@@ -1,5 +1,5 @@
 import Polygon from './Polygon';
-import me, { object } from "math-expressions";
+import me, { object, array, isArray } from "math-expressions";
 
 export default class Rectangle extends Polygon {
   static componentType = "rectangle";
@@ -63,80 +63,143 @@ export default class Rectangle extends Polygon {
     }
 
     stateVariableDefinitions.essentialVertex = {
-      defaultValue: me.fromAst(["vector", 0, 0]),
+      isArray: true,
+      entryPrefixes: ["essentialVertexX"],
+      defaultEntryValue: me.fromAst(0),
 
-      returnDependencies() {
-        return {
-          nVerticesSpecified: {
-            dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
-          }
+      returnArraySizeDependencies: () => ({
+        nVerticesSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "nVerticesSpecified",
         }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVerticesSpecified === 0 ? 2 : 0];
       },
 
-      definition({ dependencyValues }) {
-        if (dependencyValues.nVerticesSpecified === 0) {
-          return { useEssentialOrDefaultValue: { essentialVertex: { variablesToCheck: ["essentialVertex"] } } };
-        }
-        return { newValues: { essentialVertex: null } }
+      returnArrayDependenciesByKey() {
+        return {};
       },
 
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+      arrayDefinitionByKey: function ({ arrayKeys }) {
+        let essentialVertex = {};
+
+        for (let arrayKey of arrayKeys) {
+          essentialVertex[arrayKey] = {
+            variablesToCheck: ["essentialVertexX" + (Number(arrayKey) + 1)]
+          };
+        }
+        return { useEssentialOrDefaultValue: { essentialVertex } };
+
+      },
+
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.essentialVertex) {
+
+          instructions.push({
+            setStateVariable: "essentialVertex",
+            value: desiredStateVariableValues.essentialVertex[arrayKey],
+            arrayKey
+          });
+        }
+
         return {
           success: true,
-          instructions: [{
-            setStateVariable: "essentialVertex",
-            value: desiredStateVariableValues.essentialVertex
-          }]
+          instructions
         }
       }
     }
 
+    stateVariableDefinitions.haveSpecifiedCenter = {
+      returnDependencies: () => ({
+        centerChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneCenter"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          haveSpecifiedCenter: dependencyValues.centerChild.length === 1
+        }
+      })
+    }
+
     stateVariableDefinitions.specifiedCenter = {
-      defaultValue: null,
+      isArray: true,
+      entryPrefixes: ["specifiedCenterX"],
+      returnArraySizeDependencies: () => ({
+        haveSpecifiedCenter: {
+          dependencyType: "stateVariable",
+          variableName: "haveSpecifiedCenter",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.haveSpecifiedCenter ? 2 : 0];
+      },
 
-      returnDependencies() {
-        return {
-          specifiedCenterChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "atMostOneCenter",
-            variableNames: ["coords"],
-          },
-          nVerticesSpecified: {
-            dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+      returnArrayDependenciesByKey({ arrayKeys }) {
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            centerChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atMostOneCenter",
+              variableNames: ["x" + varEnding],
+            },
           }
         }
+
+        return { dependenciesByKey }
       },
 
-      definition({ dependencyValues }) {
-        if (dependencyValues.specifiedCenterChild.length === 1) {
-          return { newValues: { specifiedCenter: dependencyValues.specifiedCenterChild[0].stateValues.coords } };
-        } else {
-          return { useEssentialOrDefaultValue: { specifiedCenter: { variablesToCheck: ["center"] } } };
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        let specifiedCenter = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          if (dependencyValuesByKey[arrayKey].centerChild.length === 1) {
+            specifiedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerChild[0].stateValues["x" + varEnding];
+          }
         }
+
+        return { newValues: { specifiedCenter } }
       },
 
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.specifiedCenterChild.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "specifiedCenterChild",
-              desiredValue: desiredStateVariableValues.specifiedCenter,
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.specifiedCenter) {
+
+          if (dependencyValuesByKey[arrayKey].centerChild &&
+            dependencyValuesByKey[arrayKey].centerChild.length === 1
+          ) {
+
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].centerChild,
+              desiredValue: desiredStateVariableValues.specifiedCenter[arrayKey],
               childIndex: 0,
-              variableIndex: 0
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setStateVariable: "specifiedCenter",
-              value: desiredStateVariableValues.specifiedCenter
-            }]
+              variableIndex: 0,
+            })
           }
         }
+
+        console.log("specified center inverse", dependencyValuesByKey, instructions);
+
+        return {
+          success: true,
+          instructions
+        };
+
       }
     }
 
@@ -250,62 +313,89 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.center = {
       public: true,
-      componentType: "point",
-      defaultValue: null,
-
-      returnDependencies({ }) {
-        return {
-          vertices: {
-            dependencyType: "stateVariable",
-            variableName: "vertices",
-          }
+      isArray: true,
+      entryPrefixes: ["centerX"],
+      componentType: "math",
+      returnWrappingComponents(prefix) {
+        if (prefix === "centerX") {
+          return [];
+        } else {
+          // entire array
+          // wrap by both <point> and <xs>
+          return [["point", "xs"]];
         }
       },
 
-      definition({ dependencyValues }) {
-        let v1x, v1y, v2x, v2y;
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize: () => [2],
 
-        v1x = getNumericalComponent(dependencyValues.vertices[0], 0);
-        v1y = getNumericalComponent(dependencyValues.vertices[0], 1);
-        v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
-        v2y = getNumericalComponent(dependencyValues.vertices[2], 1);
+      returnArrayDependenciesByKey({ arrayKeys }) {
 
-        let centerx = (v1x + v2x) / 2;
-        let centery = (v1y + v2y) / 2;
-        let center = me.fromAst(["vector", centerx, centery]);
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          dependenciesByKey[arrayKey] = {
+            vertex0: {
+              dependencyType: "stateVariable",
+              variableName: "vertexX1_" + varEnding,
+            },
+            vertex2: {
+              dependencyType: "stateVariable",
+              variableName: "vertexX3_" + varEnding,
+            }
+          };
+        }
+
+        return { dependenciesByKey };
+      },
+
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let center = {};
+
+        for (let arrayKey of arrayKeys) {
+          let v0 = dependencyValuesByKey[arrayKey].vertex0;
+          let v2 = dependencyValuesByKey[arrayKey].vertex2;
+
+          center[arrayKey] = v0.add(v2).divide(2);
+        }
 
         return { newValues: { center } };
       },
 
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
-        console.log("center inverse", desiredStateVariableValues, dependencyValues, stateValues);
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyValuesByKey,
+        dependencyNamesByKey, stateValues }) {
+        console.log("center inverse", desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
-        let v1x, v1y, v2x, v2y;
+        let instructions = [];
 
-        v1x = getNumericalComponent(dependencyValues.vertices[0], 0);
-        v1y = getNumericalComponent(dependencyValues.vertices[0], 1);
-        v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
-        v2y = getNumericalComponent(dependencyValues.vertices[2], 1);
+        for (let arrayKey in desiredStateVariableValues.center) {
+          let dim = Number(arrayKey);
 
-        let newCenterX = getNumericalComponent(desiredStateVariableValues.center, 0);
-        let newCenterY = getNumericalComponent(desiredStateVariableValues.center, 1);
+          let v0 = dependencyValuesByKey[arrayKey].vertex0;
+          let v2 = dependencyValuesByKey[arrayKey].vertex2;
 
-        let centerChangeX = newCenterX - getNumericalComponent(stateValues.center, 0);
-        let centerChangeY = newCenterY - getNumericalComponent(stateValues.center, 1);
+          let offset = desiredStateVariableValues.center[dim].subtract(stateValues.center[dim]);
 
-        let vertices = {
-          0: me.fromAst(["vector", v1x + centerChangeX, v1y + centerChangeY]),
-          2: me.fromAst(["vector", v2x + centerChangeX, v2y + centerChangeY])
-        };
+          let desiredV0 = v0.add(offset).simplify();
+          let desiredV2 = v2.add(offset).simplify();
 
-        console.log("new verts", vertices);
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].vertex2,
+            desiredValue: desiredV2,
+          }, {
+            setDependency: dependencyNamesByKey[arrayKey].vertex0,
+            desiredValue: desiredV0,
+          });
+        }
+
+        console.log("center inverse instructions", instructions);
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "vertices",
-            desiredValue: vertices
-          }]
+          instructions
         }
       }
     }
@@ -313,82 +403,104 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.width = {
       public: true,
       componentType: "number",
-      defaultValue: null,
 
       returnDependencies({ }) {
         return {
-          vertices: {
+          vertex0: {
             dependencyType: "stateVariable",
-            variableName: "vertices",
+            variableName: "vertexX1_1",
+          },
+          vertex2: {
+            dependencyType: "stateVariable",
+            variableName: "vertexX3_1",
           }
         }
       },
 
       definition({ dependencyValues }) {
-        let v0x, v2x;
 
-        v0x = getNumericalComponent(dependencyValues.vertices[0], 0);
-        v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
+        let v0 = dependencyValues.vertex0.evaluate_to_constant();
+        let v2 = dependencyValues.vertex2.evaluate_to_constant();
+        let width = Math.abs(v0 - v2);
 
-        let width = Math.abs(v0x - v2x);
+        console.log("width definition", width, v0, v2);
 
         return { newValues: { width } };
       },
 
       inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
-        let v0x, v2x;
 
-        v0x = getNumericalComponent(dependencyValues.vertices[0], 0);
-        v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
+        let v0 = dependencyValues.vertex0.evaluate_to_constant();
+        let v2 = dependencyValues.vertex2.evaluate_to_constant();
+        let center = (v2 + v0) / 2;
 
-        let widthSign = Math.sign(v2x - v0x);
+        let widthSign = ((v2 - v0) < 0) ? -1 : 1;
+        let offset = widthSign * Math.max(0, desiredStateVariableValues.width) / 2;
 
-        let desiredV2x = v0x + widthSign * desiredStateVariableValues.width;
-        let desiredV2 = me.fromAst(["vector", desiredV2x, undefined]);
+        let desiredV0 = me.fromAst(center - offset);
+        let desiredV2 = me.fromAst(center + offset);
 
         return {
           success: true,
           instructions: [{
-            setDependency: "vertices",
-            desiredValue: { 2: desiredV2 }
+            setDependency: "vertex0",
+            desiredValue: desiredV0
+          }, {
+            setDependency: "vertex2",
+            desiredValue: desiredV2
           }]
         }
-
-        // if (stateValues.nVertices === 0 && stateValues.specifiedCenter !== null) {
-
-        // } else {
-
-        // }
       }
     }
 
     stateVariableDefinitions.height = {
       public: true,
       componentType: "number",
-      defaultValue: null,
 
       returnDependencies({ }) {
         return {
-          vertices: {
+          vertex0: {
             dependencyType: "stateVariable",
-            variableName: "vertices",
+            variableName: "vertexX1_2",
+          },
+          vertex2: {
+            dependencyType: "stateVariable",
+            variableName: "vertexX3_2",
           }
         }
       },
 
       definition({ dependencyValues }) {
-        let v0y, v2y;
 
-        v0y = getNumericalComponent(dependencyValues.vertices[0], 1);
-        v2y = getNumericalComponent(dependencyValues.vertices[2], 1);
+        let v0 = dependencyValues.vertex0.evaluate_to_constant();
+        let v2 = dependencyValues.vertex2.evaluate_to_constant();
 
-        let height = Math.abs(v0y - v2y);
+        let height = Math.abs(v0 - v2);
 
         return { newValues: { height } };
       },
 
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        return { success: false };
+        let v0 = dependencyValues.vertex0.evaluate_to_constant();
+        let v2 = dependencyValues.vertex2.evaluate_to_constant();
+        let center = (v2 + v0) / 2;
+
+        let heightSign = ((v2 - v0) < 0) ? -1 : 1;
+        let offset = heightSign * Math.max(0, desiredStateVariableValues.height) / 2;
+
+        let desiredV0 = me.fromAst(center - offset);
+        let desiredV2 = me.fromAst(center + offset);
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "vertex0",
+            desiredValue: desiredV0
+          }, {
+            setDependency: "vertex2",
+            desiredValue: desiredV2
+          }]
+        }
       }
     }
 
@@ -396,424 +508,631 @@ export default class Rectangle extends Polygon {
       public: true,
       componentType: "point",
       isArray: true,
-      entryPrefixes: ["vertex"],
-      stateVariablesDeterminingDependencies: [
-        "nVerticesSpecified",
-        "specifiedCenter",
-        "specifiedWidth",
-        "specifiedHeight"
-      ],
-
-      returnDependencies: function ({ arrayKeys, stateValues }) {
-        if (stateValues.nVerticesSpecified === 0) {
-          // center, width and height
-          return {
-            nVerticesSpecified: {
-              dependencyType: "stateVariable",
-              variableName: "nVerticesSpecified",
-            },
-            specifiedCenter: {
-              dependencyType: "stateVariable",
-              variableName: "specifiedCenter",
-            },
-            specifiedWidth: {
-              dependencyType: "stateVariable",
-              variableName: "specifiedWidth",
-            },
-            specifiedHeight: {
-              dependencyType: "stateVariable",
-              variableName: "specifiedHeight",
-            },
-            essentialVertex: {
-              dependencyType: "stateVariable",
-              variableName: "essentialVertex",
-            }
-          };
-        } else if (stateValues.nVerticesSpecified === 1) {
-          if (stateValues.specifiedWidth != null && stateValues.specifiedHeight != null) {
-            // 1 point, width and height
-            return {
-              nVerticesSpecified: {
-                dependencyType: "stateVariable",
-                variableName: "nVerticesSpecified",
-              },
-              verticesChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneVertices",
-                variableNames: ["points", "nPoints"],
-              },
-              specifiedWidth: {
-                dependencyType: "stateVariable",
-                variableName: "specifiedWidth",
-              },
-              specifiedHeight: {
-                dependencyType: "stateVariable",
-                variableName: "specifiedHeight",
-              }
-            };
-          } else {
-            // 1 point, center
-            return {
-              nVerticesSpecified: {
-                dependencyType: "stateVariable",
-                variableName: "nVerticesSpecified",
-              },
-              verticesChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneVertices",
-                variableNames: ["points", "nPoints"],
-              },
-              specifiedCenter: {
-                dependencyType: "stateVariable",
-                variableName: "specifiedCenter",
-              },
-              specifiedWidth: {
-                dependencyType: "stateVariable",
-                variableName: "specifiedWidth",
-              },
-              specifiedHeight: {
-                dependencyType: "stateVariable",
-                variableName: "specifiedHeight",
-              }
-            };
-          }
+      nDimensions: 2,
+      entryPrefixes: ["vertexX", "vertex"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "vertexX") {
+          return [];
         } else {
-          // 2 points
-          return {
-            nVerticesSpecified: {
-              dependencyType: "stateVariable",
-              variableName: "nVerticesSpecified",
-            },
-            verticesChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneVertices",
-              variableNames: ["points", "nPoints"],
-            }
-          }
+          // vertex or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
         }
       },
-      definition: function ({ dependencyValues, arrayKeys }) {
-        let centerSpecified = (dependencyValues.specifiedCenter != null);
-        let widthSpecified = (dependencyValues.specifiedWidth != null);
-        let heightSpecified = (dependencyValues.specifiedHeight != null);
-
-        console.log("definition of vertices", dependencyValues);
-        let v0x, v0y, v2x, v2y;
-
-        if (dependencyValues.nVerticesSpecified === 0) {
-          // maybe center, width and height
-
-          let width = dependencyValues.specifiedWidth;
-
-          let height = dependencyValues.specifiedHeight;
-
-          if (centerSpecified) {
-            let center = dependencyValues.specifiedCenter;
-            let centerx = getNumericalComponent(center, 0);
-            let centery = getNumericalComponent(center, 1);
-
-            v0x = centerx - width / 2;
-            v0y = centery - height / 2;
-            v2x = centerx + width / 2;
-            v2y = centery + height / 2;
-
-          }
-          else {
-            // no center
-
-            v0x = getNumericalComponent(dependencyValues.essentialVertex, 0);
-            v0y = getNumericalComponent(dependencyValues.essentialVertex, 1);
-            v2x = v0x + width;
-            v2y = v0y + height;
-          }
-        } else if (dependencyValues.nVerticesSpecified === 1) {
-          if (widthSpecified || heightSpecified) {
-            // 1 point, width and height
-
-            let point = dependencyValues.verticesChild[0].stateValues.points[0];
-            let pointx = getNumericalComponent(point, 0);
-            let pointy = getNumericalComponent(point, 1);
-
-            let width = dependencyValues.specifiedWidth;
-            let height = dependencyValues.specifiedHeight;
-
-            v0x = pointx;
-            v0y = pointy;
-            v2x = pointx + width;
-            v2y = pointy + height;
-
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "vertexX") {
+          // vertexX1_2 is the 2nd component of the first vertex
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
           } else {
+            return [];
+          }
+        } else {
+          // vertex3 is all components of the third vertex
+          if (!arraySize) {
+            return [];
+          }
+          let vertexInd = Number(varEnding) - 1;
+          if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
+            // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      stateVariablesDeterminingDependencies: [
+        "nVerticesSpecified",
+        "haveSpecifiedCenter"
+      ],
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [4, 2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {};
+        let globalDependencies = {
+          nVerticesSpecified: {
+            dependencyType: "stateVariable",
+            variableName: "nVerticesSpecified"
+          }
+        };
+
+        if (stateValues.nVerticesSpecified === 0) {
+
+          globalDependencies.haveSpecifiedCenter = {
+            dependencyType: "stateVariable",
+            variableName: "haveSpecifiedCenter"
+          };
+
+          if (stateValues.haveSpecifiedCenter) {
+            // center, width, height
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              dependenciesByKey[arrayKey] = {
+                specifiedCenter: {
+                  dependencyType: "stateVariable",
+                  variableName: "specifiedCenterX" + (Number(dim) + 1),
+                }
+              };
+
+              if (dim === "0") {
+                dependenciesByKey[arrayKey].specifiedWidth = {
+                  dependencyType: "stateVariable",
+                  variableName: "specifiedWidth",
+                }
+              } else {
+                dependenciesByKey[arrayKey].specifiedHeight = {
+                  dependencyType: "stateVariable",
+                  variableName: "specifiedHeight",
+                }
+              }
+            }
+          } else {
+            // essential vertex, width, height
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              dependenciesByKey[arrayKey] = {
+                essentialVertex: {
+                  dependencyType: "stateVariable",
+                  variableName: "essentialVertexX" + (Number(dim) + 1),
+                }
+              };
+
+              if (dim === "0") {
+                if (vertexInd === "1" || vertexInd === "2") {
+                  dependenciesByKey[arrayKey].specifiedWidth = {
+                    dependencyType: "stateVariable",
+                    variableName: "specifiedWidth",
+                  }
+                }
+              } else {
+                if (vertexInd === "2" || vertexInd === "3") {
+                  dependenciesByKey[arrayKey].specifiedHeight = {
+                    dependencyType: "stateVariable",
+                    variableName: "specifiedHeight",
+                  }
+                }
+              }
+            }
+          }
+        } else if (stateValues.nVerticesSpecified === 1) {
+
+          globalDependencies.haveSpecifiedCenter = {
+            dependencyType: "stateVariable",
+            variableName: "haveSpecifiedCenter"
+          };
+
+          if (stateValues.haveSpecifiedCenter) {
             // 1 point, center
 
-            let point = dependencyValues.verticesChild[0].stateValues.points[0];
-            let pointx = getNumericalComponent(point, 0);
-            let pointy = getNumericalComponent(point, 1);
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+              let varEnding = "1_" + (Number(dim) + 1);
 
-            let center = dependencyValues.specifiedCenter;
-            let centerx = getNumericalComponent(center, 0);
-            let centery = getNumericalComponent(center, 1);
+              dependenciesByKey[arrayKey] = {
+                verticesChild: {
+                  dependencyType: "childStateVariables",
+                  childLogicName: "exactlyOneVertices",
+                  variableNames: ["pointX" + varEnding]
+                }
+              };
 
-            v0x = pointx;
-            v0y = pointy;
-            v2x = pointx + 2 * (centerx - pointx);
-            v2y = pointy + 2 * (centery - pointy);
+              if (dim === "0" && vertexInd === "1" || vertexInd === "2"
+                || dim === "1" && vertexInd === "2" || vertexInd === "3") {
+                dependenciesByKey[arrayKey].specifiedCenter = {
+                  dependencyType: "stateVariable",
+                  variableName: "specifiedCenterX" + (Number(dim) + 1),
+                }
+              }
+            }
+          } else {
+            // 1 point, width and height
 
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+              let varEnding = "1_" + (Number(dim) + 1);
+
+              dependenciesByKey[arrayKey] = {
+                verticesChild: {
+                  dependencyType: "childStateVariables",
+                  childLogicName: "exactlyOneVertices",
+                  variableNames: ["pointX" + varEnding]
+                }
+              };
+
+              if (dim === "0") {
+                if (vertexInd === "1" || vertexInd === "2")
+                  dependenciesByKey[arrayKey].specifiedWidth = {
+                    dependencyType: "stateVariable",
+                    variableName: "specifiedWidth",
+                  }
+              } else {
+                if (vertexInd === "2" || vertexInd === "3") {
+                  dependenciesByKey[arrayKey].specifiedHeight = {
+                    dependencyType: "stateVariable",
+                    variableName: "specifiedHeight",
+                  }
+                }
+              }
+            }
           }
         } else {
           // 2 points
 
-          let point0 = dependencyValues.verticesChild[0].stateValues.points[0];
-          let point1 = dependencyValues.verticesChild[0].stateValues.points[1];
+          for (let arrayKey of arrayKeys) {
+            let [vertexInd, dim] = arrayKey.split(",");
+            let varEnding1 = "1_" + (Number(dim) + 1);
+            let varEnding2 = "2_" + (Number(dim) + 1);
 
-          console.log("2 points", point0, point0);
+            let varEnding;
+            if (vertexInd === "0") {
+              varEnding = varEnding1;
+            } else if (vertexInd === "2") {
+              varEnding = varEnding2;
+            } else if (vertexInd === "1") {
+              if (dim === "0") {
+                varEnding = varEnding2;
+              } else {
+                varEnding = varEnding1;
+              }
+            } else {
+              if (dim === "0") {
+                varEnding = varEnding1;
+              } else {
+                varEnding = varEnding2;
+              }
+            }
 
-          v0x = getNumericalComponent(point0, 0);
-          v0y = getNumericalComponent(point0, 1);
-          v2x = getNumericalComponent(point1, 0);
-          v2y = getNumericalComponent(point1, 1);
+            dependenciesByKey[arrayKey] = {
+              verticesChild: {
+                dependencyType: "childStateVariables",
+                childLogicName: "exactlyOneVertices",
+                variableNames: ["pointX" + varEnding]
+              }
+            };
+          }
         }
 
-        console.log("v1", v2x, v2y, "v2", v0x, v0y);
+        return {
+          dependenciesByKey,
+          globalDependencies
+        };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, globalDependencyValues }) {
 
-        let vertices = [
-          me.fromAst(["vector", v0x, v0y]),
-          me.fromAst(["vector", v2x, v0y]),
-          me.fromAst(["vector", v2x, v2y]),
-          me.fromAst(["vector", v0x, v2y])
-        ];
+        let vertices = {};
+
+        console.log("definition of vertices", dependencyValuesByKey, arrayKeys, globalDependencyValues);
+
+        if (globalDependencyValues.nVerticesSpecified === 0) {
+          if (globalDependencyValues.haveSpecifiedCenter) {
+            // width, height, center
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              let centerComponent = dependencyValuesByKey[arrayKey].specifiedCenter;
+
+              if (dim === "0") {
+                let width = dependencyValuesByKey[arrayKey].specifiedWidth;
+
+                if (vertexInd === "0" || vertexInd === "3") {
+                  vertices[arrayKey] = centerComponent.subtract(width / 2);
+                } else {
+                  vertices[arrayKey] = centerComponent.add(width / 2);
+                }
+              } else {
+                let height = dependencyValuesByKey[arrayKey].specifiedHeight;
+
+                if (vertexInd === "0" || vertexInd === "1") {
+                  vertices[arrayKey] = centerComponent.subtract(height / 2);
+                } else {
+                  vertices[arrayKey] = centerComponent.add(height / 2);
+                }
+              }
+            }
+          } else {
+            // width, height, essential vertex
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              let vertComponent = dependencyValuesByKey[arrayKey].essentialVertex;
+
+              if (dim === "0") {
+                if (vertexInd === "0" || vertexInd === "3") {
+                  vertices[arrayKey] = vertComponent;
+                } else {
+                  let width = dependencyValuesByKey[arrayKey].specifiedWidth;
+                  vertices[arrayKey] = vertComponent.add(width);
+                }
+              } else {
+                if (vertexInd === "0" || vertexInd === "1") {
+                  vertices[arrayKey] = vertComponent;
+                } else {
+                  let height = dependencyValuesByKey[arrayKey].specifiedHeight;
+                  vertices[arrayKey] = vertComponent.add(height);
+                }
+              }
+            }
+          }
+        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+          if (globalDependencyValues.haveSpecifiedCenter) {
+            // 1 vertex, center
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+              let vertComponent;
+
+              if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
+                vertComponent = Object.values(verticesChild[0].stateValues)[0];
+              } else {
+                vertComponent = me.fromAst('\uff3f');
+              }
+
+              if (dim === "0" && (vertexInd === "0" || vertexInd === "3")
+                || dim === "1" && (vertexInd === "0" || vertexInd === "1")) {
+                vertices[arrayKey] = vertComponent;
+              } else {
+                let centerComponent = dependencyValuesByKey[arrayKey].specifiedCenter;
+                vertices[arrayKey] = vertComponent.add(centerComponent.subtract(vertComponent).multiply(2));
+              }
+            }
+          } else {
+            // 1 vertex, width and height
+
+            for (let arrayKey of arrayKeys) {
+              let [vertexInd, dim] = arrayKey.split(",");
+
+              let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+              let vertComponent;
+
+              if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
+                vertComponent = Object.values(verticesChild[0].stateValues)[0];
+              } else {
+                vertComponent = me.fromAst('\uff3f');
+              }
+
+              if (dim === "0") {
+                if (vertexInd === "0" || vertexInd === "3") {
+                  vertices[arrayKey] = vertComponent;
+                } else {
+                  let width = dependencyValuesByKey[arrayKey].specifiedWidth;
+                  vertices[arrayKey] = vertComponent.add(width);
+                }
+              } else {
+                if (vertexInd === "0" || vertexInd === "1") {
+                  vertices[arrayKey] = vertComponent;
+                } else {
+                  let height = dependencyValuesByKey[arrayKey].specifiedHeight;
+                  vertices[arrayKey] = vertComponent.add(height);
+                }
+              }
+            }
+          }
+        } else {
+          // 2 vertices
+
+          for (let arrayKey of arrayKeys) {
+
+            let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+
+            if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
+              vertices[arrayKey] = Object.values(verticesChild[0].stateValues)[0];
+            } else {
+              vertices[arrayKey] = me.fromAst('\uff3f');
+            }
+          }
+        }
 
         return { newValues: { vertices } };
       },
 
-      inverseDefinition: function ({
-        desiredStateVariableValues, dependencyValues, stateValues, workspace
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues, dependencyValuesByKey, globalDependencyValues,
+        stateValues, workspace, initialChange, dependencyNamesByKey
       }) {
+
         console.log("inverse definition of vertices of rectangle");
-        console.log(desiredStateVariableValues, dependencyValues, stateValues);
+        console.log(desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
-        if (!workspace.desiredVertices) {
-          workspace.desiredVertices = {};
+        // if not draggable, then disallow initial change 
+
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
         }
 
-        Object.assign(workspace.desiredVertices, desiredStateVariableValues.vertices);
-        for (let i in workspace.desiredVertices) {
-          if (!["0", "1", "2", "3"].includes(i)) {
-            delete workspace.desiredVertices[i];
-          }
+        if (!workspace.v0) {
+          workspace.v0 = [...stateValues.vertices[0]];
+          workspace.v2 = [...stateValues.vertices[2]];
         }
 
-        let vertexInd, oppositeInd;
-        let v0x, v0y, v2x, v2y;
+        let keyX, keyY, keyV0X, keyV0Y, keyV2X, keyV2Y;
 
-        if (Object.keys(workspace.desiredVertices).length === 1) {
+        for (let arrayKey in desiredStateVariableValues.vertices) {
+          let [vertexInd, dim] = arrayKey.split(",");
 
-          vertexInd = Number(Object.keys(workspace.desiredVertices)[0]);
-          oppositeInd = (vertexInd + 2) % 4;
+          let desiredValue = desiredStateVariableValues.vertices[arrayKey];
 
-          v0x = workspace.desiredVertices[vertexInd].get_component(0);
-          v0y = workspace.desiredVertices[vertexInd].get_component(1);
-
-          v2x = stateValues.vertices[oppositeInd].get_component(0);
-          v2y = stateValues.vertices[oppositeInd].get_component(1);
-
-        } else if (Object.keys(workspace.desiredVertices).length === 4) {
-          //if 4 points are given, use 2 to make the rectangle
-          vertexInd = 0;
-          oppositeInd = 2;
-
-          v0x = workspace.desiredVertices[vertexInd].get_component(0);
-          v0y = workspace.desiredVertices[vertexInd].get_component(1);
-
-          v2x = workspace.desiredVertices[oppositeInd].get_component(0);
-          v2y = workspace.desiredVertices[oppositeInd].get_component(1);
-
-        } else if (Object.keys(workspace.desiredVertices).length === 3) {
-
-          if ("0" in workspace.desiredVertices && "2" in workspace.desiredVertices) {
-            vertexInd = 0;
-            oppositeInd = 2;
-          } else {
-            vertexInd = 1;
-            oppositeInd = 3;
-          }
-
-          v0x = workspace.desiredVertices[vertexInd].get_component(0);
-          v0y = workspace.desiredVertices[vertexInd].get_component(1);
-
-          v2x = workspace.desiredVertices[oppositeInd].get_component(0);
-          v2y = workspace.desiredVertices[oppositeInd].get_component(1);
-        } else {
-          // 2 points
-          let changedVerts = Object.keys(workspace.desiredVertices).map(x => Number(x)).sort();
-
-          vertexInd = changedVerts[0];
-          oppositeInd = (vertexInd + 2) % 4;
-
-          console.log("inds: ", vertexInd, oppositeInd);
-
-          if (oppositeInd === changedVerts[1]) {
-            // opposite vertices
-            v0x = workspace.desiredVertices[vertexInd].get_component(0);
-            v0y = workspace.desiredVertices[vertexInd].get_component(1);
-
-            v2x = workspace.desiredVertices[oppositeInd].get_component(0);
-            v2y = workspace.desiredVertices[oppositeInd].get_component(1);
-          } else {
-            // adjacent vertices - one side
-
-            if (changedVerts[0] === 1) {
-              // 1, 2 - right
-              v2x = stateValues.vertices[oppositeInd].get_component(0);
-              v2y = workspace.desiredVertices[changedVerts[1]].get_component(1);
-
-            } else if (changedVerts[0] === 2) {
-              // 2, 3 - top
-              v2x = workspace.desiredVertices[changedVerts[1]].get_component(0);
-              v2y = stateValues.vertices[oppositeInd].get_component(1);
-
-            } else if (changedVerts[1] === 1) {
-              console.log("i hope this code is running");
-              // 0, 1 - bottom
-              v2x = workspace.desiredVertices[changedVerts[1]].get_component(0);
-              v2y = stateValues.vertices[oppositeInd].get_component(1);
-
+          if (vertexInd === "0") {
+            workspace.v0[Number(dim)] = desiredValue;
+          } else if (vertexInd === "2") {
+            workspace.v2[Number(dim)] = desiredValue;
+          } else if (vertexInd === "1") {
+            if (dim === "0") {
+              workspace.v2[Number(dim)] = desiredValue;
             } else {
-              // 0, 3 - left
-              vertexInd = 3;
-              oppositeInd = 1;
+              workspace.v0[Number(dim)] = desiredValue;
+            }
+          } else {
+            if (dim === "0") {
+              workspace.v0[Number(dim)] = desiredValue;
+            } else {
+              workspace.v2[Number(dim)] = desiredValue;
+            }
+          }
 
-              v2x = stateValues.vertices[oppositeInd].get_component(0);
-              v2y = workspace.desiredVertices[0].get_component(1);
+          if (dim === "0") {
+            keyX = arrayKey;
+            if (vertexInd === "0" || vertexInd === "3") {
+              keyV0X = arrayKey;
+            } else {
+              keyV2X = arrayKey;
+            }
+          } else {
+            keyY = arrayKey;
+            if (vertexInd === "0" || vertexInd === "1") {
+              keyV0Y = arrayKey;
+            } else {
+              keyV2Y = arrayKey;
+            }
+          }
+        }
+
+        console.log("keys:", keyV0X,
+          keyV0Y,
+          keyV2X,
+          keyV2Y)
+
+        console.log("workspace", JSON.parse(JSON.stringify(workspace)));
+
+        let instructions = [];
+
+        if (globalDependencyValues.nVerticesSpecified === 0) {
+          if (globalDependencyValues.haveSpecifiedCenter) {
+            // width, height, center
+
+            if (keyX !== undefined) {
+              let width = workspace.v2[0].subtract(workspace.v0[0]).evaluate_to_constant();
+              let center = workspace.v2[0].add(workspace.v0[0]).divide(2).simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyX].specifiedWidth,
+                desiredValue: width,
+              }, {
+                setDependency: dependencyNamesByKey[keyX].specifiedCenter,
+                desiredValue: center,
+              })
             }
 
-            v0x = workspace.desiredVertices[vertexInd].get_component(0);
-            v0y = workspace.desiredVertices[vertexInd].get_component(1);
-          }
-        }
+            if (keyY !== undefined) {
+              let height = workspace.v2[1].subtract(workspace.v0[1]).evaluate_to_constant();
+              let center = workspace.v2[1].add(workspace.v0[1]).divide(2).simplify();
 
-        if (vertexInd === 2 || vertexInd === 3) {
-          let tmpy = v0y;
-          v0y = v2y;
-          v2y = tmpy;
-        }
-        if (vertexInd === 1 || vertexInd === 2) {
-          let tmpx = v0x;
-          v0x = v2x;
-          v2x = tmpx;
-        }
-
-        if (stateValues.nVerticesSpecified === 0) {
-          let width = v2x.subtract(v0x).evaluate_to_constant();
-          let height = v2y.subtract(v0y).evaluate_to_constant();
-
-          if (stateValues.specifiedCenter != null) {
-            // center, width and height
-
-            let centerx = v0x.add(v2x).divide(2);
-            let centery = v0y.add(v2y).divide(2);
-            let center = me.fromAst(["vector", centerx.tree, centery.tree]).simplify();
-
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "specifiedCenter",
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyY].specifiedHeight,
+                desiredValue: height,
+              }, {
+                setDependency: dependencyNamesByKey[keyY].specifiedCenter,
                 desiredValue: center,
-              }, {
-                setDependency: "specifiedWidth",
-                desiredValue: width,
-              }, {
-                setDependency: "specifiedHeight",
-                desiredValue: height
-              }]
-            };
+              })
+            }
           } else {
-            // no center
+            // width, height, essential vertex
 
-            let v0coords = me.fromAst(["vector", v0x, v0y]);
+            if (keyV0X !== undefined) {
+              let vert = workspace.v0[0].simplify();
 
-            console.log("no center", v0coords, width, height);
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0X].essentialVertex,
+                desiredValue: vert,
+              });
+            }
+            if (keyV2X !== undefined) {
+              let width = workspace.v2[0].subtract(workspace.v0[0]).evaluate_to_constant();
 
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "essentialVertex",
-                desiredValue: v0coords,
-              }, {
-                setDependency: "specifiedWidth",
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2X].specifiedWidth,
                 desiredValue: width,
-              }, {
-                setDependency: "specifiedHeight",
-                desiredValue: height
-              }]
-            };
+              });
+            }
+
+            if (keyV0Y !== undefined) {
+              let vert = workspace.v0[1].simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0Y].essentialVertex,
+                desiredValue: vert,
+              });
+            }
+            if (keyV2Y !== undefined) {
+              let height = workspace.v2[1].subtract(workspace.v0[1]).evaluate_to_constant();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2Y].specifiedHeight,
+                desiredValue: height,
+              });
+            }
           }
-        } else if (stateValues.nVerticesSpecified === 1) {
-          if (stateValues.specifiedWidth != null && stateValues.specifiedHeight != null) {
-            // 1 point, width and height
+        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+          if (globalDependencyValues.haveSpecifiedCenter) {
+            // 1 vertex, center
 
-            let points = [me.fromAst(["vector", v0x, v0y])];
+            if (keyV0X !== undefined) {
+              let vert = workspace.v0[0].simplify();
 
-            let width = v2x.subtract(v0x).evaluate_to_constant();
-            let height = v2y.subtract(v0y).evaluate_to_constant();
-
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "verticesChild",
-                variableIndex: 0,
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+                desiredValue: vert,
                 childIndex: 0,
-                desiredValue: points,
-              }, {
-                setDependency: "specifiedWidth",
-                desiredValue: width,
-              }, {
-                setDependency: "specifiedHeight",
-                desiredValue: height
-              }]
-            };
+                variableIndex: 0,
+              });
+            }
+            if (keyV2X !== undefined) {
+              let center = workspace.v2[0].add(workspace.v0[0]).divide(2).simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2X].specifiedCenter,
+                desiredValue: center,
+              });
+            }
+
+            if (keyV0Y !== undefined) {
+              let vert = workspace.v0[1].simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+                desiredValue: vert,
+                childIndex: 0,
+                variableIndex: 0,
+              });
+            }
+            if (keyV2Y !== undefined) {
+              let center = workspace.v2[1].add(workspace.v0[1]).divide(2).simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2Y].specifiedCenter,
+                desiredValue: center,
+              });
+            }
           } else {
-            if (dependencyValues.specifiedCenter != null) {
-              // 1 point, center
+            // 1 vertex, width, height
 
-              let points = [me.fromAst(["vector", v0x, v0y])];
+            if (keyV0X !== undefined) {
+              let vert = workspace.v0[0].simplify();
 
-              let centerx = v0x.add(v2x).divide(2);
-              let centery = v0y.add(v2y).divide(2);
-              let center = me.fromAst(["vector", centerx.tree, centery.tree]).simplify();
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+                desiredValue: vert,
+                childIndex: 0,
+                variableIndex: 0,
+              });
+            }
+            if (keyV2X !== undefined) {
+              let width = workspace.v2[0].subtract(workspace.v0[0]).evaluate_to_constant();
 
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "verticesChild",
-                  variableIndex: 0,
-                  childIndex: 0,
-                  desiredValue: points,
-                }, {
-                  setDependency: "specifiedCenter",
-                  desiredValue: center,
-                }]
-              };
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2X].specifiedWidth,
+                desiredValue: width,
+              });
+            }
+
+            if (keyV0Y !== undefined) {
+              let vert = workspace.v0[1].simplify();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+                desiredValue: vert,
+                childIndex: 0,
+                variableIndex: 0,
+              });
+            }
+            if (keyV2Y !== undefined) {
+              let height = workspace.v2[1].subtract(workspace.v0[1]).evaluate_to_constant();
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[keyV2Y].specifiedHeight,
+                desiredValue: height,
+              });
             }
           }
         } else {
-          // 2 points
+          // 2 vertices
 
-          let points = [
-            me.fromAst(["vector", v0x, v0y]),
-            me.fromAst(["vector", v2x, v2y])
-          ];
-
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "verticesChild",
-              variableIndex: 0,
+          if (keyV0X !== undefined) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+              desiredValue: workspace.v0[0],
               childIndex: 0,
-              desiredValue: points,
-            }]
-          };
+              variableIndex: 0,
+            });
+          }
+          if (keyV2X !== undefined) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[keyV2X].verticesChild,
+              desiredValue: workspace.v2[0],
+              childIndex: 0,
+              variableIndex: 0,
+            });
+          }
+
+          if (keyV0Y !== undefined) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+              desiredValue: workspace.v0[1],
+              childIndex: 0,
+              variableIndex: 0,
+            });
+          }
+          if (keyV2Y !== undefined) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[keyV2Y].verticesChild,
+              desiredValue: workspace.v2[1],
+              childIndex: 0,
+              variableIndex: 0,
+            });
+          }
         }
-        return { success: false };
+
+        console.log("rectangle inverse instructions:", instructions);
+
+        return {
+          success: true,
+          instructions
+        }
       }
     }
 
@@ -828,12 +1147,101 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-}
+  movePolygon(pointcoordsObject) {
+    let updateInstructions = [];
 
-function getNumericalComponent(expression, ind) {
-  try {
-    return expression.get_component(ind).evaluate_to_constant();
-  } catch (e) {
-    return "\uff3f";
+    let vertexComponents = {};
+
+    for (let ind in pointcoordsObject) {
+      vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
+      vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
+    }
+    updateInstructions.push({
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "vertices",
+      value: vertexComponents
+    });
+
+    if (Object.keys(pointcoordsObject).length === 1) {
+      // When dragging a rectangle corner, add additional instructions
+      // if they are needed to ensure the opposite corner doesn't move
+
+      let ind = Number(Object.keys(pointcoordsObject)[0]);
+      let vertexX = me.fromAst(pointcoordsObject[ind][0]);
+      let vertexY = me.fromAst(pointcoordsObject[ind][1]);
+
+      let oppositeInd = (ind + 2) % 4;
+      let oppositeX = this.stateValues.vertices[oppositeInd][0];
+      let oppositeY = this.stateValues.vertices[oppositeInd][1];
+
+      if (this.stateValues.nVerticesSpecified < 2) {
+        if (this.stateValues.haveSpecifiedCenter) {
+          // 1 vertex (or essential vertex) and center
+
+          let centerX, centerY;
+          if (ind === 0) {
+            centerX = vertexX.add(oppositeX).divide(2);
+            centerY = vertexY.add(oppositeY).divide(2);
+          } else if (ind === 1) {
+            centerY = vertexY.add(oppositeY).divide(2);
+          } else if (ind === 3) {
+            centerX = vertexX.add(oppositeX).divide(2);
+          }
+
+          if (centerX !== undefined) {
+            updateInstructions.push({
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "specifiedCenterX1",
+              value: centerX.simplify()
+            });
+          }
+          if (centerY !== undefined) {
+            updateInstructions.push({
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "specifiedCenterX2",
+              value: centerY.simplify()
+            });
+          }
+        } else {
+          // 1 vertex (or essential vertex), width and height
+
+          let width, height;
+          if (ind === 0) {
+            width = oppositeX.subtract(vertexX);
+            height = oppositeY.subtract(vertexY);
+          } else if (ind === 1) {
+            height = oppositeY.subtract(vertexY);
+          } else if (ind === 3) {
+            width = oppositeX.subtract(vertexX);
+          }
+
+          if (width !== undefined) {
+            updateInstructions.push({
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "specifiedWidth",
+              value: width.simplify()
+            });
+          }
+          if (height !== undefined) {
+            updateInstructions.push({
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "specifiedHeight",
+              value: height.simplify()
+            });
+          }
+        }
+      }
+    }
+
+    console.log("updateInstructions", updateInstructions);
+
+    this.requestUpdate({
+      updateInstructions
+    });
   }
 }
