@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
 // import { browserHistory } from 'react-router';
+import styled from 'styled-components'
+import { useTable, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce} from 'react-table'
 import {
     BrowserRouter as Router,
     Switch,
@@ -20,6 +22,206 @@ import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import { TreeView } from './TreeView/TreeView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+
+const Styles = styled.div`
+  padding: 1rem;
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid gray;
+    
+    thead {
+        border-bottom: 1px solid gray;
+    }
+
+    
+    a {
+
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .sortIcon {
+        padding-left: 4px;
+    }
+
+    tbody tr:nth-child(even) {background: #CCC}
+    tbody tr:nth-child(odd) {background: #FFF}
+
+    td:first-child {
+        text-align: left;
+        max-width: 15rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    th {
+        position: sticky;
+        top: 0;
+        background: white;
+        user-select: none;
+        max-width: 4rem;
+        //word-wrap: break-word;
+        padding: 2px;
+        max-height: 10rem;
+    }
+
+    th:first-child {
+        vertical-align: bottom;
+        max-width: 15rem;
+
+        p {
+            margin: 5px;
+        }
+    }
+
+
+    th > p {
+        height: 100%;
+    }
+    th:not(:first-child) > p{
+        writing-mode: vertical-rl;
+        text-align: left;
+        transform: rotate(180deg);
+
+    }
+
+
+    td {
+        user-select: none;
+        text-align: center;
+        max-width: 5rem;
+    }
+
+    td, th {
+        border-right: 1px solid gray;
+
+        :last-child {
+            border-right: 0;
+        }
+    }
+  }
+`
+function Table({ columns, data }) {
+
+    const filterTypes = React.useMemo(
+        () => ({
+            text: (rows, id, filterValue) => {
+            return rows.filter(row => {
+                const rowValue = row.values[id];
+                return rowValue !== undefined
+                ? String(rowValue)
+                    .toLowerCase()
+                    .startsWith(String(filterValue).toLowerCase())
+                : true;
+            });
+            }
+        }),
+        []
+    );
+
+    const defaultColumn = React.useMemo(
+        () => ({
+            Filter: DefaultColumnFilter
+        }),
+        []
+    );
+    
+
+    // Use the state and functions returned from useTable to build your UI
+    const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+      state,
+      visibleColumns,
+      preGlobalFilteredRows,
+      setGlobalFilter,
+    } = useTable({
+      columns,
+      data,
+      defaultColumn, // Be sure to pass the defaultColumn option
+      filterTypes,
+    },  
+        useFilters, // useFilters!
+        useGlobalFilter,
+        useSortBy, // useGlobalFilter
+    )
+  
+    // Render the UI for your table
+    return (
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                    <p>{column.render('Header')}</p>
+                    <div>{column.canFilter ? column.render("Filter") : null}</div>
+                    <span className = "sortIcon"> 
+                        {column.isSorted ? (column.isSortedDesc ? <FontAwesomeIcon icon={faSortDown} /> : <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
+                    </span>
+                    </th>
+                    ))}
+            </tr>
+            ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row, i) => {
+            prepareRow(row)
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => {
+                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    )
+  }
+  
+function gradeSorting(a, b, columnID){
+    const order = { '+': -1, '-': 1, undefined: 0 };
+    const ga = a.cells[9].value
+    const gb = b.cells[9].value
+    
+    if ((ga == null || ga == '') && (gb == null || gb == '')){
+        return 0
+    }
+
+    else if (ga == null || ga == ''){
+        return 1
+    }
+
+    else if (gb == null || gb == ''){
+        return -1
+    }
+
+    return ga[0].localeCompare(gb[0]) || order[ga[1]] - order[gb[1]];
+}
+
+function DefaultColumnFilter({
+    column: { filterValue, preFilteredRows, setFilter },
+  }) {
+    const count = preFilteredRows.length
+  
+    return (
+      <input
+        value={filterValue || ''}
+        onChange={e => {
+          setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
+        }}
+        placeholder={`Search ${count} records...`}
+      />
+    )
+  }
+
 
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
@@ -156,15 +358,43 @@ class GradebookOverview extends Component {
 
         this._assignmentsTable = {};
 
-        this._assignmentsTable.headers = []; // th elements in the all assignments table
+        this._assignmentsTable.headers = [
+            {
+                Header: "Name",
+                accessor: "name",
+            },
+        ];
+
         for (let i in this.assignments) {
             let { assignmentId, assignmentName } = this.assignments[i];
+            
             this._assignmentsTable.headers.push(
-                <th key={"headerCell_" + assignmentId} className="assignments-table-header">
-                    <Link to={`/assignment/?assignmentId=${assignmentId}`}>{assignmentName}</Link>
-                </th>
+                {
+                    Header: <Link to={`/assignment/?assignmentId=${assignmentId}`}>{assignmentName}</Link>,
+                    accessor: assignmentId,
+                    disableFilters: true
+                    //Cell: <Link to={`/assignment/?assignmentId=${assignmentId}`}>{assignmentName}</Link>
+                }
             )
         }
+
+        this._assignmentsTable.headers.push(
+            {
+                Header: "Weighted Credt",
+                accessor: "weight",
+                disableFilters: true
+                
+            }
+        )
+        this._assignmentsTable.headers.push(
+            {
+                Header: "Grade",
+                accessor: "grade",
+                sortType: gradeSorting,
+                disableFilters: true
+            },
+        )
+
 
         this._assignmentsTable.rows = [];
         for (let username in this.students) {
@@ -175,29 +405,19 @@ class GradebookOverview extends Component {
                 overrideGrade = this.students[username].overrideCourseGrade;
             let grade = overrideGrade ? overrideGrade : generatedGrade
 
-            this._assignmentsTable.rows.push(
-                <tr key={"studentRow_" + username}>
-                    <td className="DTable_header-column" key={"studentName_" + username}>{firstName + " " + lastName} (<span className="studentUsername">{username}</span>)</td>
-                    {(() => { // for immediate invocation
-                        let arr = [];
+            let row = {}
 
-                        for (let i in this.assignments) {
-                            let { assignmentId, assignmentName } = this.assignments[i]
-                            arr.push(<td key={"studentAssignmentGrade_" + username + "_" + assignmentId}>
-                                {
-                                    (this.overviewData[username].assignments[assignmentId]) * 100 + "%" // guaranteed to be initialized, if initialized to null, then this will result in "0%"
-                                }
-                            </td>);
-                        }
+            row["name"] = firstName + " " + lastName + "(" +  username + ")"
 
-                        // arr.sort() TODO: use helper at top
+            for (let i in this.assignments) {
+                let { assignmentId, assignmentName } = this.assignments[i]
+                row[assignmentId] = (this.overviewData[username].assignments[assignmentId]) * 100 + "%"
+            }
 
-                        return arr;
-                    })()}
-                    <td className="DTable_footer-column" key={"courseCredit_" + username}>{credit}</td>
-                    <td className="DTable_footer-column" key={"courseGrade_" + username}>{grade}</td>
-                </tr>
-            );
+            row["weight"] = credit
+            row["grade"] = grade
+
+            this._assignmentsTable.rows.push(row);
         }
 
         return this._assignmentsTable
@@ -212,22 +432,11 @@ class GradebookOverview extends Component {
             </div>)
         }
 
-        return (<div>
-            <h2>Gradebook Overview</h2>
-            <table className="Doenet-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        {this.assignmentsTable.headers} {/* // TODO: https://css-tricks.com/snippets/css/text-rotation/ */}
-                        <th>Weighted Credit</th>
-                        <th>Grade</th>
-                    </tr>
-                </thead>
-                <tbody> {/* TODO: https://stackoverflow.com/questions/1312236/how-do-i-create-an-html-table-with-fixed-frozen-left-column-and-scrollable-body} */}
-                    {this.assignmentsTable.rows}
-                </tbody>
-            </table>
-        </div>)
+        return (
+            <Styles>
+                <Table columns = {this.assignmentsTable.headers} data = {this.assignmentsTable.rows}/>
+            </Styles>
+        )
     }
 }
 
@@ -324,7 +533,7 @@ class GradebookAssignmentView extends Component {
             //     )
             // );
 
-            console.log(data)
+            // console.log(data)
 
             this.assignmentData = {}
             for (let username in this.students) { // initialize object
@@ -365,43 +574,52 @@ class GradebookAssignmentView extends Component {
             if (len > maxAttempts) maxAttempts = len;
         }
 
-        this._attemptsTable.headers = [];
+        this._attemptsTable.headers = [
+            {
+                Header: "Student",
+                accessor: "student",
+            }
+        ];
+
         for (let i = 1; i <= maxAttempts; i++) {
-            this._attemptsTable.headers.push(<th>Attempt {i}</th>);
+            this._attemptsTable.headers.push(
+            {
+                Header: "Attempt " + i,
+                accessor: "a"+i,
+                disableFilters: true
+            })
         }
 
+        this._attemptsTable.headers.push({
+            Header: "Assignment Grade",
+            accessor: "grade",
+            disableFilters: true
+        })
+
         this._attemptsTable.rows = [];
+        
         for (let username in this.students) {
             let { firstName,
                 lastName } = this.students[username];
+            
+            let row = {};
 
-            this._attemptsTable.rows.push(
-                <tr>
-                    <td className="DTable_header-column" key={"studentName_" + username}>{firstName + " " + lastName} (<span className="studentUsername">{username}</span>)</td>
-                    {(() => { // immediate invocation
-                        let arr = [];
+            row["student"] = firstName + " " + lastName + "(" + username + ")"
 
-                        for (let i = 1; i <= maxAttempts; i++) {
-                            let attemptCredit = this.assignmentData[username].attempts[i];
+            for (let i = 1; i <= maxAttempts; i++) {
+                let attemptCredit = this.assignmentData[username].attempts[i];
 
-                            arr.push(
-                                <td>
-                                    <Link to={`/attempt/?assignmentId=${this.state.assignmentId}&username=${username}&attemptNumber=${i}`}>
-                                        {
-                                            attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
-                                        }
-                                    </Link>
-                                </td>
-                            );
-                        }
+                row[("a"+i)] = 
+                <Link to={`/attempt/?assignmentId=${this.state.assignmentId}&username=${username}&attemptNumber=${i}`}>
+                {
+                    attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
+                }
+                </Link>
+            }
 
-                        return arr;
-                    })()}
-                    <td className="DTable_footer-column" key={"assignmentGrade_" + username}>
-                        {this.assignmentData[username].grade ? this.assignmentData[username].grade : "" /* we only need to display a grade if there is one */}
-                    </td>
-                </tr>
-            );
+            row["grade"] = this.assignmentData[username].grade ? this.assignmentData[username].grade : ""
+            
+            this._attemptsTable.rows.push(row);
         }
 
         return this._attemptsTable;
@@ -428,19 +646,11 @@ class GradebookAssignmentView extends Component {
 
         return (<div>
             <h2>{this.assignments[this.state.assignmentId]}</h2>
-            <table className="Doenet-table">
-                <thead>
-                    <tr>
-                        <th>Student</th>
-                        {this.attemptsTable.headers}
-                        <th>Assignment Grade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.attemptsTable.rows}
-                </tbody>
-            </table>
+            <Styles>
+                <Table columns = {this.attemptsTable.headers} data = {this.attemptsTable.rows}/>
+            </Styles>
         </div>);
+        
     }
 }
 
