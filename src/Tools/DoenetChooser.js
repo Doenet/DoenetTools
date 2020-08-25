@@ -817,7 +817,19 @@ class DoenetChooser extends Component {
       }
     }
 
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
+    // filter selected repos in childIds
+    let filteredChildIds = [], filteredChildType = [];
+    for (let i = 0; i < childIds.length; i++) {
+      if (childType[i] == "folder" && itemDataInfo[childIds[i]]["isRepo"]) {
+        const repoTitle = itemDataInfo[childIds[i]]["title"];
+        this.displayToast(`Failed to move '${repoTitle}': Item of type Repository must be at root directory`);
+      } else {
+        filteredChildIds.push(childIds[i]);
+        filteredChildType.push(childType[i]);
+      }
+    }
+    
+    this.saveFolder(folderId, title, filteredChildIds, filteredChildType, operationType, isRepo, isPublic, (resp) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
       //    at root ~ addContentToFolder not invoked
@@ -825,9 +837,9 @@ class DoenetChooser extends Component {
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
       if (resp.status != 200) return;
-      for (let i = 0; i < childIds.length; i++) {
-        let childId = childIds[i];
-        let childDataObject = getDataObjects(childType[i]);
+      for (let i = 0; i < filteredChildIds.length; i++) {
+        let childId = filteredChildIds[i];
+        let childDataObject = getDataObjects(filteredChildType[i]);
         let childDataInfo = childDataObject["info"];
         let childDataIdList = childDataObject["idList"];
         let childListKey = childDataObject["folderChildList"]
@@ -851,7 +863,7 @@ class DoenetChooser extends Component {
       this.userContentReloaded = true;
 
       let allItems = { itemIds: [], itemType: [] };
-      childIds.forEach(childId => {
+      filteredChildIds.forEach(childId => {
         let res = this.flattenFolder(childId);
         allItems.itemIds = allItems.itemIds.concat(res.itemIds);
         allItems.itemType = allItems.itemType.concat(res.itemType);
@@ -2686,7 +2698,9 @@ class DoenetChooser extends Component {
       .then(resp => {
         if (resp.data.success === "1") {
           this.folderInfo[repoId].user_access_info = resp.data.users;
-        }
+        } else {
+          this.displayToast(resp.data.message);
+        }      
         this.userContentReloaded = true;
         callback(resp);
         this.forceUpdate();
