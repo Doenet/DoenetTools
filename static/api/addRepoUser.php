@@ -9,6 +9,7 @@ include "db_connection.php";
 
 $email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
 $repoId = mysqli_real_escape_string($conn,$_REQUEST["repoId"]);
+$owner = mysqli_real_escape_string($conn,$_REQUEST["owner"]);
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -21,6 +22,15 @@ WHERE userId = '$userId' AND repoId = '$repoId'
 
 $result = $conn->query($sql); 
 $permisionToInsert = $result->num_rows;
+
+$sql = "
+SELECT repoId
+FROM folder
+WHERE folderId = '$repoId'
+";
+
+$result = $conn->query($sql); 
+$newRepo = $result->num_rows == 0;
 
 //Test if user exists
 $sql = "
@@ -38,15 +48,16 @@ $targetUserId = $row["userId"];
 
 $response_arr = array(
   "success"=>"0",
+  "message"=>"User with email $email does not exist"
 );
 
-if ($permisionToInsert > 0 && $targetUserExists > 0){
+if (($permisionToInsert > 0 || $newRepo) && $targetUserExists > 0){
 //  User has permission to insert the new user, so insert it
   $sql = "
   INSERT INTO repo_access
   (repoId, userId, email, timestamp, removedFlag, owner)
   VALUES
-  ('$repoId','$targetUserId','$email', NOW(), '0', '0')
+  ('$repoId','$targetUserId','$email', NOW(), '0', $owner)
   ";
   $result = $conn->query($sql); 
   //Collect users who can access repos
@@ -77,7 +88,8 @@ if ($permisionToInsert > 0 && $targetUserExists > 0){
   }
   $response_arr = array(
     "success"=>"1",
-    "users"=>$users
+    "users"=>$users,
+    "message"=>"User $email granted access"
   );
 } 
 

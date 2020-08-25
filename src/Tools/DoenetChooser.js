@@ -103,6 +103,7 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
     this.loadAllCourses();
+    this.loadUserProfile();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
@@ -1051,7 +1052,7 @@ class DoenetChooser extends Component {
     let folderId = nanoid();
     Promise.all([
       new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", true, false, () => { resolve() })),
-      new Promise(resolve => this.modifyRepoAccess(folderId, "insert", true, () => { resolve() }))
+      new Promise(resolve => this.grantRepoAccess({repoId: folderId, email: this.userProfile["email"], owner: true, callback: ()=>{ resolve() }}))
     ])
       .then(() => {
         this.loadUserFoldersAndRepo(() => {
@@ -2632,11 +2633,27 @@ class DoenetChooser extends Component {
     this.loadUserUrls();
   }
 
-  grantRepoAccess = ({repoId, email, callback=()=>{}}) => {
+  loadUserProfile = () => {
+    const phpUrl = '/api/loadProfile.php';
+    const data = {}
+    const payload = {
+      params: data
+    }
+    axios.get(phpUrl, payload)
+    .then(resp => {
+      if (resp.data.success === "1") {
+        this.userProfile = resp.data.profile;
+      }
+    })
+    .catch(error => { this.setState({ error: error }) });
+  }
+
+  grantRepoAccess = ({repoId, email, owner, callback=()=>{}}) => {
     const loadCoursesUrl = '/api/addRepoUser.php';
     const data = {
       repoId: repoId,
       email: email,
+      owner: owner,
     }
     const payload = {
       params: data
@@ -2644,10 +2661,11 @@ class DoenetChooser extends Component {
 
     axios.get(loadCoursesUrl, payload)
     .then(resp => {
-      console.log("HERE", resp);
       if (resp.data.success === "1") {
-        this.folderInfo[repoId].user_access_info = resp.data.users;
-      }
+        if (this.folderInfo[repoId]) this.folderInfo[repoId].user_access_info = resp.data.users;
+      } else {
+        this.displayToast(resp.data.message);
+      }      
       this.userContentReloaded = true;
       callback(resp);
       this.forceUpdate();
