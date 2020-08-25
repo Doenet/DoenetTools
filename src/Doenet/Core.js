@@ -6191,7 +6191,7 @@ export default class Core {
 
     for (let ancestor of component.ancestors) {
       ancestorsExamined.push(ancestor.componentName);
-      let stateVarInfo = this.componentInfoObjects.stateVariableInfo[ancestor.componentClass.componentType]
+      let stateVarInfo = this.componentInfoObjects.stateVariableInfo[ancestor.componentClass.componentType.toLowerCase()]
       // let stateVarInfo = ancestor.componentClass.returnStateVariableInfo({
       //   standardComponentClasses: this.standardComponentClasses,
       //   allPossibleProperties: this.allPossibleProperties,

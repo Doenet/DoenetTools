@@ -900,6 +900,11 @@ export class IsResponse extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class SectionWideCheckWork extends BooleanComponent {
+  static componentType = "sectionWideCheckWork";
+  static rendererType = "boolean";
+}
+
 export class FromSubstitutions extends NumberComponent {
   static componentType = "fromSubstitutions";
   static rendererType = "number";

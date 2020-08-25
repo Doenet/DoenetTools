@@ -652,11 +652,6 @@ export default class Answer extends InlineComponent {
             inheritedComponentType: child.componentType,
             baseComponentType: "_input"
           })) {
-            dependencies['childIsResponse' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
-              variableName: "isResponse"
-            }
             dependencies['childNValues' + ind] = {
               dependencyType: "componentStateVariable",
               componentIdentity: child,
@@ -705,13 +700,11 @@ export default class Answer extends InlineComponent {
             inheritedComponentType: childType,
             baseComponentType: "_input"
           })) {
-            if (dependencyValues["childIsResponse" + ind]) {
-              let nValues = dependencyValues["childNValues" + ind];
-              if (nValues === undefined) {
-                nResponses += 1;
-              } else {
-                nResponses += nValues;
-              }
+            let nValues = dependencyValues["childNValues" + ind];
+            if (nValues === undefined) {
+              nResponses += 1;
+            } else {
+              nResponses += nValues;
             }
 
           } else {
@@ -777,11 +770,6 @@ export default class Answer extends InlineComponent {
             inheritedComponentType: child.componentType,
             baseComponentType: "_input"
           })) {
-            globalDependencies['childIsResponse' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
-              variableName: "isResponse"
-            }
             globalDependencies['childValue' + ind] = {
               dependencyType: "componentStateVariable",
               componentIdentity: child,
@@ -1008,6 +996,8 @@ export default class Answer extends InlineComponent {
     };
 
     stateVariableDefinitions.delegateCheckWork = {
+      additionalStateVariablesDefined:
+        ["delegateCheckWorkToInput", "delegateCheckWorkToAncestor"],
       forRenderer: true,
       returnDependencies: () => ({
         inputChild: {
@@ -1017,12 +1007,32 @@ export default class Answer extends InlineComponent {
         forceFullCheckworkButton: {
           dependencyType: "stateVariable",
           variableName: "forceFullCheckworkButton"
+        },
+        sectionAncestor: {
+          dependencyType: "ancestorStateVariables",
+          componentType: "_sectioningcomponent",
+          variableNames: ["sectionWideCheckWork"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        let delegateCheckWork = dependencyValues.inputChild &&
-          !dependencyValues.forceFullCheckworkButton;
-        return { newValues: { delegateCheckWork } };
+        let delegateCheckWorkToAncestor = false;
+        let delegateCheckWorkToInput = false;
+        let delegateCheckWork = false;
+
+        if (dependencyValues.sectionAncestor) {
+          delegateCheckWorkToAncestor = delegateCheckWork = dependencyValues.sectionAncestor.stateValues.sectionWideCheckWork;
+        }
+
+        if (!delegateCheckWorkToAncestor && dependencyValues.inputChild &&
+          !dependencyValues.forceFullCheckworkButton
+        ) {
+          delegateCheckWorkToInput = delegateCheckWork = true;
+        }
+        return {
+          newValues: {
+            delegateCheckWork, delegateCheckWorkToAncestor, delegateCheckWorkToInput
+          }
+        };
       }
     }
 

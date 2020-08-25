@@ -179,6 +179,42 @@ export class Example extends SectioningComponent {
 }
 
 
+export class AnswerSet extends SectioningComponent {
+  static componentType = "answerSet";
+  static rendererType = "section";
+
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.aggregateScores = { default: true };
+    properties.sectionWideCheckWork = { default: true, forRenderer: true, ignorePropagationFromAncestors: true };
+
+    return properties;
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: null } })
+    }
+
+    stateVariableDefinitions.containerTag = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { containerTag: "div" } })
+    }
+
+
+    return stateVariableDefinitions
+  }
+
+}
+
 
 export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";
