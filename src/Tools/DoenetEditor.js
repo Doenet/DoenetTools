@@ -23,8 +23,10 @@ class DoenetEditor extends Component {
     this.doenetML = "";
     let url_string = window.location.href;
     var url = new URL(url_string);
-    this.contentId = url.searchParams.get("contentId");
-    this.branchId = url.searchParams.get("branchId");
+    // this.contentId = url.searchParams.get("contentId");
+    // this.branchId = url.searchParams.get("branchId");
+    this.contentId = props.contentId;
+    this.branchId = props.branchId;
     this.updateNumber = 0;
 
     var errorMsg = null;
@@ -73,6 +75,7 @@ class DoenetEditor extends Component {
               viewerDoenetML:resp.data.doenetML,
               version:version,
             }) ;
+            this.props.headerTitleChange(resp.data.title);
           }
           
         })
@@ -81,7 +84,7 @@ class DoenetEditor extends Component {
         })
     } else {
       //Redirect to chooser if no branch id
-      window.location.href = "/chooser";
+      // window.location.href = "/chooser";
     }
 
     this.state = {
@@ -285,6 +288,7 @@ class DoenetEditor extends Component {
       documentTitle: documentTitle,
       version: version,
      });
+     this.props.headerTitleChange(documentTitle);
   };
 
   editorDidMount = (editor,monaco) => {      
@@ -376,7 +380,7 @@ class DoenetEditor extends Component {
     
         // console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+      <ToolLayout toolName="Editor" hideHeader={this.props.hideHeader} headingTitle={title_text} leftPanelClose={true} rightPanelWidth="500">
         <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
         <div >Left Nav</div>
         </ToolLayoutPanel>
