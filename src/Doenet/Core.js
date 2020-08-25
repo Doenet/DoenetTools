@@ -4372,7 +4372,22 @@ export default class Core {
 
     // create the definition, etc., functions for the array stsate variable
     if (stateVarObj.entireArrayAtOnce) {
-      // don't change returnDependencies
+      // for returnDependencies
+      // just add varNamesIncludingArrayKeyStateVariable as a dependency
+      // as that state variable is looked up in the definition
+      let originalReturnDependencies = stateVarObj.returnDependencies.bind(stateVarObj);
+
+      stateVarObj.returnDependencies = function (args) {
+
+        let dependencies = originalReturnDependencies(args);
+        dependencies.__array_varnames_include_array_key = {
+          dependencyType: "stateVariable",
+          variableName: stateVarObj.varNamesIncludingArrayKeyStateVariable
+        };
+
+        return dependencies
+      }
+
 
       stateVarObj.getCurrentFreshness = function ({ freshnessInfo }) {
         return { fresh: { [stateVariable]: freshnessInfo.arrayFresh } }
@@ -4526,12 +4541,22 @@ export default class Core {
           // to tie into making sure array size is a dependency, below
           stateVarObj.dependencyNames.global.push("__array_size");
 
+          // to tie into making sure __array_varnames_include_array_key is a dependency, below
+          stateVarObj.dependencyNames.global.push("__array_varnames_include_array_key");
+
         }
 
         // make sure array size is a dependency
         dependencies.__array_size = {
           dependencyType: "stateVariable",
           variableName: stateVarObj.arraySizeStateVariable
+        };
+
+        // mark varNamesIncludingArrayKeyStateVariable as a dependency
+        // as that state variable is looked up in the definition
+        dependencies.__array_varnames_include_array_key = {
+          dependencyType: "stateVariable",
+          variableName: stateVarObj.varNamesIncludingArrayKeyStateVariable
         };
 
         // console.log(`resulting dependencies for ${stateVariable} of ${component.componentName}`)
@@ -12601,10 +12626,7 @@ export default class Core {
     // console.log("inverseResult");
     // console.log(inverseResult);
 
-    // Note: we reverse order of instructions so that the first instructions
-    // (which will correspond to the first children)
-    // will have precendence
-    for (let newInstruction of inverseResult.instructions.reverse()) {
+    for (let newInstruction of inverseResult.instructions) {
       if (newInstruction.setStateVariable) {
         // if (newInstruction.setStateVariable !== stateVariable) {
         //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not state variable itself.`);
