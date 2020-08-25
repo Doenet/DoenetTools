@@ -286,7 +286,7 @@ export default class Prop extends BaseComponent {
   //       componentName: component.componentName,
   //     }
 
-  //     let availableClassProperties = this.allComponentClasses.number.createPropertiesObject({
+  //     let availableClassProperties = this.componentInfoObjects.allComponentClasses.number.createPropertiesObject({
   //       standardComponentClasses: standardComponentClasses
   //     });
 

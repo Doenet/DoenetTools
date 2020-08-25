@@ -2,11 +2,11 @@
 The core libraries underlying the Distributed Open Education Network (Doenet)
 
 ## Local Development Setup
-### 1. `fork` and `clone` this project
+### 1. `fork` this repository and `clone` your fork.
 - [_Fork the project on Github_](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
 - `$ cd /path/to/desired/location`
-- `$ git clone git@github.com:<your_github_username>/DoenetCourse`
-- `$ cd DoenetCourse`
+- `$ git clone git@github.com:<your_github_username>/DoenetTools`
+- `$ cd DoenetTools`
 
 ### 2. Install Docker
 #### If you have a Desktop Environment (If you don't know what that is, you probably do):
@@ -33,9 +33,9 @@ Hopefully you are now done installing docker.
 `$ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose`
 
 ### 3. Install dependencies
-- Go to the DoenetCourse folder
+- Go to the DoenetTools folder
 ```bash
-$ cd /path/to/desired/location/DoenetCourse
+$ cd /path/to/desired/location/DoenetTools
 ```
 - Use NPM to install the build utilities. (Dependencies)
 ```bash
@@ -58,14 +58,52 @@ The first time it is run, this does a few things.
 4. Apache and PHP start. These are pretty quick, although if you try to access the website now, you wont get much since seeing the project depends on the MySQL database and the Webpacked project.
 5. MySQL runs some first time setup. It sets up a new database and imports the database template that you downloaded when cloning this project.
   a. You can tell this is done when the text `Version: '5.7.29'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server (GPL)` appears, signaling that mysql is done starting and is ready for connections on port 3306.
-6. Webpack (Node) runs a full pack on the project. This will be done every time the containers start. And it takes a while. Once the first pack is done, subsequent packs usually happen very quickly.
-  a. You can tell the initial pack is done when the terminal is spammed with logs from the Node container.
+6. Webpack (Node) runs a full pack on the project. This will be done every time the container starts. And it takes a while. Once the first pack is done, subsequent packs usually happen very quickly.
+  a. You can tell the initial pack is done when the terminal shows something like
+
+```
+node_1    | Hash: [something]
+node_1    | Version: webpack [something]
+node_1    | Time: [something]ms
+node_1    | Built at: [something]
+node_1    | 
+...[potential warnings and errors]...
+node_1    |                                     ..,,,,,..
+node_1    |                            ,,,,,,,,,,,,,,,,,,,,,,,,,,,
+node_1    |                       ,,,,,,,.......................,,,,,,,
+node_1    |                   .,,,,,.................................,,,,,.
+node_1    |                .,,,,......................*///,.............,,,,,
+node_1    |              .,,,,..................%*             %,..........,,,,.
+node_1    |            .,,,...........&#   &.,/                   &..........,,,,.
+node_1    |           ,,,,.........#                                %..........,,,,
+node_1    |         .,,,..........&.            .*(##(*.             ,...........,,,
+node_1    |        .,,,...........&.        %##############%          %...........,,,
+node_1    |        ,,,.........(%#,%.     %%#######//#%%%#####        &............,,,
+node_1    |       ,,,......%....         (%%####*      /%#####/          .##.......,,,,
+node_1    |       ,,,....#..             /%%%#################*              ,,.....,,,
+node_1    |      ,,,,....,.               **(%%%###########(**                ,,....,,,.
+node_1    |      ,,,.....*.                  **************                   ,.....,,,.
+node_1    |      ,,,,....%.                                                  ,*.....,,,.
+node_1    |       ,,,...../*..                .............................(/.......,,,
+node_1    |       ,,,........./###((((///////////****,,,,,............@@@@@@@@.....,,,,
+node_1    |        ,,,.........@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@........,,,
+node_1    |         ,,,........@@..@@@...@@@..@@@..@@....@@@...@@.@@.....@@.......,,,
+node_1    |          ,,,.......@@...@@..@@......@@.@@@@@.@@.@..@@.@@@@@..@@.....,,,,
+node_1    |           ,,,,.....@@...@@..@@......@@.@@....@@..@.@@.@@.....@@....,,,,
+node_1    |            .,,,,...@@..@@@...@@@..@@@..@@....@@...@@@.@@.....@@..,,,,
+node_1    |              .,,,,.@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@,,,,
+node_1    |                 ,,,,,.......................................,,,,,
+node_1    |                   .,,,,,,...............................,,,,,,
+node_1    |                       ,,,,,,,......................,,,,,,,.
+node_1    |                            .,,,,,,,,,,,,,,,,,,,,,,,,,.
+node_1    |                                      .......
+```
 
 ### 5. Stopping the containers
 When you are not using them, you can stop the docker containers by going to the terminal you started them with and using `ctrl+c`. Let the containers stop gracefully. Keep in mind that Webpack takes a while to get going, so you probably don't want to stop the containers until you are done for the day. Or you can leave them running indefinitely.
 
 ## Usage
-Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There will be no output to the terminal and you must refresh manually.
+Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There **will be** output to the terminal and you must reload pages manually.
 
 ### Run the containers
 To run the containers, you can just run `$ npm start` in the project's root directory. This command will only build the containers if they are not already built.
@@ -75,13 +113,13 @@ Note: You must have docker running before you can start the containers.
 ### Stop the containers
 Option 1: Use `ctrl+c` in the terminal that you started them with.
 
-Option 2: Stop all four containers using whatever docker interface you have. The containers are "node", "apache", "mysql", and "php".
+Option 2: Stop all four containers using whatever docker interface you have. The containers are "doenet_docker_node", "doenet_docker_apache", "doenet_docker_mysql", and "doenet_docker_php".
 
 ### Re-build the containers.
 If you need to re-build the containers for whatever reason, run `$ npm run docker:build`. Not to be confused with `$ npm run build` which will build the website for production.
 
 ### Directly access the database
-The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI. to interact with the database directly.
+The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI to interact with the database directly.
 
 If port 3306 is in use, you can change the port in the `docker-compose.yml` file:
 ```yaml
@@ -152,7 +190,9 @@ $ npm run webapck
   - Use port 3000.
 - Initialize your MySQL database with `/path/to/DoenetCourse/doenet_docker/volumes/db_init/db_template.sql`.
   - Use the default port. (3306)
-- Run Webpack. Or don't.
+- Make sure the node dependencies are installed
+  - `npm install`
+- Run Webpack. (Or don't.)
   - Use `$ npm run webpack` to run Webpack on your normal namespace (not Docker).  
 OR
   - Use `$ npm run docker:webpack` to run Webpack in Docker.
@@ -164,3 +204,6 @@ You may also get MariaDB to work. Please let us know if you do. c:
 We have not tested the current configuration with Nginx, you are on your own if you choose to use it. If you do, we would love to hear about how it turned out. c:
 
 You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.
+
+## Use Postman for API Testing
+User-authentication for DoenetTools is based on a JWT that is static when controlled for certain factors that are controlled in the dev environment. In order to test the API with postman, you can import the collection with a request already containing this pre-generated JWT cookie. The collection is located at `DoenetToolsDev.postman_collection.json`.

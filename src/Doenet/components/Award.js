@@ -236,6 +236,11 @@ export default class Award extends BaseComponent {
       }
     };
 
+    stateVariableDefinitions.feedback = {
+      isAlias: true,
+      targetVariableName: "feedback1"
+    };
+
     stateVariableDefinitions.nResponses = {
       returnDependencies: () => ({
         whenChild: {

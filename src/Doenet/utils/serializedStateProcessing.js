@@ -461,8 +461,7 @@ function breakStringByCommasWithParens(string) {
 
 export function createComponentNames({ serializedState, namespaceStack = [],
   componentTypesTakingComponentNames, allComponentClasses,
-  nameSpaceForChildren, parentDoenetAttributes,
-  idRng,
+  nameSpaceForChildren, parentDoenetAttributes = {}
 }) {
 
   if (namespaceStack.length === 0) {
@@ -476,7 +475,7 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
   let currentNamespace = namespaceStack[level];
 
-  for (let serializedComponent of serializedState) {
+  for (let [componentInd, serializedComponent] of serializedState.entries()) {
     let componentType = serializedComponent.componentType;
     // don't name strings
     if (componentType === "string") {
@@ -565,7 +564,14 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           doenetAttributes.prescribedName = prescribedName;
 
         } else if (doenetAttributes.createUniqueName) {
-          prescribedName = createUniqueName(componentType, idRng);
+          let longNameId = parentDoenetAttributes.componentName + "|createUniqueName|";
+
+          if (serializedComponent.downstreamDependencies) {
+            longNameId += JSON.stringify(serializedComponent.downstreamDependencies);
+          } else {
+            longNameId += componentInd;
+          }
+          prescribedName = createUniqueName(componentType, longNameId);
         }
         if (assignNames !== undefined) {
           if (assignNamespaces !== undefined) {
@@ -699,7 +705,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           componentTypesTakingComponentNames,
           allComponentClasses,
           parentDoenetAttributes: doenetAttributes,
-          idRng
         });
         namespaceStack.pop();
 
@@ -713,7 +718,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
           } else {
             namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: {} });
@@ -723,7 +727,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
             namespaceStack.pop();
           }
@@ -808,7 +811,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
           } else {
 
@@ -827,7 +829,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
 
             namespaceStack.pop();
@@ -877,7 +878,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             componentTypesTakingComponentNames,
             allComponentClasses,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
 
           // just use first assignedNamespace for the aliases
@@ -889,7 +889,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             allComponentClasses,
             nameSpaceForChildren: standinNamespace,
             parentDoenetAttributes: doenetAttributes,
-            idRng,
           });
           // namespaceStack.pop();
 
@@ -910,7 +909,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             componentTypesTakingComponentNames,
             allComponentClasses,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
 
           // namespaceStack.push({ namespace: standinNamespace, componentCounts: {}, namesUsed: {} });
@@ -921,7 +919,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             allComponentClasses,
             nameSpaceForChildren: standinNamespace,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
           // namespaceStack.pop();
           namespaceStack.pop();

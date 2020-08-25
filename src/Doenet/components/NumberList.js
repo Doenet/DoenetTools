@@ -301,13 +301,4 @@ export default class NumberList extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
-  }
-
 }

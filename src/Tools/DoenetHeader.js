@@ -266,7 +266,6 @@ class DoenetHeader extends Component {
   componentWillUnmount() {
     this.select = undefined
     this.selectPermission = undefined
-    this.username = undefined;
     // this.access = undefined;
     this.coursesPermissions = undefined
     this.accessAllowed = undefined

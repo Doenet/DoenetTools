@@ -6,10 +6,17 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
 
+  stats: {
+    children: false,
+    assets: false,
+    entrypoints: false,
+    modules: false,
+  },
+
   // devtool: 'source-map',
   entry: {
     "index.js": "./src/index.js",
-    // "admin/index.js": "./src/admin/index.js",
+    "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
     "dashboard/index.js": "./src/dashboard/index.js",
@@ -19,13 +26,14 @@ module.exports = {
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "guesteditor/index.js": "./src/guesteditor/index.js",
-    // "page/index.js": "./src/page/index.js",
+    "page/index.js": "./src/page/index.js",
     "accountsettings/index.js": "./src/accountsettings/index.js",
     "signin/index.js": "./src/signin/index.js",
     "signout/index.js": "./src/signout/index.js",
     "test/index.js": "./src/test/index.js",
-    // "viewer/index.js": "./src/viewer/index.js",
+    "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
+    "temp/index.js": "./src/temp/index.js",
 
   },
 
@@ -177,6 +185,12 @@ module.exports = {
       chunks: ["accountsettings/index.js"],
       template: "./src/accountsettings/index.html",
       filename: "./accountsettings/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["temp/index.js"],
+      template: "./src/temp/index.html",
+      filename: "./temp/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({

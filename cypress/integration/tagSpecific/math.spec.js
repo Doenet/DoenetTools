@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Math Tag Tests', function () {
 
   beforeEach(() => {
@@ -185,7 +195,7 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/_copy1'].replacements[0];
-      cy.get('#' + replacement.componentName).should('have.text', '\\frac{x}{y}');
+      cy.get(cesc('#' + replacement.componentName)).should('have.text', '\\frac{x}{y}');
 
     })
 
@@ -212,7 +222,7 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/a2'].replacements[0];
-      cy.get('#' + replacement.componentName).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#' + replacement.componentName)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2x+z')
       })
     })

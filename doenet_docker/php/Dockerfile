@@ -28,14 +28,15 @@ RUN apt-get install -y p7zip \
 
 WORKDIR /usr/local/apache2/htdocs/api/
 
-RUN composer require firebase/php-jwt
-
-
 #Test for php-jwt
 # COPY example.php /var/www/html/example.php
 
-# Alternative install of php-jwt
-# COPY composer.json /var/www/html/composer.json
-# RUN composer install --no-dev
+COPY composer.json /composer.json
+RUN cd / && composer install
+
+RUN composer require firebase/php-jwt
+
+# Link /usr/local/apache2/htdocs/api/vendor to /vendor in dev environment for compatability with prod
+RUN ln -s /vendor ./vendor
 
 EXPOSE 9000

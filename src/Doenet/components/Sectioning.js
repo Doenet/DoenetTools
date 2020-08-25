@@ -100,3 +100,80 @@ export class Aside extends SectioningComponent {
   }
 
 }
+
+export class Problem extends SectioningComponent {
+  static componentType = "problem";
+  static rendererType = "section";
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.aggregateScores = { default: true };
+
+    return properties;
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { sectionName: "Problem" } })
+    }
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: 3 } })
+    }
+
+    return stateVariableDefinitions
+  }
+
+}
+
+export class Exercise extends Problem {
+  static componentType = "exercise";
+  static rendererType = "section";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { sectionName: "Exercise" } })
+    }
+
+    return stateVariableDefinitions
+  }
+
+
+}
+
+
+export class Example extends SectioningComponent {
+  static componentType = "Example";
+  static rendererType = "section";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { sectionName: "Example" } })
+    }
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: 3 } })
+    }
+
+    return stateVariableDefinitions
+  }
+
+
+}

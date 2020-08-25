@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[28,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[29,2],{
 
-/***/ 731:
+/***/ 645:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 760:
+/***/ 673:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Line; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -341,7 +341,15 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
 
       var _loop = function _loop(_i) {
         _this2.pointsJXG[_i].on('drag', function (x) {
-          return _this2.onDragHandler(_i);
+          return _this2.onDragHandler(_i, true);
+        });
+
+        _this2.pointsJXG[_i].on('up', function (x) {
+          return _this2.onDragHandler(_i, false);
+        });
+
+        _this2.pointsJXG[_i].on('down', function (x) {
+          return _this2.draggedPoint = null;
         });
       };
 
@@ -350,7 +358,13 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       }
 
       this.polylineJXG.on('drag', function (x) {
-        return _this2.onDragHandler(-1);
+        return _this2.onDragHandler(-1, true);
+      });
+      this.polylineJXG.on('up', function (x) {
+        return _this2.onDragHandler(-1, false);
+      });
+      this.polylineJXG.on('down', function (x) {
+        return _this2.draggedPoint = null;
       });
       this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       this.previousNVertices = this.doenetSvData.nVertices;
@@ -421,7 +435,15 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
           _this3.polylineJXG.dataX.length = _this3.doenetSvData.nVertices;
 
           _this3.pointsJXG[i].on('drag', function (x) {
-            return _this3.onDragHandler(i);
+            return _this3.onDragHandler(i, true);
+          });
+
+          _this3.pointsJXG[i].on('up', function (x) {
+            return _this3.onDragHandler(i, false);
+          });
+
+          _this3.pointsJXG[i].on('down', function (x) {
+            return _this3.draggedPoint = null;
           });
         };
 
@@ -479,16 +501,23 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler(i) {
+    value: function onDragHandler(i, _transient) {
+      if (_transient) {
+        this.draggedPoint = i;
+      } else if (this.draggedPoint !== i) {
+        return;
+      }
+
       if (i === -1) {
-        var newPointcoords = this.polylineJXG.points.map(function (z) {
-          return [z.usrCoords[1], z.usrCoords[2]];
+        var newPointcoords = {};
+        this.polylineJXG.points.forEach(function (z, i) {
+          return newPointcoords[i] = [z.usrCoords[1], z.usrCoords[2]];
         });
-        this.actions.movePolyline(newPointcoords);
+        this.actions.movePolyline(newPointcoords, _transient);
       } else {
         var newCoords = {};
         newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-        this.actions.movePolyline(newCoords);
+        this.actions.movePolyline(newCoords, _transient);
       }
     }
   }, {
