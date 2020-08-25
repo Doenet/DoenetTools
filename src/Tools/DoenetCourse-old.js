@@ -679,7 +679,7 @@ class DoenetCourse extends Component {
     let url_string = window.location.href;
     var url = new URL(url_string);
 
-    this.username = "";
+    this.userId = "";
     this.assignmentOnScreen = false;
     this.treeOnScreen = true;
     this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses

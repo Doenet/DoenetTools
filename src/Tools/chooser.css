@@ -174,11 +174,8 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #formContainer {
-  grid-row: 2 / 3;
-  grid-column: 2 / 4;
-  max-width: 1050px;
-  margin: 5px 0;
-  padding-right: 20px;
+  width: 100%;
+  padding: 1em 3em;
   overflow-y: scroll;
 }
 
@@ -281,6 +278,7 @@ input[type=number]::-webkit-outer-spin-button {
 #formSubmitButton {
   display: inline-block;
   border: none;
+  height: 100%;
 	padding: 8px 15px 8px 15px;
 	background: #43aa90;
 	color: #fff;
@@ -299,6 +297,7 @@ input[type=number]::-webkit-outer-spin-button {
 #formCancelButton {
   display: inline-block;
   border: none;
+  height: 100%;
 	padding: 8px 15px 8px 15px;
 	background: #ff0000;
 	color: #fff;
@@ -576,7 +575,7 @@ input[type=number]::-webkit-outer-spin-button {
   overflow-x: hidden;
   grid-row: 2 / 3;
   grid-column: 3 / 4;
-  transform: scale(1.2);
+  transform: scale(1.1);
   transform-origin: top left;
   margin-top: 15px;
 }

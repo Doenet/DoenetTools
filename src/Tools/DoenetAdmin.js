@@ -35,7 +35,7 @@ class DoenetAdmin extends Component {
       const envurl='/api/env.php';
       axios.get(envurl)
         .then(resp=>{
-            this.username = resp.data.user;
+            this.userId = resp.data.userId;
             this.access = resp.data.access;
             this.adminAccess=resp.data.adminAccess;
             this.forceUpdate();
@@ -45,7 +45,7 @@ class DoenetAdmin extends Component {
     let url_string = window.location.href;
     var url = new URL(url_string);
     
-    this.username = "";
+    this.userId = "";
     this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses
     this.courseName = "Calculus and Dynamical Systems in Biology";
     this.gradeCategories = ['Gateway','Problem Sets','Projects','Exams','Participation'];
@@ -1839,7 +1839,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   variantNumberFromAttemptNumber(){
     let preseed = this.assignmentObj.attemptNumber+this.assignmentObj.assignmentId
     if(Number(this.assignmentObj.individualize) === 1){
-      preseed += this.username;
+      preseed += this.userId;
     }
     let seed = hashStringToInteger(preseed);
 

@@ -5,13 +5,6 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
-  constructor(args) {
-    super(args);
-    this.movePoint = this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-    this.actions = { movePoint: this.movePoint };
-  }
   static componentType = "point";
 
   // used when referencing this component without prop
@@ -627,8 +620,7 @@ export default class Point extends GraphicalComponent {
                 } else {
                   instructions.push({
                     setStateVariable: "unconstrainedXs",
-                    arrayKey,
-                    value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
+                    value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]) },
                   });
                 }
               }
@@ -901,7 +893,7 @@ export default class Point extends GraphicalComponent {
           let x = dependencyValuesByKey[arrayKey].x;
           if (x) {
             x = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
-            if(Number.isFinite(x)) {
+            if (Number.isFinite(x)) {
               numericalXs[arrayKey] = x;
             } else {
               numericalXs[arrayKey] = NaN;
@@ -990,16 +982,43 @@ export default class Point extends GraphicalComponent {
     if (y !== undefined) {
       components[1] = me.fromAst(y);
     }
-    this.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "xs",
-        value: components,
-      }],
-      transient
-    })
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "xs",
+          value: components,
+        }],
+        transient
+      })
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "xs",
+          value: components,
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y
+          }
+        }
+      })
+    }
 
   }
+
+  actions = {
+    movePoint: this.movePoint.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }

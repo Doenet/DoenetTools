@@ -24,6 +24,7 @@ export default class Accordion extends Component {
           [label]: !isOpen
         }
       });
+      this.props.children.props.onClick && this.props.children.props.onClick(label)
     };
   
     render() {
@@ -46,7 +47,7 @@ export default class Accordion extends Component {
   }
   function AccordionSectionCustom ({onClick, isOpen, label, children, activeChild}) {
 
-    console.log('activeChild', activeChild);
+    // console.log('activeChild', activeChild);
   
     const handleOnClick = () => {
       onClick(label);

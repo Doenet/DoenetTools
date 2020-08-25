@@ -86,7 +86,8 @@ export default class IndexFromSubs extends CompositeComponent {
     return {
       replacements: [{
         componentType: "number",
-        state: { value: component.stateValues.index, fixed: true }
+        state: { value: component.stateValues.index, fixed: true },
+        uniqueIdentifier: ""
       }]
     }
   }

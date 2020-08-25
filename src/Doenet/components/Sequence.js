@@ -839,7 +839,8 @@ export default class Sequence extends CompositeComponent {
 
       let serializedComponent = {
         componentType: component.stateValues.selectedType,
-        state: { value: componentValue, fixed: true }
+        state: { value: componentValue, fixed: true },
+        uniqueIdentifier: ind.toString()
       }
       replacements.push(serializedComponent);
     }
@@ -868,7 +869,7 @@ export default class Sequence extends CompositeComponent {
       if (component.replacements.length > 0) {
         let replacementsToWithhold = component.replacements.length;
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold,
         };
         replacementChanges.push(replacementInstruction);
@@ -937,7 +938,7 @@ export default class Sequence extends CompositeComponent {
         newReplacementsToWithhold = currentWithheld + prevCount - component.stateValues.count;
 
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold: newReplacementsToWithhold,
         };
         replacementChanges.push(replacementInstruction);
@@ -953,7 +954,7 @@ export default class Sequence extends CompositeComponent {
             numReplacementsToAdd = 0;
 
             let replacementInstruction = {
-              changeType: "changedReplacementsToWithhold",
+              changeType: "changeReplacementsToWithhold",
               replacementsToWithhold: newReplacementsToWithhold,
             };
             replacementChanges.push(replacementInstruction);
@@ -1020,7 +1021,8 @@ export default class Sequence extends CompositeComponent {
 
           let serializedComponent = {
             componentType: component.stateValues.selectedType,
-            state: { value: componentValue, fixed: true }
+            state: { value: componentValue, fixed: true },
+            uniqueIdentifier: ind.toString(),
           }
           newSerializedReplacements.push(serializedComponent);
         }

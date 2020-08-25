@@ -135,12 +135,18 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         return <option key={i} value={i + 1}>{s}</option>
       });
 
+
+      let value = this.doenetSvData.selectedIndices[0];
+      if(value === undefined) {
+        value = "";
+      }
+
       return <React.Fragment>
         <a name={this.componentName} />
         <select
           id={this.componentName}
           onChange={this.onChangeHandler}
-          value={this.doenetSvData.selectedIndices[0]}
+          value={value}
           disabled={this.doenetSvData.disabled}
         >
           <option></option>

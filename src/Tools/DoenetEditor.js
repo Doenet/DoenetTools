@@ -23,8 +23,10 @@ class DoenetEditor extends Component {
     this.doenetML = "";
     let url_string = window.location.href;
     var url = new URL(url_string);
-    this.contentId = url.searchParams.get("contentId");
-    this.branchId = url.searchParams.get("branchId");
+    // this.contentId = url.searchParams.get("contentId");
+    // this.branchId = url.searchParams.get("branchId");
+    this.contentId = props.contentId;
+    this.branchId = props.branchId;
     this.updateNumber = 0;
 
     var errorMsg = null;
@@ -73,6 +75,7 @@ class DoenetEditor extends Component {
               viewerDoenetML:resp.data.doenetML,
               version:version,
             }) ;
+            this.props.headerTitleChange(resp.data.title);
           }
           
         })
@@ -81,7 +84,7 @@ class DoenetEditor extends Component {
         })
     } else {
       //Redirect to chooser if no branch id
-      window.location.href = "/chooser";
+      // window.location.href = "/chooser";
     }
 
     this.state = {
@@ -258,6 +261,11 @@ class DoenetEditor extends Component {
 
   onChange = (newValue) => {
 
+    // console.log("This is the word until ", model.getWordUntilPosition(position).word);
+    // console.log("This is the word ", word.word);
+
+    // console.log("New Value is ", newValue);
+
         if (this.saveTimer === null) {
       this.saveTimer = setTimeout(
         () => { this.saveDoenetMLChanges({ blur: false }); }
@@ -273,7 +281,6 @@ class DoenetEditor extends Component {
     // console.log("publish_button_enabled",publish_button_enabled)
     let documentTitle = this.calculate_documentTitle({doenetML:newValue,currentTitle:this.state.documentTitle});
     let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:newValue})
-  
 
         this.setState({ 
       editorDoenetML: newValue, 
@@ -281,14 +288,13 @@ class DoenetEditor extends Component {
       documentTitle: documentTitle,
       version: version,
      });
+     this.props.headerTitleChange(documentTitle);
   };
 
-  editorDidMount = (editor,monaco) => {
-    // eslint-disable-next-line no-console
-    // console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
+  editorDidMount = (editor,monaco) => {      
+
     this.editorDOM = editor;
     this.monacoDOM = monaco;
-    // console.log("editorDOM",editor)
     this.model = this.editorDOM.getModel();
     // console.log(model._tokenization)
     // console.log('tokens')
@@ -297,22 +303,25 @@ class DoenetEditor extends Component {
     // let tokens = this.editorDOM.tokenize(editor.getValue(),'xml')
     // console.log(tokens)
 
-    this.editorDOM.onDidChangeCursorSelection(e =>{
-      this.onSelectionsChange(e.selection, ...e.secondarySelections)
+    this.editorDOM.onDidChangeCursorPosition(e =>{
+      // this.onSelectionsChange(e.selection, ...e.secondarySelections)
+      let position = this.refs.monaco.editor.getPosition();
+      let word = this.refs.monaco.editor.getModel().getWordAtPosition(position);
+      // if (word.word !== null) console.log("The current word is ", word.word);
     })
   };
 
-  onSelectionsChange = (selection,secondarySelections) => {
-    if (secondarySelections){
-      // console.log('secondary!')
-      return;
-    }
-    // console.log('selection',selection)
-    // let model = this.editorDOM.getModel();
-    // console.log('model',this.model)
-    // console.log(model._tokenization)
+  // onSelectionsChange = (selection,secondarySelections) => {
+  //   if (secondarySelections){
+  //     // console.log('secondary!')
+  //     return;
+  //   }
+  //   // console.log('selection',selection)
+  //   // let model = this.editorDOM.getModel();
+  //   // console.log('model',this.model)
+  //   // console.log(model._tokenization)
 
-  }
+  // }
 
   render() {
 
@@ -371,7 +380,7 @@ class DoenetEditor extends Component {
     
         // console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+      <ToolLayout toolName="Editor" hideHeader={this.props.hideHeader} headingTitle={title_text} leftPanelClose={true} rightPanelWidth="500">
         <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
         <div >Left Nav</div>
         </ToolLayoutPanel>
@@ -379,11 +388,11 @@ class DoenetEditor extends Component {
           <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
          
         </ToolLayoutPanel>
-        <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML">
-        <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
+        <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML" disableScroll={true}>
+        <div style={{width:"100%",height:"100%",backgroundColor:"blue",overflow:"hidden"}} >
          <MonacoEditor
-          width="100vw"
-          height="calc(100vh - 40px)"
+          width="100%"
+          height="100%"
           language="xml"
           value={editorDoenetML}
           options={{
@@ -393,12 +402,11 @@ class DoenetEditor extends Component {
             automaticLayout: true,
             scrollBeyondLastLine: false,
             showFoldingControls: "always",
-            features:["folding","caretOperations","scrollBeyondLastLine"]
           }}
           onChange={this.onChange}
           editorDidMount={this.editorDidMount}
           theme="vs-light"
-
+          ref="monaco"
         />
         </div>
        

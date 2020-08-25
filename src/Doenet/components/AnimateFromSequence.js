@@ -136,7 +136,7 @@ export default class AnimateFromSequence extends Sequence {
           }
         }
 
-        this.state.animationID = this.requestAnimationFrame(
+        this.state.animationID = this.coreFunctions.requestAnimationFrame(
           this.advanceAnimation, this.state.animationInterval
         )
         this.state.animationPreviouslyOn = true;
@@ -144,7 +144,7 @@ export default class AnimateFromSequence extends Sequence {
     }else {
       if(this.state.animationPreviouslyOn) {
         // cancel any animation in progress
-        this.cancelAnimationFrame(this.state.animationID);
+        this.coreFunctions.cancelAnimationFrame(this.state.animationID);
       }
       this.state.animationPreviouslyOn = false;
     }
@@ -185,7 +185,7 @@ export default class AnimateFromSequence extends Sequence {
       variableUpdates.currentAnimationDirection = {changes: newDirection};
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateType: "updateValue",
       updateInstructions: [{
         componentName: this.componentName,
@@ -194,7 +194,7 @@ export default class AnimateFromSequence extends Sequence {
     });
 
     if(continueAnimation) {
-      this.state.animationID = this.requestAnimationFrame(
+      this.state.animationID = this.coreFunctions.requestAnimationFrame(
         this.advanceAnimation, this.state.animationInterval
       )
     }

@@ -244,12 +244,12 @@ export default class PointListComponent extends BaseComponent {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(',');
+          let [pointInd, dim] = arrayKey.split(',');
           dependenciesByKey[arrayKey] = {
             pointChild: {
               dependencyType: "childStateVariables",
               childLogicName: "atLeastZeroPoints",
-              variableNames: ["x" + (Number(dimInd) + 1)],
+              variableNames: ["x" + (Number(dim) + 1)],
               childIndices: [pointInd],
             }
           }
@@ -267,11 +267,11 @@ export default class PointListComponent extends BaseComponent {
         let points = {};
 
         for (let arrayKey of arrayKeys) {
-          let dimInd = arrayKey.split(',')[1];
+          let dim = arrayKey.split(',')[1];
 
           let pointChild = dependencyValuesByKey[arrayKey].pointChild[0];
           if (pointChild) {
-            points[arrayKey] = pointChild.stateValues["x" + (Number(dimInd) + 1)];
+            points[arrayKey] = pointChild.stateValues["x" + (Number(dim) + 1)];
           }
         }
 

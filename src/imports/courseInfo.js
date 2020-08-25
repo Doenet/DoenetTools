@@ -1,6 +1,5 @@
-import { useIndexedDB } from 'react-indexed-db';
+import { useIndexedDB, initDB} from 'react-indexed-db';
 import axios from 'axios';
-import { initDB } from 'react-indexed-db';
 
 
 //callback(success) true or false
@@ -16,7 +15,9 @@ export function setSelected(selectCourseId,callback=()=>{}){
         break;
       }
     }
+    
     select.id = 1;
+
     update(select).then(
       event => { callback(true);  },
       error => { callback(false); console.log(error); }
@@ -24,6 +25,33 @@ export function setSelected(selectCourseId,callback=()=>{}){
 
   }
 }
+
+
+//callback(success) true or false
+export function updateCourses(courseArray,callback=()=>{}){
+
+    const courseListDB = useIndexedDB('CourseList');
+    
+    for (let courseObj of courseArray){
+      courseListDB.update(courseObj);
+    }
+
+    const url = '/api/saveUserCourseModifications.php';
+
+    axios.post(url, courseArray)
+      .then((resp) => {
+        // console.log(resp.data); //var_dump shows here
+        callback(true);
+      })
+      .catch(function (error) {
+        callback(false)
+        console.log(error);
+      })
+    //needs to save to db post
+
+    callback(true)
+}
+
 
 //callback(courseListArray,selectedCourseObj)
 export function getCourses(callback){
@@ -45,6 +73,8 @@ const selectedCourseDB = useIndexedDB('SelectedCourse');
           if (resp.data.success && resp.data.courseInfo.length > 0){
           //Store in IndexedDB
           for (let courseInfo of resp.data.courseInfo){
+            
+            
             courseListDB.add(courseInfo).then(
               event => { //console.log('Add Course Event', event); 
             },
@@ -92,6 +122,8 @@ export function initialize(){
           { name: 'longname', keypath: 'longname', options: { unique: false } },
           { name: 'description', keypath: 'description', options: { unique: false } },
           { name: 'role', keypath: 'role', options: { unique: false } },
+          { name: 'color', keypath: 'color', options: { unique: false } },
+          { name: 'imageUrl', keypath: 'imageUrl', options: { unique: false } },
         ]
       },
       {
@@ -103,6 +135,8 @@ export function initialize(){
           { name: 'longname', keypath: 'longname', options: { unique: false } },
           { name: 'description', keypath: 'description', options: { unique: false } },
           { name: 'role', keypath: 'role', options: { unique: false } },
+          { name: 'color', keypath: 'color', options: { unique: false } },
+          { name: 'imageUrl', keypath: 'imageUrl', options: { unique: false } },
         ]
       },
     ]

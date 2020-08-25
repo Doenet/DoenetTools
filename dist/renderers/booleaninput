@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[7,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[9,2],{
 
-/***/ 731:
+/***/ 645:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 739:
+/***/ 653:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,8 +191,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BooleanInput; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
-/* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(147);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(645);
+/* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(38);
+/* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(34);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -222,6 +225,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 var BooleanInput = /*#__PURE__*/function (_DoenetRenderer) {
   _inherits(BooleanInput, _DoenetRenderer);
 
@@ -238,6 +242,21 @@ var BooleanInput = /*#__PURE__*/function (_DoenetRenderer) {
   }
 
   _createClass(BooleanInput, [{
+    key: "updateValidationState",
+    value: function updateValidationState() {
+      this.validationState = "unvalidated";
+
+      if (this.doenetSvData.valueHasBeenValidated) {
+        if (this.doenetSvData.creditAchieved === 1) {
+          this.validationState = "correct";
+        } else if (this.doenetSvData.creditAchieved === 0) {
+          this.validationState = "incorrect";
+        } else {
+          this.validationState = "partialcorrect";
+        }
+      }
+    }
+  }, {
     key: "onChangeHandler",
     value: function onChangeHandler(e) {
       this.actions.updateBoolean({
@@ -248,25 +267,122 @@ var BooleanInput = /*#__PURE__*/function (_DoenetRenderer) {
   }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       if (this.doenetSvData.hide) {
         return null;
       }
 
+      this.updateValidationState();
       var inputKey = this.componentName + '_input';
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+      var checkWorkStyle = {
+        position: "relative",
+        width: "30px",
+        height: "24px",
+        fontSize: "20px",
+        fontWeight: "bold",
+        color: "#ffffff",
+        display: "inline-block",
+        textAlign: "center",
+        top: "3px",
+        padding: "2px"
+      }; //Assume we don't have a check work button
+
+      var checkWorkButton = null;
+
+      if (this.doenetSvData.includeCheckWork) {
+        if (this.validationState === "unvalidated") {
+          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          checkWorkButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+            id: this.componentName + '_submit',
+            tabIndex: "0",
+            ref: function ref(c) {
+              _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
+            },
+            style: checkWorkStyle,
+            onClick: this.actions.submitAnswer,
+            onKeyPress: function onKeyPress(e) {
+              if (e.key === 'Enter') {
+                _this2.actions.submitAnswer();
+              }
+            }
+          }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__[/* FontAwesomeIcon */ "a"], {
+            icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__[/* faLevelDownAlt */ "E"],
+            transform: {
+              rotate: 90
+            }
+          }));
+        } else {
+          if (this.doenetSvData.showCorrectness) {
+            if (this.validationState === "correct") {
+              checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+              checkWorkButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+                id: this.componentName + '_correct',
+                style: checkWorkStyle,
+                ref: function ref(c) {
+                  _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
+                }
+              }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__[/* FontAwesomeIcon */ "a"], {
+                icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__[/* faCheck */ "o"]
+              }));
+            } else if (this.validationState === "partialcorrect") {
+              //partial credit
+              var percent = Math.round(this.doenetSvData.creditAchieved * 100);
+              var partialCreditContents = "".concat(percent, " %");
+              checkWorkStyle.width = "50px";
+              checkWorkStyle.backgroundColor = "#efab34";
+              checkWorkButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+                id: this.componentName + '_partial',
+                style: checkWorkStyle,
+                ref: function ref(c) {
+                  _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
+                }
+              }, partialCreditContents);
+            } else {
+              //incorrect
+              checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+              checkWorkButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+                id: this.componentName + '_incorrect',
+                style: checkWorkStyle,
+                ref: function ref(c) {
+                  _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
+                }
+              }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__[/* FontAwesomeIcon */ "a"], {
+                icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__[/* faTimes */ "R"]
+              }));
+            }
+          } else {
+            // showCorrectness is false
+            checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+            checkWorkButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+              id: this.componentName + '_saved',
+              style: checkWorkStyle,
+              ref: function ref(c) {
+                _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
+              }
+            }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__[/* FontAwesomeIcon */ "a"], {
+              icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__[/* faCloud */ "s"]
+            }));
+          }
+        }
+      }
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        id: this.componentName
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
         name: this.componentName
-      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
         type: "checkbox",
         key: inputKey,
         id: inputKey,
         checked: this.doenetSvData.value,
         onChange: this.onChangeHandler
-      }), this.doenetSvData.label));
+      }), this.doenetSvData.label), checkWorkButton));
     }
   }]);
 
   return BooleanInput;
-}(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]);
+}(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__["default"]);
 
 _defineProperty(BooleanInput, "initializeChildrenOnConstruction", false);
 

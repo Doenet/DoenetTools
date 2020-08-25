@@ -14,7 +14,7 @@ import axios from "axios";
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100vh - 50px);
+  height: ${props => props.hideHeader ? "calc(100vh - 40px)" : "calc(100vh - 50px)" };
   overflow:hidden;
   z-index:0;
   width:100%;
@@ -29,24 +29,7 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
-  let anonymousUserProfile = {
-    accessAllowed: "0",
-    adminAccessAllowed: "0",
-    email: "",
-    firstName: "",
-    lastName: "",
-    profilePicture: "anonymous",
-    roleCommunityTA: "0",
-    roleCourseDesigner: "0",
-    roleInstructor: "0",
-    roleLiveDataCommunity: "0",
-    roleStudent: "1",
-    roleWatchdog: "0",
-    studentId: null,
-    toolAccess: ["Chooser", "Documentation"],
-    trackingConsent: "1",
-    username: "anonymous",
-  }
+ 
   const [jwt, setjwt] = useCookies('JWT_JS');
 
   let isSignedIn = false;
@@ -73,33 +56,7 @@ export default function ToolLayout(props) {
           .catch(error => { this.setState({ error: error }) });
         }, []); 
    
-      //Start Signed In when local host development
-      //To Start Signed Out Clear the Cookies and comment the next line out
-      // let devUserProfile = {
-      //   accessAllowed: "1",
-      //   adminAccessAllowed: "1",
-      //   email: "devuser@example.com",
-      //   firstName: "Dev",
-      //   lastName: "User",
-      //   profilePicture: "emu",
-      //   roleCommunityTA: "0",
-      //   roleCourseDesigner: "0",
-      //   roleInstructor: "1",
-      //   roleLiveDataCommunity: "0",
-      //   roleStudent: "1",
-      //   roleWatchdog: "0",
-      //   studentId: null,
-      //   toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
-      //   trackingConsent: "1",
-      //   username: "devuser",
-      // }
-      // setProfile(devUserProfile);
-
-    
-
- 
-
-
+  
  
 
   var w = window.innerWidth;
@@ -173,6 +130,7 @@ export default function ToolLayout(props) {
       middleW = w - (!!leftCloseBtn ? leftWidth : 0) - resizerW;
     }
     setMiddleWidth(middleW);
+    toolPanelsWidthHandler(leftW, middleW, rightW);
   };
 
   window.addEventListener("resize", windowResizeHandler);
@@ -187,6 +145,28 @@ export default function ToolLayout(props) {
     setIsResizing(false);
     setCurrentResizer("");
   };
+
+  const toolPanelsWidthHandler = (leftW, middleW, rightW) => {
+    if(!!props.toolPanelsWidth) {
+      if(deviceType === "phone") {
+        if(props.children.length === 3) {
+          props.toolPanelsWidth(window.innerWidth, window.innerWidth, window.innerWidth);
+        } else if(props.children.length === 2) {
+          props.toolPanelsWidth(window.innerWidth, window.innerWidth, 0);
+        } else {
+          props.toolPanelsWidth(window.innerWidth, 0, 0);
+        }
+      } else {
+        if(props.children.length === 3) {
+          props.toolPanelsWidth(leftW, middleW, rightW);
+        } else if(props.children.length === 2) {
+          props.toolPanelsWidth(leftW, middleW, 0);
+        } else {
+          props.toolPanelsWidth(leftW, 0, 0);
+        }
+      }
+    }
+  }
 
   const resizingResizer = (e) => {
 
@@ -230,6 +210,9 @@ export default function ToolLayout(props) {
         }
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
+
+        toolPanelsWidthHandler(leftW, middleW, rightW);
+
       } else if (currentResizer === "second") {
         const secondResizer = document.querySelector('#second.resizer');
         const leftW = (!!leftCloseBtn ? leftWidth : 0);
@@ -258,6 +241,8 @@ export default function ToolLayout(props) {
         }
         setRightWidth(rightW);
         setMiddleWidth(middleW);
+
+        toolPanelsWidthHandler(leftW, middleW, rightW);
       }
     }
   };
@@ -386,7 +371,7 @@ export default function ToolLayout(props) {
 
   return (
     <>
-      <DoenetHeader
+      {!props.hideHeader && <DoenetHeader
         profile={profile}
         cookies={jwt}
         isSignedIn={isSignedIn}
@@ -395,8 +380,8 @@ export default function ToolLayout(props) {
         headerRoleFromLayout={props.headerRoleFromLayout}
         headerChangesFromLayout={props.headerChangesFromLayout}
         guestUser={props.guestUser}
-        onChange={showCollapseMenu} />
-      {deviceType === "phone" ? <div ref={container}>
+        onChange={showCollapseMenu} />}
+      {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
             <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
@@ -420,7 +405,7 @@ export default function ToolLayout(props) {
         </div>}
       </div>
         :
-        <Container ref={container}>{allParts}</Container>
+        <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
       }
     </>
   );
