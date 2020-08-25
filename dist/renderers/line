@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[20,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[19,0],{
 
-/***/ 645:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 664:
+/***/ 751:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Line; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -286,10 +286,7 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       this.lineJXG = this.props.board.create('line', through, jsxLineAttributes);
       this.lineJXG.on('drag', function () {
         //board.suspendUpdate();
-        this.onDragHandler(true); //board.unsuspendUpdate();
-      }.bind(this));
-      this.lineJXG.on('up', function () {
-        this.onDragHandler(false);
+        this.onDragHandler(); //board.unsuspendUpdate();
       }.bind(this));
       this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       return this.lineJXG;
@@ -376,11 +373,10 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler(_transient) {
+    value: function onDragHandler() {
       this.actions.moveLine({
         point1coords: [this.lineJXG.point1.X(), this.lineJXG.point1.Y()],
-        point2coords: [this.lineJXG.point2.X(), this.lineJXG.point2.Y()],
-        "transient": _transient
+        point2coords: [this.lineJXG.point2.X(), this.lineJXG.point2.Y()]
       });
     }
   }, {

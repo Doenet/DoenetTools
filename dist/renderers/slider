@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[34,43],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[33,40],{
 
-/***/ 646:
+/***/ 732:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -140,7 +140,7 @@ function useDoenetRenderer(props) {
 
 /***/ }),
 
-/***/ 678:
+/***/ 765:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -148,10 +148,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slider; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
-/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1355);
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(20);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1347);
 /* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(646);
+/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(732);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -452,16 +452,14 @@ function Slider(props) {
       setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       actions.changeValue({
-        value: SVs.items[valindexpair[1]],
-        "transient": true
+        value: SVs.items[valindexpair[1]]
       });
     } else {
       var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
       setThumbValue(SVs.items[i]);
       actions.changeValue({
-        value: SVs.items[i],
-        "transient": true
+        value: SVs.items[i]
       });
     }
   }
@@ -503,16 +501,14 @@ function Slider(props) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
         actions.changeValue({
-          value: SVs.items[valindexpair[1]],
-          "transient": true
+          value: SVs.items[valindexpair[1]]
         });
       } else {
         var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
         actions.changeValue({
-          value: SVs.items[i],
-          "transient": true
+          value: SVs.items[i]
         });
       }
     }

@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[28,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[27,0],{
 
-/***/ 645:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 672:
+/***/ 759:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Line; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -322,10 +322,7 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       var _loop = function _loop(i) {
         var vertex = _this2.polygonJXG.vertices[i];
         vertex.on('drag', function (x) {
-          return _this2.onDragHandler(i, true);
-        });
-        vertex.on('up', function (x) {
-          return _this2.onDragHandler(i, false);
+          return _this2.onDragHandler(i);
         });
       };
 
@@ -344,51 +341,38 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       // To accomplish this, set offset for all vertices on mousedown
       // and change coordinates for all vertices on drag
 
-      var polygonJXG = this.polygonJXG;
-      var newPointcoords;
-
-      function onDragBorder(i) {
-        // create update instructions for moving entire polygon
-        newPointcoords = {};
-        var border = polygonJXG.borders[i];
-
-        var _loop2 = function _loop2(j) {
-          var point = polygonJXG.vertices[j];
-          var item = offsets.find(function (x) {
-            return x.id === point.id;
-          });
-
-          if (item === undefined) {
-            // vertex is on border segment dragged, so records its position
-            newPointcoords[j] = [point.X(), point.Y()];
-          } else {
-            // for remaining vertices, set to offset from
-            // first point of segment dragged
-            newPointcoords[j] = [border.point1.X() + item.offset[0], border.point1.Y() + item.offset[1]];
-          }
-        };
-
-        for (var j = 0; j < renderer.doenetSvData.nVertices; j++) {
-          _loop2(j);
-        }
-
-        renderer.actions.movePolygon(newPointcoords, true);
-      }
-
-      function onUpBorder() {
-        if (newPointcoords) {
-          renderer.actions.movePolygon(newPointcoords, false);
-        }
-      }
-
-      var _loop3 = function _loop3(i) {
+      var _loop2 = function _loop2(i) {
         var border = _this3.polygonJXG.borders[i];
+        var polygonJXG = _this3.polygonJXG;
         border.on('drag', function () {
-          return onDragBorder(i);
+          var _this4 = this;
+
+          // create update instructions for moving entire polygon
+          var newPointcoords = [];
+
+          var _loop3 = function _loop3(j) {
+            var point = polygonJXG.vertices[j];
+            var item = offsets.find(function (x) {
+              return x.id === point.id;
+            });
+
+            if (item === undefined) {
+              // vertex is on border segment dragged, so records its position
+              newPointcoords.push([point.X(), point.Y()]);
+            } else {
+              // for remaining vertices, set to offset from
+              // first point of segment dragged
+              newPointcoords.push([_this4.point1.X() + item.offset[0], _this4.point1.Y() + item.offset[1]]);
+            }
+          };
+
+          for (var j = 0; j < renderer.doenetSvData.nVertices; j++) {
+            _loop3(j);
+          }
+
+          renderer.actions.movePolygon(newPointcoords);
         });
-        border.on('up', onUpBorder);
-        border.on('down', function () {
-          newPointcoords = undefined;
+        border.on('mousedown', function () {
           offsets = []; // calculate offsets for all vertices not on given border segment
 
           for (var j = 0; j < renderer.doenetSvData.nVertices; j++) {
@@ -408,7 +392,7 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       };
 
       for (var i = 0; i < this.polygonJXG.borders.length; i++) {
-        _loop3(i);
+        _loop2(i);
       }
     }
   }, {
@@ -518,10 +502,10 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler(i, _transient) {
+    value: function onDragHandler(i) {
       var newCoords = {};
       newCoords[i] = [this.polygonJXG.vertices[i].X(), this.polygonJXG.vertices[i].Y()];
-      this.actions.movePolygon(newCoords, _transient);
+      this.actions.movePolygon(newCoords);
     }
   }, {
     key: "render",

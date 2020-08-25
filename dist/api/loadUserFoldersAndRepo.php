@@ -6,12 +6,24 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-include "getRepoData.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $sql="
+SELECT   -- get all repos user has access to
+  f.folderId as folderId,
+  f.title as title,
+  f.parentId as parentId,
+  f.creationDate as creationDate,
+  f.isRepo as isRepo,
+  f.public as isPublic,
+  f.isPinned as isPinned,
+  f.folderId as rootId
+FROM repo_access AS ra
+LEFT JOIN folder f ON ra.repoId = f.folderId
+WHERE ra.username='$remoteuser' AND ra.removedFlag=0
+UNION
 SELECT  -- get all personal folders 
   f.folderId as folderId,
   f.title as title,
@@ -24,20 +36,7 @@ SELECT  -- get all personal folders
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
 LEFT JOIN folder_content fc ON uf.folderId = fc.childId
-WHERE uf.userId='$userId' AND f.isPinned='0'
-UNION
-SELECT  -- get all shared folders 
-  f.folderId as folderId,
-  f.title as title,
-  f.parentId as parentId,
-  f.creationDate as creationDate,
-  f.isRepo as isRepo,
-  f.public as isPublic,
-  f.isPinned as isPinned,
-  fc.rootId as rootId
-FROM folder f
-LEFT JOIN folder_content fc ON f.folderId = fc.childId
-WHERE f.folderId IN ('".implode("','",$childFoldersArray)."')
+WHERE uf.username='$remoteuser'
 ORDER BY isPinned DESC
 ";
 
@@ -54,18 +53,6 @@ if (!$userId) {
     f.folderId as rootId
     FROM folder AS f
   WHERE f.isPinned='1'
-  UNION
-  SELECT
-    f.folderId as folderId,
-    f.title as title,
-    f.parentId as parentId,
-    f.creationDate as creationDate,
-    f.isRepo as isRepo,
-    f.public as isPublic,
-    f.isPinned as isPinned,
-    f.folderId as rootId
-    FROM folder_content AS fc, folder AS f
-  WHERE (f.folderId = fc.rootId OR f.folderId = fc.folderId) AND f.isPinned='1' AND fc.childId = f.folderId
   ";
 }
 
@@ -140,10 +127,40 @@ if ($result->num_rows > 0){
   }
 }
 
+//Collect users who can access repos
+foreach ($repos_arr as $repoId) {
+  $sql = "
+  SELECT 
+    u.firstName AS firstName,
+    u.lastName AS lastName,
+    u.username AS username,
+    u.email AS email,
+    ra.owner AS owner
+    FROM repo_access AS ra
+    LEFT JOIN user AS u
+    ON u.username = ra.username
+    WHERE ra.repoId = '$repoId'
+  ";
+$result = $conn->query($sql); 
+$users = array();
+while($row = $result->fetch_assoc()){ 
+  $user_info = array(
+    "firstName"=>$row["firstName"],
+    "lastName"=>$row["lastName"],
+    "username"=>$row["username"],
+    "email"=>$row["email"],
+    "owner"=>$row["owner"]
+  );
+  array_push($users,$user_info);
+}
+
+$folder_info_arr[$repoId]["user_access_info"] = $users;
+}
+
 
 $response_arr = array(
-  "folderInfo"=>  array_merge($folder_info_arr, $repo_info_arr),
-  "folderIds"=> array_merge($fi_array, $repo_array),
+  "folderInfo"=>$folder_info_arr,
+  "folderIds"=>$fi_array,
 );
 
 // set response code - 200 OK

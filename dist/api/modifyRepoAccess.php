@@ -5,8 +5,6 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 include "db_connection.php";
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $repoId =  mysqli_real_escape_string($conn,$_POST["repoId"]);
@@ -18,15 +16,15 @@ if ($operationType == "insert") {
   $sql = "
   SELECT id
   FROM repo_access
-  WHERE repoId='$repoId' AND userId='$userId'
+  WHERE repoId='$repoId' AND username='$remoteuser'
   ";
   $result = $conn->query($sql);
   if ($result->num_rows < 1){
     $sql = "
     INSERT INTO repo_access
-    (userId, teamId, repoId, timestamp, owner)
+    (username, teamId, repoId, timestamp, owner)
     VALUES
-    ('$userId', '1', '$repoId', NOW(), '$owner')
+    ('$remoteuser', '1', '$repoId', NOW(), '$owner')
     ";
     $result = $conn->query($sql);
   } else {
@@ -34,7 +32,7 @@ if ($operationType == "insert") {
     UPDATE repo_access
     SET removedFlag=0,
     timestamp=NOW()
-    WHERE repoId='$repoId' AND userId='$userId'
+    WHERE repoId='$repoId' AND username='$remoteuser'
     ";
     $result = $conn->query($sql);   
   }  
@@ -43,7 +41,7 @@ if ($operationType == "insert") {
     UPDATE repo_access
     SET removedFlag=1,
     timestamp=NOW()
-    WHERE repoId='$repoId' AND userId='$userId'
+    WHERE repoId='$repoId' AND username='$remoteuser'
   ";
   $result = $conn->query($sql);   
 }

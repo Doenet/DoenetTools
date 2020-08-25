@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[44,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[41,0],{
 
-/***/ 645:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 687:
+/***/ 772:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Vector; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -254,9 +254,6 @@ var Vector = /*#__PURE__*/function (_DoenetRenderer) {
       _this.initializeChildren();
     }
 
-    _this.vectorBeingDragged = false;
-    _this.headBeingDragged = false;
-    _this.tailBeingDragged = false;
     return _this;
   }
 
@@ -308,23 +305,14 @@ var Vector = /*#__PURE__*/function (_DoenetRenderer) {
       this.point1JXG = this.props.board.create('point', endpoints[0], jsxPointAttributes);
       this.point2JXG = this.props.board.create('point', endpoints[1], jsxPointAttributes);
       this.vectorJXG = this.props.board.create('arrow', [this.point1JXG, this.point2JXG], jsxVectorAttributes);
-      this.point1JXG.on('drag', function () {
-        return _this2.onDragHandler(1, true);
+      this.point1JXG.on('drag', function (e) {
+        return _this2.onDragHandler(1, e);
       });
-      this.point2JXG.on('drag', function () {
-        return _this2.onDragHandler(2, true);
+      this.point2JXG.on('drag', function (e) {
+        return _this2.onDragHandler(2, e);
       });
-      this.vectorJXG.on('drag', function () {
-        return _this2.onDragHandler(0, true);
-      });
-      this.point1JXG.on('up', function () {
-        return _this2.onDragHandler(1, false);
-      });
-      this.point2JXG.on('up', function () {
-        return _this2.onDragHandler(2, false);
-      });
-      this.vectorJXG.on('up', function () {
-        return _this2.onDragHandler(0, false);
+      this.vectorJXG.on('drag', function (e) {
+        return _this2.onDragHandler(0, e);
       });
       return this.vectorJXG;
     }
@@ -418,40 +406,20 @@ var Vector = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler(i, _transient) {
-      if (_transient) {
-        if (i === 1) {
-          this.tailBeingDragged = true;
-        } else if (i === 2) {
-          this.headBeingDragged = true;
-        } else {
-          this.headBeingDragged = true;
-          this.tailBeingDragged = true;
-        }
-      }
-
-      var instructions = {
-        "transient": _transient
-      };
-      var performMove = false;
-
-      if (this.headBeingDragged) {
-        performMove = true;
-        instructions.headcoords = [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()];
-      }
-
-      if (this.tailBeingDragged) {
-        performMove = true;
-        instructions.tailcoords = [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()];
-      }
-
-      if (!_transient) {
-        this.headBeingDragged = false;
-        this.tailBeingDragged = false;
-      }
-
-      if (performMove) {
-        this.actions.moveVector(instructions);
+    value: function onDragHandler(i) {
+      if (i == 1) {
+        this.actions.moveVector({
+          tailcoords: [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()]
+        });
+      } else if (i == 2) {
+        this.actions.moveVector({
+          headcoords: [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()]
+        });
+      } else {
+        this.actions.moveVector({
+          tailcoords: [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()],
+          headcoords: [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()]
+        });
       }
     }
   }, {

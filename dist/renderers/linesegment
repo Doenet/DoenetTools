@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[21,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[20,0],{
 
-/***/ 645:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 665:
+/***/ 752:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LineSegment; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -304,32 +304,14 @@ var LineSegment = /*#__PURE__*/function (_DoenetRenderer) {
       this.point1JXG = this.props.board.create('point', endpoints[0], jsxPointAttributes);
       this.point2JXG = this.props.board.create('point', endpoints[1], jsxPointAttributes);
       this.lineSegmentJXG = this.props.board.create('segment', [this.point1JXG, this.point2JXG], jsxSegmentAttributes);
-      this.point1JXG.on('drag', function () {
-        return _this2.onDragHandler(1, true);
+      this.point1JXG.on('drag', function (e) {
+        return _this2.onDragHandler(1, e);
       });
-      this.point2JXG.on('drag', function () {
-        return _this2.onDragHandler(2, true);
+      this.point2JXG.on('drag', function (e) {
+        return _this2.onDragHandler(2, e);
       });
-      this.lineSegmentJXG.on('drag', function () {
-        return _this2.onDragHandler(0, true);
-      });
-      this.point1JXG.on('up', function () {
-        return _this2.onDragHandler(1, false);
-      });
-      this.point2JXG.on('up', function () {
-        return _this2.onDragHandler(2, false);
-      });
-      this.lineSegmentJXG.on('up', function () {
-        return _this2.onDragHandler(0, false);
-      });
-      this.point1JXG.on('down', function () {
-        return _this2.draggedPoint = null;
-      });
-      this.point2JXG.on('down', function () {
-        return _this2.draggedPoint = null;
-      });
-      this.lineSegmentJXG.on('down', function () {
-        return _this2.draggedPoint = null;
+      this.lineSegmentJXG.on('drag', function (e) {
+        return _this2.onDragHandler(0, e);
       });
       this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       return this.lineSegmentJXG;
@@ -420,28 +402,19 @@ var LineSegment = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler(i, _transient) {
-      if (_transient) {
-        this.draggedPoint = i;
-      } else if (this.draggedPoint !== i) {
-        return;
-      }
-
+    value: function onDragHandler(i) {
       if (i == 1) {
         this.actions.moveLineSegment({
-          point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
-          "transient": _transient
+          point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()]
         });
       } else if (i == 2) {
         this.actions.moveLineSegment({
-          point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
-          "transient": _transient
+          point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()]
         });
       } else {
         this.actions.moveLineSegment({
           point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
-          point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
-          "transient": _transient
+          point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()]
         });
       }
     }

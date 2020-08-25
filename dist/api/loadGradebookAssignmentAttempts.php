@@ -7,11 +7,6 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
-
-//TODO: Check if $userId is an Instructor who has access
-
 if (!isset($_GET["assignmentId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No assignment specified!";
@@ -29,19 +24,12 @@ if (!isset($_GET["assignmentId"])) {
     if ($result->num_rows == 1) {
         // do the actual query
         $sql = "
-        SELECT 
-		ua.userId as userId,
-		ua.credit as assignmentCredit,
-		ua.creditOverride as assignmentCreditOverride,
-		uaa.attemptNumber as attemptNumber,
-		uaa.credit as attemptCredit,
-		uaa.creditOverride AS attemptCreditOverride
-        FROM user_assignment_attempt AS uaa
-        LEFT JOIN user_assignment AS ua
-        ON ua.assignmentId = uaa.assignmentId 
-        AND ua.userId = uaa.userId
-        WHERE uaa.assignmentId = '$assignmentId'
-        ORDER BY uaa.attemptNumber
+            SELECT ua.credit AS assignmentCredit, ua.username, uaa.credit AS attemptCredit, uaa.attemptNumber
+            FROM user_assignment AS ua
+            LEFT JOIN user_assignment_attempt AS uaa
+            ON ua.assignmentId = uaa.assignmentId
+            WHERE ua.assignmentId = '$assignmentId'
+            ORDER BY uaa.finished
         ";
     
         $result = $conn->query($sql);
@@ -50,12 +38,10 @@ if (!isset($_GET["assignmentId"])) {
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
-                    $row['userId'],
-                    $row['attemptNumber'],
                     $row['assignmentCredit'],
-                    $row['assignmentCreditOverride'],
+                    $row['username'],
                     $row['attemptCredit'],
-                    $row['attemptCreditOverride']
+                    $row['attemptNumber']
                 )
             );
         }

@@ -1,6 +1,5 @@
 import React from "react";
 import Styled from "styled-components";
-import Menu from "./DoenetCourseCardMenu"
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,15 +15,11 @@ const Container = Styled.div`
   width: 230px;
   display: flex; /*added*/
   flex-direction: column; /*added*/
-  justify-content: space-between;
-  position: relative;
-  background-image: url(${(props) => props.url});
-  background-color: ${(props) => `#${props.color}`};
-  background-size: cover;
-  background-position: center;
+  justify-content: flex-end;
 `;
 
 const Image = Styled.div`
+  z-index: 0;
   height: 100%;
   //width: 100%;
   color: red;
@@ -34,9 +29,10 @@ const Image = Styled.div`
   background-position: center;
 `;
 const Info = Styled.div`
-  border-radius: 0px 0px 5px 5px;
-  // position: absolute;
-  height: 65px;
+  //border-radius: 0px 0px 3px 3px;
+  position: absolute;
+  z-index: 1;
+  // height: 45px;
   width: inherit;
   background: rgba(240, 240, 240, 0.8);
 `;
@@ -67,10 +63,8 @@ const ShortNameContainer = Styled.p`
 
 
 const Card = props => (
-    <Container url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
-      <Menu
-      data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} courseId = {props.data.courseId} updateCourseColor = {props.updateCourseColor}/>
-      {/* <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} /> */}
+    <Container>
+      <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} />
       <Info>
         <LongNameContainer><b>{props.data.longname}</b></LongNameContainer>
         <ShortNameContainer>{props.data.shortname}</ShortNameContainer>

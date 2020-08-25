@@ -7,16 +7,14 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
-$email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
+$username = mysqli_real_escape_string($conn,$_REQUEST["username"]);
 $repoId = mysqli_real_escape_string($conn,$_REQUEST["repoId"]);
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 $sql = "
 SELECT id
 FROM repo_access
-WHERE userId = '$userId' AND repoId = '$repoId'
+WHERE username = '$remoteuser' AND repoId = '$repoId'
 ";
 
 $result = $conn->query($sql); 
@@ -24,15 +22,14 @@ $permisionToInsert = $result->num_rows;
 
 //Test if user exists
 $sql = "
-SELECT userId
+SELECT id
 FROM user
-WHERE email = '$email' 
+WHERE username = '$username' 
 ";
 
 $result = $conn->query($sql); 
-$targetUserExists = $result->num_rows;
-$row = $result->fetch_assoc();
-$targetUserId = $row["userId"];
+$userExists = $result->num_rows;
+
 
 //TODO: TEST IF USERNAME ALREADY HAS ACCESS
 
@@ -40,13 +37,13 @@ $response_arr = array(
   "success"=>"0",
 );
 
-if ($permisionToInsert > 0 && $targetUserExists > 0){
+if ($permisionToInsert > 0 && $userExists > 0){
 //  User has permission to insert the new user, so insert it
   $sql = "
   INSERT INTO repo_access
-  (repoId, userId, email, timestamp, removedFlag, owner)
+  (repoId, username, timestamp, removedFlag, owner)
   VALUES
-  ('$repoId','$targetUserId','$email', NOW(), '0', '0')
+  ('$repoId','$username',NOW(), '0', '0')
   ";
   $result = $conn->query($sql); 
   //Collect users who can access repos
@@ -55,23 +52,23 @@ if ($permisionToInsert > 0 && $targetUserExists > 0){
     SELECT 
   u.firstName AS firstName,
   u.lastName AS lastName,
-  u.userId AS userId,
+  u.username AS username,
   u.email AS email,
   ra.owner AS owner
   FROM repo_access AS ra
   LEFT JOIN user AS u
-  ON u.email = ra.email
+  ON u.username = ra.username
   WHERE ra.repoId = '$repoId'
   ";
   $result = $conn->query($sql); 
   $users = array();
   while($row = $result->fetch_assoc()){ 
     $user_info = array(
-      "firstName"=>$row["firstName"],
-      "lastName"=>$row["lastName"],
-      "username"=>$row["username"],
-      "email"=>$row["email"],
-      "owner"=>$row["owner"]
+      firstName=>$row["firstName"],
+      lastName=>$row["lastName"],
+      username=>$row["username"],
+      email=>$row["email"],
+      owner=>$row["owner"]
     );
     array_push($users,$user_info);
   }

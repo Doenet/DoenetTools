@@ -7,24 +7,20 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
-$email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
+$username = mysqli_real_escape_string($conn,$_REQUEST["username"]);
 $repoId = mysqli_real_escape_string($conn,$_REQUEST["repoId"]);
-
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 
 $sql = "
 SELECT id
 FROM repo_access
-WHERE userId = '$userId' AND repoId = '$repoId'
+WHERE username = '$remoteuser' AND repoId = '$repoId'
 ";
 
 $result = $conn->query($sql); 
 $permisionToRemove = $result->num_rows;
-$userId = $result->userId;
-$row = $result->fetch_assoc();
-$userId = $row["userId"];
+
+
 
 $response_arr = array(
   "success"=>"0",
@@ -34,7 +30,7 @@ if ($permisionToRemove > 0 ){
 //  User has permission to remove the user, so remove them
   $sql = "
   DELETE FROM repo_access
-  WHERE repoId='$repoId' AND email='$email'
+  WHERE repoId='$repoId' AND username='$username'
   ";
   $result = $conn->query($sql); 
 
@@ -43,23 +39,23 @@ if ($permisionToRemove > 0 ){
     SELECT 
   u.firstName AS firstName,
   u.lastName AS lastName,
-  u.userId AS userId,
+  u.username AS username,
   u.email AS email,
   ra.owner AS owner
   FROM repo_access AS ra
   LEFT JOIN user AS u
-  ON u.email = ra.email
+  ON u.username = ra.username
   WHERE ra.repoId = '$repoId'
   ";
   $result = $conn->query($sql); 
   $users = array();
   while($row = $result->fetch_assoc()){ 
     $user_info = array(
-      "firstName"=>$row["firstName"],
-      "lastName"=>$row["lastName"],
-      "username"=>$row["username"],
-      "email"=>$row["email"],
-      "owner"=>$row["owner"]
+      firstName=>$row["firstName"],
+      lastName=>$row["lastName"],
+      username=>$row["username"],
+      email=>$row["email"],
+      owner=>$row["owner"]
     );
     array_push($users,$user_info);
   }

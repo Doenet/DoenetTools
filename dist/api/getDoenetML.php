@@ -31,7 +31,7 @@ if ($branchId == ""){
 	AND draft = 0
 	ORDER BY timestamp ASC
 	";
-		$content_id_array = array();
+	
 	$result = $conn->query($sql);
 	if ($result->num_rows < 1){
 		$response_arr = array(
@@ -40,6 +40,7 @@ if ($branchId == ""){
 			"reason" => "No Matching Content",
 	);
 	}else{
+		$content_id_array = array();
 		while ($row = $result->fetch_assoc()){
 			
 			array_push($content_id_array,$row["contentId"]);

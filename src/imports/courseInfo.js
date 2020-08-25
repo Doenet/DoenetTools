@@ -36,11 +36,11 @@ export function updateCourses(courseArray,callback=()=>{}){
       courseListDB.update(courseObj);
     }
 
-    const url = '/api/saveUserCourseModifications.php';
+    const url = '/api/saveUserCourseModifications.php';;
 
     axios.post(url, courseArray)
       .then((resp) => {
-        // console.log(resp.data); //var_dump shows here
+        console.log(resp.data); //var_dump shows here
         callback(true);
       })
       .catch(function (error) {
@@ -73,8 +73,6 @@ const selectedCourseDB = useIndexedDB('SelectedCourse');
           if (resp.data.success && resp.data.courseInfo.length > 0){
           //Store in IndexedDB
           for (let courseInfo of resp.data.courseInfo){
-            
-            
             courseListDB.add(courseInfo).then(
               event => { //console.log('Add Course Event', event); 
             },

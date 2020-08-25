@@ -4,10 +4,7 @@ header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
-
 include "db_connection.php";
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $number_children = count($_POST["childIds"]);
@@ -20,10 +17,11 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_content
-      (userId, branchId)
+      (username, branchId)
       VALUES
-      ('$userId','$childId')
+      ('$remoteuser','$childId')
       ";
+      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if branch exists
@@ -36,9 +34,10 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_content
-        WHERE userId='$userId' 
+        WHERE username='$remoteuser' 
         AND branchId='$childId'
         ";
+        echo $sql;
         $result = $conn->query($sql);      
       }
     }
@@ -46,10 +45,11 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_folders
-      (userId, folderId)
+      (username, folderId)
       VALUES
-      ('$userId','$childId')
+      ('$remoteuser','$childId')
       ";
+      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if folder exists
@@ -62,9 +62,10 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_folders
-        WHERE userId='$userId' 
+        WHERE username='$remoteuser' 
         AND folderId='$childId'
         ";
+        echo $sql;
         $result = $conn->query($sql);     
       }
     }
@@ -72,10 +73,11 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_urls
-      (userId, urlId)
+      (username, urlId)
       VALUES
-      ('$userId','$childId')
+      ('$remoteuser','$childId')
       ";
+      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if url exists
@@ -88,9 +90,10 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_urls
-        WHERE userId='$userId' 
+        WHERE username='$remoteuser' 
         AND urlId='$childId'
         ";
+        echo $sql;
         $result = $conn->query($sql);     
       }
     }

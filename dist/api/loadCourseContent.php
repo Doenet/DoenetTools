@@ -21,7 +21,7 @@ f.public as isPublic,
 f.folderId as rootId
 FROM folder AS f
 LEFT JOIN course_content cc ON f.folderId=cc.itemId
-WHERE cc.courseId='$courseId' OR f.folderId='root'
+WHERE cc.courseId='$courseId'
 UNION
 SELECT  -- get all nested folders
   f.folderId as folderId,
