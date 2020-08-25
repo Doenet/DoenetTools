@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "324c96d0-e050-4b69-b549-a4ebbc9b38e6",
+		"name": "DoenetToolsDev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost with dev user pre-auth",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "dc151065-2c41-442b-b3d9-83fee70ab236",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost",
+					"host": [
+						"localhost"
+					]
+				},
+				"description": "a"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
