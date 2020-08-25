@@ -5,6 +5,15 @@ export default class Rectangle extends Polygon {
   static componentType = "rectangle";
   static rendererType = "polygon";
 
+  // used when referencing this component without prop
+  static get stateVariablesShadowedForReference() {
+    return [
+      "vertices", "nVertices", "nVerticesSpecified", "haveSpecifiedCenter",
+      "specifiedWidth", "specifiedHeight", "specifiedCenter"
+    ]
+  };
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -101,8 +110,7 @@ export default class Rectangle extends Polygon {
 
           instructions.push({
             setStateVariable: "essentialVertex",
-            value: desiredStateVariableValues.essentialVertex[arrayKey],
-            arrayKey
+            value: { [arrayKey]: desiredStateVariableValues.essentialVertex[arrayKey] },
           });
         }
 
@@ -383,11 +391,11 @@ export default class Rectangle extends Polygon {
           let desiredV2 = v2.add(offset).simplify();
 
           instructions.push({
-            setDependency: dependencyNamesByKey[arrayKey].vertex2,
-            desiredValue: desiredV2,
-          }, {
             setDependency: dependencyNamesByKey[arrayKey].vertex0,
             desiredValue: desiredV0,
+          }, {
+            setDependency: dependencyNamesByKey[arrayKey].vertex2,
+            desiredValue: desiredV2,
           });
         }
 
@@ -1240,7 +1248,7 @@ export default class Rectangle extends Polygon {
 
     console.log("updateInstructions", updateInstructions);
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions
     });
   }
