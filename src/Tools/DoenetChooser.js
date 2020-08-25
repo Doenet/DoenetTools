@@ -43,6 +43,7 @@ import {
 } from "react-router-dom";
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
+import { getCourses, setSelected } from "../imports/courseInfo";
 
 const getUrlVars = () => {
   var vars = {};
@@ -60,6 +61,7 @@ class DoenetChooser extends Component {
     super(props);
 
     const queryParams = getUrlVars()
+    const dirStack = window.location.hash.split('?')[0].replace('#/content/', '').split('/').filter(i => i)
     this.state = {
       error: null,
       errorInfo: null,
@@ -71,7 +73,7 @@ class DoenetChooser extends Component {
       selectedItemsType: [],
       showNewButtonMenu: false,
       activeSection: "chooser",
-      directoryStack: [],
+      directoryStack: dirStack.length ? dirStack : [],
       splitPanelDirectoryStack: [],
       splitPanelSelectedItems: [],
       splitPanelSelectedItemsType: [],
@@ -244,9 +246,11 @@ class DoenetChooser extends Component {
       new Promise(resolve => this.addContentToFolder([newBranchId], ["content"], currentFolderId, () => { resolve() })),
     ])
     .then(() => {
-      this.loadUserContentBranches(() => {
-        // set as selected
+      this.loadUserContentBranches(() => {  
+        const { directoryStack } = this.state
+        // set as selected        
         this.setState({
+          directoryStack: directoryStack.length ? directoryStack : [],
           // directoryStack: [], //Why go to root?
           selectedItems: [newBranchId],
           selectedItemsType: ["content"],
@@ -496,30 +500,31 @@ class DoenetChooser extends Component {
   }
 
   loadAllCourses = (callback = (() => { })) => {
-
-    const loadCoursesUrl = '/api/loadAllCourses.php';
-    const data = {
-    }
-    const payload = {
-      params: data
-    }
-
-    axios.get(loadCoursesUrl, payload)
-      .then(resp => {
-        // console.log("loadcourses:",resp.data)
-        // this.courseInfo = resp.data.courseInfo;
-        // this.courseIds = resp.data.courseIds;
-         this.courseInfo = {};
-        this.courseIds = [];
-        callback();
-        this.courses_loaded = true;
-        this.forceUpdate();
-      });
-
-    // this.courseInfo = [];
-    // this.courseIds = [];
-      
-    // callback();
+    getCourses((courseListArray,selectedCourseObj) => {
+      console.log('example****> called back');
+      console.log("courses",courseListArray)
+      this.courseInfo = {};
+      this.courseIds = [];
+      this.studentCourseInfo = {};
+      this.studentCourseIds = [];
+      for (let courseInfo of courseListArray){
+        const courseId = courseInfo.courseId;
+        if (courseInfo.role === "Student"){
+          this.studentCourseInfo[courseId] = courseInfo;
+          this.studentCourseIds.push(courseId);
+        }else{
+          this.courseInfo[courseId] = courseInfo;
+          this.courseIds.push(courseId);
+        }
+        
+      }
+      //Sort by position
+      console.log("this.studentCourseIds",this.studentCourseIds)
+      console.log("this.studentCourseInfo",this.studentCourseInfo)
+      callback();
+      this.courses_loaded = true;
+      this.forceUpdate();
+    });
   }
 
   loadCourseContent = (courseId, callback = (() => { })) => {
@@ -3123,9 +3128,18 @@ const customizedTreeNodeItem = (nodeItem, item) => {
 
       </div>
     };
+    const accordionClick = (label) => {
+      if (label === 'CONTENT' && this.state.directoryStack.length) {
+        console.log('label:', label, this.state.directoryStack)
+        this.history.push('/content')
+        this.setState({
+          directoryStack: []
+        })
+      }      
+    }
     this.customizedTree = <div className="tree-column">
       <Accordion>
-        <div label="CONTENT" activeChild={this.state.contentActiveChild}>
+        <div label="CONTENT" activeChild={this.state.contentActiveChild} onClick={accordionClick}>
           <TreeView
             containerId={treeContainerId}
             containerType={treeContainerType}
@@ -3523,8 +3537,13 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (props) => {      
       const { match, location, history } = props
-      const extURL = location.pathname.replace(match.url, '')
-      // console.log('match', match, location.pathname, extURL, extURL.split('/').map(i => i));
+      /*const extURL = location.pathname.replace(match.url, '')
+      const directoryStack = extURL.split('/').filter(i => i)
+      directoryStack.length && this.updateDirectoryStack()*/
+      /*this.setState({
+        directoryStack: extURL.split('/').filter(i => i)
+      })*/
+      // console.log('match', this, match, location.pathname, extURL, extURL.split('/').filter(i => i));
       this.history = history
       return (
         <ToolLayoutPanel
