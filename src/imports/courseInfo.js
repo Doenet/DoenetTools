@@ -1,9 +1,63 @@
-import { useIndexedDB, initDB} from 'react-indexed-db';
+import { useIndexedDB, initDB } from 'react-indexed-db';
 import axios from 'axios';
+import nanoid from 'nanoid';
 
+//callback(courseListArray,selectedCourseObj)
+export function getCourses_CI(callback){
+
+
+  const courseListDB = useIndexedDB('CourseList');
+  const selectedCourseDB = useIndexedDB('SelectedCourse');
+  
+   //Put in useEffect function in another file
+   courseListDB.getAll().then(courses => {
+      if (courses.length === 0){
+        //Load from database
+        const phpUrl = '/api/loadUserCourses.php';
+  
+        axios.get(phpUrl)
+          .then(resp => {
+            // console.log('loadUserCourses resp',resp);
+    
+            if (resp.data.success && resp.data.courseInfo.length > 0){
+            //Store in IndexedDB
+            for (let courseInfo of resp.data.courseInfo){
+              
+              
+              courseListDB.add(courseInfo).then(
+                event => { //console.log('Add Course Event', event); 
+              },
+                error => { console.log(error); }
+              )
+            }
+            //Select just the first one
+            selectedCourseDB.add(resp.data.courseInfo[0]).then(
+              event => { 
+                courseListDB.getAll().then(courses => {
+                  selectedCourseDB.getAll().then(selected =>{
+                    callback(courses,selected[0]);
+                  })
+                })
+                // console.log('Add Selected Event', event); 
+              },
+              error => { console.log(error); }
+            )
+  
+            }else{ console.log("Couldn't gather courselist. Or it's empty."); }
+          })
+          .catch(error => { this.setState({ error: error }) });
+      }else{
+        selectedCourseDB.getAll().then(selected =>{
+  
+          callback(courses,selected[0]);
+        })
+      }
+  
+    })
+  }
 
 //callback(success) true or false
-export function setSelected(selectCourseId,callback=()=>{}){
+export function setSelected_CI(selectCourseId,callback=()=>{}){
 
   getCourses(getCoursesCallback);
   function getCoursesCallback(courseListArray,selectedCourseObj){
@@ -26,9 +80,8 @@ export function setSelected(selectCourseId,callback=()=>{}){
   }
 }
 
-
 //callback(success) true or false
-export function updateCourses(courseArray,callback=()=>{}){
+export function updateCourses_CI(courseArray,callback=()=>{}){
 
     const courseListDB = useIndexedDB('CourseList');
     
@@ -52,59 +105,47 @@ export function updateCourses(courseArray,callback=()=>{}){
     callback(true)
 }
 
-
-//callback(courseListArray,selectedCourseObj)
-export function getCourses(callback){
-
-
-const courseListDB = useIndexedDB('CourseList');
-const selectedCourseDB = useIndexedDB('SelectedCourse');
-
- //Put in useEffect function in another file
- courseListDB.getAll().then(courses => {
-    if (courses.length === 0){
-      //Load from database
-      const phpUrl = '/api/loadUserCourses.php';
-
-      axios.get(phpUrl)
-        .then(resp => {
-          // console.log('loadUserCourses resp',resp);
-  
-          if (resp.data.success && resp.data.courseInfo.length > 0){
-          //Store in IndexedDB
-          for (let courseInfo of resp.data.courseInfo){
-            
-            
-            courseListDB.add(courseInfo).then(
-              event => { //console.log('Add Course Event', event); 
-            },
-              error => { console.log(error); }
-            )
-          }
-          //Select just the first one
-          selectedCourseDB.add(resp.data.courseInfo[0]).then(
-            event => { 
-              courseListDB.getAll().then(courses => {
-                selectedCourseDB.getAll().then(selected =>{
-                  callback(courses,selected[0]);
-                })
-              })
-              // console.log('Add Selected Event', event); 
-            },
-            error => { console.log(error); }
-          )
-
-          }else{ console.log("Couldn't gather courselist. Or it's empty."); }
-        })
-        .catch(error => { this.setState({ error: error }) });
-    }else{
-      selectedCourseDB.getAll().then(selected =>{
-
-        callback(courses,selected[0]);
-      })
+//callback(success) true or false
+export function saveCourse_CI(courseInfo,callback=()=>{}){
+  getCourses_CI((courseListArray,selectedCourseObj) => {
+    let new_course = true;
+    for (let course of courseListArray){
+      if (course.courseId === courseInfo.courseId){
+        new_course = false;
+        break;
+      }
     }
+    persist_CI(new_course);
+  });
+  
+  function persist_CI(new_course){
+    if (new_course){
+      courseInfo['role'] = "Instructor";
+      courseInfo['overviewId'] = nanoid();
+      courseInfo['overviewDocumentName'] = courseInfo.courseName + " Overview";
+      courseInfo['syllabusId'] = nanoid();
+      courseInfo['syllabusDocumentName'] = courseInfo.courseName + " Syllabus";
+    }
+    const courseListDB = useIndexedDB('CourseList');
+    courseListDB.update(courseInfo);
 
-  })
+    const data = {
+      longName: courseInfo['courseName'],
+      courseId: courseInfo['courseId'],
+      shortName: courseInfo['courseCode'],
+      term: courseInfo['term'],
+      description: courseInfo['description'],
+      overviewId: courseInfo['overviewId'],
+      syllabusId: courseInfo['syllabusId'],
+      department: courseInfo['department'],
+      section: courseInfo['section']
+    }
+    axios.post('/api/saveCourse.php', data)
+      .then(resp => {
+        console.log('resp data',resp.data)
+        callback();
+    })
+  }
 }
 
 
