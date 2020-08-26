@@ -2,39 +2,29 @@ import React from 'react';
 import VerticalDivider from "../Doenet/components/VerticalDivider.js";
 import ToolLayout from '../Tools/ToolLayout/ToolLayout.js';
 import ToolLayoutPanel from '../Tools/ToolLayout/ToolLayoutPanel.js';
+import { getCourses_CI, setSelected_CI, saveCourse_CI } from "../imports/courseInfo";
 
 export default function attempt() {
-  const header = {
-    display: 'inline-block',
-    fontSize: '95px',
-  };
+     //Save new course in IndexedDB
+    //  getCourses_CI({courseId, courseName, courseCode, term, description, department, section})
+    let courseId = "mycourseid";
+    let courseName = "my test course";
+    let courseCode = "my101"
+    let term = "Spring 2020"
+    let description = "my description"
+    let department = "dep"
+    let section = "01"
+
+    // getCourses_CI({courseId, courseName, courseCode, term, description, department, section})
 return (
   <>
-    <ToolLayout toolName="Course" headingTitle="Course Name Here">
-   <ToolLayoutPanel
-        //panelHeaderControls={[contextPanelMenu]}
-        panelName="Left Nav"
-      >
-        <div style={{display:"flex",flexDirection:"column"}}>
-        <button>Overview</button>
-       <button>Syllabus</button>
-       <button>Grades</button>
-       <button>Assignments</button>
-        </div>
-      </ToolLayoutPanel>
-   <ToolLayoutPanel
-        //panelHeaderControls={[contextPanelMenu]}
-        panelName="Content">
-          <p style={header}>Content</p> <VerticalDivider></VerticalDivider> <p style={header}>Here</p>
-          
-      </ToolLayoutPanel>
-      <ToolLayoutPanel
-      //panelHeaderControls={[contextPanelMenu]}
-      panelName="Rt. Nav">
-         <p>Assignment Control Panel</p>
-      </ToolLayoutPanel>
-    </ ToolLayout >
+   <button onClick={()=>{
+     console.log('before')
+     saveCourse_CI({courseId, courseName, courseCode, term, description, department, section})
+
+   }
+     } >  test add</button>
   </>
 );
-};
+}
 

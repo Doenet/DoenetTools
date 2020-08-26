@@ -43,7 +43,7 @@ import {
 } from "react-router-dom";
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
-import { getCourses, setSelected } from "../imports/courseInfo";
+import { getCourses_CI, setSelected_CI, saveCourse_CI } from "../imports/courseInfo";
 
 const getUrlVars = () => {
   var vars = {};
@@ -285,57 +285,7 @@ class DoenetChooser extends Component {
     this.setState({ modalOpen: !this.state.modalOpen, activeSection: mode });  
   }
 
-  handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
-    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
-      this.displayToast("Please sign in to create new course");
-      return;
-    }
-
-    // TODO: add user to course instructor
-
-    // // create new documents for overview and syllabus, get branchIds
-    // let overviewId = nanoid();
-    // let overviewDocumentName = courseName + " Overview";
-
-    // let syllabusId = nanoid();
-    // let syllabusDocumentName = courseName + " Syllabus";
-
-    Promise.all([
-      // new Promise(resolve => this.saveContentToServer({
-      //   documentName: overviewDocumentName,
-      //   code: "",
-      //   branchId: overviewId,
-      //   publish: true
-      // }, () => { resolve() })),
-      // new Promise(resolve => this.saveContentToServer({
-      //   documentName: syllabusDocumentName,
-      //   code: "",
-      //   branchId: syllabusId,
-      //   publish: true
-      // }, () => { resolve() })),
-      // new Promise(resolve => this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"], () => { resolve() })),
-      // new Promise(resolve => this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert", () => { resolve() }))
-      new Promise(resolve => this.saveCourse({
-        courseName: courseName,
-        courseId: courseId,
-        courseCode: courseCode,
-        term: term,
-        description: description,
-        department: department,
-        section: section,
-        overviewId: "",
-        syllabusId: ""
-      }, () => { resolve() })),
-    ])
-      .then(() => {
-        console.log("HERERERERERERREEEEEEEE!!!!!!!!!!!!!!!")
-        this.loadAllCourses(() => {
-          this.selectDrive("Courses", courseId);
-          this.forceUpdate();
-        })
-        callback();
-      })
-  }
+  
 
   toggleManageUrlForm = (mode) => {
     if (this.state.activeSection !== mode) {
@@ -467,60 +417,65 @@ class DoenetChooser extends Component {
     return contentId;
   }
 
-  saveCourse = ({ courseId, courseName, courseCode, term, description, department, section, overviewId, syllabusId }, callback = (() => { })) => {
-    const url = '/api/saveCourse.php';
-    const data = {
-      longName: courseName,
-      courseId: courseId,
-      shortName: courseCode,
-      term: term,
-      description: description,
-      overviewId: overviewId,
-      syllabusId: syllabusId,
-      department: department,
-      section: section,
+  handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new course");
+      return;
     }
-    axios.post(url, data)
-      .then(resp => {
-        // reload list of courses
+    this.saveCourse({ courseId, courseName, courseCode, term, description, department, section },callback());
+  }
+
+  saveCourse = ({ courseId, courseName, courseCode, term, description, department, section, overviewId, syllabusId }, callback = (() => { })) => {
+     //Save course info in IndexedDB and database
+     saveCourse_CI({
+      courseId, 
+      courseName, 
+      courseCode, 
+      term, 
+      description, 
+      department, 
+      section,
+      overviewId,
+      syllabusId}, ()=>{
         this.loadAllCourses(() => {
-          this.loadCourseContent(courseId, () => {
-            this.setState({
+          console.log("loadAllCourses completed !! state->",this.state)
+
+          this.selectDrive("Courses", courseId);
+              this.setState({
               selectedItems: [],
               activeSection: "chooser",
             });
-            this.forceUpdate();
-          });
-        });
-        callback(courseId);
+        })
+        callback();
       })
-      .catch(function (error) {
-        this.setState({ error: error });
-      })
+   
+    
   }
 
   loadAllCourses = (callback = (() => { })) => {
-    getCourses((courseListArray,selectedCourseObj) => {
+    getCourses_CI((courseListArray,selectedCourseObj) => {
       console.log('example****> called back');
       console.log("courses",courseListArray)
       this.courseInfo = {};
       this.courseIds = [];
-      this.studentCourseInfo = {};
-      this.studentCourseIds = [];
+      // this.studentCourseInfo = {};
+      // this.studentCourseIds = [];
       for (let courseInfo of courseListArray){
         const courseId = courseInfo.courseId;
         if (courseInfo.role === "Student"){
-          this.studentCourseInfo[courseId] = courseInfo;
-          this.studentCourseIds.push(courseId);
-        }else{
+          // this.studentCourseInfo[courseId] = courseInfo;
+          // this.studentCourseIds.push(courseId);
+        }else if (courseInfo.role === "Instructor"){
           this.courseInfo[courseId] = courseInfo;
           this.courseIds.push(courseId);
+        }else{
+          console.warn("not student or instructor role")
         }
         
       }
       //Sort by position
-      console.log("this.studentCourseIds",this.studentCourseIds)
-      console.log("this.studentCourseInfo",this.studentCourseInfo)
+      // console.log("this.studentCourseIds",this.studentCourseIds)
+      // console.log("this.studentCourseInfo",this.studentCourseInfo)
       callback();
       this.courses_loaded = true;
       this.forceUpdate();
@@ -3533,6 +3488,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     const navigationPanelMenuControls = [newItemButton];
     // const mainPanelMenuControls = [switchPanelButton];
     const mainPanelMenuControls = [switchPanelButton];
+    // const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (props) => {      
