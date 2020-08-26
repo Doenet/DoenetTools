@@ -105,6 +105,7 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
     this.loadAllCourses();
+    this.loadUserProfile();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
@@ -776,7 +777,19 @@ class DoenetChooser extends Component {
       }
     }
 
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
+    // filter selected repos in childIds
+    let filteredChildIds = [], filteredChildType = [];
+    for (let i = 0; i < childIds.length; i++) {
+      if (childType[i] == "folder" && itemDataInfo[childIds[i]]["isRepo"]) {
+        const repoTitle = itemDataInfo[childIds[i]]["title"];
+        this.displayToast(`Failed to move '${repoTitle}': Item of type Repository must be at root directory`);
+      } else {
+        filteredChildIds.push(childIds[i]);
+        filteredChildType.push(childType[i]);
+      }
+    }
+    
+    this.saveFolder(folderId, title, filteredChildIds, filteredChildType, operationType, isRepo, isPublic, (resp) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
       //    at root ~ addContentToFolder not invoked
@@ -784,9 +797,9 @@ class DoenetChooser extends Component {
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
       if (resp.status != 200) return;
-      for (let i = 0; i < childIds.length; i++) {
-        let childId = childIds[i];
-        let childDataObject = getDataObjects(childType[i]);
+      for (let i = 0; i < filteredChildIds.length; i++) {
+        let childId = filteredChildIds[i];
+        let childDataObject = getDataObjects(filteredChildType[i]);
         let childDataInfo = childDataObject["info"];
         let childDataIdList = childDataObject["idList"];
         let childListKey = childDataObject["folderChildList"]
@@ -810,7 +823,7 @@ class DoenetChooser extends Component {
       this.userContentReloaded = true;
 
       let allItems = { itemIds: [], itemType: [] };
-      childIds.forEach(childId => {
+      filteredChildIds.forEach(childId => {
         let res = this.flattenFolder(childId);
         allItems.itemIds = allItems.itemIds.concat(res.itemIds);
         allItems.itemType = allItems.itemType.concat(res.itemType);
@@ -1011,7 +1024,7 @@ class DoenetChooser extends Component {
     let folderId = nanoid();
     Promise.all([
       new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", true, false, () => { resolve() })),
-      new Promise(resolve => this.modifyRepoAccess(folderId, "insert", true, () => { resolve() }))
+      new Promise(resolve => this.grantRepoAccess({repoId: folderId, email: this.userProfile["email"], owner: true, callback: ()=>{ resolve() }}))
     ])
       .then(() => {
         this.loadUserFoldersAndRepo(() => {
@@ -2592,11 +2605,27 @@ class DoenetChooser extends Component {
     this.loadUserUrls();
   }
 
-  grantRepoAccess = ({repoId, email, callback=()=>{}}) => {
+  loadUserProfile = () => {
+    const phpUrl = '/api/loadProfile.php';
+    const data = {}
+    const payload = {
+      params: data
+    }
+    axios.get(phpUrl, payload)
+    .then(resp => {
+      if (resp.data.success === "1") {
+        this.userProfile = resp.data.profile;
+      }
+    })
+    .catch(error => { this.setState({ error: error }) });
+  }
+
+  grantRepoAccess = ({repoId, email, owner, callback=()=>{}}) => {
     const loadCoursesUrl = '/api/addRepoUser.php';
     const data = {
       repoId: repoId,
       email: email,
+      owner: owner,
     }
     const payload = {
       params: data
@@ -2604,10 +2633,11 @@ class DoenetChooser extends Component {
 
     axios.get(loadCoursesUrl, payload)
     .then(resp => {
-      console.log("HERE", resp);
       if (resp.data.success === "1") {
-        this.folderInfo[repoId].user_access_info = resp.data.users;
-      }
+        if (this.folderInfo[repoId]) this.folderInfo[repoId].user_access_info = resp.data.users;
+      } else {
+        this.displayToast(resp.data.message);
+      }      
       this.userContentReloaded = true;
       callback(resp);
       this.forceUpdate();
@@ -2628,7 +2658,9 @@ class DoenetChooser extends Component {
       .then(resp => {
         if (resp.data.success === "1") {
           this.folderInfo[repoId].user_access_info = resp.data.users;
-        }
+        } else {
+          this.displayToast(resp.data.message);
+        }      
         this.userContentReloaded = true;
         callback(resp);
         this.forceUpdate();
