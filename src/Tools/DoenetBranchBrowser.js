@@ -27,7 +27,7 @@ class DoenetBranchBrowser extends Component {
   constructor(props) {
     super(props);
     const { history: { location: { pathname = '' } }, allFolderInfo } = props
-    const directory = pathname.split('/').filter((i) => i && i !== 'content')
+    const directory = pathname.replace('#', '').split('/').filter((i) => i && i !== 'content')
     
     this.state = {
       directoryStack: directory,
@@ -160,7 +160,7 @@ class DoenetBranchBrowser extends Component {
     );
 
     // add items in directoryStack if any
-    this.state.directoryStack.forEach((folderId) => {
+    this.state.directoryStack.filter((i) => i !== '#').forEach((folderId) => {
       let folderTitle = this.props.allFolderInfo[folderId].title;
 
       directoryList.push(
@@ -191,7 +191,7 @@ class DoenetBranchBrowser extends Component {
     this.folderItems = [];
     this.folderList = this.props.folderList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.state.directoryStack.filter((i) => i !== '#').length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.folderList = this.props.allFolderInfo[folderId].childFolders;
     }
@@ -255,7 +255,7 @@ class DoenetBranchBrowser extends Component {
     this.contentItems = [];
     this.contentList = this.props.contentList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.state.directoryStack.filter((i) => i !== '#').length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.contentList = this.props.allFolderInfo[folderId].childContent;
     }
@@ -302,7 +302,7 @@ class DoenetBranchBrowser extends Component {
     this.urlItems = [];
     this.urlList = this.props.urlList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.state.directoryStack.filter((i) => i !== '#').length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.urlList = this.props.allFolderInfo[folderId].childUrls;
     }
