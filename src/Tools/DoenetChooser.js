@@ -439,12 +439,11 @@ class DoenetChooser extends Component {
         this.loadAllCourses(() => {
           console.log("loadAllCourses completed !! state->",this.state)
 
-          // this.selectDrive("Courses", courseId);
+          this.selectDrive("Courses", courseId);
               this.setState({
               selectedItems: [],
               activeSection: "chooser",
             });
-          // this.forceUpdate();
         })
         callback();
       })
@@ -3456,15 +3455,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
 
     const navigationPanelMenuControls = [newItemButton];
     // const mainPanelMenuControls = [switchPanelButton];
-    const mainPanelMenuControls = [<button onClick={()=>{
-      this.handleNewCourseCreated({courseId:"newCourseId", 
-      courseName:"mynewcoursename", 
-      courseCode:"mncn", 
-      term: "Fall 2020",
-      description: "my desc", 
-      department:"my dept", 
-      section:"sect"})
-    }}>test</button>,switchPanelButton];
+    const mainPanelMenuControls = [switchPanelButton];
     // const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];

@@ -54,7 +54,7 @@ export function getCourses_CI(callback){
       }
   
     })
-  }
+}
 
 //callback(success) true or false
 export function setSelected_CI(selectCourseId,callback=()=>{}){
@@ -147,7 +147,6 @@ export function saveCourse_CI(courseInfo,callback=()=>{}){
     })
   }
 }
-
 
 export function initialize(){
   const DBConfig = {
