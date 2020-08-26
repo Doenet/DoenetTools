@@ -2,10 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import DoenetChooser from '../Tools/DoenetChooser';
-import { initialize } from '../imports/courseInfo';
 import { CookiesProvider } from 'react-cookie';
 
+import { initialize } from '../imports/courseInfo';
 initialize();
+
     ReactDOM.render(
       <CookiesProvider>
         <DoenetChooser/>
