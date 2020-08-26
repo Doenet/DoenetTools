@@ -52,10 +52,10 @@ export default class Video extends DoenetRenderer {
     }
 
     if (this.doenetSvData.youtube) {
-      return <div className="video" id={this.componentName}>
+      return <>
         <a name={this.componentName} />
-        {/* <iframe width={this.doenetSvData.width} height={this.doenetSvData.height} src={`//www.youtube-nocookie.com/embed/${this.doenetSvData.youtube}?rel=0`} frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe> */}
-      </div>
+        <div className="video" id={this.componentName} />
+      </>
     } else if (this.doenetSvData.source) {
       let extension = this.doenetSvData.source.split('/').pop().split('.').pop();
       let type;

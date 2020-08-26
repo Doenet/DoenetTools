@@ -141,7 +141,7 @@ class DoenetViewer extends Component {
 
     //TODO: Handle if number of items changed. Handle if weights changed
 
-    if (this.assignmentId){
+    if (this.assignmentId && !this.props.ignoreDatabase){
       const payload = { 
         weights: this.core.scoredItemWeights, 
         contentId:this.contentId, 

@@ -1028,6 +1028,12 @@ export default class Circle extends Curve {
             // center and one point specified.
             // Radius is distance from center to point.
             let pt = dependencyValues.numericalThroughPoints[0];
+            if (pt === undefined) {
+              // if dependencies haven't been updated,
+              // it is possible to temporarility have fewer numericalThroughPoints
+              // than nThroughPOints
+              return { newValues: { numericalRadius: NaN } }
+            }
             let numericalRadius = Math.sqrt(
               Math.pow(pt[0] - dependencyValues.numericalPrescribedCenter[0], 2)
               + Math.pow(pt[1] - dependencyValues.numericalPrescribedCenter[1], 2)
@@ -1156,6 +1162,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.numericalCenter = {
       forRenderer: true,
       isArray: true,
+      entryPrefixes: ["numericalCenterX"],
       defaultEntryValue: 0,
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius",
@@ -1228,6 +1235,7 @@ export default class Circle extends Curve {
         // console.log(`definition of numericalCenter of circle`);
         // console.log(globalDependencyValues);
         // console.log(dependencyValuesByKey);
+        // console.log(arrayKeys)
 
         let numericalCenter = {};
 
@@ -1266,12 +1274,18 @@ export default class Circle extends Curve {
             }
             return {
               useEssentialOrDefaultValue: { numericalCenter: essentialCenter },
-              makeEssential: ["numericalCenter"]
             };
 
           } else if (globalDependencyValues.nThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
+
+            if (globalDependencyValues.numericalThroughPoints.length < 1) {
+              // if dependencies haven't been updated,
+              // it is possible to temporarility have fewer numericalThroughPoints
+              // than nThroughPOints
+              return { newValues: { numericalCenter: [NaN, NaN] } }
+            }
 
             let numericalCenter = [
               globalDependencyValues.numericalThroughPoints[0][0],
@@ -1281,6 +1295,13 @@ export default class Circle extends Curve {
             return { newValues: { numericalCenter } }
 
           } else if (globalDependencyValues.nThroughPoints === 2) {
+
+            if (globalDependencyValues.numericalThroughPoints.length < 2) {
+              // if dependencies haven't been updated,
+              // it is possible to temporarility have fewer numericalThroughPoints
+              // than nThroughPOints
+              return { newValues: { numericalCenter: [NaN, NaN] } }
+            }
 
             // find circle through two points with given radius
             let r = globalDependencyValues.numericalRadius;
@@ -1331,7 +1352,6 @@ export default class Circle extends Curve {
           }
           return {
             useEssentialOrDefaultValue: { numericalCenter: essentialCenter },
-            makeEssential: ["numericalCenter"]
           };
         } else {
 
@@ -1713,6 +1733,10 @@ export default class Circle extends Curve {
         return [2];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        console.log(`array dependencies by key for circle center`)
+        console.log(arrayKeys)
+        console.log(stateValues);
+
         let globalDependencies = {};
         let dependenciesByKey = {};
 
@@ -1782,6 +1806,8 @@ export default class Circle extends Curve {
           }
         }
 
+        console.log({ dependenciesByKey, globalDependencies })
+
         return { dependenciesByKey, globalDependencies };
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
@@ -1839,15 +1865,11 @@ export default class Circle extends Curve {
             }
             return {
               useEssentialOrDefaultValue: { center: essentialCenter },
-              makeEssential: ["center"]
             };
 
           } else if (globalDependencyValues.nThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
-
-            console.log(globalDependencyValues.throughPoints)
-            console.log(globalDependencyValues.nThroughPoints)
 
             let center;
 
@@ -1888,7 +1910,6 @@ export default class Circle extends Curve {
           }
           return {
             useEssentialOrDefaultValue: { center: essentialCenter },
-            makeEssential: ["center"]
           };
         } else {
 
