@@ -16,7 +16,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
-import { getCourses, setSelected } from "../imports/courseInfo";
+import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 import Enrollment from './Enrollment';
 import LearnerGrades from './LearnerGrades';
 
@@ -26,7 +26,7 @@ export default function DoenetCourse(props){
   const [selectedCourse,setSelectedCourse] = useState({});
   
   useEffect(()=>{
-    getCourses((courseListArray,selectedCourseObj)=>{setSelectedCourse(selectedCourseObj)})
+    getCourses_CI((courseListArray,selectedCourseObj)=>{setSelectedCourse(selectedCourseObj)})
   },[])
 
   
