@@ -36,4 +36,7 @@ RUN cd / && composer install
 
 RUN composer require firebase/php-jwt
 
+# Link /usr/local/apache2/htdocs/api/vendor to /vendor in dev environment for compatability with prod
+RUN ln -s /vendor ./vendor
+
 EXPOSE 9000

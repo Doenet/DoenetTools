@@ -241,48 +241,6 @@ export default class Award extends BaseComponent {
       targetVariableName: "feedback1"
     };
 
-    stateVariableDefinitions.nResponses = {
-      returnDependencies: () => ({
-        whenChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneWhen",
-          variableNames: ["nResponses"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.whenChild.length === 1) {
-          return {
-            newValues: {
-              nResponses: dependencyValues.whenChild[0].stateValues.nResponses
-            }
-          }
-        } else {
-          return { newValues: { nResponses: 0 } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.responses = {
-      returnDependencies: () => ({
-        whenChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneWhen",
-          variableNames: ["responses"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.whenChild.length === 1) {
-          return {
-            newValues: {
-              responses: dependencyValues.whenChild[0].stateValues.responses
-            }
-          }
-        } else {
-          return { newValues: { responses: [] } }
-        }
-      }
-    }
-
     return stateVariableDefinitions;
   }
 

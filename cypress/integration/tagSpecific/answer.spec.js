@@ -4735,7 +4735,7 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('answer with sugared inline choiceinput', () => {
+  it.skip('answer with sugared inline choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -4971,7 +4971,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer with sugared inline choiceinput, fixedorder', () => {
+  it.skip('answer with sugared inline choiceinput, fixedorder', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -5457,7 +5457,7 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('answer with sugared block choiceinput', () => {
+  it.skip('answer with sugared block choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -6101,10 +6101,12 @@ describe('Answer Tag Tests', function () {
       <p>Credit for cat: <mathinput name="catcredit" prefill="0.3" /> </p>
       <p>Last option: <textinput prefill="bird" name="last" /></p>
       <answer>
+        <choiceinput>
         <choice><credit><copy prop="value" tname="catcredit" /></credit>cat</choice>
         <choice credit="1">dog</choice>
         <choice>monkey</choice>
         <choice><copy prop="value" tname="last" /></choice>
+        </choiceinput>
       </answer>
   `}, "*");
     });
@@ -6113,7 +6115,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -6266,9 +6268,11 @@ describe('Answer Tag Tests', function () {
       <p>Inline: <booleaninput name="inline" /> </p>
       <answer>
         <inline><copy prop="value" tname="inline" /></inline>
+        <choiceinput>
         <choice credit="0.5">cat</choice>
         <choice credit="1">dog</choice>
         <choice>monkey</choice>
+        </choiceinput>
       </answer>
   `}, "*");
     });
@@ -6277,7 +6281,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';

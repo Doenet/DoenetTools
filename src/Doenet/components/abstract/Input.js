@@ -49,7 +49,7 @@ export default class Input extends InlineComponent {
         answerAncestor: {
           dependencyType: "ancestorStateVariables",
           componentType: "answer",
-          variableNames: ["delegateCheckWork", "justSubmitted"]
+          variableNames: ["delegateCheckWorkToInput", "justSubmitted"]
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -70,7 +70,7 @@ export default class Input extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let includeCheckWork = false;
         if (dependencyValues.answerAncestor) {
-          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWork;
+          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWorkToInput;
         }
         return {
           newValues: { includeCheckWork }
