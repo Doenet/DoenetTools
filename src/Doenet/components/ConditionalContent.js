@@ -81,7 +81,7 @@ export default class ConditionalContent extends CompositeComponent {
 
         if (!dependencyValues.hide) {
           replacementClasses = dependencyValues.anyChildren.map(
-            x => componentInfoObjects.allComponentClass[x.componentType]
+            x => componentInfoObjects.allComponentClasses[x.componentType]
           )
         }
 

@@ -827,6 +827,12 @@ export default class Point extends GraphicalComponent {
 
     }
 
+    // currently value is used by answer to get variable for response
+    stateVariableDefinitions.value = {
+      isAlias: true,
+      targetVariableName: "coords"
+    };
+
     stateVariableDefinitions.constraintUsed = {
       public: true,
       componentType: "boolean",
