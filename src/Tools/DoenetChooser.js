@@ -61,7 +61,7 @@ class DoenetChooser extends Component {
     super(props);
 
     const queryParams = getUrlVars()
-    const dirStack = window.location.hash.split('?')[0].replace('#/content/', '').split('/').filter(i => i)
+    const dirStack = window.location.hash.split('?')[0].replace('#', '').split('/').filter(i => i && (i !== 'content' || i !== 'courses'))
     this.state = {
       error: null,
       errorInfo: null,
@@ -659,13 +659,14 @@ class DoenetChooser extends Component {
       && this.folderInfo[this.state.directoryStack[0]].isPublic) {  // in public repo
       isPublic = true;
     }
-
+    // console.log("here!!!!!!!!",this.state.directoryStack);    
     const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
       new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => { resolve() })), // add new folder
       new Promise(resolve => this.saveUserContent([folderId], ["folder"], "insert", () => { resolve() })),  // add to user root
       new Promise(resolve => this.addContentToFolder([folderId], ["folder"], currentFolderId, () => { resolve() })) // add to folder
     ]).then(() => {
+      // console.log("here!!!!");
       this.loadUserFoldersAndRepo(() => {
         this.setState({
           selectedItems: [folderId],
@@ -1535,7 +1536,7 @@ class DoenetChooser extends Component {
   }
 
   onTreeDropEnter = (listId, containerId, containerType) => {
-    console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
+   // console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
 
     const childrenListKeyMap = {
       "folder": "childFolders",
@@ -2731,7 +2732,7 @@ class DoenetChooser extends Component {
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
-      console.log(this.userFolderInfo);
+     // console.log(this.userFolderInfo);
       this.userFolderInfo["root"] = {
         title: "User Content Tree",
         childContent: [],
@@ -2791,7 +2792,7 @@ class DoenetChooser extends Component {
       treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
       treeParentsInfo = this.userFolderInfo;
       treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
-      console.log(treeParentsInfo)
+    //  console.log(treeParentsInfo)
 
     } else if (this.state.selectedDrive == "Courses") {
       loading = !this.assignments_and_headings_loaded;
@@ -3051,7 +3052,7 @@ return <div>
       customizedCoursesTreeChildrenInfo[key].rootId = 'root';
       customizedCoursesTreeChildrenInfo[key].title = customizedCoursesTreeChildrenInfo[key]['courseCode'];
       customizedCoursesTreeChildrenInfo[key].type = 'content';
-      customizedCoursesTreeParentInfo['root']['childContent'].push(key);
+      //customizedCoursesTreeParentInfo['root']['childContent'].push(key);
     }
 
 
@@ -3085,7 +3086,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     };
     const accordionClick = (label) => {
       if (label === 'CONTENT' && this.state.directoryStack.length) {
-        console.log('label:', label, this.state.directoryStack)
+        // console.log('label:', label, this.state.directoryStack)
         this.history.push('/content')
         this.setState({
           directoryStack: []
@@ -3225,16 +3226,19 @@ const customizedTreeNodeItem = (nodeItem, item) => {
         </Accordion>
         <Accordion>
           <div label="COURSES" activeChild={this.state.courseActiveChild}>
+            {/* {console.log('customizedCoursesTreeParentInfo:', customizedCoursesTreeParentInfo, customizedCoursesTreeChildrenInfo)} */}
             <TreeView
               containerId={treeContainerId}
               containerType={treeContainerType}
               loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+              // parentsInfo={{ ...customizedCoursesTreeChildrenInfo, ...customizedCoursesTreeParentInfo }}
+              // childrenInfo={{}}
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
               specialNodes={this.customizedTempSet}
-              parentNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
-              leafNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
+              parentNodeItem={(node) => customizedTreeNodeItem(node, 'courses')}
+              leafNodeItem={(node) => customizedTreeNodeItem(node, 'courses')}
               treeNodeIcons={(itemType) => {
                 let map = {
                 }
@@ -3288,9 +3292,6 @@ const customizedTreeNodeItem = (nodeItem, item) => {
 
                 this.setState({courseActiveChild: true});
                 this.forceUpdate()
-
-                // this.tempSet.clear();
-                // this.tempSet.add(nodeId);
               }}
               onParentNodeDoubleClick={(nodeId) => {
                 ////console.log(`${nodeId} double clicked!`)
@@ -3492,14 +3493,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (props) => {      
-      const { match, location, history } = props
-      /*const extURL = location.pathname.replace(match.url, '')
-      const directoryStack = extURL.split('/').filter(i => i)
-      directoryStack.length && this.updateDirectoryStack()*/
-      /*this.setState({
-        directoryStack: extURL.split('/').filter(i => i)
-      })*/
-      // console.log('match', this, match, location.pathname, extURL, extURL.split('/').filter(i => i));
+      const { match, history } = props
       this.history = history
       return (
         <ToolLayoutPanel
