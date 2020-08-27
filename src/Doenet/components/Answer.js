@@ -911,6 +911,37 @@ export default class Answer extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.submittedResponsesComponentType = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          submittedResponsesComponentType: {
+            variablesToCheck: ["submittedResponsesComponentType"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        if (desiredStateVariableValues.submittedResponsesComponentType) {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "submittedResponsesComponentType",
+              value: [...desiredStateVariableValues.submittedResponsesComponentType]
+            }]
+          };
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setStateVariable: "submittedResponsesComponentType",
+              value: []
+            }]
+          };
+        }
+      }
+    }
+
     stateVariableDefinitions.submittedResponses = {
       public: true,
       isArray: true,
@@ -929,9 +960,9 @@ export default class Answer extends InlineComponent {
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          currentResponsesComponentType: {
-            dependencyType: "stateVariableComponentType",
-            variableName: "currentResponses"
+          submittedResponsesComponentType: {
+            dependencyType: "stateVariable",
+            variableName: "submittedResponsesComponentType"
           },
           nSubmittedResponses: {
             dependencyType: "stateVariable",
@@ -944,8 +975,8 @@ export default class Answer extends InlineComponent {
 
         let componentType = [];
 
-        if (globalDependencyValues.currentResponsesComponentType) {
-          componentType.push(...globalDependencyValues.currentResponsesComponentType.slice(0, globalDependencyValues.nSubmittedResponses))
+        if (globalDependencyValues.submittedResponsesComponentType) {
+          componentType.push(...globalDependencyValues.submittedResponsesComponentType.slice(0, globalDependencyValues.nSubmittedResponses))
         }
 
         let essentialSubmittedResponses = {};
@@ -961,7 +992,7 @@ export default class Answer extends InlineComponent {
           }
 
           if (!componentType[ind]) {
-            componentType[ind] = "text"
+            componentType[ind] = "math"
           }
 
         }
@@ -1154,11 +1185,13 @@ export default class Answer extends InlineComponent {
           changedValuesOnly: true,
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
+          }
         }
-      }),
+      },
     }
 
 
@@ -1358,6 +1391,13 @@ export default class Answer extends InlineComponent {
       componentName: this.componentName,
       stateVariable: "submittedResponses",
       value: this.stateValues.currentResponses
+    })
+
+    instructions.push({
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "submittedResponsesComponentType",
+      value: this.state.currentResponses.componentType
     })
 
     instructions.push({

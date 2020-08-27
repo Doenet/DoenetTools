@@ -3,7 +3,9 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Hint extends BlockComponent {
   static componentType = "hint";
 
-  static returnChildLogic (args) {
+  static includeBlankStringChildren = true;
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroInline = childLogic.newLeaf({
@@ -26,24 +28,54 @@ export default class Hint extends BlockComponent {
       propositions: [atLeastZeroInline, atLeastZeroBlock],
       setAsBase: true,
     })
-    
+
     return childLogic;
   }
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      if(this.flags.showHints) {
-        this.renderer = new this.availableRenderers.hint({
-          key: this.componentName,
-        });
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.showHints = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        hide: {
+          dependencyType: "stateVariable",
+          variableName: "hide"
+        },
+        showHintsFlag: {
+          dependencyType: "flag",
+          flagName: "showHints"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            showHints: dependencyValues.showHintsFlag && !dependencyValues.hide
+          }
+        }
       }
     }
-  }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "childIdentity",
+          childLogicName: "inlineOrBlock"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.children.map(x => x.componentName)
+          }
+        }
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
-  
-  static includeBlankStringChildren = true;
 
 }

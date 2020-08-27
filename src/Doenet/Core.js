@@ -1173,15 +1173,15 @@ export default class Core {
     let propertiesPropagated = {};
     for (let property in sharedParameters.propertiesToPropagate) {
       if (property in propertyObject && !propertyObject[property].ignorePropagationFromAncestors) {
-        propertiesPropagated[property] = sharedParameters.propertiesToPropagate[property];
+          propertiesPropagated[property] = sharedParameters.propertiesToPropagate[property];
+        }
       }
-    }
 
     if (Object.keys(propertiesToPropagate).length > 0 || Object.keys(propertiesPropagated).length > 0) {
       if (sharedParameters.propertiesToPropagate) {
         // shallow copy so that changes won't affect ancestors or siblings
         sharedParameters.propertiesToPropagate = Object.assign({}, sharedParameters.propertiesToPropagate);
-        for (let property in propertiesPropagated) {
+        for (let property in propertiesToStopPropagation) {
           delete sharedParameters.propertiesToPropagate[property];
         }
       }
@@ -7395,7 +7395,13 @@ export default class Core {
 
     let component = this._components[componentName];
 
-    // if they recursive dependency values are already computed, just return them
+    if (!component.state[stateVariable]) {
+      // if have optional variables, 
+      // it is possible that stateVariable isn't defined
+      return {};
+    }
+
+    // if the recursive dependency values are already computed, just return them
     if (component.state[stateVariable].recursiveDependencyValues) {
       return component.state[stateVariable].recursiveDependencyValues;
     }
@@ -7465,25 +7471,30 @@ export default class Core {
               if (!changedValuesOnly) {
                 dependencyValuesForCName[vName] = value;
               } else {
-                let sVarObj = this._components[cName].state[vName];
-                if (sVarObj.isArray || sVarObj.isArrayEntry) {
 
-                  let arrayKeys, arrayVName;
-                  if (sVarObj.isArray) {
-                    arrayVName = vName;
-                    arrayKeys = sVarObj.getAllArrayKeys(sVarObj.arraySize);
-                  } else {
-                    arrayVName = sVarObj.arrayStateVariable;
-                    arrayKeys = sVarObj.arrayKeys;
-                  }
-                  if (changedValuesForCName[arrayVName] &&
-                    arrayKeys.some(x => changedValuesForCName[arrayVName].has(x))
-                  ) {
+                let sVarObj = this._components[cName].state[vName];
+
+                // sVarObj could be undefined if vName was an optional variable
+                if (sVarObj) {
+                  if (sVarObj.isArray || sVarObj.isArrayEntry) {
+
+                    let arrayKeys, arrayVName;
+                    if (sVarObj.isArray) {
+                      arrayVName = vName;
+                      arrayKeys = sVarObj.getAllArrayKeys(sVarObj.arraySize);
+                    } else {
+                      arrayVName = sVarObj.arrayStateVariable;
+                      arrayKeys = sVarObj.arrayKeys;
+                    }
+                    if (changedValuesForCName[arrayVName] &&
+                      arrayKeys.some(x => changedValuesForCName[arrayVName].has(x))
+                    ) {
+                      dependencyValuesForCName[vName] = value;
+                    }
+                  } else if (changedValuesForCName[vName]) {
+                    // found change when not array or array entry
                     dependencyValuesForCName[vName] = value;
                   }
-                } else if (changedValuesForCName[vName]) {
-                  // found change when not array or array entry
-                  dependencyValuesForCName[vName] = value;
                 }
 
               }
@@ -12682,8 +12693,8 @@ export default class Core {
         }
       }
 
-      if(!foundArrayInstruction) {
-        if(arrayInstructionInProgress) {
+      if (!foundArrayInstruction) {
+        if (arrayInstructionInProgress) {
           combinedInstructions.push(arrayInstructionInProgress);
           arrayInstructionInProgress = undefined;
         }
@@ -12692,7 +12703,7 @@ export default class Core {
 
     }
 
-    if(arrayInstructionInProgress) {
+    if (arrayInstructionInProgress) {
       combinedInstructions.push(arrayInstructionInProgress);
       arrayInstructionInProgress = undefined;
     }
@@ -12801,7 +12812,7 @@ export default class Core {
           throw Error(`unimplemented dependency type ${dep.dependencyType} in requestComponentChanges`)
         }
 
-      } else if(newInstruction.combinedArray) {
+      } else if (newInstruction.combinedArray) {
 
         let inst = {
           componentName: newInstruction.componentName,
