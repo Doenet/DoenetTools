@@ -201,8 +201,6 @@ export default class Rectangle extends Polygon {
           }
         }
 
-        console.log("specified center inverse", dependencyValuesByKey, instructions);
-
         return {
           success: true,
           instructions
@@ -375,7 +373,7 @@ export default class Rectangle extends Polygon {
 
       inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyValuesByKey,
         dependencyNamesByKey, stateValues }) {
-        console.log("center inverse", desiredStateVariableValues, dependencyValuesByKey, stateValues);
+        // console.log("center inverse", desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
         let instructions = [];
 
@@ -398,8 +396,6 @@ export default class Rectangle extends Polygon {
             desiredValue: desiredV2,
           });
         }
-
-        console.log("center inverse instructions", instructions);
 
         return {
           success: true,
@@ -430,8 +426,6 @@ export default class Rectangle extends Polygon {
         let v0 = dependencyValues.vertex0.evaluate_to_constant();
         let v2 = dependencyValues.vertex2.evaluate_to_constant();
         let width = Math.abs(v0 - v2);
-
-        console.log("width definition", width, v0, v2);
 
         return { newValues: { width } };
       },
@@ -751,8 +745,6 @@ export default class Rectangle extends Polygon {
 
         let vertices = {};
 
-        console.log("definition of vertices", dependencyValuesByKey, arrayKeys, globalDependencyValues);
-
         if (globalDependencyValues.nVerticesSpecified === 0) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // width, height, center
@@ -884,8 +876,8 @@ export default class Rectangle extends Polygon {
         stateValues, workspace, initialChange, dependencyNamesByKey
       }) {
 
-        console.log("inverse definition of vertices of rectangle");
-        console.log(desiredStateVariableValues, dependencyValuesByKey, stateValues);
+        // console.log("inverse definition of vertices of rectangle",
+        //   desiredStateVariableValues, dependencyValuesByKey, stateValues);
 
         // if not draggable, then disallow initial change 
 
@@ -939,13 +931,6 @@ export default class Rectangle extends Polygon {
             }
           }
         }
-
-        console.log("keys:", keyV0X,
-          keyV0Y,
-          keyV2X,
-          keyV2Y)
-
-        console.log("workspace", JSON.parse(JSON.stringify(workspace)));
 
         let instructions = [];
 
@@ -1135,8 +1120,6 @@ export default class Rectangle extends Polygon {
           }
         }
 
-        console.log("rectangle inverse instructions:", instructions);
-
         return {
           success: true,
           instructions
@@ -1202,7 +1185,7 @@ export default class Rectangle extends Polygon {
               updateType: "updateValue",
               componentName: this.componentName,
               stateVariable: "specifiedCenter",
-              value: {0: centerX.simplify()}
+              value: { 0: centerX.simplify() }
             });
           }
           if (centerY !== undefined) {
@@ -1210,7 +1193,7 @@ export default class Rectangle extends Polygon {
               updateType: "updateValue",
               componentName: this.componentName,
               stateVariable: "specifiedCenter",
-              value: {1: centerY.simplify()}
+              value: { 1: centerY.simplify() }
             });
           }
         } else {
@@ -1246,7 +1229,7 @@ export default class Rectangle extends Polygon {
       }
     }
 
-    console.log("updateInstructions", updateInstructions);
+    // console.log("movePolygon updateInstructions", updateInstructions);
 
     this.coreFunctions.requestUpdate({
       updateInstructions

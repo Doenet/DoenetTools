@@ -70,7 +70,7 @@ describe('Rectangle Tag Tests', function () {
     });
   });
 
-  it.only('rectangle with only center and width', () => {
+  it('rectangle with only center and width', () => {
 
     setupScene({
       rectangleProperties: 'center="(-4, 2)" width="-2"',
