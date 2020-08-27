@@ -367,7 +367,7 @@ export default class Rectangle extends Polygon {
           let v0 = dependencyValuesByKey[arrayKey].vertex0;
           let v2 = dependencyValuesByKey[arrayKey].vertex2;
 
-          center[arrayKey] = v0.add(v2).divide(2);
+          center[arrayKey] = v0.add(v2).divide(2).simplify();
         }
 
         return { newValues: { center } };
@@ -1201,16 +1201,16 @@ export default class Rectangle extends Polygon {
             updateInstructions.push({
               updateType: "updateValue",
               componentName: this.componentName,
-              stateVariable: "specifiedCenterX1",
-              value: centerX.simplify()
+              stateVariable: "specifiedCenter",
+              value: {0: centerX.simplify()}
             });
           }
           if (centerY !== undefined) {
             updateInstructions.push({
               updateType: "updateValue",
               componentName: this.componentName,
-              stateVariable: "specifiedCenterX2",
-              value: centerY.simplify()
+              stateVariable: "specifiedCenter",
+              value: {1: centerY.simplify()}
             });
           }
         } else {
