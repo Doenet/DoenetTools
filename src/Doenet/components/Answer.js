@@ -917,6 +917,7 @@ export default class Answer extends InlineComponent {
       entryPrefixes: ["submittedResponse"],
       defaultEntryValue: '\uFF3F',
       essential: true,
+      componentType: "math",
       returnArraySizeDependencies: () => ({
         nSubmittedResponses: {
           dependencyType: "stateVariable",
@@ -978,12 +979,12 @@ export default class Answer extends InlineComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "submittedResponses",
-            value: [...desiredStateVariableValues.submittedResponses]
-          },
-          {
             setDependency: "nSubmittedResponses",
             desiredValue: desiredStateVariableValues.submittedResponses.length
+          },
+          {
+            setStateVariable: "submittedResponses",
+            value: [...desiredStateVariableValues.submittedResponses]
           }
           ]
         };
