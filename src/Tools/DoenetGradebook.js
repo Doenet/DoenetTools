@@ -22,7 +22,7 @@ import { TreeView } from './TreeView/TreeView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import { getCourses, setSelected } from "../imports/courseInfo";
+import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
@@ -501,7 +501,7 @@ export default class DoenetGradebook extends Component {
             assignmentsLoaded: false,
         };
 
-        getCourses(this.loadAssignments);
+        getCourses_CI(this.loadAssignments);
 
         this.assignments = null;
     }

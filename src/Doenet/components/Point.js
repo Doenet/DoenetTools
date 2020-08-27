@@ -583,7 +583,7 @@ export default class Point extends GraphicalComponent {
           }
         } else {
 
-          for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
+          for (let arrayKey of Object.keys(desiredStateVariableValues.unconstrainedXs).reverse()) {
 
             if (!dependencyValuesByKey[arrayKey]) {
               continue;
@@ -714,7 +714,7 @@ export default class Point extends GraphicalComponent {
 
 
         let instructions = [];
-        for (let arrayKey in desiredStateVariableValues.xs) {
+        for (let arrayKey of Object.keys(desiredStateVariableValues.xs).reverse()) {
           if (!dependencyValuesByKey[arrayKey]) {
             continue;
           }
