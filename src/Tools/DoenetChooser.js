@@ -3052,7 +3052,7 @@ return <div>
       customizedCoursesTreeChildrenInfo[key].rootId = 'root';
       customizedCoursesTreeChildrenInfo[key].title = customizedCoursesTreeChildrenInfo[key]['courseCode'];
       customizedCoursesTreeChildrenInfo[key].type = 'content';
-      //customizedCoursesTreeParentInfo['root']['childContent'].push(key);
+      customizedCoursesTreeParentInfo['root']['childContent'].push(key);
     }
 
 
@@ -3231,8 +3231,6 @@ const customizedTreeNodeItem = (nodeItem, item) => {
               containerId={treeContainerId}
               containerType={treeContainerType}
               loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-              // parentsInfo={{ ...customizedCoursesTreeChildrenInfo, ...customizedCoursesTreeParentInfo }}
-              // childrenInfo={{}}
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
