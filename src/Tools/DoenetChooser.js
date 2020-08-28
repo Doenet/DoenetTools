@@ -2716,7 +2716,6 @@ class DoenetChooser extends Component {
   }
 
   render() {
-    console.log(this.state.directoryStack)
     if (!this.courses_loaded || !this.assignments_and_headings_loaded) {
       return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         <SpinningLoader />
