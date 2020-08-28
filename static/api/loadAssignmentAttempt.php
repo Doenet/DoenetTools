@@ -54,10 +54,12 @@ if (!isset($_REQUEST["assignmentId"])) {
     $result = $conn->query($sql); 
     $response_arr = array();
 
-
+    $assignment_attempted_flag = true;
+    
     if ($result->num_rows == 1){
         $row = $result->fetch_assoc();
         $response_arr = array(
+            "assignmentAttempted" => 1,
             "doenetML"=>$row['doenetML'],
             "stateVariables"=>$row['stateVariables'],
             "variant"=>$row['variant'],
@@ -75,8 +77,45 @@ if (!isset($_REQUEST["assignmentId"])) {
         echo json_encode($response_arr);
         
     } else if ($result->num_rows == 0) {
-        http_response_code(404);
-        echo "Database Retrieval Error: No attempt with the assignmentId: '$assignmentId', userId: '$userId', and attemptNumber: '$attemptNumber'!";
+
+        $sql = "SELECT
+        c.doenetML,
+        ua.creditOverride
+        FROM user_assignment AS ua
+        LEFT JOIN assignment AS a
+        ON a.assignmentId = '$assignmentId'
+        LEFT JOIN content AS c
+        ON a.contentId = c.contentId
+        WHERE ua.userId = '$userId'
+        AND ua.assignmentId = '$assignmentId'; 
+        ";
+
+        $result = $conn->query($sql); 
+        if($result->num_rows == 0){
+            echo "grave error";
+        }
+        else{
+            $row = $result->fetch_assoc();
+
+            $response_arr = array(
+                "assignmentAttempted" => 0,
+                "doenetML"=>$row['doenetML'],
+                "stateVariables"=> array(),
+                "variant"=>array(),
+                "assignmentCredit"=>0,
+                "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
+                "attemptCredit"=>0,
+                "attemptCreditOverride"=>0,
+                "timestamp"=> NULL, 
+            );
+
+            // set response code - 200 OK
+            http_response_code(200);
+
+            // make it json format
+            echo json_encode($response_arr);
+        }
+        
     } else {
         http_response_code(500);
         echo "Database Retrieval Error: Too Many Attempts Returned!";

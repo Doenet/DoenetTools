@@ -299,6 +299,7 @@ class GradebookOverview extends Component {
 
             this.overviewData = {}
             for (let userId in this.students) { // initialize object
+                
                 this.overviewData[userId] = {
                     grade: (this.students)[userId].grade,
                     assignments: {}
@@ -319,11 +320,14 @@ class GradebookOverview extends Component {
                 this.overviewData[userId].assignments[assignmentId] = credit
             }
 
+            //console.log(this.overviewData);
+            
             this.setState({ overviewLoaded: true })
         }).catch(err => console.log(err));
     }
 
     get assignmentsTable() {
+        
         if (this._assignmentsTable !== null) {
             return this._assignmentsTable;
         }
@@ -350,6 +354,7 @@ class GradebookOverview extends Component {
             )
         }
 
+
         this._assignmentsTable.headers.push(
             {
                 Header: "Weighted Credt",
@@ -369,7 +374,9 @@ class GradebookOverview extends Component {
 
 
         this._assignmentsTable.rows = [];
+
         for (let userId in this.students) {
+            
             let firstName = this.students[userId].firstName,
                 lastName = this.students[userId].lastName,
                 credit = this.students[userId].courseCredit,
@@ -379,18 +386,23 @@ class GradebookOverview extends Component {
 
             let row = {}
 
-            row["name"] = firstName + " " + lastName + "(" +  username + ")"
-
+            row["name"] = firstName + " " + lastName
+            console.log("here", firstName);
+            
             for (let i in this.assignments) {
                 let { assignmentId, assignmentName } = this.assignments[i]
-                row[assignmentId] = (this.overviewData[username].assignments[assignmentId]) * 100 + "%"
+                row[assignmentId] = (this.overviewData[userId].assignments[assignmentId]) * 100 + "%"
             }
 
             row["weight"] = credit
             row["grade"] = grade
 
+            
             this._assignmentsTable.rows.push(row);
         }
+
+        console.log("assignment table", this._assignmentsTable);
+        
 
         return this._assignmentsTable
     }
@@ -420,6 +432,7 @@ class GradebookAssignmentView extends Component {
 
         const url = new URL(window.location.href);
         this.assignmentId = url.searchParams.get("assignmentId");
+        
         this.assignmentIdPayload = { params: { assignmentId:this.assignmentId } };
 
         
@@ -445,22 +458,26 @@ class GradebookAssignmentView extends Component {
 
     //TODO: FIX THIS AND USE assignment data from parent
     loadGradebookEnrollment() {
+        
         axios.get("/api/loadGradebookEnrollment.php",this.courseIdPayload).then(resp => {
             let data = resp.data
 
             this.students = {}
             for (let row of data) {
-                let [username,
+                
+                let [userId,
                     firstName,
                     lastName] = row;
-
-                this.students[username] = {
+                
+                
+                this.students[userId] = {
                     firstName: firstName,
                     lastName: lastName,
                 };
             }
-
-                this.getAssignmentData();
+            
+            
+            this.getAssignmentData();
         }).catch(err => console.log((err.response).toString()));
 
        
@@ -473,11 +490,12 @@ class GradebookAssignmentView extends Component {
     }
 
     getAssignmentData() {
+        
+        
         axios.get('/api/loadGradebookAssignmentAttempts.php',this.assignmentIdPayload)
         .then(resp => {
             let data = resp.data
-
-
+            
             this.assignmentData = {}
             for (let userId in this.students) { // initialize object
                 this.assignmentData[userId] = {
@@ -486,7 +504,12 @@ class GradebookAssignmentView extends Component {
                 }
             }
 
+            
+            console.log("datt", data);
+            
             for (let row of data) {
+                console.log("row", row);
+                
                 let [userId,
                     attemptNumber,
                     assignmentCredit,
@@ -543,26 +566,26 @@ class GradebookAssignmentView extends Component {
 
         this._attemptsTable.rows = [];
         
-        for (let username in this.students) {
+        for (let userId in this.students) {
             let { firstName,
-                lastName } = this.students[username];
+                lastName } = this.students[userId];
             
             let row = {};
 
-            row["student"] = firstName + " " + lastName + "(" + username + ")"
+            row["student"] = firstName + " " + lastName
 
             for (let i = 1; i <= maxAttempts; i++) {
-                let attemptCredit = this.assignmentData[username].attempts[i];
+                let attemptCredit = this.assignmentData[userId].attempts[i];
 
                 row[("a"+i)] = 
-                <Link to={`/attempt/?assignmentId=${this.state.assignmentId}&username=${username}&attemptNumber=${i}`}>
+                <Link to={`/attempt/?assignmentId=${this.state.assignmentId}&userId=${userId}&attemptNumber=${i}`}>
                 {
                     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
                 }
                 </Link>
             }
 
-            row["grade"] = this.assignmentData[username].grade ? this.assignmentData[username].grade : ""
+            row["grade"] = this.assignmentData[userId].grade ? this.assignmentData[userId].grade : ""
             
             this._attemptsTable.rows.push(row);
         }
@@ -625,7 +648,6 @@ class GradebookAttemptView extends Component {
         this.credit = null;
         this.attemptCredit = null;
         this.timestamp = null;
-
         this.getDoenetML();
     }
 
@@ -636,11 +658,11 @@ class GradebookAttemptView extends Component {
             userId:this.state.userId,
             attemptNumber:this.state.attemptNumber,
          } };
+
         axios.get('/api/loadAssignmentAttempt.php',assignmentAttemptPayload)
         .then(resp => {
 
             let data = resp.data;
-
             this.doenetML = data.doenetML;
             this.stateVariables = data.stateVariables;
             this.variant = data.variant;
@@ -652,6 +674,9 @@ class GradebookAttemptView extends Component {
 
             this.setState({ attemptLoaded: true });
         }).catch(err => console.log((err.response).toString()));
+
+
+        
     }
 
     render() {
@@ -661,6 +686,7 @@ class GradebookAttemptView extends Component {
                 <p>If this takes too long you can try refreshing the page.</p>
             </div>);
         }
+        //
         const url = new URL(window.location.href);
         url.searchParams.get("attemptNumber")
 
@@ -686,6 +712,8 @@ class GradebookAttemptView extends Component {
                 <p>If this takes too long you can try refreshing the page.</p>
             </div>);
         }
+
+        {/* TODO: check for attempts taken */}
 
         return(<p>
             Doenet Viewer Here
@@ -720,7 +748,8 @@ export default class DoenetGradebook extends Component {
     //this.courseId
     //this.assignments
     loadAssignments = (courseListArray,selectedCourseObj) => {
-        this.courseId = selectedCourseObj.courseId;
+        // this.courseId = selectedCourseObj.courseId;
+        this.courseId = 'aI8sK4vmEhC5sdeSP3vNW';
         this.courseLongName = selectedCourseObj.longname;
         const courseIdPayload = { params: { courseId:this.courseId } }
         axios.get('/api/loadAssignments.php', courseIdPayload)
