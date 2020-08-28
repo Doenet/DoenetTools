@@ -2853,7 +2853,7 @@ const TreeNodeItem = ({title, icon}) => {
 };
 
 
-          this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
+      this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}
           containerType={treeContainerType}
@@ -2872,7 +2872,6 @@ const TreeNodeItem = ({title, icon}) => {
           leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
           openedNodes={this.treeOpenedNodes}
-          // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
           treeStyles={{
             specialChildNode: {
               "title": { color: "#2675ff" },
@@ -2881,10 +2880,7 @@ const TreeNodeItem = ({title, icon}) => {
             specialParentNode: {
               "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
             },
-            // parentNode: {
-            //   "node": { background: "rgba(58,172,144)" },
-            // },
-            emptyParentExpanderIcon: <span></span>,
+            emptyParentExpanderIcon: {opened: <span style={{padding: "0 10px"}}></span>, closed: <span style={{padding: "0 10px"}}></span>}
           }}
           onLeafNodeClick={(id, type) => {
             // get path to item
