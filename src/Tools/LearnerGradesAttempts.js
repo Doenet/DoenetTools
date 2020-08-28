@@ -4,10 +4,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 // import parse from 'csv-parse';
 // import nanoid from 'nanoid';
+import DoenetViewer from "./DoenetViewer";
 
-import { Link } from "react-router-dom";
 
-export default function LearnerGrades(params){
+
+export default function LearnerGradesAttempts(params){
+  console.log(params)
   const [process, setProcess] = useState("Loading");//array containing column names
   console.log("process",process);
   const [courseId,setCourseId] = useState("");
@@ -46,9 +48,9 @@ export default function LearnerGrades(params){
       // const link = 
       gradeRows.push(<tr id={"gradeRow"+i}>
         <td>{obj.title}</td>
-        <td><Link to="/grades/attempts/" params={{test: "yep"}}>{earned}</Link></td>
+        <td>{earned}</td>
         <td>{totalPoints}</td>
-        <td><Link to="/grades/attempts/">{percent}</Link></td>
+        <td>{percent}</td>
         </tr>);
     }
     let gradeTable = <table>

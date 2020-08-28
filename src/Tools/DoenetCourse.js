@@ -19,6 +19,7 @@ import styled from "styled-components";
 import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 import Enrollment from './Enrollment';
 import LearnerGrades from './LearnerGrades';
+import LearnerGradesAttempts from './LearnerGradesAttempts';
 
 export default function DoenetCourse(props){
   
@@ -53,6 +54,7 @@ export default function DoenetCourse(props){
           <Switch>
               <Route sensitive exact path="/enrollment/" render={(props) => (<Enrollment selectedCourse={selectedCourse}/> )} />
               <Route sensitive exact path="/grades/" render={(props) => (<LearnerGrades selectedCourse={selectedCourse}/>)} />
+              <Route sensitive exact path="/grades/attempts/" render={(props) => (<LearnerGradesAttempts selectedCourse={selectedCourse} />)} />
               {/* <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} /> */}
           </Switch>
           {/* <Enrollment selectedCourse={selectedCourse}/> */}
