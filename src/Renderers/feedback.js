@@ -9,7 +9,7 @@ export default class Feedback extends DoenetRenderer {
       return null;
     }
 
-    return <aside id={this.componentName} style={{ backgroundColor: "#ebebeb" }} >
+    return <aside id={this.componentName} style={{ backgroundColor: "#ebebeb", padding: "1em"}} >
       <a name={this.componentName} />
       {this.children}
     </aside>

@@ -427,14 +427,15 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
-  <p><feedback>
+  <section>
+  <feedback>
     <condition>
       <copy prop="creditAchieved" tname="_answer1" /> != 1
       and <copy prop="responsehasbeensubmitted" tname="_answer1" />
     </condition>
-    Your response <em><copy prop="submittedresponse" tname="_answer1" /></em> is incorrect.
+    <p>Your response <em><copy prop="submittedresponse" tname="_answer1" /></em> is incorrect.</p>
   </feedback>
-  </p>
+  </section>
   `}, "*");
     });
 
@@ -447,37 +448,27 @@ describe('Feedback Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/_p2').invoke('text').then((text) => {
-        expect(text.trim()).equal('')
-      });
+      cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Enter incorrect answer in")
       cy.get(textinputAnchor).clear().type(`wrong{enter}`);
       cy.get(textinputAnchor).should('have.value', 'wrong');
-      cy.get('#\\/_p2').invoke('text').then((text) => {
-        expect(text.trim()).equal('Your response wrong is incorrect.')
-      });
+      cy.get('#\\/_section1 p').should('have.text', `Your response wrong is incorrect.`)
 
       cy.log("Enter correct answer")
       cy.get(textinputAnchor).clear().type(`hello there{enter}`);
       cy.get(textinputAnchor).should('have.value', 'hello there');
-      cy.get('#\\/_p2').invoke('text').then((text) => {
-        expect(text.trim()).equal('')
-      });
+      cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Enter blank answer")
       cy.get(textinputAnchor).clear().type("{enter}");
       cy.get(textinputAnchor).should('have.value', '');
-      cy.get('#\\/_p2').invoke('text').then((text) => {
-        expect(text.trim()).equal('Your response  is incorrect.')
-      });
+      cy.get('#\\/_section1 p').should('have.text', `Your response  is incorrect.`)
 
       cy.log("Enter another incorrect answer in")
       cy.get(textinputAnchor).clear().type(`bye{enter}`);
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get('#\\/_p2').invoke('text').then((text) => {
-        expect(text.trim()).equal('Your response bye is incorrect.')
-      });
+      cy.get('#\\/_section1 p').should('have.text', `Your response bye is incorrect.`)
 
     })
   });

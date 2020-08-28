@@ -58,6 +58,32 @@ export default class Hint extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.open = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition() {
+        return {
+          useEssentialOrDefaultValue: {
+            open: {
+              variablesToCheck: ["open"]
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "open",
+            value: desiredStateVariableValues.open
+          }]
+        }
+      }
+    }
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
@@ -77,5 +103,49 @@ export default class Hint extends BlockComponent {
     return stateVariableDefinitions;
 
   }
+
+  revealHint() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: true
+      }],
+      event: {
+        verb: "viewed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
+  }
+
+  closeHint() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: false
+      }],
+      event: {
+        verb: "closed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
+  }
+
+  actions = {
+    revealHint: this.revealHint.bind(this),
+    closeHint: this.closeHint.bind(this),
+  }
+
 
 }

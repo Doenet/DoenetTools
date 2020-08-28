@@ -1171,13 +1171,17 @@ export default class Core {
     // properties propagated from ancestors then skip this step
     // (Property will still propagate onto this component's descendants)
     let propertiesPropagated = {};
+    let propertiesToStopPropagation = {};
     for (let property in sharedParameters.propertiesToPropagate) {
-      if (property in propertyObject && !propertyObject[property].ignorePropagationFromAncestors) {
+      if (property in propertyObject) {
+        propertiesToStopPropagation[property] = true;
+        if (!propertyObject[property].ignorePropagationFromAncestors) {
           propertiesPropagated[property] = sharedParameters.propertiesToPropagate[property];
         }
       }
+    }
 
-    if (Object.keys(propertiesToPropagate).length > 0 || Object.keys(propertiesPropagated).length > 0) {
+    if (Object.keys(propertiesToPropagate).length > 0 || Object.keys(propertiesToStopPropagation).length > 0) {
       if (sharedParameters.propertiesToPropagate) {
         // shallow copy so that changes won't affect ancestors or siblings
         sharedParameters.propertiesToPropagate = Object.assign({}, sharedParameters.propertiesToPropagate);
@@ -7360,6 +7364,7 @@ export default class Core {
     let args = {
       dependencyValues,
       changes, usedDefault,
+      componentName: component.componentName
     }
 
     let stateVarObj = component.state[stateVariable];
@@ -12069,7 +12074,7 @@ export default class Core {
       }
     });
 
-    if (this.externalFunctions.submitResponse) {
+    if (updatesNeeded.itemScoreChanges.length > 0) {
       if (event) {
         if (!event.context) {
           event.context = {};
@@ -12080,11 +12085,13 @@ export default class Core {
         event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
       }
       for (let itemNumber of updatesNeeded.itemScoreChanges) {
-        this.externalFunctions.submitResponse({
-          itemNumber,
-          itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
-          callBack: this.submitResponseCallBack,
-        });
+        if (this.externalFunctions.submitResponse) {
+          this.externalFunctions.submitResponse({
+            itemNumber,
+            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
+            callBack: this.submitResponseCallBack,
+          });
+        }
         if (event) {
           event.context.itemCreditAchieved[Number(itemNumber) + 1] = this.document.stateValues.itemCreditAchieved[itemNumber]
         }
