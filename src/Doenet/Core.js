@@ -4372,22 +4372,6 @@ export default class Core {
 
     // create the definition, etc., functions for the array stsate variable
     if (stateVarObj.entireArrayAtOnce) {
-      // for returnDependencies
-      // just add varNamesIncludingArrayKeyStateVariable as a dependency
-      // as that state variable is looked up in the definition
-      let originalReturnDependencies = stateVarObj.returnDependencies.bind(stateVarObj);
-
-      stateVarObj.returnDependencies = function (args) {
-
-        let dependencies = originalReturnDependencies(args);
-        dependencies.__array_varnames_include_array_key = {
-          dependencyType: "stateVariable",
-          variableName: stateVarObj.varNamesIncludingArrayKeyStateVariable
-        };
-
-        return dependencies
-      }
-
 
       stateVarObj.getCurrentFreshness = function ({ freshnessInfo }) {
         return { fresh: { [stateVariable]: freshnessInfo.arrayFresh } }
@@ -4541,22 +4525,12 @@ export default class Core {
           // to tie into making sure array size is a dependency, below
           stateVarObj.dependencyNames.global.push("__array_size");
 
-          // to tie into making sure __array_varnames_include_array_key is a dependency, below
-          stateVarObj.dependencyNames.global.push("__array_varnames_include_array_key");
-
         }
 
         // make sure array size is a dependency
         dependencies.__array_size = {
           dependencyType: "stateVariable",
           variableName: stateVarObj.arraySizeStateVariable
-        };
-
-        // mark varNamesIncludingArrayKeyStateVariable as a dependency
-        // as that state variable is looked up in the definition
-        dependencies.__array_varnames_include_array_key = {
-          dependencyType: "stateVariable",
-          variableName: stateVarObj.varNamesIncludingArrayKeyStateVariable
         };
 
         // console.log(`resulting dependencies for ${stateVariable} of ${component.componentName}`)
@@ -5897,8 +5871,7 @@ export default class Core {
 
       ancestorResults.componentName = component.componentName;
 
-      // TODO: why is stateVariables an array of arrays?
-      ancestorResults.stateVariables = [allStateVariablesAffected];
+      ancestorResults.stateVariables = allStateVariablesAffected;
       ancestorResults.dependencyName = dependencyName;
 
       for (let ancestorName of ancestorResults.ancestorsExamined) {
@@ -6970,11 +6943,13 @@ export default class Core {
           }
         } else {
           let varNamesStateVar = component.state[varName].varNamesIncludingArrayKeyStateVariable;
-          let varNamesByArrayKey = component.stateValues[varNamesStateVar];
-          for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
-            let additionalVarNamesChanged = varNamesByArrayKey[arrayKeyChanged];
-            if (additionalVarNamesChanged) {
-              arrayVarNamesChanged.push(...additionalVarNamesChanged)
+          if (component.state[varNamesStateVar].isResolved) {
+            let varNamesByArrayKey = component.stateValues[varNamesStateVar];
+            for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
+              let additionalVarNamesChanged = varNamesByArrayKey[arrayKeyChanged];
+              if (additionalVarNamesChanged) {
+                arrayVarNamesChanged.push(...additionalVarNamesChanged)
+              }
             }
           }
         }
@@ -7283,9 +7258,20 @@ export default class Core {
         dep.dependencyType === "stateVariableComponentType"
       ) {
         let depComponent = this.components[dep.downstreamComponentName];
+        let stateVarObj = depComponent.state[dep.mappedDownstreamVariableName];
+
         // call getter to make sure component type is set
-        depComponent.state[dep.mappedDownstreamVariableName].value;
-        value = depComponent.state[dep.mappedDownstreamVariableName].componentType;
+        stateVarObj.value;
+        value = stateVarObj.componentType;
+
+        if (stateVarObj.isArray) {
+          // if array, use componentType from wrapping components, if exist
+          if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
+            let wrapCs = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1];
+            value = wrapCs[0];
+          }
+        }
+
         // if have valuesChanged, then must have dep.originalDownstreamVariableName
         // so don't bother checking if it exists
         if (dep.valuesChanged && dep.valuesChanged[dep.originalDownstreamVariableName].changed) {
@@ -12626,7 +12612,92 @@ export default class Core {
     // console.log("inverseResult");
     // console.log(inverseResult);
 
+    let combinedInstructions = [];
+
+    let arrayInstructionInProgress;
+
     for (let newInstruction of inverseResult.instructions) {
+      let foundArrayInstruction = false;
+
+      if (newInstruction.setDependency) {
+        let dependencyName = newInstruction.setDependency;
+
+        let dep = this.downstreamDependencies[component.componentName][stateVariable][dependencyName];
+        if (["componentStateVariable", "stateVariable", "parentStateVariable"].includes(dep.dependencyType)) {
+
+          let depStateVarObj = this._components[dep.downstreamComponentName].state[dep.mappedDownstreamVariableName]
+
+          if (depStateVarObj.isArrayEntry || depStateVarObj.isArray) {
+
+            let arrayStateVariable = depStateVarObj.isArrayEntry ? depStateVarObj.arrayStateVariable : dep.mappedDownstreamVariableName;
+
+            if (arrayInstructionInProgress && !(
+              arrayInstructionInProgress.componentName === dep.downstreamComponentName
+              && arrayInstructionInProgress.stateVariable === arrayStateVariable
+              && arrayInstructionInProgress.shadowedVariable === newInstruction.shadowedVariable
+              && arrayInstructionInProgress.treatAsInitialChange === newInstruction.treatAsInitialChange
+            )) {
+              // arrayInstructionInProgress didn't match,
+              // so add it to combined instructions
+              combinedInstructions.push(arrayInstructionInProgress);
+              arrayInstructionInProgress = undefined;
+            }
+
+            // haven't implemented combining when have additional dependency values
+            if (!newInstruction.additionalDependencyValues) {
+              foundArrayInstruction = true;
+
+              if (!arrayInstructionInProgress) {
+                arrayInstructionInProgress = {
+                  combinedArray: true,
+                  componentName: dep.downstreamComponentName,
+                  stateVariable: arrayStateVariable,
+                  shadowedVariable: newInstruction.shadowedVariable,
+                  treatAsInitialChange: newInstruction.treatAsInitialChange,
+                  desiredValue: {}
+                }
+              }
+
+              if (depStateVarObj.isArrayEntry) {
+
+                let arrayKeys = depStateVarObj.arrayKeys;
+
+                if (arrayKeys.length === 1) {
+                  arrayInstructionInProgress.desiredValue[arrayKeys[0]] = newInstruction.desiredValue
+                } else {
+                  for (let [ind, arrayKey] of arrayKeys.entries()) {
+                    arrayInstructionInProgress.desiredValue[arrayKey] = newInstruction.desiredValue[ind];
+                  }
+                }
+              } else {
+                Object.assign(arrayInstructionInProgress.desiredValue, newInstruction.desiredValue);
+              }
+
+
+            }
+
+
+
+          }
+        }
+      }
+
+      if(!foundArrayInstruction) {
+        if(arrayInstructionInProgress) {
+          combinedInstructions.push(arrayInstructionInProgress);
+          arrayInstructionInProgress = undefined;
+        }
+        combinedInstructions.push(newInstruction);
+      }
+
+    }
+
+    if(arrayInstructionInProgress) {
+      combinedInstructions.push(arrayInstructionInProgress);
+      arrayInstructionInProgress = undefined;
+    }
+
+    for (let newInstruction of combinedInstructions) {
       if (newInstruction.setStateVariable) {
         // if (newInstruction.setStateVariable !== stateVariable) {
         //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not state variable itself.`);
@@ -12691,7 +12762,6 @@ export default class Core {
             stateVariable: dep.mappedDownstreamVariableName,
             value: newInstruction.desiredValue,
             overrideFixed: instruction.overrideFixed,
-            arrayKey: newInstruction.arrayKey,
             shadowedVariable: newInstruction.shadowedVariable,
           };
           if (newInstruction.additionalDependencyValues) {
@@ -12731,6 +12801,22 @@ export default class Core {
           throw Error(`unimplemented dependency type ${dep.dependencyType} in requestComponentChanges`)
         }
 
+      } else if(newInstruction.combinedArray) {
+
+        let inst = {
+          componentName: newInstruction.componentName,
+          stateVariable: newInstruction.stateVariable,
+          value: newInstruction.desiredValue,
+          overrideFixed: instruction.overrideFixed,
+          shadowedVariable: newInstruction.shadowedVariable,
+        };
+
+        this.requestComponentChanges({
+          instruction: inst,
+          initialChange: newInstruction.treatAsInitialChange === true,
+          workspace, updatesNeeded,
+          newStateVariableValues
+        });
       } else if (newInstruction.deferSettingDependency) {
         let dependencyName = newInstruction.deferSettingDependency;
 

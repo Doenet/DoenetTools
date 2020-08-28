@@ -417,7 +417,9 @@ export default class Circle extends Curve {
 
         let updateCenterShadow = false;
 
-        for (let arrayKey in desiredStateVariableValues.prescribedCenter) {
+        // process instructions in reverse order 
+        // so that the x-coordinates is processed last and takes precedence
+        for (let arrayKey of Object.keys(desiredStateVariableValues.prescribedCenter).reverse()) {
 
           if (dependencyValuesByKey[arrayKey].centerChild &&
             dependencyValuesByKey[arrayKey].centerChild.length === 1
