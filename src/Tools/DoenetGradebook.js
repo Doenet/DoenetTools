@@ -715,6 +715,12 @@ class GradebookAttemptView extends Component {
 
         {/* TODO: check for attempts taken */}
 
+        if(newAttemptNumber == 0){
+            return (<p>
+                No Attempts Made
+            </p>);
+        }
+
         return(<p>
             Doenet Viewer Here
 
