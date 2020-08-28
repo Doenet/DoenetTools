@@ -318,7 +318,6 @@ class DoenetChooser extends Component {
       new Promise(resolve => this.addContentToFolder([urlId], ["url"], currentFolderId, () => { resolve() })), // add url to current folder
     ])
       .then(() => {
-        alert("DONE")
         this.loadUserUrls(() => {
           this.setState({
             selectedItems: [urlId],
@@ -739,7 +738,6 @@ class DoenetChooser extends Component {
 
   addContentToFolder = (childIds, childType, folderId, callback = (() => { })) => {
     let operationType = "insert";
-    alert(folderId)
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
@@ -789,7 +787,7 @@ class DoenetChooser extends Component {
     // filter selected repos in childIds
     let filteredChildIds = [], filteredChildType = [];
     for (let i = 0; i < childIds.length; i++) {
-      if (childType[i] == "folder" && itemDataInfo[childIds[i]]["isRepo"]) {
+      if (childType[i] == "folder" && itemDataInfo[childIds[i]] && itemDataInfo[childIds[i]]["isRepo"]) {
         const repoTitle = itemDataInfo[childIds[i]]["title"];
         this.displayToast(`Failed to move '${repoTitle}': Item of type Repository must be at root directory`);
       } else {
