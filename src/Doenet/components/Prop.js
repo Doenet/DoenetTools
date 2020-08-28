@@ -8,13 +8,25 @@ export default class Prop extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
+    let atMostOneString = childLogic.newLeaf({
       name: "atMostOneString",
       componentType: 'string',
       comparison: 'atMost',
       number: 1,
-      setAsBase: true,
     });
+
+    let exactlyOneText = childLogic.newLeaf({
+      name: "exactlyOneText",
+      componentType: 'text',
+      number: 1,
+    });
+
+    childLogic.newOperator({
+      name: "stringXorText",
+      operator: "xor",
+      propositions: [exactlyOneText, atMostOneString],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
@@ -26,14 +38,14 @@ export default class Prop extends BaseComponent {
 
     stateVariableDefinitions.variableName = {
       returnDependencies: () => ({
-        stringChild: {
+        stringOrTextChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneString",
+          childLogicName: "stringXorText",
           variableNames: ["value"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringChild.length === 0) {
+        if (dependencyValues.stringOrTextChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               variableName: { variablesToCheck: "variableName" }
@@ -42,7 +54,7 @@ export default class Prop extends BaseComponent {
         } else {
           return {
             newValues: {
-              variableName: dependencyValues.stringChild[0].stateValues.value
+              variableName: dependencyValues.stringOrTextChild[0].stateValues.value.trim()
             }
           }
         }

@@ -3,6 +3,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
   useReplacementsForComposites = false, compositeClass,
   includeNonActiveChildren = false,
   includePropertyChildren = false,
+  skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
   definingChildrenFirst = false,
   namesToIgnore = [],
@@ -89,6 +90,42 @@ export function gatherDescendants({ ancestor, descendantClasses,
 
   }
 
+  if (skipOverAdapters) {
+    for (let [ind, child] of childrenToCheck.entries()) {
+      if (child.adaptedFrom && !namesToIgnore.includes(child.componentName)) {
+        // found an adapter
+
+        namesToIgnore = [
+          ...namesToIgnore,
+          child.componentName
+        ];
+
+
+        let adaptedLocation = childrenToCheck.map(x => x.componentName).indexOf(child.adaptedFrom.componentName);
+        if (adaptedLocation === -1) {
+          // if adapted component isn't in childrenToCheck
+          // then replace adapter with adapted component
+          childrenToCheck.splice(ind, 1, child.adaptedFrom);
+        } else {
+          // if both adapter and adapted component are in childrenToCheck, then
+          // as long as the adapted component isn't a defining child
+          // with definingChildrenFirst 
+          // (in which case the adapted component would already be in the right spot)
+          // switch the locations of the adapted component and the adapter
+          // Rationale: the adapter is in the location that one would expect
+
+          if (!(definingChildrenFirst && ancestor.definingChildren
+            .map(x => x.componentName).includes(child.adaptedFrom.componentName)
+          )) {
+            // swap locations
+            childrenToCheck.splice(ind, 1, child.adaptedFrom);
+            childrenToCheck.splice(adaptedLocation, 1, child);
+          }
+        }
+
+      }
+    }
+  }
 
   if (namesToIgnore.length > 0) {
     childrenToCheck = childrenToCheck.filter(x => !namesToIgnore.includes(x.componentName));
@@ -111,6 +148,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
         useReplacementsForComposites, compositeClass,
         includeNonActiveChildren,
         includePropertyChildren,
+        skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
         definingChildrenFirst,
         init: false,

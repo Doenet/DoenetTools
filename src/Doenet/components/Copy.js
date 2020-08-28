@@ -393,12 +393,10 @@ export default class Copy extends CompositeComponent {
         if (stateValues.propVariableObjs !== null) {
           for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
             if (stateValues.componentIdentitiesForProp && stateValues.componentIdentitiesForProp[ind]) {
-              if (!propVariableObj.componentType) {
-                dependencies[`replacementComponentType${ind}`] = {
-                  dependencyType: "componentStateVariableComponentType",
-                  componentIdentity: stateValues.componentIdentitiesForProp[ind],
-                  variableName: propVariableObj.varName,
-                }
+              dependencies[`replacementComponentType${ind}`] = {
+                dependencyType: "componentStateVariableComponentType",
+                componentIdentity: stateValues.componentIdentitiesForProp[ind],
+                variableName: propVariableObj.varName,
               }
               if (propVariableObj.isArrayEntry) {
                 dependencies[`targetArray${ind}`] = {
@@ -455,9 +453,9 @@ export default class Copy extends CompositeComponent {
         let propDependenciesSetUp = true;
 
         for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
-          let componentType = propVariableObj.componentType;
+          let componentType = dependencyValues[`replacementComponentType${ind}`];
           if (!componentType) {
-            componentType = dependencyValues[`replacementComponentType${ind}`];
+            componentType = propVariableObj.componentType;
             if (!componentType) {
               continue;
             }
@@ -469,7 +467,7 @@ export default class Copy extends CompositeComponent {
             // (Could have undefined if, for example, have unsatisfied
             // childlogic for a component.  Just skip such entries here
             // so that can get to the error message describing child logic)
-            componentType = componentType.filter(x => x);
+            componentType = componentType.filter(x => x).map(x => x.toLowerCase());
 
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
@@ -508,6 +506,7 @@ export default class Copy extends CompositeComponent {
 
             }
 
+            componentType = componentType.toLowerCase();
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             replacementClasses.push(...Array(arrayLength).fill(componentClass));
             componentType = Array(arrayLength).fill(componentType);
@@ -552,11 +551,13 @@ export default class Copy extends CompositeComponent {
             }
 
             // console.log(`arrayLength for ${propVariableObj.varName}: ${arrayLength}`)
+            componentType = componentType.toLowerCase();
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             replacementClasses.push(...Array(arrayLength).fill(componentClass));
             componentType = Array(arrayLength).fill(componentType);
             potentialReplacementClasses.push(componentClass)
           } else {
+            componentType = componentType.toLowerCase();
             replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
             potentialReplacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
           }
@@ -1489,7 +1490,8 @@ export default class Copy extends CompositeComponent {
 
       for (let ind = 0; ind < Math.min(nNewReplacements, nOldReplacements); ind++) {
         if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByReplacement[ind].length ||
-          workspace.propVariablesCopiedByReplacement[ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
+          workspace.propVariablesCopiedByReplacement[ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i]) ||
+          component.replacements[ind].componentType !== newSerializedReplacements[ind].componentType
         ) {
 
           let replacementInstruction = {
@@ -2022,7 +2024,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
     }
   }
 
-  // console.log("serializedReplacements")
+  // console.log(`serializedReplacements for ${component.componentName}`)
   // console.log(serializedReplacements)
 
   return { serializedReplacements, propVariablesCopiedByReplacement };

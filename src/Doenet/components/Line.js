@@ -670,7 +670,9 @@ export default class Line extends GraphicalComponent {
 
           let instructions = [];
 
-          for (let arrayKey in desiredStateVariableValues.points) {
+          // process in reverse order so x-coordinate and first point
+          // are processed last and take precedence
+          for (let arrayKey of Object.keys(desiredStateVariableValues.points).reverse()) {
 
             let [pointInd, dim] = arrayKey.split(",");
             let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)

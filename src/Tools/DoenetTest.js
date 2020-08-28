@@ -10,23 +10,23 @@ class DoenetTest extends Component {
     this.updateAfterMessage = this.updateAfterMessage.bind(this);
     this.newAttempt = this.newAttempt.bind(this);
 
-    
-
     this.updateNumber = 1;
     this.assignmentId = "myassignmentid";
 
+    let ignoreDatabase = false;
+
     let attemptNumberIsReady = false;
-    if (this.assignmentId){
-      const payload = { 
+    if (this.assignmentId && !ignoreDatabase) {
+      const payload = {
         assignmentId: this.assignmentId,
       }
       axios.post('/api/processAttemptNumber.php', payload)
         .then(resp => {
-          console.log('processAttemptNumber-->>>',resp.data);
+          console.log('processAttemptNumber-->>>', resp.data);
           this.attemptNumber = resp.data;
-          this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
+          this.setState({ attemptNumberIsReady: true, requestedVariant: { index: this.attemptNumber } })
         });
-    }else{
+    } else {
       attemptNumberIsReady = true;
     }
 
@@ -36,10 +36,11 @@ class DoenetTest extends Component {
       showCorrectness: true,
       doenetML: doenetDefaultML,
       readOnly: false,
-      ignoreDatabase: false,
+      ignoreDatabase,
       attemptNumberIsReady,
-      requestedVariant:undefined,
-      solutionDisplayMode: "button"
+      requestedVariant: undefined,
+      solutionDisplayMode: "button",
+      showFeedbacK: true,
     };
 
     window.onmessage = this.updateAfterMessage;
@@ -65,23 +66,23 @@ class DoenetTest extends Component {
 
   //   this.setState({ error: error, errorInfo: info });
   // }
-  newAttempt(){
-    const payload = { 
+  newAttempt() {
+    const payload = {
       assignmentId: this.assignmentId,
-      newAttempt:true,
+      newAttempt: true,
     }
     axios.post('/api/processAttemptNumber.php', payload)
       .then(resp => {
-        console.log('processAttemptNumber NEW ATTEMPT-->>>',resp.data);
+        console.log('processAttemptNumber NEW ATTEMPT-->>>', resp.data);
         this.attemptNumber = resp.data;
-      this.updateNumber++; //Need to run core again
-        this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
+        this.updateNumber++; //Need to run core again
+        this.setState({ attemptNumberIsReady: true, requestedVariant: { index: this.attemptNumber } })
       });
   }
 
   render() {
 
-    if (!this.state.attemptNumberIsReady){
+    if (!this.state.attemptNumberIsReady) {
       return <p>Loading attempt number</p>
     }
 
@@ -95,8 +96,8 @@ class DoenetTest extends Component {
 
 
     return (<React.Fragment>
-      <div style={{backgroundColor:"#e3e3e3"}}><h3>Test Tool</h3>
-      <label>Attempt Number: {this.attemptNumber} <button onClick={()=>this.newAttempt()}>New Attempt</button></label>
+      <div style={{ backgroundColor: "#e3e3e3" }}><h3>Test Tool</h3>
+        <label>Attempt Number: {this.attemptNumber} <button onClick={() => this.newAttempt()}>New Attempt</button></label>
       </div>
       <DoenetViewer
         key={"doenetviewer" + this.updateNumber}
@@ -106,6 +107,7 @@ class DoenetTest extends Component {
           showCorrectness: this.state.showCorrectness,
           readOnly: this.state.readOnly,
           solutionDisplayMode: this.state.solutionDisplayMode,
+          showFeedback: this.state.showFeedbacK,
         }}
         attemptNumber={this.attemptNumber}
         assignmentId={this.assignmentId}

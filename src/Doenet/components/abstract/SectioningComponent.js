@@ -10,6 +10,7 @@ export default class SectioningComponent extends BlockComponent {
     let properties = super.createPropertiesObject(args);
     properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
+    properties.sectionWideCheckWork = { default: false, forRenderer: true, propagateToDescendants: true };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
@@ -199,6 +200,52 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.answerDescendants = {
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+      }
+    }
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            justSubmitted:
+              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
+    }
+
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
@@ -207,6 +254,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
+      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalProperties: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -269,6 +317,58 @@ export default class SectioningComponent extends BlockComponent {
 
       }
     }
+
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      defaultValue: 0,
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          aggregateScores: {
+            dependencyType: "stateVariable",
+            variableName: "aggregateScores"
+          }
+        }
+        if (stateValues.aggregateScores) {
+          dependencies.scoredDescendants = {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchievedIfSubmit" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchievedIfSubmit"
+            }
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (!dependencyValues.aggregateScores) {
+          return {
+            newValues: {
+              creditAchievedIfSubmit: 0,
+            }
+          }
+        }
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchievedIfSubmit = creditSum / totalWeight;
+
+        return { newValues: { creditAchievedIfSubmit } }
+
+      }
+    }
+
 
     stateVariableDefinitions.selectedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
@@ -344,6 +444,31 @@ export default class SectioningComponent extends BlockComponent {
 
 
     return stateVariableDefinitions;
+  }
+
+  actions = {
+    submitAllAnswers: this.submitAllAnswers.bind(this)
+  }
+
+  submitAllAnswers() {
+
+    this.coreFunctions.requestRecordEvent({
+      verb: "submitted",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: {
+        creditAchieved: this.stateValues.creditAchievedIfSubmit
+      }
+
+    })
+    for (let answer of this.stateValues.answerDescendants) {
+      this.coreFunctions.requestAction({
+        componentName: answer.componentName,
+        actionName: "submitAnswer"
+      })
+    }
   }
 
   static setUpVariant({

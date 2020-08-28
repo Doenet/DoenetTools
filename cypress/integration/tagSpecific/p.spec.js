@@ -27,9 +27,12 @@ describe('P Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>math in paragraph: <math simplify>x+x</math></p>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('find mathjax rendered math in paragraph');
     cy.get('p#\\/_p1').find('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -41,9 +44,12 @@ describe('P Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <p><text>Hello</text> <math>x</math></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('p#\\/_p1').invoke('text').should('contain', 'Hello x')
 
