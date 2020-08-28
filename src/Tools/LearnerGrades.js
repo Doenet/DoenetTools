@@ -41,12 +41,12 @@ export default function LearnerGrades(params){
     for (let [i,obj] of learnerAssignmentsObj.entries()){
       let credit = (obj.creditOverride === null) ? obj.credit : obj.creditOverride;
       const totalPoints = obj.totalPointsOrPercent;
-      const earned = Math.floor(credit * totalPoints);
-      const percent = Math.floor(credit * 100) + '%';
+      const earned = Math.round(credit * totalPoints * 100) / 100;
+      const percent = Math.round(credit * 10000)/100 + '%';
       // const link = 
       gradeRows.push(<tr id={"gradeRow"+i}>
         <td>{obj.title}</td>
-        <td><Link to="/grades/attempts/" params={{test: "yep"}}>{earned}</Link></td>
+        <td><Link to={`/grades/attempts/?assignmentId=${obj.assignmentId}`} >{earned}</Link></td>
         <td>{totalPoints}</td>
         <td><Link to="/grades/attempts/">{percent}</Link></td>
         </tr>);

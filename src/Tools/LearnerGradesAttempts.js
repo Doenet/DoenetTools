@@ -5,11 +5,15 @@ import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 // import parse from 'csv-parse';
 // import nanoid from 'nanoid';
 import DoenetViewer from "./DoenetViewer";
+import { useParams } from 'react-router';
 
 
 
 export default function LearnerGradesAttempts(params){
-  console.log(params)
+  console.log("learner grades attemps params:",params)
+  // console.log("history",params.history)
+  // const myparams = useParams();
+  // console.log('myparams',myparams)
   const [process, setProcess] = useState("Loading");//array containing column names
   console.log("process",process);
   const [courseId,setCourseId] = useState("");
