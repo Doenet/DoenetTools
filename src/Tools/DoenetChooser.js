@@ -1064,10 +1064,10 @@ class DoenetChooser extends Component {
       })
   }
 
-  jumpToDirectory = (directoryData) => {
+  jumpToDirectory = (directoryStack) => {
     this.setState({
-      directoryStack: directoryData,
-      selectedItems: directoryData,
+      directoryStack: directoryStack,
+      selectedItems: directoryStack,
       selectedItemsType: ["folder"],
     })
   }
@@ -2716,6 +2716,7 @@ class DoenetChooser extends Component {
   }
 
   render() {
+    console.log(this.state.directoryStack)
     if (!this.courses_loaded || !this.assignments_and_headings_loaded) {
       return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         <SpinningLoader />
@@ -2866,7 +2867,7 @@ const TreeNodeItem = ({title, icon}) => {
           onDraggableDragOver={this.onTreeDraggableDragOver}
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop}
-          directoryData={[...this.state.directoryStack]}
+          directoryStack={[...this.state.directoryStack]}
           parentNodeItem={TreeNodeItem}
           leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
@@ -2977,7 +2978,7 @@ return <div>
         onDraggableDragOver={this.onTreeDraggableDragOver}
         onDropEnter={this.onTreeDropEnter}
         onDrop={this.onTreeDrop}
-        directoryData={[...this.state.splitPanelDirectoryStack]}
+        directoryStack={[...this.state.splitPanelDirectoryStack]}
         specialNodes={this.tempSet}
         treeStyles={{
           specialChildNode: {
@@ -3340,7 +3341,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
           addContentToRepo={this.addContentToRepo}               
           removeContentFromCourse={this.removeContentFromCourse} 
           removeContentFromFolder={this.removeContentFromFolder} 
-          directoryData={this.state.directoryStack}              
+          directoryStack={this.state.directoryStack}              
           selectedItems={this.state.selectedItems}               
           selectedItemsType={this.state.selectedItemsType}       
           renameFolder={this.renameFolder}                       
@@ -3378,7 +3379,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
         addContentToRepo={this.addContentToRepo}               // optional
         removeContentFromCourse={this.removeContentFromCourse}  // optional
         removeContentFromFolder={this.removeContentFromFolder}  // optional                  
-        directoryData={this.state.splitPanelDirectoryStack}               // optional
+        directoryStack={this.state.splitPanelDirectoryStack}               // optional
         selectedItems={this.state.splitPanelSelectedItems}                // optional
         selectedItemsType={this.state.splitPanelSelectedItemsType}        // optional
         renameFolder={this.renameFolder}                        // optional
