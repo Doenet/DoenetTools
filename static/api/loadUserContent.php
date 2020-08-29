@@ -44,7 +44,7 @@ FROM content AS c
 LEFT JOIN content_branch cb ON c.branchId = cb.branchId
 LEFT JOIN folder_content fc ON fc.childId = c.branchId
 WHERE c.branchId IN ('".implode("','",$childContentArray)."') AND c.removedFlag=0 AND cb.isPinned='0'
-ORDER BY branchId, publishDate DESC;
+ORDER BY title ASC;
 ";
 
 if (!$userId) {
