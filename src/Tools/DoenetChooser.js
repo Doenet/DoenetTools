@@ -1407,6 +1407,8 @@ class DoenetChooser extends Component {
 
     this.setState({
       currentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+      selectedItems: [draggedId],
+      selectedItemsType: [draggedType]
     })
     this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
     this.validDrop = false;
@@ -1690,7 +1692,8 @@ class DoenetChooser extends Component {
       urlInfo: data["url"],
       courseId: containerId
     })
-
+    this.tempSet.clear();
+    this.tempSet.add(this.state.currentDraggedObject.id);
     // update headings
     parentDataSource[this.state.currentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
     if (this.state.currentDraggedObject.type == "header") parentDataSource[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
@@ -2769,6 +2772,8 @@ class DoenetChooser extends Component {
     this.buildCourseList();
     this.buildLeftNavPanel();
     this.buildTopToolbar();
+  
+    console.log(this.courseInfo)
 
     // setup mainSection to be chooser / CourseForm
     this.mainSection;
