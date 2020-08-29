@@ -24,60 +24,85 @@ import LearnerGradesAttempts from './LearnerGradesAttempts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import MenuDropDown from '../imports/MenuDropDown.js';
+import Overlay from "../imports/Overlay";
+import {CourseAssignments,CourseAssignmentControls} from "./courseAssignments";
 
 export default function DoenetCourse(props) {
   const [selectedCourse, setSelectedCourse] = useState({});
-
+  const [studentInstructor,setStudentInstructor] = useState("Student")
+  const [modalOpen, setModalOpen] = useState(false)
+  const [assignmentObj,setAssignmentObj] = useState({title:"test title"})
+  const [assignmentId,setAssignmentId] = useState("");
   useEffect(() => {
     getCourses_CI((courseListArray, selectedCourseObj) => { setSelectedCourse(selectedCourseObj) })
   }, [])
-
-  const menuStudentInstructor = <MenuDropDown 
+  let menuStudentInstructor = null;
+  if (selectedCourse.role === "Instructor"){
+    menuStudentInstructor = <MenuDropDown 
     position={'left'}  
     offset={-20} 
     showThisMenuText={"Student"} 
     options={[
-      {id:"Student", label:"Student", callBackFunction:()=>{alert('Student')}},
-      {id:"Instructor", label:"Instructor", callBackFunction:()=>{alert('Instructor')}},
+      {id:"Student", label:"Student", callBackFunction:()=>{setStudentInstructor("Student")}},
+      {id:"Instructor", label:"Instructor", callBackFunction:()=>{setStudentInstructor("Instructor")}},
   ]} />;
-  return (
+  }
+  function overlayOnClose() {
+    setModalOpen(false)
+    // const { location: { pathname = '' } } = this.history
+    // this.history.push(`${pathname}`)
+  }
+  let leftNavDrives = ['overview','syllabus','grades','assignments']
+  if (studentInstructor === "Instructor"){ leftNavDrives.push('enrollment'); }
+
+  return (<>
+    <Overlay 
+             open={modalOpen} 
+             name="Assignment"
+             header= {assignmentObj.title}
+             body={ <p>Assignment -- {assignmentId}</p> }
+          onClose={()=>overlayOnClose()} 
+          />
+    {modalOpen}
     <Router>
       <ToolLayout toolName="Course" headingTitle={selectedCourse.longname} extraMenus={[menuStudentInstructor]}>
         <ToolLayoutPanel
-          // menuControls={menuControls}
           panelName="Left Nav"
         >
           <React.Fragment>
-            <CourseTreeView />
-            {/*<div style={{ display: "flex", flexDirection: "column" }}>
-              <Link to="/overview">Overview</Link>
-              <Link to="/syllabus">Syllabus</Link>
-              <Link to="/grades">Grades</Link>
-              <Link to="/assignments">Assignments</Link>
-              <Link to="/enrollment">Enrollment</Link>
-  </div>*/}
+            <CourseTreeView leftNavDrives={leftNavDrives}/>
           </React.Fragment>
         </ToolLayoutPanel>
         <Switch>
-          <Route sensitive exact path="/overview" render={() => <h1>Overview</h1>} />
-          <Route sensitive exact path="/syllabus" render={() => <h1>Syllabus</h1>} />
-          <Route sensitive exact path="/grades" render={(props) => (<LearnerGrades selectedCourse={selectedCourse} />)} />
-          <Route sensitive exact path="/assignments" render={() => <h1>Assignments</h1>} />
-          <Route sensitive exact path="/enrollment" render={(props) => (<Enrollment selectedCourse={selectedCourse} />)} />
-          {/* <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} /> */}
+          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel><h1>Overview</h1></ToolLayoutPanel>} />
+          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel><h1>Syllabus</h1></ToolLayoutPanel>} />
+          <Route sensitive exact path="/grades" render={(props) => (<LearnerGrades selectedCourse={selectedCourse} studentInstructor={studentInstructor}/>)} />
+          <Route sensitive exact path="/grades/attempt" render={(props) => (<LearnerGradesAttempts selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
+          <Route sensitive exact path="/assignments" render={() => <CourseAssignments  selectedCourse={selectedCourse} studentInstructor={studentInstructor} setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
+          <Route sensitive exact path="/enrollment" render={(props) => (<Enrollment selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
         </Switch>
-        {/* <Enrollment selectedCourse={selectedCourse}/> */}
-        {/* <LearnerGrades selectedCourse={selectedCourse}/> */}
-        <ToolLayoutPanel
-          // menuControlsViewermenuControls={menuControlsViewer}
+
+        <Switch>
+          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel />} />
+          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel />} />
+          <Route sensitive exact path="/grades" render={() => <ToolLayoutPanel />} />
+          <Route sensitive exact path="/grades/attempt" render={() => <ToolLayoutPanel />} />
+          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId} />} />
+          <Route sensitive exact path="/enrollment" render={() => <ToolLayoutPanel />} />
+        </Switch>
+
+        {/* <ToolLayoutPanel
           panelName="Rt. Nav">
           <p>Assignment Control Panel</p>
-        </ToolLayoutPanel>
+        </ToolLayoutPanel> */}
       </ToolLayout>
 
     </Router>
+    </>
   );
 }
+
+
 
 const treeNodeItem = (nodeItem) => {
   const { title, icon } = nodeItem
@@ -98,7 +123,7 @@ const treeNodeItem = (nodeItem) => {
   </div>
 };
 
-const CourseTreeView = () => {
+const CourseTreeView = (props) => {
   const parentsInfo = {
     root: {
       childContent: [],
@@ -109,7 +134,8 @@ const CourseTreeView = () => {
       type: "folder"
     }
   };
-  ['overview','syllabus','grades','assignments', 'enrollment', ].forEach(title => {
+
+  props.leftNavDrives.forEach(title => {
     parentsInfo[title] = {
       childContent: [],
       childFolders: [],
@@ -210,5 +236,5 @@ const CourseTreeView = () => {
     onParentNodeClick={(nodeId) => {
      // console.log(nodeId)
     }}
-  />)
+      />)
 }
