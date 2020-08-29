@@ -31,7 +31,7 @@ showHints,
 showCorrectness,
 proctorMakesAvailable
 FROM assignment
-WHERE assignmentId = '4P7WK6V4HvxS9fIT8IY4i'
+WHERE assignmentId = '$assignmentId'
 ";
 
 $result = $conn->query($sql);
