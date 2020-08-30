@@ -10,7 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-//TODO: Make sure of instructor
+//TODO: Make sure of instructor or user
 
 $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
