@@ -12,6 +12,16 @@ export default class Hint extends DoenetRenderer {
       return null;
     }
 
+    let childrenToRender = this.children;
+
+    let title;
+    if (this.doenetSvData.titleDefinedByChildren) {
+      title = this.children[0]
+      childrenToRender = this.children.slice(1); // remove title
+    } else {
+      title = this.doenetSvData.title;
+    }
+
     let icon = <FontAwesomeIcon icon={lightOff} />
     let info = null;
     let infoBlockStyle = { display: "none" };
@@ -19,7 +29,7 @@ export default class Hint extends DoenetRenderer {
 
     if (this.doenetSvData.open) {
       icon = <FontAwesomeIcon icon={lightOn} />
-      info = this.children;
+      info = childrenToRender;
       infoBlockStyle = {
         display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#fcfcfc",
       };
@@ -29,7 +39,7 @@ export default class Hint extends DoenetRenderer {
     }
     return <aside id={this.componentName} key={this.componentName}>
       <a name={this.componentName} />
-      <span style={{ display: "block", margin: "4px 4px 0px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#ebebeb", cursor: "pointer" }} onClick={onClickFunction}>{icon} Hint </span>
+      <span style={{ display: "block", margin: "4px 4px 0px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#ebebeb", cursor: "pointer" }} onClick={onClickFunction}>{icon} {title} </span>
       <span style={infoBlockStyle}>
         {info}
       </span>

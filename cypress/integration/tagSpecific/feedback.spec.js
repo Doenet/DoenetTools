@@ -485,16 +485,16 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <p name="feedback1"><copy prop="feedback" tname="_award1" /></p>
+  <aside name="feedback1" title=""><copy prop="feedback" tname="_award1" /></aside>
   
   <p>Award 2 feedback:</p>
-  <p name="feedback2"><copy prop="feedback" tname="_award2" /></p>
+  <aside name="feedback2" title=""><copy prop="feedback" tname="_award2" /></aside>
 
   <p>Award 3 feedback:</p>
-  <p name="feedback3"><copy prop="feedback" tname="_award3" /></p>
+  <aside name="feedback3" title=""><copy prop="feedback" tname="_award3" /></aside>
 
   <p>Answer feedbacks:</p>
-  <p name="feedback4"><copy prop="feedbacks" tname="_answer1" /></p>
+  <aside name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
   `}, "*");
     });
 
@@ -618,7 +618,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <p name="feedbacks"><copy prop="feedbacks" tname="_answer1" /></p>
+  <aside name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
   `}, "*");
     });
 

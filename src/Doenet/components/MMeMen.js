@@ -5,7 +5,7 @@ export class M extends InlineComponent {
   static componentType = "m";
   static rendererType = "math";
 
-  // used when creating new component via adapter or ref prop
+  // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
 
   static returnChildLogic(args) {

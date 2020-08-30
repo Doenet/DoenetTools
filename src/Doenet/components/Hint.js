@@ -8,6 +8,13 @@ export default class Hint extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
+    let atMostOneTitle = childLogic.newLeaf({
+      name: "atMostOneTitle",
+      componentType: "title",
+      comparison: "atMost",
+      number: 1,
+    })
+
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",
       componentType: '_inline',
@@ -22,10 +29,16 @@ export default class Hint extends BlockComponent {
       number: 0,
     });
 
-    childLogic.newOperator({
+    let inlineOrBlock = childLogic.newOperator({
       name: 'inlineOrBlock',
       operator: "or",
       propositions: [atLeastZeroInline, atLeastZeroBlock],
+    })
+
+    childLogic.newOperator({
+      name: "titleAndContent",
+      operator: "and",
+      propositions: [atMostOneTitle, inlineOrBlock],
       setAsBase: true,
     })
 
@@ -84,11 +97,50 @@ export default class Hint extends BlockComponent {
       }
     }
 
+
+    stateVariableDefinitions.titleDefinedByChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.title = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneTitle",
+          variableNames: ["text"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.titleChild.length === 0) {
+          return { newValues: { title: "Hint" } };
+        } else {
+          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+        }
+      }
+    }
+
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
           dependencyType: "childIdentity",
-          childLogicName: "inlineOrBlock"
+          childLogicName: "titleAndContent"
         }
       }),
       definition: function ({ dependencyValues }) {

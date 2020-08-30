@@ -1,8 +1,9 @@
 import BlockComponent from './abstract/BlockComponent';
-import ConditionalContent from './ConditionalContent';
 
 export default class Feedback extends BlockComponent {
   static componentType = "feedback";
+
+  static primaryStateVariableForDefinition = "feedbackText";
 
   static createPropertiesObject() {
     let properties = super.createPropertiesObject();
@@ -55,7 +56,7 @@ export default class Feedback extends BlockComponent {
 
         let hide;
         if (dependencyValues.conditionChild.length === 0) {
-          hide = true;
+          hide = false;
         } else {
           hide = !dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
         }
@@ -64,6 +65,17 @@ export default class Feedback extends BlockComponent {
       }
     };
 
+    // for case when created from a copy prop
+    stateVariableDefinitions.feedbackText = {
+      forRenderer: true,
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          feedbackText: { variablesToCheck: ["feedbackText"] }
+        }
+      })
+    }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

@@ -1328,7 +1328,7 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedbacktext",
+      componentType: "feedback",
       isArray: true,
       entireArrayAtOnce: true,
       entryPrefixes: ["feedback"],

@@ -11,6 +11,7 @@ export default class Feedback extends DoenetRenderer {
 
     return <aside id={this.componentName} style={{ backgroundColor: "#ebebeb", padding: "1em"}} >
       <a name={this.componentName} />
+      {this.doenetSvData.feedbackText}
       {this.children}
     </aside>
 

@@ -489,7 +489,6 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
-        console.log({ createSubmitAllButton, createSubmitAllButtonOnAnswer })
         return { newValues: { createSubmitAllButton, createSubmitAllButtonOnAnswer } }
       }
     }
