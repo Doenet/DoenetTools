@@ -5,7 +5,7 @@
 // import query from '../queryParamFuncs';
 // import DoenetBox from '../Tools/DoenetBox';
 // import DoenetAssignmentTree from "./DoenetAssignmentTree"
-
+import DoenetEditor from './DoenetEditor';
 import {
   HashRouter as Router,
   Switch,
@@ -55,12 +55,29 @@ export default function DoenetCourse(props) {
   let leftNavDrives = ['overview','syllabus','grades','assignments']
   if (studentInstructor === "Instructor"){ leftNavDrives.push('enrollment'); }
 
+  let overlaycontent = (<ToolLayout hideHeader={true}>
+    <ToolLayoutPanel  panelName="left nav">
+    <div >Left Nav</div>
+    </ToolLayoutPanel>
+    <ToolLayoutPanel  panelName="Assignment">
+    <div >Assignment {assignmentId}</div>
+    </ToolLayoutPanel>
+    </ToolLayout> )
+  if (studentInstructor === "Instructor"){
+    console.log("assignmentObj!!!!!!!!!",assignmentObj)
+  overlaycontent = (<DoenetEditor hideHeader={true} 
+        branchId={"6soU1bOi77NmxYQz8nfnf"}
+        contentId={"18029ced9d03f2629636c4fdbdf5b6da76ecc624d51250863638f617045bb8be"}
+        headerTitleChange={"title here"}/> )
+  }
+  // panelHeaderControls={[contextPanelMenu]}
   return (<>
     <Overlay 
              open={modalOpen} 
              name="Assignment"
              header= {assignmentObj.title}
-             body={ <p>Assignment -- {assignmentId}</p> }
+            //  body={ <p>Assignment -- {assignmentId}</p> }
+             body={ overlaycontent }
           onClose={()=>overlayOnClose()} 
           />
     {modalOpen}
@@ -87,7 +104,7 @@ export default function DoenetCourse(props) {
           <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel />} />
           <Route sensitive exact path="/grades" render={() => <ToolLayoutPanel />} />
           <Route sensitive exact path="/grades/attempt" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId} />} />
+          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
           <Route sensitive exact path="/enrollment" render={() => <ToolLayoutPanel />} />
         </Switch>
 

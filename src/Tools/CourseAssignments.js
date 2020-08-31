@@ -12,6 +12,8 @@ import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { save } from 'math-expressions';
 
 export function CourseAssignments(props) {
+
+
  
   return (<ToolLayoutPanel>
     <div>
@@ -136,7 +138,10 @@ export function CourseAssignmentControls(props) {
     return (<ToolLayoutPanel> <div> <h1>No Assignment Selected</h1> </div> </ToolLayoutPanel>)
   }
   if (props.studentInstructor === "Student"){
-    return (<ToolLayoutPanel>
+    return (<ToolLayoutPanel panelHeaderControls={[
+      <button key='start'
+      onClick={()=>{props.setAssignmentId('Assignment1');props.setModalOpen(true)}}
+      >Start Assignment</button>]}>
       <div>
       <h1>{title}</h1>
       <p>Due: {dueDate}</p>
@@ -151,7 +156,10 @@ export function CourseAssignmentControls(props) {
 
 
 
-  return (<ToolLayoutPanel>
+  return (<ToolLayoutPanel panelHeaderControls={[
+  <button key='edit'
+  onClick={()=>{props.setAssignmentId('Assignment1');props.setModalOpen(true)}}
+  >Edit Assignment</button>]}>
     <div>
     <h1>{title} Controls</h1>
 
@@ -254,6 +262,7 @@ export function CourseAssignmentControls(props) {
           onChange={(e)=>{(e.target.checked) ? setProctorMakesAvailable(true):setProctorMakesAvailable(false); setChanged(true); saveToDB(true);}}
           />
         </div>
+        
     </div>
   
   </ToolLayoutPanel>)
