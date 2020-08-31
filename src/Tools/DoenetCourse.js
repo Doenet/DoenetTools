@@ -26,6 +26,7 @@ import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import MenuDropDown from '../imports/MenuDropDown.js';
 import Overlay from "../imports/Overlay";
 import {CourseAssignments,CourseAssignmentControls} from "./courseAssignments";
+import LearnerAssignment from './LearnerAssignment';
 
 export default function DoenetCourse(props) {
   const [selectedCourse, setSelectedCourse] = useState({});
@@ -55,16 +56,14 @@ export default function DoenetCourse(props) {
   let leftNavDrives = ['overview','syllabus','grades','assignments']
   if (studentInstructor === "Instructor"){ leftNavDrives.push('enrollment'); }
 
-  let overlaycontent = (<ToolLayout hideHeader={true}>
-    <ToolLayoutPanel  panelName="left nav">
-    <div >Left Nav</div>
-    </ToolLayoutPanel>
-    <ToolLayoutPanel  panelName="Assignment">
-    <div >Assignment {assignmentId}</div>
-    </ToolLayoutPanel>
-    </ToolLayout> )
-  if (studentInstructor === "Instructor"){
+  //Assume student assignment in overlay
+  let overlaycontent = (<LearnerAssignment 
+    assignmentId={assignmentId}
+    assignmentObj={assignmentObj}
+  />)
     console.log("assignmentObj!!!!!!!!!",assignmentObj)
+
+  if (studentInstructor === "Instructor"){
   overlaycontent = (<DoenetEditor hideHeader={true} 
         branchId={"6soU1bOi77NmxYQz8nfnf"}
         contentId={"18029ced9d03f2629636c4fdbdf5b6da76ecc624d51250863638f617045bb8be"}
@@ -76,11 +75,10 @@ export default function DoenetCourse(props) {
              open={modalOpen} 
              name="Assignment"
              header= {assignmentObj.title}
-            //  body={ <p>Assignment -- {assignmentId}</p> }
              body={ overlaycontent }
           onClose={()=>overlayOnClose()} 
           />
-    {modalOpen}
+    {/* {modalOpen} */}
     <Router>
       <ToolLayout toolName="Course" headingTitle={selectedCourse.longname} extraMenus={[menuStudentInstructor]}>
         <ToolLayoutPanel
@@ -104,7 +102,7 @@ export default function DoenetCourse(props) {
           <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel />} />
           <Route sensitive exact path="/grades" render={() => <ToolLayoutPanel />} />
           <Route sensitive exact path="/grades/attempt" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
+          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls setAssignmentObj={setAssignmentObj} selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} modalOpen={modalOpen} setAssignmentId = {setAssignmentId}/>} />
           <Route sensitive exact path="/enrollment" render={() => <ToolLayoutPanel />} />
         </Switch>
 

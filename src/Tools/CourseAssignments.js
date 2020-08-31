@@ -24,11 +24,11 @@ export function CourseAssignments(props) {
   onClick={()=>{props.setAssignmentId('4P7WK6V4HvxS9fIT8IY42')}}
   >Quiz 1</p>
   <p 
-  onDoubleClick={()=>{props.setAssignmentId('Assignment1');props.setModalOpen(true)}}
+  onDoubleClick={()=>{props.setAssignmentId('4P7WK6V4HvxS9fIT8IY4i');props.setModalOpen(true)}}
   onClick={()=>{props.setAssignmentId('4P7WK6V4HvxS9fIT8IY4i')}}
   >Assignment1</p>
   <p 
-  onDoubleClick={()=>{props.setAssignmentId('Assignment2');props.setModalOpen(true)}}
+  onDoubleClick={()=>{props.setAssignmentId('yfP_Pslr-WC1D8g2rEqhF');props.setModalOpen(true)}}
   onClick={()=>{props.setAssignmentId('yfP_Pslr-WC1D8g2rEqhF')}}
   >Assignment2</p>
   student or Instructor = {props.studentInstructor}
@@ -61,7 +61,7 @@ export function CourseAssignmentControls(props) {
 
 
   useEffect(() => {
-    if (loadedAssignmentId !== props.assignmentId){
+    if (loadedAssignmentId !== props.assignmentId && !props.modalOpen){
       if (props.assignmentId === ""){
         setLoading(false);
       }else{
@@ -72,7 +72,8 @@ export function CourseAssignmentControls(props) {
           .then(resp=>{
             // console.log("get assignment settings",resp.data)
             //TODO: test if resp.data failed
-
+            console.log('HERE!!!')
+            props.setAssignmentObj(resp.data)
             setTitle(resp.data.title);
             setDueDate(resp.data.dueDate);
             setAssignedDate(resp.data.assignedDate);
