@@ -41,6 +41,7 @@ import LineSegment from './components/LineSegment';
 import Polyline from './components/Polyline';
 import Polygon from './components/Polygon';
 import Triangle from './components/Triangle';
+import Rectangle from './components/Rectangle';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
@@ -126,6 +127,7 @@ import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
+import ConsiderAsResponses from './components/ConsiderAsResponses';
 
 
 //Extended
@@ -190,6 +192,7 @@ const componentTypeArray = [
   Line, LineSegment, Polyline,
   Polygon,
   Triangle,
+  Rectangle,
   Circle,
   Parabola,
   Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
@@ -252,6 +255,7 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   Div,
+  ConsiderAsResponses,
 ];
 
 const componentTypeArrayExtended = [

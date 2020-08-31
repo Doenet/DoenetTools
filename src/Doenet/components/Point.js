@@ -16,6 +16,7 @@ export default class Point extends GraphicalComponent {
   // Instead have a array state variable of maths for each component
   // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
+  static stateVariableForPropertyValue = "coords";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -582,7 +583,7 @@ export default class Point extends GraphicalComponent {
           }
         } else {
 
-          for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
+          for (let arrayKey of Object.keys(desiredStateVariableValues.unconstrainedXs).reverse()) {
 
             if (!dependencyValuesByKey[arrayKey]) {
               continue;
@@ -713,7 +714,7 @@ export default class Point extends GraphicalComponent {
 
 
         let instructions = [];
-        for (let arrayKey in desiredStateVariableValues.xs) {
+        for (let arrayKey of Object.keys(desiredStateVariableValues.xs).reverse()) {
           if (!dependencyValuesByKey[arrayKey]) {
             continue;
           }
@@ -826,6 +827,12 @@ export default class Point extends GraphicalComponent {
       }
 
     }
+
+    // currently value is used by answer to get variable for response
+    stateVariableDefinitions.value = {
+      isAlias: true,
+      targetVariableName: "coords"
+    };
 
     stateVariableDefinitions.constraintUsed = {
       public: true,

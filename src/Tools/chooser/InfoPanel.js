@@ -204,7 +204,7 @@ class InfoPanel extends Component {
             <button 
               disabled={!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")}
               onClick={() => {
-                this.props.grantRepoAccess({repoId: selectedItemId, email: this.addUserEmail[selectedItemId], callback: (resp) => {
+                this.props.grantRepoAccess({repoId: selectedItemId, email: this.addUserEmail[selectedItemId], owner: false, callback: (resp) => {
                   this.addUserEmail = {};
                 }})
             }}>Add</button>
