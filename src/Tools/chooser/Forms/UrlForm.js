@@ -57,7 +57,6 @@ class UrlForm extends React.Component {
         description: this.state.description,
         usesDoenetAPI: this.state.usesDoenetAPI
       }, () => {
-        this.props.handleBack();
       });
     } else {
       this.props.saveUrl({
