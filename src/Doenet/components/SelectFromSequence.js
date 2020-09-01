@@ -8,7 +8,7 @@ export default class SelectFromSequence extends Sequence {
 
   static assignNamesToReplacements = true;
 
-  // static selectedVariantVariable = "selectedValues";
+  static createsVariants = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -18,7 +18,7 @@ export default class SelectFromSequence extends Sequence {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let sequenceBase = childLogic.baseLogic;
@@ -77,11 +77,12 @@ export default class SelectFromSequence extends Sequence {
 
     stateVariableDefinitions.selectedValues = {
       immutable: true,
+      additionalStateVariablesDefined: ["selectedIndices"],
       returnDependencies: ({ sharedParameters }) => ({
-        essentialSelectedValues: {
-          dependencyType: "potentialEssentialVariable",
-          variableName: "selectedValues",
-        },
+        // essentialSelectedValues: {
+        //   dependencyType: "potentialEssentialVariable",
+        //   variableName: "selectedValues",
+        // },
         numberToSelect: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
@@ -137,8 +138,36 @@ export default class SelectFromSequence extends Sequence {
       definition: makeSelection,
     }
 
-    let originalReturnDependencies = stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies;
-    stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies = function () {
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      returnDependencies: () => ({
+        selectedIndices: {
+          dependencyType: "stateVariable",
+          variableName: "selectedIndices"
+        },
+      }),
+      definition({ dependencyValues }) {
+
+        let selectedVariantInfo = {
+          indices: dependencyValues.selectedIndices
+        };
+
+        return { newValues: { selectedVariantInfo } }
+
+      }
+    }
+
+    let originalReturnDependencies = stateVariableDefinitions.readyToExpand.returnDependencies;
+    stateVariableDefinitions.readyToExpand.returnDependencies = function () {
       let deps = originalReturnDependencies();
 
       deps.selectedValues = {
@@ -167,7 +196,8 @@ export default class SelectFromSequence extends Sequence {
       }
       let instruction = {
         operation: "assignName",
-        name
+        name,
+        uniqueIdentifier: ind.toString()
       }
 
       // if selectfromsequence is specified to be hidden
@@ -490,21 +520,24 @@ export default class SelectFromSequence extends Sequence {
 
 
 function makeSelection({ dependencyValues }) {
+  // console.log(`make selection`)
+  // console.log(dependencyValues)
 
-  if (dependencyValues.essentialSelectedValues !== undefined) {
-    return {
-      makeEssential: ["selectedValues"],
-      newValues: {
-        selectedValues: dependencyValues.essentialSelectedValues
-      }
-    }
-  }
+  // if (dependencyValues.essentialSelectedValues !== null) {
+  //   return {
+  //     makeEssential: ["selectedValues"],
+  //     newValues: {
+  //       selectedValues: dependencyValues.essentialSelectedValues
+  //     }
+  //   }
+  // }
 
   if (dependencyValues.numberToSelect < 1) {
     return {
-      makeEssential: ["selectedValues"],
+      makeEssential: ["selectedValues", "selectedIndices"],
       newValues: {
         selectedValues: [],
+        selectedIndices: [],
       }
     }
   }
@@ -587,24 +620,27 @@ function makeSelection({ dependencyValues }) {
       }
 
       return {
-        makeEssential: ["selectedValues"],
-        newValues: { selectedValues }
+        makeEssential: ["selectedValues", "selectedIndices"],
+        newValues: { selectedValues, selectedIndices: desiredIndices }
       }
     }
   }
 
   let numberCombinationsExcluded = dependencyValues.excludedCombinations.length;
 
-  let selectedValues;
+  let selectedValues, selectedIndices;
 
   if (numberCombinationsExcluded === 0) {
-    selectedValues = selectValues({
+    let selectedObj = selectValuesAndIndices({
       stateValues: dependencyValues,
       numberUniqueRequired: numberUniqueRequired,
       numberToSelect: dependencyValues.numberToSelect,
       withReplacement: dependencyValues.withReplacement,
       rng: dependencyValues.selectRng,
     });
+
+    selectedValues = selectedObj.selectedValues;
+    selectedIndices = selectedObj.selectedIndices;
 
   } else {
 
@@ -630,13 +666,17 @@ function makeSelection({ dependencyValues }) {
     let foundValidCombination = false;
     for (let sampnum = 0; sampnum < 200; sampnum++) {
 
-      selectedValues = selectValues({
+      let selectedObj = selectValuesAndIndices({
         stateValues: dependencyValues,
         numberUniqueRequired: numberUniqueRequired,
         numberToSelect: dependencyValues.numberToSelect,
         withReplacement: dependencyValues.withReplacement,
         rng: dependencyValues.selectRng,
       });
+
+      selectedValues = selectedObj.selectedValues;
+      selectedIndices = selectedObj.selectedIndices;
+
 
       // try again if hit excluded combination
       if (dependencyValues.selectedType === "math") {
@@ -662,37 +702,44 @@ function makeSelection({ dependencyValues }) {
   }
 
   if (dependencyValues.sortResults) {
+
+    // combine selectedIndices and selectedValues to sort together
+    let combinedList = [];
+    for (let [ind, val] of selectedValues.entries()) {
+      combinedList.push({ value: val, index: selectedIndices[ind] })
+    }
+
     if (dependencyValues.selectedType === "number") {
-      selectedValues.sort((a, b) => a - b);
+      combinedList.sort((a, b) => a.value - b.value);
     } else if (dependencyValues.selectedType === 'letters') {
       // sort according to their numerical value, not as words
-      let numericalValues = selectedValues.map(lettersToNumber);
-      numericalValues.sort((a, b) => a - b);
-      selectedValues = numericalValues.map(x => numberToLetters(x, dependencyValues.lowercase))
+      combinedList.sort((a, b) => lettersToNumber(a.value) - lettersToNumber(b.value));
     }
+
+    selectedValues = combinedList.map(x => x.value);
+    selectedIndices = combinedList.map(x => x.index);
 
     // don't sort selectedType math
   }
 
   return {
-    makeEssential: ["selectedValues"],
-    newValues: { selectedValues }
+    makeEssential: ["selectedValues", "selectedIndices"],
+    newValues: { selectedValues, selectedIndices }
   }
 
 }
 
 
-function selectValues({ stateValues, numberUniqueRequired = 1, numberToSelect = 1,
+function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberToSelect = 1,
   withReplacement = false, rng }) {
 
   let selectedValues = [];
+  let selectedIndices = [];
 
   if (stateValues.exclude.length + numberUniqueRequired < 0.5 * stateValues.count) {
     // the simplest case where the likelihood of getting excluded is less than 50%
     // just randomly select from all possibilities
     // and use rejection method to resample if an excluded is hit
-
-    let selectedIndices = [];
 
     for (let ind = 0; ind < numberToSelect; ind++) {
 
@@ -748,7 +795,7 @@ function selectValues({ stateValues, numberUniqueRequired = 1, numberToSelect = 
       selectedIndices.push(selectedIndex);
     }
 
-    return selectedValues;
+    return { selectedValues, selectedIndices };
 
   }
 
@@ -801,23 +848,27 @@ function selectValues({ stateValues, numberUniqueRequired = 1, numberToSelect = 
       // random integer from 0 to numPossibleValues-1
       let selectedIndex = Math.floor(rand * numPossibleValues);
 
+      selectedIndices.push(selectedIndex)
       selectedValues.push(possibleValues[selectedIndex]);
     }
 
-    return selectedValues;
+    return { selectedValues, selectedIndices };
 
   }
 
   // need to select more than one value without replacement
   // shuffle array and choose first elements
   // https://stackoverflow.com/a/12646864
+  let possibleIndices = [...Array(possibleValues.length).keys()];
   for (let i = possibleValues.length - 1; i > 0; i--) {
     const rand = rng.random();
     const j = Math.floor(rand * (i + 1));
     [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
+    [possibleIndices[i], possibleIndices[j]] = [possibleIndices[j], possibleIndices[i]];
   }
 
   selectedValues = possibleValues.slice(0, numberToSelect)
-  return selectedValues;
+  selectedIndices = possibleIndices.slice(0, numberToSelect)
+  return { selectedValues, selectedIndices };
 
 }

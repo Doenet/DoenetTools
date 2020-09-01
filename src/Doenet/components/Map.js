@@ -1,4 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
+import { deepClone } from '../utils/deepFunctions';
 
 export default class Map extends CompositeComponent {
   static componentType = "map";
@@ -11,7 +12,7 @@ export default class Map extends CompositeComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let exactlyOneTemplate = childLogic.newLeaf({
@@ -41,7 +42,7 @@ export default class Map extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSubstitutions = {
       additionalStateVariablesDefined: ["substitutionsNames"],
@@ -136,7 +137,7 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
 
       returnDependencies: () => ({
         validBehavior: {
@@ -144,10 +145,15 @@ export default class Map extends CompositeComponent {
           variableName: "validBehavior",
         }
       }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 
@@ -156,6 +162,10 @@ export default class Map extends CompositeComponent {
   }
 
   static createSerializedReplacements({ component, workspace }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     if (!component.stateValues.validBehavior) {
       workspace.lastReplacementParameters = {
@@ -223,15 +233,17 @@ export default class Map extends CompositeComponent {
     if (assignNamespaces !== undefined) {
       namespace = assignNamespaces[iter]
     }
-    // Note: undefined namespace signals to core to create a unique unreachable namespace
 
+    // Note: undefined namespace signals to core to create an unreachable namespace
+    // that will be unique if uniqueIdentifier is unique
     let instruction3 = {
       operation: "assignNamespace",
-      namespace
+      namespace,
+      uniqueIdentifier: iter.toString(),
     }
     return {
       instructions: [instruction1, instruction2, instruction3],
-      replacements: component.stateValues.template
+      replacements: deepClone(component.stateValues.template)
     }
   }
 
@@ -263,16 +275,18 @@ export default class Map extends CompositeComponent {
           namespace = assignNamespaces[iterateNumber]
         }
 
-        // Note: undefined namespace signals to core to create a unique unreachable namespace
+        // Note: undefined namespace signals to core to create an unreachable namespace
+        // that will be unique if uniqueIdentifier is unique
 
         let instruction3 = {
           operation: "assignNamespace",
-          namespace
+          namespace,
+          uniqueIdentifier: substitutionsNumber + '|' + iterateNumber
         }
 
         replacementsWithInstructions.push({
           instructions: [instruction1, instruction2, instruction3],
-          replacements: component.stateValues.template
+          replacements: deepClone(component.stateValues.template)
         });
       } else {
         let results = this.recurseThroughCombinations({
@@ -290,6 +304,12 @@ export default class Map extends CompositeComponent {
   }
 
   static calculateReplacementChanges({ component, components, workspace }) {
+
+    // console.log(`calculate replacement changes for ${component.componentName}`)
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     let replacementChanges = [];
 
@@ -423,6 +443,9 @@ export default class Map extends CompositeComponent {
     let prevMinNIterates = lrp.minNIterates;
     let newReplacementsToWithhold = 0;
     let currentReplacementsToWithhold = component.replacementsToWithhold;
+    if (!currentReplacementsToWithhold) {
+      currentReplacementsToWithhold = 0;
+    }
     let withheldSubstitutionChildNames = lrp.withheldSubstitutionChildNames;
 
     // Check if any previous substitution child names 
@@ -478,11 +501,11 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSubstitutionsChild) {
-        newReplacementsToWithhold = component.replacementsToWithhold +
+        newReplacementsToWithhold = currentReplacementsToWithhold +
           (prevMinNIterates - currentMinNIterates) * component.stateValues.numberTemplateComponents;
 
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold: newReplacementsToWithhold,
         };
         replacementChanges.push(replacementInstruction);
@@ -511,7 +534,7 @@ export default class Map extends CompositeComponent {
           numReplacementsToAdd = 0;
 
           let replacementInstruction = {
-            changeType: "changedReplacementsToWithhold",
+            changeType: "changeReplacementsToWithhold",
             replacementsToWithhold: newReplacementsToWithhold,
           };
           replacementChanges.push(replacementInstruction);
@@ -568,4 +591,35 @@ export default class Map extends CompositeComponent {
     // could treat as a normal component
     return { success: false };
   }
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = this.potentialRendererTypesFromSerializedComponents(
+      this.stateValues.template
+    );
+
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    if (this.replacements) {
+      for (let replacement of this.replacements) {
+        for (let rendererType of replacement.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
 }

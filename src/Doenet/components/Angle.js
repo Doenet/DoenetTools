@@ -6,19 +6,19 @@ export default class Angle extends GraphicalComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = {default: true};
-    properties.radius = {default: me.fromAst(1)};
-    properties.renderAsAcuteAngle = {default: false};
+    properties.draggable = { default: true, forRenderer: true };
+    properties.radius = { default: me.fromAst(1) };
+    properties.renderAsAcuteAngle = { default: false, forRenderer: true, };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addThrough = function({activeChildrenMatched}) {
+    let addThrough = function ({ activeChildrenMatched }) {
       // add <through> around points
       let throughChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         throughChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -30,19 +30,19 @@ export default class Angle extends GraphicalComponent {
       }
     }
 
-
-    let ExactlyThreePoints = childLogic.newLeaf({
-      name: "ExactlyThreePoints",
+    let atLeastOnePoint = childLogic.newLeaf({
+      name: "atLeastOnePoint",
       componentType: 'point',
-      number: 3,
+      comparison: 'atLeast',
+      number: 1,
       isSugar: true,
       replacementFunction: addThrough,
     });
 
-    let addMath = function({activeChildrenMatched}) {
+    let addMath = function ({ activeChildrenMatched }) {
       // add <math> around math/strings
       let mathChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         mathChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -54,31 +54,31 @@ export default class Angle extends GraphicalComponent {
       }
     }
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
     });
-    
-    let AtLeastZeroMath = childLogic.newLeaf({
-      name: "AtLeastZeroMath",
+
+    let atLeastZeroMath = childLogic.newLeaf({
+      name: "atLeastZeroMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 0,
     });
 
-    let StringsAndMaths = childLogic.newOperator({
-      name: "StringsAndMaths",
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
       operator: 'and',
-      propositions: [AtLeastOneString, AtLeastZeroMath],
+      propositions: [atLeastOneString, atLeastZeroMath],
       requireConsecutive: true,
       isSugar: true,
       replacementFunction: addMath,
     });
 
-    let AtLeastTwoMath = childLogic.newLeaf({
-      name: "AtLeastTwoMath",
+    let atLeastTwoMath = childLogic.newLeaf({
+      name: "atLeastTwoMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 2,
@@ -86,420 +86,515 @@ export default class Angle extends GraphicalComponent {
       replacementFunction: addMath,
     });
 
-    let ExactlyOneMath = childLogic.newLeaf({
-      name: "ExactlyOneMath",
+    let exactlyOneMath = childLogic.newLeaf({
+      name: "exactlyOneMath",
       componentType: 'math',
       number: 1,
     });
 
-    let NoPoints = childLogic.newLeaf({
-      name: "NoPoints",
+    let noPoints = childLogic.newLeaf({
+      name: "noPoints",
       componentType: 'point',
       number: 0
     });
 
-    let ExactlyOneThrough = childLogic.newLeaf({
-      name: "ExactlyOneThrough",
+    let exactlyOneThrough = childLogic.newLeaf({
+      name: "exactlyOneThrough",
       componentType: 'through',
       number: 1
     });
 
-    let ExactlyTwoLines = childLogic.newLeaf({
-      name: "ExactlyTwoLines",
+    let exactlyTwoLines = childLogic.newLeaf({
+      name: "exactlyTwoLines",
       componentType: 'line',
       number: 2,
     });
 
     childLogic.newOperator({
-      name: "ThroughXorSugar",
+      name: "throughXorSugar",
       operator: 'xor',
-      propositions: [ExactlyOneThrough, ExactlyThreePoints, ExactlyTwoLines, 
-        StringsAndMaths, AtLeastTwoMath, ExactlyOneMath, NoPoints],
+      propositions: [exactlyOneThrough, atLeastOnePoint, exactlyTwoLines,
+        stringsAndMaths, atLeastTwoMath, exactlyOneMath, noPoints],
       setAsBase: true
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
-      // this.makePublicStateVariableArray({
-      //   variableName: "points",
-      //   componentType: "point",
-      //   stateVariableForRef: "coords",
-      // });
+  static returnStateVariableDefinitions() {
 
-      // this.makePublicStateVariableArrayEntry({
-      //   entryName: "point",
-      //   arrayVariableName: "points",
-      // })
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      this.makePublicStateVariable({
-        variableName: "angle", 
-        componentType: "math"
-      });
+    stateVariableDefinitions.nPointsSpecified = {
+      returnDependencies: () => ({
+        throughChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneThrough",
+          variableNames: ["nPoints"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.throughChild.length === 1) {
+          return {
+            newValues: {
+              nPointsSpecified: dependencyValues.throughChild[0].stateValues.nPoints
+            }
+          }
 
-      this.makePublicStateVariable({
-        variableName: "degrees", 
-        componentType: "number"
-      });
+        } else {
+          return { newValues: { nPointsSpecified: 0 } }
+        }
+
+      }
     }
 
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.angle = true;
-      this.unresolvedState.degrees = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-
-    if(trackChanges.getVariableChanges({component: this, variable: "radius"})) {
-      this.state.radius = this.state.radius.simplify();
-    }
-
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let mathInds = this.childLogic.returnMatches("ExactlyOneMath");
-
-      if(mathInds.length === 1) {
-        this.state.mathChild = this.activeChildren[mathInds[0]];
-      }else {
-        delete this.state.mathChild;
-
-        let throughInds = this.childLogic.returnMatches("ExactlyOneThrough");
-
-        if(throughInds.length === 1) {
-          this.state.throughChild = this.activeChildren[throughInds[0]];
-        }else {
-          delete this.state.throughChild;
-
-          let lineInds = this.childLogic.returnMatches("ExactlyTwoLines");
-
-          if(lineInds.length === 2) {
-            this.state.lineChildren = lineInds.map(x=>this.activeChildren[x]);
+    stateVariableDefinitions.points = {
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["pointX", "point"],
+      stateVariablesDeterminingDependencies: ["nPointsSpecified"],
+      returnArraySizeDependencies: () => ({
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneMath"
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        if (dependencyValues.mathChild.length === 1) {
+          return [0, 0]
+        } else {
+          return [3, 2];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "pointX") {
+          // pointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
           } else {
-            delete this.state.lineChildren;
+            return [];
+          }
+        } else {
+          // point3 is all components of the third point
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let globalDependencies = {
+          lineChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "exactlyTwoLines",
+            variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
+          },
+          // use value of state variable determining dependency
+          // (rather than reference to state variable value)
+          // so that this dependency corresponds to the value used to set up dependencies, below
+          nPointsSpecified: {
+            dependencyType: "value",
+            value: stateValues.nPointsSpecified
+          }
+        }
 
-            if(this._state.points.essential !== true) {
-              console.log("Must specify value of angle.");
-              this.unresolvedState.angle = true;
-              this.unresolvedState.degrees = true;
-              return;
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let [pointInd, dim] = arrayKey.split(",");
+
+          if (pointInd === "0" || stateValues.nPointsSpecified > 2) {
+
+            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+            dependenciesByKey[arrayKey] = {
+              throughChild: {
+                dependencyType: "childStateVariables",
+                childLogicName: "exactlyOneThrough",
+                variableNames: ["pointX" + varEnding]
+              },
+            }
+          } else if (pointInd === "2" && stateValues.nPointsSpecified === 2) {
+
+            // if have 2 points specified, third point is second specified point
+
+            let varEnding = "2_" + (Number(dim) + 1)
+
+            dependenciesByKey[arrayKey] = {
+              throughChild: {
+                dependencyType: "childStateVariables",
+                childLogicName: "exactlyOneThrough",
+                variableNames: ["pointX" + varEnding]
+              },
+            }
+
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey };
+
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
+
+        if (globalDependencyValues.lineChildren.length === 2) {
+
+          let line1 = globalDependencyValues.lineChildren[0];
+          let line2 = globalDependencyValues.lineChildren[1];
+
+
+          let lineIntersection = calculateLineIntersection(line1, line2);
+
+          if (lineIntersection === undefined) {
+            let points = {};
+            for (let i = 0; i < 3; i++) {
+              for (let j = 0; j < 2; j++) {
+                points[i + "," + j] = me.fromAst("\uff3f")
+              }
+            }
+            return { newValues: { points } }
+          }
+
+          let point2 = lineIntersection;
+
+          let a1 = line1.stateValues.points[0][0].evaluate_to_constant();
+          let a2 = line1.stateValues.points[0][1].evaluate_to_constant();
+          let b1 = line1.stateValues.points[1][0].evaluate_to_constant();
+          let b2 = line1.stateValues.points[1][1].evaluate_to_constant();
+          let point1 = [
+            me.fromAst(point2[0].tree + b1 - a1),
+            me.fromAst(point2[1].tree + b2 - a2)
+          ]
+
+          a1 = line2.stateValues.points[0][0].evaluate_to_constant();
+          a2 = line2.stateValues.points[0][1].evaluate_to_constant();
+          b1 = line2.stateValues.points[1][0].evaluate_to_constant();
+          b2 = line2.stateValues.points[1][1].evaluate_to_constant();
+          let point3 = [
+            me.fromAst(point2[0].tree + b1 - a1),
+            me.fromAst(point2[1].tree + b2 - a2),
+          ];
+
+          return {
+            newValues: {
+              points: {
+                "0,0": point1[0],
+                "0,1": point1[1],
+                "1,0": point2[0],
+                "1,1": point2[1],
+                "2,0": point3[0],
+                "2,1": point3[1],
+              }
             }
           }
         }
-      }
-    }
 
-    let recalculateAngleFromPoints = false;
+        let nPointsSpecified = globalDependencyValues.nPointsSpecified;
+        let points = {};
+        let essentialPoints = {};
 
-    if(this.state.mathChild) {
-      if(this.state.mathChild.unresolvedState.value) {
-        this.unresolvedState.angle = true;
-        this.unresolvedState.degrees = true;
-        return;
-      }
-      if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.mathChild, variable: "value"
-      })) {
-        delete this.unresolvedState.angle;
-        delete this.unresolvedState.degrees;
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dim] = arrayKey.split(",");
 
-        this.state.angle = this.state.mathChild.state.value.simplify();
-        let angleNumeric = this.state.angle.evaluate_to_constant();
-  
-        if(Number.isFinite(angleNumeric)) {
-          // this.state.angle = angleNumeric;
-          this.state.degrees = angleNumeric/Math.PI*180;
-        }else {
-          this.state.degrees = NaN;
-        }
-   
-      }
+          if (pointInd === "0" || nPointsSpecified > 2) {
 
-      return;
+            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+            let specifiedPointComponent;
+            if (dependencyValuesByKey[arrayKey].throughChild.length === 1) {
+              specifiedPointComponent = dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding];
+            }
+            if (specifiedPointComponent === undefined) {
+              if ((pointInd === "0" && dim === "1") || (pointInd === "2" && dim === "0")) {
+                essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+              } else {
+                essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+              }
+            } else {
+              points[arrayKey] = specifiedPointComponent;
+            }
 
-    }else if(this.state.throughChild) {
+          } else if (pointInd === "2" && nPointsSpecified === 2) {
 
-      if(this.state.throughChild.unresolvedState.points) {
-        this.unresolvedState.angle = true;
-        this.unresolvedState.degrees = true;
-        return;
-      }
+            // if have 2 points specified, third point is second specified point
 
-      let throughState = this.state.throughChild.state;
-
-      if(throughState.points.some(x => x.unresolvedState.coords)) {
-        this.unresolvedState.angle = true;
-        this.unresolvedState.degrees = true;
-        return;
-      }
-
-
-      if(childrenChanged || 
-        trackChanges.getVariableChanges({component:this.state.throughChild,
-          variable: "points"})) {
-
-        recalculateAngleFromPoints = true;
-
-        this.state.nPoints = throughState.nPoints;
-
-        if(this.state.nPoints != 3) {
-          console.warn("Angle must be determined by three points (" + this.state.throughChild.state.nPoints + " given)");
-          this.unresolvedState.angle = true;
-          this.unresolvedState.degrees = true;
-          return;
-        }
-
-        this.state.points=[];
-        for(let i=0; i < this.state.nPoints; i++) {
-          this.state.points.push(throughState.points[i].state.coords.copy());
-        }
-
-      } else {
-        for(let i=0; i < this.state.nPoints; i++) {
-          if(trackChanges.getVariableChanges({
-            component: throughState.points[i],
-            variable: "coords"
-          })) {
-            recalculateAngleFromPoints = true;
-            this.state.points[i] = throughState.points[i].state.coords.copy();
+            let varEnding = "2_" + (Number(dim) + 1)
+            let specifiedPointComponent;
+            if (dependencyValuesByKey[arrayKey].throughChild.length === 1) {
+              specifiedPointComponent = dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding];
+            }
+            if (specifiedPointComponent === undefined) {
+              if (dim === "0") {
+                essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+              } else {
+                essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+              }
+            } else {
+              points[arrayKey] = specifiedPointComponent;
+            }
+          } else {
+            if (pointInd === "2" && dim === "0") {
+              essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+            } else {
+              essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+            }
           }
         }
+
+
+        let result = {};
+
+        if (Object.keys(points).length > 0) {
+          result.newValues = { points }
+        }
+        if (Object.keys(essentialPoints).length > 0) {
+          result.useEssentialOrDefaultValue = { points: essentialPoints }
+        }
+        return result;
+
       }
 
+    }
 
-    } else if(this.state.lineChildren) {
+    stateVariableDefinitions.angle = {
+      public: true,
+      componentType: "math",
+      forRenderer: true,
+      returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneMath",
+          variableNames: ["value"]
+        },
+        points: {
+          dependencyType: "stateVariable",
+          variableName: "points"
+        },
 
-      if(this.state.lineChildren.some(x => x.unresolvedState.points)) {
-        this.unresolvedState.angle = true;
-        this.unresolvedState.degrees = true;
-        return;
-      }
-      let line1 = this.state.lineChildren[0];
-      let line2 = this.state.lineChildren[1];
+      }),
+      definition({ dependencyValues }) {
 
-      if(childrenChanged || this.state.lineChildren.some(x=> trackChanges.getVariableChanges({
-        component: x, variable: "points"
-      }))) {
-
-        this.state.lineIntersection = this.calculateLineIntersection(line1,line2);
-
-        if(this.state.lineIntersection === undefined) {
-          this.state.points = [];
-          for(let i=0; i<3; i++) {
-            this.state.points.push(me.fromAst(["tuple",'\uFF3F','\uFF3F']));
+        if (dependencyValues.mathChild.length === 1) {
+          return {
+            newValues: {
+              angle: dependencyValues.mathChild[0].stateValues.value.simplify()
+            }
           }
-          this.state.angle = NaN;
-          this.state.degrees = NaN;
-          delete this.unresolvedState.angle;
-          delete this.unresolvedState.degrees;
-          return;
         }
 
-        let point2 = this.state.lineIntersection;
+        let ps = [];
+        let foundNull = false;
+        for (let i = 0; i < 3; i++) {
+          ps.push([
+            dependencyValues.points[i][0].evaluate_to_constant(),
+            dependencyValues.points[i][1].evaluate_to_constant(),
+          ]);
+          if (ps[i][0] === null || ps[i][1] === null) {
+            foundNull = true;
+          }
+        }
 
-        let a1 = line1.state.points[0].get_component(0).evaluate_to_constant();
-        let a2 = line1.state.points[0].get_component(1).evaluate_to_constant();
-        let b1 = line1.state.points[1].get_component(0).evaluate_to_constant();
-        let b2 = line1.state.points[1].get_component(1).evaluate_to_constant();
-        let point1 = me.fromAst([
-          "tuple",
-          point2.get_component(0).tree + b1 - a1,
-          point2.get_component(1).tree + b2 - a2,
-        ])
+        let angle;
 
-        a1 = line2.state.points[0].get_component(0).evaluate_to_constant();
-        a2 = line2.state.points[0].get_component(1).evaluate_to_constant();
-        b1 = line2.state.points[1].get_component(0).evaluate_to_constant();
-        b2 = line2.state.points[1].get_component(1).evaluate_to_constant();
-        let point3 = me.fromAst([
-          "tuple",
-          point2.get_component(0).tree + b1 - a1,
-          point2.get_component(1).tree + b2 - a2,
-        ])
+        if (foundNull) {
+          return { newValues: { angle: me.fromAst('\uff3f') } }
+        } else {
+          angle = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
+            Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0])
+        }
 
-        this.state.points=[point1,point2,point3];
+        // make angle be between 0 and 2pi
+        if (angle < 0) {
+          angle += 2 * Math.PI;
+        }
 
-        recalculateAngleFromPoints = true;
+        return { newValues: { angle: me.fromAst(angle) } }
       }
     }
 
-    if(recalculateAngleFromPoints) {
-
-      delete this.unresolvedState.angle;
-      delete this.unresolvedState.degrees;
-
-      this.state.ndimensions = 1;
-      let point1tree = this.state.points[0].tree;
-      if(point1tree[0] === "tuple" || point1tree[0] === "vector") {
-        this.state.ndimensions = point1tree.length-1;
-      }
-      for(let i=1; i < 3; i++) {
-        let ndimb = 1;
-        let pointtree = this.state.points[i].tree;
-        if(pointtree[0] === "tuple" || pointtree[0] === "vector") {
-          ndimb = pointtree.length-1;
+    stateVariableDefinitions.degrees = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({
+        angle: {
+          dependencyType: "stateVariable",
+          variableName: "angle",
         }
-        if(ndimb != this.state.ndimensions) {
-          console.warn("Invalid angle: points must have same number of dimensions");
-          this.unresolvedState.angle = true;
-          this.unresolvedState.degrees = true;
-          return;
+      }),
+      definition({ dependencyValues }) {
+        let numericalAngle = dependencyValues.angle.evaluate_to_constant();
 
+        let degrees;
+        if (Number.isFinite(numericalAngle)) {
+          degrees = numericalAngle / Math.PI * 180;
+        } else {
+          degrees = NaN;
         }
-      }
-
-      let ps = [];
-      let foundNull = false;
-      for(let i=0; i<3; i++) {
-        ps.push([
-          this.state.points[i].get_component(0).evaluate_to_constant(),
-          this.state.points[i].get_component(1).evaluate_to_constant(),
-        ]);
-        if(ps[i][0] === null || ps[i][1] === null) {
-          foundNull = true;
-        }
-      }
-
-      if(foundNull) {
-        this.state.angle = NaN;
-      }else {
-        this.state.angle =
-          Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
-          Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0]);
-      }
-
-      // make angle be between 0 and 2pi
-      if(this.state.angle < 0) {
-        this.state.angle += 2*Math.PI;
-      }
-
-      this.state.degrees = this.state.angle/Math.PI*180;
-
-    }
-
-  }
-
-  calculateLineIntersection(line1,line2) {
-
-    if(line1.state.ndimensions !== 2 || line2.state.ndimensions !== 2) {
-      console.log("Calculating angle between two lines implemented only in 2D");
-      return;
-    }
-
-    // only implement for constant coefficients
-    let a1 = line1.state.coeffvar1.evaluate_to_constant();
-    let b1 = line1.state.coeffvar2.evaluate_to_constant();
-    let c1 = line1.state.coeff0.evaluate_to_constant();
-    let a2 = line2.state.coeffvar1.evaluate_to_constant();
-    let b2 = line2.state.coeffvar2.evaluate_to_constant();
-    let c2 = line2.state.coeff0.evaluate_to_constant();
-
-    if(!(Number.isFinite(a1) && Number.isFinite(b1) && Number.isFinite(c1) &&
-      Number.isFinite(a2) && Number.isFinite(b2) && Number.isFinite(c2))) {
-      console.log("Calculating angle between two lines implemented only for constant coefficients");
-      return;
-    }
-
-    let d = a1*b2-a2*b1;
-
-    if(Math.abs(d) < 1E-14) {
-      if(Math.abs(c2*a1 -c1*a2) > 1E-14) {
-        console.log("Cannot calculate angle between two parallel lines")
-        return;
-      }else if((a1 === 0 && b1 === 0 && c1 ===0) || (a2 === 0 && b2 === 0 && c2 ===0)) {
-        // at least one line not defined
-        return;
-      }else {
-        // identical lines, return any point on the line
-        if(b1 !== 0) {
-          return me.fromAst(["tuple", 0, -c1/b1]);
-        }else {
-          return me.fromAst(["tuple", -c1/a1, 0]);
-        }
+        return { newValues: { degrees } }
       }
     }
 
-    // two intersecting lines, return point
-    let x = (c2*b1-c1*b2)/d;
-    let y = (c1*a2-c2*a1)/d;
-    return me.fromAst(["tuple", x, y]);
+    stateVariableDefinitions.numericalPoints = {
+      isArray: true,
+      entryPrefixes: ["numericalPoint"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneMath"
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        if (dependencyValues.mathChild.length === 1) {
+          return [0, 0]
+        } else {
+          return [3];
+        }
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            point: {
+              dependencyType: "stateVariable",
+              variableName: "point" + (Number(arrayKey) + 1)
+            },
+          }
+        }
+
+        return { dependenciesByKey }
+      },
+
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let numericalPoints = {};
+        for (let arrayKey of arrayKeys) {
+          let point = dependencyValuesByKey[arrayKey].point;
+          let numericalP = [];
+          for (let ind = 0; ind < 2; ind++) {
+            let val = point[ind].evaluate_to_constant();
+            if (!Number.isFinite(val)) {
+              val = NaN;
+            }
+            numericalP.push(val);
+          }
+          numericalPoints[arrayKey] = numericalP;
+        }
+
+        return { newValues: { numericalPoints } }
+      }
+    }
+
+    stateVariableDefinitions.numericalRadius = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        radius: {
+          dependencyType: "stateVariable",
+          variableName: "radius"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let numericalRadius = dependencyValues.radius.evaluate_to_constant();
+        if (!Number.isFinite(numericalRadius)) {
+          numericalRadius = NaN;
+        }
+        return { newValues: { numericalRadius } }
+      }
+    }
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        throughChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneThrough"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.throughChild.length === 1) {
+          return {
+            newValues: {
+              childrenToRender: [dependencyValues.throughChild[0].componentName]
+            }
+          }
+        } else {
+          return { newValues: { childrenToRender: [] } }
+        }
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
 
 
   adapters = ["angle"];
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
-      this.updateRenderer();
+}
+
+function calculateLineIntersection(line1, line2) {
+
+  if (line1.stateValues.nDimensions !== 2 || line2.stateValues.nDimensions !== 2) {
+    console.log("Calculating angle between two lines implemented only in 2D");
+    return;
+  }
+
+  // only implement for constant coefficients
+  let a1 = line1.stateValues.coeffvar1.evaluate_to_constant();
+  let b1 = line1.stateValues.coeffvar2.evaluate_to_constant();
+  let c1 = line1.stateValues.coeff0.evaluate_to_constant();
+  let a2 = line2.stateValues.coeffvar1.evaluate_to_constant();
+  let b2 = line2.stateValues.coeffvar2.evaluate_to_constant();
+  let c2 = line2.stateValues.coeff0.evaluate_to_constant();
+
+  if (!(Number.isFinite(a1) && Number.isFinite(b1) && Number.isFinite(c1) &&
+    Number.isFinite(a2) && Number.isFinite(b2) && Number.isFinite(c2))) {
+    console.log("Calculating angle between two lines implemented only for constant coefficients");
+    return;
+  }
+
+  let d = a1 * b2 - a2 * b1;
+
+  if (Math.abs(d) < 1E-14) {
+    if (Math.abs(c2 * a1 - c1 * a2) > 1E-14) {
+      console.log("Cannot calculate angle between two parallel lines")
       return;
-    }
-    
-    if(this.state.ndimensions === 2) {
-
-      this.renderer = new this.availableRenderers.angle2d({
-        key: this.componentName,
-        label: this.state.label,
-        draggable: this.state.draggable,
-        layer: this.state.layer,
-        renderAsAcuteAngle: this.state.renderAsAcuteAngle,
-        angle: this.state.angle,
-        visible: !this.state.hide,
-        point1coords:
-        [
-          this.state.points[0].get_component(0).evaluate_to_constant(),
-          this.state.points[0].get_component(1).evaluate_to_constant()
-        ],
-        point2coords:
-        [
-          this.state.points[1].get_component(0).evaluate_to_constant(),
-          this.state.points[1].get_component(1).evaluate_to_constant()
-        ],
-        point3coords:
-        [
-          this.state.points[2].get_component(0).evaluate_to_constant(),
-          this.state.points[2].get_component(1).evaluate_to_constant()
-        ],
-        radius: this.state.radius.evaluate_to_constant(),
-      });
+    } else if ((a1 === 0 && b1 === 0 && c1 === 0) || (a2 === 0 && b2 === 0 && c2 === 0)) {
+      // at least one line not defined
+      return;
+    } else {
+      // identical lines, return any point on the line
+      if (b1 !== 0) {
+        return [me.fromAst(0), me.fromAst(-c1 / b1)];
+      } else {
+        return [me.fromAst(-c1 / a1), me.fromAst(0)];
+      }
     }
   }
 
-  updateRenderer(){
-    this.renderer.updateAngle({
-      angle: this.state.angle,
-      visible: !this.state.hide,
-      point1coords:
-      [
-        this.state.points[0].get_component(0).evaluate_to_constant(),
-        this.state.points[0].get_component(1).evaluate_to_constant()
-      ],
-      point2coords:
-      [
-        this.state.points[1].get_component(0).evaluate_to_constant(),
-        this.state.points[1].get_component(1).evaluate_to_constant()
-      ],
-      point3coords:
-      [
-        this.state.points[2].get_component(0).evaluate_to_constant(),
-        this.state.points[2].get_component(1).evaluate_to_constant()
-      ],
-      radius: this.state.radius.evaluate_to_constant(),
-    });
-  }
-
-  updateChildrenWhoRender(){
-    if(this.state.throughChild !== undefined)
-    this.childrenWhoRender = [this.state.throughChild.componentName];
-  }
-
-  allowDownstreamUpdates() {
-    return false;
-  }
-
+  // two intersecting lines, return point
+  let x = (c2 * b1 - c1 * b2) / d;
+  let y = (c1 * a2 - c2 * a1) / d;
+  return [me.fromAst(x), me.fromAst(y)];
 }

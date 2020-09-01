@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class VariantControl extends BaseComponent {
   static componentType = "variantcontrol";
+  static rendererType = undefined;
 
   static createsVariants = true;
 
@@ -17,7 +18,7 @@ export default class VariantControl extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atMostOneSeeds = childLogic.newLeaf({
@@ -47,7 +48,7 @@ export default class VariantControl extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nVariantsSpecified = {
       returnDependencies: ({ sharedParameters }) => ({
@@ -86,22 +87,60 @@ export default class VariantControl extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.nSeeds = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        seedsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneSeeds",
+          variableNames: ["nSeeds"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.seedsChild.length === 1) {
+          return { newValues: { nSeeds: dependencyValues.seedsChild[0].stateValues.nSeeds } }
+        } else {
+          return { newValues: { nSeeds: 0 } }
+        }
+      }
+    }
+
+
     stateVariableDefinitions.seeds = {
       public: true,
       componentType: "seed",
       isArray: true,
       entryPrefixes: ["seed"],
-      returnDependencies: () => ({
-        seedsChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneSeeds",
-          variableNames: ["seeds"],
-        }
+      returnArraySizeDependencies: () => ({
+        nSeeds: {
+          dependencyType: "stateVariable",
+          variableName: "nSeeds",
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        let seeds = [];
-        if (dependencyValues.seedsChild.length === 1) {
-          seeds = dependencyValues.seedsChild[0].stateValues.seeds;
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nSeeds];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            seedsChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atMostOneSeeds",
+              variableNames: ["seed" + (Number(arrayKey) + 1)],
+            }
+          }
+        }
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
+        let seeds = {};
+        for (let arrayKey of arrayKeys) {
+          if (dependencyValuesByKey[arrayKey].seedsChild.length === 1) {
+            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedsChild[0]
+              .stateValues["seed" + (Number(arrayKey) + 1)]
+          }
         }
         return { newValues: { seeds } }
       }
@@ -129,30 +168,42 @@ export default class VariantControl extends BaseComponent {
       componentType: "variant",
       isArray: true,
       entryPrefixes: ["variant"],
-      returnDependencies: () => ({
-        originalVariants: {
-          dependencyType: "stateVariable",
-          variableName: "originalVariants"
-        },
+      returnArraySizeDependencies: () => ({
         nVariantsSpecified: {
           dependencyType: "stateVariable",
-          variableName: "nVariantsSpecified"
-        }
+          variableName: "nVariantsSpecified",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariantsSpecified];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          originalVariants: {
+            dependencyType: "stateVariable",
+            variableName: "originalVariants"
+          },
+          nVariantsSpecified: {
+            dependencyType: "stateVariable",
+            variableName: "nVariantsSpecified"
+          }
+        }
+        return { globalDependencies };
+      },
+      arrayDefinitionByKey: function ({ globalDependencyValues, arrayKeys }) {
 
         // if fewer variants specified than nVariantsSpecified, find additional variants
         // try variants, n, n+1, ...., nVariantsSpecified, (converted to letters)
         // except skipping variants that are already in original variants
-        let variants = [...dependencyValues.originalVariants];
+        let variants = [...globalDependencyValues.originalVariants];
         let variantNumber = variants.length;
         let variantValue = variantNumber - 1;
         let variantString;
-        while (variantNumber < dependencyValues.nVariantsSpecified) {
+        while (variantNumber < globalDependencyValues.nVariantsSpecified) {
           variantNumber++;
           variantValue++;
           variantString = numberToLowercaseLetters(variantValue);
-          while (dependencyValues.originalVariants.includes(variantString)) {
+          while (globalDependencyValues.originalVariants.includes(variantString)) {
             variantValue++;
             variantString = numberToLowercaseLetters(variantValue);
           }
@@ -210,7 +261,7 @@ export default class VariantControl extends BaseComponent {
         //    then use the variantNumber corresponding to that value
         // 4. else, random generate variantNumber
 
-        if (dependencyValues.essentialSelectedVariantNumber !== undefined) {
+        if (dependencyValues.essentialSelectedVariantNumber !== null) {
           return {
             makeEssential: ["selectedVariantNumber"],
             newValues: {

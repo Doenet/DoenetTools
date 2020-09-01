@@ -1,17 +1,32 @@
 import BaseComponent from './abstract/BaseComponent';
+import { mapDeep } from '../utils/array';
 
 export default class Prop extends BaseComponent {
   static componentType = "prop";
+  static rendererType = undefined;
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "exactlyOneString",
+    let atMostOneString = childLogic.newLeaf({
+      name: "atMostOneString",
       componentType: 'string',
+      comparison: 'atMost',
       number: 1,
-      setAsBase: true,
     });
+
+    let exactlyOneText = childLogic.newLeaf({
+      name: "exactlyOneText",
+      componentType: 'text',
+      number: 1,
+    });
+
+    childLogic.newOperator({
+      name: "stringXorText",
+      operator: "xor",
+      propositions: [exactlyOneText, atMostOneString],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
@@ -19,7 +34,32 @@ export default class Prop extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.variableName = {
+      returnDependencies: () => ({
+        stringOrTextChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringXorText",
+          variableNames: ["value"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.stringOrTextChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              variableName: { variablesToCheck: "variableName" }
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              variableName: dependencyValues.stringOrTextChild[0].stateValues.value.trim()
+            }
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.effectiveTargetClasses = {
       returnDependencies: () => ({
@@ -33,27 +73,32 @@ export default class Prop extends BaseComponent {
       },
     };
 
+
+    // propVariableObjs is an array of length the length of effectiveTargetClasses
+    // (or null if couldn't match a public state variable)
+    // For each effectiveTargetClass, attempts to match variableName (the string child)
+    // to a public state variable of the class (or to an alias or array entry prefix)
+    // Each component of probVariableObjs is an object with possible attributes
+    // - varName: the name of the state variable matched
+    // - componentType: the componentType of the state variable, if specified,
+    //   otherwise, null
+    // - isArray: true if state variable match is an array
+    // - isArrayEntry: true if matched an array entry, which means also have attributes:
+    //   - arrayVarName: name of array state variable for which have entry
+    //   - arrayEntryPrefix: prefix of the array entry
+    //   - varEnding: ending of the array entry
     stateVariableDefinitions.propVariableObjs = {
-      additionalStateVariablesDefined: ["propComponentTypes"],
       returnDependencies: () => ({
         effectiveTargetClasses: {
           dependencyType: "stateVariable",
           variableName: "effectiveTargetClasses"
         },
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"],
+        variableName: {
+          dependencyType: "stateVariable",
+          variableName: "variableName"
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        // if (dependencyValues.stringChild.length === 0) {
-        //   return {
-        //     useEssentialOrDefaultValue: {
-        //       propVariableObjs: { variablesToCheck: "propVariableObjs" }
-        //     }
-        //   }
-        // }
 
         // have a string.  Need to see if it is a valid public state variable of effectiveTargetClass
         // TODO: arrays and other embellishments
@@ -64,11 +109,10 @@ export default class Prop extends BaseComponent {
           return { newValues: { propVariableObjs: null } };
         }
 
-        let authorProp = dependencyValues.stringChild[0].stateValues.value.toLowerCase();
+        let variableName = dependencyValues.variableName.toLowerCase();
         let propVariableObjs = [];
-        let propComponentTypes = [];
 
-        let authorPropValid = true;
+        let validVariableName = true;
 
         let standardComponentClasses = componentInfoObjects.standardComponentClasses;
         let allPossibleProperties = componentInfoObjects.allPossibleProperties;
@@ -83,31 +127,71 @@ export default class Prop extends BaseComponent {
 
           // need a case insensitive match to variable name
           let variableNames = Object.keys(stateVarDescrip);
-          let matchedObj = null, componentType = null;
+          let matchedObj = null;
+          let componentType = null;
           for (let varName of variableNames) {
-            if (authorProp === varName.toLowerCase()) {
+            if (variableName === varName.toLowerCase()) {
               matchedObj = { varName };
-              if (stateVarDescrip[varName].isArray) {
+              let theDescrip = stateVarDescrip[varName];
+              if (theDescrip.isArray) {
                 matchedObj.isArray = true;
+                matchedObj.nDimensions = theDescrip.nDimensions;
               }
-              componentType = stateVarDescrip[varName].componentType
+              if (theDescrip.containsComponentNamesToCopy) {
+                matchedObj.containsComponentNamesToCopy = true;
+              }
+              if (theDescrip.wrappingComponents) {
+                matchedObj.wrappingComponents = mapDeep(theDescrip.wrappingComponents.slice(0, theDescrip.nDimensions), x => x.toLowerCase());
+                // find outermost wrapping that has at least one entry
+                // which will supercede componentType if provided
+                for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                  let wrapping = matchedObj.wrappingComponents[ind];
+                  if (wrapping && wrapping[0]) {
+                    componentType = wrapping[0];
+                    break;
+                  }
+                }
+              }
+              if (!componentType) {
+                componentType = theDescrip.componentType;
+              }
               break;
             }
           }
 
+          let arrayEntryPrefixesLongestToShortest = Object.keys(publicStateVariablesInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
+
           if (matchedObj === null) {
 
             // try to match to alias
-            let propToMatch = authorProp;
+            let propToMatch = variableName;
             for (let aliasName in publicStateVariablesInfo.aliases) {
-              if (authorProp === aliasName.toLowerCase()) {
+              if (variableName === aliasName.toLowerCase()) {
                 let targetVarName = publicStateVariablesInfo.aliases[aliasName];
                 let targetDescription = stateVarDescrip[targetVarName];
                 if (targetDescription && targetDescription.public) {
-                  componentType = targetDescription.componentType;
                   matchedObj = { varName: targetVarName };
                   if (targetDescription.isArray) {
                     matchedObj.isArray = true;
+                    matchedObj.nDimensions = targetDescription.nDimensions;
+                  }
+                  if (targetDescription.containsComponentNamesToCopy) {
+                    matchedObj.containsComponentNamesToCopy = true;
+                  }
+                  if (targetDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = mapDeep(targetDescription.wrappingComponents.slice(0, targetDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
+                  }
+                  if (!componentType) {
+                    componentType = targetDescription.componentType;
                   }
                 } else {
                   propToMatch = targetVarName.toLowerCase();
@@ -119,47 +203,74 @@ export default class Prop extends BaseComponent {
             if (matchedObj === null) {
 
               // try to match to arrayEntryPrefix
-              for (let prefix in publicStateVariablesInfo.arrayEntryPrefixes) {
+              // match with longest first, so get maximal match
+              for (let prefix of arrayEntryPrefixesLongestToShortest) {
                 if (propToMatch.substring(0, prefix.length) === prefix.toLowerCase()) {
-                  let arrayVarName = publicStateVariablesInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+                  let arrayEntryDescription = publicStateVariablesInfo.arrayEntryPrefixes[prefix];
+                  let arrayVarName = arrayEntryDescription.arrayVariableName;
                   let varEnding = propToMatch.substring(prefix.length);
                   let varName = prefix + varEnding;
-                  matchedObj = { isArrayEntry: true, arrayVarName, arrayEntryPrefix: prefix, varEnding, varName };
-                  componentType = stateVarDescrip[arrayVarName].componentType;
+                  matchedObj = {
+                    varName,
+                    isArrayEntry: true,
+                    arrayVarName,
+                    arrayEntryPrefix: prefix,
+                    varEnding,
+                    nDimensions: arrayEntryDescription.nDimensions,
+                  };
+                  if (stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
+                    matchedObj.containsComponentNamesToCopy = true;
+                  }
+                  if (arrayEntryDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = mapDeep(arrayEntryDescription.wrappingComponents.slice(0, arrayEntryDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
+                  }
+                  if (!componentType) {
+                    componentType = stateVarDescrip[arrayVarName].componentType;
+                  }
                   break;
                 }
               }
               if (matchedObj === null) {
-                authorPropValid = false;
-                console.warn(`Invalid prop: ${authorProp}`)
+                validVariableName = false;
+                console.error(`Invalid prop: ${variableName}`)
                 break;
               }
 
             }
 
-
           }
 
+          if (componentType) {
+            if (Array.isArray(componentType)) {
+              matchedObj.componentType = componentType.map(x => x.toLowerCase())
+            } else {
+              matchedObj.componentType = componentType.toLowerCase()
+            }
+          }
 
-          // need to keep the capitalization of the actual public state variable
+          // Note: need to keep the capitalization of the actual public state variable
           // since state variables are case sensitive even though DoenetML is not
           propVariableObjs.push(matchedObj);
-          if(!componentType) {
-            componentType = null;
-          }
-          propComponentTypes.push(componentType);
 
         }
 
-        // console.log("authorPropValid")
-        // console.log(authorPropValid)
+        // console.log("validVariableName")
+        // console.log(validVariableName)
         // console.log(propVariableObjs)
-        // console.log(propComponentTypes)
 
-        if (authorPropValid) {
-          return { newValues: { propVariableObjs, propComponentTypes } };
+        if (validVariableName) {
+          return { newValues: { propVariableObjs } };
         } else {
-          return { newValues: { propVariableObjs: null, propComponentTypes: null } };
+          return { newValues: { propVariableObjs: null } };
         }
 
       }
@@ -187,7 +298,7 @@ export default class Prop extends BaseComponent {
   //       componentName: component.componentName,
   //     }
 
-  //     let availableClassProperties = this.allComponentClasses.number.createPropertiesObject({
+  //     let availableClassProperties = this.componentInfoObjects.allComponentClasses.number.createPropertiesObject({
   //       standardComponentClasses: standardComponentClasses
   //     });
 

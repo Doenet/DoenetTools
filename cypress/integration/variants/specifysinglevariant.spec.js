@@ -9,7 +9,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>1</text>
       Selected number: 
@@ -26,14 +26,14 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex0 = components['/n'].state.number;
+      nWithIndex0 = components['/n'].stateValues.value;
     })
 
     cy.log("Number doesn't change with multiple updates");
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>a</text>
       Selected number: 
@@ -47,12 +47,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `a`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>b</text>
       Selected number: 
@@ -66,12 +66,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `b`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>c</text>
       Selected number: 
@@ -85,12 +85,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `c`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>d</text>
       Selected number: 
@@ -104,13 +104,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `d`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.log("Number changes for index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>e</text>
       Selected number: 
@@ -127,14 +127,14 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex1 = components['/n'].state.number;
+      nWithIndex1 = components['/n'].stateValues.value;
       expect(nWithIndex1).not.eq(nWithIndex0);
     })
 
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>f</text>
       Selected number: 
@@ -148,12 +148,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `f`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>g</text>
       Selected number: 
@@ -167,13 +167,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `g`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.log("Index 101 same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>g</text>
       Selected number: 
@@ -187,12 +187,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `g`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>h</text>
       Selected number: 
@@ -206,13 +206,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `h`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.log("Index -299 same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>i</text>
       Selected number: 
@@ -226,12 +226,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `i`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>j</text>
       Selected number: 
@@ -245,13 +245,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `j`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.log("Index 83057200 same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>k</text>
       Selected number: 
@@ -265,12 +265,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `k`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>l</text>
       Selected number: 
@@ -284,13 +284,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `l`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.log("Variant 'a' same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>m</text>
       Selected number: 
@@ -304,12 +304,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `m`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>n</text>
       Selected number: 
@@ -323,13 +323,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `n`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.log("Variant 'b' same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>o</text>
       Selected number: 
@@ -343,12 +343,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `o`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>q</text>
       Selected number: 
@@ -362,13 +362,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `q`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
     })
 
     cy.log("Index '300' same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>r</text>
       Selected number: 
@@ -382,13 +382,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `r`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
     })
 
     cy.log("Variant 'cQ' and index '94' are the same");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>s</text>
       Selected number: 
@@ -405,14 +405,14 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex94 = components['/n'].state.number;
+      nWithIndex94 = components['/n'].stateValues.value;
       expect(nWithIndex94).not.eq(nWithIndex0);
       expect(nWithIndex94).not.eq(nWithIndex1);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>t</text>
       Selected number: 
@@ -426,13 +426,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `t`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithIndex94);
+      expect(components['/n'].stateValues.value).eq(nWithIndex94);
     })
 
     cy.log("Variant 'nonexistent one' doesn't change");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>u</text>
       Selected number: 
@@ -449,12 +449,12 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithValueNonexistent = components['/n'].state.number;
+      nWithValueNonexistent = components['/n'].stateValues.value;
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>v</text>
       Selected number: 
@@ -468,12 +468,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `v`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithValueNonexistent);
+      expect(components['/n'].stateValues.value).eq(nWithValueNonexistent);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>w</text>
       Selected number: 
@@ -487,14 +487,14 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `w`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithValueNonexistent);
+      expect(components['/n'].stateValues.value).eq(nWithValueNonexistent);
     })
 
 
     cy.log("Object as variant doesn't change");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>x</text>
       Selected number: 
@@ -511,12 +511,12 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithObject = components['/n'].state.number;
+      nWithObject = components['/n'].stateValues.value;
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>y</text>
       Selected number: 
@@ -530,12 +530,12 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `y`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithObject);
+      expect(components['/n'].stateValues.value).eq(nWithObject);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>z</text>
       Selected number: 
@@ -549,7 +549,7 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `z`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithObject);
+      expect(components['/n'].stateValues.value).eq(nWithObject);
     })
 
 
@@ -560,7 +560,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>1</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -572,8 +572,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { index: 0 },
       }, "*");
@@ -585,20 +585,20 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'a';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
     cy.log("specify third variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>2</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -610,8 +610,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { index: 2 },
       }, "*");
@@ -623,13 +623,13 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'c';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
@@ -637,7 +637,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify variant bRoccoli")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>3</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -649,8 +649,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { value: 'bRoccoli' },
       }, "*");
@@ -662,13 +662,13 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'b';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
@@ -676,7 +676,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify variant dill")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>4</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -688,8 +688,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { value: 'dill' },
       }, "*");
@@ -701,13 +701,13 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'd';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
@@ -715,7 +715,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify large variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>5</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -727,8 +727,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { index: 20582309 },
       }, "*");
@@ -740,13 +740,13 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'e';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
@@ -754,7 +754,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify negative variant index as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>6</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -766,8 +766,8 @@ describe('Specifying single variant document tests', function () {
       <math variants="broccoli">b</math>
     </select>
     </p>
-    <p>Selected variable repeated: <ref name="x2">x</ref></p>
-    <p>Selected variable repeated again: <ref name="x3">_select1</ref></p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
         requestedVariant: { index: '-20582309' },
       }, "*");
@@ -779,13 +779,13 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'b';
 
       let components = Object.assign({}, win.state.components);
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
     })
 
@@ -796,7 +796,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -814,12 +814,12 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithSeed50283 = components['/n'].state.number;
+      nWithSeed50283 = components['/n'].stateValues.value;
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -835,13 +835,13 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed50283);
+      expect(components['/n'].stateValues.value).eq(nWithSeed50283);
     })
 
     cy.log("specify second variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -859,13 +859,13 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithSeed25018 = components['/n'].state.number;
+      nWithSeed25018 = components['/n'].stateValues.value;
       expect(nWithSeed25018).not.eq(nWithSeed50283);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>d</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -880,13 +880,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `d`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed25018);
+      expect(components['/n'].stateValues.value).eq(nWithSeed25018);
     })
 
     cy.log("specify third variant by name")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>e</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -904,14 +904,14 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithSeed52018 = components['/n'].state.number;
+      nWithSeed52018 = components['/n'].stateValues.value;
       expect(nWithSeed52018).not.eq(nWithSeed50283);
       expect(nWithSeed52018).not.eq(nWithSeed25018);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>f</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -926,13 +926,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `f`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed52018);
+      expect(components['/n'].stateValues.value).eq(nWithSeed52018);
     })
 
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>g</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -950,7 +950,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithSeed2917392 = components['/n'].state.number;
+      nWithSeed2917392 = components['/n'].stateValues.value;
       expect(nWithSeed2917392).not.eq(nWithSeed50283);
       expect(nWithSeed2917392).not.eq(nWithSeed25018);
       expect(nWithSeed2917392).not.eq(nWithSeed52018);
@@ -958,13 +958,13 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed2917392);
+      expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
     })
 
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>h</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -979,14 +979,14 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `h`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed2917392);
+      expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
     })
 
 
     cy.log("specify fifth variant as negative")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>i</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -1009,7 +1009,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithSeed603962 = components['/n'].state.number;
+      nWithSeed603962 = components['/n'].stateValues.value;
       expect(nWithSeed603962).not.eq(nWithSeed50283);
       expect(nWithSeed603962).not.eq(nWithSeed25018);
       expect(nWithSeed603962).not.eq(nWithSeed52018);
@@ -1018,7 +1018,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>j</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -1033,7 +1033,7 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `j`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed603962);
+      expect(components['/n'].stateValues.value).eq(nWithSeed603962);
     })
 
     cy.log('reorder seeds');
@@ -1041,7 +1041,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>k</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1057,12 +1057,12 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed2917392);
+      expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
     })
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>l</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1077,13 +1077,13 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `l`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed2917392);
+      expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
     })
 
     cy.log("specify second variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>m</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1099,14 +1099,14 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed52018);
+      expect(components['/n'].stateValues.value).eq(nWithSeed52018);
     })
 
 
     cy.log("specify third variant by name")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>n</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1122,13 +1122,13 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed603962);
+      expect(components['/n'].stateValues.value).eq(nWithSeed603962);
     })
 
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>o</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1144,13 +1144,13 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed50283);
+      expect(components['/n'].stateValues.value).eq(nWithSeed50283);
     })
 
     cy.log("specify fifth variant as negative")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>p</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1166,7 +1166,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].state.number).eq(nWithSeed25018);
+      expect(components['/n'].stateValues.value).eq(nWithSeed25018);
     })
 
   });
@@ -1190,7 +1190,7 @@ describe('Specifying single variant document tests', function () {
       for (let ind2 = 0; ind2 < 3; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
@@ -1226,26 +1226,26 @@ describe('Specifying single variant document tests', function () {
           let components = Object.assign({}, win.state.components);
           let p = components['/p'];
 
-          let variantInd = firstStringsToInd[p.activeChildren[0].state.value.trim()];
+          let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
           expect(variantInd).not.eq(undefined);
 
           let secondChild = p.activeChildren[1];
 
           if (variantInd === 0) {
-            expect(["red", "orange", "green", "white", "chartreuse"].includes(secondChild.state.value)).eq(true)
+            expect(["red", "orange", "green", "white", "chartreuse"].includes(secondChild.stateValues.value)).eq(true)
           } else if (variantInd === 1) {
-            let num = secondChild.state.number;
+            let num = secondChild.stateValues.value;
             expect(Number.isInteger(num)).eq(true);
             expect((num >= 1000 && num <= 2000) || (num >= -1000 && num <= -900)).eq(true);
           } else if (variantInd === 2) {
-            expect(["a", "b", "c", "d", "e", "f", "g"].includes(secondChild.state.value)).eq(true)
+            expect(["a", "b", "c", "d", "e", "f", "g"].includes(secondChild.stateValues.value)).eq(true)
           } else {
-            expect(["u", "v", "w", "x", "y", "z"].includes(secondChild.state.value)).eq(true)
+            expect(["u", "v", "w", "x", "y", "z"].includes(secondChild.stateValues.value)).eq(true)
           }
 
-          let secondValue = secondChild.state.number;
+          let secondValue = secondChild.stateValues.value;
           if (secondValue === undefined) {
-            secondValue = secondChild.state.value;
+            secondValue = secondChild.stateValues.value;
           }
 
           if (originalVariantInd === undefined) {
@@ -1280,7 +1280,7 @@ describe('Specifying single variant document tests', function () {
       for (let ind2 = 0; ind2 < 3; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
@@ -1319,7 +1319,7 @@ describe('Specifying single variant document tests', function () {
 
           for (let i = 1; i <= 3; i++) {
             let problem = components['/problem' + i];
-            let variantInd = titlesToInd[problem.state.title];
+            let variantInd = titlesToInd[problem.stateValues.title];
 
             expect(variantInd).not.eq(undefined);
 
@@ -1328,18 +1328,18 @@ describe('Specifying single variant document tests', function () {
             let p = problem.activeChildren[4];
 
             if (variantInd === 0) {
-              expect(p.activeChildren[0].state.value.trim()).eq("Word:")
-              expect(["angry", "bad", "churlish", "drab", "excoriated"].includes(p.activeChildren[1].state.value)).eq(true)
+              expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+              expect(["angry", "bad", "churlish", "drab", "excoriated"].includes(p.activeChildren[1].stateValues.value)).eq(true)
             } else {
-              expect(p.activeChildren[0].state.value.trim()).eq("Number:");
-              let num = p.activeChildren[1].state.number;
+              expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+              let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
             }
 
-            let secondValue = p.activeChildren[1].state.number;
+            let secondValue = p.activeChildren[1].stateValues.value;
             if (secondValue === undefined) {
-              secondValue = p.activeChildren[1].state.value;
+              secondValue = p.activeChildren[1].stateValues.value;
             }
             secondValues.push(secondValue);
           }

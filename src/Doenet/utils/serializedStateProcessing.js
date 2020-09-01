@@ -1,5 +1,6 @@
 import me from 'math-expressions';
 import { createUniqueName } from './naming';
+import { flattenDeep } from './array';
 
 export function scrapeOffAllDoumentRelated(serializedState) {
 
@@ -379,7 +380,7 @@ export function createComponentsFromProps(serializedState, standardComponentClas
           newChildren.push(newComponent);
           delete component.props[prop];
         } else if (!(propLower === "name" || propLower === "assignnames" || propLower === "assignnamespaces" || propLower === "newnamespace")) {
-          throw Error("Invalid property " + prop);
+          throw Error("Invalid property: " + prop);
         }
       }
       component.children.unshift(...newChildren);
@@ -393,14 +394,9 @@ export function createComponentsFromProps(serializedState, standardComponentClas
 }
 
 
-function lowercaseDeep(arr1) {
-  return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
-}
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
-}
+// function lowercaseDeep(arr1) {
+//   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
+// }
 
 function breakStringByCommasWithParens(string) {
   let Nparens = 0;
@@ -465,8 +461,7 @@ function breakStringByCommasWithParens(string) {
 
 export function createComponentNames({ serializedState, namespaceStack = [],
   componentTypesTakingComponentNames, allComponentClasses,
-  nameSpaceForChildren, parentDoenetAttributes,
-  idRng,
+  nameSpaceForChildren, parentDoenetAttributes = {}
 }) {
 
   if (namespaceStack.length === 0) {
@@ -480,7 +475,7 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
   let currentNamespace = namespaceStack[level];
 
-  for (let serializedComponent of serializedState) {
+  for (let [componentInd, serializedComponent] of serializedState.entries()) {
     let componentType = serializedComponent.componentType;
     // don't name strings
     if (componentType === "string") {
@@ -555,13 +550,11 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         if (prescribedName !== undefined) {
 
           if (!prescribedNameFromDoenetAttributes) {
-            // change it to lowerCase
-            prescribedName = prescribedName.toLowerCase();
 
-            if (!(/[a-z]/.test(prescribedName.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
               throw Error("Component name must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(prescribedName))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(prescribedName))) {
               throw Error("Component name can contain only letters, numbers, hypens, and underscores");
             }
           }
@@ -571,7 +564,14 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           doenetAttributes.prescribedName = prescribedName;
 
         } else if (doenetAttributes.createUniqueName) {
-          prescribedName = createUniqueName(componentType, idRng);
+          let longNameId = parentDoenetAttributes.componentName + "|createUniqueName|";
+
+          if (serializedComponent.downstreamDependencies) {
+            longNameId += JSON.stringify(serializedComponent.downstreamDependencies);
+          } else {
+            longNameId += componentInd;
+          }
+          prescribedName = createUniqueName(componentType, longNameId);
         }
         if (assignNames !== undefined) {
           if (assignNamespaces !== undefined) {
@@ -579,17 +579,15 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           }
 
           // assignNames was specified
-          // change it to lower case
-          assignNames = lowercaseDeep(assignNames);
           // put in doenetAttributes as assignNames array
           doenetAttributes.assignNames = assignNames;
 
           let flattedNames = flattenDeep(assignNames);
           for (let name of flattedNames) {
-            if (!(/[a-z]/.test(name.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
               throw Error("All assigned names must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(name))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
               throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
             }
           }
@@ -600,16 +598,14 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         }
         if (assignNamespaces !== undefined) {
           // assignNamespaces was specified
-          // change it to lower case
-          assignNamespaces = assignNamespaces.map(x => x.toLowerCase());
           // put in doenetAttributes as assignNamespaces array
           doenetAttributes.assignNamespaces = assignNamespaces;
 
           for (let name of assignNamespaces) {
-            if (!(/[a-z]/.test(name.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
               throw Error("All assigned namespaces must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(name))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
               throw Error("Assigned namespaces can contain only letters, numbers, hypens, and underscores");
             }
           }
@@ -709,7 +705,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           componentTypesTakingComponentNames,
           allComponentClasses,
           parentDoenetAttributes: doenetAttributes,
-          idRng
         });
         namespaceStack.pop();
 
@@ -723,7 +718,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
           } else {
             namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: {} });
@@ -733,7 +727,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
             namespaceStack.pop();
           }
@@ -787,13 +780,12 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
               }
               if (childName !== undefined && !prescribedChildNameFromDoenetAttributes) {
-                childName = childName.toLowerCase();
                 child.doenetAttributes.prescribedName = childName;
 
-                if (!(/[a-z]/.test(childName.substring(0, 1)))) {
+                if (!(/[a-zA-Z]/.test(childName.substring(0, 1)))) {
                   throw Error("Component name must begin with a letter");
                 }
-                if (!(/^[a-z0-9_-]+$/.test(childName))) {
+                if (!(/^[a-zA-Z0-9_-]+$/.test(childName))) {
                   throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
                 }
 
@@ -819,7 +811,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
           } else {
 
@@ -838,7 +829,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               componentTypesTakingComponentNames,
               allComponentClasses,
               parentDoenetAttributes: doenetAttributes,
-              idRng
             });
 
             namespaceStack.pop();
@@ -888,7 +878,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             componentTypesTakingComponentNames,
             allComponentClasses,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
 
           // just use first assignedNamespace for the aliases
@@ -900,7 +889,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             allComponentClasses,
             nameSpaceForChildren: standinNamespace,
             parentDoenetAttributes: doenetAttributes,
-            idRng,
           });
           // namespaceStack.pop();
 
@@ -921,7 +909,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             componentTypesTakingComponentNames,
             allComponentClasses,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
 
           // namespaceStack.push({ namespace: standinNamespace, componentCounts: {}, namesUsed: {} });
@@ -932,7 +919,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             allComponentClasses,
             nameSpaceForChildren: standinNamespace,
             parentDoenetAttributes: doenetAttributes,
-            idRng
           });
           // namespaceStack.pop();
           namespaceStack.pop();
@@ -987,7 +973,7 @@ function convertComponentTarget({ allComponentClasses, componentType,
     originalTarget = parentDoenetAttributes.originalTarget;
   }
   else if (stateVariableForTakingComponentName) {
-    throw Error(`Have state variable for taking component name but original target defined.`);
+    throw Error(`Have state variable for taking component name but original target not defined.`);
   }
 
   let stringChild;
@@ -1005,7 +991,7 @@ function convertComponentTarget({ allComponentClasses, componentType,
           if (/__/.test(target)) {
             throw Error("Invalid reference target: " + target);
           }
-          originalTarget = target.toLowerCase();
+          originalTarget = target;
         }
       }
     }

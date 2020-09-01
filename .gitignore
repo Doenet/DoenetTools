@@ -39,3 +39,11 @@ cypress/videos
 cypress/screenshots
 
 src/tempcodes
+
+
+# Docker testing environment
+docker\ deb/
+docker\ alp/
+
+#Docker mysql db
+doenet_docker/volumes/db/*

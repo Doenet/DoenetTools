@@ -3,20 +3,42 @@ import Input from './abstract/Input';
 export default class Textinput extends Input {
   constructor(args) {
     super(args);
-    this.updateText = this.updateText.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
+
+    this.actions = {
+      updateImmediateValue: this.updateImmediateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      ),
+      updateValue: this.updateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      )
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.coreFunctions.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
+
   }
   static componentType = "textinput";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
-    properties.size = { default: 10 };
+    properties.size = { default: 10, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -33,16 +55,18 @@ export default class Textinput extends Input {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         textChild: {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneText",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -83,340 +107,176 @@ export default class Textinput extends Input {
       }
     }
 
-    stateVariableDefinitions.componentTypes = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentTypes: ["text"] } })
-    }
-
-
-
-
-    stateVariableDefinitions.numberTimesSubmitted = {
-      public: true,
-      componentType: "number",
-      defaultValue: 0,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          numberTimesSubmitted: {
-            variablesToCheck: ["numberTimesSubmitted"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "numberTimesSubmitted",
-            value: desiredStateVariableValues.numberTimesSubmitted
-          }]
-        };
-      }
-    }
-
-
-    stateVariableDefinitions.creditAchieved = {
-      defaultValue: 0,
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          creditAchieved: {
-            variablesToCheck: ["creditAchieved"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
-        };
-      }
-    }
-
-
-    stateVariableDefinitions.submittedValue = {
-      defaultValue: "",
+    stateVariableDefinitions.immediateValue = {
       public: true,
       componentType: "text",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          submittedValue: {
-            variablesToCheck: ["submittedValue"]
-          }
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
         }
       }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      definition: function ({ dependencyValues, changes }) {
+        // console.log(`definition of immediateValue`)
+        // console.log(dependencyValues)
+        // console.log(changes);
+
+        if (changes.value) {
+          // only update to value when it changes
+          // (otherwise, let its essential value change)
+          return {
+            newValues: { immediateValue: dependencyValues.value },
+            makeEssential: ["immediateValue"]
+          };
+
+
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              immediateValue: {
+                variablesToCheck: "immediateValue",
+                defaultValue: dependencyValues.value
+              }
+            }
+          }
+        }
+
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange, shadowedVariable }) {
+
+        // value is essential; give it the desired value
+        let instructions = [{
+          setStateVariable: "immediateValue",
+          value: desiredStateVariableValues.immediateValue
+        }]
+
+
+        // if from outside sources, also set value
+        if (!(initialChange || shadowedVariable)) {
+          instructions.push({
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.immediateValue
+          })
+        }
+
         return {
           success: true,
-          instructions: [{
-            setStateVariable: "submittedValue",
-            value: desiredStateVariableValues.submittedValue
-          }]
+          instructions
         };
       }
     }
 
-    stateVariableDefinitions.rendererValueAsSubmitted = {
-      returnDependencies: () => ({
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
       }),
       definition: function ({ dependencyValues }) {
-        console.warn('todo')
-        return {
-          newValues: {
-            rendererValueAsSubmitted: true
-          }
-        }
+        return { newValues: { text: dependencyValues.value } }
       }
     }
+
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentType: "text" } })
+    }
+
+
+    // stateVariableDefinitions.submittedValue = {
+    //   defaultValue: '\uFF3F',
+    //   public: true,
+    //   componentType: "text",
+    //   returnDependencies: () => ({}),
+    //   definition: () => ({
+    //     useEssentialOrDefaultValue: {
+    //       submittedValue: {
+    //         variablesToCheck: ["submittedValue"]
+    //       }
+    //     }
+    //   }),
+    //   inverseDefinition: function ({ desiredStateVariableValues }) {
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setStateVariable: "submittedValue",
+    //         value: desiredStateVariableValues.submittedValue
+    //       }]
+    //     };
+    //   }
+    // }
+
 
     return stateVariableDefinitions;
 
   }
 
-  updateState(args = {}) {
-    super.updateState(args);
 
-    if (args.init) {
-
-      this.makePublicStateVariable({
-        variableName: "value",
-        componentType: "text",
-      });
-      this.makePublicStateVariable({
-        variableName: "submittedvalue",
-        componentType: "text",
-      });
-      this.makePublicStateVariable({
-        variableName: "creditAchieved",
-        componentType: "number"
-      });
-      this.makePublicStateVariable({
-        variableName: "numberTimesSubmitted",
-        componentType: "number"
-      });
-
-      // if not essential, initialize submittedvalue to empty string
-      if (this._state.submittedvalue.essential !== true) {
-        this.state.submittedvalue = ""
-      }
-      if (this._state.numberTimesSubmitted.essential !== true) {
-        this.state.numberTimesSubmitted = 0
-      }
-      if (this._state.creditAchieved.essential !== true) {
-        this.state.creditAchieved = 0;
-      }
-      // make value, submittedvalue, creditAchieved, numberTimesSubmitted essential
-      // as they are used to store changed quantities
-      this._state.value.essential = true;
-      this._state.submittedvalue.essential = true;
-      this._state.creditAchieved.essential = true;
-      this._state.numberTimesSubmitted.essential = true;
-
-
-      this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-
-      if (this._state.rendererValueAsSubmitted === undefined) {
-        this._state.rendererValueAsSubmitted = { essential: true };
-      }
+  updateImmediateValue({ text }) {
+    if (!this.stateValues.disabled) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          value: text,
+        }]
+      })
     }
-
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.value = true;
-      this.unresolvedState.submittedvalue = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if (childrenChanged) {
-      let atMostOneText = this.childLogic.returnMatches("atMostOneText");
-      if (atMostOneText.length === 1) {
-        this.state.textChild = this.activeChildren[atMostOneText[0]];
-      } else {
-        delete this.state.textChild;
-      }
-    }
-
-    delete this.unresolvedState.value;
-    delete this.unresolvedState.submittedvalue;
-
-    if (this.state.textChild !== undefined) {
-      if (this.state.textChild.unresolvedState.value) {
-        this.unresolvedState.value = true;
-        this.unresolvedState.submittedvalue = true;
-      } else {
-        // we could update this only if children changed or value of textchild changed
-        // but this step is quick
-        this.state.value = this.state.textChild.state.value;
-      }
-    } else {
-      if (this.state.value === undefined) {
-        if (this.unresolvedState.prefill) {
-          this.unresolvedState.value = true;
-          this.unresolvedState.submittedvalue = true;
-        } else {
-          this.state.value = this.state.prefill;
-        }
-      }
-    }
-
-    if (this.ancestors === undefined) {
-      this.unresolvedState.includeCheckWork = true;
-      this.unresolvedDependencies = { [this.state.includeCheckWork]: true };
-    } else {
-      delete this.unresolvedState.includeCheckWork;
-      delete this.unresolvedDependencies;
-
-      // if (this.ancestorsWhoGathered === undefined){
-      //textinput not inside an answer component
-      this.state.includeCheckWork = false;
-      // }else{
-      //   this.state.answerAncestor = undefined;
-      //   for (let componentName of this.ancestorsWhoGathered){
-      //     if (this.components[componentName].componentType === "answer"){
-      //       this.state.answerAncestor = this.components[componentName];
-      //       break;
-      //     }
-      //   }
-      //   if (this.state.answerAncestor === undefined){
-      //     //textinput not inside an answer component
-      //     this.state.includeCheckWork = false;
-      //   }else{
-      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-      //     if (this.state.answerAncestor.state.delegateCheckWork){
-      //       this.state.includeCheckWork = true;
-      //     }else{
-      //       this.state.includeCheckWork = false;
-      //     }
-      //   }
-      // }
-    }
-    this.state.valueHasBeenValidated = false;
-
-    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 && this.state.value === this.state.submittedvalue) {
-      this.state.valueHasBeenValidated = true;
-    }
-
-    if (this.state.rendererValueAsSubmitted === undefined) {
-      // first time through, use valueHasBeenValidated
-      this.state.rendererValueAsSubmitted = this.state.valueHasBeenValidated;
-    }
-
   }
 
-
-  updateText({ text }) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
+  updateValue() {
+    if (!this.stateValues.disabled) {
+      let updateInstructions = [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
-        value: text,
-      }]
-    })
-  }
-
-  setRendererValueAsSubmitted(val) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
+        value: this.stateValues.immediateValue,
+      },
+      // in case value ended up being a different value than requested
+      // we set immediate value to whatever was the result
+      // (hence the need to execute update first)
+      // Also, this makes sure immediateValue is saved to the database,
+      // since in updateImmediateValue, immediateValue is note saved to database
+      {
+        updateType: "executeUpdate"
+      },
+      {
+        updateType: "updateValue",
         componentName: this.componentName,
-        variableUpdates: {
-          rendererValueAsSubmitted: { changes: val },
+        stateVariable: "immediateValue",
+        valueOfStateVariable: "value",
+      }];
+
+      let event = {
+        verb: "answered",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          response: this.stateValues.immediateValue,
+          responseText: this.stateValues.immediateValue,
         }
-      }]
-    })
-  }
+      }
 
-  allowDownstreamUpdates(status) {
-    // since can't change via parents, 
-    // only non-initial change can be due to reference
-    return (status.initialChange === true || this.state.modifyIndirectly === true);
-  }
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
 
-  get variablesUpdatableDownstream() {
-    // only allowed to change these state variables
-    return [
-      "value", "submittedvalue", "creditAchieved", "numberTimesSubmitted",
-      "rendererValueAsSubmitted"
-    ];
-  }
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event
+      })
 
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    if ("value" in stateVariablesToUpdate && this.state.textChild) {
-      let textName = this.state.textChild.componentName;
-      dependenciesToUpdate[textName] = { value: { changes: stateVariablesToUpdate.value.changes } };
     }
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: stateVariablesToUpdate,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-
-    // if didn't update a downstream referenceShadow and didn't have textChild
-    // then this textinput is at the bottom
-    // and we need to give core instructions to update its state variables explicitly
-    // if the the update is successful
-    if (Object.keys(shadowedStateVariables).length === 0 &&
-      // !isReplacement && 
-      !this.state.textChild) {
-      Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-    }
-
-    return true;
-
-  }
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    const actions = {
-      updateText: this.updateText,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      actions.submitAnswer = this.stateValues.answerAncestor.submitAnswer;
-    }
-
-    this.renderer = new this.availableRenderers.textinput({
-      actions: actions,
-      text: this.stateValues.value,
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-      size: this.stateValues.size,
-      showCorrectness: this.flags.showCorrectness,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateTextinputRenderer({
-      text: this.stateValues.value,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-    });
-
   }
 
 }

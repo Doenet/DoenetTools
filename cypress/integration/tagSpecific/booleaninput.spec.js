@@ -1,231 +1,290 @@
-describe('Booleaninput Tag Tests',function() {
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
+describe('Booleaninput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
   })
-  
+
   it('single boolean input', () => {
 
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <booleaninput label="hello"/>
-    <ref prop="value">_booleaninput1</ref>
-    <ref>_ref1</ref>
-    `},"*");
+    <copy prop="value" tname="_booleaninput1" />
+    <copy tname="_copy1" />
+    `}, "*");
     });
 
-    cy.log('Test values displayed in browser')
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
-    
-    // had to include two booleans in order to get it to wait long enough
-    // so that the components object, below, was populated
-    cy.get('#__boolean1').should('have.text', "false");
-    cy.get('#__boolean2').should('have.text', "false");
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__label1.state.value).eq("hello");
-    });
+      let components = Object.assign({}, win.state.components);
+      let boolean1 = components['/_copy1'].replacements[0];
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
+      let boolean2 = components['/_copy2'].replacements[0].replacements[0];
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
 
-    cy.log('check the box')
-    cy.get('#\\/_booleaninput1_input').click();
+      cy.log('Test values displayed in browser')
 
-    cy.log('Test values displayed in browser')
-    // cy.get('#\\/_booleaninput1_input').should('have.attr', 'checked');
-    cy.get('#__boolean1').should('have.text', "true");
-    cy.get('#__boolean2').should('have.text', "true");
+      cy.get(boolean1Anchor).should('have.text', "false");
+      cy.get(boolean2Anchor).should('have.text', "false");
 
-    cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-    });
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(false);
+        expect(boolean2.stateValues.value).eq(false);
+        expect(components['/_booleaninput1'].stateValues.label).eq("hello");
+      });
 
-    cy.log('uncheck the box')
-    cy.get('#\\/_booleaninput1_input').click();
+      cy.log('check the box')
+      cy.get('#\\/_booleaninput1_input').click();
 
-    cy.log('Test values displayed in browser')
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
-    cy.get('#__boolean1').should('have.text', "false");
-    cy.get('#__boolean2').should('have.text', "false");
+      cy.log('Test values displayed in browser')
+      // cy.get('#\\/_booleaninput1_input').should('have.attr', 'checked');
+      cy.get(boolean1Anchor).should('have.text', "true");
+      cy.get(boolean2Anchor).should('have.text', "true");
 
-    cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-    });
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(boolean1.stateValues.value).eq(true);
+        expect(boolean2.stateValues.value).eq(true);
+      });
 
+      cy.log('uncheck the box')
+      cy.get('#\\/_booleaninput1_input').click();
 
+      cy.log('Test values displayed in browser')
+      // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
+      cy.get(boolean1Anchor).should('have.text', "false");
+      cy.get(boolean2Anchor).should('have.text', "false");
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(false);
+        expect(boolean2.stateValues.value).eq(false);
+      });
+
+    })
   })
 
   it('single boolean input, starts checked', () => {
 
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <booleaninput prefill="true"/>
-    <ref prop="value">_booleaninput1</ref>
-    `},"*");
+    <copy prop="value" tname="_booleaninput1" />
+    `}, "*");
     });
 
-    cy.log('Test values displayed in browser')
-    cy.get('#__boolean1').should('have.text', "true");
 
-    cy.log('Test internal values are set to the correct values')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-    });
+      let components = Object.assign({}, win.state.components);
+      let boolean1 = components['/_copy1'].replacements[0];
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
 
-    cy.log('uncheck the box')
-    cy.get('#\\/_booleaninput1_input').click();
+      cy.log('Test values displayed in browser')
+      cy.get(boolean1Anchor).should('have.text', "true");
 
-    cy.log('Test values displayed in browser')
-    cy.get('#__boolean1').should('have.text', "false");
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(boolean1.stateValues.value).eq(true);
+      });
 
-    cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-    });
+      cy.log('uncheck the box')
+      cy.get('#\\/_booleaninput1_input').click();
 
-    cy.log('recheck the box')
-    cy.get('#\\/_booleaninput1_input').click();
+      cy.log('Test values displayed in browser')
+      cy.get(boolean1Anchor).should('have.text', "false");
 
-    cy.log('Test values displayed in browser')
-    cy.get('#__boolean1').should('have.text', "true");
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(false);
+      });
 
-    cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-    });
+      cy.log('recheck the box')
+      cy.get('#\\/_booleaninput1_input').click();
 
+      cy.log('Test values displayed in browser')
+      cy.get(boolean1Anchor).should('have.text', "true");
 
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(boolean1.stateValues.value).eq(true);
+      });
+
+    })
   })
 
   it('reffed boolean input', () => {
 
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p><booleaninput prefill="t" label="green"/></p>
-    <p><ref>_booleaninput1</ref></p>
-    <p><ref prop="value">_booleaninput1</ref></p>
+    <p><copy tname="_booleaninput1" /></p>
+    <p><copy prop="value" tname="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>
-    <p><ref prop="value">_booleaninput2</ref></p>
-    `},"*");
+    <p><copy prop="value" tname="_booleaninput2" /></p>
+    `}, "*");
     });
 
-    cy.get('#__boolean1').should('have.text', "true");
-    cy.get('#__boolean2').should('have.text', "false");
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['__booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__label1.state.value).eq("green");
-      expect(components.__label2.state.value).eq("red");
-    });
+      let components = Object.assign({}, win.state.components);
+      let booleaninput1a = components['/_copy1'].replacements[0];
+      let booleaninput1aAnchor = cesc('#' + booleaninput1a.componentName + "_input");
+      let boolean1 = components['/_copy2'].replacements[0];
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
+      let boolean2 = components['/_copy3'].replacements[0];
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
 
-    cy.log("click the first input");
-    cy.get("#\\/_booleaninput1_input").click();
-    cy.get('#__boolean1').should('have.text', "false");
-    cy.get('#__boolean2').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['__booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-    });
+      cy.get(boolean1Anchor).should('have.text', "true");
+      cy.get(boolean2Anchor).should('have.text', "false");
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(booleaninput1a.stateValues.value).eq(true);
+        expect(components['/_booleaninput2'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(true);
+        expect(boolean2.stateValues.value).eq(false);
+        expect(components['/_booleaninput1'].stateValues.label).eq("green");
+        expect(components['/_booleaninput2'].stateValues.label).eq("red");
+      });
 
-    cy.log("click the second input");
-    cy.get("#__booleaninput1_input").click();
-    cy.get('#__boolean1').should('have.text', "true");
-    cy.get('#__boolean2').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['__booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(false);
-    });
+      cy.log("click the first input");
+      cy.get("#\\/_booleaninput1_input").click();
+      cy.get(boolean1Anchor).should('have.text', "false");
+      cy.get(boolean2Anchor).should('have.text', "false");
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_booleaninput1'].stateValues.value).eq(false);
+        expect(booleaninput1a.stateValues.value).eq(false);
+        expect(components['/_booleaninput2'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(false);
+        expect(boolean2.stateValues.value).eq(false);
+      });
+
+      cy.log("click the second input");
+      cy.get(booleaninput1aAnchor).click();
+      cy.get(boolean1Anchor).should('have.text', "true");
+      cy.get(boolean2Anchor).should('have.text', "false");
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(booleaninput1a.stateValues.value).eq(true);
+        expect(components['/_booleaninput2'].stateValues.value).eq(false);
+        expect(boolean1.stateValues.value).eq(true);
+        expect(boolean2.stateValues.value).eq(false);
+      });
 
 
-    cy.log("click the third input");
-    cy.get("#\\/_booleaninput2_input").click();
-    cy.get('#__boolean1').should('have.text', "true");
-    cy.get('#__boolean2').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['__booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-    });
+      cy.log("click the third input");
+      cy.get("#\\/_booleaninput2_input").click();
+      cy.get(boolean1Anchor).should('have.text', "true");
+      cy.get(boolean2Anchor).should('have.text', "true");
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(booleaninput1a.stateValues.value).eq(true);
+        expect(components['/_booleaninput2'].stateValues.value).eq(true);
+        expect(boolean1.stateValues.value).eq(true);
+        expect(boolean2.stateValues.value).eq(true);
+      });
 
+    })
   })
 
   it('downstream from booleaninput', () => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>
-    <p>Reffed boolean: <ref>_boolean1</ref></p>
-    <p>Reffed boolean input: <ref prop="value">_booleaninput1</ref></p>
-    `},"*");
+    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>Reffed boolean: <copy tname="_boolean1" /></p>
+    <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
+    `}, "*");
     });
 
     // cy.get('#\\/_booleaninput1_input').should('have.attr', 'checked');
 
-    cy.get('#\\/_boolean1').should('have.text', 'true');
-    cy.get('#\\__boolean2').should('have.text', 'true');
-    cy.get('#\\__boolean3').should('have.text', 'true');
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_boolean1'].state.value).eq(true);
-      expect(components['__boolean2'].state.value).eq(true);
-      expect(components['__boolean3'].state.value).eq(true);
+      let components = Object.assign({}, win.state.components);
+      let boolean2 = components['/_copy2'].replacements[0];
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
+      let boolean3 = components['/_copy3'].replacements[0];
+      let boolean3Anchor = cesc('#' + boolean3.componentName);
+
+      cy.get('#\\/_boolean1').should('have.text', 'true');
+      cy.get(boolean2Anchor).should('have.text', 'true');
+      cy.get(boolean3Anchor).should('have.text', 'true');
+
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(true);
+        expect(components['/_boolean1'].stateValues.value).eq(true);
+        expect(boolean2.stateValues.value).eq(true);
+        expect(boolean3.stateValues.value).eq(true);
+      });
+
+      cy.log('change value')
+      cy.get('#\\/_booleaninput1_input').click();
+
+      // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
+
+      cy.get('#\\/_boolean1').should('have.text', 'false');
+      cy.get(boolean2Anchor).should('have.text', 'false');
+      cy.get(boolean3Anchor).should('have.text', 'false');
+
+
+      cy.window().then((win) => {
+        expect(components['/_booleaninput1'].stateValues.value).eq(false);
+        expect(components['/_boolean1'].stateValues.value).eq(false);
+        expect(boolean2.stateValues.value).eq(false);
+        expect(boolean3.stateValues.value).eq(false);
+      });
+
     });
-
-    cy.log('change value')
-    cy.get('#\\/_booleaninput1_input').click();
-
-    // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
-
-    cy.get('#\\/_boolean1').should('have.text', 'false');
-    cy.get('#\\__boolean2').should('have.text', 'false');
-    cy.get('#\\__boolean3').should('have.text', 'false');
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_boolean1'].state.value).eq(false);
-      expect(components['__boolean2'].state.value).eq(false);
-      expect(components['__boolean3'].state.value).eq(false);
-    });
-
 
     cy.log('prefill ignored');
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput prefill="false"><ref>_boolean1</ref></booleaninput></p>
-    `},"*");
+    <p>booleaninput based on boolean: <booleaninput prefill="false"><copy tname="_boolean1" /></booleaninput></p>
+    `}, "*");
     });
+
+
+    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+
 
     // cy.get('#\\/_booleaninput1_input').should('have.attr', 'checked');
 
@@ -233,20 +292,25 @@ describe('Booleaninput Tag Tests',function() {
 
 
     cy.log("values revert if not updatable")
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>
-    `},"*");
+    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'c');  // to wait until loaded
 
     // cy.get('#\\/_booleaninput1_input').should('not.have.attr', 'checked');
 
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_boolean1'].state.value).eq(false);
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_boolean1'].stateValues.value).eq(false);
     });
 
     cy.log('change value, but it reverts')
@@ -257,12 +321,11 @@ describe('Booleaninput Tag Tests',function() {
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_boolean1'].state.value).eq(false);
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_boolean1'].stateValues.value).eq(false);
     });
 
   })
-
 
 });

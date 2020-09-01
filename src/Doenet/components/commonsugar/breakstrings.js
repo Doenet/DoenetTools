@@ -1,29 +1,41 @@
 
-// function: breakStringsAndOthersIntoComponentsByStringCommas
+// function: returnBreakStringsSugarFunction
 //
 // returns a sugar replacement function that
 // - expects string and other children,
 // - breaks the children by commas in strings not enclosed in parenthesis,
-// - returns an array of components created by mapping the childrenToComponent
+//   (optionally stripping off outer most parentheses first)
+// - returns an array of components created by mapping the childrenToComponentFunction
 //   function onto each of the pieces
 // - other children are not examined or altered, so they could be anything
 //
-// For example, to create points with coordinates determined by the pieces
+// For example, to take the dependency "stringAndMathChildren"
+// and create points with coordinates determined by the pieces
 // one could use the sugar replacement function
-//
-// breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+// let childrenToComponentFunction = x => ({
 //   componentType: "point", children: [{
 //     componentType: "coords", children: x}]
-// }))
+// })
+// returnBreakStringsSugarFunction({
+//   childrenToComponentFunction,
+//   dependencyNameWithChildren: "stringAndMathChildren"
+//  })
 
-export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComponent) {
-  return function ({ activeChildrenMatched }) {
+export function returnBreakStringsSugarFunction({
+  childrenToComponentFunction,
+  dependencyNameWithChildren,
+  stripOffOuterParentheses = false
+}) {
+  return function ({ dependencyValues }) {
     let Nparens = 0;
     let pieces = [];
     let currentPiece = [];
     let toDelete = [];
+    let strippedParens = false;
 
-    for (let component of activeChildrenMatched) {
+    let nChildren = dependencyValues[dependencyNameWithChildren].length;
+
+    for (let [compInd, component] of dependencyValues[dependencyNameWithChildren].entries()) {
       if (component.componentType !== "string") {
         currentPiece.push({
           createdComponent: true,
@@ -33,8 +45,26 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComp
       }
 
       let s = component.stateValues.value.trim();
-      let beginInd = 0;
       let deleteOriginalString = false;
+
+      if (compInd === 0 && stripOffOuterParentheses && s[0] === "(") {
+        // found beginning paren, now check if there is an ending parens
+        let lastChild = dependencyValues[dependencyNameWithChildren][nChildren - 1];
+        if (lastChild.componentType === "string") {
+          let sLast = lastChild.stateValues.value.trimRight();
+          if (sLast[sLast.length - 1] === ")") {
+            // found ending paren, so we'll strip off first paren
+            strippedParens = true;
+            s = s.substring(1);
+            if (!deleteOriginalString) {
+              toDelete.push(component.componentName);
+              deleteOriginalString = true;
+            }
+          }
+        }
+      }
+
+      let beginInd = 0;
 
       for (let ind = 0; ind < s.length; ind++) {
         let char = s[ind];
@@ -43,7 +73,19 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComp
         }
         if (char === ")") {
           if (Nparens === 0) {
-            // parens didn't match, so return failure
+            // parens didn't match
+
+            // check if stripped off initial paren and we're at the end
+            if (strippedParens && compInd === nChildren - 1 && ind === s.length - 1) {
+              if (!deleteOriginalString) {
+                toDelete.push(component.componentName);
+                deleteOriginalString = true;
+              }
+              // strip off last parens
+              s = s.substring(0, s.length - 1);
+              break;
+            }
+            // return failure due to non-matching parens
             return { success: false };
           }
           Nparens--
@@ -58,11 +100,10 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComp
           pieces.push(currentPiece);
           currentPiece = [];
           beginInd = ind + 1;
-          if (deleteOriginalString !== true) {
+          if (!deleteOriginalString) {
+            deleteOriginalString = true;
             toDelete.push(component.componentName);
           }
-          deleteOriginalString = true;
-
         }
       }
 
@@ -89,7 +130,7 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComp
 
     pieces.push(currentPiece);
 
-    let newChildren = pieces.map(childrenToComponent);
+    let newChildren = pieces.map(childrenToComponentFunction);
 
     return {
       success: true,

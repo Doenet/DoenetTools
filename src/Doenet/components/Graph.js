@@ -1,33 +1,29 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
-  constructor(args) {
-    super(args);
-    this.returnRenderersInGraph = this.returnRenderersInGraph.bind(this);
-  }
   static componentType = "graph";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.xmin = { default: -10 };
-    properties.xmax = { default: 10 };
-    properties.ymin = { default: -10 };
-    properties.ymax = { default: 10 };
+    properties.xmin = { default: -10, forRenderer: true };
+    properties.xmax = { default: 10, forRenderer: true };
+    properties.ymin = { default: -10, forRenderer: true };
+    properties.ymax = { default: 10, forRenderer: true };
     properties.width = { default: 300 };
     properties.height = { default: 300 };
-    properties.displayaxes = { default: true };
-    properties.xlabel = { default: "" };
-    properties.ylabel = { default: "" };
+    properties.displayAxes = { default: true, forRenderer: true };
+    properties.xlabel = { default: "", forRenderer: true };
+    properties.ylabel = { default: "", forRenderer: true };
     return properties;
   }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addCurve = function ({ activeChildrenMatched }) {
+    let addCurve = function ({ activeChildrenMatched, dependencyValues }) {
       // add <curve> around strings, as long as they don't have points
       let curveChildren = [];
-      for (let child of activeChildrenMatched) {
+      for (let child of dependencyValues.atLeastOneString) {
         if (child.stateValues.value.includes(",")) {
           return { success: false };
         }
@@ -49,6 +45,14 @@ export default class Graph extends BlockComponent {
       number: 1,
       requireConsecutive: true,
       isSugar: true,
+      returnSugarDependencies: () => ({
+        atLeastOneString: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneString",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastZeroGraphical"],
       replacementFunction: addCurve,
     });
 
@@ -60,7 +64,7 @@ export default class Graph extends BlockComponent {
     });
 
     childLogic.newOperator({
-      name: "SugarXorGraph",
+      name: "sugarXorGraph",
       operator: "xor",
       propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,
@@ -71,12 +75,12 @@ export default class Graph extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.graphicalDescendants = {
-
+      forRenderer: true,
       returnDependencies: () => ({
-        descendants: {
+        graphicalDescendants: {
           dependencyType: "descendantIdentity",
           componentTypes: ["_graphical"]
         },
@@ -84,14 +88,39 @@ export default class Graph extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            graphicalDescendants: dependencyValues.descendants
+            graphicalDescendants: dependencyValues.graphicalDescendants
           }
         }
       },
     };
 
+    stateVariableDefinitions.numericalWidth = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        width: {
+          dependencyType: "stateVariable",
+          variableName: "width"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numericalWidth: parseInt(dependencyValues.width) }
+      })
+    }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.numericalHeight = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        height: {
+          dependencyType: "stateVariable",
+          variableName: "height"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numericalHeight: parseInt(dependencyValues.height) }
+      })
+    }
+
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -101,7 +130,7 @@ export default class Graph extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }
@@ -109,50 +138,5 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    this.renderer = new this.availableRenderers.graph2d({
-      key: this.componentName,
-      returnRenderersInGraph: this.returnRenderersInGraph,
-      // TODO: lost graphRenderComponents: is used in graph renderer!
-      graphRenderComponents: this.graphRenderComponents,
-      width: parseInt(this.stateValues.width),
-      height: parseInt(this.stateValues.height),
-      xmin: this.stateValues.xmin,
-      xmax: this.stateValues.xmax,
-      ymin: this.stateValues.ymin,
-      ymax: this.stateValues.ymax,
-      displayaxes: this.stateValues.displayaxes,
-      xlabel: this.stateValues.xlabel,
-      ylabel: this.stateValues.ylabel,
-    });
-  }
-
-  updateRenderer() {
-    if (this.renderer !== undefined) {
-      this.renderer.resizeBoard({
-        xmin: this.stateValues.xmin,
-        xmax: this.stateValues.xmax,
-        ymin: this.stateValues.ymin,
-        ymax: this.stateValues.ymax,
-      })
-    }
-  }
-
-  returnRenderersInGraph() {
-    let graphicalRenderers = {};
-
-    for (let component of this.stateValues.graphicalDescendants) {
-      let componentRenderer = this.allRenderComponents[component.componentName];
-      // could be undefined if no renderer present
-      graphicalRenderers[component.componentName] = componentRenderer;
-    }
-
-    return graphicalRenderers;
-
-  }
 
 }

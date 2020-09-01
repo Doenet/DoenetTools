@@ -1,144 +1,281 @@
 import BaseComponent from './BaseComponent';
 
 export default class ComponentSize extends BaseComponent {
-  constructor(args){
-    super(args);
-
-    // make default reference (with no prop) be value
-    this.stateVariablesForReference = ["value","isAbsolute"];
-
-  }
   static componentType = "_componentsize";
+  static rendererType = "number";
 
-  updateState(args={}) {
-    super.updateState(args);
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value", "isAbsolute"] };
 
-    let MathAndStringInds = this.childLogic.returnMatches("MathAndString");
-    if (MathAndStringInds.length === 0){
-      let AtMostOneComponentSizeInds = this.childLogic.returnMatches("AtMostOneComponentSize");
-      if (AtMostOneComponentSizeInds.length === 0){
-        if(this._state.value.essential !== true || this._state.isAbsolute.essential !== true ) {
-          throw Error(this.componentType + " needs a value")
-        }
-        
-      }else{
-        //The case where we have componentsize child
-        this.state.componentSizeChild = this.activeChildren[AtMostOneComponentSizeInds[0]];
-        this.state.value = this.state.componentSizeChild.state.value;
-        this.state.isAbsolute = this.state.componentSizeChild.state.isAbsolute;
-      }
 
-    }else{
-      //The case where we have math and a string
-      let mathAndStringChildren = MathAndStringInds.map( x => this.activeChildren[x]);
-
-      // console.log(mathAndStringChildren);
-      if (mathAndStringChildren.length === 1){
-        //Only have a string
-        // <width>100px</width>
-        // <width>100 px</width>
-        // <width>100 pixels</width>
-        // <width>100pixels</width>
-        // <width>100     pixel</width>
-        // <width>100pixel</width>
-
-        let result = mathAndStringChildren[0].state.value.match(/^\s*(\d+)\s*([a-zA-Z]+|%+)\s*$/);
-        if (result === null){ throw Error(this.componentType + " must have a number and a unit.");}
-        this.state.originalValue = result[1];
-        this.state.originalUnit = result[2];
-        
-      }else{
-        //Have a math followed by a string
-        this.state.originalValue = mathAndStringChildren[0].state.value.evaluate_to_constant();
-        if (!Number.isFinite(this.state.originalValue)) {
-          throw Error(this.componentType + " must have a number");
-        }
-        let result = mathAndStringChildren[1].state.value.match(/^\s*([a-zA-Z]+|%+)\s*$/);
-        if (result === null){ throw Error(this.componentType + " must have a number and a unit.");}
-        this.state.originalUnit = result[1];
-
-      }
- 
-      //Set isAbsolute and value (this.state)
-      if (this.state.originalUnit === '%' || this.state.originalUnit === 'em'){
-        this.state.isAbsolute = false;
-      }else{
-        this.state.isAbsolute = true;
-      }
-
-      let conversionFactor = {
-        'px': 1,
-        'pixel': 1,
-        'pixels': 1,
-        '%': 1,
-        'em': 100,
-        'in': 96,
-        'inch': 96,
-        'inches': 96,
-        'pt': 1.333333333333,
-        'mm': 3.7795296,
-        'millimeter': 3.7795296,
-        'millimeters': 3.7795296,
-        'cm': 37.795296,
-        'centimeter': 37.795296,
-        'centimeters': 37.795296,
-      }
-      if (conversionFactor[this.state.originalUnit] === undefined){
-        throw Error(this.state.originalUnit + ' is not a defined unit of measure.');
-      }
-      this.state.value = conversionFactor[this.state.originalUnit] * this.state.originalValue;
-
- 
-      // console.log(this.state.originalValue);
-      // console.log(this.state.originalUnit);
-      // console.log(this.state.isAbsolute);
-      // console.log(this.state.value);
-      
-      
-    }
-
-  }
-
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let ExactlyOneString = childLogic.newLeaf({
-      name: "ExactlyOneString",
+    let atMostOneString = childLogic.newLeaf({
+      name: "atMostOneString",
       componentType: 'string',
-      comparison: 'exactly',
-      number: 1,
-    });
-
-    let AtMostOneMath = childLogic.newLeaf({
-      name: "AtMostOneMath",
-      componentType: 'math',
       comparison: 'atMost',
       number: 1,
     });
 
-    let MathAndString = childLogic.newOperator({
-      name: "MathAndString",
+    let atMostOneNumber = childLogic.newLeaf({
+      name: "atMostOneNumber",
+      componentType: 'number',
+      comparison: 'atMost',
+      number: 1,
+    });
+
+    let numberAndString = childLogic.newOperator({
+      name: "numberAndString",
       operator: 'and',
-      propositions: [AtMostOneMath,ExactlyOneString],
+      propositions: [atMostOneNumber, atMostOneString],
       requireConsecutive: true,
       sequenceMatters: true,
     });
 
-    let AtMostOneComponentSize = childLogic.newLeaf({
-      name: "AtMostOneComponentSize",
+    let atMostOneComponentSize = childLogic.newLeaf({
+      name: "atMostOneComponentSize",
       componentType: '_componentsize',
       comparison: 'atMost',
       number: 1,
     });
 
     childLogic.newOperator({
-      name: "MathAndStringXorComponentSize",
+      name: "numberAndStringXorComponentSize",
       operator: 'xor',
-      propositions: [MathAndString,AtMostOneComponentSize],
+      propositions: [numberAndString, atMostOneComponentSize],
       setAsBase: true
     });
 
     return childLogic;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let componentType = this.componentType;
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: ["isAbsolute"],
+      returnDependencies: () => ({
+        componentSizeChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneComponentSize",
+          variableNames: ["value", "isAbsolute"]
+        },
+        numberChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneNumber",
+          variableNames: ["value"]
+        },
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        // console.log('value dependencyValues')
+        // console.log(dependencyValues);
+
+        if (dependencyValues.stringChild.length === 0) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.componentSizeChild.length === 0) {
+              return {
+                useEssentialOrDefaultValue: {
+                  value: { variablesToCheck: "value", defaultValue: 100 },
+                  isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: false }
+                }
+              }
+            } else {
+              //only componentSize child
+
+              return {
+                newValues: dependencyValues.componentSizeChild[0].stateValues
+              }
+            }
+          } else {
+            //only number child
+
+            return {
+              newValues: {
+                value: dependencyValues.numberChild[0].stateValues.value,
+                isAbsolute: true
+              }
+            }
+          }
+        } else {
+          //string child
+
+          let originalValue, originalUnit;
+
+          if (dependencyValues.numberChild.length === 1) {
+            //string and number child
+
+            originalValue = dependencyValues.numberChild[0].stateValues.value;
+            originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+          } else {
+            //only string child
+
+            // <width>100</width>
+            // <width>100px</width>
+            // <width>100 px</width>
+            // <width>100 pixels</width>
+            // <width>100pixels</width>
+            // <width>100     pixel</width>
+            // <width>100pixel</width>
+            // <width>50%</width>
+
+            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
+            if (result === null) {
+              console.warn(componentType + " must begin with a number.");
+              return { newValues: { value: null, isAbsolute: true } };
+            }
+            originalValue = result[1];
+            originalUnit = result[2].trim();
+          }
+
+          originalValue = Number(originalValue);
+          if (!Number.isFinite(originalValue)) {
+            console.warn(componentType + " must have a number");
+            return { newValues: { value: null, isAbsolute: true } };
+          }
+
+          if (originalUnit === "") {
+            return { newValues: { value: originalValue, isAbsolute: true } };
+          }
+
+          let isAbsolute = !(originalUnit === '%' || originalUnit === 'em');
+
+          let conversionFactor = {
+            'px': 1,
+            'pixel': 1,
+            'pixels': 1,
+            '%': 1,
+            'em': 100,
+            'in': 96,
+            'inch': 96,
+            'inches': 96,
+            'pt': 1.333333333333,
+            'mm': 3.7795296,
+            'millimeter': 3.7795296,
+            'millimeters': 3.7795296,
+            'cm': 37.795296,
+            'centimeter': 37.795296,
+            'centimeters': 37.795296,
+          }
+          if (conversionFactor[originalUnit] === undefined) {
+            console.warn(originalUnit + ' is not a defined unit of measure.');
+            return { newValues: { value: originalValue, isAbsolute: true } };
+          }
+          let value = conversionFactor[originalUnit] * originalValue;
+
+          // console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
+
+          return {
+            newValues: { value, isAbsolute }
+          }
+
+        }
+
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.componentSizeChild.length === 0) {
+
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "value",
+                  value: desiredStateVariableValues.value
+                }]
+              }
+            } else {
+              //only componentSize child
+
+              return {
+                success: true,
+                instructions: [{
+                  setDependency: "componentSizeChild",
+                  desiredValue: desiredStateVariableValues.value,
+                  childIndex: 0,
+                  variableIndex: 0
+                }]
+              }
+            }
+          } else {
+            //only number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+        } else {
+          //string child
+
+          if (dependencyValues.numberChild.length === 1) {
+            //string and number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }, {
+                setDependency: "stringChild",
+                desiredValue: "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+
+          } else {
+            //only string child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringChild",
+                desiredValue: desiredStateVariableValues.value + "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+
+
+        }
+      }
+    }
+
+    stateVariableDefinitions.valueForDisplay = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { valueForDisplay: dependencyValues.value }
+      })
+    }
+
+    return stateVariableDefinitions;
   }
 
 

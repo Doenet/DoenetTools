@@ -27,7 +27,7 @@ export default class CollaborateGroups extends BaseComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroPoints"],
+      logicToWaitOnSugar: ["atLeastZeroPoints"],
       replacementFunction: breakIntoPointsByCommas,
     });
 
@@ -44,7 +44,7 @@ export default class CollaborateGroups extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.collaborateGroups = {
       returnDependencies: () => ({

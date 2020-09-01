@@ -2,7 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class panel extends InlineComponent {
   static componentType = "panel";
-
+  static rendererType = "container";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -27,7 +27,7 @@ export default class panel extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.breakpoints = {
       returnDependencies: () => ({
@@ -116,7 +116,7 @@ export default class panel extends InlineComponent {
 
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
           dependencyType: "childIdentity",
@@ -126,7 +126,7 @@ export default class panel extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.children.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.children.map(x => x.componentName) }
         };
       }
     }
@@ -134,29 +134,5 @@ export default class panel extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    // console.log(this.widths);
-    // console.log(this.activeChildren);
-
-
-    //TODO: Security checking for widths make sure it's px or % 
-
-    this.renderer = new this.availableRenderers.panel({
-      key: this.componentName,
-      breakpoints: this.stateValues.breakpoints,
-    });
-  }
-
-
-  updateRenderer() {
-    // this.renderer.updateText(this.state.value);
-  }
 
 }

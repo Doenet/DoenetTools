@@ -1,10 +1,10 @@
 describe('Specifying unique variant tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit.skip('/test')
   })
 
-  it('single select', () => {
+  it.skip('single select', () => {
 
     let values = ["u", "v", "w", "x", "y", "z"]
     let valuesFound = [];
@@ -13,7 +13,7 @@ describe('Specifying unique variant tests', function () {
     for (let ind = 0; ind < 6; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <select assignnames="x">u,v,w,x,y,z</select>
@@ -27,7 +27,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].state.value;
+        let newValue = components['/x'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -39,7 +39,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <select assignnames="x">u,v,w,x,y,z</select>
@@ -53,13 +53,13 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/x'].state.value).eq(valuesFound[ind % 6])
+        expect(components['/x'].stateValues.value).eq(valuesFound[ind % 6])
       })
     }
 
   });
 
-  it('single selectfromsequence', () => {
+  it.skip('single selectfromsequence', () => {
 
     let values = [...Array(10).keys()].map(x => x + 1)
     let valuesFound = [];
@@ -69,7 +69,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x">10</selectfromsequence>
@@ -83,7 +83,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].state.number;
+        let newValue = components['/x'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -95,7 +95,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x">10</selectfromsequence>
@@ -109,13 +109,13 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/x'].state.number).eq(valuesFound[ind % 10])
+        expect(components['/x'].stateValues.value).eq(valuesFound[ind % 10])
       })
     }
 
   });
 
-  it('select and selectfromsequence combination', () => {
+  it.skip('select and selectfromsequence combination', () => {
 
     let valuesW = ["m", "n"]
     let valuesX = ["x", "y", "z"];
@@ -141,7 +141,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -160,10 +160,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].state.value;
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.number;
-        let newZ = components['/z'].state.number;
+        let newW = components['/w'].stateValues.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -176,7 +176,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -195,10 +195,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].state.value;
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.number;
-        let newZ = components['/z'].state.number;
+        let newW = components['/w'].stateValues.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -211,7 +211,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -230,10 +230,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        wsFound.push(components['/w'].state.value);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.number);
-        zsFound.push(components['/z'].state.number);
+        wsFound.push(components['/w'].stateValues.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -245,7 +245,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('select multiple', () => {
+  it.skip('select multiple', () => {
 
     let valuesSingle = ["w", "x", "y", "z"]
     let valuesFound = [];
@@ -271,7 +271,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -287,9 +287,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -304,7 +304,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -320,9 +320,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -335,7 +335,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -351,9 +351,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.value);
-        zsFound.push(components['/z'].state.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -364,7 +364,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('select multiple with replacement', () => {
+  it.skip('select multiple with replacement', () => {
 
     let valuesSingle = ["x", "y", "z"]
     let valuesFound = [];
@@ -384,7 +384,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -400,9 +400,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -417,7 +417,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -433,9 +433,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -448,7 +448,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -464,9 +464,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.value);
-        zsFound.push(components['/z'].state.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -477,7 +477,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('select multiple from sequence', () => {
+  it.skip('select multiple from sequence', () => {
 
     let valuesSingle = ["w", "x", "y", "z"]
     let valuesFound = [];
@@ -503,7 +503,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -519,9 +519,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -536,7 +536,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -552,9 +552,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -567,7 +567,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -583,9 +583,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.value);
-        zsFound.push(components['/z'].state.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -596,7 +596,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('select multiple from sequence with replacement', () => {
+  it.skip('select multiple from sequence with replacement', () => {
 
     let valuesSingle = ["x", "y", "z"]
     let valuesFound = [];
@@ -616,7 +616,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -632,9 +632,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -649,7 +649,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -665,9 +665,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -680,7 +680,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -696,9 +696,9 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.value);
-        zsFound.push(components['/z'].state.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -709,7 +709,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('limit variants', () => {
+  it.skip('limit variants', () => {
 
     let valuesSingle = ["u", "v", "w", "x", "y", "z"]
     let valuesFound = [];
@@ -731,7 +731,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -747,10 +747,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].state.value;
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newW = components['/w'].stateValues.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -765,7 +765,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -781,10 +781,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].state.value;
-        let newX = components['/x'].state.value;
-        let newY = components['/y'].state.value;
-        let newZ = components['/z'].state.value;
+        let newW = components['/w'].stateValues.value;
+        let newX = components['/x'].stateValues.value;
+        let newY = components['/y'].stateValues.value;
+        let newZ = components['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -797,7 +797,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -813,10 +813,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        wsFound.push(components['/w'].state.value);
-        xsFound.push(components['/x'].state.value);
-        ysFound.push(components['/y'].state.value);
-        zsFound.push(components['/z'].state.value);
+        wsFound.push(components['/w'].stateValues.value);
+        xsFound.push(components['/x'].stateValues.value);
+        ysFound.push(components['/y'].stateValues.value);
+        zsFound.push(components['/z'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -828,7 +828,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('selects of selectfromsequence', () => {
+  it.skip('selects of selectfromsequence', () => {
 
     let valuesFound = [];
     let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
@@ -839,7 +839,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -859,7 +859,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].state.number;
+        let newValue = components['/x/n'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -873,7 +873,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -893,7 +893,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].state.number;
+        let newValue = components['/x/n'].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -904,7 +904,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -924,7 +924,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -938,7 +938,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -958,7 +958,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -973,7 +973,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -993,7 +993,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1004,7 +1004,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('selects of selects', () => {
+  it.skip('selects of selects', () => {
 
     let valuesFound = [];
     let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
@@ -1015,7 +1015,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1035,7 +1035,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].state.number;
+        let newValue = components['/x/n'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -1049,7 +1049,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1069,7 +1069,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].state.number;
+        let newValue = components['/x/n'].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -1080,7 +1080,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1100,7 +1100,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1114,7 +1114,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1134,7 +1134,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1149,7 +1149,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1169,7 +1169,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].state.number);
+        valuesFound2.push(components['/x/n'].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1180,7 +1180,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('selects of paragraphs of selects/selectfromsequence', () => {
+  it.skip('selects of paragraphs of selects/selectfromsequence', () => {
 
     let valuesFound = [];
     let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
@@ -1191,7 +1191,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1209,7 +1209,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].activeChildren[0].state.number;
+        let newValue = components['/x'].activeChildren[0].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -1223,7 +1223,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1241,7 +1241,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].activeChildren[0].state.number;
+        let newValue = components['/x'].activeChildren[0].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -1252,7 +1252,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1270,7 +1270,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].state.number);
+        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1284,7 +1284,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1302,7 +1302,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].state.number);
+        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1317,7 +1317,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1335,7 +1335,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].state.number);
+        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
       })
     }
     cy.window().then((win) => {
@@ -1346,7 +1346,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('selects of selects, select multiple', () => {
+  it.skip('selects of selects, select multiple', () => {
 
     let valuesFound = [];
     let valuesSingle = [1, 2, 101, 102, 103, 201, 202, 203, 204];
@@ -1365,7 +1365,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1385,8 +1385,8 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x/n'].state.number;
-        let newY = components['/y/n'].state.number;
+        let newX = components['/x/n'].stateValues.value;
+        let newY = components['/y/n'].stateValues.value;
         let newValue = [newX, newY].join(',');
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -1401,7 +1401,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1421,8 +1421,8 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let newX = components['/x/n'].state.number;
-        let newY = components['/y/n'].state.number;
+        let newX = components['/x/n'].stateValues.value;
+        let newY = components['/y/n'].stateValues.value;
         let newValue = [newX, newY].join(',');
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
@@ -1436,7 +1436,7 @@ describe('Specifying unique variant tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -1456,8 +1456,8 @@ describe('Specifying unique variant tests', function () {
         cy.window().then((win) => {
 
           let components = Object.assign({}, win.state.components);
-          valuesFound1.push(components['/x/n'].state.number);
-          valuesFound2.push(components['/y/n'].state.number);
+          valuesFound1.push(components['/x/n'].stateValues.value);
+          valuesFound2.push(components['/y/n'].stateValues.value);
         })
       }
       cy.window().then((win) => {
@@ -1472,7 +1472,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('deeper nesting of selects/selectfromsequence', () => {
+  it.skip('deeper nesting of selects/selectfromsequence', () => {
 
     let valuesFound = [];
 
@@ -1497,7 +1497,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1544,13 +1544,13 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let category = components['/p'].activeChildren[0].state.value.trim();
+        let category = components['/p'].activeChildren[0].stateValues.value.trim();
         expect(categories.includes(category)).eq(true);
 
         let component = components['/p'].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
-          newValue = component.state.number;
+          newValue = component.state.value;
         }
         if (category === categories[0]) {
           expect(allColors.includes(newValue)).eq(true);
@@ -1594,7 +1594,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1641,11 +1641,11 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let category = components['/p'].activeChildren[0].state.value.trim();
+        let category = components['/p'].activeChildren[0].stateValues.value.trim();
         let component = components['/p'].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
-          newValue = component.state.number;
+          newValue = component.state.value;
         }
         let combinedValue = [category, newValue].join(",");
         expect(combinedValue).eq(valuesFound[ind % numVariants])
@@ -1658,7 +1658,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1705,7 +1705,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        categoriesFound.push(components['/p'].activeChildren[0].state.value.trim());
+        categoriesFound.push(components['/p'].activeChildren[0].stateValues.value.trim());
       })
     }
     cy.window().then((win) => {
@@ -1719,7 +1719,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1766,7 +1766,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        categoriesFound[ind - 4] = components['/p'].activeChildren[0].state.value.trim();
+        categoriesFound[ind - 4] = components['/p'].activeChildren[0].stateValues.value.trim();
       })
     }
     cy.window().then((win) => {
@@ -1777,7 +1777,7 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it('select problems of selects/selectfromsequence', () => {
+  it.skip('select problems of selects/selectfromsequence', () => {
 
     let valuesFound = [];
 
@@ -1802,7 +1802,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -1861,13 +1861,13 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let category = components['/problem'].state.title;
+        let category = components['/problem'].stateValues.title;
         expect(categories.includes(category)).eq(true);
 
         let component = components['/problem'].activeChildren[2].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
-          newValue = component.state.number;
+          newValue = component.state.value;
         }
         if (category === categories[0]) {
           expect(allColors.includes(newValue)).eq(true);
@@ -1911,7 +1911,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -1970,11 +1970,11 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        let category = components['/problem'].state.title;
+        let category = components['/problem'].stateValues.title;
         let component = components['/problem'].activeChildren[2].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
-          newValue = component.state.number;
+          newValue = component.state.value;
         }
         let combinedValue = [category, newValue].join(",");
         expect(combinedValue).eq(valuesFound[ind % numVariants])
@@ -1987,7 +1987,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -2046,7 +2046,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        categoriesFound.push(components['/problem'].state.title);
+        categoriesFound.push(components['/problem'].stateValues.title);
       })
     }
     cy.window().then((win) => {
@@ -2060,7 +2060,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -2119,7 +2119,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        categoriesFound[ind - 4] = components['/problem'].state.title;
+        categoriesFound[ind - 4] = components['/problem'].stateValues.title;
       })
     }
     cy.window().then((win) => {

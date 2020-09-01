@@ -3,6 +3,10 @@ import InlineComponent from './abstract/InlineComponent';
 export default class StringComponent extends InlineComponent {
   static componentType = "string";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value"] };
+
   static createPropertiesObject() {
     return {};
   }
@@ -10,19 +14,18 @@ export default class StringComponent extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       returnDependencies: () => ({}),
       defaultValue: "",
-      definition: function () {
-        return {
-          useEssentialOrDefaultValue: {
-            value: { variablesToCheck: "value" }
-          }
+      forRenderer: true,
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          value: { variablesToCheck: "value" },
         }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
@@ -33,29 +36,29 @@ export default class StringComponent extends InlineComponent {
       }
     }
 
-    return stateVariableDefinitions;
-
-  }
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
+    stateVariableDefinitions.text = {
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.text
+          }]
+        };
+      }
     }
 
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.value,
-      suppressKeyRender: true,
-    });
-  }
+    return stateVariableDefinitions;
 
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
   }
 
 }

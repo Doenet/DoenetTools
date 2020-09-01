@@ -3,36 +3,37 @@ import BooleanBaseOperator from './abstract/BooleanBaseOperator';
 export class Not extends BooleanBaseOperator {
   static componentType = "not";
 
-  applyBooleanOperator() {
-    if(this.state.nBooleans !==1) {
-      throw Error("Not requires exactly one boolean child");
+  static applyBooleanOperator(values) {
+    if(values.length !== 1) {
+      console.warn("Not requires exactly one boolean child")
+      return null;
     }
-    return !this.state.booleanChildren[0].state.value;
+    return !values[0];
   }
 }
 
 export class And extends BooleanBaseOperator {
   static componentType = "and";
 
-  applyBooleanOperator() {
-    return this.state.booleanChildren.every(x => x.state.value);
+  static applyBooleanOperator(values) {
+    return values.every(x => x);
   }
 }
 
 export class Or extends BooleanBaseOperator {
   static componentType = "or";
 
-  applyBooleanOperator() {
-    return this.state.booleanChildren.some(x => x.state.value);
+  static applyBooleanOperator(values) {
+    return values.some(x => x);
   }
 }
 
 export class Xor extends BooleanBaseOperator {
   static componentType = "xor";
 
-  applyBooleanOperator() {
-    let numberTrues = this.state.booleanChildren.reduce(
-      (acc, curr) => acc + curr.state.value, 0);
+  static applyBooleanOperator(values) {
+    let numberTrues = values.reduce(
+      (acc, curr) => acc + curr, 0);
     return numberTrues === 1;
   }
 }

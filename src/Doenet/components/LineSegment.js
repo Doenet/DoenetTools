@@ -1,22 +1,33 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import { convertValueToMathExpression } from '../utils/math';
 
 export default class LineSegment extends GraphicalComponent {
   static componentType = "linesegment";
 
+  actions = {
+    moveLineSegment: this.moveLineSegment.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["endpoints"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = {default: true};
+    properties.draggable = { default: true, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addEndpoints = function({activeChildrenMatched}) {
+    let addEndpoints = function ({ activeChildrenMatched }) {
       // add <endpoints> around points
       let endpointChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         endpointChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -28,424 +39,490 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
-    let ExactlyTwoPoints = childLogic.newLeaf({
-      name: "ExactlyTwoPoints",
+    let exactlyTwoPoints = childLogic.newLeaf({
+      name: "exactlyTwoPoints",
       componentType: 'point',
       number: 2,
       isSugar: true,
       replacementFunction: addEndpoints,
     });
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
     });
-    
-    let AtLeastOneMath = childLogic.newLeaf({
-      name: "AtLeastOneMath",
+
+    let atLeastOneMath = childLogic.newLeaf({
+      name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let StringsAndMaths = childLogic.newOperator({
-      name: "StringsAndMaths",
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
       operator: 'or',
-      propositions: [AtLeastOneString, AtLeastOneMath],
+      propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
       replacementFunction: addEndpoints,
     });
 
-    let NoPoints = childLogic.newLeaf({
-      name: "NoPoints",
+    let noPoints = childLogic.newLeaf({
+      name: "noPoints",
       componentType: 'point',
       number: 0
     });
 
-    let ExactlyOneEndpoints = childLogic.newLeaf({
-      name: "ExactlyOneEndpoints",
+    let exactlyOneEndpoints = childLogic.newLeaf({
+      name: "exactlyOneEndpoints",
       componentType: 'endpoints',
       number: 1
     });
 
     childLogic.newOperator({
-      name: "EndpointsXorSugar",
+      name: "endpointsXorSugar",
       operator: 'xor',
-      propositions: [ExactlyOneEndpoints, ExactlyTwoPoints, StringsAndMaths, NoPoints],
+      propositions: [exactlyOneEndpoints, exactlyTwoPoints, stringsAndMaths, noPoints],
       setAsBase: true
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
 
-      this.makePublicStateVariableArray({
-        variableName: "endpoints",
-        componentType: "point",
-        stateVariableForRef: "coords",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "endpoint",
-        arrayVariableName: "endpoints",
-      });
-      this.makePublicStateVariable({
-        variableName: "styledescription",
-        componentType: "text",
-      });
+  static returnStateVariableDefinitions() {
 
-      // reference via the point coords
-      this.stateVariablesForReference = ["endpoints"];
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      this.moveLineSegment = this.moveLineSegment.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-    }
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.endpoints = true;
-      return;
-    }
-
-    delete this.unresolvedState.endpoints;
-
-    this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
-      this.state.selectedStyle = this.styleDefinitions[1];
-    }
-
-    let lineDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
-      lineDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
-      lineDescription += "thin ";
-    }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
-      lineDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
-      lineDescription += "dotted ";
-    }
-
-    lineDescription += `${this.state.selectedStyle.lineColor} `;
-
-    this.state.styledescription = lineDescription;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let endpointsInds = this.childLogic.returnMatches("ExactlyOneEndpoints");
-
-      if(endpointsInds.length === 0) {
-        if(this._state.endpoints.essential !== true) {
-          throw Error("Must specify endpoints of lineSegment.")
+        let lineDescription = "";
+        if (dependencyValues.selectedStyle.lineWidth >= 4) {
+          lineDescription += "thick ";
+        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
+          lineDescription += "thin ";
         }
-      } else {
+        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
+          lineDescription += "dashed ";
+        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
+          lineDescription += "dotted ";
+        }
 
-        this.state.endpointsChild = this.activeChildren[endpointsInds[0]];
+        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+
+        return { newValues: { styleDescription: lineDescription } };
       }
-
     }
 
-    if(this.state.endpointsChild) {
-      let endpointsState = this.state.endpointsChild.state;
 
-      if(this.state.endpointsChild.unresolvedState.points ||
-        endpointsState.points.some(x =>x.unresolvedState.coords)) {
-        this.unresolvedState.endpoints = true;
-        return;
-      }
-
-      let pointsChanged = childrenChanged || trackChanges.childrenChanged(this.state.endpointsChild.componentName);
-
-      if(pointsChanged) {
-
-        if(endpointsState.nPoints === 0) {
-          console.warn("Cannot determine lineSegment with zero endpoints");
-          this.state.endpoints = [me.fromAst(0), me.fromAst(0)];
-        }else if(endpointsState.nPoints === 1) {
-          console.warn("Cannot determine lineSegment with one endpoint");
-          this.state.endpoints = [
-            endpointsState.points[0].state.coords.copy(),
-            endpointsState.points[0].state.coords.copy(),
-          ]
-        }else if(endpointsState.nPoints === 2) {
-          this.state.endpoints = [
-            endpointsState.points[0].state.coords.copy(),
-            endpointsState.points[1].state.coords.copy(),
-          ]
-        }else {
-          throw Error("LineSegment must be determined by two endpoints (" + endpointsState.nPoints + " given)");
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        endpointsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneEndpoints",
+          variableNames: ["nDimensions"],
         }
-      }else {
-        if(endpointsState.nPoints > 0) {
-          if(trackChanges.getVariableChanges({
-            component: endpointsState.points[0],
-            variable: "coords"
-          })) {
-            this.state.endpoints[0] = endpointsState.points[0].state.coords.copy();
+      }),
+      definition: function ({ dependencyValues }) {
+
+        // console.log('definition of nDimensions')
+        // console.log(dependencyValues)
+
+        if (dependencyValues.endpointsChild.length === 1) {
+          let nDimensions = dependencyValues.endpointsChild[0].stateValues.nDimensions;
+          return {
+            newValues: { nDimensions },
+            checkForActualChange: { nDimensions: true }
+          }
+        } else {
+          // line segment through zero points
+          return { newValues: { nDimensions: 2 } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.endpoints = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["endpointX", "endpoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "endpointX") {
+          return [];
+        } else {
+          // endpoint or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "endpointX") {
+          // pointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // endpoint3 is all components of the third point
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+      },
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [2, dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          dependenciesByKey[arrayKey] = {
+            endpointsChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneEndpoints",
+              variableNames: ["pointX" + varEnding]
+            }
+          }
+        }
+        return { dependenciesByKey }
+
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, arraySize }) {
+
+        // console.log('array definition of linesegment endpoints');
+        // console.log(dependencyValuesByKey)
+        // console.log(arrayKeys);
+
+        let endpoints = {};
+        let essentialPoints = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
+            && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
+          ) {
+            endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding];
+          } else {
+            if (arrayKey === "0,0") {
+              essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+            } else {
+              essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+            }
           }
         }
 
-        if(endpointsState.nPoints > 1) {
-            if(trackChanges.getVariableChanges({
-            component: endpointsState.points[1],
-            variable: "coords"
-          })) {
-            this.state.endpoints[1] = endpointsState.points[1].state.coords.copy();
+        let result = {};
+
+        if (Object.keys(endpoints).length > 0) {
+          result.newValues = { endpoints }
+        }
+        if (Object.keys(essentialPoints).length > 0) {
+          result.useEssentialOrDefaultValue = { endpoints: essentialPoints }
+        }
+        return result;
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues,
+      }) {
+
+        // console.log(`inverse array definition of endpoints of linesegment`);
+        // console.log(desiredStateVariableValues)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(dependencyValuesByKey);
+
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.endpoints) {
+
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
+            && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
+          ) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].endpointsChild,
+              desiredValue: desiredStateVariableValues.endpoints[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            })
+
+          } else {
+
+            instructions.push({
+              setStateVariable: "endpoints",
+              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]) },
+            })
           }
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
+
+    stateVariableDefinitions.numericalEndpoints = {
+      isArray: true,
+      entryPrefixes: ["numericalEndpoint"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        if (Number.isNaN(dependencyValues.nDimensions)) {
+          return [0]
+        }
+        return [2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          nDimensions: {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions",
+          }
+        }
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            endpoint: {
+              dependencyType: "stateVariable",
+              variableName: "endpoint" + (Number(arrayKey) + 1)
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+        if (Number.isNaN(globalDependencyValues.nDimensions)) {
+          return {}
+        }
+
+        let numericalEndpoints = {};
+        for (let arrayKey of arrayKeys) {
+          let endpoint = dependencyValuesByKey[arrayKey].endpoint;
+          let numericalP = [];
+          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+            let val = endpoint[ind].evaluate_to_constant();
+            if (!Number.isFinite(val)) {
+              val = NaN;
+            }
+            numericalP.push(val);
+          }
+          numericalEndpoints[arrayKey] = numericalP;
+        }
+
+        return { newValues: { numericalEndpoints } }
+      }
+    }
+
+
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        endpointsChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneEndpoints"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.endpointsChild.length === 1) {
+          return {
+            newValues: {
+              childrenToRender: [dependencyValues.endpointsChild[0].componentName]
+            }
+          }
+        } else {
+          return { newValues: { childrenToRender: [] } }
         }
       }
     }
 
 
-    if(trackChanges.getVariableChanges({
-      component: this, variable: "endpoints"})) {
+    stateVariableDefinitions.nearestPoint = {
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        },
+        endpoints: {
+          dependencyType: "stateVariable",
+          variableName: "endpoints"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          nearestPoint: function (variables) {
 
-      this.state.ndimensions = 1;
-      let endpoint1tree = this.state.endpoints[0].tree;
-      if(endpoint1tree[0] === "tuple" || endpoint1tree[0] === "vector") {
-        this.state.ndimensions = endpoint1tree.length-1;
-      }
-      let ndim2 = 1;
-      let endpoint2tree = this.state.endpoints[1].tree;
-      if(endpoint2tree[0] === "tuple" || endpoint2tree[0] === "vector") {
-        ndim2 = endpoint2tree.length-1;
-      }
-      if(ndim2 !== this.state.ndimensions) {
-        throw Error("Invalid line segment: points must have same number of dimensions");
-      }
+            // only implemented in 2D for now
+            if (dependencyValues.nDimensions !== 2) {
+              return {};
+            }
+
+            let A1 = dependencyValues.endpoints[0][0].evaluate_to_constant();
+            let A2 = dependencyValues.endpoints[0][1].evaluate_to_constant();
+            let B1 = dependencyValues.endpoints[1][0].evaluate_to_constant();
+            let B2 = dependencyValues.endpoints[1][1].evaluate_to_constant();
+
+            // only implement for constants
+            if (!(Number.isFinite(A1) && Number.isFinite(A2) &&
+              Number.isFinite(B1) && Number.isFinite(B2))) {
+              return {};
+            }
+
+            let BA1 = B1 - A1;
+            let BA2 = B2 - A2;
+            let denom = (BA1 * BA1 + BA2 * BA2);
+
+            if (denom === 0) {
+              return {};
+            }
+
+            let t = ((variables.x1 - A1) * BA1 + (variables.x2 - A2) * BA2) / denom;
+
+            let result = {};
+
+            if (t <= 0) {
+              result = { x1: A1, x2: A2 };
+            } else if (t >= 1) {
+              result = { x1: B1, x2: B2 };
+            } else {
+              result = {
+                x1: A1 + t * BA1,
+                x2: A2 + t * BA2,
+              };
+            }
+
+            if (variables.x3 !== undefined) {
+              result.x3 = 0;
+            }
+
+            return result;
+
+          }
+        }
+      })
     }
+
+
+
+
+    return stateVariableDefinitions;
   }
 
 
-  moveLineSegment({point1coords, point2coords}) {
+  moveLineSegment({ point1coords, point2coords, transient }) {
 
     let newComponents = {};
 
-    if(point1coords !== undefined) {
-      newComponents[0] = me.fromAst(["tuple", ...point1coords]);
+    if (point1coords !== undefined) {
+      newComponents["0,0"] = me.fromAst(point1coords[0]);
+      newComponents["0,1"] = me.fromAst(point1coords[1]);
     }
-    if(point2coords !== undefined) {
-      newComponents[1] = me.fromAst(["tuple", ...point2coords]);
+    if (point2coords !== undefined) {
+      newComponents["1,0"] = me.fromAst(point2coords[0]);
+      newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          endpoints:  {
-            isArray: true,
-            changes: { arrayComponents: newComponents }
+    if (transient) {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            point1: point1coords,
+            point2: point2coords,
           }
         }
-      }]
-    });
-
-  }
-
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    
-    if(this.state.ndimensions === 2) {
-      const actions = {
-        moveLineSegment: this.moveLineSegment,
-      }
-
-      let point1x, point1y, point2x, point2y;
-      try {
-        point1x = this.state.endpoints[0].get_component(0);
-        point1y = this.state.endpoints[0].get_component(1);
-        point2x = this.state.endpoints[1].get_component(0);
-        point2y = this.state.endpoints[1].get_component(1);
-      } catch(e) {
-        console.warn("Endpoints of line segment don't have two dimensions");
-        return;
-      }
-
-      this.renderer = new this.availableRenderers.linesegment2d({
-        key: this.componentName,
-        label: this.state.label,
-        draggable: this.state.draggable,
-        layer: this.state.layer,
-        visible: !this.state.hide,
-        point1coords:
-        [
-          point1x.evaluate_to_constant(),
-          point1y.evaluate_to_constant()
-        ],
-        point2coords:
-        [
-          point2x.evaluate_to_constant(),
-          point2y.evaluate_to_constant()
-        ],
-        actions: actions,
-        color: this.state.selectedStyle.lineColor,
-        width: this.state.selectedStyle.lineWidth,
-        style: this.state.selectedStyle.lineStyle,
       });
     }
-  }
-
-  updateRenderer(){
-    let point1x, point1y, point2x, point2y;
-    try {
-      point1x = this.state.endpoints[0].get_component(0);
-      point1y = this.state.endpoints[0].get_component(1);
-      point2x = this.state.endpoints[1].get_component(0);
-      point2y = this.state.endpoints[1].get_component(1);
-    } catch(e) {
-      console.warn("Endpoints of line segment don't have two dimensions");
-      return;
-    }
-
-    this.renderer.updateLineSegment({
-      point1coords:
-      [
-        point1x.evaluate_to_constant(),
-        point1y.evaluate_to_constant()
-      ],
-      point2coords:
-      [
-        point2x.evaluate_to_constant(),
-        point2y.evaluate_to_constant()
-      ],
-      visible: !this.state.hide,      
-    });
-  }
-
-  updateChildrenWhoRender(){
-    if(this.state.endpointsChild !== undefined)
-    this.childrenWhoRender = [this.state.endpointsChild.componentName];
-  }
-
-  allowDownstreamUpdates(status) {
-    return ((status.initialChange === true && this.state.draggable === true) ||
-    (status.initialChange !== true && this.state.modifyIndirectly === true));
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["endpoints"];
-  }
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-    let newStateVariables = {};
-    let endpointsChanged = new Set([]);
-
-    let newEndpoints = Array(2);
-
-    for(let varName in stateVariablesToUpdate) {
-      if(varName === "endpoints") {
-        if(newStateVariables[varName] === undefined) {
-          newStateVariables[varName] = {
-            isArray: true,
-            changes: { arrayComponents: {} }
-          }
-        }
-        for(let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
-          endpointsChanged.add(Number(ind));
-          newEndpoints[ind] = newStateVariables[varName].changes.arrayComponents[ind] = 
-            stateVariablesToUpdate[varName].changes.arrayComponents[ind];
-        }
-      }
-    }
-
-    // check if based on endpoints child
-    if(this.state.endpointsChild !== undefined) {
-      let endPoints = this.state.endpointsChild.state.points;
-
-      for(let ind=0; ind < 2; ind++) {
-        // use endpointsChanged rather than checking if newEndpoints[ind]
-        // is undefined as is possible on dryRun to have passed in an
-        // undefined endpoint to indicate it will be changed
-        if(endpointsChanged.has(ind)) {
-          let pointName = endPoints[ind].componentName;
-          dependenciesToUpdate[pointName] = {coords: {changes: newEndpoints[ind]}};
-        }
-      }
-    }
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // add stateVariable to stateVariableChangesToSave if is essential
-    // and no shadow sources were updated
-    for(let varname in newStateVariables) {
-      if(this._state[varname].essential === true &&
-          !shadowedStateVariables.has(varname) && !isReplacement) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
-
-  }
-
-
-  nearestPoint({x1, x2, x3}) {
-
-    // only implemented in 2D for now
-    if(this.state.ndimensions !== 2) {
-      return;
-    }
-
-    let A1 = this.state.endpoints[0].get_component(0).evaluate_to_constant();
-    let A2 = this.state.endpoints[0].get_component(1).evaluate_to_constant();
-    let B1 = this.state.endpoints[1].get_component(0).evaluate_to_constant();
-    let B2 = this.state.endpoints[1].get_component(1).evaluate_to_constant();
-
-    // only implement for constants
-    if(!(Number.isFinite(A1) && Number.isFinite(A2) && 
-        Number.isFinite(B1) && Number.isFinite(B2))) {
-      return {};
-    }
-
-    let BA1 = B1-A1;
-    let BA2 = B2-A2;
-    let denom = (BA1*BA1+BA2*BA2);
-
-    if(denom===0) {
-      return {};
-    }
-
-    let t = ((x1-A1)*BA1+(x2-A2)*BA2)/denom;
-
-    let result = {};
-
-    if(t<=0) {
-      result = {x1: A1, x2: A2};
-    }else if(t >= 1) {
-      result = {x1: B1, x2: B2};
-    }else {
-      result = {
-        x1: A1 + t*BA1,
-        x2: A2 + t*BA2,
-      };
-    }
-
-    if(x3 !== undefined) {
-      result.x3 = 0;
-    }
-
-    return result;
 
   }
 

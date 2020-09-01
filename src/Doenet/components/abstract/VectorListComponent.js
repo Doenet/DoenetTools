@@ -1,62 +1,74 @@
 import BaseComponent from './BaseComponent';
-import { breakStringsAndOthersIntoComponentsByStringCommas } from '../commonsugar/breakstrings';
+import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
-
-  static alwaysContinueUpstreamUpdates = true;
+  static rendererType = "container";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true };
+    properties.hide = { default: true, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let AtLeastZeroVectors = childLogic.newLeaf({
-      name: "AtLeastZeroVectors",
+    let atLeastZeroVectors = childLogic.newLeaf({
+      name: "atLeastZeroVectors",
       componentType: 'vector',
       comparison: 'atLeast',
       number: 0
     });
 
-    let breakIntoVectorsByCommas = breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+    let childrenToComponentFunction = x => ({
       componentType: "vector", children: [{
         componentType: "head", children: [{
           componentType: "coords", children: x
         }]
       }]
-    }));
+    });
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let breakIntoVectorsByCommas = returnBreakStringsSugarFunction({
+      childrenToComponentFunction,
+      dependencyNameWithChildren: "stringsAndMaths"
+    });
+
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let AtLeastOneMath = childLogic.newLeaf({
-      name: "AtLeastOneMath",
+    let atLeastOneMath = childLogic.newLeaf({
+      name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let StringsAndMaths = childLogic.newOperator({
-      name: "StringsAndMaths",
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
       operator: 'or',
-      propositions: [AtLeastOneString, AtLeastOneMath],
+      propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
+      returnSugarDependencies: () => ({
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastZeroVectors"],
       replacementFunction: breakIntoVectorsByCommas,
     });
 
     childLogic.newOperator({
-      name: "VectorsXorSugar",
+      name: "vectorsXorSugar",
       operator: 'xor',
-      propositions: [StringsAndMaths, AtLeastZeroVectors],
+      propositions: [stringsAndMaths, atLeastZeroVectors],
       setAsBase: true,
     });
 
@@ -64,41 +76,117 @@ export default class VectorListComponent extends BaseComponent {
   }
 
 
-  updateState(args = {}) {
-    if(args.init) {
-      this._state.vectors = {trackChanges: true};
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.nVectors = {
+      returnDependencies: () => ({
+        vectorChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroVectors",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nVectors: dependencyValues.vectorChildren.length },
+        checkForActualChange: { nVectors: true }
+      })
     }
 
-    super.updateState(args);
 
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.vectors = true;
-      this.unresolvedState.nVectors = true;
-      return;
+    stateVariableDefinitions.vectors = {
+      isArray: true,
+      entryPrefixes: ["vector"],
+      returnArraySizeDependencies: () => ({
+        nVectors: {
+          dependencyType: "stateVariable",
+          variableName: "nVectors",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVectors];
+      },
+
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            vectorChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroVectors",
+              variableNames: ["displacement"],
+              childIndices: [arrayKey],
+            }
+          }
+        }
+
+        return { dependenciesByKey };
+
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of vectors for vectorlist')
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+        // console.log(arrayKeys);
+
+        let vectors = {};
+
+        for (let arrayKey of arrayKeys) {
+          let vectorChild = dependencyValuesByKey[arrayKey].vectorChild[0];
+          if (vectorChild) {
+            vectors[arrayKey] = vectorChild.stateValues.coords;
+          }
+        }
+
+        return { newValues: { vectors } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey
+      }) {
+
+        // console.log('array inverse definition of vectors of vectorlist')
+        // console.log(desiredStateVariableValues)
+        // console.log(arrayKeys);
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.vectors) {
+
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].vectorChild,
+            desiredValue: desiredStateVariableValues.vectors[arrayKey],
+            childIndex: 0,
+            variableIndex: 0
+          })
+
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+
     }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if (childrenChanged) {
-      delete this.unresolvedState.vectors;
-      delete this.unresolvedState.nVectors;
-
-      let AtLeastZeroVectors = this.childLogic.returnMatches("AtLeastZeroVectors");
-      this.state.nVectors = AtLeastZeroVectors.length;
-      this.state.vectors = AtLeastZeroVectors.map(i => this.activeChildren[i]);
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        vectorChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroVectors",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          childrenToRender: dependencyValues.vectorChildren.map(x => x.componentName)
+        }
+      })
     }
-  }
 
+    return stateVariableDefinitions;
 
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.container({ key: this.componentName });
-    }
-  }
-
-  updateChildrenWhoRender() {
-    this.childrenWhoRender = this.state.vectors.map(x => x.componentName);
   }
 
 }

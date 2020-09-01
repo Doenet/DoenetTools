@@ -11,7 +11,7 @@ describe('P Tag Tests', function () {
   it('two paragraphs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>Hello, paragraph 1</p>
   <p>Bye, paragraph 2</p>
   `}, "*");
@@ -26,10 +26,13 @@ describe('P Tag Tests', function () {
   it('paragraph with math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
+  <text>a</text>
   <p>math in paragraph: <math simplify>x+x</math></p>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('find mathjax rendered math in paragraph');
     cy.get('p#\\/_p1').find('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -40,10 +43,13 @@ describe('P Tag Tests', function () {
   it('spaces preserved between tags', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
+    <text>a</text>
     <p><text>Hello</text> <math>x</math></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('p#\\/_p1').invoke('text').should('contain', 'Hello x')
 

@@ -1,0 +1,728 @@
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[19,2],{
+
+/***/ 645:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DoenetRenderer; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var DoenetRenderer = /*#__PURE__*/function (_Component) {
+  _inherits(DoenetRenderer, _Component);
+
+  var _super = _createSuper(DoenetRenderer);
+
+  function DoenetRenderer(props) {
+    var _this;
+
+    _classCallCheck(this, DoenetRenderer);
+
+    _this = _super.call(this, props);
+    _this.addChildren = _this.addChildren.bind(_assertThisInitialized(_this));
+    _this.removeChildren = _this.removeChildren.bind(_assertThisInitialized(_this));
+    _this.swapChildren = _this.swapChildren.bind(_assertThisInitialized(_this));
+    _this.update = _this.update.bind(_assertThisInitialized(_this));
+    _this.childrenToCreate = props.componentInstructions.children;
+    _this.componentName = props.componentInstructions.componentName;
+    _this.actions = props.componentInstructions.actions; // This keeps the proxy in place so that state variables
+    // aren't calculated unless asked for
+    // Also means it will always have the new values when they are changed
+    // so we don't have to pass them in on update
+
+    _this.doenetSvData = props.componentInstructions.stateValues;
+    props.rendererUpdateMethods[_this.componentName] = {
+      update: _this.update,
+      addChildren: _this.addChildren,
+      removeChildren: _this.removeChildren,
+      swapChildren: _this.swapChildren
+    };
+
+    if (_this.constructor.initializeChildrenOnConstruction) {
+      _this.initializeChildren();
+    }
+
+    return _this;
+  }
+
+  _createClass(DoenetRenderer, [{
+    key: "update",
+    value: function update() {
+      this.forceUpdate();
+    }
+  }, {
+    key: "addChildren",
+    value: function addChildren(instruction) {
+      var childInstructions = this.childrenToCreate[instruction.indexForParent];
+      var child = this.createChildFromInstructions(childInstructions);
+      this.children.splice(instruction.indexForParent, 0, child);
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "removeChildren",
+    value: function removeChildren(instruction) {
+      this.children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      var _iterator = _createForOfIteratorHelper(instruction.deletedComponentNames),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var componentName = _step.value;
+          delete this.props.rendererUpdateMethods[componentName];
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "swapChildren",
+    value: function swapChildren(instruction) {
+      var _ref = [this.children[instruction.index2], this.children[instruction.index1]];
+      this.children[instruction.index1] = _ref[0];
+      this.children[instruction.index2] = _ref[1];
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "initializeChildren",
+    value: function initializeChildren() {
+      this.children = [];
+
+      var _iterator2 = _createForOfIteratorHelper(this.childrenToCreate),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var childInstructions = _step2.value;
+          var child = this.createChildFromInstructions(childInstructions);
+          this.children.push(child);
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      return this.children;
+    }
+  }, {
+    key: "createChildFromInstructions",
+    value: function createChildFromInstructions(childInstructions) {
+      var propsForChild = {
+        key: childInstructions.componentName,
+        componentInstructions: childInstructions,
+        rendererClasses: this.props.rendererClasses,
+        rendererUpdateMethods: this.props.rendererUpdateMethods,
+        flags: this.props.flags
+      };
+
+      if (this.doenetPropsForChildren) {
+        Object.assign(propsForChild, this.doenetPropsForChildren);
+      }
+
+      var child = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(this.props.rendererClasses[childInstructions.rendererType], propsForChild);
+      return child;
+    }
+  }]);
+
+  return DoenetRenderer;
+}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
+
+_defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
+
+
+
+/***/ }),
+
+/***/ 663:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return IntervalInput; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n  &:focus {\n    outline: 0;\n  }\n  width: 120px;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n  margin-left: 1px;\n  margin-top: 1px;\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);\n"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+
+
+
+{
+  /* 
+  <intervalinput width="4px" height="100px">
+   <xmin>-10</xmin>
+   <xmax>10</xmax>
+   <interval>(-6,2]</interval>
+   <interval>[3,8)</interval>
+   <point>6</point>
+  </intervalinput>
+  */
+}
+var TextNoSelect = styled_components__WEBPACK_IMPORTED_MODULE_2__[/* default */ "b"].text(_templateObject());
+var ModeButton = styled_components__WEBPACK_IMPORTED_MODULE_2__[/* default */ "b"].button(_templateObject2());
+
+var IntervalInput = /*#__PURE__*/function (_DoenetRenderer) {
+  _inherits(IntervalInput, _DoenetRenderer);
+
+  var _super = _createSuper(IntervalInput);
+
+  function IntervalInput(props) {
+    var _this;
+
+    _classCallCheck(this, IntervalInput);
+
+    _this = _super.call(this, props);
+    _this.buildLine = _this.buildLine.bind(_assertThisInitialized(_this));
+    _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_this));
+    _this.switchMode = _this.switchMode.bind(_assertThisInitialized(_this));
+    _this.buildPoints = _this.buildPoints.bind(_assertThisInitialized(_this));
+    _this.buildIntervals = _this.buildIntervals.bind(_assertThisInitialized(_this));
+    _this.state = {
+      mode: "toggle or drag points",
+      activePointObj: null,
+      activeIntervalObj: null,
+      pointsAndIntervalsObj: []
+    };
+    _this.primaryColor = "red";
+    _this.removeColor = "grey";
+    _this.storedPoints = [];
+    _this.storedLines = [];
+    _this.firstHashXPosition = 40;
+    _this.xBetweenHashes = 36; // console.log(this.doenetSvData);
+    // console.log(this.doenetSvData.numericalPoints);
+    // console.log(this.doenetSvData.numericalIntervals);
+    //Infinity and -Infinity start and end
+
+    return _this;
+  }
+
+  _createClass(IntervalInput, [{
+    key: "buildLine",
+    value: function buildLine() {
+      this.hashLines = [];
+      var numbers = [];
+
+      for (var number = -10; number <= 10; number++) {
+        numbers.push(number);
+      }
+
+      this.labels = [];
+
+      for (var x = this.firstHashXPosition; x < 780; x = x + this.xBetweenHashes) {
+        this.hashLines.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("line", {
+          key: "hash" + x,
+          x1: x,
+          y1: "20",
+          x2: x,
+          y2: "50",
+          style: {
+            stroke: "black",
+            strokeWidth: "1"
+          },
+          shapeRendering: "geometricPrecision"
+        }));
+
+        var _number = numbers.shift();
+
+        this.labels.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(TextNoSelect, {
+          key: "label" + x,
+          x: x,
+          y: "66",
+          textAnchor: "middle"
+        }, _number));
+      }
+    }
+  }, {
+    key: "xValueToXPosition",
+    value: function xValueToXPosition(xValue) {
+      // let minValue = -10;
+      // let maxValue = 10;
+      //Shift to positive numbers
+      //TODO: Calculate shiftAmount and intervalValueWidth
+      var shiftAmount = 10;
+      var intervalValueWidth = 1;
+      var shiftedXValue = xValue + shiftAmount;
+      return this.firstHashXPosition + shiftedXValue / intervalValueWidth * this.xBetweenHashes;
+    }
+  }, {
+    key: "xPositionToXValue",
+    value: function xPositionToXValue(xPosition) {
+      var relativeX = xPosition - this.firstHashXPosition;
+      var shiftAmount = 10;
+      var intervalValueWidth = 1;
+      var value = relativeX / this.xBetweenHashes * intervalValueWidth;
+      value = value - shiftAmount;
+      return value;
+    }
+  }, {
+    key: "buildPoints",
+    value: function buildPoints() {
+      var _iterator = _createForOfIteratorHelper(this.doenetSvData.numericalPoints),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var xValue = _step.value;
+          var closed = true;
+          var remove = false;
+          var xPosition = this.xValueToXPosition(xValue);
+          var currentFillColor = this.primaryColor;
+
+          if (!closed) {
+            currentFillColor = "white";
+          }
+
+          if (remove) {
+            currentFillColor = this.removeColor;
+          }
+
+          var key = "point-".concat(xPosition);
+          this.storedPoints.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("circle", {
+            key: key,
+            cx: xPosition,
+            cy: "40",
+            r: "6",
+            stroke: "black",
+            strokeWidth: "1",
+            fill: currentFillColor
+          }));
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    }
+  }, {
+    key: "buildIntervals",
+    value: function buildIntervals() {
+      var _iterator2 = _createForOfIteratorHelper(this.doenetSvData.numericalIntervals),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var intervalObj = _step2.value;
+          console.log(intervalObj);
+
+          if (intervalObj.end < intervalObj.start) {
+            continue;
+          } // Ignore imposible Intervals
+
+
+          var lowerXPosition = this.xValueToXPosition(intervalObj.start);
+          var higherXPosition = this.xValueToXPosition(intervalObj.end);
+          var lowerPointKey = "lowerIntervalPoint".concat(lowerXPosition);
+          var higherPointKey = "higherIntervalPoint".concat(higherXPosition);
+          var lineKey = "line".concat(lowerXPosition, "-").concat(higherXPosition);
+          var remove = false;
+          var currentFillColor = this.primaryColor;
+
+          if (remove) {
+            currentFillColor = this.removeColor;
+          }
+
+          var lowerFillColor = "white";
+
+          if (intervalObj.startClosed) {
+            lowerFillColor = currentFillColor;
+          }
+
+          var higherFillColor = "white";
+
+          if (intervalObj.endClosed) {
+            higherFillColor = currentFillColor;
+          }
+
+          var lowerLine = lowerXPosition;
+          var higherLine = higherXPosition;
+
+          if (lowerXPosition < 38) {
+            lowerLine = 20;
+            this.storedPoints.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("polygon", {
+              key: lowerPointKey,
+              points: "5,40 20,46 20,34",
+              style: {
+                fill: lowerFillColor,
+                stroke: lowerFillColor,
+                strokeWidth: "1"
+              }
+            }));
+          } else {
+            this.storedPoints.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("circle", {
+              key: lowerPointKey,
+              cx: lowerXPosition,
+              cy: "40",
+              r: "6",
+              stroke: "black",
+              strokeWidth: "1",
+              fill: lowerFillColor
+            }));
+          }
+
+          if (higherXPosition > 778) {
+            higherLine = 782;
+            this.storedPoints.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("polygon", {
+              key: higherPointKey,
+              points: "795,40 780,46 780,34",
+              style: {
+                fill: higherFillColor,
+                stroke: higherFillColor,
+                strokeWidth: "1"
+              }
+            }));
+          } else {
+            this.storedPoints.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("circle", {
+              key: higherPointKey,
+              cx: higherXPosition,
+              cy: "40",
+              r: "6",
+              stroke: "black",
+              strokeWidth: "1",
+              fill: higherFillColor
+            }));
+          }
+
+          console.log("lowerXPosition ".concat(lowerXPosition, " higherXPosition ").concat(higherXPosition));
+          this.storedLines.push( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("line", {
+            key: lineKey,
+            x1: lowerLine,
+            y1: "40",
+            x2: higherLine,
+            y2: "40",
+            style: {
+              stroke: currentFillColor,
+              strokeWidth: "8"
+            }
+          }));
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(e, inputState) {
+      if (inputState === "up") {
+        var xPosition = this.xPositionToXValue(e.clientX);
+        console.log(xPosition);
+      }
+    }
+  }, {
+    key: "switchMode",
+    value: function switchMode(mode) {
+      console.log(mode);
+      this.setState({
+        mode: mode
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      if (this.doenetSvData.hide) {
+        return null;
+      }
+
+      this.buildLine();
+      this.buildPoints();
+      this.buildIntervals();
+      var activeButtonColor = "lightblue";
+      var inactiveButtonColor = "lightgrey";
+      var addIntervalStyle = {
+        backgroundColor: inactiveButtonColor
+      };
+
+      if (this.state.mode === "add interval" || this.state.mode === "add 2nd intervalPoint") {
+        addIntervalStyle = {
+          backgroundColor: activeButtonColor
+        };
+      }
+
+      var removeIntervalStyle = {
+        backgroundColor: inactiveButtonColor
+      };
+
+      if (this.state.mode === "remove interval") {
+        removeIntervalStyle = {
+          backgroundColor: activeButtonColor
+        };
+      }
+
+      var addPointStyle = {
+        backgroundColor: inactiveButtonColor
+      };
+
+      if (this.state.mode === "add point") {
+        addPointStyle = {
+          backgroundColor: activeButtonColor
+        };
+      }
+
+      var removePointStyle = {
+        backgroundColor: inactiveButtonColor
+      };
+
+      if (this.state.mode === "remove point") {
+        removePointStyle = {
+          backgroundColor: activeButtonColor
+        };
+      }
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ModeButton, {
+        style: addIntervalStyle,
+        onClick: function onClick() {
+          return _this2.switchMode("add interval");
+        }
+      }, "Add Interval")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ModeButton, {
+        style: removeIntervalStyle,
+        onClick: function onClick() {
+          return _this2.switchMode("remove interval");
+        }
+      }, "Remove Interval")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ModeButton, {
+        style: addPointStyle,
+        onClick: function onClick() {
+          return _this2.switchMode("add point");
+        }
+      }, "Add Point")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ModeButton, {
+        style: removePointStyle,
+        onClick: function onClick() {
+          return _this2.switchMode("remove point");
+        }
+      }, "Remove Point")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(ModeButton, {
+        style: {
+          backgroundColor: inactiveButtonColor
+        },
+        onClick: function onClick() {
+          return console.log("simplify");
+        }
+      }, "Simplify"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("svg", {
+        width: "808",
+        height: "80",
+        style: {
+          backgroundColor: "white"
+        },
+        onMouseDown: function onMouseDown(e) {
+          _this2.handleInput(e, "down");
+        },
+        onMouseUp: function onMouseUp(e) {
+          _this2.handleInput(e, "up");
+        },
+        onMouseMove: function onMouseMove(e) {
+          _this2.handleInput(e, "move");
+        },
+        onMouseLeave: function onMouseLeave(e) {
+          _this2.handleInput(e, "leave");
+        }
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("polygon", {
+        points: "5,40 20,50 20,30",
+        style: {
+          fill: "black",
+          stroke: "black",
+          strokeWidth: "1"
+        }
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("polygon", {
+        points: "795,40 780,50 780,30",
+        style: {
+          fill: "black",
+          stroke: "black",
+          strokeWidth: "1"
+        }
+      }), this.storedLines, this.hashLines, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("line", {
+        x1: "20",
+        y1: "40",
+        x2: "780",
+        y2: "40",
+        style: {
+          stroke: "black",
+          strokeWidth: "4"
+        }
+      }), this.storedPoints, this.labels));
+    }
+  }]);
+
+  return IntervalInput;
+}(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]); // this.handleKeyPress = this.handleKeyPress.bind(this);
+// this.handleKeyDown = this.handleKeyDown.bind(this);
+// this.handleBlur = this.handleBlur.bind(this);
+// this.handleFocus = this.handleFocus.bind(this);
+// this.onChangeHandler = this.onChangeHandler.bind(this);
+// this.currentValue = this.doenetSvData.value;
+// this.valueToRevertTo = this.doenetSvData.value;
+// const inputKey = this.componentName + '_input';
+// let surroundingBorderColor = "#efefef";
+// if (this.focused) {
+//   surroundingBorderColor = "#82a5ff";
+// }
+// if (this.doenetSvData.value !== this.currentValue) {
+//   this.currentValue = this.doenetSvData.value;
+//   this.valueToRevertTo = this.doenetSvData.value;
+// }
+// return <React.Fragment>
+//   <a name={this.componentName} />
+//   {this.doenetSvData.numericalPoints.map((x)=>{
+//     return <p key={x}>{x}</p>
+//   })}
+//   {/* <span className="textInputSurroundingBox" id={this.componentName}>
+//     <input
+//       key={inputKey}
+//       id={inputKey}
+//       value={this.currentValue}
+//       disabled={this.doenetSvData.disabled}
+//       onChange={this.onChangeHandler}
+//       onKeyPress={this.handleKeyPress}
+//       onKeyDown={this.handleKeyDown}
+//       onBlur={this.handleBlur}
+//       onFocus={this.handleFocus}
+//       style={{
+//         width: `${this.doenetSvData.size * 10}px`,
+//         height: "22px",
+//         fontSize: "14px",
+//         borderWidth: "1px",
+//         borderColor: surroundingBorderColor,
+//         padding: "4px",
+//       }}
+//     />
+//   </span> */}
+// </React.Fragment>
+// handleKeyPress(e) {
+//   if (e.key === "Enter") {
+//     this.valueToRevertTo = this.doenetSvData.value;
+//     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
+//       this.actions.submitAnswer();
+//     }
+//     this.forceUpdate();
+//   }
+// }
+// handleKeyDown(e) {
+//   if (e.key === "Escape") {
+//     this.actions.updateText({
+//       text: this.valueToRevertTo
+//     });
+//     this.forceUpdate();
+//   }
+// }
+// handleFocus(e) {
+//   this.focused = true;
+//   this.forceUpdate();
+// }
+// handleBlur(e) {
+//   this.focused = false;
+//   this.valueToRevertTo = this.doenetSvData.value;
+//   this.forceUpdate();
+// }
+// onChangeHandler(e) {
+//   this.currentValue = e.target.value;
+//   this.actions.updateText({
+//     text: e.target.value
+//   });
+//   this.forceUpdate();
+// }
+
+
+
+
+/***/ })
+
+}]);

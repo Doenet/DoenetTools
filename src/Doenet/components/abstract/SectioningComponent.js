@@ -4,53 +4,426 @@ import { getVariantsForDescendants } from '../../utils/variants';
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningcomponent";
 
-  setUpVariantIfVariantControlChild = true;
+  static setUpVariantIfVariantControlChild = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.title = { default: "", componentType: "text" };
-    properties.aggregatescores = { default: false };
+    properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
+    properties.sectionWideCheckWork = { default: false, forRenderer: true, propagateToDescendants: true };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
-
+    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
+    properties.styleDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
+    let atMostOneVariantControl = childLogic.newLeaf({
+      name: "atMostOneVariantControl",
+      componentType: "variantcontrol",
+      comparison: "atMost",
+      number: 1,
+      allowSpillover: false,
+    })
+
+    let atMostOneTitle = childLogic.newLeaf({
+      name: "atMostOneTitle",
+      componentType: "title",
+      comparison: "atMost",
+      number: 1,
+    })
+
+    let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
       comparison: 'atLeast',
       number: 0,
-      setAsBase: true,
     });
+
+    childLogic.newOperator({
+      name: "variantTitleAndAnything",
+      operator: "and",
+      propositions: [atMostOneVariantControl, atMostOneTitle, anything],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
 
-  // TODO: component has not yet been completely converted
-  // Just added some state variables so basic function works
-
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.enumeration = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        countAmongSiblings: {
+          dependencyType: "countAmongSiblingsOfSameType"
+        },
+        sectionAncestor: {
+          dependencyType: "ancestorStateVariables",
+          componentType: "_sectioningcomponent",
+          variableNames: ["enumeration"]
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let enumeration = [];
+        if (dependencyValues.sectionAncestor) {
+          enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+        }
+
+        enumeration.push(dependencyValues.countAmongSiblings)
+        return { newValues: { enumeration } }
+
+      }
+    }
+
+    stateVariableDefinitions.sectionName = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { sectionName: "Section" } })
+    }
+
+
+    stateVariableDefinitions.titleDefinedByChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.title = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneTitle",
+          variableNames: ["text"],
+        },
+        sectionName: {
+          dependencyType: "stateVariable",
+          variableName: "sectionName",
+        },
+        enumeration: {
+          dependencyType: "stateVariable",
+          variableName: "enumeration"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.titleChild.length === 0) {
+
+          let title = dependencyValues.sectionName + " "
+            + dependencyValues.enumeration.join(".")
+
+          return { newValues: { title } };
+        } else {
+          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+        }
+      }
+    }
 
     stateVariableDefinitions.containerTag = {
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { containerTag: "section" } })
     }
 
-    stateVariableDefinitions.viewedSolution = {
+    stateVariableDefinitions.level = {
+      forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { viewedSolution: false } })
+      definition: () => ({ newValues: { level: 1 } })
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.viewedSolution = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "viewedSolution",
+            value: desiredStateVariableValues.viewedSolution
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
+        scoredDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_sectioningcomponent", "answer"],
+          variableNames: [
+            "scoredDescendants",
+            "aggregateScores",
+            "weight"
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues }) {
+        let scoredDescendants = [];
+        for (let descendant of dependencyValues.scoredDescendants) {
+          if (descendant.stateValues.aggregateScores ||
+            descendant.stateValues.scoredDescendants === undefined
+          ) {
+            scoredDescendants.push(descendant)
+          } else {
+            scoredDescendants.push(...descendant.stateValues.scoredDescendants)
+          }
+        }
+
+        return { newValues: { scoredDescendants } }
+
+      }
+    }
+
+    stateVariableDefinitions.answerDescendants = {
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+      }
+    }
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            justSubmitted:
+              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
+    }
+
+    stateVariableDefinitions.displayDigitsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+    }
+
+    stateVariableDefinitions.creditAchieved = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      defaultValue: 0,
+      stateVariablesPrescribingAdditionalProperties: {
+        displayDigits: "displayDigitsForCreditAchieved",
+      },
+      additionalStateVariablesDefined: [{
+        variableName: "percentCreditAchieved",
+        public: true,
+        componentType: "number",
+        stateVariablesPrescribingAdditionalProperties: {
+          displayDigits: "displayDigitsForCreditAchieved",
+        }
+      }],
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          aggregateScores: {
+            dependencyType: "stateVariable",
+            variableName: "aggregateScores"
+          }
+        }
+        if (stateValues.aggregateScores) {
+          dependencies.scoredDescendants = {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchieved" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchieved"
+            }
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (!dependencyValues.aggregateScores) {
+          return {
+            newValues: {
+              creditAchieved: 0,
+              percentCreditAchieved: 0
+            }
+          }
+        }
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchieved" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchieved = creditSum / totalWeight;
+        let percentCreditAchieved = creditAchieved * 100;
+
+        return { newValues: { creditAchieved, percentCreditAchieved } }
+
+      }
+    }
+
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      defaultValue: 0,
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          aggregateScores: {
+            dependencyType: "stateVariable",
+            variableName: "aggregateScores"
+          }
+        }
+        if (stateValues.aggregateScores) {
+          dependencies.scoredDescendants = {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchievedIfSubmit" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchievedIfSubmit"
+            }
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (!dependencyValues.aggregateScores) {
+          return {
+            newValues: {
+              creditAchievedIfSubmit: 0,
+            }
+          }
+        }
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchievedIfSubmit = creditSum / totalWeight;
+
+        return { newValues: { creditAchievedIfSubmit } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      additionalStateVariablesDefined: ["isVariantComponent"],
+      returnDependencies: ({ componentInfoObjects }) => ({
+        variantControlChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneVariantControl",
+          variableNames: ["selectedVariantNumber"]
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let isVariantComponent;
+        let selectedVariantInfo = {};
+        if (dependencyValues.variantControlChild.length === 1) {
+          isVariantComponent = true;
+          selectedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantNumber;
+        } else {
+          isVariantComponent = false;
+        }
+
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if (descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo, isVariantComponent } }
+
+      }
+    }
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle"
+        },
         activeChildren: {
           dependencyType: "childIdentity",
           childLogicName: "anything"
@@ -59,130 +432,49 @@ export default class SectioningComponent extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+          {
+            childrenToRender:
+              [...dependencyValues.titleChild, ...dependencyValues.activeChildren]
+                .map(x => x.componentName)
+          }
         };
       }
     }
 
 
+
     return stateVariableDefinitions;
   }
 
-  updateState(args = {}) {
-    if (args.init) {
-      this.makePublicStateVariable({
-        variableName: "creditAchieved",
-        componentType: "number",
-        additionalProperties: {
-          displaydigits: 3,
-        }
-      });
-      this.makePublicStateVariable({
-        variableName: "percentcreditachieved",
-        componentType: "number",
-        additionalProperties: {
-          displaydigits: 3,
-        }
-      });
-      // this.makePublicStateVariable({
-      //   variableName: "pointsachieved",
-      //   componentType: "number"
-      // });
+  actions = {
+    submitAllAnswers: this.submitAllAnswers.bind(this)
+  }
 
-      if (!this._state.creditAchieved.essential) {
-        this.state.creditAchieved = 0;
-        this._state.creditAchieved.essential = true;
-      }
-      this.state.percentcreditachieved = this.state.creditAchieved * 100;
+  submitAllAnswers() {
 
-      if (this.doenetAttributes.isVariantComponent) {
-        this.state.selectedVariant = this.sharedParameters.selectedVariant;
-        this._state.selectedVariant.essential = true;
+    this.coreFunctions.requestRecordEvent({
+      verb: "submitted",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: {
+        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
 
-      if (this._state.viewedSolution === undefined) {
-        this.state.viewedSolution = false;
-      }
-      this._state.viewedSolution.essential = true;
-
-    }
-
-    super.updateState(args);
-
-
-    this.state.level = 1;
-    this.state.containerTag = "section";
-
-    if (this.state.aggregatescores) {
-      this.calculatecreditachieved();
+    })
+    for (let answer of this.stateValues.answerDescendants) {
+      this.coreFunctions.requestAction({
+        componentName: answer.componentName,
+        actionName: "submitAnswer"
+      })
     }
   }
 
-  calculatecreditachieved() {
-    // if(this.state.aggregatebypoints) {
-    //   let pointsachieved = 0;
-    //   let totalPoints = 0;
-    //   for(let component of this.descendantsFound.scoredComponent) {
-    //     let possiblePoints = component.state.possiblepoints;
-    //     if(possiblePoints === undefined) {
-    //       possiblePoints = component.state.weight;
-    //     }
-    //     totalPoints += possiblePoints;
-    //     pointsachieved += possiblePoints * component.state.creditAchieved;
-    //   }
-    //   this.state.creditAchieved = pointsachieved/totalPoints;
-    //   this.state.possiblepoints = totalPoints;
-
-    // }else {
-    let creditSum = 0;
-    let totalWeight = 0;
-
-    for (let component of this.descendantsFound.scoredComponents) {
-      let weight = component.state.weight;
-      creditSum += component.state.creditAchieved * weight;
-      totalWeight += weight;
-    }
-    this.state.creditAchieved = creditSum / totalWeight;
-    this.state.percentcreditachieved = this.state.creditAchieved * 100;
-    // }
-
-    // if(this.state.possiblePoints !== undefined) {
-    //   this.state.pointsachieved = this.state.creditAchieved * this.state.possiblePoints;
-    // }
-  }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.section({
-        key: this.componentName,
-        title: this.stateValues.title,
-        level: this.stateValues.level,
-        containerTag: this.stateValues.containerTag,
-        viewedSolution: this.stateValues.viewedSolution,
-      });
-    }
-  }
-
-  updateRenderer() {
-    this.renderer.updateSection({
-      title: this.stateValues.title,
-      viewedSolution: this.stateValues.viewedSolution,
-    });
-  }
-
-  get descendantSearchClasses() {
-    return [{
-      classNames: ["_sectioningcomponent", "answer"],
-      recurseToMatchedChildren: false,
-      key: "scoredComponents",
-      childCondition: child => child.componentType === "answer" || child.state.aggregatescores,
-      skip: !this.state.aggregatescores,
-    }];
-  }
-
-
-  static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
-    allComponentClasses }) {
+  static setUpVariant({
+    serializedComponent, sharedParameters, definingChildrenSoFar,
+    allComponentClasses
+  }) {
     let variantcontrolChild;
     for (let child of definingChildrenSoFar) {
       if (child !== undefined && child.componentType === "variantcontrol") {
@@ -349,27 +641,5 @@ export default class SectioningComponent extends BlockComponent {
   }
 
   static includeBlankStringChildren = true;
-
-
-  allowDownstreamUpdates(status) {
-    // only allow initial change 
-    return (status.initialChange === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // only allowed to change these state variables
-    return [
-      "viewedSolution",
-    ];
-  }
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-
-    return true;
-  }
-
 
 }

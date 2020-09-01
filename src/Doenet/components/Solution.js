@@ -1,10 +1,32 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    this.revealSolution = this.revealSolution.bind(this);
+    this.revealSolutionCallBack = this.revealSolutionCallBack.bind(this);
+
+  }
   static componentType = "solution";
 
-  static returnChildLogic (args) {
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    delete properties.hide;
+    return properties;
+  }
+
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
+
+    let atMostOneHide = childLogic.newLeaf({
+      name: "atMostOneHide",
+      componentType: "hide",
+      comparison: "atMost",
+      number: 1,
+    })
 
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",
@@ -23,139 +45,256 @@ export default class Solution extends BlockComponent {
     childLogic.newOperator({
       name: 'inlineOrBlock',
       operator: "or",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
+      propositions: [atMostOneHide, atLeastZeroInline, atLeastZeroBlock],
       setAsBase: true,
     })
-    
+
     return childLogic;
   }
 
-  updateState(args = {}) {
-    super.updateState(args);
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
-    if(args.init) {
-
-      this.makePublicStateVariable({
-        variableName: "open",
-        componentType: "boolean"
-      });
-
-      this.makePublicStateVariable({
-        variableName: "message",
-        componentType: "text"
-      });
-      
-      if(!this._state.open.essential) {
-        this.state.open = false;
-        this._state.open.essential = true;
+    stateVariableDefinitions.hide = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        hideChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneHide",
+          variableNames: ["value"]
+        },
+        displayMode: {
+          dependencyType: "flag",
+          flagName: "solutionDisplayMode"
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.displayMode === "none") {
+          return { newValues: { hide: true } }
+        } else if (dependencyValues.hideChild.length === 1) {
+          return {
+            newValues: {
+              hide: dependencyValues.hideChild[0].stateValues.value
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              hide: { variablesToCheck: ["hide"] }
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.displayMode === "none") {
+          return { success: false }
+        } else if (dependencyValues.hideChild.length === 1) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "hideChild",
+              desiredValue: desiredStateVariableValues.hide,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setSetVariable: "hide",
+              value: desiredStateVariableValues.hide
+            }]
+          }
+        }
       }
-      if(!this._state.message.essential) {
-        this.state.message = "";
-        this._state.message.essential = true;
-      }
-      this.revealSolution = this.revealSolution.bind(this);
-      this.revealSolutionCallBack = this.revealSolutionCallBack.bind(this);
-
     }
+
+    stateVariableDefinitions.open = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        displayMode: {
+          dependencyType: "flag",
+          flagName: "solutionDisplayMode"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.displayMode === "displayed") {
+          return { newValues: { open: true } }
+        } else if (dependencyValues.displayMode === "none") {
+          return { newValues: { open: false } }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              open: {
+                variablesToCheck: ["open"]
+              }
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.displayMode === "displayed" ||
+          dependencyValues.displayMode === "none"
+        ) {
+          // will always be open if displaymode is displayed
+          // or always closed if displaymode is none
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "open",
+            value: desiredStateVariableValues.open
+          }]
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.canBeClosed = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        displayMode: {
+          dependencyType: "flag",
+          flagName: "solutionDisplayMode"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.displayMode === "button") {
+          return { newValues: { canBeClosed: true } }
+        } else {
+          return { newValues: { canBeClosed: false } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.message = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          message: {
+            variablesToCheck: ["message"]
+          }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "message",
+            value: desiredStateVariableValues.message
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "childIdentity",
+          childLogicName: "inlineOrBlock"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenToRender: dependencyValues.children.map(x => x.componentName) }
+        };
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
 
 
-  revealSolutionCallBack({allowView,message,scoredComponent}){
-    
+  revealSolutionCallBack({ allowView, message, scoredComponent }) {
+
     let updateInstructions = [{
+      updateType: "updateValue",
       componentName: this.componentName,
-      variableUpdates: {
-        open: {changes: allowView},
-        message: {changes: message},
-      }
+      stateVariable: "open",
+      value: allowView
+    }, {
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "message",
+      value: message
     }];
 
-    if(allowView) {
+    let event;
+
+    if (allowView) {
       updateInstructions.push({
-        componentName: scoredComponent.componentName,
-        variableUpdates: {
-          viewedSolution: {changes: true},
-        }
-      })
-    }
-
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: updateInstructions
-    })
-    
-  }
-
-
-
-  revealSolution(){
-    // TODO: this doesn't work anymore since don't have actual ancestor components
-    console.warn("reveal solution doesn't work anymore, as don't have ancestor components")
-    let document = this.ancestors[this.ancestors.length - 1];
-    let { scoredItemNumber, scoredComponent } = document.calculateScoredItemNumberOfContainer(this);
-    
-    this.externalFunctions.recordSolutionView({
-      itemNumber:scoredItemNumber,
-      scoredComponent: scoredComponent,
-      callBack:this.revealSolutionCallBack
-    });
-    
-  }
-
-  initializeRenderer(){
-       
-    const actions = {
-      revealSolution:this.revealSolution,
-    }
-
-    if(this.renderer === undefined) {      
-      this.renderer = new this.availableRenderers.solution({
-        key: this.componentName,
-        message: this.state.message,
-        actions: actions,
-        displayMode: this.flags.solutionType,
-        open:this.state.open,
+        updateType: "updateValue",
+        componentName: scoredComponent,
+        stateVariable: "viewedSolution",
+        value: true
       });
+
+      event = {
+        verb: "viewed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
     }
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions,
+      event
+    })
+
   }
 
-  updateRenderer(){
-    this.renderer.updateRenderer({open:this.state.open,message:this.state.message});
-  }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
-  }
+  revealSolution() {
+    let { scoredItemNumber, scoredComponent } = this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
-  allowDownstreamUpdates(status) {
-    return true;
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["open","message"];
-  }
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-  
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: stateVariablesToUpdate,
-      dependenciesToUpdate: dependenciesToUpdate,
+    this.coreFunctions.recordSolutionView({
+      itemNumber: scoredItemNumber,
+      scoredComponent: scoredComponent,
+      callBack: this.revealSolutionCallBack
     });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
 
-    if(Object.keys(shadowedStateVariables).length === 0
-        // !isReplacement && 
-        ) {
-      Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-    }
-
-    return true;
-    
   }
-  
+
+  closeSolution() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: false
+      }]
+    })
+
+  }
+
+
+  actions = {
+    revealSolution: this.revealSolution.bind(this),
+    closeSolution: this.closeSolution.bind(this),
+  }
+
+
   static includeBlankStringChildren = true;
 
 }

@@ -1,0 +1,16 @@
+.container {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background: #dfe3e6;
+  border-radius: 5px;
+  margin-right: 40px;
+  padding: 10px;
+  min-height: 30px;
+}
+
+h3 {
+  text-align: left;
+  padding-left: 10px;
+  margin: 10px 0;
+}

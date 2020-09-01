@@ -4,8 +4,8 @@ describe('Collect Tag Tests',function() {
     cy.visit('/test')
   })
 
-  it.only('collect points from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+  it('collect points from graphs',() => {
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <panel>
     <graph>
@@ -14,24 +14,24 @@ describe('Collect Tag Tests',function() {
     </graph>
 
     <graph>
-      <ref>_point1</ref>
+      <copy tname="_point1" />
       <point>(4,2)</point>
       <point>
-        <x><ref prop="y">_point2</ref></x>
-        <y><ref prop="x">_point2</ref></y>
+        <x><copy prop="y" tname="_point2" /></x>
+        <y><copy prop="x" tname="_point2" /></y>
       </point>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" name="points">_panel1</collect>
+      <collect componentTypes="point" name="points" tname="_panel1"/>
     </graph>
 
-    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords">_panel1</collect></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs">_graph3</collect></aslist></p>
-    <p><m>x</m>-coordinates of points via a ref: <aslist><ref name="xs2">xs</ref></aslist></p>
-    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><ref name="points2">points</ref></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys">_graph3</collect></mean></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" tname="_panel1"/></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" tname="_graph3"/></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" tname="xs" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><copy name="points2" tname="points" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" tname="_graph3"/></mean></p>
     `},"*");
     });
   
@@ -113,7 +113,7 @@ describe('Collect Tag Tests',function() {
       expect(text.trim()).equal(String(y2).replace(/-/,'−'));
     })
 
-    cy.get('#\\/_p5 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/_p5 > span:nth-of-type(2)').invoke('text').then((text) => {
       expect(text.trim()).equal(String(meany).replace(/-/,'−'));
     })
 
@@ -123,17 +123,17 @@ describe('Collect Tag Tests',function() {
       let ys = [y1,y2,y1,y3,x2];
       let components = Object.assign({},win.state.components);
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
 
@@ -149,21 +149,21 @@ describe('Collect Tag Tests',function() {
       components['/_point1'].movePoint({x:x1, y:y1});
 
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
 
-    cy.log("move point 1 via ref")
+    cy.log("move point 1 via copy")
     cy.window().then((win) => {
       x1 = 2;
       y1 = 0;
@@ -172,20 +172,20 @@ describe('Collect Tag Tests',function() {
       meany = (y1+y2+y1+y3+x2)/5
 
       let components = Object.assign({},win.state.components);
-      components['/_ref1'].replacements[0].movePoint({x:x1, y:y1});
+      components['/_copy1'].replacements[0].movePoint({x:x1, y:y1});
 
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
 
@@ -202,17 +202,17 @@ describe('Collect Tag Tests',function() {
       components['/_point2'].movePoint({x:x2, y:y2});
 
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
 
@@ -229,17 +229,17 @@ describe('Collect Tag Tests',function() {
       components['/_point4'].movePoint({x:y2, y:x2});
 
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
 
@@ -255,50 +255,50 @@ describe('Collect Tag Tests',function() {
       components['/_point3'].movePoint({x:x3, y:y3});
 
       for(let i=0; i<5; i++) {
-        expect(components['/points'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[i].state.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[i].state.xs[1].tree).eq(ys[i]);
-        expect(components['/coords'].replacements[i].state.value.tree).eqls(["tuple", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].state.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].state.value.tree).eq(ys[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
+        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].state.value.tree).eq(meany);
+      expect(components['/mean'].stateValues.value).eq(meany);
 
     })
   });
 
   it('collect dynamic points from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput name="count" prefill="3"/>
     <mathinput name="mult" prefill="2"/>
     <panel>
     <graph>
       <map>
-        <template><point>(<subsref/>, <ref prop="value">mult</ref><subsref/>)</point></template>
-        <substitutions><sequence><to><ref prop="value">count</ref></to></sequence></substitutions>
+        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
+        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><subsref/></extract>+1, 1.5*<extract prop="y"><subsref/></extract>)</point></template>
-      <substitutions><collect components="point">_map1</collect></substitutions>
+      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
+      <substitutions><collect componentTypes="point" tname="_map1"/></substitutions>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect components="point">_panel1</collect>
+      <collect componentTypes="point" tname="_panel1"/>
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect components="point" prop="y">_graph3</collect>
+      <collect componentTypes="point" prop="y" tname="_graph3" />
     </aslist></p>
     `},"*");
     });
@@ -315,18 +315,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<3; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect2'].replacements[i+3].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+3].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(2*x);
-        expect(components['/_collect3'].replacements[i+3].state.value.tree).eq(3*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect2'].replacements[i+3].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+3].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2*x);
+        expect(components['/_collect3'].replacements[i+3].stateValues.value.tree).eq(3*x);
       }
 
     })
@@ -344,18 +344,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect2'].replacements[i+5].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+5].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(2*x);
-        expect(components['/_collect3'].replacements[i+5].state.value.tree).eq(3*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2*x);
+        expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(3*x);
       }
 
     })
@@ -374,18 +374,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+5].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+5].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+5].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -404,18 +404,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<1; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+1].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+1].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+1].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+1].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+1].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+1].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -434,18 +434,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+4].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+4].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+4].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+4].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -463,18 +463,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<6; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+6].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+6].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+6].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+6].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+6].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+6].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -483,18 +483,18 @@ describe('Collect Tag Tests',function() {
   // got rid of include hidden and always include hidden
   // rationale: if component becomes unhidden, it's not communicated to collect so it can't grab it after the fact
   it.skip(`default don't include hidden`,() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
+    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect components="point">_graph1</collect>
+      <collect componentTypes="point" tname="_graph1"/>
     </graph>
 
-    <collect components="point" prop="x">_graph1</collect>
+    <collect componentTypes="point" prop="x" tname="_graph1"/>
 
     `},"*");
     });
@@ -514,24 +514,23 @@ describe('Collect Tag Tests',function() {
   })
 
   it.skip(`dynamically change if include hidden`,() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
+    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
     <p>Include hidden: <booleaninput /></p>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect components="point">
-        <includehidden><ref prop="value">_booleaninput1</ref></includehidden>
-        _graph1
+      <collect componentTypes="point" tname="_graph1">
+        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
       </collect>
     </graph>
 
     <p>x-coordinates of points: <aslist>
-      <collect components="point" prop="x">
-        <includehidden><ref prop="value">_booleaninput1</ref></includehidden>
+      <collect componentTypes="point" prop="x">
+        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
         _graph1
       </collect>
     </aslist></p>
@@ -548,8 +547,8 @@ describe('Collect Tag Tests',function() {
       let components = Object.assign({},win.state.components);
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",1,2]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-3,5]);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",1,2]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-3,5]);
     })
 
     cy.log('include hidden')
@@ -557,15 +556,15 @@ describe('Collect Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].state.xs[0].tree).eq(1);
-      expect(components['/_collect1'].replacements[0].state.xs[1].tree).eq(2);
-      expect(components['/_collect1'].replacements[1].state.xs[0].tree).eq(-3);
-      expect(components['/_collect1'].replacements[1].state.xs[1].tree).eq(5);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(1);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(2);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-3);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(5);
       expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].state.value.tree).eq(1);
-      expect(components['/_collect2'].replacements[1].state.value.tree).eq(-3);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",1,2]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-3,5]);
+      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(1);
+      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-3);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",1,2]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-3,5]);
 
     })
 
@@ -575,15 +574,15 @@ describe('Collect Tag Tests',function() {
       components['/_collect1'].replacements[0].movePoint({x: 3, y: 9})
       components['/_collect1'].replacements[1].movePoint({x: -7, y: -6})
       expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].state.xs[0].tree).eq(3);
-      expect(components['/_collect1'].replacements[0].state.xs[1].tree).eq(9);
-      expect(components['/_collect1'].replacements[1].state.xs[0].tree).eq(-7);
-      expect(components['/_collect1'].replacements[1].state.xs[1].tree).eq(-6);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(3);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(9);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
       expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].state.value.tree).eq(3);
-      expect(components['/_collect2'].replacements[1].state.value.tree).eq(-7);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",3,9]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-7,-6]);
+      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(3);
+      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",3,9]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-7,-6]);
 
     })
 
@@ -593,8 +592,8 @@ describe('Collect Tag Tests',function() {
       let components = Object.assign({},win.state.components);
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",3,9]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-7,-6]);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",3,9]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-7,-6]);
     })
 
 
@@ -604,8 +603,8 @@ describe('Collect Tag Tests',function() {
       components['/_linesegment1'].moveLineSegment({point1coords: [0,-8]})
       expect(components['/_collect1'].replacements.length).eq(0);
       expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",0,-8]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-7,-6]);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",0,-8]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-7,-6]);
 
     })
 
@@ -614,15 +613,15 @@ describe('Collect Tag Tests',function() {
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
       expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].state.xs[0].tree).eq(0);
-      expect(components['/_collect1'].replacements[0].state.xs[1].tree).eq(-8);
-      expect(components['/_collect1'].replacements[1].state.xs[0].tree).eq(-7);
-      expect(components['/_collect1'].replacements[1].state.xs[1].tree).eq(-6);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
       expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].state.value.tree).eq(0);
-      expect(components['/_collect2'].replacements[1].state.value.tree).eq(-7);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",0,-8]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",-7,-6]);
+      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
+      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",0,-8]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",-7,-6]);
 
     })
 
@@ -631,44 +630,44 @@ describe('Collect Tag Tests',function() {
       let components = Object.assign({},win.state.components);
       components['/_linesegment1'].moveLineSegment({point2coords: [3,4]})
       expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].state.xs[0].tree).eq(0);
-      expect(components['/_collect1'].replacements[0].state.xs[1].tree).eq(-8);
-      expect(components['/_collect1'].replacements[1].state.xs[0].tree).eq(3);
-      expect(components['/_collect1'].replacements[1].state.xs[1].tree).eq(4);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
+      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(3);
+      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(4);
       expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].state.value.tree).eq(0);
-      expect(components['/_collect2'].replacements[1].state.value.tree).eq(3);
-      expect(components['/_linesegment1'].state.endpoints[0].tree).eqls(["tuple",0,-8]);
-      expect(components['/_linesegment1'].state.endpoints[1].tree).eqls(["tuple",3,4]);
+      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
+      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(3);
+      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector",0,-8]);
+      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector",3,4]);
 
     })
   })
 
   it('collect points and lines from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <panel>
     <graph>
       <point>(-3,1)</point>
       <point>(-7,4)</point>
-      <vector><ref>_point1</ref><ref>_point2</ref></vector>
+      <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
     </graph>
 
     <graph>
       <point>
-        <x><ref prop="y">_point1</ref></x>
-        <y><ref prop="x">_point1</ref></y>
+        <x><copy prop="y" tname="_point1" /></x>
+        <y><copy prop="x" tname="_point1" /></y>
       </point>
       <point>
-        <x><ref prop="y">_point2</ref></x>
-        <y><ref prop="x">_point2</ref></y>
+        <x><copy prop="y" tname="_point2" /></x>
+        <y><copy prop="x" tname="_point2" /></y>
       </point>
-      <vector><ref>_point3</ref><ref>_point4</ref></vector>
+      <vector><copy tname="_point3" /><copy tname="_point4" /></vector>
     </graph>
     </panel>
 
     <graph>
-      <collect components="point,vector" >_panel1</collect>
+      <collect componentTypes="point,vector" tname="_panel1"/>
     </graph>
     `},"*");
     });
@@ -681,23 +680,23 @@ describe('Collect Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector1'].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_vector2'].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_vector2'].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[1].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[2].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[2].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[3].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[4].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_collect1'].replacements[5].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[5].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
 
@@ -710,23 +709,23 @@ describe('Collect Tag Tests',function() {
 
       let components = Object.assign({},win.state.components);
       components['/_collect1'].replacements[2].moveVector({tailcoords:[x1,y1], headcoords:[x2,y2]});
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector1'].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_vector2'].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_vector2'].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[1].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[2].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[2].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[3].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[4].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_collect1'].replacements[5].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[5].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
 
@@ -739,29 +738,29 @@ describe('Collect Tag Tests',function() {
 
       let components = Object.assign({},win.state.components);
       components['/_collect1'].replacements[5].moveVector({tailcoords:[y1,x1], headcoords:[y2,x2]});
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector1'].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_vector2'].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_vector2'].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].state.coords.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[1].state.coords.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[2].state.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_collect1'].replacements[2].state.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_collect1'].replacements[3].state.coords.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[4].state.coords.tree).eqls(["tuple", y2, x2]);
-      expect(components['/_collect1'].replacements[5].state.tail.tree).eqls(["tuple", y1, x1]);
-      expect(components['/_collect1'].replacements[5].state.head.tree).eqls(["tuple", y2, x2]);
+      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
+      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
   });
 
   it('maximum number',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput name="count" prefill="5"/>
     <mathinput name="mult" prefill="2"/>
@@ -769,27 +768,27 @@ describe('Collect Tag Tests',function() {
     <panel>
     <graph>
       <map>
-        <template><point>(<subsref/>, <ref prop="value">mult</ref><subsref/>)</point></template>
-        <substitutions><sequence><to><ref prop="value">count</ref></to></sequence></substitutions>
+        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
+        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><subsref/></extract>+1, 1.5*<extract prop="y"><subsref/></extract>)</point></template>
-      <substitutions><collect components="point"><maximumnumber><ref prop="value">maxnumber</ref></maximumnumber>_map1</collect></substitutions>
+      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
+      <substitutions><collect componentTypes="point" tname="_map1"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect></substitutions>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect components="point"><maximumnumber>2<ref prop="value">maxnumber</ref></maximumnumber>_panel1</collect>
+      <collect componentTypes="point" tname="_panel1"><maximumnumber>2<copy prop="value" tname="maxnumber" /></maximumnumber></collect>
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect components="point" prop="y"><maximumnumber><ref prop="value">maxnumber</ref></maximumnumber>_graph3</collect>
+      <collect componentTypes="point" prop="y" tname="_graph3"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect>
     </aslist></p>
     `},"*");
     });
@@ -806,24 +805,24 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
       }
       for(let i=0; i<2; i++) {
         let x=i+1;
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(3*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
       }
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(2*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
       }
       for(let i=0; i<2; i++) {
         let x=i+1;
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(2*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2*x);
       }
 
     })
@@ -842,18 +841,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect2'].replacements[i+5].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+5].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(2*x);
-        // expect(components['/_collect3'].replacements[i+5].state.value.tree).eq(3*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2*x);
+        // expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(3*x);
       }
 
     })
@@ -873,18 +872,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(2*x);
-        expect(components['/_collect2'].replacements[i+5].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+5].state.xs[1].tree).eq(3*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(2*x);
-        expect(components['/_collect3'].replacements[i+5].state.value.tree).eq(3*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2*x);
+        expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(3*x);
       }
 
     })
@@ -904,18 +903,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+5].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+5].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+5].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+5].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -934,18 +933,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<1; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+1].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+1].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+1].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+1].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+1].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+1].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -964,18 +963,18 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i+4].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+4].state.xs[1].tree).eq(0.75*x);
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
-        expect(components['/_collect3'].replacements[i+4].state.value.tree).eq(0.75*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i+4].stateValues.value.tree).eq(0.75*x);
       }
 
     })
@@ -994,49 +993,50 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
       }
       for(let i=0; i<3; i++) {
         let x=i+1;
-        expect(components['/_collect1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].state.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].state.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
       }
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].state.xs[1].tree).eq(0.5*x);
-        expect(components['/_collect2'].replacements[i].state.xs[0].tree).eq(x);
-        expect(components['/_collect2'].replacements[i].state.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
+        expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
       }
       for(let i=0; i<2; i++) {
         let x=i+1;
-        expect(components['/_collect2'].replacements[i+4].state.xs[0].tree).eq(x+1);
-        expect(components['/_collect2'].replacements[i+4].state.xs[1].tree).eq(0.75*x);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_collect2'].replacements[i+4].stateValues.xs[1].tree).eq(0.75*x);
       }
       for(let i=0; i<3; i++) {
         let x=i+1;
-        expect(components['/_collect3'].replacements[i].state.value.tree).eq(0.5*x);
+        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5*x);
       }
 
     })
   });
 
-  it('collect child numbers',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+  // removed functionality of collecting child numbers, at least for now
+  it.skip('collect child numbers',() => {
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput />
 
     <math>
-      <sequence><to><ref prop="value">_mathinput1</ref></to></sequence>
+      <sequence><to><copy prop="value" tname="_mathinput1" /></to></sequence>
       <math>a</math>
       <math>b</math>
       <math>c</math>
     </math>
     
-    <collect prop="childnumber" components="math">_math1</collect>
+    <collect prop="childnumber" componentTypes="math" tname="_math1"/>
     `},"*");
     });
 
@@ -1055,9 +1055,9 @@ describe('Collect Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_collect1'].replacements[0].state.number).eq(1);
-      expect(components['/_collect1'].replacements[1].state.number).eq(2);
-      expect(components['/_collect1'].replacements[2].state.number).eq(3);
+      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
     })
 
     cy.get('#\\/_mathinput1_input').clear().type("3{enter}");
@@ -1083,12 +1083,12 @@ describe('Collect Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_collect1'].replacements[0].state.number).eq(1);
-      expect(components['/_collect1'].replacements[1].state.number).eq(2);
-      expect(components['/_collect1'].replacements[2].state.number).eq(3);
-      expect(components['/_collect1'].replacements[3].state.number).eq(4);
-      expect(components['/_collect1'].replacements[4].state.number).eq(5);
-      expect(components['/_collect1'].replacements[5].state.number).eq(6);
+      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
+      expect(components['/_collect1'].replacements[3].stateValues.number).eq(4);
+      expect(components['/_collect1'].replacements[4].stateValues.number).eq(5);
+      expect(components['/_collect1'].replacements[5].stateValues.number).eq(6);
     })
 
     cy.get('#\\/_mathinput1_input').clear().type("1{enter}");
@@ -1108,16 +1108,16 @@ describe('Collect Tag Tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_collect1'].replacements[0].state.number).eq(1);
-      expect(components['/_collect1'].replacements[1].state.number).eq(2);
-      expect(components['/_collect1'].replacements[2].state.number).eq(3);
-      expect(components['/_collect1'].replacements[3].state.number).eq(4);
+      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
+      expect(components['/_collect1'].replacements[3].stateValues.number).eq(4);
     })
 
   });
 
-  it('collect, extract, ref multiple ways',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+  it('collect, extract, copy multiple ways',() => {
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
 
   <p>How many blanks? 
@@ -1130,36 +1130,36 @@ describe('Collect Tag Tests',function() {
         <mathinput />
       </template>
       <substitutions>
-        <sequence><count><ref prop="value">n</ref></count></sequence>
+        <sequence><count><copy prop="value" tname="n" /></count></sequence>
       </substitutions>
     </map>
   </p>
   
   <p name="p_1">Inputs collected then, values extracted: 
-  <aslist name="al1"><extract prop="value" name="values1"><collect components="mathinput">p_original</collect></extract></aslist></p>
+  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" tname="p_original"/></extract></aslist></p>
 
-  <p name="p_1a">Reffed: <aslist name="al1a"><ref name="values1a">values1</ref></aslist></p>
-  <p name="p_1b">Ref aslist: <ref name="al1b">al1</ref></p>
-  <p name="p_1c">Ref reffed: <aslist><ref>values1a</ref></aslist></p>
-  <p name="p_1d">Ref aslist containing ref: <ref>al1a</ref></p>
-  <p name="p_1e">Ref reffed aslist: <ref>al1b</ref></p>
+  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" tname="values1" /></aslist></p>
+  <p name="p_1b">Copy aslist: <copy name="al1b" tname="al1" /></p>
+  <p name="p_1c">Copy copied: <aslist><copy tname="values1a" /></aslist></p>
+  <p name="p_1d">Copy aslist containing copy: <copy tname="al1a" /></p>
+  <p name="p_1e">Copy copied aslist: <copy tname="al1b" /></p>
 
   <p name="p_2">Values collected: 
-    <aslist name="al2"><collect prop="value" name="values2" components="mathinput">p_original</collect></aslist></p>
+    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" tname="p_original"/></aslist></p>
     
-  <p name="p_2a">Reffed: <aslist name="al2a"><ref name="values2a">values2</ref></aslist></p>
-  <p name="p_2b">Ref aslist: <ref name="al2b">al2</ref></p>
-  <p name="p_2c">Ref reffed: <aslist><ref>values2a</ref></aslist></p>
-  <p name="p_2d">Ref aslist containing ref: <ref>al2a</ref></p>
-  <p name="p_2e">Ref reffed aslist: <ref>al2b</ref></p>
+  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" tname="values2" /></aslist></p>
+  <p name="p_2b">Copy aslist: <copy name="al2b" tname="al2" /></p>
+  <p name="p_2c">Copy copied: <aslist><copy tname="values2a" /></aslist></p>
+  <p name="p_2d">Copy aslist containing copy: <copy tname="al2a" /></p>
+  <p name="p_2e">Copy copied aslist: <copy tname="al2b" /></p>
 
-  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" components="mathinput">p_original</collect></aslist></p>
+  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" tname="p_original"/></aslist></p>
   
-  <p name="p_3a">Reffed: <aslist name="al3a"><ref name="cola">col</ref></aslist></p>
-  <p name="p_3b">Ref aslist: <ref name="al3b">al3</ref></p>
-  <p name="p_3c">Ref reffed: <aslist><ref>cola</ref></aslist></p>
-  <p name="p_3d">Ref aslist containing ref: <ref>al3a</ref></p>
-  <p name="p_3e">Ref reffed aslist: <ref>al3b</ref></p>
+  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" tname="col" /></aslist></p>
+  <p name="p_3b">Copy aslist: <copy name="al3b" tname="al3" /></p>
+  <p name="p_3c">Copy copied: <aslist><copy tname="cola" /></aslist></p>
+  <p name="p_3d">Copy aslist containing copy: <copy tname="al3a" /></p>
+  <p name="p_3e">Copy copied aslist: <copy tname="al3b" /></p>
   
     `},"*");
     });
@@ -1167,10 +1167,10 @@ describe('Collect Tag Tests',function() {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text','a');
 
-    cy.get('#\\/p_3e div:nth-of-type(1) input').clear().type('x{enter}');
+    cy.get('#\\/p_3e span:nth-of-type(1) input').clear().type('x{enter}');
 
 
-    cy.get('#\\/p_original div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_original span:nth-of-type(1) input').should('have.value', 'x');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1186,23 +1186,23 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'x');
 
 
     cy.get('#\\/n_input').clear().type("5{enter}")
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').clear().type('y').blur();
-    cy.get('#\\/p_original > div:nth-of-type(3) input').clear().type('z').blur();
-    cy.get('#\\/p_original > div:nth-of-type(4) input').clear().type('u').blur();
-    cy.get('#\\/p_original > div:nth-of-type(5) input').clear().type('v').blur();
+    cy.get('#\\/p_original > span:nth-of-type(2) input').clear().type('y').blur();
+    cy.get('#\\/p_original > span:nth-of-type(3) input').clear().type('z').blur();
+    cy.get('#\\/p_original > span:nth-of-type(4) input').clear().type('u').blur();
+    cy.get('#\\/p_original > span:nth-of-type(5) input').clear().type('v').blur();
 
 
-    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'x');
     
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1218,15 +1218,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'x');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_original > span:nth-of-type(2) input').should('have.value', 'y');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
@@ -1242,15 +1242,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3 > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3b > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3c > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3d > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3e > span:nth-of-type(2) input').should('have.value', 'y');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_original > span:nth-of-type(3) input').should('have.value', 'z');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
@@ -1266,15 +1266,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3 > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3a > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3b > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3c > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3d > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3e > span:nth-of-type(3) input').should('have.value', 'z');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_original > span:nth-of-type(4) input').should('have.value', 'u');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
@@ -1290,15 +1290,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3 > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3a > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3b > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3c > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3d > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3e > span:nth-of-type(4) input').should('have.value', 'u');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_original > span:nth-of-type(5) input').should('have.value', 'v');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
@@ -1314,12 +1314,12 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3 > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3a > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3b > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3c > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3d > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3e > span:nth-of-type(5) input').should('have.value', 'v');
 
 
 
@@ -1329,7 +1329,7 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/n_input').clear().type("2{enter}");
 
 
-    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'x');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1345,15 +1345,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'x');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_original > span:nth-of-type(2) input').should('have.value', 'y');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
@@ -1369,20 +1369,20 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'y');
-    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3 > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3b > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3c > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3d > span:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3e > span:nth-of-type(2) input').should('have.value', 'y');
 
 
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').clear().type('a{enter}');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').clear().type('b{enter}');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').clear().type('a{enter}');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').clear().type('b{enter}');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1398,15 +1398,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_original > span:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1422,19 +1422,19 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3 > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > span:nth-of-type(2) input').should('have.value', 'b');
 
 
 
     cy.get('#\\/n_input').clear().type("5{enter}");
 
 
-    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1450,15 +1450,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_original > span:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1474,15 +1474,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3 > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > span:nth-of-type(2) input').should('have.value', 'b');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_original > span:nth-of-type(3) input').should('have.value', 'z');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
@@ -1498,15 +1498,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'z');
-    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3 > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3a > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3b > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3c > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3d > span:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3e > span:nth-of-type(3) input').should('have.value', 'z');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_original > span:nth-of-type(4) input').should('have.value', 'u');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
@@ -1522,15 +1522,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'u');
-    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3 > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3a > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3b > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3c > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3d > span:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3e > span:nth-of-type(4) input').should('have.value', 'u');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_original > span:nth-of-type(5) input').should('have.value', 'v');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
@@ -1546,21 +1546,21 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'v');
-    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3 > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3a > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3b > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3c > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3d > span:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3e > span:nth-of-type(5) input').should('have.value', 'v');
 
 
 
-    cy.get('#\\/p_3b > div:nth-of-type(3) input').clear().type('c{enter}');
-    cy.get('#\\/p_3c > div:nth-of-type(4) input').clear().type('d{enter}');
-    cy.get('#\\/p_3d > div:nth-of-type(5) input').clear().type('e{enter}');
+    cy.get('#\\/p_3b > span:nth-of-type(3) input').clear().type('c{enter}');
+    cy.get('#\\/p_3c > span:nth-of-type(4) input').clear().type('d{enter}');
+    cy.get('#\\/p_3d > span:nth-of-type(5) input').clear().type('e{enter}');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1576,15 +1576,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
-    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3 > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > span:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > span:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_original > span:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1600,15 +1600,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
-    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3 > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > span:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > span:nth-of-type(2) input').should('have.value', 'b');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_original > span:nth-of-type(3) input').should('have.value', 'c');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
@@ -1624,15 +1624,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'c');
-    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'c');
-    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'c');
-    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'c');
-    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'c');
-    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3 > span:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3a > span:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3b > span:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3c > span:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3d > span:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3e > span:nth-of-type(3) input').should('have.value', 'c');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_original > span:nth-of-type(4) input').should('have.value', 'd');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
@@ -1648,15 +1648,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'd');
-    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'd');
-    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'd');
-    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'd');
-    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'd');
-    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3 > span:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3a > span:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3b > span:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3c > span:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3d > span:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3e > span:nth-of-type(4) input').should('have.value', 'd');
 
 
-    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_original > span:nth-of-type(5) input').should('have.value', 'e');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
@@ -1672,12 +1672,12 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
 
-    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'e');
-    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'e');
-    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'e');
-    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'e');
-    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'e');
-    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3 > span:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3a > span:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3b > span:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3c > span:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3d > span:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3e > span:nth-of-type(5) input').should('have.value', 'e');
 
 
 

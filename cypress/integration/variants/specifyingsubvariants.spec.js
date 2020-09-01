@@ -12,7 +12,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 6; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <select assignnames="x">u,v,w,x,y,z</select>
     `,
@@ -29,7 +29,7 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/x'].state.value).eq(values[ind]);
+        expect(components['/x'].stateValues.value).eq(values[ind]);
       })
 
     }
@@ -46,7 +46,7 @@ describe('Specifying subvariants tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
       <text>${ind1}</text>
       <text>${ind2}</text>
       <select assignnames="x,y" numbertoselect="2">x,y,z</select>
@@ -66,8 +66,8 @@ describe('Specifying subvariants tests', function () {
         cy.window().then((win) => {
 
           let components = Object.assign({}, win.state.components);
-          expect(components['/x'].state.value).eq(values[ind1]);
-          expect(components['/y'].state.value).eq(values[ind2]);
+          expect(components['/x'].stateValues.value).eq(values[ind1]);
+          expect(components['/y'].stateValues.value).eq(values[ind2]);
         })
       }
 
@@ -84,7 +84,7 @@ describe('Specifying subvariants tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <selectfromsequence assignnames="n">10</selectfromsequence>
       `,
@@ -102,7 +102,7 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/n'].state.number).eq(values[ind]);
+        expect(components['/n'].stateValues.value).eq(values[ind]);
       })
 
     }
@@ -118,7 +118,7 @@ describe('Specifying subvariants tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind1}</text>
         <text>${ind2}</text>
         <selectfromsequence assignnames="x,y" numbertoselect="2">4</selectfromsequence>
@@ -137,8 +137,8 @@ describe('Specifying subvariants tests', function () {
         cy.window().then((win) => {
 
           let components = Object.assign({}, win.state.components);
-          expect(components['/x'].state.number).eq(values[ind1]);
-          expect(components['/y'].state.number).eq(values[ind2]);
+          expect(components['/x'].stateValues.value).eq(values[ind1]);
+          expect(components['/y'].stateValues.value).eq(values[ind2]);
         })
       }
     }
@@ -172,7 +172,7 @@ describe('Specifying subvariants tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -203,9 +203,9 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].state.value).eq(directionsByVariantName[variant]);
+        expect(components['/direction'].stateValues.value).eq(directionsByVariantName[variant]);
 
-        let sidesSelected = [components['/side1'].state.value, components['/side2'].state.value];
+        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
       })
     }
@@ -220,7 +220,7 @@ describe('Specifying subvariants tests', function () {
       let direction = directions[directionInd];
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -254,9 +254,9 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].state.value).eq(direction);
+        expect(components['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].state.value, components['/side2'].state.value];
+        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
       })
     }
@@ -272,7 +272,7 @@ describe('Specifying subvariants tests', function () {
       let sidesChosen = sideInds.map(x => sides[x])
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -307,9 +307,9 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].state.value).eq(direction);
+        expect(components['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].state.value, components['/side2'].state.value];
+        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
       })
     }
@@ -323,7 +323,7 @@ describe('Specifying subvariants tests', function () {
       let sidesChosen = sideInds.map(x => sides[x])
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -358,9 +358,9 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].state.value).eq(direction);
+        expect(components['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].state.value, components['/side2'].state.value];
+        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
       })
     }
@@ -383,7 +383,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 5; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="100"/>
   
@@ -424,10 +424,10 @@ describe('Specifying subvariants tests', function () {
         let components = Object.assign({}, win.state.components);
         let p = components['/p'];
 
-        let variantInd = firstStringsToInd[p.activeChildren[0].state.value.trim()];
+        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
         expect(variantInd).eq(0);
 
-        expect(p.activeChildren[1].state.value).eq(colorsByInd[ind])
+        expect(p.activeChildren[1].stateValues.value).eq(colorsByInd[ind])
       });
 
     }
@@ -437,7 +437,7 @@ describe('Specifying subvariants tests', function () {
       for (let ind2 = 0; ind2 < 400; ind2 += 100) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind1}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
@@ -483,10 +483,10 @@ describe('Specifying subvariants tests', function () {
           let components = Object.assign({}, win.state.components);
           let p = components['/p'];
 
-          let variantInd = firstStringsToInd[p.activeChildren[0].state.value.trim()];
+          let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
           expect(variantInd).eq(1);
 
-          let num = p.activeChildren[1].state.number;
+          let num = p.activeChildren[1].stateValues.value;
 
           if (ind1 === 0) {
             expect(num).eq(1000 + ind2);
@@ -501,7 +501,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 5; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="100"/>
   
@@ -542,10 +542,10 @@ describe('Specifying subvariants tests', function () {
         let components = Object.assign({}, win.state.components);
         let p = components['/p'];
 
-        let variantInd = firstStringsToInd[p.activeChildren[0].state.value.trim()];
+        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
         expect(variantInd).eq(2);
 
-        expect(p.activeChildren[1].state.value).eq(lettersByInd[ind])
+        expect(p.activeChildren[1].stateValues.value).eq(lettersByInd[ind])
       });
 
     }
@@ -571,7 +571,7 @@ describe('Specifying subvariants tests', function () {
               for (let ind6 = 4; ind6 < 5; ind6++) {
                 cy.window().then((win) => {
                   win.postMessage({
-                    doenetCode: `
+                    doenetML: `
                 <text>${ind1}</text>
                 <text>${ind2}</text>
                 <text>${ind3}</text>
@@ -635,15 +635,15 @@ describe('Specifying subvariants tests', function () {
 
                   for (let i = 1; i <= 3; i++) {
                     let problem = components['/problem' + i];
-                    let variantInd = titlesToInd[problem.state.title];
+                    let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
 
                     let p = problem.activeChildren[4];
 
                     if (variantInd === 0) {
-                      expect(p.activeChildren[1].state.value).eq(problemAoptions[selectInds[i - 1]])
+                      expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1]])
                     } else {
-                      expect(p.activeChildren[1].state.number).eq(problemBoptions[selectInds[i - 1]])
+                      expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1]])
                     }
                   }
                 })
@@ -675,7 +675,7 @@ describe('Specifying subvariants tests', function () {
               for (let ind6 = 4; ind6 < 5; ind6++) {
                 cy.window().then((win) => {
                   win.postMessage({
-                    doenetCode: `
+                    doenetML: `
                   <text>${ind1}</text>
                   <text>${ind2}</text>
                   <text>${ind3}</text>
@@ -743,15 +743,15 @@ describe('Specifying subvariants tests', function () {
 
                   for (let i = 1; i <= 3; i++) {
                     let problem = components['/problem' + i];
-                    let variantInd = titlesToInd[problem.state.title];
+                    let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
 
                     let p = problem.activeChildren[4];
 
                     if (variantInd === 0) {
-                      expect(p.activeChildren[1].state.value).eq(problemAoptions[selectInds[i - 1]])
+                      expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1]])
                     } else {
-                      expect(p.activeChildren[1].state.number).eq(problemBoptions[selectInds[i - 1]])
+                      expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1]])
                     }
                   }
                 })

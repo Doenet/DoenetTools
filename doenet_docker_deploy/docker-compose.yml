@@ -1,0 +1,41 @@
+version: '3.7'
+# Runs on dist instead of dist_local 
+
+services:
+  apache:
+    build: '../doenet_docker/apache'
+    ports:
+      - 80:80
+      # - 443:443
+    volumes:
+      - ../dist:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+      - mysql
+    restart: always
+
+  php:
+    build: '../doenet_docker/php'
+    volumes:
+      - ../dist:/usr/local/apache2/htdocs
+    restart: always
+
+  mysql:
+    build: '../doenet_docker/mysql'
+    ports:
+      - 3306:3306
+    volumes:
+      - ../doenet_docker/volumes/db:/var/lib/mysql
+      - ../doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+    restart: always
+
+  node:
+    build: '../doenet_docker/node'
+    # image: node:13.8
+    user: 'node'
+    working_dir: /home/node/app
+    volumes:
+      - ..:/home/node/app
+    command: 'npm run webpack' # comment this line if you want to serve but not build
+    restart: always # comment this line if you want to serve but not build
+    # command: 'npm --version' # UNcomment this line if you want to serve but not build

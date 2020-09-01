@@ -4,19 +4,29 @@ import me from 'math-expressions';
 export default class Polyline extends GraphicalComponent {
   static componentType = "polyline";
 
+  actions = {
+    movePolyline: this.movePolyline.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["vertices", "nVertices"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = {default: true};
+    properties.draggable = { default: true, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addVertices = function({activeChildrenMatched}) {
+    let addVertices = function ({ activeChildrenMatched }) {
       // add <vertices> around points
       let verticesChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         verticesChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -29,8 +39,8 @@ export default class Polyline extends GraphicalComponent {
     }
 
 
-    let AtLeastOnePoint = childLogic.newLeaf({
-      name: "AtLeastOnePoint",
+    let atLeastOnePoint = childLogic.newLeaf({
+      name: "atLeastOnePoint",
       componentType: 'point',
       comparison: 'atLeast',
       number: 1,
@@ -38,45 +48,45 @@ export default class Polyline extends GraphicalComponent {
       replacementFunction: addVertices,
     });
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
     });
-    
-    let AtLeastOneMath = childLogic.newLeaf({
-      name: "AtLeastOneMath",
+
+    let atLeastOneMath = childLogic.newLeaf({
+      name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let StringsAndMaths = childLogic.newOperator({
-      name: "StringsAndMaths",
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
       operator: 'or',
-      propositions: [AtLeastOneString, AtLeastOneMath],
+      propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
       replacementFunction: addVertices,
     });
 
-    let NoPoints = childLogic.newLeaf({
-      name: "NoPoints",
+    let noPoints = childLogic.newLeaf({
+      name: "noPoints",
       componentType: 'point',
       number: 0
     });
 
-    let ExactlyOneVertices = childLogic.newLeaf({
-      name: "ExactlyOneVertices",
+    let exactlyOneVertices = childLogic.newLeaf({
+      name: "exactlyOneVertices",
       componentType: 'vertices',
       number: 1
     });
 
     childLogic.newOperator({
-      name: "VerticesXorSugar",
+      name: "verticesXorSugar",
       operator: 'xor',
-      propositions: [ExactlyOneVertices, AtLeastOnePoint, StringsAndMaths, NoPoints],
+      propositions: [exactlyOneVertices, atLeastOnePoint, stringsAndMaths, noPoints],
       setAsBase: true
     });
 
@@ -84,387 +94,445 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  updateState(args={}) {
-    if(args.init === true) {
+  static returnStateVariableDefinitions() {
 
-      this.makePublicStateVariableArray({
-        variableName: "vertices",
-        componentType: "point",
-        stateVariableForRef: "coords",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "vertex",
-        arrayVariableName: "vertices",
-      });
-      this.makePublicStateVariable({
-        variableName: "styledescription",
-        componentType: "text",
-      });
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      // reference via the point coords
-      this.stateVariablesForReference = ["vertices"];
-
-      this.movePolyline = this.movePolyline.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-
-      if(this.state.nPoints === undefined) {
-        this.state.nPoints = 0;
-      }
-
-    }
-
-    super.updateState(args);
-
-    this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
-      this.state.selectedStyle = this.styleDefinitions[1];
-    }
-
-    let curveDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
-      curveDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
-      curveDescription += "thin ";
-    }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
-      curveDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
-      curveDescription += "dotted ";
-    }
-
-    curveDescription += `${this.state.selectedStyle.lineColor} `;
-
-    this.state.styledescription = curveDescription;
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.vertices = true;
-      this.unresolvedState.ndimensions = true;
-      this.unresolvedState.nPoints = true;
-      return;
-    }
-
-    delete this.unresolvedState.ndimensions;
-    delete this.unresolvedState.nPoints;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let verticesInds = this.childLogic.returnMatches("ExactlyOneVertices");
-
-      // if ExactlyOneVertices is undefined, then a superclass
-      // must have overwritten childLogic, so skip this processing
-      if(verticesInds === undefined) {
-        this.state.polylineChildlogicOverwritten = true;
-        delete this.unresolvedState.vertices;
-        return;
-      }
-
-
-      if(verticesInds.length > 0) {
-        this.state.verticesChild = this.activeChildren[verticesInds[0]];
-      } else {
-        delete this.state.verticesChild;
-      }
-    }
-
-
-    if(this.state.polylineChildlogicOverwritten) {
-      return;
-    }
-
-    let recheckPoints = false;
-
-    if(!this.state.verticesChild) {
-      if(!this._state.vertices.essential) {
-        delete this.unresolvedState.vertices;
-        this.state.vertices = [];
-        this.state.nPoints = 0;
-        this.state.ndimensions = undefined;
-        return;
-      }else {
-        this.state.nPoints = this.state.vertices.length;
-        if(trackChanges.getVariableChanges({component: this, variable: "vertices"})) {
-          recheckPoints = true;
+        let styleDescription = "";
+        if (dependencyValues.selectedStyle.lineWidth >= 4) {
+          styleDescription += "thick ";
+        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
+          styleDescription += "thin ";
         }
+        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
+          styleDescription += "dashed ";
+        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
+          styleDescription += "dotted ";
+        }
+
+        styleDescription += `${dependencyValues.selectedStyle.lineColor} `;
+
+        return { newValues: { styleDescription } };
       }
-    }else {
+    }
 
-      let verticesState = this.state.verticesChild.state;
-      if(this.state.verticesChild.unresolvedState.points) {
-        this.unresolvedState.vertices = true;
-        this.unresolvedState.ndimensions = true;
-        this.unresolvedState.nPoints = true;
-        return;
+    stateVariableDefinitions.nVertices = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({
+        verticesChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneVertices",
+          variableNames: ["nPoints"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.verticesChild.length === 1) {
+          return { newValues: { nVertices: dependencyValues.verticesChild[0].stateValues.nPoints } }
+        } else {
+          return { newValues: { nVertices: 0 } }
+        }
+
       }
+    }
 
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "number",
+      returnDependencies() {
+        return {
+          verticesChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "exactlyOneVertices",
+            variableNames: ["nDimensions"],
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
 
-      if(childrenChanged || 
-          trackChanges.getVariableChanges({component:this.state.verticesChild,
-            variable: "points"})) {
+        if (dependencyValues.verticesChild.length === 1) {
+          let nDimensions = dependencyValues.verticesChild[0].stateValues.nDimensions;
+          return {
+            newValues: { nDimensions },
+            checkForActualChange: { nDimensions: true }
+          }
+        } else {
+          // polyline through zero vertices
+          return { newValues: { nDimensions: 2 } }
+        }
 
-        recheckPoints = true;
-        delete this.unresolvedState.vertices;
+      }
+    }
 
-        let points = verticesState.points;
-        this.state.nPoints = verticesState.nPoints;
-
-        this.state.vertices=[];
-        
-        for(let i=0; i < this.state.nPoints; i++) {
-          if(points[i].unresolvedState.coords) {
-            if(!this.unresolvedState.vertices) {
-              this.unresolvedState.vertices = {isArray: true, arrayComponents: {}};
+    stateVariableDefinitions.vertices = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["vertexX", "vertex"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "vertexX") {
+          return [];
+        } else {
+          // vertex or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "vertexX") {
+          // vertexX1_2 is the 2nd component of the first vertex
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
             }
-            this.unresolvedState.vertices.arrayComponents[i] = true;
-            this.state.vertices.push(undefined);
-          }else {
-            this.state.vertices.push(points[i].state.coords.copy());
+          } else {
+            return [];
+          }
+        } else {
+          // vertex3 is all components of the third vertex
+          if (!arraySize) {
+            return [];
+          }
+          let vertexInd = Number(varEnding) - 1;
+          if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
+            // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+          } else {
+            return [];
           }
         }
 
-      } else {
-        for(let i=0; i < this.state.nPoints; i++) {
-          if(verticesState.points[i].unresolvedState.coords) {
-            if(!this.unresolvedState.vertices) {
-              this.unresolvedState.vertices = {isArray: true, arrayComponents: {}};
+      },
+      returnArraySizeDependencies: () => ({
+        nVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nVertices",
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVertices, dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          dependenciesByKey[arrayKey] = {
+            verticesChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneVertices",
+              variableNames: ["pointX" + varEnding]
             }
-            this.unresolvedState.vertices.arrayComponents[i] = true;
-          }else if(trackChanges.getVariableChanges({
-            component: verticesState.points[i],
-            variable: "coords"
-          })) {
-            recheckPoints = true;
-            this.state.vertices[i] = verticesState.points[i].state.coords.copy();
           }
+        }
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of polyline vertices');
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+        // console.log(arrayKeys);
+
+        let vertices = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+          if (verticesChild.length === 1
+            && verticesChild[0].stateValues["pointX" + varEnding]
+          ) {
+            vertices[arrayKey] = verticesChild[0].stateValues["pointX" + varEnding];
+          } else {
+            vertices[arrayKey] = me.fromAst('\uff3f');
+          }
+        }
+
+        return { newValues: { vertices } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey,
+        initialChange, stateValues,
+      }) {
+
+        // console.log(`inverseArrayDefinition of vertices of polyline`);
+        // console.log(desiredStateVariableValues)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(dependencyValuesByKey);
+
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.vertices) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
+            && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
+          ) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].verticesChild,
+              desiredValue: desiredStateVariableValues.vertices[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            })
+
+          } else {
+            return { success: false };
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
+
+    stateVariableDefinitions.numericalVertices = {
+      isArray: true,
+      entryPrefixes: ["numericalVertex"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        nVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nVertices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVertices];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            vertex: {
+              dependencyType: "stateVariable",
+              variableName: "vertex" + (Number(arrayKey) + 1)
+            }
+          }
+        }
+
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let numericalVertices = {};
+
+        for (let arrayKey of arrayKeys) {
+          let vert = dependencyValuesByKey[arrayKey].vertex.map(x => x.evaluate_to_constant())
+          if (!vert.every(x => Number.isFinite(x))) {
+            vert = Array(vert.length).fill(NaN)
+          }
+          numericalVertices[arrayKey] = vert;
+        }
+
+        return { newValues: { numericalVertices } }
+      }
+    }
+
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        verticesChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneVertices"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.verticesChild.length === 1) {
+          return {
+            newValues: {
+              childrenToRender: [dependencyValues.verticesChild[0].componentName]
+            }
+          }
+        } else {
+          return { newValues: { childrenToRender: [] } }
         }
       }
     }
 
-    if(recheckPoints && !this.unresolvedState.vertices) {
-      this.state.ndimensions = undefined;
-      if(this.state.nPoints > 0) {
-        this.state.ndimensions = 1;
-        let vertex1tree = this.state.vertices[0].tree;
-        if(vertex1tree[0] === "tuple" || vertex1tree[0] === "vector") {
-          this.state.ndimensions = vertex1tree.length-1;
-        }
-        for(let i=1; i < this.state.nPoints; i++) {
-          let ndimb = 1;
-          let vertextree = this.state.vertices[i].tree;
-          if(vertextree[0] === "tuple" || vertextree[0] === "vector") {
-            ndimb = vertextree.length-1;
+    stateVariableDefinitions.nearestPoint = {
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        },
+        vertices: {
+          dependencyType: "stateVariable",
+          variableName: "vertices"
+        },
+        nVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nVertices"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          nearestPoint: function (variables) {
+
+            // only implemented in 2D for now
+            if (dependencyValues.nDimensions !== 2 || dependencyValues.nVertices === 0) {
+              return {};
+            }
+
+            let closestDistance2 = Infinity;
+            let closestResult = {};
+
+            let x1 = variables.x1.evaluate_to_constant();
+            let x2 = variables.x2.evaluate_to_constant();
+
+            let prevPtx, prevPty;
+            let nextPtx = dependencyValues.vertices[0][0].evaluate_to_constant();
+            let nextPty = dependencyValues.vertices[0][1].evaluate_to_constant();
+
+            for (let i = 1; i < dependencyValues.nVertices; i++) {
+              prevPtx = nextPtx;
+              prevPty = nextPty;
+
+              nextPtx = dependencyValues.vertices[i][0].evaluate_to_constant();
+              nextPty = dependencyValues.vertices[i][1].evaluate_to_constant();
+
+              // only implement for constants
+              if (!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) &&
+                Number.isFinite(nextPtx) && Number.isFinite(nextPty))) {
+                continue;
+              }
+
+              let BA1 = nextPtx - prevPtx;
+              let BA2 = nextPty - prevPty;
+              let denom = (BA1 * BA1 + BA2 * BA2);
+
+              if (denom === 0) {
+                continue;
+              }
+
+              let t = ((x1 - prevPtx) * BA1 + (x2 - prevPty) * BA2) / denom;
+
+              let result;
+
+              if (t <= 0) {
+                result = { x1: prevPtx, x2: prevPty };
+              } else if (t >= 1) {
+                result = { x1: nextPtx, x2: nextPty };
+              } else {
+                result = {
+                  x1: prevPtx + t * BA1,
+                  x2: prevPty + t * BA2,
+                };
+              }
+
+              let distance2 = Math.pow(x1 - result.x1, 2) + Math.pow(x2 - result.x2, 2);
+
+              if (distance2 < closestDistance2) {
+                closestDistance2 = distance2;
+                closestResult = result;
+              }
+
+            }
+
+            if (variables.x3 !== undefined && Object.keys(closestResult).length > 0) {
+              closestResult.x3 = 0;
+            }
+
+            return closestResult;
+
           }
-          if(ndimb != this.state.ndimensions) {
-            console.warn("Invalid polyline: points must have same number of dimensions");
-            this.state.nPoints = 0;
-            this.state.vertices = [];
-            break;
-          }
         }
-      }
+      })
     }
+
+    return stateVariableDefinitions;
 
   }
 
-  movePolyline(pointcoordsObject) {
+
+  movePolyline(pointcoordsObject, transient, sourceInformation) {
+
     let vertexComponents = {};
-    for(let ind in pointcoordsObject) {
-      vertexComponents[ind] = me.fromAst(["tuple", ...pointcoordsObject[ind]])
+    for (let ind in pointcoordsObject) {
+      vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
+      vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
     }
 
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          vertices: {
-            isArray: true,
-            changes: { arrayComponents: vertexComponents }
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents,
+          sourceInformation
+        }],
+        transient,
+      });
+    } else {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents,
+          sourceInformation
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            pointCoordinates: pointcoordsObject
           }
-        }
-      }]
-    });
-
-  }
-
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    
-    if(this.state.ndimensions === 2 && this.unresolvedState.vertices === undefined) {
-      const actions = {
-        movePolyline: this.movePolyline,
-      }
-      this.renderer = new this.availableRenderers.polyline2d({
-        key: this.componentName,
-        label: this.state.label,
-        draggable: this.state.draggable,
-        layer: this.state.layer,
-        visible: !this.state.hide,
-        pointcoords: this.state.vertices.map(x => 
-          [x.get_component(0).evaluate_to_constant(),
-          x.get_component(1).evaluate_to_constant()]),
-        color: this.state.selectedStyle.lineColor,
-        width: this.state.selectedStyle.lineWidth,
-        style: this.state.selectedStyle.lineStyle,
-        actions: actions,
+        },
       });
     }
-  }
-
-  updateRenderer(){
-    this.renderer.updatePolyline({
-      visible: !this.state.hide,
-      pointcoords: this.state.vertices.map(x => 
-        [x.get_component(0).evaluate_to_constant(),
-        x.get_component(1).evaluate_to_constant()]),
-   });
-  }
-
-  updateChildrenWhoRender(){
-    if(this.state.verticesChild !== undefined)
-      this.childrenWhoRender = [this.state.verticesChild.componentName];
-  }
-
-  allowDownstreamUpdates(status) {
-    return ((status.initialChange === true && this.state.draggable === true) ||
-    (status.initialChange !== true && this.state.modifyIndirectly === true));
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["vertices"];
-  }
-
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-    let newStateVariables = {};
-    let verticesChanged = new Set([]);
-
-    let newVertices = Array(this.state.nPoints);
-
-    for(let varName in stateVariablesToUpdate) {
-      if(varName === "vertices") {
-        if(newStateVariables[varName] === undefined) {
-          newStateVariables[varName] = {
-            isArray: true,
-            changes: { arrayComponents: {} }
-          }
-        }
-        for(let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
-          verticesChanged.add(Number(ind));
-          newVertices[ind] = newStateVariables[varName].changes.arrayComponents[ind] = 
-            stateVariablesToUpdate[varName].changes.arrayComponents[ind];
-        }
-      }
-    }
-
-    // check if based on vertices child
-    if(this.state.verticesChild !== undefined) {
-      let vertices = this.state.verticesChild.state.points;
-
-      for(let ind=0; ind < vertices.length; ind++) {
-        if(verticesChanged.has(ind)) {
-          let pointName = vertices[ind].componentName;
-          dependenciesToUpdate[pointName] = {coords: {changes: newVertices[ind]}};
-        }
-      }
-    }
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // add stateVariable to stateVariableChangesToSave if is essential
-    // and no shadow sources were updated
-    for(let varname in newStateVariables) {
-      if(this._state[varname].essential === true &&
-          !shadowedStateVariables.has(varname) && !isReplacement) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
 
   }
 
-
-  nearestPoint({x1, x2, x3}) {
-
-    // only implemented in 2D for now
-    if(this.state.ndimensions !== 2) {
-      return;
-    }
-
-    let closestDistance2 = Infinity;
-    let closestResult = {}
-
-    let prevPtx, prevPty;
-    let nextPtx = this.state.vertices[this.state.nPoints-1].get_component(0).evaluate_to_constant();
-    let nextPty = this.state.vertices[this.state.nPoints-1].get_component(1).evaluate_to_constant();
-
-    for(let i=0; i < this.state.nPoints; i++) {
-      prevPtx = nextPtx;
-      prevPty = nextPty;
-
-      nextPtx = this.state.vertices[i].get_component(0).evaluate_to_constant();
-      nextPty = this.state.vertices[i].get_component(1).evaluate_to_constant();
-    
-      // only implement for constants
-      if(!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) && 
-          Number.isFinite(nextPtx) && Number.isFinite(nextPty))) {
-        continue;
-      }
-
-      let BA1 = nextPtx-prevPtx;
-      let BA2 = nextPty-prevPty;
-      let denom = (BA1*BA1+BA2*BA2);
-
-      if(denom===0) {
-        continue;
-      }
-
-      let t = ((x1-prevPtx)*BA1+(x2-prevPty)*BA2)/denom;
-
-      let result;
-
-      if(t<=0) {
-        result = {x1: prevPtx, x2: prevPty};
-      }else if(t >= 1) {
-        result = {x1: nextPtx, x2: nextPty};
-      }else {
-        result = {
-          x1: prevPtx + t*BA1,
-          x2: prevPty + t*BA2,
-        };
-      }
-
-      let distance2 = Math.pow(x1 - result.x1, 2) + Math.pow(x2 - result.x2, 2);
-
-      if(distance2 < closestDistance2) {
-        closestDistance2 = distance2;
-        closestResult = result;
-      }
-
-    }
-
-    if(x3 !== undefined && Object.keys(closestResult).length > 0) {
-      closestResult.x3 = 0;
-    }
-
-    return closestResult;
-
-  }
 
 }

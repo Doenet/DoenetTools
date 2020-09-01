@@ -9,7 +9,7 @@ describe('Pluralize Tag Tests', function () {
   it('number followed by noun', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
     <p><pluralize>one dog</pluralize></p>
     <p><pluralize>two dog</pluralize></p>
@@ -38,7 +38,7 @@ describe('Pluralize Tag Tests', function () {
   it('single word', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
     <p><pluralize>dog</pluralize></p>
     <p><pluralize>mouse</pluralize></p>
@@ -61,7 +61,7 @@ describe('Pluralize Tag Tests', function () {
   it('number followed by noun with plural form', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   
       <p><pluralize pluralForm="cheetahs">one dog</pluralize></p>
       <p><pluralize pluralForm="cheetahs">two dog</pluralize></p>
@@ -90,7 +90,7 @@ describe('Pluralize Tag Tests', function () {
   it('single word, with plural form', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
     <p><pluralize pluralForm="cheetahs">dog</pluralize></p>
     <p><pluralize pluralForm="cheetahs">mouse</pluralize></p>
@@ -113,7 +113,7 @@ describe('Pluralize Tag Tests', function () {
   it('number followed by noun, based on number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
     <p><pluralize basedOnNumber="3">one dog</pluralize></p>
     <p><pluralize basedOnNumber="1">two dog</pluralize></p>
@@ -143,7 +143,7 @@ describe('Pluralize Tag Tests', function () {
   it('single word, based on number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
     <p><pluralize basedOnNumber="7">dog</pluralize></p>
     <p><pluralize basedOnNumber="1">dog</pluralize></p>
@@ -179,14 +179,14 @@ describe('Pluralize Tag Tests', function () {
   it('phrases', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><pluralize>one dog three cat two squirrel or 1 cat plus 7 goose</pluralize></p>
-    <p><pluralize>one hundred green milk plane flew through one big sky, rather six shiny sky</pluralize></p>
+    <p><pluralize>one hundred green plane flew through one big sky, rather than six shiny sky</pluralize></p>
     `}, "*");
     });
 
     cy.get('#\\/_p1').should('have.text', 'one dog three cats two squirrels or 1 cat plus 7 geese')
-    cy.get('#\\/_p2').should('have.text', 'one hundred green milk planes flew through one big sky, rather six shiny skies')
+    cy.get('#\\/_p2').should('have.text', 'one hundred green planes flew through one big sky, rather than six shiny skies')
 
   })
 
@@ -194,11 +194,11 @@ describe('Pluralize Tag Tests', function () {
   it('dynamic', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>How many geese? <textinput name="ngeese" prefill="1" /></p>
     <p>How many teeth? <textinput name="nteeth" prefill="1" /></p>
 
-    <p><pluralize>I have <ref prop="value">ngeese</ref> goose even if one doesn't have <ref prop="value">nteeth</ref> tooth</pluralize></p>
+    <p><pluralize>I have <copy prop="value" tname="ngeese" /> goose even if one doesn't have <copy prop="value" tname="nteeth" /> tooth</pluralize></p>
     `}, "*");
     });
 
@@ -218,6 +218,9 @@ describe('Pluralize Tag Tests', function () {
 
     cy.get('#\\/ngeese_input').clear().type("-1{enter}");
     cy.get('#\\/_p3').should('have.text', `I have -1 geese even if one doesn't have one thousand teeth`);
+
+    cy.get('#\\/ngeese_input').clear().type("-2{enter}");
+    cy.get('#\\/_p3').should('have.text', `I have -2 geese even if one doesn't have one thousand teeth`);
 
   })
 })

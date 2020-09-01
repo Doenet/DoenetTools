@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class MathOperator extends MathComponent {
   static componentType = "_mathoperator";
+  static rendererType = "math";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -30,20 +31,28 @@ export default class MathOperator extends MathComponent {
     delete stateVariableDefinitions.codesAdjacentToStrings;
     delete stateVariableDefinitions.mathChildrenByArrayComponent;
 
-    let constructor = this;
-
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { canBeModified: false } })
     }
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { mathOperator: x => me.fromAst('\uff3f') } })
+    }
+
 
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroMaths",
-          variableNames: ["value", "canBeModified"],
+          variableNames: ["value"],
         },
+        mathOperator: {
+          dependencyType: "stateVariable",
+          variableName: "mathOperator"
+        }
       }),
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       definition: function ({ dependencyValues }) {
@@ -56,7 +65,9 @@ export default class MathOperator extends MathComponent {
         } else {
           return {
             newValues: {
-              unnormalizedValue: constructor.applyMathOperator(dependencyValues)
+              unnormalizedValue: dependencyValues.mathOperator(
+                dependencyValues.mathChildren.map(x => x.stateValues.value)
+              )
             }
           }
         }

@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Math Tag Tests', function () {
 
   beforeEach(() => {
@@ -7,7 +17,7 @@ describe('Math Tag Tests', function () {
   it('1+1', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>1+1</math>
     <math simplify>1+1</math>
@@ -34,7 +44,7 @@ describe('Math Tag Tests', function () {
   it('string math string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>3<math>x+1</math>+5</math>
     <math simplify>3<math>x+1</math>+5</math>
@@ -65,10 +75,10 @@ describe('Math Tag Tests', function () {
   it('hidden string ref/math string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<ref>_math1</ref> + 5</math>
+    <math>3<copy tname="_math1" /> + 5</math>
     `}, "*");
     });
 
@@ -85,7 +95,7 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement = components['/_ref1'].replacements[0];
+      let replacement = components['/_copy1'].replacements[0];
       expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
       expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
@@ -98,7 +108,7 @@ describe('Math Tag Tests', function () {
   it('math underscore when no value', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math></math>
     `}, "*");
@@ -112,7 +122,7 @@ describe('Math Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <math> </math>
     `}, "*");
@@ -125,7 +135,7 @@ describe('Math Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <math />
     `}, "*");
@@ -140,7 +150,7 @@ describe('Math Tag Tests', function () {
   it('format latex', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math format="latex">\\frac{x}{z}</math>
     `}, "*");
@@ -166,10 +176,10 @@ describe('Math Tag Tests', function () {
   it('ref latex property', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>x/y</math>
-  <ref prop="latex">_math1</ref>
+  <copy prop="latex" tname="_math1" />
   `}, "*");
     });
 
@@ -184,8 +194,8 @@ describe('Math Tag Tests', function () {
     })
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement = components['/_ref1'].replacements[0];
-      cy.get('#' + replacement.componentName).should('have.text', '\\frac{x}{y}');
+      let replacement = components['/_copy1'].replacements[0];
+      cy.get(cesc('#' + replacement.componentName)).should('have.text', '\\frac{x}{y}');
 
     })
 
@@ -194,11 +204,11 @@ describe('Math Tag Tests', function () {
   it('math with internal and external refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
-  <math name="a" simplify><math name="x">x</math> + <ref>x</ref> + <ref>z</ref></math>
+  <math name="a" simplify><math name="x">x</math> + <copy tname="x" /> + <copy tname="z" /></math>
   <math name="z">z</math>
-  <ref name="a2">a</ref>
+  <copy name="a2" tname="a" />
   `}, "*");
     });
 
@@ -212,7 +222,7 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement = components['/a2'].replacements[0];
-      cy.get('#' + replacement.componentName).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(cesc('#' + replacement.componentName)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2x+z')
       })
     })
@@ -222,10 +232,10 @@ describe('Math Tag Tests', function () {
   it('point adapts into a math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <point>3</point>
-  <math simplify>2 + <ref>_point1</ref></math>
+  <math simplify>2 + <copy tname="_point1" /></math>
   `}, "*");
     });
 
@@ -239,7 +249,7 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point = components['/_ref1'].replacements[0];
+      let point = components['/_copy1'].replacements[0];
       let coords = point.adapterUsed;
       expect(components['/_math1'].stateValues.value.tree).eq(5);
       expect(components['/_math1'].activeChildren[2].componentName).equal(coords.componentName);
@@ -251,11 +261,11 @@ describe('Math Tag Tests', function () {
   it('adjacent string children in math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math simplify>2<sequence count="0"/>3</math>
   <graph>
-  <point><coords>(<ref>_math1</ref>, 3)</coords></point>
+  <point><coords>(<copy tname="_math1" />, 3)</coords></point>
   </graph>
   `}, "*");
     });
@@ -296,7 +306,7 @@ describe('Math Tag Tests', function () {
   it('math displayed rounded to 14 significant digits by default', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p><text>a</text></p>
   <p><math>1.000000000000001</math></p>
   <p><math>0.30000000000000004 x + 4pi</math></p>
@@ -325,29 +335,29 @@ describe('Math Tag Tests', function () {
   it('mutual references of format', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>q</text>
   <p><math name="a" simplify>
-    <format><ref prop="value">_textinput1</ref></format>
+    <format><copy prop="value" tname="_textinput1" /></format>
     \\sin(y)
     <math name="c">
-      <ref prop="format">b</ref>
+      <format><copy prop="format" tname="b" /></format>
       sin(x)
     </math>
   </math></p>
   <p><math name="b" simplify>
-    <format><ref prop="value">_textinput2</ref></format>
+    <format><copy prop="value" tname="_textinput2" /></format>
     sin(u)
     <math name="d">
-      <ref prop="format">a</ref>
+      <format><copy prop="format" tname="a" /></format>
       \\sin(v)
     </math>
   </math></p>
   
-  <p name="formata"><ref prop="format">a</ref></p>
-  <p name="formatb"><ref prop="format">b</ref></p>
-  <p name="formatc"><ref prop="format">c</ref></p>
-  <p name="formatd"><ref prop="format">d</ref></p>
+  <p name="formata"><copy prop="format" tname="a" /></p>
+  <p name="formatb"><copy prop="format" tname="b" /></p>
+  <p name="formatc"><copy prop="format" tname="c" /></p>
+  <p name="formatd"><copy prop="format" tname="d" /></p>
   
   <textinput prefill="latex"/>
   <textinput prefill="text"/>
@@ -435,7 +445,7 @@ describe('Math Tag Tests', function () {
   it('simplify math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default is no simplification: <math>1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Explicit no simplify: <math simplify="none">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
@@ -509,7 +519,7 @@ describe('Math Tag Tests', function () {
   it('expand math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default is to not expand: <math>(x-3)(2x+4)</math></p>
     <p>Expand: <math expand="true">(x-3)(2x+4)</math></p>
@@ -538,7 +548,7 @@ describe('Math Tag Tests', function () {
   it('create vectors and intervals', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default: <math>(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
     <p>Create vectors: <math createvectors="true">(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
@@ -602,7 +612,7 @@ describe('Math Tag Tests', function () {
   it('display small numbers as zero', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p><text>a</text></p>
   <p><math>2x + (1E-15)y</math></p>
   <p><math displaysmallaszero>2x + (1E-15)y</math></p>

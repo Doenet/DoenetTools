@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class NumberBaseOperatorOrNumber extends NumberComponent {
   static componentType = "_numberbaseoperatorornumber";
+  static rendererType = "number";
 
   static modifySharedParameters({ sharedParameters, serializedComponent }) {
 
@@ -28,10 +29,8 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
 
     childLogic.deleteAllLogic();
 
-    let breakStringIntoNumbersByCommas = function ({ activeChildrenMatched }) {
-      console.log("activeChildrenMatched")
-      console.log(activeChildrenMatched)
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoNumbersByCommas = function ({ dependencyValues }) {
+      let stringChild = dependencyValues.exactlyOneString[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "number",
         state: { value: Number(x) }
@@ -48,7 +47,14 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroNumbers"],
+      returnSugarDependencies: () => ({
+        exactlyOneString: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastZeroNumbers"],
       replacementFunction: breakStringIntoNumbersByCommas,
     });
 

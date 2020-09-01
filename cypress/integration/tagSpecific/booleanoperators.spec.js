@@ -8,9 +8,9 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
-    <not><ref prop="value">_booleaninput1</ref></not>
+    <not><copy prop="value" tname="_booleaninput1" /></not>
     `}, "*");
     });
 
@@ -20,9 +20,9 @@ describe('Boolean Operator Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components['/_not1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_not1'].stateValues.value).eq(true);
     });
 
     cy.log('check the box')
@@ -34,9 +34,9 @@ describe('Boolean Operator Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components['/_not1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_not1'].stateValues.value).eq(false);
     });
 
   })
@@ -45,14 +45,14 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
     <and>
-      <ref prop="value">_booleaninput1</ref>
-      <ref prop="value">_booleaninput2</ref>
-      <ref prop="value">_booleaninput3</ref>
+      <copy prop="value" tname="_booleaninput1" />
+      <copy prop="value" tname="_booleaninput2" />
+      <copy prop="value" tname="_booleaninput3" />
     </and>
     `}, "*");
     });
@@ -61,13 +61,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_and1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_and1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_and1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 1')
@@ -75,13 +75,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_and1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_and1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_and1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 2')
@@ -89,13 +89,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_and1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_and1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_and1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 3')
@@ -103,13 +103,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_and1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_and1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_and1'].stateValues.value).eq(true);
     });
   })
 
@@ -117,14 +117,14 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
     <or>
-      <ref prop="value">_booleaninput1</ref>
-      <ref prop="value">_booleaninput2</ref>
-      <ref prop="value">_booleaninput3</ref>
+      <copy prop="value" tname="_booleaninput1" />
+      <copy prop="value" tname="_booleaninput2" />
+      <copy prop="value" tname="_booleaninput3" />
     </or>
     `}, "*");
     });
@@ -133,13 +133,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_or1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_or1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 1')
@@ -147,13 +147,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_or1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_or1'].stateValues.value).eq(true);
     });
 
     cy.log('check box 2')
@@ -161,13 +161,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_or1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_or1'].stateValues.value).eq(true);
     });
 
     cy.log('check box 3')
@@ -175,13 +175,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_or1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_or1'].stateValues.value).eq(true);
     });
 
     cy.log('uncheck box 1')
@@ -189,13 +189,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_or1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_or1'].stateValues.value).eq(true);
     });
 
     cy.log('uncheck box 2')
@@ -203,13 +203,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_or1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_or1'].stateValues.value).eq(true);
     });
 
     cy.log('uncheck box 3')
@@ -217,13 +217,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_or1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_or1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_or1'].stateValues.value).eq(false);
     });
 
   })
@@ -232,14 +232,14 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
     <xor>
-      <ref prop="value">_booleaninput1</ref>
-      <ref prop="value">_booleaninput2</ref>
-      <ref prop="value">_booleaninput3</ref>
+      <copy prop="value" tname="_booleaninput1" />
+      <copy prop="value" tname="_booleaninput2" />
+      <copy prop="value" tname="_booleaninput3" />
     </xor>
     `}, "*");
     });
@@ -248,13 +248,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_xor1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_xor1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 1')
@@ -262,13 +262,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_xor1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_xor1'].stateValues.value).eq(true);
     });
 
     cy.log('check box 2')
@@ -276,13 +276,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_xor1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_xor1'].stateValues.value).eq(false);
     });
 
     cy.log('check box 3')
@@ -290,13 +290,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(true);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_xor1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_xor1'].stateValues.value).eq(false);
     });
 
     cy.log('uncheck box 1')
@@ -304,13 +304,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(true);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(true);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_xor1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(true);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(true);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_xor1'].stateValues.value).eq(false);
     });
 
     cy.log('uncheck box 2')
@@ -318,13 +318,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(true);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(true);
-      expect(components['/_xor1'].state.value).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(true);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(true);
+      expect(components['/_xor1'].stateValues.value).eq(true);
     });
 
     cy.log('uncheck box 3')
@@ -332,13 +332,13 @@ describe('Boolean Operator Tag Tests', function () {
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_booleaninput2'].state.value).eq(false);
-      expect(components['/_booleaninput3'].state.value).eq(false);
-      expect(components.__boolean1.state.value).eq(false);
-      expect(components.__boolean2.state.value).eq(false);
-      expect(components.__boolean3.state.value).eq(false);
-      expect(components['/_xor1'].state.value).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_booleaninput2'].stateValues.value).eq(false);
+      expect(components['/_booleaninput3'].stateValues.value).eq(false);
+      expect(components["/_copy1"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy2"].replacements[0].stateValues.value).eq(false);
+      expect(components["/_copy3"].replacements[0].stateValues.value).eq(false);
+      expect(components['/_xor1'].stateValues.value).eq(false);
     });
 
   })
@@ -347,10 +347,10 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput label="show point"/>
     <graph>
-      <point><hide><not><ref prop="value">_booleaninput1</ref></not></hide>
+      <point><hide><not><copy prop="value" tname="_booleaninput1" /></not></hide>
        (1,2)
       </point>
     </graph>
@@ -361,16 +361,16 @@ describe('Boolean Operator Tag Tests', function () {
     cy.log('Test initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(false);
-      expect(components['/_point1'].state.hide).eq(true);
+      expect(components['/_booleaninput1'].stateValues.value).eq(false);
+      expect(components['/_point1'].stateValues.hide).eq(true);
     });
 
     cy.log('check box to show point')
     cy.get('#\\/_booleaninput1_input').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_booleaninput1'].state.value).eq(true);
-      expect(components['/_point1'].state.hide).eq(false);
+      expect(components['/_booleaninput1'].stateValues.value).eq(true);
+      expect(components['/_point1'].stateValues.hide).eq(false);
     });
 
   })
