@@ -283,7 +283,14 @@ export default class Solution extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "open",
         value: false
-      }]
+      }],
+      event: {
+        verb: "closed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
     })
 
   }

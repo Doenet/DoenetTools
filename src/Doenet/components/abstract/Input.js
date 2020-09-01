@@ -20,36 +20,19 @@ export default class Input extends InlineComponent {
       definition: () => ({ newValues: { nValues: 1 } })
     }
 
-    stateVariableDefinitions.creditAchieved = {
-      defaultValue: 0,
-      public: true,
-      componentType: "number",
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          creditAchieved: {
-            variablesToCheck: ["creditAchieved"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
-        };
-      }
-    }
+
 
     stateVariableDefinitions.answerAncestor = {
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "ancestorStateVariables",
           componentType: "answer",
-          variableNames: ["delegateCheckWorkToInput", "justSubmitted"]
+          variableNames: [
+            "delegateCheckWorkToInput",
+            "justSubmittedForSubmitButton",
+            "creditAchievedForSubmitButton",
+            "submitAllAnswersAtAncestor"
+          ]
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -79,6 +62,28 @@ export default class Input extends InlineComponent {
 
     }
 
+
+    stateVariableDefinitions.creditAchievedForSubmitButton = {
+      defaultValue: 0,
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerAncestor: {
+          dependencyType: "stateVariable",
+          variableName: "answerAncestor"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let creditAchievedForSubmitButton = 0;
+        if (dependencyValues.answerAncestor) {
+          creditAchievedForSubmitButton = dependencyValues.answerAncestor.stateValues.creditAchievedForSubmitButton;
+        }
+        return {
+          newValues: { creditAchievedForSubmitButton }
+        }
+      }
+    }
     //TODO: disabled is now in basecomponent - how to make it work with collaborateGroups
     // stateVariableDefinitions.disabled = {
     //   forRenderer: true,
@@ -115,7 +120,7 @@ export default class Input extends InlineComponent {
         let valueHasBeenValidated = false;
 
         if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted) {
+          dependencyValues.answerAncestor.stateValues.justSubmittedForSubmitButton) {
           valueHasBeenValidated = true;
         }
         return {

@@ -12,13 +12,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.8" allowederrorinnumbers="0.0001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -28,7 +28,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -123,13 +123,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.8" allowederrorinnumbers="0.0001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -139,7 +139,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -235,10 +235,10 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10 exp(7x^2/(3-sqrt(y)))</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.0000001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.6" allowederrorinnumbers="0.0001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -248,7 +248,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -304,7 +304,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.0001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -312,7 +312,7 @@ describe('Allow error in numbers validation tests', function () {
     <p>Allow for error in exponents
     <answer size="30">
       <award allowederrorinnumbers="0.0001" includeerrorinnumberexponents>
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -322,14 +322,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -397,13 +397,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.00001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -413,7 +413,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -508,13 +508,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001" allowederrorisabsolute="true">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -524,7 +524,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -619,13 +619,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
       <award symbolicequality="true" allowederrorinnumbers="0.0000001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -635,7 +635,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -718,13 +718,13 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
       <award symbolicequality="true" allowederrorinnumbers="0.0000001" allowederrorisabsolute>
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001" allowederrorisabsolute>
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
       <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001" allowederrorisabsolute>
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -734,7 +734,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -816,7 +816,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.0001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -824,7 +824,7 @@ describe('Allow error in numbers validation tests', function () {
     <p>Allow for error in exponents
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.0001" includeerrorinnumberexponents>
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -834,14 +834,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -909,7 +909,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math>2.15234262pi+e*25.602348230</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -919,7 +919,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -998,7 +998,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify="numbersPreserveOrder">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -1008,7 +1008,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1080,7 +1080,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify="numbers">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -1090,7 +1090,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1163,7 +1163,7 @@ describe('Allow error in numbers validation tests', function () {
     <p><math simplify="full">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
       <award symbolicequality="true" allowederrorinnumbers="0.001">
-        <ref>_math1</ref>
+        <copy tname="_math1" />
       </award>
     </answer>
     </p>
@@ -1173,7 +1173,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';

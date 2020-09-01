@@ -41,7 +41,7 @@ export default class Section extends DoenetRenderer {
 
     let checkworkComponent = null;
 
-    if (this.doenetSvData.sectionWideCheckWork) {
+    if (this.doenetSvData.createSubmitAllButton) {
 
       let validationState = "unvalidated";
       if (this.doenetSvData.justSubmitted) {
@@ -149,6 +149,13 @@ export default class Section extends DoenetRenderer {
         {childrenToRender}
         {checkworkComponent}
       </div>
+    } else if (this.doenetSvData.containerTag === "none") {
+      return <>
+        <a name={this.componentName} />
+        {heading}
+        {childrenToRender}
+        {checkworkComponent}
+      </>
     } else {
       return <section id={this.componentName} >
         <a name={this.componentName} />

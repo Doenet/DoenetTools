@@ -642,6 +642,14 @@ export default class Collect extends CompositeComponent {
     let collectedName = component.stateValues.collectedComponents[collectedNum].componentName;
     let collectedComponent = components[collectedName];
 
+    // since we delayed recalculating descendants,
+    // it's possible that a collectedComponent no longer exists
+    // but hasn't been removed from the state variable
+    // In this case, skip
+    if (!collectedComponent) {
+      return { serializedReplacements, propVariablesCopiedByReplacement };
+    }
+
     let stateVarObj = collectedComponent.state[propVariableObj.varName];
 
     if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
@@ -1117,7 +1125,7 @@ export default class Collect extends CompositeComponent {
 
       }
 
- 
+
       // use new uniqueIdentifiersUsed
       // so will get the same names for pieces that match
       let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
@@ -1184,7 +1192,7 @@ export default class Collect extends CompositeComponent {
     workspace.numReplacementsByCollected = numReplacementsByCollected;
     workspace.collectedNames = component.stateValues.collectedComponents.map(x => x.componentName)
     workspace.propVariablesCopiedByCollected = propVariablesCopiedByCollected;
-    
+
     return replacementChanges;
 
   }

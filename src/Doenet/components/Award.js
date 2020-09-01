@@ -187,7 +187,7 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedbacktext",
+      componentType: "feedback",
       isArray: true,
       entireArrayAtOnce: true,
       entryPrefixes: ['feedback'],

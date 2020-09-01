@@ -10,7 +10,8 @@ export default class SectioningComponent extends BlockComponent {
     let properties = super.createPropertiesObject(args);
     properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
-    properties.sectionWideCheckWork = { default: false, forRenderer: true, propagateToDescendants: true };
+    properties.sectionWideCheckWork = { default: false, };
+    properties.delegateCheckWorkToAnswerNumber = { default: null, forRenderer: true };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
@@ -203,9 +204,8 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendantIdentity",
           componentTypes: ["answer"],
-          variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
         }
       }),
@@ -218,8 +218,10 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "stateVariable",
-          variableName: "answerDescendants"
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
         }
       }),
       definition({ dependencyValues }) {
@@ -441,7 +443,125 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.createSubmitAllButton = {
+      forRenderer: true,
+      additionalStateVariablesDefined: ["createSubmitAllButtonOnAnswer"],
+      returnDependencies: () => ({
+        sectionWideCheckWork: {
+          dependencyType: "stateVariable",
+          variableName: "sectionWideCheckWork"
+        },
+        delegateCheckWorkToAnswerNumber: {
+          dependencyType: "stateVariable",
+          variableName: "delegateCheckWorkToAnswerNumber"
+        },
+        aggregateScores: {
+          dependencyType: "stateVariable",
+          variableName: "aggregateScores"
+        },
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
 
+        let createSubmitAllButton = false;
+        let createSubmitAllButtonOnAnswer = null;
+
+        if (dependencyValues.sectionWideCheckWork) {
+          if (!dependencyValues.aggregateScores) {
+            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
+          } else {
+            let chosenAnswer = null;
+            if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
+              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber-1];
+            } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
+              let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
+              chosenAnswer = dependencyValues.answerDescendants[answerInd];
+            }
+            if (chosenAnswer) {
+              createSubmitAllButtonOnAnswer = chosenAnswer.componentName;
+            } else {
+              createSubmitAllButton = true;
+            }
+
+          }
+        }
+
+        return { newValues: { createSubmitAllButton, createSubmitAllButtonOnAnswer } }
+      }
+    }
+
+    stateVariableDefinitions.suppressAnswerSubmitButtons = {
+      additionalStateVariablesDefined: [
+        "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
+        "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+      ],
+      forRenderer: true,
+      returnDependencies: () => ({
+        createSubmitAllButton: {
+          dependencyType: "stateVariable",
+          variableName: "createSubmitAllButton"
+        },
+        createSubmitAllButtonOnAnswer: {
+          dependencyType: "stateVariable",
+          variableName: "createSubmitAllButtonOnAnswer"
+        },
+        justSubmitted: {
+          dependencyType: "stateVariable",
+          variableName: "justSubmitted"
+        },
+        creditAchieved: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchieved"
+        },
+        sectionAncestor: {
+          dependencyType: "ancestorStateVariables",
+          componentType: "_sectioningcomponent",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
+            "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
+            "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+          ]
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let suppressAnswerSubmitButtons = false;
+        let answerDelegatedForSubmitAll = null;
+        let componentNameForSubmitAll = null;
+        let justSubmittedForSubmitAll = null;
+        let creditAchievedForSubmitAll = null;
+
+        if (dependencyValues.createSubmitAllButton || dependencyValues.createSubmitAllButtonOnAnswer) {
+          componentNameForSubmitAll = componentName;
+          suppressAnswerSubmitButtons = true;
+          if (dependencyValues.createSubmitAllButtonOnAnswer) {
+            answerDelegatedForSubmitAll = dependencyValues.createSubmitAllButtonOnAnswer;
+            justSubmittedForSubmitAll = dependencyValues.justSubmitted;
+            creditAchievedForSubmitAll = dependencyValues.creditAchieved;
+          }
+        } else if (dependencyValues.sectionAncestor) {
+          let ancestorStateValues = dependencyValues.sectionAncestor.stateValues;
+          suppressAnswerSubmitButtons = ancestorStateValues.suppressAnswerSubmitButtons;
+          componentNameForSubmitAll = ancestorStateValues.componentNameForSubmitAll;
+          answerDelegatedForSubmitAll = ancestorStateValues.answerDelegatedForSubmitAll;
+          justSubmittedForSubmitAll = ancestorStateValues.justSubmittedForSubmitAll;
+          creditAchievedForSubmitAll = ancestorStateValues.creditAchievedForSubmitAll;
+        }
+
+        return {
+          newValues: {
+            suppressAnswerSubmitButtons,
+            componentNameForSubmitAll,
+            answerDelegatedForSubmitAll,
+            justSubmittedForSubmitAll,
+            creditAchievedForSubmitAll
+          }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
   }

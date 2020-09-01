@@ -206,7 +206,7 @@ export class AnswerSet extends SectioningComponent {
     stateVariableDefinitions.containerTag = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { containerTag: "div" } })
+      definition: () => ({ newValues: { containerTag: "none" } })
     }
 
 
