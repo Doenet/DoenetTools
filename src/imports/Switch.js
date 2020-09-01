@@ -28,8 +28,7 @@ export default function Switch(props) {
   if (props.checked === true || props.checked === "true" || props.checked === "1" || props.checked === 1){propsChecked = true;}
   // Section: states
   let [checked, setChecked] = useState(propsChecked || false); // will be undefined if not specified which will show up like an empty string.
-  const farPos = 20;
-  const posprops = useSpring({left: checked ? farPos : 0})
+
 
   return (
     <div className={(props.className || "") + " switch"} key={id + "container"}>
