@@ -19,6 +19,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -30,6 +31,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -86,6 +89,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput inline>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -97,6 +101,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -154,6 +160,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput fixedOrder>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -165,6 +172,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -213,6 +222,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+      <text>a</text>
       <choiceinput inline>
         <choice>a</choice>
         <choice>b</choice>
@@ -241,6 +251,7 @@ describe('Choiceinput Tag Tests', function () {
     `}, "*");
     });
 
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["a", "b", "c", "d", "e", "f"];
     cy.get('#\\/_p1').should('have.text', 'Selected values: ')
@@ -448,6 +459,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
@@ -468,6 +480,8 @@ describe('Choiceinput Tag Tests', function () {
 
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = [
       "The function is f(ξ) = sin(ξ).",

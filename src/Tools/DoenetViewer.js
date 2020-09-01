@@ -123,9 +123,19 @@ class DoenetViewer extends Component {
     this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
 
     if (this.cumulativeStateVariableChanges) {
-      this.core.executeUpdateStateVariables({
+      // continue to try setting the state variables to cummulativeStateVariableChanges
+      // while there are a positive number of failures
+      // and the number of failures is increasing
+      let nFailures = Infinity;
+      while (nFailures > 0) {
+        let result = this.core.executeUpdateStateVariables({
         newStateVariableValues: this.cumulativeStateVariableChanges
       })
+        if (!(result.nFailures && result.nFailures < nFailures)) {
+          break;
+        }
+        nFailures = result.nFailures;
+      }
     } else {
       // if database doesn't contain contentId, cumulativeStateVariableChanges is null
       // so change to empty object
@@ -141,7 +151,7 @@ class DoenetViewer extends Component {
 
     //TODO: Handle if number of items changed. Handle if weights changed
 
-    if (this.assignmentId){
+    if (this.assignmentId && !this.props.ignoreDatabase){
       const payload = { 
         weights: this.core.scoredItemWeights, 
         contentId:this.contentId, 

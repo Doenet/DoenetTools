@@ -27,7 +27,7 @@ class DoenetBranchBrowser extends Component {
   constructor(props) {
     super(props);
     const { history: { location: { pathname = '' } }, allFolderInfo } = props
-    const directory = pathname.split('/').filter((i) => i && i !== 'content')
+    const directory = pathname.replace('#', '').split('/').filter((i) => i && (i !== 'content' || i !== 'courses'))
     
     this.state = {
       directoryStack: directory,

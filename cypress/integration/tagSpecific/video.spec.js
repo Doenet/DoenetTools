@@ -15,9 +15,9 @@ it('youtube video',() => {
   `},"*");
   });
 
-  cy.get('#\\/_video1 iframe').invoke('attr', 'width').then((width) => expect(width).eq('560'))
-  cy.get('#\\/_video1 iframe').invoke('attr', 'height').then((height) => expect(height).eq('315'))
-  cy.get('#\\/_video1 iframe').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
+  cy.get('#\\/_video1').invoke('attr', 'width').then((width) => expect(width).eq('560'))
+  cy.get('#\\/_video1').invoke('attr', 'height').then((height) => expect(height).eq('315'))
+  cy.get('#\\/_video1').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
 })
 
 it('video from external source',() => {

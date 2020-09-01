@@ -232,38 +232,48 @@ export default class Textinput extends Input {
 
   updateValue() {
     if (!this.stateValues.disabled) {
-      this.coreFunctions.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
+      let updateInstructions = [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "value",
+        value: this.stateValues.immediateValue,
+      },
+      // in case value ended up being a different value than requested
+      // we set immediate value to whatever was the result
+      // (hence the need to execute update first)
+      // Also, this makes sure immediateValue is saved to the database,
+      // since in updateImmediateValue, immediateValue is note saved to database
+      {
+        updateType: "executeUpdate"
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "immediateValue",
+        valueOfStateVariable: "value",
+      }];
+
+      let event = {
+        verb: "answered",
+        object: {
           componentName: this.componentName,
-          stateVariable: "value",
-          value: this.stateValues.immediateValue,
+          componentType: this.componentType,
         },
-        // in case value ended up being a different value than requested
-        // we set immediate value to whatever was the result
-        // (hence the need to execute update first)
-        // Also, this makes sure immediateValue is saved to the database,
-        // since in updateImmediateValue, immediateValue is note saved to database
-        {
-          updateType: "executeUpdate"
-        },
-        {
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "immediateValue",
-          valueOfStateVariable: "value",
-        }],
-        event: {
-          verb: "answered",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            response: this.stateValues.immediateValue,
-            responseText: this.stateValues.immediateValue,
-          }
+        result: {
+          response: this.stateValues.immediateValue,
+          responseText: this.stateValues.immediateValue,
         }
+      }
+
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event
       })
 
     }
