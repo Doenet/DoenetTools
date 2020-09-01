@@ -23,7 +23,7 @@ SELECT   -- get all repos user has access to
 FROM repo_access AS ra
 LEFT JOIN folder f ON ra.repoId = f.folderId
 WHERE ra.userId='$userId' AND ra.removedFlag=0 AND f.isPinned='0'
-ORDER BY isPinned DESC
+ORDER BY title ASC
 ";
 
 if (!$userId) {

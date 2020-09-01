@@ -7293,4 +7293,245 @@ describe('Point Tag Tests', function () {
     })
   })
 
+  // have this abbreviated test, at it was triggering an error
+  // that wasn't caught with full test
+  it('change point dimensions, abbreviated', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
+
+    <section title="The points" name="thePoints">
+    <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
+    <p>The point copied: <copy name="point2" tname="_point1"/></p>
+    <p>The point copied again: <copy name="point3" tname="point2"/></p>
+    </section>
+
+  `}, "*");
+    });
+
+    cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let point1Anchor = '#' + components["/_point1"].adapterUsed.componentName;
+      let point2 = components["/point2"].replacements[0];
+      let point2Anchor = '#' + point2.adapterUsed.componentName;
+      let point3 = components["/point3"].replacements[0].replacements[0];
+      let point3Anchor = '#' + point3.adapterUsed.componentName;
+
+      cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.window().then((win) => {
+
+        expect(components['/_point1'].stateValues.nDimensions).eq(1);
+        expect(components['/_point1'].stateValues.xs.length).eq(1);
+        expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
+        expect(components['/_point1'].stateValues.x1.tree).eq('＿');
+        expect(components['/_point1'].stateValues.x2).eq(undefined);
+        expect(components['/_point1'].stateValues.x3).eq(undefined);
+        expect(point2.stateValues.nDimensions).eq(1);
+        expect(point2.stateValues.xs.length).eq(1);
+        expect(point2.stateValues.xs[0].tree).eq('＿');
+        expect(point2.stateValues.x1.tree).eq('＿');
+        expect(point2.stateValues.x2).eq(undefined);
+        expect(point2.stateValues.x3).eq(undefined);
+        expect(point3.stateValues.nDimensions).eq(1);
+        expect(point3.stateValues.xs.length).eq(1);
+        expect(point3.stateValues.xs[0].tree).eq('＿');
+        expect(point3.stateValues.x1.tree).eq('＿');
+        expect(point3.stateValues.x2).eq(undefined);
+        expect(point3.stateValues.x3).eq(undefined);
+
+      });
+
+      cy.log('Create 2D point')
+      cy.get('#\\/originalCoords_input').type('(a,b){enter}')
+
+      cy.window().then((win) => {
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect(components['/_point1'].stateValues.x1.tree).eq('a');
+          expect(components['/_point1'].stateValues.x2.tree).eq('b');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('a');
+          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect(point2.stateValues.x1.tree).eq('a');
+          expect(point2.stateValues.x2.tree).eq('b');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('a');
+          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect(point3.stateValues.x1.tree).eq('a');
+          expect(point3.stateValues.x2.tree).eq('b');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+      })
+
+
+      cy.log('Back to 1D point')
+      cy.get('#\\/originalCoords_input').clear().type('q{enter}')
+
+      cy.window().then((win) => {
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(1);
+          expect(components['/_point1'].stateValues.xs.length).eq(1);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
+          expect(components['/_point1'].stateValues.x1.tree).eq('q');
+          expect(components['/_point1'].stateValues.x2).eq(undefined);
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(1);
+          expect(point2.stateValues.xs.length).eq(1);
+          expect(point2.stateValues.xs[0].tree).eq('q');
+          expect(point2.stateValues.x1.tree).eq('q');
+          expect(point2.stateValues.x2).eq(undefined);
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(1);
+          expect(point3.stateValues.xs.length).eq(1);
+          expect(point3.stateValues.xs[0].tree).eq('q');
+          expect(point3.stateValues.x1.tree).eq('q');
+          expect(point3.stateValues.x2).eq(undefined);
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+      })
+
+
+      cy.log('Create 3D point')
+      cy.get('#\\/originalCoords_input').clear().type('(2x,u/v,w^2){enter}')
+
+      cy.window().then((win) => {
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(components['/_point1'].stateValues.x1.tree).eqls(["*", 2, "x"]);;
+          expect(components['/_point1'].stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(components['/_point1'].stateValues.x3.tree).eqls(["^", "w", 2]);
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(point2.stateValues.x1.tree).eqls(["*", 2, "x"]);
+          expect(point2.stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(point2.stateValues.x3.tree).eqls(["^", "w", 2]);
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
+          expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
+
+        });
+
+
+      })
+
+
+
+      cy.log('Back to 2D point')
+      cy.get('#\\/originalCoords_input').clear().type('(p,q){enter}')
+
+      cy.window().then((win) => {
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
+          expect(components['/_point1'].stateValues.x1.tree).eq('p');
+          expect(components['/_point1'].stateValues.x2.tree).eq('q');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('p');
+          expect(point2.stateValues.xs[1].tree).eq('q');
+          expect(point2.stateValues.x1.tree).eq('p');
+          expect(point2.stateValues.x2.tree).eq('q');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('p');
+          expect(point3.stateValues.xs[1].tree).eq('q');
+          expect(point3.stateValues.x1.tree).eq('p');
+          expect(point3.stateValues.x2.tree).eq('q');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+      })
+
+    })
+  })
+
 })

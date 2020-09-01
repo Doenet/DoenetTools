@@ -362,7 +362,12 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          let formula_f = dependencyValues.formula.f();
+          let formula_f;
+          try {
+            formula_f = dependencyValues.formula.f();
+          } catch (e) {
+            formula_f = () => NaN;
+          }
           let varString = dependencyValues.variable.tree;
           return {
             newValues: {
