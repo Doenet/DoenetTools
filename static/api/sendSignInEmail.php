@@ -65,8 +65,18 @@ $sql = "INSERT INTO user_device (userId,email,signInCode,timestampOfSignInCode, 
     VALUE ('$user_id','$emailaddress','$signInCode',NOW(),'$deviceName')";
     $result = $conn->query($sql);
 
+$htmlContent = file_get_contents("signInEmail.html");
+
+$from = 'noreply-signin@doenet.org';
+$fromName = 'Doenet Accounts';
+
+$subject = 'Sign-In Request';
+// Set content-type header for sending HTML email 
+$headers = "MIME-Version: 1.0" . "\r\n"; 
+$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n"; 
+$headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n"; 
 //SEND EMAIL WITH CODE HERE
-mail($emailaddress,"Doenet Signin","Your code is: $signInCode on device $deviceName.");
+mail($emailaddress,$subject,$htmlContent, $headers);
 
 $response_arr = array(
     "success" => 1,
