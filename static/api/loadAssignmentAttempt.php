@@ -22,9 +22,27 @@ if (!isset($_REQUEST["assignmentId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No attemptNumber specified!";
 } else {
+
+
     $assignmentId = mysqli_real_escape_string($conn, $_REQUEST["assignmentId"]);
     $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
     $userId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
+    $attemptTaken = false;
+
+    $sql = "SELECT *
+    FROM user_assignment_attempt AS uaa
+    WHERE uaa.userId = '$userId'
+    AND uaa.assignmentId = '$assignmentId'
+    AND uaa.attemptNumber = '$attemptNumber'
+    ";
+
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0){
+        $attemptTaken = true;
+    }
+
+
 
     $sql = "
 	SELECT 
@@ -53,13 +71,11 @@ if (!isset($_REQUEST["assignmentId"])) {
 
     $result = $conn->query($sql); 
     $response_arr = array();
-
-    $assignment_attempted_flag = true;
     
     if ($result->num_rows == 1){
         $row = $result->fetch_assoc();
         $response_arr = array(
-            "assignmentAttempted" => 1,
+            "assignmentAttempted" => $attemptTaken,
             "doenetML"=>$row['doenetML'],
             "stateVariables"=>$row['stateVariables'],
             "variant"=>$row['variant'],
@@ -92,13 +108,13 @@ if (!isset($_REQUEST["assignmentId"])) {
 
         $result = $conn->query($sql); 
         if($result->num_rows == 0){
-            echo "grave error";
+            echo "no rows";
         }
         else{
             $row = $result->fetch_assoc();
 
             $response_arr = array(
-                "assignmentAttempted" => 0,
+                "assignmentAttempted" => $attemptTaken,
                 "doenetML"=>$row['doenetML'],
                 "stateVariables"=> array(),
                 "variant"=>array(),
@@ -107,6 +123,7 @@ if (!isset($_REQUEST["assignmentId"])) {
                 "attemptCredit"=>0,
                 "attemptCreditOverride"=>0,
                 "timestamp"=> NULL, 
+
             );
 
             // set response code - 200 OK

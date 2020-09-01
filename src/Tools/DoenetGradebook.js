@@ -637,7 +637,7 @@ class GradebookAttemptView extends Component {
             attemptNumber: url.searchParams.get("attemptNumber"),
         }
 
-
+        this.assignmentAttempted = false;
         this.assignmentsLoaded = false;
         this.assignments = null;
         this.studentsLoaded = false;
@@ -663,6 +663,8 @@ class GradebookAttemptView extends Component {
         .then(resp => {
 
             let data = resp.data;
+            
+            this.assignmentAttempted = data.assignmentAttempted;
             this.doenetML = data.doenetML;
             this.stateVariables = data.stateVariables;
             this.variant = data.variant;
@@ -715,7 +717,9 @@ class GradebookAttemptView extends Component {
 
         {/* TODO: check for attempts taken */}
 
-        if(newAttemptNumber == 0){
+        
+
+        if(!this.assignmentAttempted){
             return (<p>
                 No Attempts Made
             </p>);
