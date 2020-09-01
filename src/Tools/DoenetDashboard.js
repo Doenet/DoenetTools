@@ -54,20 +54,22 @@ const alphabet =
   
     const [isLoaded, setIsLoaded] = useState(false)
 
+    const [hasClasses, setHasClasses] = useState(false)
 
     useEffect(() => {
       getCourses_CI(updateCourseInfo);
+      setIsLoaded(true);
     }, [])
 
     function updateCourseInfo(courseListArray,selectedCourseObj){
-      console.log("courses",courseListArray);
+      // console.log("courses",courseListArray);
       //console.log("selected",selectedCourseObj);
       //setSelected_CI("NfzKqYtTgYRyPnmaxc7XB");
       // console.log("hereeeeeee");////////////////////////////
       
       setItems(courseListArray.sort(compare))
       if(courseListArray.length > 0){
-        setIsLoaded(true)
+        setHasClasses(true)
       }
     }
 
@@ -130,8 +132,8 @@ const alphabet =
     let heights = []
     let routes = []
 
-    if(isLoaded){
-      console.log("loaded");
+    if(isLoaded && hasClasses){
+      // console.log("loaded");
       heights = new Array(columns).fill(0) // Each column gets a height starting with zero
       gridItems = items.map((child, i) => {
         routes.push(<Route sensitive exact path={`/${child.courseId}`} key = {i}/>);
@@ -179,7 +181,7 @@ const alphabet =
 
             <div className = "dashboardcontainer">
 
-            {isLoaded ? 
+            {hasClasses ? 
             <div {...bind} className="list" style={{ height: Math.max(...heights) }}>
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
                 <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
@@ -188,8 +190,8 @@ const alphabet =
                   {/* <CourseCard data = {item} /> */}
                 </a.div>
               ))}
-            </div> : 
-            <p>Loading..</p>
+            </div> : isLoaded ? <p>No classes to display...</p> :
+            <p>Loading...</p>
             }
 
             <Switch>
