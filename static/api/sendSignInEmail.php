@@ -7,13 +7,9 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
+$emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);
 
 $deviceNames = include "deviceNames.php";
-
-
-
-
 
 //Nine digit random number
 $signInCode = rand(100000000,999999999);
@@ -28,7 +24,7 @@ if ($result->num_rows > 0){
     //Already have an email with this account
     $row = $result->fetch_assoc();
     $user_id = $row['userId'];
-    //unique deviceName 
+    //unique deviceName
     //Remove device names which are already in use
     $sql = "
     SELECT deviceName
@@ -61,21 +57,24 @@ if ($result->num_rows > 0){
     $randomNumber = rand(0,(count($deviceNames) - 1));
     $deviceName = $deviceNames[$randomNumber];
 }
-$sql = "INSERT INTO user_device (userId,email,signInCode,timestampOfSignInCode, deviceName) 
+$sql = "INSERT INTO user_device (userId,email,signInCode,timestampOfSignInCode, deviceName)
     VALUE ('$user_id','$emailaddress','$signInCode',NOW(),'$deviceName')";
     $result = $conn->query($sql);
 
+
+// Generate and modify email content
 $htmlContent = file_get_contents("signInEmail.html");
 $htmlContent = str_replace(array("deviceName", "signInCode"), array($deviceName, $signInCode), $htmlContent);
 
-$from = 'noreply-signin@doenet.org';
+$from = 'noreply@doenet.org';
 $fromName = 'Doenet Accounts';
-
 $subject = 'Sign-In Request';
-// Set content-type header for sending HTML email 
-$headers = "MIME-Version: 1.0" . "\r\n"; 
-$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n"; 
-$headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n"; 
+
+// Set content-type header for sending HTML email
+$headers = "MIME-Version: 1.0" . "\r\n";
+$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+$headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n";
+
 //SEND EMAIL WITH CODE HERE
 mail($emailaddress,$subject,$htmlContent, $headers);
 
