@@ -45,6 +45,7 @@ export default class Polyline extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
+      logicToWaitOnSugar: ["exactlyOneVertices"],
       replacementFunction: addVertices,
     });
 

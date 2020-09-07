@@ -140,14 +140,16 @@ export const TreeView = ({
   disableSearch=false,
   treeNodeIcons={},
   directoryData=[],
+  openedNodes=new Set(),
   specialNodes=new Set(),
   parentNodeItem={},
   leafNodeItem={},
-	treeStyles={},
+  treeStyles={},
 	onLeafNodeClick=(()=>{}),
 	onLeafNodeDoubleClick=(()=>{}),
 	onParentNodeClick=(()=>{}),
-	onParentNodeDoubleClick=(()=>{}),
+  onParentNodeDoubleClick=(()=>{}),
+  markNodeAsOpened=(()=>{}),
   containerId, 
   containerType, 
   currentDraggedObject={}, 
@@ -272,6 +274,7 @@ export const TreeView = ({
         hideRoot: hideRoot, 
         treeNodeIcons: treeNodeIcons, 
         specialNodes: specialNodes,
+        openedNodes: openedNodes,
         directoryData: directoryData,
         parentNodeItem: parentNodeItem,
         leafNodeItem: leafNodeItem,
@@ -280,6 +283,7 @@ export const TreeView = ({
         onLeafNodeDoubleClick: onLeafNodeDoubleClick,
 				onParentNodeClick: onParentNodeClick,
         onParentNodeDoubleClick: onParentNodeDoubleClick,
+        markNodeAsOpened: markNodeAsOpened,
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -319,11 +323,13 @@ function buildTreeStructure({
   onParentNodeDoubleClick, 
   onLeafNodeClick, 
   onLeafNodeDoubleClick, 
+  markNodeAsOpened,
   currentSearchingFolder, 
   buildControlButtons, 
   buildSearchComponent, 
   setCurrentHovered, 
   directoryData, 
+  openedNodes,
   parentNodeItem, 
   leafNodeItem }) {
      
@@ -380,8 +386,10 @@ function buildTreeStructure({
       baseItemStyleAndIcon.style)};
 
   let defaultOpen = parentHeadingId == "root";
-  if (directoryData.length != 0 && directoryData[0] == parentHeadingId) {
-    directoryData.shift();
+  const onDirectoryPath = directoryData.length != 0 && directoryData[0] == parentHeadingId;
+  const previousOpened = openedNodes.has(parentHeadingId);
+  if (onDirectoryPath || previousOpened) {
+    if (onDirectoryPath) directoryData.shift();
     defaultOpen = true;
   }
 
@@ -395,6 +403,7 @@ function buildTreeStructure({
     expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcons"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
+    markNodeAsOpened={markNodeAsOpened}
     onDrop={onDrop}
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -419,6 +428,7 @@ function buildTreeStructure({
           hideRoot: hideRoot,
           treeNodeIcons: treeNodeIcons,
           specialNodes: specialNodes,
+          openedNodes: openedNodes,
           directoryData: directoryData,
           parentNodeItem: parentNodeItem,
           leafNodeItem: leafNodeItem,
@@ -427,6 +437,7 @@ function buildTreeStructure({
           onParentNodeDoubleClick: onParentNodeDoubleClick,
           onLeafNodeClick: onLeafNodeClick,
           onLeafNodeDoubleClick: onLeafNodeDoubleClick,
+          markNodeAsOpened: markNodeAsOpened,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 
           onDraggableDragOver: onDraggableDragOver, 
@@ -449,7 +460,6 @@ function buildTreeStructure({
         let itemStyle = specialNodes.has(childId) ? treeStyles["specialChildNode"] : treeStyles["childNode"];
         // if user-defined styles undefined, fallback to default style
         itemStyle = itemStyle || {"title": Object.assign({color: "rgba(0,0,0,0.8)", marginLeft: '5px'}, baseItemStyleAndIcon.style)};
-
 
         return <LeafNode 
           index={index}

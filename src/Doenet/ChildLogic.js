@@ -1283,6 +1283,13 @@ class ChildLogicOperator extends ChildLogicBase {
           }
         }
 
+        // although have more than one match
+        // it is possible that all the successful matches were with zero children
+        // in which case propositionOfMinIndex is undefined
+        // and there is nothing to do here
+
+        if (propositionOfMinIndex !== undefined) {
+
         // chose just the sugar from the proposition chosen
         let nameofMinIndex = allResults[propositionOfMinIndex].name;
         if (sugarsMatchedByPropositionName[nameofMinIndex]) {
@@ -1296,7 +1303,7 @@ class ChildLogicOperator extends ChildLogicBase {
         // reset adapterResults
         // to correspond to the one proposition chosen
         adapterResults = allResults[propositionOfMinIndex].adapterResults;
-
+        }
       }
     }
 

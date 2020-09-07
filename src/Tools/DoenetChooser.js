@@ -10,8 +10,7 @@ import {
   faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave,
   faLink, faAlignJustify, faStream, faColumns, faFolderOpen, faInfoCircle,
    faChevronDown, faChevronRight
-}
-  from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
@@ -22,9 +21,10 @@ import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
 import InfoPanel from './chooser/InfoPanel';
+import CourseForm from './chooser/Forms/CourseForm.js';
+import UrlForm from './chooser/Forms/UrlForm.js';
 import {
   SwitchableContainers,
-  SwitchableContainer,
   SwitchableContainerPanel,
 } from './chooser/SwitchableContainer';
 import DoenetEditor from "./DoenetEditor";
@@ -133,6 +133,7 @@ class DoenetChooser extends Component {
     this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
     this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
     this.tempSet = new Set();
+    this.treeOpenedNodes = new Set();
     this.customizedTempSet = new Set();
     this.history = null
   }
@@ -281,7 +282,11 @@ class DoenetChooser extends Component {
       [ChooserConstants.EDIT_URL_INFO_MODE]: `Edit URL Info`
     }
     const { location: { pathname = '' } } = this.history
-    this.history.push(`${pathname}?overlay=true&${mode}`);
+    if (this.state.modalOpen) {
+      this.history.push(`${pathname}`); 
+    } else {
+      this.history.push(`${pathname}?overlay=true&${mode}`);
+    }
     this.setState({ modalOpen: !this.state.modalOpen, activeSection: mode });  
   }
 
@@ -336,6 +341,7 @@ class DoenetChooser extends Component {
     }
     axios.post(apiUrl, data)
       .then(resp => {
+        console.log(resp);
         callback();
       })
       .catch(function (error) {
@@ -781,7 +787,7 @@ class DoenetChooser extends Component {
     // filter selected repos in childIds
     let filteredChildIds = [], filteredChildType = [];
     for (let i = 0; i < childIds.length; i++) {
-      if (childType[i] == "folder" && itemDataInfo[childIds[i]]["isRepo"]) {
+      if (childType[i] == "folder" && itemDataInfo[childIds[i]] && itemDataInfo[childIds[i]]["isRepo"]) {
         const repoTitle = itemDataInfo[childIds[i]]["title"];
         this.displayToast(`Failed to move '${repoTitle}': Item of type Repository must be at root directory`);
       } else {
@@ -1058,10 +1064,10 @@ class DoenetChooser extends Component {
       })
   }
 
-  jumpToDirectory = (directoryData) => {
+  jumpToDirectory = (directoryStack) => {
     this.setState({
-      directoryStack: directoryData,
-      selectedItems: directoryData,
+      directoryStack: directoryStack,
+      selectedItems: directoryStack,
       selectedItemsType: ["folder"],
     })
   }
@@ -1401,6 +1407,8 @@ class DoenetChooser extends Component {
 
     this.setState({
       currentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+      selectedItems: [draggedId],
+      selectedItemsType: [draggedType]
     })
     this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
     this.validDrop = false;
@@ -1684,7 +1692,8 @@ class DoenetChooser extends Component {
       urlInfo: data["url"],
       courseId: containerId
     })
-
+    this.tempSet.clear();
+    this.tempSet.add(this.state.currentDraggedObject.id);
     // update headings
     parentDataSource[this.state.currentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
     if (this.state.currentDraggedObject.type == "header") parentDataSource[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
@@ -2307,10 +2316,15 @@ class DoenetChooser extends Component {
   updateTree = ({ containerType, folderInfo = {}, contentInfo = {}, urlInfo = {}, courseId = "" }) => {
     switch (containerType) {
       case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-        this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { } });
+        this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { 
+        } });
         break;
       case ChooserConstants.USER_CONTENT_TYPE:
-        this.saveContentTree({ folderInfo, callback: () => { } });
+        this.saveContentTree({ folderInfo, callback: () => {
+          this.loadUserContentBranches();
+          this.loadUserFoldersAndRepo();
+          this.loadUserUrls();
+        }});
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { } });
@@ -2442,7 +2456,6 @@ class DoenetChooser extends Component {
     const newPanelData = {
       values: values,
       activeContainer: view
-
     }
     this.setState({
       panelsCollection: {
@@ -2759,6 +2772,8 @@ class DoenetChooser extends Component {
     this.buildCourseList();
     this.buildLeftNavPanel();
     this.buildTopToolbar();
+  
+    console.log(this.courseInfo)
 
     // setup mainSection to be chooser / CourseForm
     this.mainSection;
@@ -2842,7 +2857,7 @@ const TreeNodeItem = ({title, icon}) => {
 };
 
 
-          this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
+      this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}
           containerType={treeContainerType}
@@ -2856,11 +2871,11 @@ const TreeNodeItem = ({title, icon}) => {
           onDraggableDragOver={this.onTreeDraggableDragOver}
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop}
-          directoryData={[...this.state.directoryStack]}
+          directoryStack={[...this.state.directoryStack]}
           parentNodeItem={TreeNodeItem}
           leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
-          // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
+          openedNodes={this.treeOpenedNodes}
           treeStyles={{
             specialChildNode: {
               "title": { color: "#2675ff" },
@@ -2869,10 +2884,7 @@ const TreeNodeItem = ({title, icon}) => {
             specialParentNode: {
               "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
             },
-            // parentNode: {
-            //   "node": { background: "rgba(58,172,144)" },
-            // },
-            emptyParentExpanderIcon: <span></span>,
+            emptyParentExpanderIcon: {opened: <span style={{padding: "0 10px"}}></span>, closed: <span style={{padding: "0 10px"}}></span>}
           }}
           onLeafNodeClick={(id, type) => {
             // get path to item
@@ -2926,6 +2938,14 @@ const TreeNodeItem = ({title, icon}) => {
           onParentNodeDoubleClick={(id) => {
             // openSubtree
           }}
+          markNodeAsOpened={(id, opened) => {
+            if (!opened && this.treeOpenedNodes.has(id)) {
+              this.treeOpenedNodes.delete(id);
+            }
+            if (opened) {
+              this.treeOpenedNodes.add(id);
+            }
+          }}
         />
     </div>
 
@@ -2958,7 +2978,7 @@ return <div>
         onDraggableDragOver={this.onTreeDraggableDragOver}
         onDropEnter={this.onTreeDropEnter}
         onDrop={this.onTreeDrop}
-        directoryData={[...this.state.splitPanelDirectoryStack]}
+        directoryStack={[...this.state.splitPanelDirectoryStack]}
         specialNodes={this.tempSet}
         treeStyles={{
           specialChildNode: {
@@ -3321,7 +3341,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
           addContentToRepo={this.addContentToRepo}               
           removeContentFromCourse={this.removeContentFromCourse} 
           removeContentFromFolder={this.removeContentFromFolder} 
-          directoryData={this.state.directoryStack}              
+          directoryStack={this.state.directoryStack}              
           selectedItems={this.state.selectedItems}               
           selectedItemsType={this.state.selectedItemsType}       
           renameFolder={this.renameFolder}                       
@@ -3359,7 +3379,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
         addContentToRepo={this.addContentToRepo}               // optional
         removeContentFromCourse={this.removeContentFromCourse}  // optional
         removeContentFromFolder={this.removeContentFromFolder}  // optional                  
-        directoryData={this.state.splitPanelDirectoryStack}               // optional
+        directoryStack={this.state.splitPanelDirectoryStack}               // optional
         selectedItems={this.state.splitPanelSelectedItems}                // optional
         selectedItemsType={this.state.splitPanelSelectedItemsType}        // optional
         renameFolder={this.renameFolder}                        // optional
@@ -3728,236 +3748,6 @@ const TreeIcons = ({iconName, isPublic}) => {
   }
 };
 
-class CourseForm extends React.Component {
-  static defaultProps = {
-    selectedCourse: null,
-    selectedCourseInfo: null
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      edited: "",
-      courseName: "",
-      department: "",
-      courseCode: "",
-      section: "",
-      year: "",
-      semester: "Spring",
-      description: "",
-      roles: []
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleBack = this.handleBack.bind(this);
-    this.addRole = this.addRole.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.props.mode == ChooserConstants.EDIT_COURSE_INFO_MODE && this.props.selectedCourseInfo !== null) {
-      let term = this.props.selectedCourseInfo.term.split(" ");
-      this.setState({
-        courseName: this.props.selectedCourseInfo.courseName,
-        department: this.props.selectedCourseInfo.department,
-        courseCode: this.props.selectedCourseInfo.courseCode,
-        section: this.props.selectedCourseInfo.section,
-        semester: term[0],
-        year: term[1],
-        description: this.props.selectedCourseInfo.description
-      });
-    }
-  }
-
-  handleChange(event) {
-    // set edited to true once any input is detected
-    this.setState({ edited: true });
-
-    let name = event.target.name;
-    let value = event.target.value;
-    this.setState({ [name]: value });
-  }
-
-  handleSubmit(event) {
-    let term = this.state.semester + " " + this.state.year;
-    if (this.props.mode == ChooserConstants.CREATE_COURSE_MODE) {
-      let courseId = nanoid();
-      this.props.handleNewCourseCreated({
-        courseName: this.state.courseName,
-        courseId: courseId,
-        courseCode: this.state.courseCode,
-        term: term,
-        description: this.state.description,
-        department: this.state.department,
-        section: this.state.section,
-      }, () => {
-        event.preventDefault();
-      });
-    } else {
-      this.props.saveCourse({
-        courseName: this.state.courseName,
-        courseId: this.props.selectedCourse,
-        courseCode: this.state.courseCode,
-        term: term,
-        description: this.state.description,
-        department: this.state.department,
-        section: this.state.section,
-        overviewId: this.props.selectedCourseInfo.overviewId,
-        syllabusId: this.props.selectedCourseInfo.syllabusId
-      });
-    }
-  }
-
-  handleBack() {
-    // popup confirm dialog if form is edited
-    if (this.state.edited) {
-      if (!window.confirm('All of your input will be discarded, are you sure you want to proceed?')) {
-        return;
-      }
-    }
-
-    this.props.handleBack(this.props.mode);
-  }
-
-  addRole(role) {
-    //create a unike key for each new role
-    var timestamp = (new Date()).getTime();
-    this.state.roles['role-' + timestamp] = role;
-    this.setState({ roles: this.state.roles });
-  }
-
-
-  render() {
-    return (
-      <div id="formContainer">
-        <div id="formTopbar">
-          <div id="formBackButton" onClick={this.handleBack} data-cy="newCourseFormBackButton">
-            <FontAwesomeIcon icon={faArrowCircleLeft} style={{ "fontSize": "17px", "marginRight": "5px" }} />
-            <span>Back to Chooser</span>
-          </div>
-        </div>
-        <form onSubmit={this.handleSubmit}>
-          <div className="formGroup-12">
-            <label className="formLabel">COURSE NAME</label>
-            <input className="formInput" required type="text" name="courseName" value={this.state.courseName}
-              placeholder="Course name goes here." onChange={this.handleChange} data-cy="newCourseFormNameInput" />
-          </div>
-          <div className="formGroupWrapper">
-            <div className="formGroup-4" >
-              <label className="formLabel">DEPARTMENT</label>
-              <input className="formInput" required type="text" name="department" value={this.state.department}
-                placeholder="DEP" onChange={this.handleChange} data-cy="newCourseFormDepInput" />
-            </div>
-            <div className="formGroup-4">
-              <label className="formLabel">COURSE CODE</label>
-              <input className="formInput" required type="text" name="courseCode" value={this.state.courseCode}
-                placeholder="MATH 1241" onChange={this.handleChange} data-cy="newCourseFormCodeInput" />
-            </div>
-            <div className="formGroup-4">
-              <label className="formLabel">SECTION</label>
-              <input className="formInput" type="number" name="section" value={this.state.section}
-                placeholder="00000" onChange={this.handleChange} data-cy="newCourseFormSectionInput" />
-            </div>
-          </div>
-          <div className="formGroupWrapper">
-            <div className="formGroup-4" >
-              <label className="formLabel">YEAR</label>
-              <input className="formInput" required type="number" name="year" value={this.state.year}
-                placeholder="2019" onChange={this.handleChange} data-cy="newCourseFormYearInput" />
-            </div>
-            <div className="formGroup-4">
-              <label className="formLabel">SEMESTER</label>
-              <select className="formSelect" required name="semester" onChange={this.handleChange} value={this.state.semester}>
-                <option value="Spring">Spring</option>
-                <option value="Summer">Summer</option>
-                <option value="Fall">Fall</option>
-              </select>
-            </div>
-            <div className="formGroup-4">
-            </div>
-          </div>
-          <div className="formGroup-12">
-            <label className="formLabel">DESCRIPTION</label>
-            <textarea className="formInput" type="text" name="description" value={this.state.description}
-              placeholder="Official course description here" onChange={this.handleChange} data-cy="newCourseFormDescInput" />
-          </div>
-          <div className="formGroup-12">
-            <label className="formLabel">ROLES</label>
-            <AddRoleForm addRole={this.addRole} />
-            <RoleList roles={this.state.roles} />
-          </div>
-          <div id="formButtonsContainer">
-            <button id="formSubmitButton" type="submit" data-cy="newCourseFormSubmitButton">
-              <div className="formButtonWrapper">
-                {this.props.mode == ChooserConstants.CREATE_COURSE_MODE ?
-                  <React.Fragment>
-                    <span>Create Course</span>
-                    <FontAwesomeIcon icon={faPlusCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-                  </React.Fragment>
-                  :
-                  <React.Fragment>
-                    <span>Save Changes</span>
-                    <FontAwesomeIcon icon={faSave} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-                  </React.Fragment>
-                }
-              </div>
-            </button>
-            <button id="formCancelButton" onClick={this.handleBack} data-cy="newCourseFormCancelButton">
-              <div className="formButtonWrapper">
-                <span>Cancel</span>
-                <FontAwesomeIcon icon={faTimesCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-              </div>
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
-
-function RoleList(props) {
-  return (
-    <div className="roleListContainer">
-      <ul style={{ "fontSize": "16px" }}>{
-        Object.keys(props.roles).map(function (key) {
-          return <li key={key}>{props.roles[key]}</li>
-        })}
-      </ul>
-    </div>
-  );
-};
-
-class AddRoleForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      input: ""
-    };
-
-    this.addRole = this.addRole.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
-    
-  addRole(event) {
-    this.props.addRole(this.state.input);
-    this.setState({ input: "" });
-    event.preventDefault();
-  };
-
-  handleChange(event) {
-    this.setState({ input: event.target.value });
-  }
-
-  render() {
-    return (
-      <div className="formGroup-4" style={{ "display": "flex" }}>
-        <input className="formInput" type="text" value={this.state.input} onChange={this.handleChange}
-          type="text" placeholder="Admin" />
-        <button type="submit" style={{ "whiteSpace": "nowrap" }} onClick={this.addRole}>Add Role</button>
-      </div>
-    )
-  }
-}
 class FilterPanel extends Component {
 
   constructor(props) {
@@ -4073,143 +3863,6 @@ const FilterForm = (props) => {
       <button id="applyFilterButton" type="button" onClick={() => handleSearch()}> Apply Filters </button>
     </div>
   );
-}
-
-class UrlForm extends React.Component {
-  static defaultProps = {
-    selectedUrl: null,
-    selectedUrlInfo: null
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      edited: "",
-      title: "",
-      url: "",
-      description: "",
-      usesDoenetAPI: false
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleBack = this.handleBack.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.props.mode == ChooserConstants.EDIT_URL_INFO_MODE && this.props.selectedUrlInfo !== null) {
-      this.setState({
-        title: this.props.selectedUrlInfo.title,
-        url: this.props.selectedUrlInfo.url,
-        description: this.props.selectedUrlInfo.description,
-        usesDoenetAPI: this.props.selectedUrlInfo.usesDoenetAPI
-      });
-    }
-  }
-
-  handleChange(event) {
-    // set edited to true once any input is detected
-    this.setState({ edited: true });
-    let name = event.target.name;
-    let value = event.target.value;
-    if (event.target.type == "checkbox") {
-      value = event.target.checked;
-    }
-    this.setState({ [name]: value });
-  }
-
-  handleSubmit(event) {
-    if (this.props.mode == ChooserConstants.CREATE_URL_MODE) {
-      let urlId = nanoid();
-      event.preventDefault();
-      this.props.handleNewUrlCreated({
-        urlId: urlId,
-        title: this.state.title,
-        url: this.state.url,
-        description: this.state.description,
-        usesDoenetAPI: this.state.usesDoenetAPI
-      }, () => {
-        this.props.handleBack();
-      });
-    } else {
-      this.props.saveUrl({
-        urlId: this.props.selectedUrl,
-        title: this.state.title,
-        url: this.state.url,
-        description: this.state.description,
-        usesDoenetAPI: this.state.usesDoenetAPI
-      });
-    }
-  }
-
-  handleBack() {
-    // popup confirm dialog if form is edited
-    if (this.state.edited) {
-      if (!window.confirm('All of your input will be discarded, are you sure you want to proceed?')) {
-        return;
-      }
-    }
-    this.props.handleBack(this.props.mode);
-  }
-
-  render() {
-
-    return (
-      <div id="formContainer">
-        <div id="formTopbar">
-          <div id="formBackButton" onClick={this.handleBack} data-cy="urlFormBackButton">
-            <FontAwesomeIcon icon={faArrowCircleLeft} style={{ "fontSize": "17px", "marginRight": "5px" }} />
-            <span>Back to Chooser</span>
-          </div>
-        </div>
-        <form onSubmit={this.handleSubmit}>
-          <div className="formGroup-12">
-            <label className="formLabel">TITLE</label>
-            <input className="formInput" required type="text" name="title" value={this.state.title}
-              placeholder="Doenet Homepage" onChange={this.handleChange} data-cy="urlFormTitleInput" />
-          </div>
-          <div className="formGroup-12" >
-            <label className="formLabel">URL</label>
-            <input className="formInput" required type="text" name="url" value={this.state.url}
-              placeholder="https://www.doenet.org/" onChange={this.handleChange} data-cy="urlFormUrlInput" />
-          </div>
-          <div className="formGroup-12">
-            <label className="formLabel">DESCRIPTION</label>
-            <textarea className="formInput" type="text" name="description" value={this.state.description}
-              placeholder="URL description here" onChange={this.handleChange} data-cy="urlFormDescInput" />
-          </div>
-          <div className="formGroup-12" >
-            <label className="formLabel" style={{ "display": "inline-block" }}>Uses DoenetML</label>
-            <input className="formInput" type="checkbox" name="usesDoenetAPI" checked={this.state.usesDoenetAPI}
-              onChange={this.handleChange} data-cy="urlFormUsesDoenetAPICheckbox" style={{ "width": "auto", "marginLeft": "7px" }} />
-          </div>
-          <div id="formButtonsContainer">
-            <button id="formSubmitButton" type="submit" data-cy="urlFormSubmitButton">
-              <div className="formButtonWrapper">
-                {this.props.mode == ChooserConstants.CREATE_URL_MODE ?
-                  <React.Fragment>
-                    <span>Add New URL</span>
-                    <FontAwesomeIcon icon={faPlusCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-                  </React.Fragment>
-                  :
-                  <React.Fragment>
-                    <span>Save Changes</span>
-                    <FontAwesomeIcon icon={faSave} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-                  </React.Fragment>
-                }
-              </div>
-            </button>
-            <button id="formCancelButton" onClick={this.handleBack} data-cy="urlFormCancelButton">
-              <div className="formButtonWrapper">
-                <span>Cancel</span>
-                <FontAwesomeIcon icon={faTimesCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
-              </div>
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
 }
 
 export default withCookies(DoenetChooser);

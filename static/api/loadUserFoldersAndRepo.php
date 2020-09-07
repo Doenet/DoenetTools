@@ -38,7 +38,7 @@ SELECT  -- get all shared folders
 FROM folder f
 LEFT JOIN folder_content fc ON f.folderId = fc.childId
 WHERE f.folderId IN ('".implode("','",$childFoldersArray)."')
-ORDER BY isPinned DESC
+ORDER BY title ASC
 ";
 
 if (!$userId) {

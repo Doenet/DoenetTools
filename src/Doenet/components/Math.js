@@ -7,7 +7,7 @@ import { flattenDeep } from '../utils/array';
 export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
-  // used when creating new component via adapter or ref prop
+  // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
 
   // used when referencing this component without prop

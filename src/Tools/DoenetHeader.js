@@ -60,6 +60,7 @@ const ProfilePicture = styled.button`
   border-style:none;
   
 `;
+
 const ProfilePictureLrg = styled.div`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
     url("/profile_pictures/${props => props.pic}.jpg");
@@ -187,7 +188,18 @@ class DoenetHeader extends Component {
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
 
+
     
+
+    this.extraMenus = [];
+    if (this.props.extraMenus){
+      this.extraMenus = this.props.extraMenus
+    }
+
+    
+  
+
+
   }
 
   populateMenuToolbox(tools){
@@ -252,7 +264,6 @@ class DoenetHeader extends Component {
     }
   }  
 
-
   componentWillReceiveProps(props) {
     if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
       this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
@@ -260,8 +271,6 @@ class DoenetHeader extends Component {
       this.prepareProfileDropDown(this.profilePicture);
   }
   }
-    
-
 
   componentWillUnmount() {
     this.select = undefined
@@ -307,7 +316,6 @@ class DoenetHeader extends Component {
     this.props.onChange(!this.state.sliderVisible, this.headerSectionCount);
   }
 
-
   render() {
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
@@ -341,6 +349,7 @@ class DoenetHeader extends Component {
               alignItems: "center",
               borderRadius: "5px",
             }}>{this.state.myRoles.permissionRoles[0].label}</button>}
+            {this.extraMenus}
             {menuToolBox}
             {profileMenu}
 
@@ -364,6 +373,7 @@ class DoenetHeader extends Component {
                 alignItems: "center",
                 borderRadius: "5px",
               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              {this.extraMenus}
               {menuToolBox}
               {profileMenu}
 

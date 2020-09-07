@@ -27,10 +27,8 @@ class DoenetBranchBrowser extends Component {
   constructor(props) {
     super(props);
     const { history: { location: { pathname = '' } }, allFolderInfo } = props
-    const directory = pathname.replace('#', '').split('/').filter((i) => i && (i !== 'content' || i !== 'courses'))
     
     this.state = {
-      directoryStack: directory,
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
       currentDraggedOverFolder: null,
@@ -70,9 +68,6 @@ class DoenetBranchBrowser extends Component {
     this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({directoryStack: nextProps.directoryData}); //watch for directoryData prop and updates directoryStack state variable
-  }
   getAllSelectedItems() {
     let allSelectedContent = [];
     for (let i =0; i < this.state.selectedItemsType.length; i++) {
@@ -160,7 +155,7 @@ class DoenetBranchBrowser extends Component {
     );
 
     // add items in directoryStack if any
-    this.state.directoryStack.forEach((folderId) => {
+    this.props.directoryStack.forEach((folderId) => {
       let folderTitle = this.props.allFolderInfo[folderId].title;
 
       directoryList.push(
@@ -191,7 +186,7 @@ class DoenetBranchBrowser extends Component {
     this.folderItems = [];
     this.folderList = this.props.folderList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.props.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.folderList = this.props.allFolderInfo[folderId].childFolders;
     }
@@ -255,7 +250,7 @@ class DoenetBranchBrowser extends Component {
     this.contentItems = [];
     this.contentList = this.props.contentList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.props.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.contentList = this.props.allFolderInfo[folderId].childContent;
     }
@@ -302,7 +297,7 @@ class DoenetBranchBrowser extends Component {
     this.urlItems = [];
     this.urlList = this.props.urlList;
     // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
+    if (this.props.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
       this.urlList = this.props.allFolderInfo[folderId].childUrls;
     }
@@ -440,8 +435,7 @@ class DoenetBranchBrowser extends Component {
 
   handleContentItemDoubleClick(branchId) {
     if (!this.disableEditing) {
-      const { history } = this.props
-      const { directoryStack } = this.state
+      const { history, directoryStack } = this.props
       const path = directoryStack.join('/')
       history.push(`/content/${path}?overlay=true&branchId=${branchId}`)
       this.props.updateSelectedItems([branchId], ['content']);
@@ -460,28 +454,23 @@ class DoenetBranchBrowser extends Component {
   }
 
   pushDirectoryStack(folderId) {
-    let directoryStack = this.state.directoryStack;
+    let directoryStack = this.props.directoryStack;
     directoryStack.push(folderId);
-    this.setState({
-      directoryStack: directoryStack
-    }); 
+    this.props.updateDirectoryStack(directoryStack);
   }
 
   popDirectoryStack() {
-    let directoryStack = this.state.directoryStack;
+    let directoryStack = this.props.directoryStack;
     directoryStack.pop();
-    this.setState({
-      directoryStack: directoryStack
-    });
+    this.props.updateDirectoryStack(directoryStack);
   }
 
   peekDirectoryStack() {
-    return this.state.directoryStack[this.state.directoryStack.length - 1];
+    return this.props.directoryStack[this.props.directoryStack.length - 1];
   }
 
   openFolder(folderId) {
-    const { updateDirectoryStack, history, allFolderInfo } = this.props
-    const { directoryStack } = this.state
+    const { updateDirectoryStack, history, allFolderInfo, directoryStack } = this.props
     // console.log('folderId:', folderId, directoryStack, allFolderInfo)
     const path = [ ...directoryStack, folderId ]
                     //.map((stack) => allFolderInfo[stack])
@@ -493,8 +482,7 @@ class DoenetBranchBrowser extends Component {
   }
 
   upOneDirectory() {
-    const { updateDirectoryStack, updateSelectedItems, history, allFolderInfo } = this.props
-    const { directoryStack } = this.state
+    const { updateDirectoryStack, updateSelectedItems, history, allFolderInfo, directoryStack } = this.props
     this.popDirectoryStack();
     this.setState({selectedItems: [], selectedItemType: []});
     const path = directoryStack
@@ -509,7 +497,7 @@ class DoenetBranchBrowser extends Component {
   jumpToDirectory(folderId) {
     // pop all items after folderId
     this.setState({selectedItems: [], selectedItemType: []});
-    while (this.state.directoryStack.length > 0 && this.peekDirectoryStack() !== folderId) {
+    while (this.props.directoryStack.length > 0 && this.peekDirectoryStack() !== folderId) {
       this.upOneDirectory();      
     }
   }
@@ -732,7 +720,7 @@ class DoenetBranchBrowser extends Component {
                                                             <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
                     </th>
                   </tr>
-                  {this.state.directoryStack.length !== 0 &&
+                  {this.props.directoryStack.length !== 0 &&
                   <DropItem 
                     id={ChooserConstants.PREVIOUS_DIR_ID} 
                     onDrop={() => this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)} 

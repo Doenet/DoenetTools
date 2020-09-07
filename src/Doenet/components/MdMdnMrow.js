@@ -6,7 +6,7 @@ export class Md extends InlineComponent {
   static componentType = "md";
   static rendererType = "math";
 
-  // used when creating new component via adapter or ref prop
+  // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
 
   // used when referencing this component without prop

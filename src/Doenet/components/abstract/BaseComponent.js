@@ -14,11 +14,12 @@ export default class BaseComponent {
     coreFunctions,
     flags,
     shadow,
-    numerics, sharedParameters,
+    numerics, parentSharedParameters, sharedParameters,
     allowSugarForChildren,
   }) {
 
     this.numerics = numerics;
+    this.parentSharedParameters = parentSharedParameters;
     this.sharedParameters = sharedParameters;
 
     this.componentName = componentName;
