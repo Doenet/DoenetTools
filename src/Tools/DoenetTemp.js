@@ -1,40 +1,26 @@
 import React from 'react';
-import VerticalDivider from "../Doenet/components/VerticalDivider.js";
-import ToolLayout from '../Tools/ToolLayout/ToolLayout.js';
-import ToolLayoutPanel from '../Tools/ToolLayout/ToolLayoutPanel.js';
+import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
+import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
+import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
+import Button from "../imports/PanelHeaderComponents/Button.js";
+import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
+import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
 
 export default function attempt() {
-  const header = {
-    display: 'inline-block',
-    fontSize: '95px',
-  };
 return (
-  <>
-    <ToolLayout toolName="Course" headingTitle="Course Name Here">
-   <ToolLayoutPanel
-        //panelHeaderControls={[contextPanelMenu]}
-        panelName="Left Nav"
-      >
-        <div style={{display:"flex",flexDirection:"column"}}>
-        <button>Overview</button>
-       <button>Syllabus</button>
-       <button>Grades</button>
-       <button>Assignments</button>
-        </div>
-      </ToolLayoutPanel>
-   <ToolLayoutPanel
-        //panelHeaderControls={[contextPanelMenu]}
-        panelName="Content">
-          <p style={header}>Content</p> <VerticalDivider></VerticalDivider> <p style={header}>Here</p>
-          
-      </ToolLayoutPanel>
-      <ToolLayoutPanel
-      //panelHeaderControls={[contextPanelMenu]}
-      panelName="Rt. Nav">
-         <p>Assignment Control Panel</p>
-      </ToolLayoutPanel>
-    </ ToolLayout >
-  </>
+<div>
+  <p>Button</p>
+  <Button/>
+  <p>ToggleButton</p>
+  <ToggleButton/>
+  <p>ActionButton</p>
+  <ActionButton/>
+  <p>textfield</p>
+  <Textfield/>
+  <p>searchbar</p>
+  <SearchBar/>
+  
+</div>
 );
 };
 
