@@ -1,7 +1,8 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 
-export default class Q extends DoenetRenderer {
+
+export default class Nbsp extends DoenetRenderer {
 
   render() {
 
@@ -9,6 +10,6 @@ export default class Q extends DoenetRenderer {
       return null;
     }
 
-    return <><a name={this.componentName} />&ldquo;{this.children}&rdquo;</>
+    return <>&ndash;</>
   }
 }

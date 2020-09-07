@@ -905,6 +905,11 @@ export class SectionWideCheckWork extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class delegateCheckWorkToAnswerNumber extends NumberComponent {
+  static componentType = "delegateCheckWorkToAnswerNumber";
+  static rendererType = "number";
+}
+
 export class FromSubstitutions extends NumberComponent {
   static componentType = "fromSubstitutions";
   static rendererType = "number";

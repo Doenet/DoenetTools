@@ -15,10 +15,17 @@ export default class Booleaninput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
-            componentName: this.stateValues.answerAncestor.componentName,
-            actionName: "submitAnswer"
-          })
+          if (this.stateValues.answerAncestor.stateValues.submitAllAnswersAtAncestor !== null) {
+            return () => this.coreFunctions.requestAction({
+              componentName: this.stateValues.answerAncestor.stateValues.submitAllAnswersAtAncestor,
+              actionName: "submitAllAnswers"
+            })
+          } else {
+            return () => this.coreFunctions.requestAction({
+              componentName: this.stateValues.answerAncestor.componentName,
+              actionName: "submitAnswer"
+            })
+          }
         } else {
           return () => null
         }

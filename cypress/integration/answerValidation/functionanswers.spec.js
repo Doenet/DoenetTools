@@ -15,7 +15,7 @@ describe('Function answer validation tests', function () {
     <mathinput name="x" />
     <award>
       <credit>
-        <evaluate><ref>f</ref><ref prop="value">x</ref></evaluate>
+        <evaluate><copy tname="f" /><copy prop="immediateValue" tname="x" /></evaluate>
       </credit>
       <when>true</when>
     </award>
@@ -139,14 +139,14 @@ describe('Function answer validation tests', function () {
   <p>Offset: <mathinput name="offset" prefill="0"/></p>
   <p>Period: <mathinput name="period" prefill="1"/></p>
   <p>Magnitude <mathinput name="magnitude" prefill="1"/></p>
-  <function name="f"><ref prop="value">magnitude</ref>cos(2*pi*(x-<ref prop="value">offset</ref>)/<ref prop="value">period</ref>)</function>
+  <function name="f"><copy prop="value" tname="magnitude" />cos(2*pi*(x-<copy prop="value" tname="offset" />)/<copy prop="value" tname="period" />)</function>
 
   <p>Enter a number:
   <answer>
     <mathinput name="x" />
     <award>
       <credit>
-        <evaluate><ref>f</ref><ref prop="value">x</ref></evaluate>
+        <evaluate><copy tname="f" /><copy prop="immediateValue" tname="x" /></evaluate>
       </credit>
       <when>true</when>
     </award>

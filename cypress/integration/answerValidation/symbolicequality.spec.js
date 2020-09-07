@@ -12,23 +12,23 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1+3</math>: 
     <answer>
-      <award symbolicEquality="true"><ref>_math1</ref></award>
+      <award symbolicEquality="true"><copy tname="_math1" /></award>
     </answer>
 
     </p>
     
     <p><math>3+1</math>: 
     <answer>
-      <award symbolicEquality="true"><ref>_math2</ref></award>
+      <award symbolicEquality="true"><copy tname="_math2" /></award>
     </answer>
     </p>
 
     <p>Numeric versions</p>
     <p><answer>
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     <p><answer>
-      <ref>_math2</ref>
+      <copy tname="_math2" />
     </answer></p>
     `}, "*");
     });
@@ -37,28 +37,28 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -172,13 +172,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x-0y+-3s</math>: 
     <answer>
-      <award symbolicEquality="true"><ref>_math1</ref></award>
+      <award symbolicEquality="true"><copy tname="_math1" /></award>
     </answer>
     </p>
 
     <p>Numeric version</p>
     <p><answer>
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     `}, "*");
     });
@@ -187,14 +187,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -295,13 +295,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><ref simplify="numbersPreserveOrder">_math1</ref></award>
+      <award symbolicEquality="true"><copy simplify="numbersPreserveOrder" tname="_math1" /></award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     `}, "*");
     });
@@ -310,14 +310,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -418,13 +418,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><ref simplify="numbers">_math1</ref></award>
+      <award symbolicEquality="true"><copy simplify="numbers" tname="_math1" /></award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     `}, "*");
     });
@@ -433,14 +433,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -530,13 +530,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>6x^2 -3x +8x-4 + (2x-3)(4-x)</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><ref simplify>_math1</ref></award>
+      <award symbolicEquality="true"><copy simplify tname="_math1" /></award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     `}, "*");
     });
@@ -545,14 +545,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -641,13 +641,13 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>(2x-3)(4-x) + sin(x)^2+cos(x)^2</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><ref simplify expand>_math1</ref></award>
+      <award symbolicEquality="true"><copy simplify expand tname="_math1" /></award>
     </answer>
     </p>
     
     <p>Numeric versions</p>
     <p><answer size="20">
-      <ref>_math1</ref>
+      <copy tname="_math1" />
     </answer></p>
     `}, "*");
     });
@@ -656,14 +656,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';

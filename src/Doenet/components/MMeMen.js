@@ -5,7 +5,7 @@ export class M extends InlineComponent {
   static componentType = "m";
   static rendererType = "math";
 
-  // used when creating new component via adapter or ref prop
+  // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
 
   static returnChildLogic(args) {
@@ -35,10 +35,23 @@ export class M extends InlineComponent {
       comparison: 'atLeast',
       number: 0,
     });
+
+    let atLeastZeroMs = childLogic.newLeaf({
+      name: "atLeastZeroMs",
+      componentType: 'm',
+      comparison: 'atLeast',
+      number: 0,
+    });
     childLogic.newOperator({
       name: "stringsTextsAndMaths",
       operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastZeroTexts, atLeastZeroMaths, atLeastZeroMathlists],
+      propositions: [
+        atLeastZeroStrings,
+        atLeastZeroTexts,
+        atLeastZeroMaths,
+        atLeastZeroMathlists,
+        atLeastZeroMs
+      ],
       requireConsecutive: true,
       setAsBase: true,
     });
@@ -56,30 +69,11 @@ export class M extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "childStateVariables",
           childLogicName: "stringsTextsAndMaths",
+          variableNames: ["latex", "text"],
+          variablesOptional: true,
         },
-        stringChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroStrings",
-          variableNames: ["value"]
-        },
-        textChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroTexts",
-          variableNames: ["value"]
-        },
-        mathChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroMaths",
-          variableNames: ["latex"]
-        },
-        mathlistChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroMathlists",
-          variableNames: ["latex"]
-        },
-
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
@@ -92,37 +86,15 @@ export class M extends InlineComponent {
         }
 
         let latex = "";
-        let stringNum = 0;
-        let textNum = 0;
-        let mathNum = 0;
-        let mathlistNum = 0;
 
         for (let child of dependencyValues.stringTextMathChildren) {
-
-          if (child.componentType === "string") {
-            latex += dependencyValues.stringChildren[stringNum].stateValues.value;
-            stringNum++;
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "text"
-          })) {
-            latex += dependencyValues.textChildren[textNum].stateValues.value;
-            textNum++;
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "math"
-          })) {
-            latex += dependencyValues.mathChildren[mathNum].stateValues.latex;
-            mathNum++;
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "mathlist"
-          })) {
-            latex += dependencyValues.mathlistChildren[mathlistNum].stateValues.value;
-            mathlistNum++;
+          if (child.stateValues.latex) {
+            latex += child.stateValues.latex
+          } else if (child.stateValues.text) {
+            latex += child.stateValues.text
           }
-
         }
+
         return { newValues: { latex } }
 
       }

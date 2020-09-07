@@ -32,28 +32,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -350,28 +350,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -667,28 +667,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -986,28 +986,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -1304,28 +1304,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
@@ -1614,14 +1614,14 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -1799,56 +1799,56 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = '#' + mathinputName + '_input';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputDescendants[0].componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
       let mathinput2Anchor = '#' + mathinput2Name + '_input';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
       let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
       let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputDescendants[0].componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
       let mathinput3Anchor = '#' + mathinput3Name + '_input';
       let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
       let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
       let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
       let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputDescendants[0].componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
       let mathinput4Anchor = '#' + mathinput4Name + '_input';
       let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
       let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
       let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
       let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
 
-      let mathinput5Name = components['/_answer5'].stateValues.inputDescendants[0].componentName
+      let mathinput5Name = components['/_answer5'].stateValues.inputChild.componentName
       let mathinput5Anchor = '#' + mathinput5Name + '_input';
       let mathinput5SubmitAnchor = '#' + mathinput5Name + '_submit';
       let mathinput5CorrectAnchor = '#' + mathinput5Name + '_correct';
       let mathinput5PartialAnchor = '#' + mathinput5Name + '_partial';
       let mathinput5IncorrectAnchor = '#' + mathinput5Name + '_incorrect';
 
-      let mathinput6Name = components['/_answer6'].stateValues.inputDescendants[0].componentName
+      let mathinput6Name = components['/_answer6'].stateValues.inputChild.componentName
       let mathinput6Anchor = '#' + mathinput6Name + '_input';
       let mathinput6SubmitAnchor = '#' + mathinput6Name + '_submit';
       let mathinput6CorrectAnchor = '#' + mathinput6Name + '_correct';
       let mathinput6PartialAnchor = '#' + mathinput6Name + '_partial';
       let mathinput6IncorrectAnchor = '#' + mathinput6Name + '_incorrect';
 
-      let mathinput7Name = components['/_answer7'].stateValues.inputDescendants[0].componentName
+      let mathinput7Name = components['/_answer7'].stateValues.inputChild.componentName
       let mathinput7Anchor = '#' + mathinput7Name + '_input';
       let mathinput7SubmitAnchor = '#' + mathinput7Name + '_submit';
       let mathinput7CorrectAnchor = '#' + mathinput7Name + '_correct';
       let mathinput7PartialAnchor = '#' + mathinput7Name + '_partial';
       let mathinput7IncorrectAnchor = '#' + mathinput7Name + '_incorrect';
 
-      let mathinput8Name = components['/_answer8'].stateValues.inputDescendants[0].componentName
+      let mathinput8Name = components['/_answer8'].stateValues.inputChild.componentName
       let mathinput8Anchor = '#' + mathinput8Name + '_input';
       let mathinput8SubmitAnchor = '#' + mathinput8Name + '_submit';
       let mathinput8CorrectAnchor = '#' + mathinput8Name + '_correct';
@@ -2150,297 +2150,300 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <p>Match partial:</p>
-  <answer name="a" newnamespace>
-    <p><mathinput name="x"/></p>
-    <p><mathinput name="y"/></p>
-    <p><mathinput name="z"/></p>
+  <section title="Match partial" name="a" newNamespace>
 
+  <p><mathinput name="x"/></p>
+  <p><mathinput name="y"/></p>
+  <p><mathinput name="z"/></p>
+  <answer>
     <award>
       <when matchpartial>
         <math>
-          <ref prop="value">x</ref>,
-          <ref prop="value">y</ref>,
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />,
+          <copy prop="immediateValue" tname="y" />,
+          <copy prop="immediateValue" tname="z" />
         </math>
         =
         <math>x,y,z</math>
       </when>
     </award>
   </answer>
+  </section>
 
-  <p>Match partial, unordered:</p>
-  <answer name="b" newnamespace>
+  <section title="Match partial, unordered" name="b" newnamespace>
     <p><mathinput name="x"/></p>
     <p><mathinput name="y"/></p>
     <p><mathinput name="z"/></p>
-
+  <answer>
     <award>
       <when matchpartial>
         <math unordered="true">
-          <ref prop="value">x</ref>,
-          <ref prop="value">y</ref>,
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />,
+          <copy prop="immediateValue" tname="y" />,
+          <copy prop="immediateValue" tname="z" />
         </math>
         =
         <math>x,y,z</math>
       </when>
     </award>
   </answer>
+  </section>
 
-  <p>Strict equality:</p>
-  <answer name="c" newnamespace>
+  <section title="Strict equality" newnamespace name="c">
    <p><mathinput name="x"/></p>
    <p><mathinput name="y"/></p>
    <p><mathinput name="z"/></p>
 
+   <answer>
    <award>
      <when>
        <math>
-         <ref prop="value">x</ref>,
-         <ref prop="value">y</ref>,
-         <ref prop="value">z</ref>
+         <copy prop="immediateValue" tname="x" />,
+         <copy prop="immediateValue" tname="y" />,
+         <copy prop="immediateValue" tname="z" />
        </math>
        =
        <math>x,y,z</math>
      </when>
    </award>
  </answer>
+ </section>
 
-  <p>Unordered:</p>
-  <answer name="d" newnamespace>
+  <section title="Unordered" newnamespace name="d">
     <p><mathinput name="x"/></p>
     <p><mathinput name="y"/></p>
     <p><mathinput name="z"/></p>
 
+    <answer>
     <award>
       <when>
         <math unordered="true">
-          <ref prop="value">x</ref>,
-          <ref prop="value">y</ref>,
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />,
+          <copy prop="immediateValue" tname="y" />,
+          <copy prop="immediateValue" tname="z" />
         </math>
         =
         <math>x,y,z</math>
       </when>
     </award>
   </answer>
+  </section>
       `}, "*");
     });
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').should('be.visible');
 
     cy.log("Submit empty answers")
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_incorrect').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).eq(0);
-      expect(components['/b'].stateValues.creditAchieved).eq(0);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Submit correct answers")
     cy.get('#\\/a\\/x_input').clear().type('x');
     cy.get('#\\/a\\/y_input').clear().type('y');
     cy.get('#\\/a\\/z_input').clear().type('z');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/b\\/x_input').clear().type('x');
     cy.get('#\\/b\\/y_input').clear().type('y');
     cy.get('#\\/b\\/z_input').clear().type('z');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/x_input').clear().type('x');
     cy.get('#\\/c\\/y_input').clear().type('y');
     cy.get('#\\/c\\/z_input').clear().type('z');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/d\\/x_input').clear().type('x');
     cy.get('#\\/d\\/y_input').clear().type('y');
     cy.get('#\\/d\\/z_input').clear().type('z');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).eq(1);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(1);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
 
     cy.get('#\\/a\\/y_input').clear().type('z');
     cy.get('#\\/a\\/z_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/y_input').clear().type('z');
     cy.get('#\\/b\\/z_input').clear();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/c\\/y_input').clear().type('z');
     cy.get('#\\/c\\/z_input').clear();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('z');
     cy.get('#\\/d\\/z_input').clear();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
     cy.get('#\\/a\\/x_input').clear().type('z');
     cy.get('#\\/a\\/y_input').clear().type('x');
     cy.get('#\\/a\\/z_input').clear().type('y');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/x_input').clear().type('z');
     cy.get('#\\/b\\/y_input').clear().type('x');
     cy.get('#\\/b\\/z_input').clear().type('y');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/x_input').clear().type('z');
     cy.get('#\\/c\\/y_input').clear().type('x');
     cy.get('#\\/c\\/z_input').clear().type('y');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/x_input').clear().type('z');
     cy.get('#\\/d\\/y_input').clear().type('x');
     cy.get('#\\/d\\/z_input').clear().type('y');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
     cy.get('#\\/a\\/y_input').clear().type('y');
     cy.get('#\\/a\\/z_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
     cy.get('#\\/b\\/y_input').clear().type('y');
     cy.get('#\\/b\\/z_input').clear().type('x');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/y_input').clear().type('y');
     cy.get('#\\/c\\/z_input').clear().type('x');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('y');
     cy.get('#\\/d\\/z_input').clear().type('x');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("two components out of order")
     cy.get('#\\/a\\/y_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/b\\/y_input').clear();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
     cy.get('#\\/c\\/y_input').clear();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("add component")
     cy.get('#\\/a\\/y_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/b\\/y_input').clear().type('x');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
     cy.get('#\\/c\\/y_input').clear().type('x');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('x');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
   });
@@ -2449,297 +2452,302 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <p>Match partial:</p>
-  <answer name="a" newnamespace>
-    <p><textinput name="x"/></p>
-    <p><textinput name="y"/></p>
-    <p><textinput name="z"/></p>
+  <section title="Match partial" name="a" newNamespace>
 
+  <p><textinput name="x"/></p>
+  <p><textinput name="y"/></p>
+  <p><textinput name="z"/></p>
+  <answer>
     <award>
       <when matchpartial>
         <textlist>
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />
+          <copy prop="immediateValue" tname="y" />
+          <copy prop="immediateValue" tname="z" />
         </textlist>
         =
         <textlist>x,y,z</textlist>
       </when>
     </award>
   </answer>
+  </section>
+  
+  <section title="Match partial, unordered" name="b" newnamespace>
+  <p><textinput name="x"/></p>
+  <p><textinput name="y"/></p>
+  <p><textinput name="z"/></p>
 
-  <p>Match partial, unordered:</p>
-  <answer name="b" newnamespace>
-    <p><textinput name="x"/></p>
-    <p><textinput name="y"/></p>
-    <p><textinput name="z"/></p>
-
+  <answer>
     <award>
       <when matchpartial>
         <textlist unordered="true">
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />
+          <copy prop="immediateValue" tname="y" />
+          <copy prop="immediateValue" tname="z" />
         </textlist>
         =
         <textlist>x,y,z</textlist>
       </when>
     </award>
   </answer>
+  </section>
 
-  <p>Strict equality:</p>
-  <answer name="c" newnamespace>
-   <p><textinput name="x"/></p>
-   <p><textinput name="y"/></p>
-   <p><textinput name="z"/></p>
+  <section title="Strict equality" newnamespace name="c">
+  <p><textinput name="x"/></p>
+  <p><textinput name="y"/></p>
+  <p><textinput name="z"/></p>
 
+   <answer>
    <award>
      <when>
        <textlist>
-         <ref prop="value">x</ref>
-         <ref prop="value">y</ref>
-         <ref prop="value">z</ref>
+         <copy prop="immediateValue" tname="x" />
+         <copy prop="immediateValue" tname="y" />
+         <copy prop="immediateValue" tname="z" />
        </textlist>
        =
        <textlist>x,y,z</textlist>
      </when>
    </award>
- </answer>
+   </answer>
+   </section>
 
-  <p>Unordered:</p>
-  <answer name="d" newnamespace>
-    <p><textinput name="x"/></p>
-    <p><textinput name="y"/></p>
-    <p><textinput name="z"/></p>
+   <section title="Unordered" newnamespace name="d">
+   <p><textinput name="x"/></p>
+   <p><textinput name="y"/></p>
+   <p><textinput name="z"/></p>
+ 
+     <answer>
 
     <award>
       <when>
         <textlist unordered="true">
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="immediateValue" tname="x" />
+          <copy prop="immediateValue" tname="y" />
+          <copy prop="immediateValue" tname="z" />
         </textlist>
         =
         <textlist>x,y,z</textlist>
       </when>
     </award>
   </answer>
+  </section>
       `}, "*");
     });
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').should('be.visible');
 
     cy.log("Submit empty answers")
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_incorrect').should('be.visible');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_incorrect').should('be.visible');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).eq(0);
-      expect(components['/b'].stateValues.creditAchieved).eq(0);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Submit correct answers")
     cy.get('#\\/a\\/x_input').clear().type('x');
     cy.get('#\\/a\\/y_input').clear().type('y');
     cy.get('#\\/a\\/z_input').clear().type('z');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/b\\/x_input').clear().type('x');
     cy.get('#\\/b\\/y_input').clear().type('y');
     cy.get('#\\/b\\/z_input').clear().type('z');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/x_input').clear().type('x');
     cy.get('#\\/c\\/y_input').clear().type('y');
     cy.get('#\\/c\\/z_input').clear().type('z');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/d\\/x_input').clear().type('x');
     cy.get('#\\/d\\/y_input').clear().type('y');
     cy.get('#\\/d\\/z_input').clear().type('z');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).eq(1);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(1);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
 
     cy.get('#\\/a\\/y_input').clear().type('z');
     cy.get('#\\/a\\/z_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/y_input').clear().type('z');
     cy.get('#\\/b\\/z_input').clear();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/c\\/y_input').clear().type('z');
     cy.get('#\\/c\\/z_input').clear();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('z');
     cy.get('#\\/d\\/z_input').clear();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
     cy.get('#\\/a\\/x_input').clear().type('z');
     cy.get('#\\/a\\/y_input').clear().type('x');
     cy.get('#\\/a\\/z_input').clear().type('y');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/x_input').clear().type('z');
     cy.get('#\\/b\\/y_input').clear().type('x');
     cy.get('#\\/b\\/z_input').clear().type('y');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/x_input').clear().type('z');
     cy.get('#\\/c\\/y_input').clear().type('x');
     cy.get('#\\/c\\/z_input').clear().type('y');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/x_input').clear().type('z');
     cy.get('#\\/d\\/y_input').clear().type('x');
     cy.get('#\\/d\\/z_input').clear().type('y');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
     cy.get('#\\/a\\/y_input').clear().type('y');
     cy.get('#\\/a\\/z_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
     cy.get('#\\/b\\/y_input').clear().type('y');
     cy.get('#\\/b\\/z_input').clear().type('x');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/y_input').clear().type('y');
     cy.get('#\\/c\\/z_input').clear().type('x');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('y');
     cy.get('#\\/d\\/z_input').clear().type('x');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("two components out of order")
     cy.get('#\\/a\\/y_input').clear();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/b\\/y_input').clear();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
     cy.get('#\\/c\\/y_input').clear();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("add component")
     cy.get('#\\/a\\/y_input').clear().type('x');
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/b\\/y_input').clear().type('x');
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
     cy.get('#\\/c\\/y_input').clear().type('x');
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').clear().type('x');
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
   });
@@ -2748,231 +2756,236 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <p>Match partial:</p>
-  <answer name="a" newnamespace>
-    <p><booleaninput name="x"/></p>
-    <p><booleaninput name="y"/></p>
-    <p><booleaninput name="z"/></p>
+  <section title="Match partial" name="a" newNamespace>
 
+  <p><booleaninput name="x"/></p>
+  <p><booleaninput name="y"/></p>
+  <p><booleaninput name="z"/></p>
+  <answer>
     <award>
       <when matchpartial>
         <booleanlist>
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="value" tname="x" />
+          <copy prop="value" tname="y" />
+          <copy prop="value" tname="z" />
         </booleanlist>
         =
         <booleanlist>false, true, true</booleanlist>
       </when>
     </award>
   </answer>
+  </section>
+  
+  <section title="Match partial, unordered" name="b" newnamespace>
+  <p><booleaninput name="x"/></p>
+  <p><booleaninput name="y"/></p>
+  <p><booleaninput name="z"/></p>
 
-  <p>Match partial, unordered:</p>
-  <answer name="b" newnamespace>
-    <p><booleaninput name="x"/></p>
-    <p><booleaninput name="y"/></p>
-    <p><booleaninput name="z"/></p>
+  <answer>
 
     <award>
       <when matchpartial>
         <booleanlist unordered="true">
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="value" tname="x" />
+          <copy prop="value" tname="y" />
+          <copy prop="value" tname="z" />
         </booleanlist>
         =
         <booleanlist>false, true, true</booleanlist>
       </when>
     </award>
   </answer>
+  </section>
 
-  <p>Strict equality:</p>
-  <answer name="c" newnamespace>
-   <p><booleaninput name="x"/></p>
-   <p><booleaninput name="y"/></p>
-   <p><booleaninput name="z"/></p>
+  <section title="Strict equality" newnamespace name="c">
+  <p><booleaninput name="x"/></p>
+  <p><booleaninput name="y"/></p>
+  <p><booleaninput name="z"/></p>
 
+   <answer>
    <award>
      <when>
        <booleanlist>
-         <ref prop="value">x</ref>
-         <ref prop="value">y</ref>
-         <ref prop="value">z</ref>
+         <copy prop="value" tname="x" />
+         <copy prop="value" tname="y" />
+         <copy prop="value" tname="z" />
        </booleanlist>
        =
        <booleanlist>false, true, true</booleanlist>
      </when>
    </award>
  </answer>
+ </section>
 
-  <p>Unordered:</p>
-  <answer name="d" newnamespace>
-    <p><booleaninput name="x"/></p>
-    <p><booleaninput name="y"/></p>
-    <p><booleaninput name="z"/></p>
+ <section title="Unordered" newnamespace name="d">
+ <p><booleaninput name="x"/></p>
+ <p><booleaninput name="y"/></p>
+ <p><booleaninput name="z"/></p>
 
+   <answer>
     <award>
       <when>
         <booleanlist unordered="true">
-          <ref prop="value">x</ref>
-          <ref prop="value">y</ref>
-          <ref prop="value">z</ref>
+          <copy prop="value" tname="x" />
+          <copy prop="value" tname="y" />
+          <copy prop="value" tname="z" />
         </booleanlist>
         =
         <booleanlist>false, true, true</booleanlist>
       </when>
     </award>
   </answer>
+  </section>
       `}, "*");
     });
 
-    cy.get('#\\/a_submit').should('be.visible');
-    cy.get('#\\/b_submit').should('be.visible');
-    cy.get('#\\/c_submit').should('be.visible');
-    cy.get('#\\/d_submit').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').should('be.visible');
 
     cy.log("Submit correct answers")
     cy.get('#\\/a\\/y_input').click();
     cy.get('#\\/a\\/z_input').click();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_correct').should('be.visible');
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/b\\/y_input').click();
     cy.get('#\\/b\\/z_input').click();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/y_input').click();
     cy.get('#\\/c\\/z_input').click();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_correct').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/d\\/y_input').click();
     cy.get('#\\/d\\/z_input').click();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).eq(1);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(1);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("All true")
     cy.get('#\\/a\\/x_input').click();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/x_input').click();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/c\\/x_input').click();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/x_input').click();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("wrong order")
     cy.get('#\\/a\\/y_input').click();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/b\\/y_input').click();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_correct').should('be.visible');
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
     cy.get('#\\/c\\/y_input').click();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/y_input').click();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_correct').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).eq(1);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(1);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("wrong order and values")
     cy.get('#\\/a\\/z_input').click();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
     cy.get('#\\/b\\/z_input').click();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
     cy.get('#\\/c\\/z_input').click();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/z_input').click();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
     cy.log("all false")
     cy.get('#\\/a\\/x_input').click();
-    cy.get('#\\/a_submit').click();
-    cy.get('#\\/a_partial').invoke('text').then((text) => {
+    cy.get('#\\/a\\/_answer1_submit').click();
+    cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/b\\/x_input').click();
-    cy.get('#\\/b_submit').click();
-    cy.get('#\\/b_partial').invoke('text').then((text) => {
+    cy.get('#\\/b\\/_answer1_submit').click();
+    cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
     cy.get('#\\/c\\/x_input').click();
-    cy.get('#\\/c_submit').click();
-    cy.get('#\\/c_incorrect').should('be.visible');
+    cy.get('#\\/c\\/_answer1_submit').click();
+    cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
     cy.get('#\\/d\\/x_input').click();
-    cy.get('#\\/d_submit').click();
-    cy.get('#\\/d_incorrect').should('be.visible');
+    cy.get('#\\/d\\/_answer1_submit').click();
+    cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/b'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
-      expect(components['/c'].stateValues.creditAchieved).eq(0);
-      expect(components['/d'].stateValues.creditAchieved).eq(0);
+      expect(components['/a/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/b/_answer1'].stateValues.creditAchieved).closeTo(1 / 3, 1E-14);
+      expect(components['/c/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/d/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
   });

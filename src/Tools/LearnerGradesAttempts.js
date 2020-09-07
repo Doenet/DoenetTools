@@ -4,10 +4,16 @@ import React, { useState, useEffect, useCallback } from "react";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 // import parse from 'csv-parse';
 // import nanoid from 'nanoid';
+import DoenetViewer from "./DoenetViewer";
+import { useParams } from 'react-router';
 
-import { Link } from "react-router-dom";
 
-export default function LearnerGrades(params){
+
+export default function LearnerGradesAttempts(params){
+  console.log("learner grades attemps params:",params)
+  // console.log("history",params.history)
+  // const myparams = useParams();
+  // console.log('myparams',myparams)
   const [process, setProcess] = useState("Loading");//array containing column names
   console.log("process",process);
   const [courseId,setCourseId] = useState("");
@@ -41,14 +47,14 @@ export default function LearnerGrades(params){
     for (let [i,obj] of learnerAssignmentsObj.entries()){
       let credit = (obj.creditOverride === null) ? obj.credit : obj.creditOverride;
       const totalPoints = obj.totalPointsOrPercent;
-      const earned = Math.round(credit * totalPoints * 100) / 100;
-      const percent = Math.round(credit * 10000)/100 + '%';
+      const earned = Math.floor(credit * totalPoints);
+      const percent = Math.floor(credit * 100) + '%';
       // const link = 
       gradeRows.push(<tr id={"gradeRow"+i}>
         <td>{obj.title}</td>
-        <td><Link to={`/grades/attempts/?assignmentId=${obj.assignmentId}`} >{earned}</Link></td>
+        <td>{earned}</td>
         <td>{totalPoints}</td>
-        <td><Link to="/grades/attempts/">{percent}</Link></td>
+        <td>{percent}</td>
         </tr>);
     }
     let gradeTable = <table>

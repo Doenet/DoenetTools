@@ -380,6 +380,7 @@ export default function ToolLayout(props) {
         headerRoleFromLayout={props.headerRoleFromLayout}
         headerChangesFromLayout={props.headerChangesFromLayout}
         guestUser={props.guestUser}
+        extraMenus={props.extraMenus}
         onChange={showCollapseMenu} />}
       {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
         <div className={footerClass}>
