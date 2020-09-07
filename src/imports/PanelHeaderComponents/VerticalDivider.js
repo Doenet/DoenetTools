@@ -1,20 +1,20 @@
 import React from 'react';
+//import "theme.css";
+import { doenetComponentBackgroundActive } from "./theme.js";
 
 export default function VerticalDivider() {
   const verticalHeaderDivider = {
     borderRadius: '5px',
-    borderLeft: '5px solid #3d3d3d',
+    borderLeft: `5px solid ${doenetComponentBackgroundActive}`,
     borderRight: '0px',
     height: '95px',
     width: '0px',
     display: 'inline-block',
-    margin: '55px 5px 0px 5px',
+    margin: '0px',
     verticalAlign: 'middle'
   };
   return (
-    <>
     <div style={verticalHeaderDivider}></div>
-    </>
   );
-};
+}
       
