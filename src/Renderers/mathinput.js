@@ -4,6 +4,22 @@ import DoenetRenderer from './DoenetRenderer';
 import me from 'math-expressions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import styled from 'styled-components';
+import MathJax from 'react-mathjax2';
+
+const Prev = styled.div`
+  // min-height: 30px;
+  background: rgba(0, 0, 0, 0.8);
+  width: auto;
+  display: inline-block;
+  border-radius: 5px;
+  color: white;
+  // line-height: 0px;
+  z-index: 1;
+  padding: 3px;
+  position: absolute;
+  left: ${props => props.left};
+`;
 
 
 export default class MathInput extends DoenetRenderer {
@@ -239,9 +255,11 @@ export default class MathInput extends DoenetRenderer {
       }
     }
 
-    return <React.Fragment>
+    let leftOffset = `${this.doenetSvData.size * 10 + 20}px`;
+
+    return <div><React.Fragment>
       <a name={this.componentName} />
-      <span className="textInputSurroundingBox" id={this.componentName}>
+      <div className="textInputSurroundingBox" id={this.componentName} >
         <input
           key={inputKey}
           id={inputKey}
@@ -259,12 +277,28 @@ export default class MathInput extends DoenetRenderer {
             borderWidth: "1px",
             borderColor: surroundingBorderColor,
             padding: "4px",
+            position: "absolute",
           }}
         />
         {checkWorkButton}
-      </span>
-
+        {console.log("eval", this.mathExpression.toLatex())}
+        {this.textValue ? 
+        <Prev left = {leftOffset}>
+          <div>
+            <MathJax.Context input='tex'>
+                <div>
+                    <MathJax.Node inline>{this.textValue ? this.mathExpression.toLatex() : ''}</MathJax.Node>
+                </div>
+            </MathJax.Context>
+          </div>
+        </Prev> : 
+        null}
+      </div>
+    
     </React.Fragment>
 
+    {/* <p>yooooooooooooooooooooooooooooooooooooooooooooooo</p> */}
+    
+    </div>
   }
 }

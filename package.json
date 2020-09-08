@@ -30,6 +30,7 @@
     "react-draggable": "3.0.5",
     "react-dropzone": "^11.0.2",
     "react-indexed-db": "^1.0.12",
+    "react-mathjax2": "0.0.2",
     "react-monaco-editor": "^0.36.0",
     "react-router": "^5.2.0",
     "react-spring": "^8.0.27",
