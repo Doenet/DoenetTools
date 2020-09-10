@@ -46,12 +46,30 @@ export default class ToolLayoutPanel extends Component {
   static contextType = PlacementContext;
 
   render() {
-    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? (this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 'px' : '50px';
 
+
+    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 95 + 30) + 'px' : '175px';
+    
+    if(!this.context.panelHeadersControlVisible.phoneButtonsDisplay) {
+      let existingHeight = mainHeight.replace(/[a-z]/g , '');
+      existingHeight = Number.parseInt(existingHeight);
+      mainHeight = (existingHeight - 30) + 'px';
+    }
+
+    if(this.props.panelHeaderControls === undefined  && this.context.panelHeadersControlVisible.purpose  && this.context.panelHeadersControlVisible.purpose.length === 1){
+      let existingHeight = mainHeight.replace(/[a-z]/g , '');
+      existingHeight = Number.parseInt(existingHeight);
+      mainHeight = (existingHeight - 95) + 'px';
+    }
+
+    if(this.props.isLeftPanel) {
+      mainHeight = "0px";
+    }
+    
     let splitLayoutPanel = null;
     let filteredChildren = [];
     let panelHeader = null;
-
+    // console.log("props" , this.props[1])
     if (Array.isArray(this.props.children)) {
       for (let component of this.props.children) {
         if (component.type == SplitLayoutPanel) {
@@ -75,7 +93,7 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {this.context.leftCloseBtn && (
-            <button onClick={this.context.leftPanelHideable} className="leftCloseButton custom">
+            <button onClick={this.context.leftPanelHideable} className="leftCloseButton circle">
               <FontAwesomeIcon
                 style={{
                   alignSelf: "center",
@@ -109,7 +127,7 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {(this.context.leftOpenBtn) && !this.context.guestUser && (
-            <button onClick={this.context.leftPanelVisible} className="middleLeftButton custom"
+            <button onClick={this.context.leftPanelVisible} className="middleLeftButton circle"
             >
               <FontAwesomeIcon
                 icon={faChevronRight}
@@ -138,7 +156,9 @@ export default class ToolLayoutPanel extends Component {
     const splitPanelProps = splitLayoutPanel && splitLayoutPanel.props;
     return (
       <>
-        {!this.context.panelHeadersControlVisible.hideMenu ? <div className="panels-header-content">
+        {!this.context.panelHeadersControlVisible.hideMenu  
+           && this.props.isLeftPanel === undefined  
+        ? <div className="panels-header-content">
           <div className="panels-header-controls">
             {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
               this.context.position === 'middle' ? middleOpenLeftRightButton() :
@@ -161,6 +181,9 @@ export default class ToolLayoutPanel extends Component {
           </div>
         </div> : ''}
 
+        {this.props.isLeftPanel ? <div className="panels-header-controls">
+            {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() : '' : ''} </div> : null }
+
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
        
           {!this.props.splitPanel ?
@@ -169,7 +192,7 @@ export default class ToolLayoutPanel extends Component {
             (<><SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[0]}>{filteredChildren}</SplitPanelContent>
               <SplitDivider></SplitDivider>
               <SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[1]}>{splitLayoutPanel}</SplitPanelContent></>)}
-          {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
+          {this.context.panelHeadersControlVisible.showFooter }
         </MainContent>
 
       </>

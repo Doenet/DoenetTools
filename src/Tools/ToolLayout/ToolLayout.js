@@ -17,8 +17,9 @@ const Container = styled.div`
   height: ${props => props.hideHeader ? "calc(100vh - 40px)" : "calc(100vh - 50px)" };
   overflow:hidden;
   z-index:0;
-  width:100%;
 `;
+  // width:80%;
+
 
 const widthToDevice = () => {
   let w = document.documentElement.clientWidth;
@@ -67,7 +68,7 @@ export default function ToolLayout(props) {
     if (props.leftPanelWidth) {
       leftW = parseInt(props.leftPanelWidth, 10) > 300 ? 300 : props.leftPanelWidth;
     } else {
-      leftW = 200;
+      leftW = props.isLeftPanel ? 200 : 0;
     }
   }
   if (props.rightPanelWidth) {
@@ -77,14 +78,16 @@ export default function ToolLayout(props) {
   }
   const resizerW = 3;
 
-
+  
   //Assume 3 if 1 child then we don't worry about middleW
-  let middleW = w - (props.leftPanelClose ? 0 : leftW) - (props.rightPanelClose ? 0 : rightW) - resizerW - resizerW;
-  if (props.children.length === 2) {
-    middleW = w - (props.leftPanelClose ? 0 : leftW) - resizerW;
-  }
+  // let middleW = w - (props.leftPanelClose ? 0 : leftW) - (props.rightPanelClose ? 0 : rightW) - resizerW - resizerW;
+  let middleW = w - (props.rightPanelClose || props.purpose.indexOf("Right") === -1 ? 0 : rightW) - resizerW - (props.isLeftPanel ? leftW : 0);
+
+  // if (props.children.length === 2) {
+  //   middleW = w - (props.leftPanelClose ? 0 : leftW) - resizerW;
+  // }
   const [leftWidth, setLeftWidth] = useState(leftW);
-  const [rightWidth, setRightWidth] = useState(rightW);
+  const [rightWidth, setRightWidth] = useState(props.purpose && props.purpose.length >= 2 && props.purpose.indexOf("Right") !== -1 ? rightW : 0);
   const [isResizing, setIsResizing] = useState(false);
   const [currentResizer, setCurrentResizer] = useState("");
   const [firstPanelHidden, setFirstPanelHidden] = useState(false);
@@ -98,6 +101,11 @@ export default function ToolLayout(props) {
   const [middleWidth, setMiddleWidth] = useState(middleW);
   const container = useRef();
   const [deviceType, setDeviceType] = useState(widthToDevice());
+  // const [totalWidthNoLeft, setTotalWidthNoLeft] = useState( w - leftW );
+  // const [totalWidthNoLeft, setTotalWidthNoLeft] = useState(props.isLeftPanel ? w : w - leftW );
+
+  const [totalWidthNoLeft, setTotalWidthNoLeft] = useState(props.isLeftPanel ? w - leftW : w);
+
 
   useEffect(() => {
 
@@ -124,13 +132,39 @@ export default function ToolLayout(props) {
       setDeviceType(deviceWidth);
     }
     let w = window.innerWidth;
+    // let middleW = 0;
+    // if(w < 1300) {
+    //   leftPanelHideable();
+    //   middleW =
+    //   w - (!!rightCloseBtn ? rightWidth : 0) - resizerW;
+    // }
+    // else if(w > 1300) {
+    //   if(!leftCloseBtn){
+    //     leftPanelVisible();
+    //     middleW =
+    //     w - (!!leftCloseBtn ? leftWidth : 0)-(!!rightCloseBtn ? rightWidth : 0) - resizerW;
+    //   }
+    // }
     let middleW =
-      w - (!!leftCloseBtn ? leftWidth : 0) - (!!rightCloseBtn ? rightWidth : 0) - resizerW - resizerW;
-    if (props.children.length === 2) {
-      middleW = w - (!!leftCloseBtn ? leftWidth : 0) - resizerW;
-    }
+      w - (!!leftCloseBtn ? leftWidth : 0)-(!!rightCloseBtn ? rightWidth : 0) - resizerW;
+    
     setMiddleWidth(middleW);
     toolPanelsWidthHandler(leftW, middleW, rightW);
+
+
+
+    // let deviceWidth = widthToDevice();
+    // if (deviceType !== deviceWidth) {
+    //   setDeviceType(deviceWidth);
+    // }
+    // let w = window.innerWidth;
+    // let middleW =
+    //   w - (!!leftCloseBtn ? leftWidth : 0) - (!!rightCloseBtn ? rightWidth : 0) - resizerW - resizerW;
+    // if (props.children.length === 2) {
+    //   middleW = w - (!!leftCloseBtn ? leftWidth : 0) - resizerW;
+    // }
+    // setMiddleWidth(middleW);
+    // toolPanelsWidthHandler(leftW, middleW, rightW);
   };
 
   window.addEventListener("resize", windowResizeHandler);
@@ -258,6 +292,12 @@ export default function ToolLayout(props) {
       middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
     }
     setMiddleWidth(middleW);
+    if(props.purpose && props.purpose.length === 2) {
+      setTotalWidthNoLeft( !!rightCloseBtn ? middleW + rightWidth : middleW );
+    }else{
+      setTotalWidthNoLeft(middleW);
+    }
+    setLeftWidth(0);
   };
 
   const leftPanelVisible = () => {
@@ -278,6 +318,8 @@ export default function ToolLayout(props) {
       middleW = w - leftW - resizerW;
     }
     setLeftWidth(leftW);
+    setTotalWidthNoLeft(w - leftW);
+
     setMiddleWidth(middleW);
   };
   const rightPanelVisible = () => {
@@ -290,18 +332,23 @@ export default function ToolLayout(props) {
     }
     setRightCloseBtn(true);
     setRightOpenBtn(false);
-    let middleW = w - resizerW - resizerW - rightW - (!!leftCloseBtn ? leftWidth : 0);
-    if (props.children.length === 2) {
-      middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
-    }
+    let middleW = w - resizerW - rightW - (!!leftCloseBtn ? leftWidth : 0);
+    // if (props.children.length === 2) {
+    //   middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
+    // }
     setRightWidth(rightW);
     setMiddleWidth(middleW);
   };
 
   const rightPanelHideable = () => {
+    // console.log("left width", leftW)
     setRightCloseBtn(false);
     setRightOpenBtn(true);
-    let middleW = w - resizerW - resizerW - (!!leftCloseBtn ? leftWidth : 0);
+    // let middleW = w - resizerW - resizerW - (!!leftCloseBtn ? leftWidth : 0);
+    let middleW = w - resizerW - (props.isLeftPanel && !!leftCloseBtn ? leftWidth : 0);
+
+    // let middleW = w - resizerW - resizerW - leftW; 
+
     setMiddleWidth(middleW);
   };
 
@@ -311,6 +358,7 @@ export default function ToolLayout(props) {
     setHeaderSectionCount(count);
   }
   //Props children[0]
+  console.log("props",props.children[0])
   let leftNavContent = props.children && Array.isArray(props.children) ? props.children[0] : props.children;
   let panelHeadersControlVisible = {
     sliderVisible: false,
@@ -326,23 +374,42 @@ export default function ToolLayout(props) {
   panelHeadersControlVisible.hideFooter = deviceType === "phone" && !Array.isArray(props.children);
   panelHeadersControlVisible.sliderVisible = deviceType === "phone" && sliderVisible;
   panelHeadersControlVisible.hideCollapse = !Array.isArray(props.children);
+  panelHeadersControlVisible.phoneButtonsDisplay = deviceType === "phone" && props.children.length > 1 ? true : false;
+  panelHeadersControlVisible.purpose = props.purpose;
+  let leftNav = <PlacementContext.Provider 
+  value={{ 
+    leftCloseBtn: leftCloseBtn, 
+    // width: `${leftWidth}px`, 
+    position: 'left', 
+    panelHeadersControlVisible, 
+    leftPanelHideable, 
+    isResizing 
+  }}>{leftNavContent}</PlacementContext.Provider>
 
-  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', panelHeadersControlVisible, leftPanelHideable, isResizing }}>{leftNavContent}</PlacementContext.Provider>
+  !props.guestUser && props.purpose && props.purpose.indexOf("Left") !== -1 ? allParts.push(
+    <div key="part1"
 
-  !props.guestUser && allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} ` }} >{leftNav}</div>);
+      id="leftpanel"
+      className="leftpanel"
+      style={{
+        width: `${leftWidth}px`,
+        marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} `
+      }} >
+      {leftNav}</div> ): null;
 
   //Resizer
-  if (props.children.length === 2 || props.children.length === 3) {
-    allParts.push(
-      <div key="resizer1" id="first" className="resizer column-resizer" />
+//  if (props.purpose && props.purpose.length > 1 && (props.children.length === 2 || props.children.length === 3)) {
+//     allParts.push(
+//       <div key="resizer1" id="first" className="resizer column-resizer" />
 
-    );
-  }
+//     );
+//   }
 
   //Props children[1]
   let middleNav
-  if (props.children[1]) {
-    middleNav = <PlacementContext.Provider value={{ splitPanel: props.splitPanel, rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser }}> {props.children[1]}</PlacementContext.Provider>
+  if (props.children[1] || (props.purpose && props.purpose.length===1 && props.purpose.indexOf("Main")!==-1)) {
+    // middleNav = <PlacementContext.Provider value={{ splitPanel: props.splitPanel, rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser }}> {props.children[1]}</PlacementContext.Provider>
+    middleNav = <PlacementContext.Provider value={{ splitPanel: props.splitPanel, rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser }}> { props.children && Array.isArray(props.children) ? props.children[1] : props.children}</PlacementContext.Provider>
     allParts.push(<div key="part2" id="middlepanel" className="middlepanel" style={{ width: `${middleWidth}px`, display: `${middleWidth === 0 ? "none" : "flex"} ` }} >  {middleNav}</div>);
   }
 
@@ -361,6 +428,14 @@ export default function ToolLayout(props) {
     allParts.push(<div key="part3" id="rightpanel" className="rightpanel" style={{ width: `${rightWidth}px`, marginRight: `${rightOpenBtn ? `-${rightWidth}px` : '0px'}` }}>{rightNav}</div>);
 
   }
+
+  if(props.children.length === 2 && props.purpose && props.purpose.indexOf("Right") !== -1) {
+    allParts.push(
+      <div key="resizer2" id="second" className="resizer column-resizer" />
+    );
+    let rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', panelHeadersControlVisible, rightPanelHideable, isResizing }}>{props.children[1]}  </PlacementContext.Provider>
+    allParts.push(<div key="part3" id="rightpanel" className="rightpanel" style={{ width: `${rightWidth}px`, marginRight: `${rightOpenBtn ? `-${rightWidth}px` : '0px'}` }}>{rightNav}</div>);
+  }
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
 
   
@@ -368,24 +443,46 @@ export default function ToolLayout(props) {
   if (Object.keys(profile).length < 1) {
     return (<h1>Loading...</h1>)
   }
-
   return (
-    <>
-      {!props.hideHeader && <DoenetHeader
-        profile={profile}
-        cookies={jwt}
-        isSignedIn={isSignedIn}
-        toolName={props.toolName}
-        headingTitle={props.headingTitle}
-        headerRoleFromLayout={props.headerRoleFromLayout}
-        headerChangesFromLayout={props.headerChangesFromLayout}
-        guestUser={props.guestUser}
-        onChange={showCollapseMenu} />}
-      {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
-        <div className={footerClass}>
-          {(phoneVisiblePanel === "left" || allParts.length === 1) &&
-            <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
-          {phoneVisiblePanel === "middle" &&
+    <div style={{ display: "flex" }}>
+      
+      { 
+      props.isLeftPanel &&
+      // && deviceType !== "phone"?
+       (
+       <div
+        style={{
+          width: leftWidth + "px"
+        }}
+        // id="leftpanel"
+        className="leftpanel"
+      >
+        {leftNav}
+        <span style={{ width: "40px", backgroundColor: "red" }}>{leftCloseBtn}</span>
+      </div>) 
+      // : null
+      }
+
+      <div style={{ width: totalWidthNoLeft + "px" }}>
+        <div>
+          {!props.hideHeader && <DoenetHeader
+            profile={profile}
+            cookies={jwt}
+            isSignedIn={isSignedIn}
+            toolName={props.toolName}
+            headingTitle={props.headingTitle}
+            headerRoleFromLayout={props.headerRoleFromLayout}
+            headerChangesFromLayout={props.headerChangesFromLayout}
+            guestUser={props.guestUser}
+            onChange={showCollapseMenu} />}
+        </div>
+        <div>
+          {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
+         <div className={footerClass}>
+           {/* {(phoneVisiblePanel === "left" || allParts.length === 1) && */}
+           {/* {(phoneVisiblePanel === "left" ) &&
+            <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>} */}
+          {(phoneVisiblePanel === "middle" || allParts.length === 1 )&&
             <div key="part2" id="middlepanel" className="middlepanel" >{middleNav} </div>}
           {phoneVisiblePanel === "right" && allParts.length > 2 &&
             <div key="part3" id="rightpanel" className="rightpanel" > {rightNav} </div>}
@@ -394,8 +491,10 @@ export default function ToolLayout(props) {
         {props.children.length > 1 && <div className="phonebuttoncontainer" >
           {leftNav && middleNav && leftNav.props.children.props && middleNav.props.children[1].props && (
             <>
-              {!props.guestUser && <button className="phonebutton"
-                onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>}
+              {/* {!props.guestUser && 
+              <button className="phonebutton"
+                onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>
+                } */}
               <button className="phonebutton"
                 onClick={() => setPhoneVisiblePanel("middle")}>{middleNav.props.children[1].props.panelName}</button>
             </>)}
@@ -403,10 +502,123 @@ export default function ToolLayout(props) {
             <button className="phonebutton"
               onClick={() => setPhoneVisiblePanel("right")}>{rightNav.props.children[0].props.panelName}</button>}
         </div>}
+      </div> : <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
+}
+        </div>
       </div>
-        :
-        <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
-      }
-    </>
+
+    </div>
+
+
+
+
+
+
+
+
+  //   <>
+  //     {!props.hideHeader && <DoenetHeader
+  //       profile={profile}
+  //       cookies={jwt}
+  //       isSignedIn={isSignedIn}
+  //       toolName={props.toolName}
+  //       headingTitle={props.headingTitle}
+  //       headerRoleFromLayout={props.headerRoleFromLayout}
+  //       headerChangesFromLayout={props.headerChangesFromLayout}
+  //       guestUser={props.guestUser}
+  //       onChange={showCollapseMenu} />}
+  //     {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
+  //       <div className={footerClass}>
+  //         {/* {(phoneVisiblePanel === "left" || allParts.length === 1) && */}
+  //         {(phoneVisiblePanel === "left" ) &&
+  //           <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
+  //         {(phoneVisiblePanel === "middle" || allParts.length === 1 )&&
+  //           <div key="part2" id="middlepanel" className="middlepanel" >{middleNav} </div>}
+  //         {phoneVisiblePanel === "right" && allParts.length > 2 &&
+  //           <div key="part3" id="rightpanel" className="rightpanel" > {rightNav} </div>}
+  //       </div>
+
+  //       {props.children.length > 1 && <div className="phonebuttoncontainer" >
+  //         {leftNav && middleNav && leftNav.props.children.props && middleNav.props.children[1].props && (
+  //           <>
+  //             {!props.guestUser && <button className="phonebutton"
+  //               onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>}
+  //             <button className="phonebutton"
+  //               onClick={() => setPhoneVisiblePanel("middle")}>{middleNav.props.children[1].props.panelName}</button>
+  //           </>)}
+  //         {rightNav && rightNav.props.children[0].props &&
+  //           <button className="phonebutton"
+  //             onClick={() => setPhoneVisiblePanel("right")}>{rightNav.props.children[0].props.panelName}</button>}
+  //       </div>}
+  //     </div>
+  //       :
+  //       <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
+  //     }
+  //   </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// return (
+//   <>
+//     {!props.hideHeader && <DoenetHeader
+//       profile={profile}
+//       cookies={jwt}
+//       isSignedIn={isSignedIn}
+//       toolName={props.toolName}
+//       headingTitle={props.headingTitle}
+//       headerRoleFromLayout={props.headerRoleFromLayout}
+//       headerChangesFromLayout={props.headerChangesFromLayout}
+//       guestUser={props.guestUser}
+//       onChange={showCollapseMenu} />}
+//     {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
+//       <div className={footerClass}>
+//         {(phoneVisiblePanel === "left" || allParts.length === 1) &&
+//           <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
+//         {phoneVisiblePanel === "middle" &&
+//           <div key="part2" id="middlepanel" className="middlepanel" >{middleNav} </div>}
+//         {phoneVisiblePanel === "right" && allParts.length > 2 &&
+//           <div key="part3" id="rightpanel" className="rightpanel" > {rightNav} </div>}
+//       </div>
+
+//       {props.children.length > 1 && <div className="phonebuttoncontainer" >
+//         {leftNav && middleNav && leftNav.props.children.props && middleNav.props.children[1].props && (
+//           <>
+//             {!props.guestUser && <button className="phonebutton"
+//               onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>}
+//             <button className="phonebutton"
+//               onClick={() => setPhoneVisiblePanel("middle")}>{middleNav.props.children[1].props.panelName}</button>
+//           </>)}
+//         {rightNav && rightNav.props.children[0].props &&
+//           <button className="phonebutton"
+//             onClick={() => setPhoneVisiblePanel("right")}>{rightNav.props.children[0].props.panelName}</button>}
+//       </div>}
+//     </div>
+//       :
+//       <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
+//     }
+//   </>
+// );
+// }
