@@ -18,7 +18,8 @@ const Prev = styled.div`
   z-index: 1;
   padding: 3px;
   position: absolute;
-  left: ${props => props.left};
+  user-select: none;
+  left: ${props => `${props.left}px`};
 `;
 
 
@@ -31,9 +32,17 @@ export default class MathInput extends DoenetRenderer {
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
+    this.handleDragEnter = this.handleDragEnter.bind(this);
+    this.handleDragThrough = this.handleDragThrough.bind(this);
+    this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.value;
     this.textValue = this.doenetSvData.value.toString();
+
+
+    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 20, clickOffset: 0};
+    this.inputRef = React.createRef();
+    
 
     this.valueToRevertTo = this.mathExpression;
     this.textValueToRevertTo = this.textValue;
@@ -44,6 +53,12 @@ export default class MathInput extends DoenetRenderer {
   }
 
   static initializeChildrenOnConstruction = false;
+
+  componentDidMount() {
+    this.setState({previewLeftOffset: this.inputRef.current.getBoundingClientRect().width + this.inputRef.current.getBoundingClientRect().left + 3});
+    console.log('left offset', this.inputRef.current.getBoundingClientRect());
+    // console.log('width: ', this.doenetSvData.size * 10, 'offset: ',  this.inputRef.current.getBoundingClientRect().left);
+  }
 
   calculateMathExpressionFromText(text) {
     let expression;
@@ -82,6 +97,26 @@ export default class MathInput extends DoenetRenderer {
     }
   }
 
+  handleDragEnter(e) {
+    this.setState({
+      isDragging: true,
+      clickOffset: e.pageX - this.state.previewLeftOffset,
+    })
+  }
+
+  handleDragThrough(e) {
+    if(this.state.isDragging){
+      console.log(e.pageX, e.clientX);
+      this.setState({previewLeftOffset: e.pageX - this.state.clickOffset});
+    }
+  }
+
+  handleDragExit(e){
+    this.setState({
+      isDragging: false,
+      clickOffset: 0,
+    })
+  }
 
   handleKeyPress(e) {
     if (e.key === "Enter") {
@@ -255,14 +290,15 @@ export default class MathInput extends DoenetRenderer {
       }
     }
 
-    let leftOffset = `${this.doenetSvData.size * 10 + 20}px`;
+    // let leftOffset = `${this.doenetSvData.size * 10 + 20}px`;
 
-    return <div><React.Fragment>
+    return <React.Fragment>
       <a name={this.componentName} />
-      <div className="textInputSurroundingBox" id={this.componentName} >
+      <div className="textInputSurroundingBox" style = {{height: "35px", display: "inline-block", width:"112px", }} id={this.componentName}>
         <input
           key={inputKey}
           id={inputKey}
+          ref = {this.inputRef}
           value={this.textValue}
           disabled={this.doenetSvData.disabled}
           onChange={this.onChangeHandler}
@@ -281,9 +317,9 @@ export default class MathInput extends DoenetRenderer {
           }}
         />
         {checkWorkButton}
-        {console.log("eval", this.mathExpression.toLatex())}
+        {/* {console.log("eval", this.mathExpression.toLatex())} */}
         {this.textValue ? 
-        <Prev left = {leftOffset}>
+        <Prev left = {this.state.previewLeftOffset} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
           <div>
             <MathJax.Context input='tex'>
                 <div>
@@ -297,8 +333,5 @@ export default class MathInput extends DoenetRenderer {
     
     </React.Fragment>
 
-    {/* <p>yooooooooooooooooooooooooooooooooooooooooooooooo</p> */}
-    
-    </div>
   }
 }
