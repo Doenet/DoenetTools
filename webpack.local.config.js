@@ -8,24 +8,25 @@ module.exports = {
 
   // devtool: 'source-map',
   entry: {
-    "index.js": "./src/index.js",
-    "admin/index.js": "./src/admin/index.js",
+    // "index.js": "./src/index.js",
+    // "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
-    "dashboard/index.js": "./src/dashboard/index.js",
-    "docs/index.js": "./src/docs/index.js",
-    "dragdrop/index.js": "./src/dragdrop/index.js",
+    // "dashboard/index.js": "./src/dashboard/index.js",
+    // "docs/index.js": "./src/docs/index.js",
+    // "dragdrop/index.js": "./src/dragdrop/index.js",
     "editor/index.js": "./src/editor/index.js",
-    "exam/index.js": "./src/exam/index.js",
-    "gradebook/index.js": "./src/gradebook/index.js",
-    "guesteditor/index.js": "./src/guesteditor/index.js",
-    "page/index.js": "./src/page/index.js",
-    "accountsettings/index.js": "./src/accountsettings/index.js",
-    "signin/index.js": "./src/signin/index.js",
-    "signout/index.js": "./src/signout/index.js",
-    "test/index.js": "./src/test/index.js",
-    "viewer/index.js": "./src/viewer/index.js",
-    "exampletool/index.js": "./src/exampletool/index.js",
+    "editor-mirror/index.js": "./src/editor-mirror/index.js",
+    // "exam/index.js": "./src/exam/index.js",
+    // "gradebook/index.js": "./src/gradebook/index.js",
+    // "guesteditor/index.js": "./src/guesteditor/index.js",
+    // "page/index.js": "./src/page/index.js",
+    // "accountsettings/index.js": "./src/accountsettings/index.js",
+    // "signin/index.js": "./src/signin/index.js",
+    // "signout/index.js": "./src/signout/index.js",
+    // "test/index.js": "./src/test/index.js",
+    // "viewer/index.js": "./src/viewer/index.js",
+    // "exampletool/index.js": "./src/exampletool/index.js",
 
   },
 
@@ -133,6 +134,12 @@ module.exports = {
       filename: "./editor/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
+    new HtmlWebPackPlugin({
+      chunks: ["editor-mirror/index.js"],
+      template: "./src/editor-mirror/index.html",
+      filename: "./editor-mirror/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
 
     // new HtmlWebPackPlugin({
     //   chunks: ["exam/index.js"],
@@ -227,5 +234,8 @@ module.exports = {
     port: 3000,
     // openPage: "protected",
   },
+  // optimization: {//Uncomment to debug bundled files
+  //   minimize: false
+  // }
   // devtool: 'source-map'
 };
