@@ -13,10 +13,12 @@ export default function ActionButton(props) {
         borderRadius: '5px',
         text: 'Action Button',
         padding: '0px 10px 0px 10px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        fontSize: '12px'
       };
   if (props.size === "medium") {
-    actionButton.height = '85px'
+    actionButton.height = '85px',
+    actionButton.fontSize = '24px'
   };
   if (props.text) {
       actionButton.text = props.text;
