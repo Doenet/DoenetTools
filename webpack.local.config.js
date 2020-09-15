@@ -18,6 +18,7 @@ module.exports = {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
+    "controls/index.js": "./src/controls/index.js",
     "course/index.js": "./src/course/index.js",
     "dashboard/index.js": "./src/dashboard/index.js",
     "docs/index.js": "./src/docs/index.js",
@@ -33,8 +34,8 @@ module.exports = {
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
-    "temp/index.js": "./src/temp/index.js",
-
+    "temp/index.js": "./src/temp/index.js"
+    
   },
 
   output: {
@@ -103,6 +104,12 @@ module.exports = {
       chunks: ["chooser/index.js"],
       template: "./src/chooser/index.html",
       filename: "./chooser/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["controls/index.js"],
+      template: "./src/controls/index.html",
+      filename: "./controls/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({

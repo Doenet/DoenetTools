@@ -1,6 +1,6 @@
 import React from 'react';
-import Textfgield from "../imports/PanelHeaderComponents/Textfield.js";
 import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
+import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
 import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
 import Button from "../imports/PanelHeaderComponents/Button.js";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
