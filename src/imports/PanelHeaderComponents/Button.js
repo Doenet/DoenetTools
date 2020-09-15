@@ -13,10 +13,12 @@ export default function Button(props) {
         borderRadius: '20px',
         text: 'Button',
         padding: '0px 10px 0px 10px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        fontSize: '12px'
       };
   if (props.size === "medium") {
-    button.height = '85px'
+    button.height = '85px',
+    button.fontSize = '24px'
   };
   if (button.width < button.height) {
     button.width = '85px'

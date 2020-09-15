@@ -9,14 +9,18 @@ export default function Textfield(props) {
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
         borderRadius: '5px',
-        color: '#000'
-      };
+        color: '#000',
+        text: 'Enter text here'
+      }
   if (props.size === "medium") {
     textfield.height = '85px'
-  };
+  }
+  if (props.text) {
+    textfield.text = props.text;
+}
     return (
         <>
-            <textarea defaultValue="Enter text here" style={textfield}></textarea>
+            <textarea defaultValue={textfield.text} style={textfield}></textarea>
         </>
     )
 }
