@@ -118,6 +118,7 @@ button{
   top: 92%;
   left: 1%;
   z-index:10000;
+
 }
 .circle{
   color: #288ae9;
@@ -203,6 +204,17 @@ button{
   z-index:5;
   text-align: center;
   height:30px;
+}
+
+.phonebuttoncontainershrinked{
+  display: flex;
+    width: 61%;
+    bottom: 0.1px;
+    left: 200px;
+    position: fixed;
+    z-index: 5;
+    text-align: center;
+    height: 30px;
 }
 
 .phonebutton{
