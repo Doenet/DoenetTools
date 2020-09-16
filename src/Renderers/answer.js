@@ -12,14 +12,18 @@ export default class Answer extends DoenetRenderer {
       return null;
     }
 
+    let submitAnswer = this.actions.submitAnswer;
+    if(this.doenetSvData.submitAllAnswersAtAncestor) {
+      submitAnswer = this.actions.submitAllAnswers;
+    }
 
     if (!this.doenetSvData.delegateCheckWork) {
 
       let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmitted) {
-        if (this.doenetSvData.creditAchieved === 1) {
+      if (this.doenetSvData.justSubmittedForSubmitButton) {
+        if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
           validationState = "correct";
-        } else if (this.doenetSvData.creditAchieved === 0) {
+        } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
           validationState = "incorrect";
         } else {
           validationState = "partialcorrect";
@@ -44,10 +48,10 @@ export default class Answer extends DoenetRenderer {
         <button id={this.componentName + "_submit"}
           tabIndex="0"
           style={checkWorkStyle}
-          onClick={this.actions.submitAnswer}
+          onClick={submitAnswer}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
-              this.actions.submitAnswer();
+              submitAnswer();
             }
           }}
         >
@@ -79,7 +83,7 @@ export default class Answer extends DoenetRenderer {
             </span>);
         } else if (validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
-          let percent = Math.round(this.doenetSvData.creditAchieved * 100);
+          let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
           let partialCreditContents = `${percent}% Correct`;
 
           checkworkComponent = (

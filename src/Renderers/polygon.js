@@ -1,7 +1,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 
-export default class Line extends DoenetRenderer {
+export default class Polygon extends DoenetRenderer {
   constructor(props) {
     super(props)
 
@@ -30,13 +30,13 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       visible: this.doenetSvData.draggable === true,
       withLabel: false,
-      layer: 10 * this.doenetSvData.layer + 9,
+      layer: 10 * this.doenetSvData.layer + 8,
     };
 
     this.jsxBorderAttributes = {
       highlight: false,
       visible: true,
-      layer: 10 * this.doenetSvData.layer + 8,
+      layer: 10 * this.doenetSvData.layer + 7,
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
@@ -227,6 +227,8 @@ export default class Line extends DoenetRenderer {
 
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
       this.polygonJXG.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalVertices[i]]);
+      this.polygonJXG.vertices[i].needsUpdate = true;
+      this.polygonJXG.vertices[i].update();
     }
 
     let visibleNow = !this.doenetSvData.hide;

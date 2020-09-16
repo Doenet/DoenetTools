@@ -2,11 +2,11 @@ import React, { memo, useState, useEffect } from 'react'
 import { useSpring, a } from 'react-spring'
 import useMeasure from "../../hooks/useMeasure";
 import usePrevious from "../../hooks/usePrevious";
-import { Global, Frame, ListItem, Title, Content, toggle } from './styles'
+import { Frame, ListItem, Content, toggle } from './styles'
 import * as Icons from './icons'
 import DropItem from "../drop-item";
 import DragItem from "../drag-item";
-import { Search } from "../../TreeView";
+import PropTypes from 'prop-types';
 
 export const ParentNode = memo(({ 
   id, 
@@ -19,6 +19,7 @@ export const ParentNode = memo(({
   expanderIcon, 
   styles, 
   defaultOpen = false, 
+  markNodeAsOpened,
   onDrop, 
   onDraggableDragOver, 
   onDragStart, 
@@ -27,8 +28,7 @@ export const ParentNode = memo(({
   onDropLeave, 
   setCurrentHovered, 
   draggedOver, 
-  currentDraggedId, 
-  currentDraggedType, 
+  currentDraggedId,  
   controlButtons = null , 
   SearchComponent }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
@@ -46,10 +46,18 @@ export const ParentNode = memo(({
     expander = <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/>;
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      markNodeAsOpened(id, true);
+    } else {
+      markNodeAsOpened(id, false);
+    }
+  }, [isOpen])
+
   const onDraggableDragOverCb = (id) => {
     if (id !== currentDraggedId) {
       setOpen(true)
-    };
+    }
     onDraggableDragOver && onDraggableDragOver(id, type)
   }
 
@@ -76,7 +84,9 @@ export const ParentNode = memo(({
       <Frame>
       <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnter} onDropLeave={onDropLeave} >
           {children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} />}
-          <a.div style={{ transform }} {...bind} children={children} />
+          <a.div style={{ transform }} {...bind}>
+            {children}
+          </a.div>
       </DropItem>
     </Frame>
     </React.Fragment>
@@ -101,7 +111,9 @@ export const ParentNode = memo(({
         <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height, ...styles["contentContainer"]}}>
           { SearchComponent }
           { children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} /> }
-          <a.div style={{ transform }} {...bind} children={children} />
+          <a.div style={{ transform }} {...bind}>
+            {children}
+          </a.div>
         </Content>
       </DropItem>
     </Frame>
@@ -109,7 +121,7 @@ export const ParentNode = memo(({
 
 })
 
-export const LeafNode = memo(({ id, nodeItem, type, styles, onDragStart, onDragOver, onDragEnd, onClick }) => {
+export const LeafNode = memo(({ id, nodeItem, type, styles, onDragStart, onDragOver, onDragEnd, onClick, onDoubleClick }) => {
 
   const onDraggableDragOverCb = (id) => {
     onDragOver(id, type)
@@ -119,9 +131,11 @@ export const LeafNode = memo(({ id, nodeItem, type, styles, onDragStart, onDragO
     onDragStart(draggedId, type)
   }
 
+  
+
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
-      <Frame style={styles["frame"]} onClick={() => onClick(id, type)}>
+      <Frame style={styles["frame"]} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClick(id, type)}>
         <ListItem style={styles["title"]}>
           {nodeItem}
         </ListItem>
@@ -129,3 +143,40 @@ export const LeafNode = memo(({ id, nodeItem, type, styles, onDragStart, onDragO
     </DragItem>    
   )
 })
+
+ParentNode.propTypes = {
+  id: PropTypes.string,
+  hide: PropTypes.bool,
+  children: PropTypes.any,
+  nodeItem: PropTypes.any, 
+  type: PropTypes.string,
+  onClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  expanderIcon: PropTypes.object, 
+  styles: PropTypes.object,
+  defaultOpen: PropTypes.bool,
+  onDrop: PropTypes.func, 
+  onDraggableDragOver: PropTypes.func,
+  onDragStart: PropTypes.func,
+  onDragEnd: PropTypes.func,
+  onDropEnter: PropTypes.func,
+  onDropLeave: PropTypes.func,
+  setCurrentHovered: PropTypes.func,
+  draggedOver: PropTypes.func,
+  currentDraggedId: PropTypes.string,
+  controlButtons: PropTypes.any,
+  SearchComponent: PropTypes.any 
+}
+
+LeafNode.displayName = 'LeafNode'
+LeafNode.propTypes = {
+  id: PropTypes.string,
+  nodeItem: PropTypes.any, 
+  type: PropTypes.string,
+  onClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  styles: PropTypes.object,
+  onDragStart: PropTypes.func,
+  onDragEnd: PropTypes.func,
+  onDragOver: PropTypes.func,
+}

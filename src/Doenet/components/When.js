@@ -210,49 +210,6 @@ export default class When extends BaseComponent {
       definition: evaluateLogic
     };
 
-
-    stateVariableDefinitions.nResponses = {
-      returnDependencies: () => ({
-        allDescendants: {
-          dependencyType: "descendantStateVariables",
-          componentTypes: ["_base"],
-          variableNames: ["isResponse", "nValues"],
-          variablesOptional: true,
-          requireChildLogicInitiallySatisfied: true,
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nResponses: dependencyValues.allDescendants
-            .filter(x => x.stateValues.isResponse)
-            .reduce((a, c) => a + (c.stateValues.nValues === undefined ? 1 : c.stateValues.nValues), 0)
-        }
-      })
-    }
-
-    stateVariableDefinitions.responses = {
-      returnDependencies: () => ({
-        allDescendants: {
-          dependencyType: "descendantStateVariables",
-          componentTypes: ["_base"],
-          variableNames: ["isResponse", "value", "values"],
-          variablesOptional: true,
-          requireChildLogicInitiallySatisfied: true,
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          responses: dependencyValues.allDescendants
-            .filter(x => x.stateValues.isResponse)
-            .map(x => ({
-              componentType: x.componentType,
-              value: x.stateValues.value,
-              values: x.stateValues.values
-            }))
-        }
-      })
-    }
-
     return stateVariableDefinitions;
   }
 
@@ -485,7 +442,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
 
   // TODO: other set operations
 
-  if (!(["=", "ne", "<", ">", "le", "ge", "lts", "gts", "in"].includes(operator))) {
+  if (!(["=", "ne", "<", ">", "le", "ge", "lts", "gts", "in", "notin"].includes(operator))) {
     console.warn("Invalid format for <when>");
     return 0;
   }
@@ -773,7 +730,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
     return fraction_equal === 0 ? 1 : 0;
   }
 
-  if (operator === "in") {
+  if (operator === "in" || operator === "notin") {
 
     let element = operands[0];
     let set = operands[1];
@@ -784,7 +741,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
     }
 
     if (dependencyValues.matchPartial) {
-      let results = operands.slice(1).map(x => checkEquality({
+      let results = set_tree.slice(1).map(x => checkEquality({
         object1: element,
         object2: me.fromAst(x),
         isUnordered: unorderedCompare,
@@ -799,26 +756,33 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       }));
 
       let max_fraction = results.reduce((a, c) => Math.max(a, c.fraction_equal), 0);
-
-      return max_fraction;
+      if (operator === "in") {
+        return max_fraction;
+      } else {
+        return 1 - max_fraction;
+      }
 
     } else {
 
-      return set_tree.slice(1).some(x => checkEquality(
-        {
-          object1: element,
-          object2: me.fromAst(x),
-          isUnordered: unorderedCompare,
-          partialMatches: dependencyValues.matchPartial,
-          symbolicEquality: dependencyValues.symbolicEquality,
-          simplify: simplifyOnCompare,
-          expand: expandOnCompare,
-          allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
-          includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
-          allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-          nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-        }
-      ).fraction_equal === 1) ? 1 : 0;
+      let result = set_tree.slice(1).some(x => checkEquality({
+        object1: element,
+        object2: me.fromAst(x),
+        isUnordered: unorderedCompare,
+        partialMatches: dependencyValues.matchPartial,
+        symbolicEquality: dependencyValues.symbolicEquality,
+        simplify: simplifyOnCompare,
+        expand: expandOnCompare,
+        allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
+        includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
+        allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
+        nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+      }).fraction_equal === 1);
+
+      if (operator === "in") {
+        return result ? 1 : 0;
+      } else {
+        return result ? 0 : 1;
+      }
     }
   }
 

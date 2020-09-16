@@ -10,6 +10,8 @@ export default class SectioningComponent extends BlockComponent {
     let properties = super.createPropertiesObject(args);
     properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
+    properties.sectionWideCheckWork = { default: false, };
+    properties.delegateCheckWorkToAnswerNumber = { default: null, forRenderer: true };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
@@ -199,6 +201,53 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.answerDescendants = {
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendantIdentity",
+          componentTypes: ["answer"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+      }
+    }
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            justSubmitted:
+              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
+    }
+
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
@@ -207,6 +256,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
+      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalProperties: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -269,6 +319,58 @@ export default class SectioningComponent extends BlockComponent {
 
       }
     }
+
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      defaultValue: 0,
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          aggregateScores: {
+            dependencyType: "stateVariable",
+            variableName: "aggregateScores"
+          }
+        }
+        if (stateValues.aggregateScores) {
+          dependencies.scoredDescendants = {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchievedIfSubmit" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchievedIfSubmit"
+            }
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (!dependencyValues.aggregateScores) {
+          return {
+            newValues: {
+              creditAchievedIfSubmit: 0,
+            }
+          }
+        }
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchievedIfSubmit = creditSum / totalWeight;
+
+        return { newValues: { creditAchievedIfSubmit } }
+
+      }
+    }
+
 
     stateVariableDefinitions.selectedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
@@ -341,9 +443,152 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.createSubmitAllButton = {
+      forRenderer: true,
+      additionalStateVariablesDefined: ["createSubmitAllButtonOnAnswer"],
+      returnDependencies: () => ({
+        sectionWideCheckWork: {
+          dependencyType: "stateVariable",
+          variableName: "sectionWideCheckWork"
+        },
+        delegateCheckWorkToAnswerNumber: {
+          dependencyType: "stateVariable",
+          variableName: "delegateCheckWorkToAnswerNumber"
+        },
+        aggregateScores: {
+          dependencyType: "stateVariable",
+          variableName: "aggregateScores"
+        },
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
 
+        let createSubmitAllButton = false;
+        let createSubmitAllButtonOnAnswer = null;
+
+        if (dependencyValues.sectionWideCheckWork) {
+          if (!dependencyValues.aggregateScores) {
+            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
+          } else {
+            let chosenAnswer = null;
+            if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
+              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber-1];
+            } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
+              let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
+              chosenAnswer = dependencyValues.answerDescendants[answerInd];
+            }
+            if (chosenAnswer) {
+              createSubmitAllButtonOnAnswer = chosenAnswer.componentName;
+            } else {
+              createSubmitAllButton = true;
+            }
+
+          }
+        }
+
+        return { newValues: { createSubmitAllButton, createSubmitAllButtonOnAnswer } }
+      }
+    }
+
+    stateVariableDefinitions.suppressAnswerSubmitButtons = {
+      additionalStateVariablesDefined: [
+        "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
+        "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+      ],
+      forRenderer: true,
+      returnDependencies: () => ({
+        createSubmitAllButton: {
+          dependencyType: "stateVariable",
+          variableName: "createSubmitAllButton"
+        },
+        createSubmitAllButtonOnAnswer: {
+          dependencyType: "stateVariable",
+          variableName: "createSubmitAllButtonOnAnswer"
+        },
+        justSubmitted: {
+          dependencyType: "stateVariable",
+          variableName: "justSubmitted"
+        },
+        creditAchieved: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchieved"
+        },
+        sectionAncestor: {
+          dependencyType: "ancestorStateVariables",
+          componentType: "_sectioningcomponent",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
+            "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
+            "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+          ]
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let suppressAnswerSubmitButtons = false;
+        let answerDelegatedForSubmitAll = null;
+        let componentNameForSubmitAll = null;
+        let justSubmittedForSubmitAll = null;
+        let creditAchievedForSubmitAll = null;
+
+        if (dependencyValues.createSubmitAllButton || dependencyValues.createSubmitAllButtonOnAnswer) {
+          componentNameForSubmitAll = componentName;
+          suppressAnswerSubmitButtons = true;
+          if (dependencyValues.createSubmitAllButtonOnAnswer) {
+            answerDelegatedForSubmitAll = dependencyValues.createSubmitAllButtonOnAnswer;
+            justSubmittedForSubmitAll = dependencyValues.justSubmitted;
+            creditAchievedForSubmitAll = dependencyValues.creditAchieved;
+          }
+        } else if (dependencyValues.sectionAncestor) {
+          let ancestorStateValues = dependencyValues.sectionAncestor.stateValues;
+          suppressAnswerSubmitButtons = ancestorStateValues.suppressAnswerSubmitButtons;
+          componentNameForSubmitAll = ancestorStateValues.componentNameForSubmitAll;
+          answerDelegatedForSubmitAll = ancestorStateValues.answerDelegatedForSubmitAll;
+          justSubmittedForSubmitAll = ancestorStateValues.justSubmittedForSubmitAll;
+          creditAchievedForSubmitAll = ancestorStateValues.creditAchievedForSubmitAll;
+        }
+
+        return {
+          newValues: {
+            suppressAnswerSubmitButtons,
+            componentNameForSubmitAll,
+            answerDelegatedForSubmitAll,
+            justSubmittedForSubmitAll,
+            creditAchievedForSubmitAll
+          }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
+  }
+
+  actions = {
+    submitAllAnswers: this.submitAllAnswers.bind(this)
+  }
+
+  submitAllAnswers() {
+
+    this.coreFunctions.requestRecordEvent({
+      verb: "submitted",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: {
+        creditAchieved: this.stateValues.creditAchievedIfSubmit
+      }
+
+    })
+    for (let answer of this.stateValues.answerDescendants) {
+      this.coreFunctions.requestAction({
+        componentName: answer.componentName,
+        actionName: "submitAnswer"
+      })
+    }
   }
 
   static setUpVariant({

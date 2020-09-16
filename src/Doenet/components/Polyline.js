@@ -45,6 +45,7 @@ export default class Polyline extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
+      logicToWaitOnSugar: ["exactlyOneVertices"],
       replacementFunction: addVertices,
     });
 
@@ -490,7 +491,7 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  movePolyline(pointcoordsObject, transient) {
+  movePolyline(pointcoordsObject, transient, sourceInformation) {
 
     let vertexComponents = {};
     for (let ind in pointcoordsObject) {
@@ -504,7 +505,8 @@ export default class Polyline extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "vertices",
-          value: vertexComponents
+          value: vertexComponents,
+          sourceInformation
         }],
         transient,
       });
@@ -515,7 +517,8 @@ export default class Polyline extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "vertices",
-          value: vertexComponents
+          value: vertexComponents,
+          sourceInformation
         }],
         event: {
           verb: "interacted",
@@ -526,7 +529,7 @@ export default class Polyline extends GraphicalComponent {
           result: {
             pointCoordinates: pointcoordsObject
           }
-        }
+        },
       });
     }
 

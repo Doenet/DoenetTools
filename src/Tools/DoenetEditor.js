@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import crypto from 'crypto';
 import DoenetViewer from './DoenetViewer';
@@ -7,51 +7,10 @@ import allComponents from '../../docs/complete-docs.json';
 import ErrorBoundary from './ErrorBoundary';
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
+import MonacoEditor from 'react-monaco-editor';
 import PlacementContext from "./ToolLayout/PlacementContext";
 
-//CodeMirror 6 Imports
-import {EditorState} from '@codemirror/next/state';
-import {EditorView} from '@codemirror/next/view';
-import {basicSetup} from '@codemirror/next/basic-setup';
-import {javascript} from '@codemirror/next/lang-javascript';
 
-console.log("Editor mounted in DoenetEditor");
-
-function View(props) {
-    
-    useEffect(() =>{//May result in inefficiency from constant rerenders
-        let startState = EditorState.create({
-            doc: props.content,
-            extensions: [basicSetup, javascript()]
-        })
-    
-        let { mountKey } = props;
-        const containerRoot = document.getElementById(mountKey);
-    
-        let view = new EditorView({
-            state: startState,
-            parent: containerRoot
-        })
-    });
-
-    return(null)
-}
-
-function Editor(props) {
-    
-    //The edtior needs to be mounted onto a div
-    //This div needs to be ID'd uniquely
-    let { mountKey } = props;
-
-    //Might be more efficient to use context to pass down content
-    return(
-        <>
-        <h2>This is the Editor!</h2>
-        <div id={mountKey} />
-        <View mountKey={mountKey} content={props.content}/>
-        </>
-    )
-}
 
 class DoenetEditor extends Component {
   constructor(props) {
@@ -64,8 +23,10 @@ class DoenetEditor extends Component {
     this.doenetML = "";
     let url_string = window.location.href;
     var url = new URL(url_string);
-    this.contentId = url.searchParams.get("contentId");
-    this.branchId = url.searchParams.get("branchId");
+    // this.contentId = url.searchParams.get("contentId");
+    // this.branchId = url.searchParams.get("branchId");
+    this.contentId = props.contentId;
+    this.branchId = props.branchId;
     this.updateNumber = 0;
 
     var errorMsg = null;
@@ -114,6 +75,7 @@ class DoenetEditor extends Component {
               viewerDoenetML:resp.data.doenetML,
               version:version,
             }) ;
+            this.props.headerTitleChange(resp.data.title);
           }
           
         })
@@ -122,7 +84,7 @@ class DoenetEditor extends Component {
         })
     } else {
       //Redirect to chooser if no branch id
-      window.location.href = "/chooser";
+      // window.location.href = "/chooser";
     }
 
     this.state = {
@@ -279,6 +241,24 @@ class DoenetEditor extends Component {
     this.setState({viewerDoenetML:this.state.editorDoenetML});
   }
 
+  // updateEditor(editorDoenetML, e){
+  //   console.log('updateEditor',editorDoenetML);
+  //   console.log('state viewerDoenetML',this.state.viewerDoenetML);
+    
+  //   if (editorDoenetML !== this.state.editorDoenetML){
+  //   // this.editorDOM.setValue(editorDoenetML)
+  //   // this.setState({editorDoenetML})
+  //   this.setState({viewerDoenetML:editorDoenetML})
+  //   }
+  // }
+
+    // editorDidMount(editor, monaco){
+  //   this.editorDOM = editor;
+  //   this.monacoDOM = monaco;
+  //   // this.updateEditor();
+  //   this.editorDOM.focus();
+  // }
+
   onChange = (newValue) => {
 
     // console.log("This is the word until ", model.getWordUntilPosition(position).word);
@@ -308,6 +288,7 @@ class DoenetEditor extends Component {
       documentTitle: documentTitle,
       version: version,
      });
+     this.props.headerTitleChange(documentTitle);
   };
 
   editorDidMount = (editor,monaco) => {      
@@ -329,6 +310,18 @@ class DoenetEditor extends Component {
       // if (word.word !== null) console.log("The current word is ", word.word);
     })
   };
+
+  // onSelectionsChange = (selection,secondarySelections) => {
+  //   if (secondarySelections){
+  //     // console.log('secondary!')
+  //     return;
+  //   }
+  //   // console.log('selection',selection)
+  //   // let model = this.editorDOM.getModel();
+  //   // console.log('model',this.model)
+  //   // console.log(model._tokenization)
+
+  // }
 
   render() {
 
@@ -385,8 +378,9 @@ class DoenetEditor extends Component {
    
         let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
     
+        // console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+      <ToolLayout toolName="Editor" hideHeader={this.props.hideHeader} headingTitle={title_text} leftPanelClose={true} rightPanelWidth="500">
         <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
         <div >Left Nav</div>
         </ToolLayoutPanel>
@@ -395,9 +389,8 @@ class DoenetEditor extends Component {
          
         </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML" disableScroll={true}>
-        {/* <div style={{width:"100%",height:"100%",overflow:hidden}} > */}
-        <div>
-         {/* <MonacoEditor
+        <div style={{width:"100%",height:"100%",backgroundColor:"blue",overflow:"hidden"}} >
+         <MonacoEditor
           width="100%"
           height="100%"
           language="xml"
@@ -414,8 +407,7 @@ class DoenetEditor extends Component {
           editorDidMount={this.editorDidMount}
           theme="vs-light"
           ref="monaco"
-        /> */}
-         <Editor mountKey="mount-point" content={editorDoenetML}/>
+        />
         </div>
        
 
@@ -562,5 +554,3 @@ function findNextTag({code,index}){
 }
 
 export default DoenetEditor;
-
-

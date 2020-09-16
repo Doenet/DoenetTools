@@ -160,6 +160,9 @@ export default class Line extends DoenetRenderer {
       this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
     }
 
+    this.previousNVertices = this.doenetSvData.nVertices;
+
+
     let shiftX = this.polylineJXG.transformMat[1][0];
     let shiftY = this.polylineJXG.transformMat[2][0];
 
@@ -194,6 +197,13 @@ export default class Line extends DoenetRenderer {
       }
     }
 
+    if (this.componentName in sourceOfUpdate.sourceInformation) {
+      let vertexUpdated = sourceOfUpdate.sourceInformation[this.componentName].vertex;
+
+      if (Number.isFinite(vertexUpdated)) {
+        this.props.board.updateInfobox(this.pointsJXG[vertexUpdated]);
+      }
+    }
 
     this.polylineJXG.needsUpdate = true;
     this.polylineJXG.update().updateVisibility();
@@ -220,7 +230,7 @@ export default class Line extends DoenetRenderer {
     } else {
       let newCoords = {};
       newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-      this.actions.movePolyline(newCoords, transient);
+      this.actions.movePolyline(newCoords, transient, { vertex: i });
     }
   }
 

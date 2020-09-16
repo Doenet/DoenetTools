@@ -15,7 +15,8 @@ import {
   Link,
   useHistory
 } from "react-router-dom";
-import { getCourses, setSelected } from "../imports/courseInfo";
+import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/courseInfo";
+
 
 const Button = styled.button`
   width: 60px;
@@ -32,13 +33,17 @@ const alphabet =
 
   function compare (x, y) {
     //console.log("XY: ", x, y);
+    // console.log("yoooooooooooo");
+    
     if(x.position != null && y.position != null){
+      console.log("not nullll");
       return x.position - y.position
     }else if(x.position != null){
       return -1
     }else if(y.position != null){
       return 1
     }else{
+      // console.log(x.shortname, y.shortname);////////////////////////////
       return x.shortname.localeCompare(y.shortname)
     }
   }
@@ -49,21 +54,24 @@ const alphabet =
   
     const [isLoaded, setIsLoaded] = useState(false)
 
+    const [hasClasses, setHasClasses] = useState(false)
 
     useEffect(() => {
-      getCourses(updateCourseInfo);
+      getCourses_CI(updateCourseInfo);
+      setIsLoaded(true);
     }, [])
 
     function updateCourseInfo(courseListArray,selectedCourseObj){
-      console.log("courses",courseListArray);
+      // console.log("courses",courseListArray);
       //console.log("selected",selectedCourseObj);
-      //setSelected("NfzKqYtTgYRyPnmaxc7XB");
+      //setSelected_CI("NfzKqYtTgYRyPnmaxc7XB");
+      // console.log("hereeeeeee");////////////////////////////
+      
       setItems(courseListArray.sort(compare))
       if(courseListArray.length > 0){
-        setIsLoaded(true)
+        setHasClasses(true)
       }
     }
-
 
     // useEffect(() => {
     //   axios.get(`/api/loadUserCourses.php?`).then(resp => {
@@ -94,6 +102,19 @@ const alphabet =
     const [width, setWidth] = useState(window.innerWidth < 767 ? window.innerWidth : window.innerWidth - 206)
     
 
+    function updateCourseColor(color, courseId){
+      let mod = [...items]
+      for (var index in mod){
+        if(mod[index].courseId === courseId){
+          mod[index].color = color;
+        }
+      }
+      // console.log(mod);
+      setItems(mod);
+
+      updateCourses_CI(mod);
+      
+    }
     // const updateWidth = () => {
     //   setWidth(window.innerWidth - 209);
     // };
@@ -111,8 +132,8 @@ const alphabet =
     let heights = []
     let routes = []
 
-    if(isLoaded){
-      console.log("loaded");
+    if(isLoaded && hasClasses){
+      // console.log("loaded");
       heights = new Array(columns).fill(0) // Each column gets a height starting with zero
       gridItems = items.map((child, i) => {
         routes.push(<Route sensitive exact path={`/${child.courseId}`} key = {i}/>);
@@ -160,17 +181,17 @@ const alphabet =
 
             <div className = "dashboardcontainer">
 
-            {isLoaded ? 
+            {hasClasses ? 
             <div {...bind} className="list" style={{ height: Math.max(...heights) }}>
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
                 <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
                   {/* {console.log(item)} */}
-                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}}><CourseCard data = {item} /></Link>
+                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} onClick = {() => setSelected_CI(item.courseId)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>
                   {/* <CourseCard data = {item} /> */}
                 </a.div>
               ))}
-            </div> : 
-            <p>Loading..</p>
+            </div> : isLoaded ? <p>No classes to display...</p> :
+            <p>Loading...</p>
             }
 
             <Switch>

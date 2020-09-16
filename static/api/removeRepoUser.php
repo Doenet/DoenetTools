@@ -7,30 +7,39 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
-$username = mysqli_real_escape_string($conn,$_REQUEST["username"]);
+$email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
 $repoId = mysqli_real_escape_string($conn,$_REQUEST["repoId"]);
+
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
 
 
 $sql = "
 SELECT id
 FROM repo_access
-WHERE username = '$remoteuser' AND repoId = '$repoId'
+WHERE userId = '$userId' AND repoId = '$repoId' AND owner = '1'
 ";
 
 $result = $conn->query($sql); 
-$permisionToRemove = $result->num_rows;
+$hasPermissionToRemove = $result->num_rows > 0;
+$userId = $result->userId;
+$row = $result->fetch_assoc();
+$userId = $row["userId"];
 
-
+if (!$hasPermissionToRemove) {
+  $response_message = "Must be owner to remove access";
+}
 
 $response_arr = array(
   "success"=>"0",
+  "message"=>$response_message
 );
 
-if ($permisionToRemove > 0 ){
+if ($hasPermissionToRemove ){
 //  User has permission to remove the user, so remove them
   $sql = "
   DELETE FROM repo_access
-  WHERE repoId='$repoId' AND username='$username'
+  WHERE repoId='$repoId' AND email='$email'
   ";
   $result = $conn->query($sql); 
 
@@ -39,23 +48,23 @@ if ($permisionToRemove > 0 ){
     SELECT 
   u.firstName AS firstName,
   u.lastName AS lastName,
-  u.username AS username,
+  u.userId AS userId,
   u.email AS email,
   ra.owner AS owner
   FROM repo_access AS ra
   LEFT JOIN user AS u
-  ON u.username = ra.username
+  ON u.email = ra.email
   WHERE ra.repoId = '$repoId'
   ";
   $result = $conn->query($sql); 
   $users = array();
   while($row = $result->fetch_assoc()){ 
     $user_info = array(
-      firstName=>$row["firstName"],
-      lastName=>$row["lastName"],
-      username=>$row["username"],
-      email=>$row["email"],
-      owner=>$row["owner"]
+      "firstName"=>$row["firstName"],
+      "lastName"=>$row["lastName"],
+      "username"=>$row["username"],
+      "email"=>$row["email"],
+      "owner"=>$row["owner"]
     );
     array_push($users,$user_info);
   }

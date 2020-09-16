@@ -3,14 +3,15 @@ import BaseComponent from './abstract/BaseComponent';
 
 export class Ol extends BlockComponent {
   static componentType = "ol";
+  static rendererType = "list";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.label = { default: undefined };
+    properties.label = { default: undefined, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -24,42 +25,68 @@ export class Ol extends BlockComponent {
     return childLogic;
   }
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.list({
-        key: this.componentName,
-        numbered: true,
-        label: this.state.label,
-      });
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numbered = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: true } })
     }
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        liChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroLis"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.liChildren.map(x => x.componentName)
+          }
+        }
+      }
+    }
+
+
+    return stateVariableDefinitions;
+
   }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
-  }
-  
 }
 
 
 export class Ul extends Ol {
   static componentType = "ul";
+  static rendererType = "list";
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.list({
-        key: this.componentName,
-        numbered: false,
-        label: this.state.label,
-      });
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numbered = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: false } })
     }
+
+    return stateVariableDefinitions;
+
   }
+
 }
 
 
 export class Li extends BaseComponent {
   static componentType = "li";
+  static rendererType = "list";
 
-  static returnChildLogic (args) {
+  static includeBlankStringChildren = true;
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroInline = childLogic.newLeaf({
@@ -82,23 +109,40 @@ export class Li extends BaseComponent {
       propositions: [atLeastZeroInline, atLeastZeroBlock],
       setAsBase: true,
     })
-    
+
     return childLogic;
   }
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.list({
-        key: this.componentName,
-        item: true,
-      });
-    }
-  }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.item = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { item: true } })
+    }
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "childIdentity",
+          childLogicName: "inlineOrBlock"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.children.map(x => x.componentName)
+          }
+        }
+      }
+    }
+
+
+    return stateVariableDefinitions;
+
   }
-  
-  static includeBlankStringChildren = true;
 
 }

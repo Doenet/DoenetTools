@@ -12,24 +12,21 @@ export default class BaseComponent {
     stateVariableDefinitions,
     componentInfoObjects,
     coreFunctions,
-    externalFunctions,
     flags,
     shadow,
-    numerics, sharedParameters,
+    numerics, parentSharedParameters, sharedParameters,
     allowSugarForChildren,
   }) {
 
     this.numerics = numerics;
+    this.parentSharedParameters = parentSharedParameters;
     this.sharedParameters = sharedParameters;
-
-    this.readOnlyProxyHandler = readOnlyProxyHandler;
 
     this.componentName = componentName;
     this.ancestors = ancestors;
 
     this.componentInfoObjects = componentInfoObjects;
     this.coreFunctions = coreFunctions;
-    this.externalFunctions = externalFunctions;
     this.flags = flags;
 
     this.componentIsAProperty = false;
@@ -126,6 +123,8 @@ export default class BaseComponent {
 
   }
 
+  readOnlyProxyHandler = readOnlyProxyHandler;
+
   potentialRendererTypesFromSerializedComponents(serializedComponents) {
     let potentialRendererTypes = [];
 
@@ -221,6 +220,7 @@ export default class BaseComponent {
       "returnArraySizeDependencies", "returnArraySize",
       "returnArrayDependenciesByKey", "arrayDefinitionByKey",
       "inverseArrayDefinitionByKey",
+      "basedOnArrayKeyStateVariables", "entireArrayAtOnce",
       "markStale", "getPreviousDependencyValuesForMarkStale",
       "triggerParentChildLogicWhenResolved",
     ];
