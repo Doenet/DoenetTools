@@ -409,7 +409,7 @@ else {
   panelHeadersControlVisible.hideFooter = deviceType === "phone" && !Array.isArray(props.children);
   panelHeadersControlVisible.sliderVisible = deviceType === "phone" && sliderVisible;
   panelHeadersControlVisible.hideCollapse = !Array.isArray(props.children);
-  panelHeadersControlVisible.phoneButtonsDisplay = deviceType === "phone" && purposeArr.length === 2 && purposeArr.indexOf("navigation") !== -1 ? false : true;
+  panelHeadersControlVisible.phoneButtonsDisplay = deviceType === "phone" ? purposeArr.length === 2 && purposeArr.indexOf("navigation") !== -1 ? false : true : false;
   panelHeadersControlVisible.purpose = purposeArr;
   panelHeadersControlVisible.deviceTypeToPanels = deviceType;
   let leftNav = <PlacementContext.Provider 
