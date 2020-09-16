@@ -4,7 +4,8 @@ import SplitPanelContext from './SplitPanelContext';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faTimes, faBars
 } from "@fortawesome/free-solid-svg-icons";
 import './toollayout.css';
 import styled from 'styled-components';
@@ -45,10 +46,11 @@ const SplitPanelContent = styled.div`
 export default class ToolLayoutPanel extends Component {
   static contextType = PlacementContext;
 
+
   render() {
-
-
-    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 95 + 30) + 'px' : '175px';
+    const deviceType = this.context && this.context.panelHeadersControlVisible && this.context.panelHeadersControlVisible.deviceTypeToPanels ? this.context.panelHeadersControlVisible.deviceTypeToPanels : ""; 
+// console.log("panel device type", this.context.panelHeadersControlVisible.deviceTypeToPanels);
+let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 95 + 30) + 'px' : '175px';
     
     if(!this.context.panelHeadersControlVisible.phoneButtonsDisplay) {
       let existingHeight = mainHeight.replace(/[a-z]/g , '');
@@ -99,13 +101,18 @@ export default class ToolLayoutPanel extends Component {
                   alignSelf: "center",
                   fontSize: '16px'
                 }}
-                icon={faChevronLeft}
+                icon={faTimes}
               />
             </button>
           )}
         </>
       );
     };
+
+    const defaultLeftClose = () => {
+        middleOpenLeftRightButton();
+    }
+
     const rightPanelCloseButton = () => {
       return (
         <>
@@ -130,12 +137,12 @@ export default class ToolLayoutPanel extends Component {
             <button onClick={this.context.leftPanelVisible} className="middleLeftButton circle"
             >
               <FontAwesomeIcon
-                icon={faChevronRight}
+                icon={faBars}
                 style={{
                   display: "block",
                   alignSelf: "center",
                   fontSize: '16px'
-                }}
+                }} 
               />
             </button>
           )}
@@ -157,12 +164,14 @@ export default class ToolLayoutPanel extends Component {
     return (
       <>
         {!this.context.panelHeadersControlVisible.hideMenu  
-           && this.props.isLeftPanel === undefined  
+          && this.props.isLeftPanel === undefined  
         ? <div className="panels-header-content">
           <div className="panels-header-controls">
             {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
               this.context.position === 'middle' ? middleOpenLeftRightButton() :
-                this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
+              // this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
+
+                 this.context.position === 'right' ? rightPanelCloseButton() : middleOpenLeftRightButton() : ''} 
 
             {!this.props.splitPanel ?
              
@@ -182,8 +191,7 @@ export default class ToolLayoutPanel extends Component {
         </div> : ''}
 
         {this.props.isLeftPanel ? <div className="panels-header-controls">
-            {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() : '' : ''} </div> : null }
-
+            { this.context.position === 'left'  && this.context.panelHeadersControlVisible.deviceTypeToPanels === "computer" ? leftPanelCloseButton() : defaultLeftClose() } </div> : null }
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
        
           {!this.props.splitPanel ?
