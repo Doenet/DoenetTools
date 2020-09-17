@@ -15,14 +15,14 @@ module.exports = {
 
   // devtool: 'source-map',
   entry: {
-    // "index.js": "./src/index.js",
+    "index.js": "./src/index.js",
     // "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
     "controls/index.js": "./src/controls/index.js",
     "course/index.js": "./src/course/index.js",
-    // "dashboard/index.js": "./src/dashboard/index.js",
-    // "docs/index.js": "./src/docs/index.js",
-    // "dragdrop/index.js": "./src/dragdrop/index.js",
+    "dashboard/index.js": "./src/dashboard/index.js",
+    "docs/index.js": "./src/docs/index.js",
+    "dragdrop/index.js": "./src/dragdrop/index.js",
     "editor/index.js": "./src/editor/index.js",
     "editor-mirror/index.js": "./src/editor-mirror/index.js",
     "exam/index.js": "./src/exam/index.js",
