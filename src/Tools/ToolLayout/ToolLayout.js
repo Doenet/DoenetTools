@@ -24,7 +24,6 @@ const Container = styled.div`
   overflow:hidden;
   z-index:0;
 `;
-  // width:80%;
 
 
 const widthToDevice = () => {
@@ -163,18 +162,51 @@ else {
       };
     }
   });
+
+  useEffect(()=>{
+    let w = window.innerWidth;
+    let middleW;
+    // console.log(leftCloseBtn);
+    if("phone" === deviceType) {
+      setLeftCloseBtn(false,()=>{
+        leftPanelHideable();
+        middleW = window.innerWidth;
+        setTotalWidthNoLeft(middleW);
+      });
+    }
+  
+    else if("computer" === deviceType){
+      setLeftCloseBtn(true);
+      // setLeftOpenBtn(true);
+
+     setLeftCloseBtn(true,()=>{
+        // leftPanelVisible();
+        middleW = w - (!!leftCloseBtn ? leftWidth : 0)-(!!rightCloseBtn ? rightWidth : 0) - resizerW;
+        setMiddleWidth(middleW);
+      })
+      toolPanelsWidthHandler(leftW, middleW, rightW);
+    }
+  },[deviceType]);
+
   const windowResizeHandler = () => {
     let deviceWidth = widthToDevice();
     if (deviceType !== deviceWidth) {
-      // console.log(deviceWidth);
       setDeviceType(deviceWidth);
+      return;
     }
     let w = window.innerWidth;
-    let middleW =
-      w - (!!leftCloseBtn ? leftWidth : 0)-(!!rightCloseBtn ? rightWidth : 0) - resizerW;
-    
+    let middleW;
+    // console.log(leftCloseBtn,"leftCLosebutton");
+    if(deviceType === "computer"){
+      middleW = w - (!!leftCloseBtn ? leftWidth : 0)-(!!rightCloseBtn ? rightWidth : 0) - resizerW;
+      setTotalWidthNoLeft(middleW+rightWidth);
+    }
+    else {
+      middleW = window.innerWidth;
+      setTotalWidthNoLeft(middleW);
+    }
     setMiddleWidth(middleW);
-    toolPanelsWidthHandler(leftW, middleW, rightW);
+    //toolPanelsWidthHandler(leftW, middleW, rightW);
     // let deviceWidth = widthToDevice();
     // if (deviceType !== deviceWidth) {
     //   setDeviceType(deviceWidth);
@@ -327,11 +359,12 @@ else {
       middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
     }
     setMiddleWidth(middleW);
-    if(purposeArr && purposeArr.length === 2) {
+    //if(purposeArr && purposeArr.length === 2) {
       setTotalWidthNoLeft( !!rightCloseBtn ? middleW + rightWidth : middleW );
-    }else{
-      setTotalWidthNoLeft(middleW);
-    }
+    //}
+    // else{
+    //   setTotalWidthNoLeft(middleW);
+    // }
     setLeftWidth(0);
   };
 
@@ -409,7 +442,7 @@ else {
   panelHeadersControlVisible.hideFooter = deviceType === "phone" && !Array.isArray(props.children);
   panelHeadersControlVisible.sliderVisible = deviceType === "phone" && sliderVisible;
   panelHeadersControlVisible.hideCollapse = !Array.isArray(props.children);
-  panelHeadersControlVisible.phoneButtonsDisplay = deviceType === "phone" ? purposeArr.length === 2 && purposeArr.indexOf("navigation") !== -1 ? false : true : false;
+  panelHeadersControlVisible.phoneButtonsDisplay = deviceType === "phone" ? ((purposeArr.length === 2 && purposeArr.indexOf("navigation") !== -1) || purposeArr.length === 1 && purposeArr.indexOf("main") !== -1) ? false : true : false;
   panelHeadersControlVisible.purpose = purposeArr;
   panelHeadersControlVisible.deviceTypeToPanels = deviceType;
   let leftNav = <PlacementContext.Provider 
@@ -423,7 +456,6 @@ else {
     leftPanelVisible,
     isResizing 
   }}>{leftNavContent}</PlacementContext.Provider>
-  // debugger;
   // !props.guestUser && purposeArr && purposeArr.indexOf("navigation") !== -1 ? allParts.push(
   //   <div key="part1"
 
