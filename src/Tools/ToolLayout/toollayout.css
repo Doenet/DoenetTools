@@ -55,8 +55,6 @@ button{
 
 .resizer{
   width: 3px;
-  /* padding-left: 1px;
-  padding-right: 1px; */
   position:relative;
   flex-shrink: 0;
   background-color: #E3E3E3;
@@ -66,12 +64,10 @@ button{
 
 
 .panels-header-content{
-    /* min-height: 60px;
-    max-height: 60px; */
+
     min-height: 95px;
     max-height: 95px;
     margin: 0px;
-    /* z-index: 3; */
     background-color: white;
     border-bottom: 1px solid #E3E2E2;
   
@@ -83,37 +79,16 @@ button{
   align-items: center;
   justify-content: space-between;
   position: relative;
-  /* margin: 10px 10px;
-  display: inline-block; */
 }
-
-/* .leftCloseButton{
-  width: 28px;
-  height:40px;
-  background-color: white;
-  border-radius: 20px 0 0 20px;
-  margin: 10px 0 10px 0;
-  float: right;
-  border: 1px solid #E3E2E2;
-  padding: 2px 4px;
-  font-size: 16px;
-  cursor: pointer;
-  order:1;
-} */
 
 .leftCloseButton{
   width: 40px;
   height:40px;
   background-color:white;
-  /* border-radius:50%; */
-  margin: 10px 0 10px 0;
   border: 1px solid #E3E2E2;
-  padding: 2px 4px;
+  padding: 2px 14px;
   font-size: 16px;
   cursor: pointer;
-  /* position: relative; 
-  top: 760px;
-  left: 10px; */
   position: fixed;
   top: 92%;
   left: 1%;
@@ -151,27 +126,13 @@ button{
   background-color: white;
   border-radius: 50%;
   border: 1px solid #E3E2E2;
-  padding: 11px 18px;
+  padding: 6px 12px;
   font-size: 16px;
   cursor: pointer;
-  /* position: relative;
-  top: 710px;
-  left: 10px; */
   position: fixed;
   top: 92%;
   left: 1%;
   z-index:10000
-
-  /* width: 50px;
-  height:40px;
-  background-color: white;
-  border-radius: 0 20px 20px 0;
-  margin: 10px 0 10px 0;
-  border: 1px solid #E3E2E2;
-  padding: 11px 8px;
-  font-size: 16px;
-  cursor: pointer; */
-
 
 }
 .middleRightButton{
