@@ -9,7 +9,7 @@ const alphabet =
 
 export default function DoenetExampleTool(props) {
 
-  const menuControls = [<button>Test</button>];
+  const mainControls = [<button>Test</button>];
 
   return (
     <>
@@ -18,30 +18,30 @@ export default function DoenetExampleTool(props) {
       
       <ToolLayout toolName="my example"
       headingTitle="Example tool"
-      isLeftPanel={true} 
-      purpose={["Main"]}
-      // purpose={["Main", "Right"]}
-      // purpose={["Right"]}
+
 
       >
         <ToolLayoutPanel
           // panelHeaderControls={menuControls}
-          // panelName="Navigation"
           isLeftPanel={true}
+          purpose = "navigation"
         >
           start {alphabet} {alphabet} {alphabet}{alphabet} {alphabet}{alphabet}end
         </ToolLayoutPanel>
 
         <ToolLayoutPanel
-          panelHeaderControls={menuControls}
-          panelName="Main">
+          panelHeaderControls={mainControls}
+          panelName="Main"
+          // purpose="main" 
+          >
           start {alphabet}{alphabet}{alphabet}{alphabet}{alphabet}{alphabet}{alphabet}end
         </ToolLayoutPanel>
 
-        {/* <ToolLayoutPanel
-          panelName="Support">
+        <ToolLayoutPanel
+          panelName="Support"
+          purpose="support">
           start {alphabet}{alphabet}{alphabet}{alphabet}{alphabet}{alphabet}end
-          </ToolLayoutPanel> */}
+          </ToolLayoutPanel>
       </ToolLayout>
     </>
   );
