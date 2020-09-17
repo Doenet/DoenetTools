@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import MathJax from 'react-mathjax2';
 
 const Prev = styled.div`
+  font-size: 23px;
   // min-height: 30px;
   background: rgba(0, 0, 0, 0.8);
   width: auto;
@@ -19,7 +20,8 @@ const Prev = styled.div`
   padding: 3px;
   position: absolute;
   user-select: none;
-  left: ${props => `${props.left}px`};
+  // left: ${props => `${props.left}px`};
+  // top: ${props => `${props.top}px`};
 `;
 
 
@@ -40,7 +42,7 @@ export default class MathInput extends DoenetRenderer {
     this.textValue = this.doenetSvData.value.toString();
 
 
-    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 20, clickOffset: 0};
+    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 20, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     this.inputRef = React.createRef();
     
 
@@ -55,7 +57,7 @@ export default class MathInput extends DoenetRenderer {
   static initializeChildrenOnConstruction = false;
 
   componentDidMount() {
-    this.setState({previewLeftOffset: this.inputRef.current.getBoundingClientRect().width + this.inputRef.current.getBoundingClientRect().left + 3});
+    this.setState({previewLeftOffset: this.inputRef.current.getBoundingClientRect().width + this.inputRef.current.getBoundingClientRect().left + 3, previewTopOffset: this.inputRef.current.getBoundingClientRect().top});
     console.log('left offset', this.inputRef.current.getBoundingClientRect());
     // console.log('width: ', this.doenetSvData.size * 10, 'offset: ',  this.inputRef.current.getBoundingClientRect().left);
   }
@@ -100,21 +102,23 @@ export default class MathInput extends DoenetRenderer {
   handleDragEnter(e) {
     this.setState({
       isDragging: true,
-      clickOffset: e.pageX - this.state.previewLeftOffset,
+      clickXOffset: e.pageX - this.state.previewLeftOffset,
+      clickYOffset: e.pageY - this.state.previewTopOffset,
     })
   }
 
   handleDragThrough(e) {
     if(this.state.isDragging){
-      console.log(e.pageX, e.clientX);
-      this.setState({previewLeftOffset: e.pageX - this.state.clickOffset});
+      // console.log();
+      this.setState({previewLeftOffset: e.pageX - this.state.clickXOffset, previewTopOffset: e.pageY - this.state.clickYOffset});
     }
   }
 
   handleDragExit(e){
     this.setState({
       isDragging: false,
-      clickOffset: 0,
+      clickXOffset: 0,
+      clickYOffset: 0,
     })
   }
 
@@ -319,7 +323,7 @@ export default class MathInput extends DoenetRenderer {
         {checkWorkButton}
         {/* {console.log("eval", this.mathExpression.toLatex())} */}
         {this.textValue ? 
-        <Prev left = {this.state.previewLeftOffset} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
+        <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
           <div>
             <MathJax.Context input='tex'>
                 <div>
