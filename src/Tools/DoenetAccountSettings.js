@@ -348,7 +348,7 @@ export default function DoenetProfile(props) {
             id="changeProfilePicture"
           >
             CHANGE
-</ProfilePicture>
+          </ProfilePicture>
           <ProfilePicModal />
           <Textinput
             style={{ width: textfieldwidth }}
@@ -395,19 +395,19 @@ export default function DoenetProfile(props) {
             checked={tracking}
           >
             I consent to the use of tracking technologies.
-  </StyledSwitch>
+          </StyledSwitch>
           <p>
             "I consent to the tracking of my progress and my activity on
             educational websites which participate in Doenet; my data will be
             used to provide my instructor with my grades on course assignments,
             and anonymous data may be provided to content authors to improve the
             educational effectiveness."
-    <br />
+            <br />
             <br />
             <em>
               Revoking your consent may impact your ability to recieve credit
               for coursework.
-    </em>
+            </em>
           </p>
 
 
@@ -416,14 +416,14 @@ export default function DoenetProfile(props) {
           <StyledSwitch
             id="student"
             onChange={e => {
-              e.preventDefault();
+              e.preventDefault(); //why is this here?
               updateMyProfile("roleStudent", e.target.checked, true)
             }
             } // updates immediately
             checked={Number(profile.roleStudent)}
           >
             Student
-  </StyledSwitch>
+          </StyledSwitch>
           <StyledSwitch
             id="instructor"
             onChange={e =>
@@ -432,7 +432,7 @@ export default function DoenetProfile(props) {
             checked={Number(profile.roleInstructor)}
           >
             Instructor
-  </StyledSwitch>
+          </StyledSwitch>
           <StyledSwitch
             id="course_designer"
             onChange={
@@ -441,7 +441,7 @@ export default function DoenetProfile(props) {
             checked={Number(profile.roleCourseDesigner)}
           >
             Course Designer
-  </StyledSwitch>
+          </StyledSwitch>
           {/* <StyledSwitch
     id="watchdog"
     onChange={e =>
