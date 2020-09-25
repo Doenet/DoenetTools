@@ -27,7 +27,7 @@ export default class Angle extends DoenetRenderer {
 
     var jsxAngleAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -129,7 +129,7 @@ export default class Angle extends DoenetRenderer {
     this.angleJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, through[1]);
     this.angleJXG.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
 
-    this.angleJXG.setAttribute({radius: this.doenetSvData.numericalRadius, visible: !this.doenetSvData.hide});
+    this.angleJXG.setAttribute({radius: this.doenetSvData.numericalRadius, visible: !this.doenetSvData.hidden});
 
  
     this.angleJXG.name = this.doenetSvData.label;
@@ -169,12 +169,12 @@ export default class Angle extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
+    }
+
+    if (this.doenetSvData.hidden) {
+      return null;
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.angle + "\\)";

@@ -5739,4 +5739,99 @@ describe('Line Tag Tests', function () {
     })
   })
 
+  it('value of hidden of points changes with line', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><booleaninput label="Hide line" name="hidel" prefill="true" /></p>
+  <p><booleaninput label="Hide first point" name="hidep" prefill="false" /></p>
+  <graph>
+    <line label='l'>
+      <hide><copy prop="value" tname="hidel" /></hide>
+      <through hide="false">
+        <point><hide><copy prop="value" tname="hidep" /></hide>(1,2)</point>
+        <point>(4,7)</point>
+      </through>
+    </line>
+  </graph>
+    `}, "*");
+    });
+
+    // TODO: find a way to check if points/lines are actually hidden in renderer
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.log('everything hidden, but only line has hide specified')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
+      expect(components['/_point1'].stateValues.hide).eq(false)
+      expect(components['/_point1'].stateValues.hidden).eq(true)
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
+      expect(components['/_point2'].stateValues.hide).eq(false)
+      expect(components['/_point2'].stateValues.hidden).eq(true)
+      expect(components['/_line1'].stateValues.label).eq('l')
+      expect(components['/_line1'].stateValues.hide).eq(true)
+      expect(components['/_line1'].stateValues.hidden).eq(true)
+
+    })
+
+    // explictly hide first point
+    cy.get('#\\/hidep').click();
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
+      expect(components['/_point1'].stateValues.hide).eq(true)
+      expect(components['/_point1'].stateValues.hidden).eq(true)
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
+      expect(components['/_point2'].stateValues.hide).eq(false)
+      expect(components['/_point2'].stateValues.hidden).eq(true)
+      expect(components['/_line1'].stateValues.label).eq('l')
+      expect(components['/_line1'].stateValues.hide).eq(true)
+      expect(components['/_line1'].stateValues.hidden).eq(true)
+
+    })
+
+    // unhide line
+    cy.get('#\\/hidel').click();
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
+      expect(components['/_point1'].stateValues.hide).eq(true)
+      expect(components['/_point1'].stateValues.hidden).eq(true)
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
+      expect(components['/_point2'].stateValues.hide).eq(false)
+      expect(components['/_point2'].stateValues.hidden).eq(false)
+      expect(components['/_line1'].stateValues.label).eq('l')
+      expect(components['/_line1'].stateValues.hide).eq(false)
+      expect(components['/_line1'].stateValues.hidden).eq(false)
+
+    })
+
+    // unhide point
+    cy.get('#\\/hidep').click();
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
+      expect(components['/_point1'].stateValues.hide).eq(false)
+      expect(components['/_point1'].stateValues.hidden).eq(false)
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
+      expect(components['/_point2'].stateValues.hide).eq(false)
+      expect(components['/_point2'].stateValues.hidden).eq(false)
+      expect(components['/_line1'].stateValues.label).eq('l')
+      expect(components['/_line1'].stateValues.hide).eq(false)
+      expect(components['/_line1'].stateValues.hidden).eq(false)
+
+    })
+  })
+
 })

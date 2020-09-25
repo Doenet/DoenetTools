@@ -82,6 +82,13 @@ export default class TextList extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // set overrideChildHide so that children are hidden
+    // only based on whether or not the list is hidden
+    // so that can't have a list with partially hidden components
+    stateVariableDefinitions.overrideChildHide = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { overrideChildHide: true } })
+    }
 
     stateVariableDefinitions.nComponents = {
       public: true,

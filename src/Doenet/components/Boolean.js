@@ -43,10 +43,16 @@ export default class BooleanComponent extends InlineComponent {
       number: 1,
     });
 
+    let exactlyOneMath = childLogic.newLeaf({
+      name: "exactlyOneMath",
+      componentType: 'math',
+      number: 1,
+    });
+
     childLogic.newOperator({
-      name: "TextXorBooleanXorWhen",
+      name: "TextBooleanWhenXorMath",
       operator: "xor",
-      propositions: [stringsAndTexts, exactlyOneBoolean, exactlyOneWhen],
+      propositions: [stringsAndTexts, exactlyOneBoolean, exactlyOneWhen, exactlyOneMath],
       setAsBase: true,
     })
 
@@ -81,16 +87,26 @@ export default class BooleanComponent extends InlineComponent {
           variableNames: ["conditionSatisfied"],
           requireChildLogicInitiallySatisfied: true,
         },
+        mathChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneMath",
+          variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
+        },
       }),
       defaultValue: false,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.stringTextChildren.length === 0) {
           if (dependencyValues.booleanChild.length === 0) {
             if (dependencyValues.whenChild.length === 0) {
-              return {
-                useEssentialOrDefaultValue: {
-                  value: { variablesToCheck: ["value", "implicitValue"] }
+              if (dependencyValues.mathChild.length === 0) {
+                return {
+                  useEssentialOrDefaultValue: {
+                    value: { variablesToCheck: ["value", "implicitValue"] }
+                  }
                 }
+              } else {
+                return { newValues: { value: dependencyValues.mathChild[0].stateValues.value.simplify().tree !== 0 } }
               }
             } else {
               return { newValues: { value: dependencyValues.whenChild[0].stateValues.conditionSatisfied } }
@@ -111,7 +127,7 @@ export default class BooleanComponent extends InlineComponent {
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.stringTextChildren.length === 0) {
           if (dependencyValues.booleanChild.length === 0) {
-            if (dependencyValues.whenChild.length === 0) {
+            if (dependencyValues.whenChild.length === 0 && dependencyValues.mathChild.length === 0) {
               // no children, so value is essential and give it the desired value
               return {
                 success: true,
@@ -121,7 +137,7 @@ export default class BooleanComponent extends InlineComponent {
                 }]
               };
             } else {
-              // can't invert if have when child
+              // can't invert if have when or math child
               return { success: false }
             }
           } else {
