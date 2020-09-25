@@ -56,6 +56,8 @@ const alphabet =
 
     const [hasClasses, setHasClasses] = useState(false)
 
+    const [drag, setDrag] = useState(0)
+
     useEffect(() => {
       getCourses_CI(updateCourseInfo);
       setIsLoaded(true);
@@ -115,17 +117,31 @@ const alphabet =
       updateCourses_CI(mod);
       
     }
-    // const updateWidth = () => {
-    //   setWidth(window.innerWidth - 209);
-    // };
-    // console.log("width", width)
-    
-    // useEffect(() => {
-    //     window.addEventListener("resize", updateWidth);
-    //     return () => window.removeEventListener("resize", updateWidth);
-    // });
+  
+    function handleDragEnter(item, e){
+      console.log("drag/click start");
+      let dummy = {...item}
+      dummy.isDummy = true;
+      setItems([...items, dummy].sort(compare));
+      setDrag(1);
+    }
 
-    
+    function handleDragThrough(e){
+      if(drag === 1 || drag === 2){
+        setDrag(2);
+        console.log("drag going")
+      }
+    }
+
+    function handleDragExit(e){
+      if(drag == 1){
+        console.log("click end");
+        setDrag(0);
+      }else if(drag === 2){
+        console.log("drag end");
+        setDrag(0);
+      }
+    }
     
 
     let gridItems = []
@@ -169,7 +185,7 @@ const alphabet =
             panelName="context"
           >
           <div>
-            {x}
+            {x}gi
             <button onClick={()=>setX(x + 1)}>Count</button>
             <p>test</p>
           </div>
@@ -184,9 +200,11 @@ const alphabet =
             {hasClasses ? 
             <div {...bind} className="list" style={{ height: Math.max(...heights) }}>
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
-                <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
+                <a.div className = "adiv" key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
                   {/* {console.log(item)} */}
-                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} onClick = {() => setSelected_CI(item.courseId)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>
+              {drag === 2 ? <div onMouseDown = {handleDragEnter} onMouseMove = {handleDragThrough} onMouseUp = {handleDragExit} onMouseLeave = {handleDragExit} style = {{height: "100%"}}>{item.isDummy ? null : <CourseCard data = {item} updateCourseColor = {updateCourseColor}/>}</div> : 
+                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} 
+                  onClick = {() => setSelected_CI(item.courseId)} onMouseDown = {(e) => handleDragEnter(item, e)} onMouseMove = {handleDragThrough} onMouseUp = {handleDragExit} ><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>}
                   {/* <CourseCard data = {item} /> */}
                 </a.div>
               ))}

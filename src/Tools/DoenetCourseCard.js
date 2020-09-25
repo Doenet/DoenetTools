@@ -10,18 +10,21 @@ import {
 } from "react-router-dom";
 
 const Container = Styled.div`
-  border-radius: 5px;
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  height: 230px;
-  width: 230px;
+  font-size: 10px;
+  line-height: 12px;
+  border-radius: 4px;
+  box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
   display: flex; /*added*/
   flex-direction: column; /*added*/
   justify-content: space-between;
-  position: relative;
   background-image: url(${(props) => props.url});
   background-color: ${(props) => `#${props.color}`};
-  background-size: cover;
-  background-position: center;
 `;
 
 const Image = Styled.div`
