@@ -1,133 +1,289 @@
-import React, { useEffect } from 'react';
-
-import ToolLayout from './ToolLayout/ToolLayout';
-import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
+import React, { useState, useEffect } from 'react';
+// import ToggleButton from '../imports/PanelHeader/Components/ToggleButton.js';
 
 //CodeMirror 6 Imports
 import {EditorState, StateField} from '@codemirror/next/state';
-import {EditorView, ViewPlugin} from '@codemirror/next/view';
+import {EditorView} from '@codemirror/next/view';
 import {basicSetup} from '@codemirror/next/basic-setup';
-import {htmlSyntax, html} from '@codemirror/next/lang-html';
+// import {htmlSyntax, html} from '@codemirror/next/lang-html';
+import {doenetml, attrsLookup} from './lang-doenetml.js';
 
 //This is a mirror of DoenetEditor that uses 
 //CodeMirror 6 instead of Monaco Editor
 
-function getTag(tree, position) {//Function to get tag name from position
+//To Do:
+//getTag works anywhere inside tag
+//Info Panel displays current Attr values
+//css styling for info panel
+//Work for closing tags as well
+//Test Case the different tag types
+//What about tags inside tags?
+
+//Move these files into a seperate folder called Editor
+
+// Should there be a difference between quoted/unquoted attr values
+// What if the user puts the same attr name twice?
+
+//returns an object with three fields
+//(1) pos: the buffer index of the open/self-closing tag corresponding to the tag containing the given document position
+//  Returns the buffer index of the closing tag if no open tag is found
+//  -1 indicates no tag contains position
+//(2) tagname: The name of the tag containing position
+//(3) open: Boolean indicating if an open tag was found.
+function findTag(doc, tree, position) {
+    let tag = {pos: -1, tagname: "", open: true}
+    if (tree.children.length == 0) return tag;
+
     let buffer = tree.children[0].buffer;
     let types = tree.children[0].group.types;
+    let sym_open = -1;
+    let sym_close = -1;
+    let sym_selfclose = -1;
     let sym_tagname = -1;
+    let sym_mismatch = -1; //mismatched tag names
 
-    //Find the int corresponding to node type "TagName"
+    //find symbols
     for (let i=0; i < types.length; i++) {
-        if (types[i].name == "TagName") {
-            sym_tagname = i;
+        switch(types[i].name) {
+            case "OpenTag":
+                sym_open = i;
+                break;
+            case "CloseTag":
+                sym_close = i;
+                break;
+            case "SelfClosingTag":
+                sym_selfclose = i;
+                break;
+            case "TagName":
+                sym_tagname = i;
+                break;
+            case "MismatchedTagName":
+                sym_mismatch = i;
+                break;
         }
     }
 
-    let tag_range = [0, 0];
-    if (sym_tagname > -1) {
-        //Search for a TagName containing the position
-        for (let i=0; i < buffer.length; i+=4) {
-            if (position < buffer[i+1]) {
-                break; //No more nodes will contain position in its range
-            } else {
-                if (position <= buffer[i+2] && buffer[i] == sym_tagname) {
-                    tag_range[0] = buffer[i+1];
-                    tag_range[1] = buffer[i+2];
-                    break;
-                }
+    if (sym_tagname < 0) return tag;
+    //find pos
+    for (let i=0; i < buffer.length; i+=4) {
+        if (position < buffer[i+1]) {
+            break; //No more nodes will contain position in its range
+        } else {
+            if (position <= buffer[i+2] && (buffer[i]==sym_open || buffer[i]==sym_selfclose || buffer[i]==sym_close)) {
+                tag.pos = i;
+                if (buffer[i]==sym_close) tag.open = false;
+                break;
             }
         }
     }
-    return tag_range;
-}
+    if (tag.pos < 0) return tag;
 
-let countDocChanges = StateField.define({
-    //Sets initial value
-    create() {return ""},
-    //Updates value based on transaction
-    update(value, tr) {
-        console.log(tr.state.tree);
-        // console.log(tr.state.doc);
-        // console.log(tr.state.selection);
-
-        let position = tr.state.selection.ranges[0].to;
-
-        let word = "";
-        let tag_range = getTag(tr.state.tree, position);
-
-        // if (istag) {
-        //     const text = tr.state.doc.text;
-
-        //     let line_count = 0;
-        //     for (let i=0; i < text.length; i++) {
-        //         line_count = text[i].length;
-
-        //         if (position > line_count) {
-        //             position -= line_count+1; //+1 for the linebreak
-        //         } else {
-        //             let line = text[i];
-        //             let line1 = line.slice(0, position).split(/\s|<|>|\//);
-        //             let line2 = line.slice(position, line.length).split(/\s|<|>|\/|\n/);
-        //             word = line1[line1.length-1].concat(line2[0]);
-        //             break;
-        //         }
-
-        //     }
-        //     console.log(word);
-        // }
-
-        // word = text.sliceString(tag_range[0], tag_range[1], "\n");
-        word = tr.state.sliceDoc(tag_range[0], tag_range[1]);
-        if (word != "") console.log(word);
-
-        return tr.docChanged ? word : value
-    }
-})
-
-//This should probably go in the useEffect
-const wordGetterPlugin = ViewPlugin.fromClass(class {
-    constructor(view) {
-        this.dom = view.dom.appendChild(document.createElement('div'));
-        this.dom.style.cssText = 
-            "position: absolute; inset-block-start: 2px; inset-inline-end: 5px";
-        // this.dom.textContent = view.state.field(countDocChanges);
-    }
-
-    update(update) {
-        if (update.docChanged) {
-            // this.dom.textContent = update.state.field(countDocChanges);
+    //find tagname
+    for (let i=tag.pos; i < buffer.length; i+=4) {
+        if (buffer[i+2] > buffer[tag.pos+2]) {
+            break; 
+        } else {
+            if (buffer[i] == sym_tagname || buffer[i] == sym_mismatch) {
+                tag.tagname = doc.sliceString(buffer[i+1], buffer[i+2]);
+                break;
+            }
         }
     }
 
-    destroy() {this.dom.remove}
-})
+    //If in a closing tag find the open tag
+    if (!tag.open) {
+        let close_tag_i = tag.pos;
+        let in_open_tag = false;
+        let open_tag_end = 0;
+        let possible_indices = [];
+        for (let i=0; i < close_tag_i; i+=4) {
+            if (in_open_tag && buffer[i+2] <= open_tag_end ) {
+                if (buffer[i] == sym_tagname || buffer[i] == sym_mismatch) {
+                    if (doc.sliceString(buffer[i+1],buffer[i+2]) == tag.tagname) {
+                        possible_indices.push(i);
+                    }
+                }
+            } else {
+                if (in_open_tag) in_open_tag = false;
+                if (buffer[i] == sym_open) {
+                    in_open_tag = true;
+                    open_tag_end = buffer[i+2];
+                } else if (buffer[i] == sym_close) {
+                    possible_indices.pop();
+                }
+            }
+        }
+
+        let found_open_tag = possible_indices.pop();
+        if (found_open_tag !== undefined) {
+            tag.pos = found_open_tag;
+            tag.open = true;
+        }
+    }
+
+    return tag;
+}
+
+//Finds the attributes for a tag given its buffer index init_i
+function getAttrs(doc, tree, init_i) {
+    let attrs = [];
+    if (tree.children.length == 0) return attrs;
+
+
+    let sym_attrname = -1;
+    let sym_attrval = -1;
+    let sym_unquoteval = -1;
+
+    let buffer = tree.children[0].buffer;
+    let types = tree.children[0].group.types;
+
+    for (let i=0; i < types.length; i++) {
+        if (types[i].name == "AttributeName") {
+            sym_attrname = i;
+        } else if (types[i].name == "AttributeValue") {
+            sym_attrval = i;
+        } else if (types[i].name == "UnquotedAttributeValue") {
+            sym_unquoteval = i;
+        }
+    }
+
+    let subtree_end = buffer[init_i+2];
+    let curr_index = -1;
+    let name_exists = 0;
+    for (let i = init_i; i < buffer.length; i+= 4) {
+        if (buffer[i+2] > subtree_end) break;
+
+        if (buffer[i] == sym_attrname) {
+            let curr_attr = doc.sliceString(buffer[i+1], buffer[i+2]);
+            attrs.push([curr_attr, ""]);
+            curr_index += 1;
+            name_exists = 1;
+        } else if (name_exists && (buffer[i] == sym_attrval || buffer[i] == sym_unquoteval)) {
+            attrs[curr_index][1] = doc.sliceString(buffer[i+1], buffer[i+2]);
+            name_exists = 0;
+        }
+    }
+
+    return attrs;
+}
+
+//Returns an object representing the properties of a tag
+//If given a closing tag it will only return the tag name
+function getTagProps(doc, tree, position) {
+    let tag_props = {tagname: "", attrs: []};
+    if (tree.children.length == 0) return tag_props;
+
+    let basic_tag_props = findTag(doc, tree, position);
+    if (basic_tag_props.pos < 0) return tag_props;
+    tag_props.tagname = basic_tag_props.tagname;
+    
+    if (!basic_tag_props.open) return tag_props;
+    tag_props.attrs = getAttrs(doc, tree, basic_tag_props.pos);
+
+    return tag_props;
+}
+
+function InfoPanel(props) {
+    let { curr_tag } = props;
+    // console.log("This is curr_tag: ", curr_tag);
+
+    let tagname = curr_tag.tagname;
+    let attrs = curr_tag.attrs;
+    // console.log("These are attrs: ", attrs)
+
+    let tag_dict = attrsLookup(tagname);
+
+    let tags_mentioned = {};
+
+    const attrToEntry = function(x) {
+        tags_mentioned[x[0]] = 1;
+        return(
+            <li key={x[0]}>{x[0]}: {x[1]}</li>
+        )
+    }
+
+    const propToEntry = function(x) {
+        let default_val = tag_dict["properties"][x]["default"];
+        if (default_val === true) default_val = "true";
+        if (default_val === false) default_val = "false";
+        if (default_val === "") default_val = "\"\"";
+        if (default_val === undefined) 
+            default_val = "{}";
+
+        return(
+        <li key={x} style={{color: "grey"}}>{x} : default : {default_val}</li>
+        )
+    }
+
+    return(
+        <>
+        <h1>{tagname}</h1>
+        {!tag_dict || !attrs ? <p>No props found</p> :
+            <ul>
+                {attrs.map(attrToEntry)}
+                {Object.keys(tag_dict["properties"]).filter(x => tags_mentioned[x] === undefined).map(propToEntry)}
+            </ul>
+        } 
+        </>
+    )
+
+}
 
 function Editor(props) {
+    const [curr_tag, setCurr_Tag] = useState({});
+
+    let currentTag = StateField.define({
+        //Sets initial value
+        create() {return ""},
+        //Updates value based on transaction
+        update(value, tr) {
+            // console.log(tr.state.tree);
+            // console.log(tr.state.doc);
+            // console.log(tr.state.selection);
+    
+            let position = tr.state.selection.ranges[0].to;
+    
+            let tag = getTagProps(tr.state.doc, tr.state.tree, position);
+
+            setCurr_Tag(tag);
+            return tr.docChanged ? tag : value;
+        }
+    })
+
     let startState = EditorState.create({
         doc: props.content,
-        extensions: [basicSetup, html(), countDocChanges, wordGetterPlugin]
-    })
-
-    let { mountKey } = props;
+        extensions: [basicSetup, doenetml(), currentTag]
+    });
 
     let view = new EditorView({
-        state: startState,
-    })
+        state: startState
+    });
+
+    let { mountKey } = props;
 
     useEffect(() => {
         const containerRoot = document.getElementById(mountKey);
         containerRoot.appendChild(view.dom);
 
-        console.log(view);
-    });
+        // console.log(view.state.tree);
 
-    return(<div id={mountKey}/>)
+        return function cleanup() {
+            let element = document.getElementById(mountKey);
+            element.removeChild(element);
+        };
+    }, []);
+
+    return(
+        <>
+            <div id={mountKey}/>
+            {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag}/>}
+        </>
+    )
 }
 
 function DoenetEditor() {
 
-    const content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
+    const content = "<cell rownum=3><outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 
     return(
         <Editor content={content} mountKey="mountkey-1"/>
