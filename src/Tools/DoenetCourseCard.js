@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 
 const Container = Styled.div`
+  opacity: ${(props) => props.isDummy ? 0.5 : 1};
+  border: ${(props) => props.isDummy ? "1px solid darkblue" : "0px"};
   position: relative;
   background-size: cover;
   background-position: center center;
@@ -70,7 +72,7 @@ const ShortNameContainer = Styled.p`
 
 
 const Card = props => (
-    <Container url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
+    <Container isDummy = {props.data.isDummy} url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
       <Menu
       data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} courseId = {props.data.courseId} updateCourseColor = {props.updateCourseColor}/>
       {/* <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} /> */}

@@ -59,7 +59,7 @@ export function getCourses_CI(callback){
 //callback(success) true or false
 export function setSelected_CI(selectCourseId,callback=()=>{}){
 
-  getCourses(getCoursesCallback);
+  getCourses_CI(getCoursesCallback);
   function getCoursesCallback(courseListArray,selectedCourseObj){
     const {update} = useIndexedDB('SelectedCourse');
     let select = {};
