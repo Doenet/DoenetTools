@@ -10,7 +10,7 @@ import { styleTags } from '@codemirror/next/highlight';
 //5. Remove js and css functionality
 
 const Bool = ["true", "false"];
-var Tags = require('../../docs/complete-docs.json');
+var Tags = require('../../../docs/complete-docs.json');
 const GlobalAttrs = {
   hide: Bool,
   disabled: Bool,
