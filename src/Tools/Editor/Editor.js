@@ -232,6 +232,28 @@ function InfoPanel(props) {
 
 }
 
+function TextForm(props) {
+    const [word, setWord] = useState(props.word);
+    const [isForm, setForm] = useState(false);
+    console.log(word);
+
+    const handleTextClick = function() {
+        setForm(!isForm);
+    }
+
+    const handleFormClick = function() {
+        setForm(!isForm);
+    }
+
+    return (
+        <>
+            {isForm ? 
+                <textarea onClick={handleClick} defaultValue={word}/>
+            : <p onClick={handleClick}>{word}</p>}
+        </>
+    )
+}
+
 function Editor(props) {
     const [curr_tag, setCurr_Tag] = useState({});
 
@@ -280,6 +302,7 @@ function Editor(props) {
         <>
             <div id={mountKey}/>
             {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag}/>}
+            <TextForm word="Cookies"/>
         </>
     )
 }
