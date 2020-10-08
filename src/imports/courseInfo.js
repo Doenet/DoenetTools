@@ -93,7 +93,7 @@ export function updateCourses_CI(courseArray,callback=()=>{}){
 
     axios.post(url, courseArray)
       .then((resp) => {
-        // console.log(resp.data); //var_dump shows here
+        // console.log("api dump", resp.data); //var_dump shows here
         callback(true);
       })
       .catch(function (error) {

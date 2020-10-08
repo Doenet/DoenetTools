@@ -33,18 +33,18 @@ const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
   function compare (x, y) {
-    console.log("XY: ", x, y);
+    // console.log("XY: ", x, y);
     // console.log("yoooooooooooo");
     
     if(x.position != null && y.position != null){
-      console.log("not nullll");
+      // console.log("not nullll");
       return x.position - y.position
     }else if(x.position != null){
       return -1
     }else if(y.position != null){
       return 1
     }else{
-      console.log(x.shortname, y.shortname);////////////////////////////
+      // console.log(x.shortname, y.shortname);////////////////////////////
       return x.shortname.localeCompare(y.shortname)
     }
   }
@@ -82,12 +82,15 @@ const alphabet =
 
       courseListArray = courseListArray.sort(compare);
 
-      console.log("input", courseListArray)
+      // console.log("input", courseListArray)
+
       for(let index in courseListArray){
-        if(courseListArray[index].position === null || courseListArray[index].position === undefined){
-          console.log("position not defined for", courseListArray[index], "at", index);
-          courseListArray[index].position = parseInt(index);
-        }
+        // console.log("position not defined for", courseListArray[index], "at", index);
+        courseListArray[index].position = parseInt(index);
+        // if(courseListArray[index].position === null || courseListArray[index].position === undefined){
+        //   console.log("position not defined for", courseListArray[index], "at", index);
+        //   courseListArray[index].position = parseInt(index);
+        // }
         // courseListArray[index].ogposition = parseInt(index);
       }
       setItems(courseListArray)
@@ -142,7 +145,7 @@ const alphabet =
   
     function handleDragEnter(index, e){
       if(drag === 0){
-        console.log("drag/click start at index", index);
+        // console.log("drag/click start at index", index);
         setDragIndex(index);
         setDrag(1);
       }
@@ -151,22 +154,22 @@ const alphabet =
     function handleDragThrough(e){
       if(drag === 1){
         setDrag(2);
-        console.log("drag confirmed at index", dragIndex)
+        // console.log("drag confirmed at index", dragIndex)
         let moditems = [...items];
         moditems[dragIndex].isDummy = true;
         setItems(moditems);
       }else if(drag === 2){
-        console.log("drag 2:", (width/columns), height);
+        // console.log("drag 2:", (width/columns), height);
         
         let xp = parseInt(e.clientX/(width/columns))
         let yp = parseInt((e.clientY - 50)/height)
         let fp = Math.min(yp*columns + xp, items.length - 1);
-        console.log("position", fp);
+        // console.log("position", fp);
         if(fp !== dragIndex){
           let moditems = [...items];
           if(fp > dragIndex){
             for(let i = dragIndex + 1; i <= fp; i++){
-              console.log("i loop 1", i);
+              // console.log("i loop 1", i);
               moditems[i].position -= 1;
             }
           }else{
@@ -175,7 +178,7 @@ const alphabet =
             }
           }
           moditems[dragIndex].position = fp;
-          console.log("new pos", moditems[dragIndex].position, "dragItem", moditems[dragIndex]);
+          // console.log("new pos", moditems[dragIndex].position, "dragItem", moditems[dragIndex]);
           setDragIndex(fp);
           setItems(moditems.sort(compare));
         }
@@ -185,39 +188,43 @@ const alphabet =
 
     function handleDragExit(e){
       if(drag == 1){
-        console.log("click end");
+        // console.log("click end");
         setDrag(0);
         // setDragIndex(null);
         setDragIndex(null);
       }else if(drag === 2){
-        console.log("drag end");
+        // console.log("drag end");
         let moditems = [...items];
         moditems[dragIndex].isDummy = false;
         setItems(moditems);
         setDrag(0);
         setDragIndex(null);
         updateCourses_CI(moditems);
-        // let moditemscopy = [...moditems]
-        // moditemscopy = moditemscopy.sort(ignorantcompare)
+
+        // let itemsinshortnameorder = [...moditems].sort(ignorantcompare)
         // let backtosquareoneflag = true;
-        // for (let index in moditemscopy){
-        //   if(moditemscopy[index].shortname === moditems[index].shortname){
-        //     moditemscopy[index].position = null;
-        //   }else{
+        
+        // for (let index in itemsinshortnameorder){
+        //   if(itemsinshortnameorder[index].shortname !== moditems[index].shortname){
         //     console.log("pos matching failed at", index);
-            
         //     backtosquareoneflag = false;
         //     break;
         //   }
         // }
 
         // if(backtosquareoneflag){
-        //   console.log("updated with copy", moditemscopy);
-        //   updateCourses_CI(moditemscopy)
+        //   for(let index in itemsinshortnameorder){
+        //     let item = {...itemsinshortnameorder[index]};
+        //     item.position = null;
+        //     itemsinshortnameorder[index] = item;
+        //   }
+
+        //   updateCourses_CI(itemsinshortnameorder);
+
         // }else{
-        //   console.log("updated with original")
-        //   updateCourses_CI(moditems)
+        //   updateCourses_CI(moditems);
         // }
+
       }
     }
     
@@ -236,7 +243,7 @@ const alphabet =
         return { ...child, xy, width: width / columns, height: 230}
       })
 
-      console.log("griditems", gridItems);
+      // console.log("griditems", gridItems);
     }
     
 
@@ -278,7 +285,7 @@ const alphabet =
 
             {hasClasses ? 
             <div {...bind} className="list" style={{ height: Math.max(...heights), position: "relative"}} onMouseMove = {handleDragThrough} onMouseUp = {handleDragExit} onMouseLeave = {handleDragExit}>
-              {console.log("items", items)}
+              {/* {console.log("items", items)} */}
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
                 <a.div className = "adiv" key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
                   {/* {console.log(item)} */}
