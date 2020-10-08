@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // import ToggleButton from '../imports/PanelHeader/Components/ToggleButton.js';
 import './editor.css';
 
@@ -158,11 +158,13 @@ function getAttrs(doc, tree, init_i) {
 
         if (buffer[i] == sym_attrname) {
             let curr_attr = doc.sliceString(buffer[i+1], buffer[i+2]);
-            attrs.push([curr_attr, ""]);
+            attrs.push([curr_attr, "", 0, 0]);
             curr_index += 1;
             name_exists = 1;
         } else if (name_exists && (buffer[i] == sym_attrval || buffer[i] == sym_unquoteval)) {
             attrs[curr_index][1] = doc.sliceString(buffer[i+1], buffer[i+2]);
+            attrs[curr_index][2] = buffer[i+1];
+            attrs[curr_index][3] = buffer[i+2];
             name_exists = 0;
         }
     }
@@ -186,22 +188,79 @@ function getTagProps(doc, tree, position) {
     return tag_props;
 }
 
+function TextForm(props) {
+    let { tagname } = props; let { tagval } = props;
+    // const [tagval, setTagVal] = useState(props.tagval);
+    const [isForm, setForm] = useState(false);
+    const formEl = useRef(null);
+
+    const handleTextClick = function() {
+        setForm(!isForm);
+    }
+
+    const handleFormClick = function() {
+        setForm(!isForm);
+        // setTagVal(formEl.current.value);
+        // props.handleChange(tagname, offsets[0], offsets[1], formEl.current.value);
+        if (tagval !== formEl.current.value) {
+            let transaction = props.handleChange(props.offset1, props.offset2, formEl.current.value);
+            console.log(transaction.state.doc.toString());
+        }
+    };
+
+    useEffect(() => {
+        if (isForm) formEl.current.focus();
+    });
+
+    return (
+        <>
+            {isForm ? 
+                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval}/>
+            : <p onClick={handleTextClick}>{tagname}: {tagval}</p>}
+        </>
+    )
+}
+
 function InfoPanel(props) {
     let { curr_tag } = props;
-    // console.log("This is curr_tag: ", curr_tag);
+    let { view } = props;
 
     let tagname = curr_tag.tagname;
     let attrs = curr_tag.attrs;
-    // console.log("These are attrs: ", attrs)
 
     let tag_dict = attrsLookup(tagname);
 
     let tags_mentioned = {};
 
+    // const handleChange = function(tagname, offset1, offset2, newval) {
+    //     len_change = newval.length-(offset2-offset1);
+    //     let i=0;
+    //     for (; i<attrs.length; i++) {
+    //         if (attrs[i][0] == tagname) {
+    //             state.update({changes: {from: offset1, to: offset2, insert: newval}});
+    //             attrs[i][1] = newval;
+    //             break;
+    //         }
+    //     }
+    //     for (; i<attrs.length; i++) {
+    //         attrs[i][2] += len_change;
+    //         attrs[i][3] += len_change;
+    //     }
+    // };
+
+    const handleChange = function(offset1, offset2, newval) {
+        let transaction = view.state.update({changes: {from: offset1, to: offset2, insert: newval}});
+        view.dispatch(transaction);
+        return transaction;
+    };
+
     const attrToEntry = function(x) {
         tags_mentioned[x[0]] = 1;
         return(
-            <li key={x[0]}>{x[0]}: {x[1]}</li>
+            <li key={x[0]}>
+                <TextForm tagname={x[0]} tagval={x[1]} offset1={x[2]} offset2={x[3]}
+                handleChange={handleChange}/>
+            </li>
         )
     }
 
@@ -230,28 +289,6 @@ function InfoPanel(props) {
         </>
     )
 
-}
-
-function TextForm(props) {
-    const [word, setWord] = useState(props.word);
-    const [isForm, setForm] = useState(false);
-    console.log(word);
-
-    const handleTextClick = function() {
-        setForm(!isForm);
-    }
-
-    const handleFormClick = function() {
-        setForm(!isForm);
-    }
-
-    return (
-        <>
-            {isForm ? 
-                <textarea onClick={handleClick} defaultValue={word}/>
-            : <p onClick={handleClick}>{word}</p>}
-        </>
-    )
 }
 
 function Editor(props) {
@@ -301,7 +338,7 @@ function Editor(props) {
     return(
         <>
             <div id={mountKey}/>
-            {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag}/>}
+            {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view}/>}
             <TextForm word="Cookies"/>
         </>
     )
