@@ -7,7 +7,7 @@ export default class Boolean extends DoenetRenderer {
   
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
     return <><a name={this.componentName} /><span id={this.componentName}>{this.doenetSvData.text}</span></>

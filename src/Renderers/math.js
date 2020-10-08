@@ -17,7 +17,7 @@ export default class MathRenderer extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
 

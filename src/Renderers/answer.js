@@ -8,7 +8,7 @@ export default class Answer extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
 
