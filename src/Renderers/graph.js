@@ -171,7 +171,7 @@ export default class Graph extends DoenetRenderer {
       height: this.doenetSvData.numericalHeight,
     }
 
-    if(this.doenetSvData.hide) {
+    if(this.doenetSvData.hidden) {
       divStyle.display = "none";
     }
 

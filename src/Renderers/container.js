@@ -16,7 +16,7 @@ export default class Container extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
 
