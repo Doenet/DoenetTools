@@ -34,7 +34,7 @@ export default class Vector extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer,
@@ -131,7 +131,7 @@ export default class Vector extends DoenetRenderer {
     this.vectorJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[0]);
     this.vectorJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[1]);
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validPoints) {
       this.vectorJXG.visProp["visible"] = visible;
@@ -224,12 +224,12 @@ export default class Vector extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
+    }
+
+    if (this.doenetSvData.hidden) {
+      return null;
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.displacementCoords + "\\)";

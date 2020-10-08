@@ -17,7 +17,7 @@ export default class Point extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxPointAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 9,
@@ -101,7 +101,7 @@ export default class Point extends DoenetRenderer {
 
     this.pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (Number.isFinite(x) && Number.isFinite(y)) {
       let actuallyChangedVisibility = this.pointJXG.visProp["visible"] !== visible;
@@ -113,8 +113,7 @@ export default class Point extends DoenetRenderer {
         // TODO: figure out how to make label disappear right away so don't need to run this function
         this.pointJXG.setAttribute({ visible: visible })
       }
-    }
-    else {
+    } else {
       this.pointJXG.visProp["visible"] = false;
       this.pointJXG.visPropCalc["visible"] = false;
       // this.pointJXG.setAttribute({visible: false})
@@ -177,12 +176,12 @@ export default class Point extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <a name={this.componentName} />
+    }
+
+    if (this.doenetSvData.hidden) {
+      return null;
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.coords + "\\)";

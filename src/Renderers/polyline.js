@@ -41,7 +41,7 @@ export default class Line extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     this.jsxPolylineAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide && validCoords,
+      visible: !this.doenetSvData.hidden && validCoords,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -65,7 +65,7 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 9,
     });
-    if (!this.doenetSvData.draggable && !this.doenetSvData.hide && validCoords) {
+    if (!this.doenetSvData.draggable && !this.doenetSvData.hidden && validCoords) {
       this.jsxPointAttributes.visible = false;
     }
 
@@ -174,7 +174,7 @@ export default class Line extends DoenetRenderer {
     }
 
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
       this.polylineJXG.visProp["visible"] = visible;
@@ -237,15 +237,16 @@ export default class Line extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

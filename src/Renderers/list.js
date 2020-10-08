@@ -5,7 +5,7 @@ export default class List extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
 
