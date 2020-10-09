@@ -204,7 +204,7 @@ function TextForm(props) {
         // props.handleChange(tagname, offsets[0], offsets[1], formEl.current.value);
         if (tagval !== formEl.current.value) {
             let transaction = props.handleChange(props.offset1, props.offset2, formEl.current.value);
-            console.log(transaction.state.doc.toString());
+            // console.log(transaction.state.doc.toString());
         }
     };
 
@@ -249,8 +249,12 @@ function InfoPanel(props) {
     // };
 
     const handleChange = function(offset1, offset2, newval) {
-        let transaction = view.state.update({changes: {from: offset1, to: offset2, insert: newval}});
-        view.dispatch(transaction);
+        // let transaction = view.state.update({changes: {from: offset1, to: offset2, insert: newval}});
+        let transaction = {changes: {from: offset1, to: offset2, insert: newval}};
+        // let editor = document.getElementById('mountkey-1').childNodes[0];
+        let new_view = view.dispatch(transaction);
+        console.log(new_view);
+        props.setView(new_view);
         return transaction;
     };
 
@@ -317,9 +321,11 @@ function Editor(props) {
         extensions: [basicSetup, doenetml(), currentTag]
     });
 
-    let view = new EditorView({
+    let view_init = new EditorView({
         state: startState
     });
+
+    const [view, setView] = useState(view_init);
 
     let { mountKey } = props;
 
@@ -330,15 +336,15 @@ function Editor(props) {
         // console.log(view.state.tree);
 
         return function cleanup() {
-            let element = document.getElementById(mountKey);
-            element.removeChild(element);
+            let editor = document.getElementById(mountKey);
+            editor.removeChild(editor.childNodes[0]);
         };
-    }, []);
+    }, [view]);
 
     return(
         <>
             <div id={mountKey}/>
-            {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view}/>}
+            {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view} setView={setView}/>}
             <TextForm word="Cookies"/>
         </>
     )
