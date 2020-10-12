@@ -34,9 +34,8 @@ export class Md extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: this.componentType,
+      componentType: "text",
       defaultValue: "",
-      forRenderer: true,
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "childStateVariables",
@@ -62,6 +61,58 @@ export class Md extends InlineComponent {
       }
 
     }
+
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        mrowChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMrows",
+          variableNames: ["latexWithInputChildren"],
+        },
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.mrowChildren.length > 0) {
+          let latexWithInputChildren = [];
+          let inputInd = 0;
+          let lastLatex = "";
+
+          for(let mrow of dependencyValues.mrowChildren) {
+            for(let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
+              if(typeof latexOrChildInd === "number") {
+                if (lastLatex.length > 0) {
+                  latexWithInputChildren.push(lastLatex);
+                  lastLatex = "";
+                }
+                latexWithInputChildren.push(inputInd);
+                inputInd++;
+              } else {
+                lastLatex += latexOrChildInd
+              }
+            }
+            lastLatex += '\\\\'
+
+          }
+          if (lastLatex.length > 0) {
+            latexWithInputChildren.push(lastLatex);
+          }
+          return { newValues: { latexWithInputChildren } }
+
+        } else {
+          return {
+            newValues: {
+              latexWithInputChildren: [dependencyValues.latex]
+            }
+          }
+        }
+      }
+
+    }
+
 
     stateVariableDefinitions.text = {
       returnDependencies: () => ({
@@ -89,6 +140,25 @@ export class Md extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { renderMode: "align" } })
+    }
+
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        mrowChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMrows",
+          variableNames: ["childrenToRender"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.mrowChildren.reduce(
+              (a,c) => [...a, ...c.stateValues.childrenToRender], [])
+          }
+        };
+      }
     }
 
     return stateVariableDefinitions;

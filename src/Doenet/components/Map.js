@@ -8,7 +8,7 @@ export default class Map extends CompositeComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.behavior = { default: "combination" };
+    properties.behavior = { default: "combination", trim: true };
     return properties;
   }
 

@@ -13085,6 +13085,10 @@ function validatePropertyValue({ value, propertySpecification, property }) {
     value = value.toLowerCase();
   }
 
+  if (propertySpecification.trim) {
+    value = value.trim();
+  }
+
   if (propertySpecification.validValues) {
     if (!propertySpecification.validValues.includes(value)) {
       let firstValue = propertySpecification.validValues[0]

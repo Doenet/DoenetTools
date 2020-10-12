@@ -286,7 +286,6 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -297,6 +296,20 @@ export default class MathComponent extends InlineComponent {
         return { newValues: { latex: dependencyValues.valueForDisplay.toLatex() } };
       }
     }
+
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+      }
+    }
+
 
     stateVariableDefinitions.text = {
       public: true,

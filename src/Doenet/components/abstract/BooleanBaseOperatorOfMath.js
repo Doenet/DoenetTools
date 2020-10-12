@@ -13,7 +13,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
       setAsBase: true,
     });
 

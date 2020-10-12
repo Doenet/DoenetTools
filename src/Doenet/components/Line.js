@@ -12,8 +12,8 @@ export default class Line extends GraphicalComponent {
   };
 
   // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["points"] };
+  // static useChildrenForReference = false;
+  // static get stateVariablesShadowedForReference() { return ["points"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

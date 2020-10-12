@@ -48,7 +48,14 @@ export default class Answer extends InlineComponent {
       propagateToDescendants: true,
     };
     properties.unorderedCompare = { default: false, propagateToDescendants: true };
+    properties.allowedErrorInNumbers = { default: 0, propagateToDescendants: true };
+    properties.includeErrorInNumberExponents = { default: false, propagateToDescendants: true };
+    properties.allowedErrorIsAbsolute = { default: false, propagateToDescendants: true };
+    properties.splitIntoOptions = { default: false, propagateToDescendants: true };
+    properties.nSignErrorsMatched = { default: 0, propagateToDescendants: true };
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
+    
+    properties.prefill = { propagateToDescendants: true, default: "" };
 
     return properties;
   }

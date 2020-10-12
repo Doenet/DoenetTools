@@ -6,6 +6,7 @@ var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false });
 
 export default class When extends BaseComponent {
   static componentType = "when";
+  static rendererType = undefined;
 
   static alwaysContinueUpstreamUpdates = true;
 
