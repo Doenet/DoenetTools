@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import ToggleButton from '../imports/PanelHeader/Components/ToggleButton.js';
+import ToggleButton from '../../imports/PanelHeaderComponents/ToggleButton.js';
 import './editor.css';
 
 //CodeMirror 6 Imports
@@ -190,9 +190,10 @@ function getTagProps(doc, tree, position) {
 
 function TextForm(props) {
     let { tagname } = props; let { tagval } = props;
-    // const [tagval, setTagVal] = useState(props.tagval);
     const [isForm, setForm] = useState(false);
     const formEl = useRef(null);
+
+    if (!tagname) return null;
 
     const handleTextClick = function() {
         setForm(!isForm);
@@ -200,23 +201,42 @@ function TextForm(props) {
 
     const handleFormClick = function() {
         setForm(!isForm);
-        // setTagVal(formEl.current.value);
-        // props.handleChange(tagname, offsets[0], offsets[1], formEl.current.value);
         if (tagval !== formEl.current.value) {
-            let transaction = props.handleChange(props.offset1, props.offset2, formEl.current.value);
-            // console.log(transaction.state.doc.toString());
+            props.handleChange(props.offset1, props.offset2, formEl.current.value);
         }
     };
 
     useEffect(() => {
-        if (isForm) formEl.current.focus();
+        if (isForm && tagval) formEl.current.focus();
     });
+
+    const handleKeyUp = function(e) {
+        if (e.keyCode === 13) handleFormClick();
+    }
 
     return (
         <>
-            {isForm ? 
-                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval}/>
+            {(isForm && tagval) ? 
+                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
             : <p onClick={handleTextClick}>{tagname}: {tagval}</p>}
+        </>
+    )
+}
+
+function ToggleButtonWrapper(props) {
+
+    let isSelected = props.tagval === "true" ? true : false
+
+    const toggleCallback = function() {
+        props.handleChange(props.offset1, props.offset2, isSelected ? "false" : "true");
+    };
+
+    return(
+        <>
+        <p>{props.tagname}:</p>
+        <ToggleButton text="False" switch_text="True" 
+        isSelected={isSelected}
+        callback={toggleCallback}/>
         </>
     )
 }
@@ -232,39 +252,28 @@ function InfoPanel(props) {
 
     let tags_mentioned = {};
 
-    // const handleChange = function(tagname, offset1, offset2, newval) {
-    //     len_change = newval.length-(offset2-offset1);
-    //     let i=0;
-    //     for (; i<attrs.length; i++) {
-    //         if (attrs[i][0] == tagname) {
-    //             state.update({changes: {from: offset1, to: offset2, insert: newval}});
-    //             attrs[i][1] = newval;
-    //             break;
-    //         }
-    //     }
-    //     for (; i<attrs.length; i++) {
-    //         attrs[i][2] += len_change;
-    //         attrs[i][3] += len_change;
-    //     }
-    // };
-
     const handleChange = function(offset1, offset2, newval) {
-        // let transaction = view.state.update({changes: {from: offset1, to: offset2, insert: newval}});
         let transaction = {changes: {from: offset1, to: offset2, insert: newval}};
-        // let editor = document.getElementById('mountkey-1').childNodes[0];
-        let new_view = view.dispatch(transaction);
-        console.log(new_view);
-        props.setView(new_view);
+        view.dispatch(transaction);
+        props.setView(view);
         return transaction;
     };
 
     const attrToEntry = function(x) {
         tags_mentioned[x[0]] = 1;
         return(
-            <li key={x[0]}>
-                <TextForm tagname={x[0]} tagval={x[1]} offset1={x[2]} offset2={x[3]}
+        <li key={x[0]}>
+            {(x[1].toLowerCase() === "true" || x[1].toLowerCase() === "false") ?
+                <ToggleButtonWrapper tagname={x[0]} tagval={x[1]} 
+                offset1={x[2]} offset2={x[3]}
+                isSelected={false} handleChange={handleChange}/>
+            :
+                <TextForm tagname={x[0]} tagval={x[1]} 
+                offset1={x[2]} offset2={x[3]}
                 handleChange={handleChange}/>
-            </li>
+                
+            }
+        </li>
         )
     }
 
@@ -345,7 +354,6 @@ function Editor(props) {
         <>
             <div id={mountKey}/>
             {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view} setView={setView}/>}
-            <TextForm word="Cookies"/>
         </>
     )
 }

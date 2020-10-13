@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { doenetComponentForegroundActive } from "./theme.js"
 
 export default function ToggleButton(props) {
-    const [isSelected, setSelected] = useState(false)
+    const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false)
     //Assume small
     var toggleButton = {
         margin: '0px',
@@ -28,6 +28,7 @@ export default function ToggleButton(props) {
         toggleButton.backgroundColor = `${doenetComponentForegroundActive}`;
         toggleButton.color = '#FFF';
         toggleButton.border = '2px solid #FFF'
+        if (props.switch_text) toggleButton.text = props.switch_text;
     }
     function handleClick() {
         if (isSelected === false) {
@@ -35,6 +36,7 @@ export default function ToggleButton(props) {
         } if (isSelected === true) {
             setSelected(false)
         }
+        if (props.callback) props.callback();
     }
     return (
         <>
