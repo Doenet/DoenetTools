@@ -37,6 +37,8 @@ function findTag(doc, tree, position) {
     let tag = {pos: -1, tagname: "", open: true}
     if (tree.children.length == 0) return tag;
 
+    console.log(tree);
+
     let buffer = tree.children[0].buffer;
     let types = tree.children[0].group.types;
     let sym_open = -1;
@@ -217,8 +219,9 @@ function TextForm(props) {
     return (
         <>
             {(isForm && tagval) ? 
-                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
-            : <p onClick={handleTextClick}>{tagname}: {tagval}</p>}
+                <><label>{tagname}: </label><input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
+                </>
+            : <label onClick={handleTextClick}>{tagname}: {tagval}</label>}
         </>
     )
 }
@@ -233,7 +236,7 @@ function ToggleButtonWrapper(props) {
 
     return(
         <>
-        <p>{props.tagname}:</p>
+        <label>{props.tagname}:</label>
         <ToggleButton text="False" switch_text="True" 
         isSelected={isSelected}
         callback={toggleCallback}/>
