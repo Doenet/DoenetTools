@@ -1,6 +1,8 @@
-import BlockComponent from './abstract/BlockComponent';
+import CompositeComponent from './abstract/CompositeComponent';
+import { postProcessCopy } from '../utils/copy';
+import ComponentSize from './abstract/ComponentSize';
 
-export default class ConditionalContent extends BlockComponent {
+export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalcontent";
 
   static createPropertiesObject() {
@@ -12,38 +14,25 @@ export default class ConditionalContent extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atMostOneIf = childLogic.newLeaf({
-      name: "atMostOneIf",
-      componentType: 'if',
+    let atMostOneCondition = childLogic.newLeaf({
+      name: "atMostOneCondition",
+      componentType: 'condition',
       comparison: 'atMost',
       number: 1,
       allowSpillover: false,
     });
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
+    let atLeastZeroAnything = childLogic.newLeaf({
+      name: "atLeastZeroAnything",
+      componentType: '_base',
       comparison: 'atLeast',
       number: 0,
     });
-
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let inlineAndBlock = childLogic.newOperator({
-      name: "inlineAndBlock",
-      operator: "and",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-    })
 
     childLogic.newOperator({
       name: "ifAndRest",
       operator: "and",
-      propositions: [atMostOneIf, inlineAndBlock],
+      propositions: [atMostOneCondition, atLeastZeroAnything],
       setAsBase: true,
     })
 
@@ -57,49 +46,221 @@ export default class ConditionalContent extends BlockComponent {
 
     stateVariableDefinitions.hide = {
       returnDependencies: () => ({
-        ifChild: {
+        conditionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneIf",
+          childLogicName: "atMostOneCondition",
           variableNames: ["conditionSatisfied"],
         },
       }),
       definition: function ({ dependencyValues }) {
 
         let hide;
-        if (dependencyValues.ifChild.length === 0) {
+        if (dependencyValues.conditionChild.length === 0) {
           hide = true;
         } else {
-          hide = !dependencyValues.ifChild[0].stateValues.conditionSatisfied;
+          hide = !dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
         }
 
         return { newValues: { hide } }
       }
     };
 
-    stateVariableDefinitions.childrenToRender = {
+    stateVariableDefinitions.replacementClasses = {
       returnDependencies: () => ({
-        inlineBlockChildren: {
+        hide: {
+          dependencyType: "stateVariable",
+          variableName: "hide",
+        },
+        anyChildren: {
           dependencyType: "childIdentity",
-          childLogicName: "inlineAndBlock",
+          childLogicName: "atLeastZeroAnything"
+        }
+      }),
+      definition({ dependencyValues, componentInfoObjects }) {
+        let replacementClasses = [];
+
+        if (!dependencyValues.hide) {
+          replacementClasses = dependencyValues.anyChildren.map(
+            x => componentInfoObjects.allComponentClasses[x.componentType]
+          )
+        }
+
+        return { newValues: { replacementClasses } };
+
+      }
+    }
+
+    stateVariableDefinitions.readyToExpand = {
+      returnDependencies: () => ({
+        replacementClasses: {
+          dependencyType: "stateVariable",
+          variableName: "replacementClasses"
+        },
+        needsReplacementsUpdatedWhenStale: {
+          dependencyType: "stateVariable",
+          variableName: "needsReplacementsUpdatedWhenStale",
+        },
+      }),
+      definition() {
+        return { newValues: { readyToExpand: true } }
+      }
+    }
+
+    stateVariableDefinitions.conditionName = {
+      returnDependencies: () => ({
+        conditionChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneCondition",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.inlineBlockChildren.map(x => x.componentName)
-          }
+
+        let conditionName;
+        if (dependencyValues.conditionChild.length === 1) {
+          conditionName = dependencyValues.conditionChild[0].componentName;
         }
+
+        return { newValues: { conditionName } }
       }
+    };
+
+
+    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
+      returnDependencies: () => ({
+        hide: {
+          dependencyType: "stateVariable",
+          variableName: "hide",
+        },
+      }),
+      // the whole point of this state variable is to return updateReplacements
+      // on mark stale
+      markStale: () => ({ updateReplacements: true }),
+      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
     }
 
     return stateVariableDefinitions;
   }
 
+  static createSerializedReplacements({ component, workspace }) {
 
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.container({ key: this.componentName });
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
+
+    workspace.previouslyHidden = component.stateValues.hide;
+
+    if (component.stateValues.hide) {
+      return { replacements: [] };
     }
+
+    let serializedChildrenCopy = component.activeChildren
+      .filter(x => x.componentName !== component.stateValues.conditionName)
+      .map(
+        x => x.serialize({ forCopy: true })
+      );
+
+
+    if (!workspace.uniqueIdentifiersUsed) {
+      workspace.uniqueIdentifiersUsed = []
+    }
+
+    return {
+      replacements: postProcessCopy({
+        serializedComponents: serializedChildrenCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      })
+    };
+
+  }
+
+  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
+
+    if (component.stateValues.hide) {
+      if (workspace.previouslyHidden) {
+        return [];
+      } else {
+
+        workspace.previouslyHidden = true;
+
+        let replacementsToWithhold = component.replacements.length;
+        let replacementInstruction = {
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold,
+        };
+
+        return [replacementInstruction];
+
+      }
+    }
+
+    if (!workspace.previouslyHidden) {
+      return [];
+    }
+
+    workspace.previouslyHidden = false;
+
+    let childrenToCopy = component.activeChildren
+      .filter(x => x.componentName !== component.stateValues.conditionName);
+
+    if (component.replacements.length === childrenToCopy.length) {
+      // just stop withholding replacements
+      let replacementInstruction = {
+        changeType: "changeReplacementsToWithhold",
+        replacementsToWithhold: 0,
+      };
+
+      return [replacementInstruction];
+
+    }
+
+    // create new replacements
+
+    let serializedChildrenCopy = childrenToCopy.map(
+      x => x.serialize({ forCopy: true })
+    );
+
+    if (!workspace.uniqueIdentifiersUsed) {
+      workspace.uniqueIdentifiersUsed = []
+    }
+
+    let serializedReplacements = postProcessCopy({
+      serializedComponents: serializedChildrenCopy,
+      componentName: component.componentName,
+      uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+    })
+
+    let replacementInstruction = {
+      changeType: "add",
+      changeTopLevelReplacements: true,
+      firstReplacementInd: 0,
+      numberReplacementsToReplace: component.replacements.length,
+      replacementsToWithhold: 0,
+      serializedReplacements: serializedReplacements,
+    };
+
+    return [replacementInstruction];
+
+  }
+
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = [];
+
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    return allPotentialRendererTypes;
+
   }
 
 }

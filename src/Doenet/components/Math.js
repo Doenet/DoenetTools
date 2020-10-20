@@ -1,12 +1,13 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { convertValueToMathExpression } from '../utils/math';
+import { flattenDeep } from '../utils/array';
 
 
 export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
-  // used when creating new component via adapter or ref prop
+  // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
 
   // used when referencing this component without prop
@@ -157,7 +158,7 @@ export default class MathComponent extends InlineComponent {
           variableName: "valueShadow"
         },
       }),
-      set: convertValueToMathExpression, // TODO: implement
+      set: convertValueToMathExpression,
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       definition: calculateMathValue,
       inverseDefinition: invertMath,
@@ -1204,9 +1205,4 @@ function getExpressionPieces({ expression, stateValues }) {
   }
   return pieces;
 
-}
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 }

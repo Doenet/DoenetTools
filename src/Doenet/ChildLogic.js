@@ -1,3 +1,5 @@
+import { flattenDeep } from "./utils/array";
+
 export default class childLogic {
   constructor({ properties, parentComponentType,
     allComponentClasses, standardComponentClasses, components }) {
@@ -294,7 +296,7 @@ export default class childLogic {
   }
 
   calculateSugarReplacements({ childMatches, activeChildren, allChildren, definingChildren,
-    separateSugarInputs, replacementFunction, dependencyValues, idRng }
+    separateSugarInputs, replacementFunction, dependencyValues, parentName, childLogicName }
   ) {
 
     let flattenedMatches = flattenDeep(childMatches);
@@ -323,7 +325,7 @@ export default class childLogic {
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
-        idRng,
+        parentName, childLogicName
       });
       if (result.success !== true) {
         return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
@@ -356,7 +358,7 @@ export default class childLogic {
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
-        idRng
+        parentName, childLogicName
       });
       if (result.success !== true) {
         return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
@@ -1281,6 +1283,13 @@ class ChildLogicOperator extends ChildLogicBase {
           }
         }
 
+        // although have more than one match
+        // it is possible that all the successful matches were with zero children
+        // in which case propositionOfMinIndex is undefined
+        // and there is nothing to do here
+
+        if (propositionOfMinIndex !== undefined) {
+
         // chose just the sugar from the proposition chosen
         let nameofMinIndex = allResults[propositionOfMinIndex].name;
         if (sugarsMatchedByPropositionName[nameofMinIndex]) {
@@ -1294,7 +1303,7 @@ class ChildLogicOperator extends ChildLogicBase {
         // reset adapterResults
         // to correspond to the one proposition chosen
         adapterResults = allResults[propositionOfMinIndex].adapterResults;
-
+        }
       }
     }
 
@@ -1356,9 +1365,4 @@ class ChildLogicOperator extends ChildLogicBase {
     return this.propositions.some(x => x.checkIfChildInLogic(child, allowInheritance));
   }
 
-}
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 }

@@ -17,16 +17,22 @@ export default class Textinput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
-            componentName: this.stateValues.answerAncestor.componentName,
-            actionName: "submitAnswer"
-          })
+          if (this.stateValues.answerAncestor.stateValues.submitAllAnswersAtAncestor !== null) {
+            return () => this.coreFunctions.requestAction({
+              componentName: this.stateValues.answerAncestor.stateValues.submitAllAnswersAtAncestor,
+              actionName: "submitAllAnswers"
+            })
+          } else {
+            return () => this.coreFunctions.requestAction({
+              componentName: this.stateValues.answerAncestor.componentName,
+              actionName: "submitAnswer"
+            })
+          }
         } else {
           return () => null
         }
       }.bind(this)
     });
-
 
   }
   static componentType = "textinput";
@@ -219,7 +225,7 @@ export default class Textinput extends Input {
 
   updateImmediateValue({ text }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -232,25 +238,50 @@ export default class Textinput extends Input {
 
   updateValue() {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "value",
-          value: this.stateValues.immediateValue,
-        }]
-      })
-
+      let updateInstructions = [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "value",
+        value: this.stateValues.immediateValue,
+      },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result
-      this.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
+      // (hence the need to execute update first)
+      // Also, this makes sure immediateValue is saved to the database,
+      // since in updateImmediateValue, immediateValue is note saved to database
+      {
+        updateType: "executeUpdate"
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "immediateValue",
+        valueOfStateVariable: "value",
+      }];
+
+      let event = {
+        verb: "answered",
+        object: {
           componentName: this.componentName,
-          stateVariable: "immediateValue",
-          value: this.stateValues.value,
-        }]
+          componentType: this.componentType,
+        },
+        result: {
+          response: this.stateValues.immediateValue,
+          responseText: this.stateValues.immediateValue,
+        }
+      }
+
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event
       })
+
     }
   }
 

@@ -2,6 +2,7 @@ import BaseComponent from './BaseComponent';
 
 export default class ComponentSize extends BaseComponent {
   static componentType = "_componentsize";
+  static rendererType = "number";
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
@@ -11,10 +12,10 @@ export default class ComponentSize extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
+    let atMostOneString = childLogic.newLeaf({
+      name: "atMostOneString",
       componentType: 'string',
-      comparison: 'exactly',
+      comparison: 'atMost',
       number: 1,
     });
 
@@ -28,7 +29,7 @@ export default class ComponentSize extends BaseComponent {
     let numberAndString = childLogic.newOperator({
       name: "numberAndString",
       operator: 'and',
-      propositions: [atMostOneNumber, exactlyOneString],
+      propositions: [atMostOneNumber, atMostOneString],
       requireConsecutive: true,
       sequenceMatters: true,
     });
@@ -57,6 +58,8 @@ export default class ComponentSize extends BaseComponent {
     let componentType = this.componentType;
 
     stateVariableDefinitions.value = {
+      public: true,
+      componentType: "number",
       additionalStateVariablesDefined: ["isAbsolute"],
       returnDependencies: () => ({
         componentSizeChild: {
@@ -64,9 +67,14 @@ export default class ComponentSize extends BaseComponent {
           childLogicName: "atMostOneComponentSize",
           variableNames: ["value", "isAbsolute"]
         },
-        numberAndStringChildren: {
+        numberChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "numberAndString",
+          childLogicName: "atMostOneNumber",
+          variableNames: ["value"]
+        },
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
           variableNames: ["value"]
         }
       }),
@@ -75,50 +83,72 @@ export default class ComponentSize extends BaseComponent {
         // console.log('value dependencyValues')
         // console.log(dependencyValues);
 
-        if (dependencyValues.numberAndStringChildren.length === 0) {
-          if (dependencyValues.componentSizeChild.length === 0) {
-            return {
-              useEssentialOrDefaultValue: {
-                value: { variablesToCheck: "value", defaultValue: 100 },
-                isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: false }
+        if (dependencyValues.stringChild.length === 0) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.componentSizeChild.length === 0) {
+              return {
+                useEssentialOrDefaultValue: {
+                  value: { variablesToCheck: "value", defaultValue: 100 },
+                  isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: false }
+                }
+              }
+            } else {
+              //only componentSize child
+
+              return {
+                newValues: dependencyValues.componentSizeChild[0].stateValues
               }
             }
           } else {
+            //only number child
+
             return {
-              newValues: dependencyValues.componentSizeChild[0].stateValues
+              newValues: {
+                value: dependencyValues.numberChild[0].stateValues.value,
+                isAbsolute: true
+              }
             }
           }
         } else {
-          // number and string children
+          //string child
 
           let originalValue, originalUnit;
 
-          if (dependencyValues.numberAndStringChildren.length === 1) {
-            //Only have a string
+          if (dependencyValues.numberChild.length === 1) {
+            //string and number child
+
+            originalValue = dependencyValues.numberChild[0].stateValues.value;
+            originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+          } else {
+            //only string child
+
+            // <width>100</width>
             // <width>100px</width>
             // <width>100 px</width>
             // <width>100 pixels</width>
             // <width>100pixels</width>
             // <width>100     pixel</width>
             // <width>100pixel</width>
+            // <width>50%</width>
 
-            let result = dependencyValues.numberAndStringChildren[0].stateValues.value.match(/^\s*(\d+)\s*([a-zA-Z]+|%+)\s*$/);
-            if (result === null) { throw Error(componentType + " must have a number and a unit."); }
-            originalValue = result[1];
-            originalUnit = result[2];
-
-          } else {
-            //Have a number followed by a string
-            originalValue = dependencyValues.numberAndStringChildren[0].stateValues.value;
-            if (!Number.isFinite(originalValue)) {
-              throw Error(componentType + " must have a number");
+            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
+            if (result === null) {
+              console.warn(componentType + " must begin with a number.");
+              return { newValues: { value: null, isAbsolute: true } };
             }
-            let result = dependencyValues.numberAndStringChildren[1].stateValues.value.match(/^\s*([a-zA-Z]+|%+)\s*$/);
-            if (result === null) { throw Error(componentType + " must have a number and a unit."); }
-            originalUnit = result[1];
-
+            originalValue = result[1];
+            originalUnit = result[2].trim();
           }
 
+          originalValue = Number(originalValue);
+          if (!Number.isFinite(originalValue)) {
+            console.warn(componentType + " must have a number");
+            return { newValues: { value: null, isAbsolute: true } };
+          }
+
+          if (originalUnit === "") {
+            return { newValues: { value: originalValue, isAbsolute: true } };
+          }
 
           let isAbsolute = !(originalUnit === '%' || originalUnit === 'em');
 
@@ -140,7 +170,8 @@ export default class ComponentSize extends BaseComponent {
             'centimeters': 37.795296,
           }
           if (conversionFactor[originalUnit] === undefined) {
-            throw Error(originalUnit + ' is not a defined unit of measure.');
+            console.warn(originalUnit + ' is not a defined unit of measure.');
+            return { newValues: { value: originalValue, isAbsolute: true } };
           }
           let value = conversionFactor[originalUnit] * originalValue;
 
@@ -152,7 +183,96 @@ export default class ComponentSize extends BaseComponent {
 
         }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.componentSizeChild.length === 0) {
+
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "value",
+                  value: desiredStateVariableValues.value
+                }]
+              }
+            } else {
+              //only componentSize child
+
+              return {
+                success: true,
+                instructions: [{
+                  setDependency: "componentSizeChild",
+                  desiredValue: desiredStateVariableValues.value,
+                  childIndex: 0,
+                  variableIndex: 0
+                }]
+              }
+            }
+          } else {
+            //only number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+        } else {
+          //string child
+
+          if (dependencyValues.numberChild.length === 1) {
+            //string and number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }, {
+                setDependency: "stringChild",
+                desiredValue: "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+
+          } else {
+            //only string child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringChild",
+                desiredValue: desiredStateVariableValues.value + "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+
+
+        }
       }
+    }
+
+    stateVariableDefinitions.valueForDisplay = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { valueForDisplay: dependencyValues.value }
+      })
     }
 
     return stateVariableDefinitions;

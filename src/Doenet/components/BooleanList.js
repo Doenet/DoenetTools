@@ -78,57 +78,174 @@ export default class BooleanList extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // set overrideChildHide so that children are hidden
+    // only based on whether or not the list is hidden
+    // so that can't have a list with partially hidden components
+    stateVariableDefinitions.overrideChildHide = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { overrideChildHide: true } })
+    }
+
+
+    stateVariableDefinitions.nComponents = {
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: ["childIndexByArrayKey"],
+      returnDependencies() {
+        return {
+          maximumNumber: {
+            dependencyType: "stateVariable",
+            variableName: "maximumNumber",
+          },
+          booleanAndBooleanlistChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "booleanAndBooleanLists",
+            variableNames: ["nComponents"],
+            variablesOptional: true,
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        let nComponents = 0;
+        let childIndexByArrayKey = [];
+
+        for (let [childInd, child] of dependencyValues.booleanAndBooleanlistChildren.entries()) {
+          if (child.stateValues.nComponents !== undefined) {
+            for (let i = 0; i < child.stateValues.nComponents; i++) {
+              childIndexByArrayKey[nComponents + i] = [childInd, i];
+            }
+            nComponents += child.stateValues.nComponents;
+          } else {
+            childIndexByArrayKey[nComponents] = [childInd, 0];
+            nComponents += 1;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== null && nComponents > maxNum) {
+          nComponents = maxNum;
+          childIndexByArrayKey = childIndexByArrayKey.slice(0, maxNum);
+        }
+
+        return {
+          newValues: { nComponents, childIndexByArrayKey },
+          checkForActualChange: { nComponents: true }
+        }
+      }
+    }
+
     stateVariableDefinitions.booleans = {
       public: true,
       componentType: "boolean",
       isArray: true,
       entryPrefixes: ["boolean"],
-      returnDependencies: () => ({
-        booleanAndBooleanlistChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "booleanAndBooleanLists",
-          variableNames: ["value", "booleans"],
-          variablesOptional: true,
-        },
-        maximumNumber: {
+      stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
+      returnArraySizeDependencies: () => ({
+        nComponents: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
-        }
+          variableName: "nComponents",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nComponents];
+      },
 
-        let booleans = [];
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {}
+        let globalDependencies = {
+          childIndexByArrayKey: {
+            dependencyType: "stateVariable",
+            variableName: "childIndexByArrayKey"
+          }
+        };
 
-        for (let child of dependencyValues.booleanAndBooleanlistChildren) {
-          if (child.stateValues.booleans) {
-            booleans.push(...child.stateValues.booleans);
-          } else {
-            booleans.push(child.stateValues.value);
+        for (let arrayKey of arrayKeys) {
+          let childIndices = [];
+          let booleanIndex = "1";
+          if (stateValues.childIndexByArrayKey[arrayKey]) {
+            childIndices = [stateValues.childIndexByArrayKey[arrayKey][0]];
+            booleanIndex = stateValues.childIndexByArrayKey[arrayKey][1] + 1;
+          }
+          dependenciesByKey[arrayKey] = {
+            booleanAndBooleanlistChildren: {
+              dependencyType: "childStateVariables",
+              childLogicName: "booleanAndBooleanLists",
+              variableNames: ["value", "boolean" + booleanIndex],
+              variablesOptional: true,
+              childIndices,
+            },
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== null && booleans.length > maxNum) {
-          maxNum = Math.max(0, Math.floor(maxNum));
-          booleans = booleans.slice(0, maxNum)
+        return { globalDependencies, dependenciesByKey }
+
+      },
+      arrayDefinitionByKey({
+        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+      }) {
+
+        let booleans = {};
+
+        for (let arrayKey of arrayKeys) {
+          let child = dependencyValuesByKey[arrayKey].booleanAndBooleanlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              booleans[arrayKey] = child.stateValues.value;
+            } else {
+              let booleanIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              booleans[arrayKey] = child.stateValues["boolean" + booleanIndex];
+            }
+
+          }
+
         }
 
         return { newValues: { booleans } }
 
-      }
-    }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
 
-    stateVariableDefinitions.nComponents = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        booleans: {
-          dependencyType: "stateVariable",
-          variableName: "booleans"
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.booleans) {
+
+          if (!dependencyValuesByKey[arrayKey]) {
+            continue;
+          }
+
+          let child = dependencyValuesByKey[arrayKey].booleanAndBooleanlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].booleanAndBooleanlistChildren,
+                desiredValue: desiredStateVariableValues.booleans[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].booleanAndBooleanlistChildren,
+                desiredValue: desiredStateVariableValues.booleans[arrayKey],
+                childIndex: 0,
+                variableIndex: 1,
+              });
+
+            }
+          }
         }
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { nComponents: dependencyValues.booleans.length } }
+
+        return {
+          success: true,
+          instructions
+        }
+
+
       }
     }
 

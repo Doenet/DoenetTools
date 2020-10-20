@@ -1,0 +1,621 @@
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[45,2],{
+
+/***/ 1354:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! https://mths.be/cssesc v3.0.0 by @mathias */
+
+
+var object = {};
+var hasOwnProperty = object.hasOwnProperty;
+var merge = function merge(options, defaults) {
+	if (!options) {
+		return defaults;
+	}
+	var result = {};
+	for (var key in defaults) {
+		// `if (defaults.hasOwnProperty(key) { … }` is not needed here, since
+		// only recognized option names are used.
+		result[key] = hasOwnProperty.call(options, key) ? options[key] : defaults[key];
+	}
+	return result;
+};
+
+var regexAnySingleEscape = /[ -,\.\/:-@\[-\^`\{-~]/;
+var regexSingleEscape = /[ -,\.\/:-@\[\]\^`\{-~]/;
+var regexAlwaysEscape = /['"\\]/;
+var regexExcessiveSpaces = /(^|\\+)?(\\[A-F0-9]{1,6})\x20(?![a-fA-F0-9\x20])/g;
+
+// https://mathiasbynens.be/notes/css-escapes#css
+var cssesc = function cssesc(string, options) {
+	options = merge(options, cssesc.options);
+	if (options.quotes != 'single' && options.quotes != 'double') {
+		options.quotes = 'single';
+	}
+	var quote = options.quotes == 'double' ? '"' : '\'';
+	var isIdentifier = options.isIdentifier;
+
+	var firstChar = string.charAt(0);
+	var output = '';
+	var counter = 0;
+	var length = string.length;
+	while (counter < length) {
+		var character = string.charAt(counter++);
+		var codePoint = character.charCodeAt();
+		var value = void 0;
+		// If it’s not a printable ASCII character…
+		if (codePoint < 0x20 || codePoint > 0x7E) {
+			if (codePoint >= 0xD800 && codePoint <= 0xDBFF && counter < length) {
+				// It’s a high surrogate, and there is a next character.
+				var extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) {
+					// next character is low surrogate
+					codePoint = ((codePoint & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000;
+				} else {
+					// It’s an unmatched surrogate; only append this code unit, in case
+					// the next code unit is the high surrogate of a surrogate pair.
+					counter--;
+				}
+			}
+			value = '\\' + codePoint.toString(16).toUpperCase() + ' ';
+		} else {
+			if (options.escapeEverything) {
+				if (regexAnySingleEscape.test(character)) {
+					value = '\\' + character;
+				} else {
+					value = '\\' + codePoint.toString(16).toUpperCase() + ' ';
+				}
+			} else if (/[\t\n\f\r\x0B]/.test(character)) {
+				value = '\\' + codePoint.toString(16).toUpperCase() + ' ';
+			} else if (character == '\\' || !isIdentifier && (character == '"' && quote == character || character == '\'' && quote == character) || isIdentifier && regexSingleEscape.test(character)) {
+				value = '\\' + character;
+			} else {
+				value = character;
+			}
+		}
+		output += value;
+	}
+
+	if (isIdentifier) {
+		if (/^-[-\d]/.test(output)) {
+			output = '\\-' + output.slice(1);
+		} else if (/\d/.test(firstChar)) {
+			output = '\\3' + firstChar + ' ' + output.slice(1);
+		}
+	}
+
+	// Remove spaces after `\HEX` escapes that are not followed by a hex digit,
+	// since they’re redundant. Note that this is only possible if the escape
+	// sequence isn’t preceded by an odd number of backslashes.
+	output = output.replace(regexExcessiveSpaces, function ($0, $1, $2) {
+		if ($1 && $1.length % 2) {
+			// It’s not safe to remove the space, so don’t.
+			return $0;
+		}
+		// Strip the space.
+		return ($1 || '') + $2;
+	});
+
+	if (!isIdentifier && options.wrap) {
+		return quote + output + quote;
+	}
+	return output;
+};
+
+// Expose default options (so they can be overridden globally).
+cssesc.options = {
+	'escapeEverything': false,
+	'isIdentifier': false,
+	'quotes': 'single',
+	'wrap': false
+};
+
+cssesc.version = '3.0.0';
+
+module.exports = cssesc;
+
+
+/***/ }),
+
+/***/ 645:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DoenetRenderer; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var DoenetRenderer = /*#__PURE__*/function (_Component) {
+  _inherits(DoenetRenderer, _Component);
+
+  var _super = _createSuper(DoenetRenderer);
+
+  function DoenetRenderer(props) {
+    var _this;
+
+    _classCallCheck(this, DoenetRenderer);
+
+    _this = _super.call(this, props);
+    _this.addChildren = _this.addChildren.bind(_assertThisInitialized(_this));
+    _this.removeChildren = _this.removeChildren.bind(_assertThisInitialized(_this));
+    _this.swapChildren = _this.swapChildren.bind(_assertThisInitialized(_this));
+    _this.update = _this.update.bind(_assertThisInitialized(_this));
+    _this.childrenToCreate = props.componentInstructions.children;
+    _this.componentName = props.componentInstructions.componentName;
+    _this.actions = props.componentInstructions.actions; // This keeps the proxy in place so that state variables
+    // aren't calculated unless asked for
+    // Also means it will always have the new values when they are changed
+    // so we don't have to pass them in on update
+
+    _this.doenetSvData = props.componentInstructions.stateValues;
+    props.rendererUpdateMethods[_this.componentName] = {
+      update: _this.update,
+      addChildren: _this.addChildren,
+      removeChildren: _this.removeChildren,
+      swapChildren: _this.swapChildren
+    };
+
+    if (_this.constructor.initializeChildrenOnConstruction) {
+      _this.initializeChildren();
+    }
+
+    return _this;
+  }
+
+  _createClass(DoenetRenderer, [{
+    key: "update",
+    value: function update() {
+      this.forceUpdate();
+    }
+  }, {
+    key: "addChildren",
+    value: function addChildren(instruction) {
+      var childInstructions = this.childrenToCreate[instruction.indexForParent];
+      var child = this.createChildFromInstructions(childInstructions);
+      this.children.splice(instruction.indexForParent, 0, child);
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "removeChildren",
+    value: function removeChildren(instruction) {
+      this.children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      var _iterator = _createForOfIteratorHelper(instruction.deletedComponentNames),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var componentName = _step.value;
+          delete this.props.rendererUpdateMethods[componentName];
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "swapChildren",
+    value: function swapChildren(instruction) {
+      var _ref = [this.children[instruction.index2], this.children[instruction.index1]];
+      this.children[instruction.index1] = _ref[0];
+      this.children[instruction.index2] = _ref[1];
+      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+
+      this.forceUpdate();
+    }
+  }, {
+    key: "initializeChildren",
+    value: function initializeChildren() {
+      this.children = [];
+
+      var _iterator2 = _createForOfIteratorHelper(this.childrenToCreate),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var childInstructions = _step2.value;
+          var child = this.createChildFromInstructions(childInstructions);
+          this.children.push(child);
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      return this.children;
+    }
+  }, {
+    key: "createChildFromInstructions",
+    value: function createChildFromInstructions(childInstructions) {
+      var propsForChild = {
+        key: childInstructions.componentName,
+        componentInstructions: childInstructions,
+        rendererClasses: this.props.rendererClasses,
+        rendererUpdateMethods: this.props.rendererUpdateMethods,
+        flags: this.props.flags
+      };
+
+      if (this.doenetPropsForChildren) {
+        Object.assign(propsForChild, this.doenetPropsForChildren);
+      }
+
+      var child = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(this.props.rendererClasses[childInstructions.rendererType], propsForChild);
+      return child;
+    }
+  }]);
+
+  return DoenetRenderer;
+}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
+
+_defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
+
+
+
+/***/ }),
+
+/***/ 688:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Video; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var cssesc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1354);
+/* harmony import */ var cssesc__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(cssesc__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+// youtube player code based on Ximera youtube player
+// https://github.com/XimeraProject/server
+// https://github.com/XimeraProject/server/blob/master/public/javascripts/youtube.js
+
+
+
+
+var Video = /*#__PURE__*/function (_DoenetRenderer) {
+  _inherits(Video, _DoenetRenderer);
+
+  var _super = _createSuper(Video);
+
+  function Video(props) {
+    var _this;
+
+    _classCallCheck(this, Video);
+
+    _this = _super.call(this, props);
+    _this.onPlayerReady = _this.onPlayerReady.bind(_assertThisInitialized(_this));
+    _this.onPlayerStateChange = _this.onPlayerStateChange.bind(_assertThisInitialized(_this));
+    _this.onPlaybackRateChange = _this.onPlaybackRateChange.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(Video, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      if (this.doenetSvData.youtube) {
+        var cName = cssesc__WEBPACK_IMPORTED_MODULE_2___default()(this.componentName);
+        this.player = new window.YT.Player(cName, {
+          videoId: this.doenetSvData.youtube,
+          width: this.doenetSvData.width,
+          height: this.doenetSvData.height,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+            showinfo: 0
+          },
+          events: {
+            'onReady': this.onPlayerReady,
+            'onStateChange': this.onPlayerStateChange,
+            'onPlaybackRateChange': this.onPlaybackRateChange
+          }
+        });
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.doenetSvData.hide) {
+        return null;
+      }
+
+      if (this.doenetSvData.youtube) {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+          className: "video",
+          id: this.componentName
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+          name: this.componentName
+        }));
+      } else if (this.doenetSvData.source) {
+        var extension = this.doenetSvData.source.split('/').pop().split('.').pop();
+        var type;
+
+        if (extension === "ogg") {
+          type = "video/ogg";
+        } else if (extension === "webm") {
+          type = "video/webm";
+        } else if (extension === "mp4") {
+          type = "video/mp4";
+        } else {
+          console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
+        }
+
+        if (type) {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+            name: this.componentName
+          }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("video", {
+            className: "video",
+            id: this.componentName,
+            style: {
+              objectFit: "fill"
+            },
+            controls: true,
+            width: this.doenetSvData.width,
+            height: this.doenetSvData.height
+          }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("source", {
+            src: this.doenetSvData.source,
+            type: type
+          }), "Your browser does not support the <video> tag."));
+        } else {
+          return null;
+        }
+      }
+
+      console.warn("No video returned youtube or no valid sources specified");
+      return null;
+    }
+  }, {
+    key: "onPlayerReady",
+    value: function onPlayerReady() {
+      var player = this.player;
+      var renderer = this;
+      player.setPlaybackQuality("hd720"); // To correctly capture the "watched" events, we need to know the last time
+      // of the player before the user skips to a new spot
+      // Since the callbacks only give the time after a skip,
+      // we poll the player for the current time every 200 ms
+      // to record the last time before a skip
+
+      window.setInterval(function () {
+        var newTime = player.getCurrentTime();
+        var timeInterval; // if previously skipped a time (because the jump was too large)
+        // we need to calculate the interval from that skipped time
+
+        if (renderer.skippedCurrentTime) {
+          timeInterval = newTime - renderer.skippedCurrentTime;
+        } else {
+          timeInterval = newTime - renderer.currentTime;
+        } // We are polling every 200 ms,
+        // hence if a jump was larger than a second (or negative),
+        // we guess that a portion of the video was skipped
+        // so don't update the current time for one cycle
+        // (which is typically long enough for the state change listener
+        // to be able to grab the current time to determine
+        // the end of the watched segment)
+
+
+        if (!(renderer.currentTime >= 0) || timeInterval > 0 && timeInterval < 1) {
+          renderer.currentTime = newTime;
+          renderer.skippedCurrentTime = null;
+        } else {
+          // jump was negative or longer than a second
+          renderer.skippedCurrentTime = newTime;
+        }
+      }, 200);
+    }
+  }, {
+    key: "onPlayerStateChange",
+    value: function onPlayerStateChange(event) {
+      var lastPlayerState = this.lastPlayerState;
+      var renderer = this;
+      var player = this.player;
+      var duration = player.getDuration(); // console.log(`on player state change: ${event.data}`)
+
+      switch (event.data) {
+        case window.YT.PlayerState.PLAYING:
+          if (this.lastEventState !== event.data) {
+            var newTime = player.getCurrentTime();
+
+            if (this.lastEventState === window.YT.PlayerState.PAUSED) {
+              var timeSincePaused = newTime - this.lastPausedTime; // if the time has gone backward or move ahead more than a half-second,
+              // we consider that a portion of the video was skipped
+              // (When video is paused and immediately restarted, the time
+              // skips forward a small amount, but less than a half-second)
+
+              if (timeSincePaused < 0 || timeSincePaused > 0.5) {
+                // console.log(`recording video skipped ${this.lastPausedTime}, ${newTime}`)
+                this.actions.recordVideoSkipped({
+                  beginTime: this.lastPausedTime,
+                  endTime: newTime,
+                  duration: duration
+                });
+              }
+            }
+
+            this.lastPlayedTime = newTime;
+            var rate = player.getPlaybackRate();
+            this.rates = [{
+              startingPoint: newTime,
+              rate: rate
+            }];
+            this.currentTime = NaN; // console.log(`recording that video started at ${this.lastPlayedTime} at rate ${rate}`)
+
+            this.actions.recordVideoStarted({
+              beginTime: player.getCurrentTime(),
+              duration: duration,
+              rate: rate
+            });
+            this.lastEventState = event.data;
+          }
+
+          break;
+
+        case window.YT.PlayerState.PAUSED:
+          var timer = setTimeout(function () {
+            var currentTime = player.getCurrentTime();
+
+            if (renderer.lastEventState === window.YT.PlayerState.PLAYING) {
+              // console.log(`recording video watched ${renderer.lastPlayedTime}, ${currentTime}`);
+              renderer.rates[renderer.rates.length - 1].endingPoint = currentTime;
+              renderer.actions.recordVideoWatched({
+                beginTime: renderer.lastPlayedTime,
+                endTime: currentTime,
+                duration: duration,
+                rates: renderer.rates
+              });
+            } // console.log(`recording that video paused ${currentTime}`)
+
+
+            renderer.actions.recordVideoPaused({
+              endTime: currentTime,
+              duration: duration
+            });
+            renderer.currentTime = NaN;
+            renderer.lastEventState = event.data;
+            renderer.lastPausedTime = currentTime;
+          }, 250);
+          this.timer = timer;
+          break;
+
+        case window.YT.PlayerState.BUFFERING:
+          clearTimeout(this.timer);
+
+          if (lastPlayerState !== window.YT.PlayerState.UNSTARTED && Number.isFinite(this.currentTime)) {
+            var _newTime = player.getCurrentTime(); // console.log(`recording video watched ${this.lastPlayedTime}, ${this.currentTime}`);
+
+
+            this.rates[this.rates.length - 1].endingPoint = this.currentTime;
+            this.actions.recordVideoWatched({
+              beginTime: this.lastPlayedTime,
+              endTime: this.currentTime,
+              duration: duration,
+              rates: this.rates
+            }); // console.log(`recording video skipped ${this.currentTime}, ${newTime}`)
+
+            this.actions.recordVideoSkipped({
+              beginTime: this.currentTime,
+              endTime: _newTime,
+              duration: duration
+            });
+            this.currentTime = NaN; // videoWatched(player, container, container.data('lastPlayedTime'), container.data('currentTime'));
+            // videoSkipped(player, container, container.data('currentTime'), player.getCurrentTime());
+
+            this.lastEventState = event.data;
+          }
+
+          break;
+
+        case window.YT.PlayerState.ENDED:
+          // BADBAD: We're treating ENDED as though it meant the user
+          // completed the video, even thought it
+          // doesn't necessarily mean the learner watched ALL the video
+          // console.log(`recording video watched ${this.lastPlayedTime}, ${player.getCurrentTime()}`);
+          this.rates[this.rates.length - 1].endingPoint = player.getCurrentTime();
+          this.actions.recordVideoWatched({
+            beginTime: this.lastPlayedTime,
+            endTime: player.getCurrentTime(),
+            duration: duration,
+            rates: this.rates
+          }); // console.log(`recording video ended`)
+
+          this.actions.recordVideoCompleted({
+            duration: duration
+          });
+          this.currentTime = NaN;
+          this.lastEventState = event.data;
+          break;
+
+        case window.YT.PlayerState.UNSTARTED:
+          break;
+      }
+
+      this.lastPlayerState = event.data;
+    }
+  }, {
+    key: "onPlaybackRateChange",
+    value: function onPlaybackRateChange(event) {
+      this.rates[this.rates.length - 1].endingPoint = this.currentTime;
+      this.rates.push({
+        startingPoint: this.currentTime,
+        rate: event.data
+      });
+    }
+  }]);
+
+  return Video;
+}(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
+
+/***/ })
+
+}]);

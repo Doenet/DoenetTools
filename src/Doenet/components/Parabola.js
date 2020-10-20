@@ -10,14 +10,26 @@ export default class Parabola extends Curve {
 
     childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
+    let atMostOneThrough = childLogic.newLeaf({
       name: "atMostOneThrough",
       componentType: 'through',
       comparison: "atMost",
       number: 1,
-      setAsBase: true,
     });
 
+    let atMostOneVariables = childLogic.newLeaf({
+      name: "atMostOneVariables",
+      componentType: 'variables',
+      comparison: 'atMost',
+      number: 1
+    });
+
+    childLogic.newOperator({
+      name: "parabolaLogic",
+      operator: 'and',
+      propositions: [atMostOneThrough, atMostOneVariables],
+      setAsBase: true,
+    });
 
     return childLogic;
   }
@@ -78,343 +90,245 @@ export default class Parabola extends Curve {
       }
     }
 
+
     stateVariableDefinitions.throughPoints = {
       public: true,
       componentType: "point",
       isArray: true,
-      entryPrefixes: ["throughPoint"],
-      additionalStateVariablesDefined: [{
-        variableName: "throughPointsAreNumeric",
-        entryPrefixes: ["throughPointIsNumeric"]
-      }],
-      returnDependencies: function ({ arrayKeys }) {
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        let dependencies = {
-          aShadow: {
-            dependencyType: "stateVariable",
-            variableName: "aShadow"
-          },
-          nThroughPoints: {
-            dependencyType: "stateVariable",
-            variableName: "nThroughPoints"
-          }
-        }
-        if (arrayKey === undefined) {
-          dependencies.throughChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "atMostOneThrough",
-            variableNames: ["points"]
-          };
-
+      nDimensions: 2,
+      entryPrefixes: ["throughPointX", "throughPoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "throughPointX") {
+          return [];
         } else {
-          dependencies.throughChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "atMostOneThrough",
-            variableNames: ["point" + (arrayKey + 1)]
-          };
+          // through point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
         }
-        return dependencies;
-
       },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-
-        let freshByKeyPoints = freshnessInfo.throughPoints.freshByKey;
-        let freshByKeyNumeric = freshnessInfo.throughPointsAreNumeric.freshByKey;
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (changes.throughChild) {
-
-          if (changes.throughChild.componentIdentitiesChanged) {
-
-            // if throughChild changed
-            // then the entire points array is also changed
-            for (let key in freshByKeyPoints) {
-              delete freshByKeyPoints[key];
-            }
-            for (let key in freshByKeyNumeric) {
-              delete freshByKeyNumeric[key];
-            }
-          } else {
-
-            let valuesChanged = changes.throughChild.valuesChanged[0];
-
-            if (arrayKey === undefined) {
-
-              if (valuesChanged.points) {
-                // if have the same points from throughChild
-                // then just check if any of those points values
-                // are no longer fresh
-                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
-                for (let key in freshByKeyPoints) {
-                  if (!newFreshByKey[key]) {
-                    delete freshByKeyPoints[key];
-                  }
-                }
-                for (let key in freshByKeyNumeric) {
-                  if (!newFreshByKey[key]) {
-                    delete freshByKeyNumeric[key];
-                  }
-                }
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "throughPointX") {
+          // throughPointX1_2 is the 2nd component of the first through point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
               }
             } else {
-              if (valuesChanged["point" + (arrayKey + 1)]) {
-                delete freshByKeyPoints[arrayKey];
-                delete freshByKeyNumeric[arrayKey];
-              }
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
             }
-
-          }
-        }
-
-        if (arrayKey === undefined) {
-          let fresh = {};
-          let partiallyFresh = {}
-          if (Object.keys(freshByKeyPoints).length === 0) {
-            // asked for entire array and it is all stale
-            fresh.throughPoints = false;
           } else {
-            // asked for entire array, but it has some fresh elements
-            partiallyFresh.throughPoints = true;
+            return [];
           }
-          if (Object.keys(freshByKeyNumeric).length === 0) {
-            // asked for entire array and it is all stale
-            fresh.throughPointsAreNumeric = false;
-          } else {
-            // asked for entire array, but it has some fresh elements
-            partiallyFresh.throughPointsAreNumeric = true;
-          }
-
-          return { fresh, partiallyFresh }
         } else {
-          // asked for just one component
-          return {
-            fresh: {
-              throughPoints: freshByKeyPoints[arrayKey] === true,
-              throughPointsAreNumeric: freshByKeyNumeric[arrayKey] === true
+          // throughPoint3 is all components of the third throughPoint
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+      },
+      returnArraySizeDependencies: () => ({
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nThroughPoints, 2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+
+          dependenciesByKey[arrayKey] = {
+            throughChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atMostOneThrough",
+              variableNames: ["pointX" + varEnding]
             }
           }
         }
 
+        return { dependenciesByKey }
       },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-
-        let freshByKeyPoints = freshnessInfo.throughPoints.freshByKey;
-        let freshByKeyNumeric = freshnessInfo.throughPointsAreNumeric.freshByKey;
-
-        // console.log(`definition of throughPoints`)
-        // console.log(changes);
-        // console.log(dependencyValues)
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        // console.log(`array definition of throughPoints`)
+        // console.log(dependencyValuesByKey)
         // console.log(arrayKeys)
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
 
-        if (dependencyValues.throughChild.length === 1) {
+        let throughPoints = {};
 
-          if (arrayKey === undefined) {
-            let throughPoints = dependencyValues.throughChild[0].stateValues.points;
+        for (let arrayKey of arrayKeys) {
 
-            if (changes.throughChild) {
-              let overwriteArray = changes.throughChild.componentIdentitiesChanged;
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-              if (changes.throughChild.valuesChanged[0].points.changed.changedEntireArray) {
-                overwriteArray = true;
-              }
-
-              if (overwriteArray) {
-                // send array to indicate that should overwrite entire array
-                for (let key in throughPoints) {
-                  freshByKeyPoints[key] = true;
-                  freshByKeyNumeric[key] = true;
-                }
-
-                let newPointValues = [];
-                let newPointsAreNumeric = [];
-
-                for (let coords of throughPoints) {
-                  let { coordsNumeric, numericEntries } = getNumericalCoords(coords)
-                  newPointValues.push(coordsNumeric);
-                  newPointsAreNumeric.push(numericEntries);
-                }
-
-                return {
-                  newValues: {
-                    throughPoints: newPointValues,
-                    throughPointsAreNumeric: newPointsAreNumeric
-                  }
-                }
-              }
-            }
-
-            let newPointValues = {};
-            let newPointsAreNumeric = {}
-            for (let key in throughPoints) {
-              if (!freshByKeyPoints[key]) {
-                freshByKeyPoints[key] = true;
-                freshByKeyNumeric[key] = true;
-                let { coordsNumeric, numericEntries } = getNumericalCoords(throughPoints[key])
-                newPointValues[key] = coordsNumeric;
-                newPointsAreNumeric[key] = numericEntries;
-
-              }
-            }
-            return {
-              newValues: {
-                throughPoints: newPointValues,
-                throughPointsAreNumeric: newPointsAreNumeric
-              }
-            }
-
-          } else {
-            // have an arrayKey defined
-
-            if (!freshByKeyPoints[arrayKey]) {
-              freshByKeyPoints[arrayKey] = true;
-              freshByKeyNumeric[arrayKey] = true;
-              let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
-              let coordsNumeric, numericEntries;
-              if (coords) {
-                let result = getNumericalCoords(coords);
-                coordsNumeric = result.coordsNumeric;
-                numericEntries = result.numericEntries;
-              }
-              return {
-                newValues: {
-                  throughPoints: {
-                    [arrayKey]: coordsNumeric
-                  },
-                  throughPointsAreNumeric: {
-                    [arrayKey]: numericEntries
-                  }
-                }
-              }
+          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
+          if (throughChild.length === 1
+            && throughChild[0].stateValues["pointX" + varEnding]
+          ) {
+            let numericalVal = throughChild[0].stateValues["pointX" + varEnding].evaluate_to_constant();
+            if (Number.isFinite(numericalVal)) {
+              throughPoints[arrayKey] = me.fromAst(numericalVal);
             } else {
-              // arrayKey asked for didn't change
-              // don't need to report noChanges for array state variable
-              return {};
+              throughPoints[arrayKey] = me.fromAst('\uff3f');
             }
-          }
-
-        } else {
-          return {
-            newValues: { throughPoints: [], throughPointsAreNumeric: [] }
+          } else {
+            throughPoints[arrayKey] = me.fromAst('\uff3f');
           }
         }
+
+        return { newValues: { throughPoints } }
+
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
-        stateValues, initialChange, arrayKeys, workspace,
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey,
+        initialChange, stateValues,
       }) {
 
         // console.log('inverse definition of throughPoints')
         // console.log(desiredStateVariableValues)
+        // console.log(dependencyValuesByKey)
 
         // if not draggable, then disallow initial change 
         if (initialChange && !stateValues.draggable) {
           return { success: false };
         }
 
-        if ("throughPointsAreNumeric" in desiredStateVariableValues) {
-          return { success: false }
-        }
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.throughPoints) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey === undefined) {
-          // working with entire array
-
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "throughChild",
-              desiredValue: desiredStateVariableValues.throughPoints,
-              childIndex: 0,
-              variableIndex: 0
-            }]
-          }
-
-        } else {
-
-          // just have one arrayKey
-          // so child variable of throughChild is an array entry (rather than array)
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "throughChild",
+          if (dependencyValuesByKey[arrayKey].throughChild.length === 1
+            && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
+          ) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].throughChild,
               desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
               childIndex: 0,
               variableIndex: 0,
-            }]
+            })
+
+          } else {
+            return { success: false };
           }
 
+        }
+
+        return {
+          success: true,
+          instructions
         }
 
       }
     }
 
 
-    stateVariableDefinitions.numericalEntries = {
-      returnDependencies: () => ({
-        throughPointsAreNumeric: {
-          dependencyType: "stateVariable",
-          variableName: "throughPointsAreNumeric"
-        },
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          numericalEntries: dependencyValues.throughPointsAreNumeric.every(x => x)
-        },
-        checkForActualChange: { numericalEntries: true }
-      })
-    }
 
-    stateVariableDefinitions.throughPointsNumeric = {
+
+    stateVariableDefinitions.numericalThroughPoints = {
       isArray: true,
       forRenderer: true,
-      returnDependencies: () => ({
-        throughPoints: {
+      returnArraySizeDependencies: () => ({
+        nThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "throughPoints"
-        },
-        numericalEntries: {
-          dependencyType: "stateVariable",
-          variableName: "numericalEntries"
+          variableName: "nThroughPoints",
         },
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nThroughPoints];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
 
-        if (!dependencyValues.numericalEntries) {
-          return { newValues: { throughPointsNumeric: [] } }
-        } else {
-          return {
-            newValues: {
-              throughPointsNumeric: dependencyValues.throughPoints.map(x => x.tree.slice(1))
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            throughPoint: {
+              dependencyType: "stateVariable",
+              variableName: "throughPoint" + (Number(arrayKey) + 1)
             }
           }
         }
+
+        return { dependenciesByKey }
       },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let numericalThroughPoints = {};
+
+        for (let arrayKey of arrayKeys) {
+          let point = dependencyValuesByKey[arrayKey].throughPoint.map(x => x.tree)
+          if (!point.every(x => Number.isFinite(x))) {
+            point = Array(point.length).fill(NaN)
+          }
+          numericalThroughPoints[arrayKey] = point;
+        }
+
+        return { newValues: { numericalThroughPoints } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey
+      }) {
+        // console.log('inverse definition of numericalThroughPoints')
+        // console.log(desiredStateVariableValues)
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.numericalThroughPoints) {
+          if (dependencyValuesByKey[arrayKey].throughPoint) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].throughPoint,
+              desiredValue: desiredStateVariableValues.numericalThroughPoints[arrayKey].map(x => me.fromAst(x)),
+            })
+          } else {
+            return { success: false }
+          }
+        }
+
         return {
           success: true,
-          instructions: [{
-            setDependency: "throughPoints",
-            desiredValue: desiredStateVariableValues.throughPointsNumeric
-              .map(x => me.fromAst(["vector", ...x]))
-          }]
+          instructions
         }
       }
+    }
+
+    stateVariableDefinitions.pointAreNumerical = {
+      returnDependencies: () => ({
+        numericalThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalThroughPoints"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        // need to check just the first entry of numericalThroughPoints
+        newValues: {
+          pointAreNumerical: dependencyValues.numericalThroughPoints
+            .every(x => Number.isFinite(x[0]))
+        },
+        checkForActualChange: { pointAreNumerical: true }
+      })
     }
 
     stateVariableDefinitions.a = {
@@ -432,13 +346,13 @@ export default class Parabola extends Curve {
         },
         "realValued"],
       returnDependencies: () => ({
-        throughPointsNumeric: {
+        numericalThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "throughPointsNumeric"
+          variableName: "numericalThroughPoints"
         },
-        numericalEntries: {
+        pointAreNumerical: {
           dependencyType: "stateVariable",
-          variableName: "numericalEntries"
+          variableName: "pointAreNumerical"
         },
         aShadow: {
           dependencyType: "stateVariable",
@@ -449,7 +363,7 @@ export default class Parabola extends Curve {
         // console.log('definition of a, b, c, realValued of parabola')
         // console.log(dependencyValues)
 
-        if (!dependencyValues.numericalEntries) {
+        if (!dependencyValues.pointAreNumerical) {
           return {
             newValues: {
               a: NaN,
@@ -463,7 +377,7 @@ export default class Parabola extends Curve {
         let a, b, c;
         let realValued = true;
 
-        if (dependencyValues.throughPointsNumeric.length === 0) {
+        if (dependencyValues.numericalThroughPoints.length === 0) {
           // nothing specified.  Create parabola y=a*x^2, by default
           return {
             useEssentialOrDefaultValue: {
@@ -482,11 +396,11 @@ export default class Parabola extends Curve {
             }
           }
 
-        } else if (dependencyValues.throughPointsNumeric.length === 1) {
+        } else if (dependencyValues.numericalThroughPoints.length === 1) {
           // one point
           // create parabola with point as vertex
 
-          let p1 = dependencyValues.throughPointsNumeric[0];
+          let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
           let y1 = p1[1];
 
@@ -501,18 +415,18 @@ export default class Parabola extends Curve {
             }
           }
 
-        } else if (dependencyValues.throughPointsNumeric.length === 2) {
+        } else if (dependencyValues.numericalThroughPoints.length === 2) {
           // two points
           // create parabola through those points with given value of a
 
           a = dependencyValues.aShadow;
 
-          let p1 = dependencyValues.throughPointsNumeric[0];
+          let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
           let y1 = p1[1];
           let x12 = x1 * x1;
 
-          let p2 = dependencyValues.throughPointsNumeric[1];
+          let p2 = dependencyValues.numericalThroughPoints[1];
           let x2 = p2[0];
           let y2 = p2[1];
           let x22 = x2 * x2;
@@ -534,20 +448,20 @@ export default class Parabola extends Curve {
 
           return { newValues: { a, b, c, realValued } }
 
-        } else if (dependencyValues.throughPointsNumeric.length === 3) {
+        } else if (dependencyValues.numericalThroughPoints.length === 3) {
           // three points
 
-          let p1 = dependencyValues.throughPointsNumeric[0];
+          let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
           let y1 = p1[1];
           let x12 = x1 * x1;
 
-          let p2 = dependencyValues.throughPointsNumeric[1];
+          let p2 = dependencyValues.numericalThroughPoints[1];
           let x2 = p2[0];
           let y2 = p2[1];
           let x22 = x2 * x2;
 
-          let p3 = dependencyValues.throughPointsNumeric[2];
+          let p3 = dependencyValues.numericalThroughPoints[2];
           let x3 = p3[0];
           let y3 = p3[1];
           let x32 = x3 * x3;
@@ -647,7 +561,7 @@ export default class Parabola extends Curve {
         // console.log(dependencyValues);
         // console.log(workspace);
 
-        if (!dependencyValues.numericalEntries) {
+        if (!dependencyValues.pointAreNumerical) {
           return { success: false }
         }
 
@@ -669,7 +583,7 @@ export default class Parabola extends Curve {
           }
         }
 
-        if (dependencyValues.throughPointsNumeric.length === 0) {
+        if (dependencyValues.numericalThroughPoints.length === 0) {
           let instructions = [];
 
           if (desiredStateVariableValues.a !== undefined) {
@@ -694,7 +608,7 @@ export default class Parabola extends Curve {
             success: true,
             instructions
           }
-        } else if (dependencyValues.throughPointsNumeric.length === 1) {
+        } else if (dependencyValues.numericalThroughPoints.length === 1) {
           // one point
           // move point to be at vertex
           // modify a if changed
@@ -707,7 +621,7 @@ export default class Parabola extends Curve {
           let y1 = c - b * b / (4 * a);
 
           let instructions = [{
-            setDependency: "throughPointsNumeric",
+            setDependency: "numericalThroughPoints",
             desiredValue: [[x1, y1]],
           }];
 
@@ -723,7 +637,7 @@ export default class Parabola extends Curve {
             instructions
           }
 
-        } else if (dependencyValues.throughPointsNumeric.length === 2) {
+        } else if (dependencyValues.numericalThroughPoints.length === 2) {
           // two points
           // move points vertically to be on parabola
           // modify a if changed
@@ -733,10 +647,10 @@ export default class Parabola extends Curve {
           let b = getWorkingParameterValue("b")
           let c = getWorkingParameterValue("c")
 
-          let p1 = dependencyValues.throughPointsNumeric[0];
+          let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
 
-          let p2 = dependencyValues.throughPointsNumeric[1];
+          let p2 = dependencyValues.numericalThroughPoints[1];
           let x2 = p2[0];
 
           if (x1 === x2) {
@@ -744,7 +658,7 @@ export default class Parabola extends Curve {
             let y1 = c - b * b / (4 * a);
 
             let instructions = [{
-              setDependency: "throughPointsNumeric",
+              setDependency: "numericalThroughPoints",
               desiredValue: [[x1, y1], [x1, y1]],
             }];
 
@@ -766,7 +680,7 @@ export default class Parabola extends Curve {
             let y2 = a * x2 * x2 + b * x2 + c;
 
             let instructions = [{
-              setDependency: "throughPointsNumeric",
+              setDependency: "numericalThroughPoints",
               desiredValue: [[x1, y1], [x2, y2]],
             }];
 
@@ -785,7 +699,7 @@ export default class Parabola extends Curve {
           }
 
 
-        } else if (dependencyValues.throughPointsNumeric.length === 3) {
+        } else if (dependencyValues.numericalThroughPoints.length === 3) {
 
           // three points
           // move points vertically to be on parabola
@@ -796,13 +710,13 @@ export default class Parabola extends Curve {
           let b = getWorkingParameterValue("b");
           let c = getWorkingParameterValue("c");
 
-          let p1 = dependencyValues.throughPointsNumeric[0];
+          let p1 = dependencyValues.numericalThroughPoints[0];
           let x1 = p1[0];
 
-          let p2 = dependencyValues.throughPointsNumeric[1];
+          let p2 = dependencyValues.numericalThroughPoints[1];
           let x2 = p2[0];
 
-          let p3 = dependencyValues.throughPointsNumeric[2];
+          let p3 = dependencyValues.numericalThroughPoints[2];
           let x3 = p3[0];
 
           let nUniquePoints = 3;
@@ -828,7 +742,7 @@ export default class Parabola extends Curve {
             let y3 = a * x3 * x3 + b * x3 + c;
 
             let instructions = [{
-              setDependency: "throughPointsNumeric",
+              setDependency: "numericalThroughPoints",
               desiredValue: [[x1, y1], [x2, y2], [x3, y3]],
             }];
 
@@ -853,7 +767,7 @@ export default class Parabola extends Curve {
               let uy2 = a * ux2 * ux2 + b * ux2 + c;
 
               let instructions = [{
-                setDependency: "throughPointsNumeric",
+                setDependency: "numericalThroughPoints",
                 desiredValue: [[ux1, uy1], [ux2, uy2], [ux2, uy2]],
               }];
 
@@ -874,7 +788,7 @@ export default class Parabola extends Curve {
               let uy2 = a * ux2 * ux2 + b * ux2 + c;
 
               let instructions = [{
-                setDependency: "throughPointsNumeric",
+                setDependency: "numericalThroughPoints",
                 desiredValue: [[ux1, uy1], [ux2, uy2], [ux1, uy1]],
               }];
 
@@ -895,7 +809,7 @@ export default class Parabola extends Curve {
               let uy2 = a * ux2 * ux2 + b * ux2 + c;
 
               let instructions = [{
-                setDependency: "throughPointsNumeric",
+                setDependency: "numericalThroughPoints",
                 desiredValue: [[ux1, uy1], [ux1, uy1], [ux2, uy2]],
               }];
 
@@ -917,7 +831,7 @@ export default class Parabola extends Curve {
             let y1 = c - b * b / (4 * a);
 
             let instructions = [{
-              setDependency: "throughPointsNumeric",
+              setDependency: "numericalThroughPoints",
               desiredValue: [[x1, y1], [x1, y1], [x1, y1]],
             }];
 
@@ -945,57 +859,94 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.vertex = {
       public: true,
-      componentType: "point",
-      returnDependencies: () => ({
-        a: {
-          dependencyType: "stateVariable",
-          variableName: "a"
-        },
-        b: {
-          dependencyType: "stateVariable",
-          variableName: "b"
-        },
-        c: {
-          dependencyType: "stateVariable",
-          variableName: "c"
-        },
-        realValued: {
-          dependencyType: "stateVariable",
-          variableName: "realValued"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let vertex;
-
-        if (dependencyValues.realValued && dependencyValues.a !== 0) {
-          let vertex_x = -dependencyValues.b / (2 * dependencyValues.a);
-          let vertex_y = dependencyValues.c - dependencyValues.b ** 2 / (4 * dependencyValues.a)
-          vertex = me.fromAst(["vector", vertex_x, vertex_y])
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["vertexX"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "vertexX") {
+          return [];
         } else {
-          vertex = me.fromAst(["vector", "\uff3f", "\uff3f"])
+          // entire array
+          // wrap by both <point> and <xs>
+          return [["point", "xs"]];
         }
+      },
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          a: {
+            dependencyType: "stateVariable",
+            variableName: "a"
+          },
+          b: {
+            dependencyType: "stateVariable",
+            variableName: "b"
+          },
+          c: {
+            dependencyType: "stateVariable",
+            variableName: "c"
+          },
+          realValued: {
+            dependencyType: "stateVariable",
+            variableName: "realValued"
+          }
+        }
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey: function ({ globalDependencyValues }) {
 
+        let vertex = {};
+
+        if (globalDependencyValues.realValued && globalDependencyValues.a !== 0) {
+          vertex[0] = me.fromAst(-globalDependencyValues.b / (2 * globalDependencyValues.a));
+          vertex[1] = me.fromAst(globalDependencyValues.c - globalDependencyValues.b ** 2 / (4 * globalDependencyValues.a));
+        } else {
+          vertex[0] = me.fromAst("\uff3f");
+          vertex[1] = me.fromAst("\uff3f");
+        }
         return { newValues: { vertex } }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, globalDependencyValues,
+        workspace, stateValues
+      }) {
+        // console.log(`inverse definition of parabola vertex`)
+        // console.log(desiredStateVariableValues)
+        // console.log(globalDependencyValues)
+
         // change b and c to match vertex
 
-        let x, y;
-
-        try {
-          x = desiredStateVariableValues.vertex.get_component(0).evaluate_to_constant();
-          y = desiredStateVariableValues.vertex.get_component(1).evaluate_to_constant();
-        } catch (e) {
-          console.warn('Invalid format for vertex')
+        let x;
+        if ("0" in desiredStateVariableValues.vertex) {
+          x = desiredStateVariableValues.vertex[0].evaluate_to_constant();
+        } else if (workspace.x !== undefined) {
+          x = workspace.x
+        } else {
+          x = stateValues.vertex[0].tree
+        }
+        if (Number.isFinite(x)) {
+          workspace.x = x;
+        } else {
           return { success: false }
         }
 
-        if (!(Number.isFinite(x) && Number.isFinite(y))) {
+        let y;
+        if ("1" in desiredStateVariableValues.vertex) {
+          y = desiredStateVariableValues.vertex[1].evaluate_to_constant();
+        } else if (workspace.y !== undefined) {
+          y = workspace.y
+        } else {
+          y = stateValues.vertex[1].tree
+        }
+        if (Number.isFinite(y)) {
+          workspace.y = y;
+        } else {
           return { success: false }
         }
 
-        let a = dependencyValues.a;
+        let a = globalDependencyValues.a;
         let b = -2 * a * x;
         let c = y + a * x * x;
 

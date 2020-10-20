@@ -26,7 +26,7 @@ export default class Line extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -50,8 +50,12 @@ export default class Line extends DoenetRenderer {
 
     this.lineJXG.on('drag', function () {
       //board.suspendUpdate();
-      this.onDragHandler();
+      this.onDragHandler(true);
       //board.unsuspendUpdate();
+    }.bind(this));
+
+    this.lineJXG.on('up', function () {
+      this.onDragHandler(false);
     }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
@@ -103,14 +107,20 @@ export default class Line extends DoenetRenderer {
     this.lineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[0]);
     this.lineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[1]);
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
+      let actuallyChangedVisibility = this.lineJXG.visProp["visible"] !== visible;
       this.lineJXG.visProp["visible"] = visible;
       this.lineJXG.visPropCalc["visible"] = visible;
-      // this.lineJXG.setAttribute({visible: visible})
-    }
-    else {
+
+      if (actuallyChangedVisibility) {
+        // at least for point, this function is incredibly slow, so don't run it if not necessary
+        // TODO: figure out how to make label disappear right away so don't need to run this function
+        this.lineJXG.setAttribute({ visible: visible })
+      }
+
+    } else {
       this.lineJXG.visProp["visible"] = false;
       this.lineJXG.visPropCalc["visible"] = false;
       // this.lineJXG.setAttribute({visible: false})
@@ -135,10 +145,11 @@ export default class Line extends DoenetRenderer {
 
   }
 
-  onDragHandler() {
+  onDragHandler(transient) {
     this.actions.moveLine({
       point1coords: [this.lineJXG.point1.X(), this.lineJXG.point1.Y()],
       point2coords: [this.lineJXG.point2.X(), this.lineJXG.point2.Y()],
+      transient
     });
   }
 
@@ -158,12 +169,12 @@ export default class Line extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
+    }
+
+    if (this.doenetSvData.hidden) {
+      return null;
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.equation + "\\)";

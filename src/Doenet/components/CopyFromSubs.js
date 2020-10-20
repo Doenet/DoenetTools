@@ -8,67 +8,20 @@ export default class CopyFromSubs extends CompositeComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.fromMapAncestor = { default: 0 };
+    properties.fromSubstitutions = { default: 1 };
+    properties.fromMapAncestor = { default: 1 };
     properties.fixed = { default: true, useDefaultForShadows: true }
     return properties;
   }
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let atMostOneFixed = childLogic.newLeaf({
-      name: "atMostOneFixed",
-      componentType: "fixed",
-      comparison: "atMost",
-      number: 1,
-    })
-
-    let atMostOneString = childLogic.newLeaf({
-      name: "atMostOneString",
-      componentType: 'string',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "stringAndFixed",
-      operator: "and",
-      propositions: [atMostOneFixed, atMostOneString],
-      setAsBase: true,
-    })
-
-    return childLogic;
-  }
-
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.substitutionsNumber = {
-      returnDependencies: () => ({
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneString",
-          variableNames: ["value"],
-        },
-      }),
-      defaultValue: 1,
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringChild.length === 0) {
-          return { useEssentialOrDefaultValue: { substitutionsNumber: { variablesToCheck: ["substitutionsNumber"] } } }
-        }
-        let number = Number(dependencyValues.stringChild[0].stateValues.value);
-        if (Number.isNaN(number)) {
-          number = 1;
-        }
-        return { newValues: { substitutionsNumber: number } };
-      }
-    }
 
     stateVariableDefinitions.targetSubsName = {
       additionalStateVariablesDefined: ["childNumber"],
-      stateVariablesDeterminingDependencies: ["fromMapAncestor", "substitutionsNumber"],
+      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSubstitutions"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
         let substitutionsInfo = sharedParameters.substitutionsInfo;
 
@@ -76,14 +29,14 @@ export default class CopyFromSubs extends CompositeComponent {
           throw Error(`copyfromsubs can only be inside a map template.`);
         }
 
-        let level = substitutionsInfo.length - 1 - stateValues.fromMapAncestor;
+        let level = substitutionsInfo.length - stateValues.fromMapAncestor;
         let infoForLevel = substitutionsInfo[level];
         if (infoForLevel === undefined) {
           throw Error(`Invalid value of copyfromsubs fromMapAncestor: ${stateValues.fromMapAncestor}`);
         }
-        let infoForSubs = infoForLevel[stateValues.substitutionsNumber - 1];
+        let infoForSubs = infoForLevel[stateValues.fromSubstitutions - 1];
         if (infoForSubs === undefined) {
-          throw Error(`Invalid substitutionsNumber of copyfromsubs: ${stateValues.substitutionsNumber}`);
+          throw Error(`Invalid fromSubstitutions of copyfromsubs: ${stateValues.fromSubstitutions}`);
         };
 
         return {
@@ -190,7 +143,17 @@ export default class CopyFromSubs extends CompositeComponent {
     serializedCopy = targetChild.serialize({ forCopy: true });
     serializedCopy = [serializedCopy];
 
-    return { replacements: postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName }) };
+    if (!workspace.uniqueIdentifiersUsed) {
+      workspace.uniqueIdentifiersUsed = []
+    }
+
+    return {
+      replacements: postProcessCopy({
+        serializedComponents: serializedCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      })
+    };
 
   }
 
@@ -219,7 +182,15 @@ export default class CopyFromSubs extends CompositeComponent {
       serializedCopy = targetChild.serialize({ forCopy: true });
       serializedCopy = [serializedCopy];
 
-      let newSerializedReplacements = postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = []
+      }
+
+      let newSerializedReplacements = postProcessCopy({
+        serializedComponents: serializedCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      });
 
       let replacementInstruction = {
         changeType: "add",

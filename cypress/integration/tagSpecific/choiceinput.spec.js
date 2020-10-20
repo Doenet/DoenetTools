@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Choiceinput Tag Tests', function () {
 
   beforeEach(() => {
@@ -9,6 +19,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -20,6 +31,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -76,6 +89,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput inline>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -87,6 +101,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -144,6 +160,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput fixedOrder>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -155,6 +172,8 @@ describe('Choiceinput Tag Tests', function () {
     <p>Selected index: <copy prop='selectedindex' tname="_choiceinput1" /></p>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["cat", "dog", "monkey", "mouse"];
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
@@ -203,6 +222,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+      <text>a</text>
       <choiceinput inline>
         <choice>a</choice>
         <choice>b</choice>
@@ -231,6 +251,7 @@ describe('Choiceinput Tag Tests', function () {
     `}, "*");
     });
 
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     let originalChoices = ["a", "b", "c", "d", "e", "f"];
     cy.get('#\\/_p1').should('have.text', 'Selected values: ')
@@ -240,9 +261,9 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choice2Anchor = '#' + components["/copy"].replacements[0].componentName;
-      let choice3Anchor = '#' + components["/copy2"].replacements[0].componentName;
-      let choice4Anchor = '#' + components["/copy3"].replacements[0].replacements[0].componentName;
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
+      let choice3Anchor = cesc('#' + components["/copy2"].replacements[0].componentName);
+      let choice4Anchor = cesc('#' + components["/copy3"].replacements[0].replacements[0].componentName);
 
       let choices;
       cy.window().then((win) => {
@@ -438,6 +459,7 @@ describe('Choiceinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <choiceinput>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
@@ -459,6 +481,8 @@ describe('Choiceinput Tag Tests', function () {
     `}, "*");
     });
 
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
     let originalChoices = [
       "The function is f(ξ) = sin(ξ).",
       "The sum of λ^2 and 2 λ^2 is 3 λ^2.",
@@ -472,7 +496,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choice2Anchor = '#' + components["/copy"].replacements[0].componentName;
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
 
       let choices;

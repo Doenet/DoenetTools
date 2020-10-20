@@ -228,13 +228,13 @@ export default class Substitute extends CompositeComponent {
       this.state.patternChild = this.state.patternParent.activeChildren[0];
 
       // type child is ignored unless have a string pattern
-      if(this.state.patternChild instanceof this.allComponentClasses.math) {
+      if(this.state.patternChild instanceof this.componentInfoObjects.allComponentClasses.math) {
         this.state.type = "math";
         this.state.patternClass = "math";
-      }else if(this.state.patternChild instanceof this.allComponentClasses.text) {
+      }else if(this.state.patternChild instanceof this.componentInfoObjects.allComponentClasses.text) {
         this.state.type="text";
         this.state.patternClass = "text"
-      }else if(this.state.patternChild instanceof this.allComponentClasses.string) {
+      }else if(this.state.patternChild instanceof this.componentInfoObjects.allComponentClasses.string) {
         this.state.patternClass = "string";
       }else {
         console.warn("Substitute must have a math, text or string pattern.")
@@ -315,9 +315,9 @@ export default class Substitute extends CompositeComponent {
         let replace = [];
         for(let b of child.activeChildren) {
           if(this.state.type === "math") {
-            if(b instanceof this.allComponentClasses.math) {
+            if(b instanceof this.componentInfoObjects.allComponentClasses.math) {
               replace.push(b.state.value);
-            }else if(b instanceof this.allComponentClasses.string) {
+            }else if(b instanceof this.componentInfoObjects.allComponentClasses.string) {
               replace.push(this.parseMathString(b.state.value));
             }else {
               console.warn("Substitute of math type must have math or string replaces")
@@ -325,8 +325,8 @@ export default class Substitute extends CompositeComponent {
               return;
             }
           }else if(this.state.type === "text") {
-            if(b instanceof this.allComponentClasses.text ||
-                b instanceof this.allComponentClasses.string) {
+            if(b instanceof this.componentInfoObjects.allComponentClasses.text ||
+                b instanceof this.componentInfoObjects.allComponentClasses.string) {
               replace.push(b.state.value)
             }else {
               console.warn("Substitute of text type must have text or string replaces")

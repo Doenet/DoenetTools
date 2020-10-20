@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetChooser from '../React/DoenetChooser';
-import ChooserManager from '../React/chooser/ChooserManager';
+import DoenetChooser from '../Tools/DoenetChooser';
+import { CookiesProvider } from 'react-cookie';
+
+import { initialize } from '../imports/courseInfo';
+initialize();
 
     ReactDOM.render(
-      <DoenetChooser/>
-      // <ChooserManager/>
+      <CookiesProvider>
+        <DoenetChooser/>
+      </CookiesProvider>
   ,document.getElementById('root'));

@@ -1,6 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
-import me from 'math-expressions';
+import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -22,15 +21,68 @@ export default class PointListComponent extends BaseComponent {
       number: 0
     });
 
-    let childrenToComponentFunction = x => ({
-      componentType: "point", children: [{
-        componentType: "coords", children: x
-      }]
-    })
-    let breakIntoPointsByCommas = returnBreakStringsSugarFunction({
-      childrenToComponentFunction,
-      dependencyNameWithChildren: "stringsAndMaths"
-    });
+
+    let createPointList = function ({ dependencyValues }) {
+
+      let results = breakEmbeddedStringByCommas({
+        childrenList: dependencyValues.stringsAndMaths,
+      });
+
+      if (results.success !== true) {
+        return { success: false }
+      }
+
+      let pieces = results.pieces;
+      let toDelete = results.toDelete;
+
+      let newChildren = [];
+
+      for (let ind = 0; ind < pieces.length; ind++) {
+        let piece = pieces[ind];
+
+        // each piece must be a vector (if not, we won't sugar)
+        // the next step is to find the vector components
+        // so that we can see if the components themselves are vectors
+
+        let result = breakIntoVectorComponents(piece);
+        if (result.foundVector !== true) {
+          return { success: false };
+        }
+
+        let vectorComponents = result.vectorComponents;
+
+
+        // since we're actually breaking it up,
+        // add any more strings to delete
+        // that we encountered in the initial breaking into components
+        toDelete = [...toDelete, ...result.toDelete];
+
+        let children = vectorComponents.map(x => ({
+          componentType: "x",
+          children: x
+        }));
+
+
+
+        newChildren.push({
+          componentType: "point",
+          children: [{
+            componentType: "xs",
+            children
+          }]
+        })
+
+      }
+
+      return {
+        success: true,
+        newChildren: newChildren,
+        toDelete: toDelete,
+      }
+
+    }
+
+
 
     let atLeastOneString = childLogic.newLeaf({
       name: "atLeastOneString",
@@ -60,7 +112,7 @@ export default class PointListComponent extends BaseComponent {
         }
       }),
       logicToWaitOnSugar: ["atLeastZeroPoints"],
-      replacementFunction: breakIntoPointsByCommas,
+      replacementFunction: createPointList,
     });
 
     childLogic.newOperator({
@@ -79,197 +131,6 @@ export default class PointListComponent extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.points = {
-      isArray: true,
-      entryPrefixes: ["point"],
-      returnDependencies: function ({ arrayKeys }) {
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-        if (arrayKey === undefined) {
-          return {
-            pointChildren: {
-              dependencyType: "childStateVariables",
-              childLogicName: "atLeastZeroPoints",
-              variableNames: ["coords"]
-            }
-          }
-        } else {
-          return {
-            pointChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "atLeastZeroPoints",
-              variableNames: ["coords"],
-              childIndices: [arrayKey],
-            }
-          }
-        }
-      },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-        // console.log('mark stale for pointlist points')
-        // console.log(changes);
-        // console.log(arrayKeys);
-
-        let freshByKey = freshnessInfo.points.freshByKey;
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey === undefined) {
-
-          if (changes.pointChildren) {
-            if (changes.pointChildren.componentIdentitiesChanged) {
-              for (let key in freshByKey) {
-                delete freshByKey[key];
-              }
-            } else {
-              for (let key in changes.pointChildren.valuesChanged) {
-                delete freshByKey[key];
-              }
-            }
-          }
-
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { points: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            // (we don't know here how many elements points has, 
-            // so can't determine if completely fresh)
-            return { partiallyFresh: { points: true } }
-          }
-        } else {
-
-          // have arrayKey
-          // so asked for just one component
-
-          if (changes.pointChild) {
-            if (changes.pointChild.componentIdentitiesChanged) {
-              delete freshByKey[arrayKey];
-            } else {
-              if (changes.pointChild.valuesChanged[0]) {
-                delete freshByKey[arrayKey];
-              }
-            }
-          }
-
-          return { fresh: { points: freshByKey[arrayKey] === true } };
-        }
-
-      },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-
-        let freshByKey = freshnessInfo.points.freshByKey;
-
-        // console.log('definition of points for pointlist')
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(dependencyValues)))
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey === undefined) {
-          if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
-            // send array so that now should overwrite entire array
-            for (let key in dependencyValues.pointChildren) {
-              freshByKey[key] = true;
-            }
-
-            return {
-              newValues: {
-                points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
-              }
-            }
-          }
-
-          let newPointValues = {};
-          for (let arrayKey in dependencyValues.pointChildren) {
-            if (!freshByKey[arrayKey]) {
-              freshByKey[arrayKey] = true;
-              newPointValues[arrayKey] = dependencyValues.pointChildren[arrayKey].stateValues.coords
-            }
-          }
-          return { newValues: { points: newPointValues } }
-        } else {
-
-          // have arrayKey
-
-          if (!freshByKey[arrayKey]) {
-            freshByKey[arrayKey] = true;
-            let coords;
-            if (dependencyValues.pointChild.length === 1) {
-              coords = dependencyValues.pointChild[0].stateValues.coords
-            }
-            return {
-              newValues: {
-                points: {
-                  [arrayKey]: coords
-                }
-              }
-            }
-          } else {
-            // arrayKey asked for didn't change
-            // don't need to report noChanges for array state variable
-            return {};
-          }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues,
-        stateValues, arrayKeys
-      }) {
-
-        // console.log('inverse definition of points of pointlist')
-        // console.log(desiredStateVariableValues)
-        // console.log(arrayKeys);
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey === undefined) {
-          // working with entire array
-
-          let instructions = [];
-          for (let key in desiredStateVariableValues.points) {
-            instructions.push({
-              setDependency: "pointChildren",
-              desiredValue: desiredStateVariableValues.points[key],
-              childIndex: key,
-              variableIndex: 0
-            })
-          }
-
-          return {
-            success: true,
-            instructions
-          }
-        } else {
-
-          // just have one arrayKey
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "pointChild",
-              desiredValue: desiredStateVariableValues.points[arrayKey],
-              childIndex: 0,
-              variableIndex: 0
-            }]
-          }
-
-        }
-
-      }
-    }
-
     stateVariableDefinitions.nPoints = {
       returnDependencies: () => ({
         pointChildren: {
@@ -277,15 +138,171 @@ export default class PointListComponent extends BaseComponent {
           childLogicName: "atLeastZeroPoints",
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
-        // console.log(`definition of nPoints`);
-        // console.log(dependencyValues);
-        // console.log(changes);
-        
+      definition: function ({ dependencyValues }) {
         return {
           newValues: { nPoints: dependencyValues.pointChildren.length },
           checkForActualChange: { nPoints: true }
         }
+      }
+    }
+
+
+    stateVariableDefinitions.nDimensions = {
+      returnDependencies: () => ({
+        pointChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroPoints",
+          variableNames: ["nDimensions"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let nDimensions;
+
+        if (dependencyValues.pointChildren.length === 0) {
+          nDimensions = 2;
+        } else {
+          nDimensions = 1;
+          for (let point of dependencyValues.pointChildren) {
+            if (Number.isFinite(point.stateValues.nDimensions)) {
+              nDimensions = Math.max(nDimensions, point.stateValues.nDimensions)
+            }
+          }
+        }
+        return {
+          newValues: { nDimensions },
+          checkForActualChange: { nDimensions: true }
+        }
+      }
+    }
+
+    stateVariableDefinitions.points = {
+      isArray: true,
+      entryPrefixes: ["pointX"],
+      nDimensions: 2,
+      entryPrefixes: ["pointX", "point"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "pointX") {
+          return [];
+        } else {
+          // point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "pointX") {
+          // pointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // point3 is all components of the third point
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
+      returnArraySizeDependencies: () => ({
+        nPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nPoints",
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nPoints, dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dim] = arrayKey.split(',');
+          dependenciesByKey[arrayKey] = {
+            pointChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroPoints",
+              variableNames: ["x" + (Number(dim) + 1)],
+              childIndices: [pointInd],
+            }
+          }
+        }
+
+        return { dependenciesByKey };
+
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of points for pointlist')
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+        // console.log(arrayKeys);
+
+        let points = {};
+
+        for (let arrayKey of arrayKeys) {
+          let dim = arrayKey.split(',')[1];
+
+          let pointChild = dependencyValuesByKey[arrayKey].pointChild[0];
+          if (pointChild) {
+            points[arrayKey] = pointChild.stateValues["x" + (Number(dim) + 1)];
+          }
+        }
+
+        return { newValues: { points } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey
+      }) {
+
+        // console.log('array inverse definition of points of pointlist')
+        // console.log(desiredStateVariableValues)
+        // console.log(arrayKeys);
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.points) {
+
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].pointChild,
+            desiredValue: desiredStateVariableValues.points[arrayKey],
+            childIndex: 0,
+            variableIndex: 0
+          })
+
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
       }
     }
 

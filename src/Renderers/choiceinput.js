@@ -17,9 +17,9 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
 
     this.validationState = "unvalidated";
     if (this.doenetSvData.valueHasBeenValidated) {
-      if (this.doenetSvData.creditAchieved === 1) {
+      if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
         this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchieved === 0) {
+      } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -43,7 +43,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
+    if (this.doenetSvData.hidden) {
       return null;
     }
 
@@ -98,7 +98,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
             } else if (this.validationState === "partialcorrect") {
               //partial credit
 
-              let percent = Math.round(this.doenetSvData.creditAchieved * 100);
+              let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
               let partialCreditContents = `${percent} %`;
               checkWorkStyle.width = "50px";
 
@@ -135,12 +135,18 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         return <option key={i} value={i + 1}>{s}</option>
       });
 
+
+      let value = this.doenetSvData.selectedIndices[0];
+      if(value === undefined) {
+        value = "";
+      }
+
       return <React.Fragment>
         <a name={this.componentName} />
         <select
           id={this.componentName}
           onChange={this.onChangeHandler}
-          value={this.doenetSvData.selectedIndices[0]}
+          value={value}
           disabled={this.doenetSvData.disabled}
         >
           <option></option>
@@ -211,7 +217,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
                 </span>);
             } else if (this.validationState === "partialcorrect") {
               checkWorkStyle.backgroundColor = "#efab34";
-              let percent = Math.round(this.doenetSvData.creditAchieved * 100);
+              let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
               let partialCreditContents = `${percent}% Correct`;
 
               checkworkComponent = (

@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Award extends BaseComponent {
   static componentType = "award";
+  static rendererType = undefined;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -186,8 +187,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedbacktext",
+      componentType: "feedback",
       isArray: true,
+      entireArrayAtOnce: true,
       entryPrefixes: ['feedback'],
       returnDependencies: () => ({
         feedbackText: {
@@ -207,7 +209,7 @@ export default class Award extends BaseComponent {
           variableName: "awarded"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
           return { newValues: { feedbacks: [] } }
@@ -234,24 +236,10 @@ export default class Award extends BaseComponent {
       }
     };
 
-    stateVariableDefinitions.responseComponents = {
-      returnDependencies: () => ({
-        whenChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneWhen",
-          variableNames: ["responseComponents"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.whenChild.length === 1) {
-          return {
-            newValues: {
-              responseComponents: dependencyValues.whenChild[0].stateValues.responseComponents
-            }
-          }
-        }
-      }
-    }
+    stateVariableDefinitions.feedback = {
+      isAlias: true,
+      targetVariableName: "feedback1"
+    };
 
     return stateVariableDefinitions;
   }

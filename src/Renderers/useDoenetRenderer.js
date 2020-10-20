@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 
 //Renderer can change it later and values will be here
@@ -20,10 +20,10 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   }
 
   function addChildren(instruction) {
-    let childInstructions = this.childrenToCreate[instruction.indexForParent];
-    let child = this.createChildFromInstructions(childInstructions);
+    let childInstructions = childrenToCreate[instruction.indexForParent];
+    let child = createChildFromInstructions(childInstructions);
     children.splice(instruction.indexForParent, 0, child);
-    children = [...this.children]; // needed for React to recognize it's different
+    children = [...children]; // needed for React to recognize it's different
 
     setUpdateCount(updateCount + 1);
   }

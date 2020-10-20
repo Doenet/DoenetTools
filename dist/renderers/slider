@@ -1,198 +1,146 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[25,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[34,43],{
 
-/***/ 495:
+/***/ 646:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DoenetRenderer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return useDoenetRenderer; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+ //Renderers will need to set doenetPropsForChildren locally and pass it along. 
+//Renderer can change it later and values will be here
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function useDoenetRenderer(props) {
+  var initializeChildrenOnConstruction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var doenetPropsForChildren = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      updateCount = _useState2[0],
+      setUpdateCount = _useState2[1];
 
+  var stateValues = props.componentInstructions.stateValues;
+  var actions = props.componentInstructions.actions;
+  var children = [];
+  var name = props.componentInstructions.componentName; // console.log("updateCount",updateCount)
 
+  props.rendererUpdateMethods[name] = {
+    update: function update() {
+      setUpdateCount(updateCount + 1);
+    },
+    addChildren: addChildren,
+    removeChildren: removeChildren,
+    swapChildren: swapChildren
+  };
 
-var DoenetRenderer =
-/*#__PURE__*/
-function (_Component) {
-  _inherits(DoenetRenderer, _Component);
+  function addChildren(instruction) {
+    var childInstructions = childrenToCreate[instruction.indexForParent];
+    var child = createChildFromInstructions(childInstructions);
+    children.splice(instruction.indexForParent, 0, child);
+    children = _toConsumableArray(children); // needed for React to recognize it's different
 
-  function DoenetRenderer(props) {
-    var _this;
-
-    _classCallCheck(this, DoenetRenderer);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DoenetRenderer).call(this, props));
-    _this.addChildren = _this.addChildren.bind(_assertThisInitialized(_this));
-    _this.removeChildren = _this.removeChildren.bind(_assertThisInitialized(_this));
-    _this.swapChildren = _this.swapChildren.bind(_assertThisInitialized(_this));
-    _this.update = _this.update.bind(_assertThisInitialized(_this));
-    _this.childrenToCreate = props.componentInstructions.children;
-    _this.componentName = props.componentInstructions.componentName;
-    _this.actions = props.componentInstructions.actions; // This keeps the proxy in place so that state variables
-    // aren't calculated unless asked for
-    // Also means it will always have the new values when they are changed
-    // so we don't have to pass them in on update
-
-    _this.doenetSvData = props.componentInstructions.stateValues;
-    props.rendererUpdateMethods[_this.componentName] = {
-      update: _this.update,
-      addChildren: _this.addChildren,
-      removeChildren: _this.removeChildren,
-      swapChildren: _this.swapChildren
-    };
-
-    if (_this.constructor.initializeChildrenOnConstruction) {
-      _this.initializeChildren();
-    }
-
-    return _this;
+    setUpdateCount(updateCount + 1);
   }
 
-  _createClass(DoenetRenderer, [{
-    key: "update",
-    value: function update() {
-      this.forceUpdate();
-    }
-  }, {
-    key: "addChildren",
-    value: function addChildren(instruction) {
-      var childInstructions = this.childrenToCreate[instruction.indexForParent];
-      var child = this.createChildFromInstructions(childInstructions);
-      this.children.splice(instruction.indexForParent, 0, child);
-      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+  function removeChildren(instruction) {
+    children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
+    children = _toConsumableArray(children); // needed for React to recognize it's different
 
-      this.forceUpdate();
-    }
-  }, {
-    key: "removeChildren",
-    value: function removeChildren(instruction) {
-      this.children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
-      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
+    var _iterator = _createForOfIteratorHelper(instruction.deletedComponentNames),
+        _step;
 
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = instruction.deletedComponentNames[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var componentName = _step.value;
-          delete this.props.rendererUpdateMethods[componentName];
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var componentName = _step.value;
+        delete props.rendererUpdateMethods[componentName];
       }
-
-      this.forceUpdate();
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
     }
-  }, {
-    key: "swapChildren",
-    value: function swapChildren(instruction) {
-      var _ref = [this.children[instruction.index2], this.children[instruction.index1]];
-      this.children[instruction.index1] = _ref[0];
-      this.children[instruction.index2] = _ref[1];
-      this.children = _toConsumableArray(this.children); // needed for React to recognize it's different
 
-      this.forceUpdate();
-    }
-  }, {
-    key: "initializeChildren",
-    value: function initializeChildren() {
-      this.children = [];
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+    setUpdateCount(updateCount + 1);
+  }
 
-      try {
-        for (var _iterator2 = this.childrenToCreate[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var childInstructions = _step2.value;
-          var child = this.createChildFromInstructions(childInstructions);
-          this.children.push(child);
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
+  function swapChildren(instruction) {
+    var _ref = [children[instruction.index2], children[instruction.index1]];
+    children[instruction.index1] = _ref[0];
+    children[instruction.index2] = _ref[1];
+    children = _toConsumableArray(children); // needed for React to recognize it's different
+
+    setUpdateCount(updateCount + 1);
+  }
+
+  if (initializeChildrenOnConstruction) {
+    initializeChildren();
+  }
+
+  function initializeChildren() {
+    var _iterator2 = _createForOfIteratorHelper(props.componentInstructions.children),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var childInstructions = _step2.value;
+        var child = createChildFromInstructions(childInstructions);
+        children.push(child);
       }
-
-      return this.children;
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
     }
-  }, {
-    key: "createChildFromInstructions",
-    value: function createChildFromInstructions(childInstructions) {
-      var propsForChild = {
-        key: childInstructions.componentName,
-        componentInstructions: childInstructions,
-        rendererClasses: this.props.rendererClasses,
-        rendererUpdateMethods: this.props.rendererUpdateMethods,
-        flags: this.props.flags
-      };
 
-      if (this.doenetPropsForChildren) {
-        Object.assign(propsForChild, this.doenetPropsForChildren);
-      }
+    return children;
+  }
 
-      var child = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(this.props.rendererClasses[childInstructions.rendererType], propsForChild);
-      return child;
-    }
-  }]);
+  function createChildFromInstructions(childInstructions) {
+    var propsForChild = {
+      key: childInstructions.componentName,
+      componentInstructions: childInstructions,
+      rendererClasses: props.rendererClasses,
+      rendererUpdateMethods: props.rendererUpdateMethods,
+      flags: props.flags
+    };
+    Object.assign(propsForChild, doenetPropsForChildren);
+    var child = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(props.rendererClasses[childInstructions.rendererType], propsForChild);
+    return child;
+  }
 
-  return DoenetRenderer;
-}(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
+  function updatesetDoenetPropsForChildren(props) {
+    setDoenetPropsForChildren(props);
+  }
 
-_defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
-
-
+  return [name, stateValues, actions, children, initializeChildren, updatesetDoenetPropsForChildren];
+}
 
 /***/ }),
 
-/***/ 520:
+/***/ 678:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -200,28 +148,472 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slider; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(495);
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1355);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(646);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _templateObject7() {
+  var data = _taggedTemplateLiteral(["\n    position: absolute;\n    left: ", ";\n    color: #888888;\n    font-size: 15px;\n    user-select: none;\n"]);
+
+  _templateObject7 = function _templateObject7() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject6() {
+  var data = _taggedTemplateLiteral(["\n    position: absolute;\n    border-left: solid #888888;\n    height: 10px;\n    width: 1px;\n    left: ", ";\n"]);
+
+  _templateObject6 = function _templateObject6() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject5() {
+  var data = _taggedTemplateLiteral(["\n  width: 10px;\n  height: 15px;\n  border-radius: 3px;\n  position: relative;\n  top: -5px;\n  opacity: 0.8;\n  background: ", ";\n  cursor: pointer;\n"]);
+
+  _templateObject5 = function _templateObject5() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject4() {
+  var data = _taggedTemplateLiteral(["\n    display: inline;\n    user-select: none;\n"]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  border-radius: 3px;\n  background: #dddddd;\n  height: 5px;\n  width: ", ";\n"]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n    padding-top: 10px;\n    height: 50px;\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n    width: fit-content;\n    height: ", ";\n"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 
 
 
+
+var SliderContainer = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject(), function (props) {
+  return props.labeled && props.noTicked ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px";
+});
+var SubContainer2 = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject2());
+var StyledSlider = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject3(), function (props) {
+  return props.width;
+});
+var StyledValueLabel = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].p(_templateObject4());
+var StyledThumb = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject5(), function (props) {
+  return props.disabled ? "#404040" : "#002266";
+});
+var Tick = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject6(), function (props) {
+  return props.x;
+});
+var Label = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].p(_templateObject7(), function (props) {
+  return props.x;
+});
+
+function generateNumericLabels(points, div_width, point_start_val) {
+  return [points.map(function (point) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Tick, {
+      key: point,
+      x: "".concat((point - point_start_val) * div_width, "px")
+    });
+  }), points.map(function (point) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Label, {
+      key: point,
+      x: "".concat((point - point_start_val) * div_width - 3, "px")
+    }, point);
+  })];
+}
+
+function generateTextLabels(points, div_width) {
+  return [points.map(function (point, index) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Tick, {
+      key: point,
+      x: "".concat(index * div_width, "px")
+    });
+  }), points.map(function (point, index) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Label, {
+      key: point,
+      x: "".concat(index * div_width - 3, "px")
+    }, point);
+  })];
+}
+
+function xPositionToValue(ref, div_width, start_val) {
+  return start_val + ref / div_width;
+}
+
+function nearestValue(refval, points) {
+  var min = Infinity,
+      val = null,
+      index = 0;
+  var i = 0;
+
+  var _iterator = _createForOfIteratorHelper(points),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var point = _step.value;
+      var diff = Math.abs(point - refval);
+
+      if (diff < min) {
+        min = diff;
+        val = point;
+        index = i;
+      }
+
+      i = i + 1;
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  return [val, index];
+}
+
+function Slider(props) {
+  var _useDoenetRender = Object(_useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__["default"])(props),
+      _useDoenetRender2 = _slicedToArray(_useDoenetRender, 3),
+      name = _useDoenetRender2[0],
+      SVs = _useDoenetRender2[1],
+      actions = _useDoenetRender2[2]; //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+
+
+  var containerRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(null);
+
+  var sorted_points = _toConsumableArray(SVs.items).sort(function (p1, p2) {
+    return p1 - p2;
+  });
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      thumbXPos = _useState2[0],
+      setThumbXPos = _useState2[1];
+
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? SVs.items[0] : sorted_points[0]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      thumbValue = _useState4[0],
+      setThumbValue = _useState4[1];
+
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState6 = _slicedToArray(_useState5, 2),
+      isMouseDown = _useState6[0],
+      setIsMouseDown = _useState6[1];
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState8 = _slicedToArray(_useState7, 2),
+      offsetLeft = _useState8[0],
+      setOffsetLeft = _useState8[1];
+
+  var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 0 : sorted_points[0]),
+      _useState10 = _slicedToArray(_useState9, 2),
+      startValue = _useState10[0],
+      setStartValue = _useState10[1];
+
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 0 : sorted_points[sorted_points.length - 1]),
+      _useState12 = _slicedToArray(_useState11, 2),
+      endValue = _useState12[0],
+      setEndValue = _useState12[1];
+
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 500 / (SVs.items.length - 1) : 500 / (endValue - startValue)),
+      _useState14 = _slicedToArray(_useState13, 2),
+      divisionWidth = _useState14[0],
+      setDivisionWidth = _useState14[1];
+
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState16 = _slicedToArray(_useState15, 2),
+      index = _useState16[0],
+      setIndex = _useState16[1];
+
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    if (containerRef.current) {
+      var rect = containerRef.current.getBoundingClientRect();
+      setOffsetLeft(rect.left);
+    }
+  }, []);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    //console.log("ran");
+    if (!isMouseDown) {
+      setThumbValue(SVs.value);
+      setIndex(SVs.index);
+
+      if (!(SVs.sliderType === "text")) {
+        setThumbXPos((SVs.value - startValue) * divisionWidth);
+      } else {
+        setThumbXPos(SVs.index * divisionWidth);
+      }
+    }
+  }, [SVs.index]);
+
+  if (SVs.hide) {
+    return null;
+  }
+
+  if (SVs.disabled) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
+      labeled: SVs.showControls || SVs.label,
+      noTicked: SVs.showTicks === false,
+      ref: containerRef
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      style: {
+        height: SVs.showControls || SVs.label ? "20px" : "0px"
+      }
+    }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      style: {
+        "float": "right",
+        userSelect: "none"
+      },
+      onClick: handleNext,
+      disabled: true
+    }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      style: {
+        "float": "right",
+        userSelect: "none"
+      },
+      onClick: handlePrevious,
+      disabled: true
+    }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
+      width: "".concat(500, "px")
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
+      disabled: true,
+      style: {
+        left: "".concat(-3, "px")
+      }
+    }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
+  }
+
+  function handleDragEnter(e) {
+    setIsMouseDown(true);
+    setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
+    if (!(SVs.sliderType === "text")) {
+      var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      var valindexpair = nearestValue(refval, SVs.items);
+      setThumbValue(valindexpair[0]);
+      setIndex(valindexpair[1]);
+      actions.changeValue({
+        value: SVs.items[valindexpair[1]],
+        "transient": true
+      });
+    } else {
+      var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
+      actions.changeValue({
+        value: SVs.items[i],
+        "transient": true
+      });
+    }
+  }
+
+  function handleDragExit(e) {
+    if (!isMouseDown) {
+      return;
+    }
+
+    setIsMouseDown(false);
+
+    if (!(SVs.sliderType === "text")) {
+      var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      var valindexpair = nearestValue(refval, SVs.items);
+      setThumbValue(valindexpair[0]);
+      setThumbXPos((valindexpair[0] - startValue) * divisionWidth);
+      setIndex(valindexpair[1]);
+      actions.changeValue({
+        value: SVs.items[valindexpair[1]]
+      });
+    } else {
+      var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
+      setThumbXPos(i * divisionWidth);
+      actions.changeValue({
+        value: SVs.items[i]
+      });
+    }
+  }
+
+  function handleDragThrough(e) {
+    if (isMouseDown) {
+      setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
+      if (!(SVs.sliderType === "text")) {
+        var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+        var valindexpair = nearestValue(refval, SVs.items);
+        setThumbValue(valindexpair[0]);
+        setIndex(valindexpair[1]);
+        actions.changeValue({
+          value: SVs.items[valindexpair[1]],
+          "transient": true
+        });
+      } else {
+        var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+        setIndex(i);
+        setThumbValue(SVs.items[i]);
+        actions.changeValue({
+          value: SVs.items[i],
+          "transient": true
+        });
+      }
+    }
+  }
+
+  function handleNext(e) {
+    if (index === SVs.items.length - 1) {
+      return;
+    }
+
+    if (!(SVs.sliderType === "text")) {
+      setThumbXPos((SVs.items[index + 1] - startValue) * divisionWidth);
+    } else {
+      setThumbXPos((index + 1) * divisionWidth);
+    }
+
+    actions.changeValue({
+      value: SVs.items[index + 1]
+    });
+    setThumbValue(SVs.items[index + 1]);
+    setIndex(index + 1);
+  }
+
+  function handlePrevious(e) {
+    if (index === 0) {
+      return;
+    }
+
+    if (!(SVs.sliderType === "text")) {
+      setThumbXPos((SVs.items[index - 1] - startValue) * divisionWidth);
+    } else {
+      setThumbXPos((index - 1) * divisionWidth);
+    }
+
+    actions.changeValue({
+      value: SVs.items[index - 1]
+    });
+    setThumbValue(SVs.items[index - 1]);
+    setIndex(index - 1);
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
+    ref: containerRef,
+    labeled: SVs.showControls || SVs.label,
+    noTicked: SVs.showTicks === false
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    style: {
+      height: SVs.showControls || SVs.label ? "20px" : "0px"
+    }
+  }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handleNext
+  }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handlePrevious
+  }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, {
+    onMouseDown: handleDragEnter,
+    onMouseUp: handleDragExit,
+    onMouseMove: handleDragThrough,
+    onMouseLeave: handleDragExit
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
+    width: "".concat(500, "px")
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__["Spring"], {
+    to: {
+      x: thumbXPos
+    }
+  }, function (props) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
+      style: {
+        left: "".concat(props.x - 3, "px")
+      }
+    });
+  }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
+} // let [name, SVs, actions] = useDoenetRender(props);
+//   // let [handlePos,setHandlePos] = useState(100);
+//   if (SVs.hide) {
+//     return null;
+//   }
+//   return (
+//     <StyledSlider width = {`${500}px`} >
+//       <Spring
+//           to={{ x: 0 }}>
+//           {props => <StyledThumb style={{left: `${props.x - 3}px`}}/>}
+//       </Spring>
+//       {/* {(props.showTicks === false) ? null : (props.isText ? generateTextLabels(props.points, divisionWidth) : generateNumericLabels(props.points, divisionWidth, startValue))} */}
+//     </StyledSlider>
+//   )
+
+{
+  /* <>
+       <div> {name}'s Slider Value {SVs.items[SVs.index]} </div>
+       <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index - 1] })}>Prev</button>
+       <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index + 1] })}>Next</button>
+     </> */
+}
 {
   /* 
   <slider>
@@ -243,64 +635,38 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
   </sequence>
   </slider> 
   */
-}
-
-var Slider =
-/*#__PURE__*/
-function (_DoenetRenderer) {
-  _inherits(Slider, _DoenetRenderer);
-
-  function Slider(props) {
-    var _this;
-
-    _classCallCheck(this, Slider);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Slider).call(this, props));
-    _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_this));
-    _this.state = {};
-    console.log("this.doenetSvData");
-    console.log(_this.doenetSvData);
-    console.log(_this.doenetSvData.items);
-    console.log(_this.doenetSvData.index);
-    console.log(_this.doenetSvData.sliderType);
-    console.log(_this.actions);
-    return _this;
-  }
-
-  _createClass(Slider, [{
-    key: "handleInput",
-    value: function handleInput(e, inputState) {}
-  }, {
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      if (this.doenetSvData.hide) {
-        return null;
-      }
-
-      console.log("Current Value");
-      console.log(this.doenetSvData.items[this.doenetSvData.index]);
-      return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, " I'm a slider! "), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        onClick: function onClick() {
-          return _this2.actions.changeValue({
-            value: _this2.doenetSvData.items[_this2.doenetSvData.index - 1]
-          });
-        }
-      }, "Prev"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        onClick: function onClick() {
-          return _this2.actions.changeValue({
-            value: _this2.doenetSvData.items[_this2.doenetSvData.index + 1]
-          });
-        }
-      }, "Next"));
-    }
-  }]);
-
-  return Slider;
-}(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]);
-
-
+} // export default class Slider extends DoenetRenderer {
+//   constructor(props) {
+//     super(props);
+//     this.handleInput = this.handleInput.bind(this);
+//     this.state = {
+//     }
+//     console.log("this.doenetSvData");
+//     console.log(this.doenetSvData);
+//     // console.log(this.doenetSvData.items)
+//     // console.log(this.doenetSvData.index)
+//     // console.log(this.doenetSvData.sliderType);
+//     // console.log(this.actions);
+//     // console.log(props.rendererUpdateMethods[this.componentName])
+//   }
+//   handleInput(e, inputState) {
+//   }
+//   render() {
+//     console.log('RENDER')
+//     if (this.doenetSvData.hide) {
+//       return null;
+//     }
+//     console.log("Current Value")
+//     console.log(this.doenetSvData.items[this.doenetSvData.index]);
+//     return (
+//       <>
+//         <div> {this.componentName}'s Slider Value {this.doenetSvData.items[this.doenetSvData.index]} </div>
+//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index - 1] })}>Prev</button>
+//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index + 1] })}>Next</button>
+//       </>
+//     );
+//   }
+// }
 
 /***/ })
 

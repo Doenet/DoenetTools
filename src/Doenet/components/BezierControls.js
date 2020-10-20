@@ -1055,8 +1055,7 @@ export default class BezierControls extends BaseComponent {
             } else {
               instructions.push({
                 setStateVariable: "directions",
-                value: desiredStateVariableValues.directions[arrayKey],
-                arrayKey
+                value: { [arrayKey]: desiredStateVariableValues.directions[arrayKey] },
               })
             }
 
@@ -1094,8 +1093,7 @@ export default class BezierControls extends BaseComponent {
           } else {
             instructions.push({
               setStateVariable: "directions",
-              value: desiredStateVariableValues.directions[arrayKey],
-              arrayKey
+              value: { [arrayKey]: desiredStateVariableValues.directions[arrayKey] },
             })
           }
 
@@ -1600,16 +1598,14 @@ export default class BezierControls extends BaseComponent {
                 } else {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   })
                   if (direction === "symmetric") {
                     // if don't have a control in symmetric case
                     // also save state variable to make it symmetric
                     instructions.push({
                       setStateVariable: "controls",
-                      value: flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers(),
-                      arrayKey: arrayIndices[0] + ",1"
+                      value: { [arrayIndices[0] + ",1"]: flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers() },
                     })
                   }
                 }
@@ -1621,15 +1617,13 @@ export default class BezierControls extends BaseComponent {
                 } else {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   })
                   // if don't have a control in symmetric case
                   // also save state variable to make it symmetric
                   instructions.push({
                     setStateVariable: "controls",
-                    value: flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers(),
-                    arrayKey: arrayIndices[0] + ",0"
+                    value: { [arrayIndices[0] + ",0"]: flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers() },
                   })
                 }
 
@@ -1644,8 +1638,7 @@ export default class BezierControls extends BaseComponent {
                 } else {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   })
                 }
               }
@@ -1716,22 +1709,19 @@ export default class BezierControls extends BaseComponent {
                 if (direction === "symmetric") {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   });
                   // also save symmetric value to state variable
                   let flippedValue = flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers();
                   let symmetricKey = arrayIndices[0] + ",1";
                   instructions.push({
                     setStateVariable: "controls",
-                    value: flippedValue,
-                    arrayKey: symmetricKey
+                    value: { [symmetricKey]: flippedValue },
                   })
                 } else if (direction === "both" || direction === "previous") {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   })
                 }
 
@@ -1740,22 +1730,19 @@ export default class BezierControls extends BaseComponent {
                 if (direction === "symmetric") {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   });
                   // also save symmetric value to state variable
                   let flippedValue = flipVector(desiredStateVariableValues.controls[arrayKey]).evaluate_numbers();
                   let symmetricKey = arrayIndices[0] + ",0";
                   instructions.push({
                     setStateVariable: "controls",
-                    value: flippedValue,
-                    arrayKey: symmetricKey
+                    value: { [symmetricKey]: flippedValue },
                   })
                 } else if (direction === "both" || direction === "next") {
                   instructions.push({
                     setStateVariable: "controls",
-                    value: desiredStateVariableValues.controls[arrayKey],
-                    arrayKey
+                    value: { [arrayKey]: desiredStateVariableValues.controls[arrayKey] },
                   });
                 }
               }

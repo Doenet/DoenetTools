@@ -111,8 +111,7 @@ function nearestValue(refval, points){
 
 export default function Slider(props) {
   let [name, SVs, actions] = useDoenetRender(props);
-  //console.log(SVs.index);
-  
+  //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
 
   const containerRef = useRef(null);
 
@@ -135,11 +134,24 @@ export default function Slider(props) {
       }
   }, []);
 
-  if(SVs.hide){
+  useEffect(() => {
+      //console.log("ran");
+      if(!isMouseDown){
+        setThumbValue(SVs.value);
+        setIndex(SVs.index);
+        if(!(SVs.sliderType === "text")){
+            setThumbXPos((SVs.value - startValue)*divisionWidth);
+        }else{
+            setThumbXPos((SVs.index)*divisionWidth);
+        }
+      }
+  }, [SVs.index]);
+
+  if(SVs.hidden){
     return null;
   }
 
-  if(props.disabled) {
+  if(SVs.disabled) {
     return (
         <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
@@ -169,13 +181,13 @@ function handleDragEnter(e) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-        actions.changeValue({ value: SVs.items[valindexpair[1]]});
+        actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
     }else{
         let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
 
-        actions.changeValue({ value: SVs.items[i]});
+        actions.changeValue({ value: SVs.items[i], transient: true});
     }
 }
 
@@ -217,13 +229,13 @@ function handleDragThrough(e) {
             setThumbValue(valindexpair[0]);
             setIndex(valindexpair[1]);
 
-            actions.changeValue({ value: SVs.items[valindexpair[1]]});
+            actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
         }else{
             let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
             setIndex(i);
             setThumbValue(SVs.items[i]);
 
-            actions.changeValue({ value: SVs.items[i]});
+            actions.changeValue({ value: SVs.items[i], transient: true});
         }
     }
 }
@@ -264,21 +276,6 @@ function handlePrevious(e) {
 }
   
   return (
-    // <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
-    // <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-    //     {SVs.label? <StyledValueLabel>{SVs.items[index]}</StyledValueLabel> : null}
-    //     {SVs.showControls? <>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
-    //     </> : null}
-    // </div>
-    // <SubContainer2>
-    //     <StyledSlider width = {`${500}px`} >
-    //     <StyledThumb disabled style={{left: `${-3}px`}}/>
-    //     {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
-    //     </StyledSlider>
-    // </SubContainer2>
-    // </SliderContainer>
     <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false}>
         <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
@@ -305,7 +302,7 @@ function handlePrevious(e) {
 //   // let [handlePos,setHandlePos] = useState(100);
 
 
-//   if (SVs.hide) {
+//   if (SVs.hidden) {
 //     return null;
 //   }
 
@@ -385,7 +382,7 @@ function handlePrevious(e) {
 
 //     console.log('RENDER')
 
-//     if (this.doenetSvData.hide) {
+//     if (this.doenetSvData.hidden) {
 //       return null;
 //     }
 

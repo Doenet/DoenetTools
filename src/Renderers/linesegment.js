@@ -28,7 +28,7 @@ export default class LineSegment extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -51,7 +51,7 @@ export default class LineSegment extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 8,
     });
-    if(this.doenetSvData.draggable !== true) {
+    if (this.doenetSvData.draggable !== true) {
       jsxPointAttributes.visible = false;
     }
 
@@ -68,9 +68,17 @@ export default class LineSegment extends DoenetRenderer {
 
     this.lineSegmentJXG = this.props.board.create('segment', [this.point1JXG, this.point2JXG], jsxSegmentAttributes);
 
-    this.point1JXG.on('drag', e => this.onDragHandler(1,e));
-    this.point2JXG.on('drag', e => this.onDragHandler(2,e));
-    this.lineSegmentJXG.on('drag', e => this.onDragHandler(0,e));
+    this.point1JXG.on('drag', () => this.onDragHandler(1, true));
+    this.point2JXG.on('drag', () => this.onDragHandler(2, true));
+    this.lineSegmentJXG.on('drag', () => this.onDragHandler(0, true));
+
+    this.point1JXG.on('up', () => this.onDragHandler(1, false));
+    this.point2JXG.on('up', () => this.onDragHandler(2, false));
+    this.lineSegmentJXG.on('up', () => this.onDragHandler(0, false));
+
+    this.point1JXG.on('down', () => this.draggedPoint = null);
+    this.point2JXG.on('down', () => this.draggedPoint = null);
+    this.lineSegmentJXG.on('down', () => this.draggedPoint = null);
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
@@ -125,12 +133,18 @@ export default class LineSegment extends DoenetRenderer {
     this.lineSegmentJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[0]);
     this.lineSegmentJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[1]);
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
+      let actuallyChangedVisibility = this.lineSegmentJXG.visProp["visible"] !== visible;
       this.lineSegmentJXG.visProp["visible"] = visible;
       this.lineSegmentJXG.visPropCalc["visible"] = visible;
-      // this.lineSegmentJXG.setAttribute({visible: visible})
+
+      if (actuallyChangedVisibility) {
+        // at least for point, this function is incredibly slow, so don't run it if not necessary
+        // TODO: figure out how to make label disappear right away so don't need to run this function
+        this.lineSegmentJXG.setAttribute({ visible: visible })
+      }
     }
     else {
       this.lineSegmentJXG.visProp["visible"] = false;
@@ -157,20 +171,29 @@ export default class LineSegment extends DoenetRenderer {
 
   }
 
-  onDragHandler(i) {
+  onDragHandler(i, transient) {
 
-    if(i==1) {
+    if (transient) {
+      this.draggedPoint = i;
+    } else if (this.draggedPoint !== i) {
+      return;
+    }
+
+    if (i == 1) {
       this.actions.moveLineSegment({
         point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
+        transient
       });
-    }else if(i==2) {
+    } else if (i == 2) {
       this.actions.moveLineSegment({
         point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
+        transient
       });
-    }else {
+    } else {
       this.actions.moveLineSegment({
         point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
         point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
+        transient
       });
     }
   }
@@ -178,15 +201,16 @@ export default class LineSegment extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null;
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

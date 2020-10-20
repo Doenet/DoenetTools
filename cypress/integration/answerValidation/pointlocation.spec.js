@@ -10,10 +10,10 @@ describe('Point location validation tests',function() {
     <p>Move point to first quadrant</p>
     <graph><point>(-3.9,4.5)</point></graph>
     <p><answer><award><when>
-    <ref prop="x">_point1</ref> > 0 and 
-    <ref prop="y">_point1</ref> > 0
+    <copy prop="x" tname="_point1" /> > 0 and 
+    <copy prop="y" tname="_point1" /> > 0
     </when></award></answer></p>
-    <p>Credit for answer: <ref prop="creditAchieved">_answer1</ref></p>
+    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
     `},"*");
     });
 
@@ -182,17 +182,17 @@ describe('Point location validation tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <point name="goal">(-4.1, 7.4)</point>
-    <p>Move point to <ref prop="coords">goal</ref></p>
+    <p>Move point to <copy prop="coords" tname="goal" /></p>
     <graph>
       <point name="A">(4.9, -1.1)
-        <attractTo><ref>goal</ref></attractTo>
+        <attractTo><copy tname="goal" /></attractTo>
       </point>
     </graph>
     <p><answer><award><when>
-    <ref prop="x">A</ref> = <ref prop="x">goal</ref> and 
-    <ref prop="y">A</ref> = <ref prop="y">goal</ref>
+    <copy prop="x" tname="A" /> = <copy prop="x" tname="goal" /> and 
+    <copy prop="y" tname="A" /> = <copy prop="y" tname="goal" />
     </when></award></answer></p>
-    <p>Credit for answer: <ref prop="creditAchieved">_answer1</ref></p>
+    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
     `},"*");
     });
 
@@ -222,7 +222,7 @@ describe('Point location validation tests',function() {
     cy.log("Move near correct point")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -4, y: 7.6})
+      components['/A'].movePoint({x: -4, y: 7.6})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -250,7 +250,7 @@ describe('Point location validation tests',function() {
     cy.log("Move point further away and submit")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -3.7, y: 7})
+      components['/A'].movePoint({x: -3.7, y: 7})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -277,7 +277,7 @@ describe('Point location validation tests',function() {
     cy.log("Move point close again and submit")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -3.8, y: 7.1})
+      components['/A'].movePoint({x: -3.8, y: 7.1})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -312,24 +312,24 @@ describe('Point location validation tests',function() {
     <p>Criterion distance: <mathinput name="criterion" prefill="2"/></p>
     <p>Partial credit distance: <mathinput name="partialcriterion" prefill="3"/></p>
 
-    <number hide name="criterion2"><ref prop="value">criterion</ref>^2</number>
-    <number hide name="partialcriterion2"><ref prop="value">partialcriterion</ref>^2</number>
-    <number hide name="distance2">(<ref prop="x">A</ref> - <ref prop="x">goal</ref>)^2 + 
-    (<ref prop="y">A</ref> - <ref prop="y">goal</ref>)^2</number>
+    <number hide name="criterion2"><copy prop="value" tname="criterion" />^2</number>
+    <number hide name="partialcriterion2"><copy prop="value" tname="partialcriterion" />^2</number>
+    <number hide name="distance2">(<copy prop="x" tname="A" /> - <copy prop="x" tname="goal" />)^2 + 
+    (<copy prop="y" tname="A" /> - <copy prop="y" tname="goal" />)^2</number>
 
-    <p>Move point to within distance of <ref prop="value">criterion</ref> to <ref prop="coords">goal</ref></p>
+    <p>Move point to within distance of <copy prop="value" tname="criterion" /> to <copy prop="coords" tname="goal" /></p>
     <graph>
       <point name="A">(4.9, -1.1)</point>
     </graph>
     <p><answer>
       <award><when>
-        <ref>distance2</ref> < <ref>criterion2</ref>
+        <copy tname="distance2" /> < <copy tname="criterion2" />
       </when></award>
       <award credit="0.6"><when>
-        <ref>distance2</ref> < <ref>partialcriterion2</ref>
+        <copy tname="distance2" /> < <copy tname="partialcriterion2" />
       </when></award>
     </answer></p>
-    <p>Credit for answer: <ref prop="creditAchieved">_answer1</ref></p>
+    <p>Credit for answer: <copy prop="creditAchieved" tname="_answer1" /></p>
     `},"*");
     });
 
@@ -359,7 +359,7 @@ describe('Point location validation tests',function() {
     cy.log("Move near correct point")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -5, y: 7})
+      components['/A'].movePoint({x: -5, y: 7})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -417,7 +417,7 @@ describe('Point location validation tests',function() {
     cy.log("Move point further away and submit")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -2.8, y: 9})
+      components['/A'].movePoint({x: -2.8, y: 9})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -471,7 +471,7 @@ describe('Point location validation tests',function() {
     cy.log("Move point closer again and submit")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -3, y: 9})
+      components['/A'].movePoint({x: -3, y: 9})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -497,7 +497,7 @@ describe('Point location validation tests',function() {
     cy.log("Move point even closer and submit")
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      components['/a'].movePoint({x: -3.5, y: 8})
+      components['/A'].movePoint({x: -3.5, y: 8})
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {

@@ -512,7 +512,7 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it("refs don't resample",() => {
+  it("copies don't resample",() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
@@ -1084,14 +1084,14 @@ describe('SelectFromSequence Tag Tests',function() {
   it('two selects with mutual dependence, numbertoselect initially unresolved',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
   <p><aslist>
-    <selectfromsequence name="s1" assignnames="X1, y1, z1" withReplacement>
+    <selectfromsequence name="s1" assignnames="x1, y1, z1" withReplacement>
       <numberToSelect><copy prop="numberToSelect" tname="s2" /></numberToSelect>
       1,5
     </selectfromsequence>
   </aslist></p>
   
   <p><aslist>
-    <selectfromsequence name="s2" assignnames="X2, y2, z2">
+    <selectfromsequence name="s2" assignnames="x2, y2, z2">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <withReplacement><copy prop="withReplacement" tname="s1" /></withReplacement>
       6,10
@@ -1099,7 +1099,7 @@ describe('SelectFromSequence Tag Tests',function() {
   </aslist></p>
   
   <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="X2" />, <copy name="y2a" tname="Y2" />, <copy name="z2a" tname="Z2" /></p>
+  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
   
   <p> 
     <copy name="n2" tname="n3" />
@@ -1221,7 +1221,7 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it('select multiple letters with excludes and excludecombiations',() => {
+  it('select multiple letters with excludes and excludecombinations',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>

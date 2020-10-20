@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Booleaninput Tag Tests', function () {
 
   beforeEach(() => {
@@ -21,9 +31,9 @@ describe('Booleaninput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let boolean1 = components['/_copy1'].replacements[0];
-      let boolean1Anchor = '#' + boolean1.componentName;
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
       let boolean2 = components['/_copy2'].replacements[0].replacements[0];
-      let boolean2Anchor = '#' + boolean2.componentName;
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
 
       cy.log('Test values displayed in browser')
 
@@ -88,7 +98,7 @@ describe('Booleaninput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let boolean1 = components['/_copy1'].replacements[0];
-      let boolean1Anchor = '#' + boolean1.componentName;
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(boolean1Anchor).should('have.text', "true");
@@ -146,11 +156,11 @@ describe('Booleaninput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let booleaninput1a = components['/_copy1'].replacements[0];
-      let booleaninput1aAnchor = '#' + booleaninput1a.componentName + "_input";
+      let booleaninput1aAnchor = cesc('#' + booleaninput1a.componentName + "_input");
       let boolean1 = components['/_copy2'].replacements[0];
-      let boolean1Anchor = '#' + boolean1.componentName;
+      let boolean1Anchor = cesc('#' + boolean1.componentName);
       let boolean2 = components['/_copy3'].replacements[0];
-      let boolean2Anchor = '#' + boolean2.componentName;
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
 
       cy.get(boolean1Anchor).should('have.text', "true");
       cy.get(boolean2Anchor).should('have.text', "false");
@@ -228,9 +238,9 @@ describe('Booleaninput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let boolean2 = components['/_copy2'].replacements[0];
-      let boolean2Anchor = '#' + boolean2.componentName;
+      let boolean2Anchor = cesc('#' + boolean2.componentName);
       let boolean3 = components['/_copy3'].replacements[0];
-      let boolean3Anchor = '#' + boolean3.componentName;
+      let boolean3Anchor = cesc('#' + boolean3.componentName);
 
       cy.get('#\\/_boolean1').should('have.text', 'true');
       cy.get(boolean2Anchor).should('have.text', 'true');

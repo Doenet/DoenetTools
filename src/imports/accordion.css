@@ -1,0 +1,12 @@
+.menuCustomTwirlIcon{
+  font-size: 12px;
+  color: #03a1fc;
+  margin-right: 8px;
+  margin-left: 6px;
+  border:1px solid #03a1fc;
+  border-radius: 2px;
+  /* padding-left: 2px;
+  padding-right:2px; */
+  width: 15px !important;
+  height: 15px !important;
+}

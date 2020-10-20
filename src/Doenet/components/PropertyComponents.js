@@ -17,9 +17,17 @@ import Variable from './Variable';
 import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
+import MathList from './MathList';
+import When from './When';
+import TextOrInline from './abstract/TextOrInline';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
+  static rendererType = "boolean";
+}
+
+export class Disabled extends BooleanComponent {
+  static componentType = "disabled";
   static rendererType = "boolean";
 }
 
@@ -241,13 +249,13 @@ export class Step extends MathComponent {
   static rendererType = "math";
 }
 
-export class NumRows extends Integer {
-  static componentType = "numrows";
+export class MinNumRows extends Integer {
+  static componentType = "minnumrows";
   static rendererType = "number";
 }
 
-export class NumColumns extends Integer {
-  static componentType = "numcolumns";
+export class MinNumColumns extends Integer {
+  static componentType = "minnumcolumns";
   static rendererType = "number";
 }
 
@@ -417,9 +425,9 @@ export class AggregateScores extends BooleanComponent {
 //   static componentType = "aggregatebypoints";
 // }
 
-export class Title extends TextComponent {
+export class Title extends TextOrInline {
   static componentType = "title";
-  static rendererType = "text";
+  static rendererType = "textorinline";
 }
 
 export class Level extends NumberComponent {
@@ -542,6 +550,11 @@ export class Z extends MathComponent {
   static rendererType = "math";
 }
 
+export class Xs extends MathList {
+  static componentType = "xs";
+  static rendererType = "aslist";
+}
+
 export class Layer extends Integer {
   static componentType = "layer";
   static rendererType = "number";
@@ -652,9 +665,9 @@ export class Source extends TextComponent {
   static rendererType = "text";
 }
 
-export class Description extends TextComponent {
+export class Description extends TextOrInline {
   static componentType = "description";
-  static rendererType = "text";
+  static rendererType = "textorinline";
 }
 
 export class SelectMultiple extends BooleanComponent {
@@ -677,13 +690,18 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Href extends TextComponent {
-  static componentType = "href";
+export class Uri extends TextComponent {
+  static componentType = "uri";
   static rendererType = "text";
 }
 
 export class Youtube extends TextComponent {
   static componentType = "youtube";
+  static rendererType = "text";
+}
+
+export class Geogebra extends TextComponent {
+  static componentType = "geogebra";
   static rendererType = "text";
 }
 
@@ -797,6 +815,11 @@ export class Target extends TextComponent {
   static rendererType = "text";
 }
 
+export class targetPropertiesToIgnore extends TextList {
+  static componentType = "targetPropertiesToIgnore";
+  static rendererType = "textlist";
+}
+
 export class PluralForm extends TextComponent {
   static componentType = "pluralform";
   static rendererType = "text";
@@ -875,4 +898,38 @@ export class Periodic extends BooleanComponent {
 export class IsResponse extends BooleanComponent {
   static componentType = "isResponse";
   static rendererType = "boolean";
+}
+
+export class SectionWideCheckWork extends BooleanComponent {
+  static componentType = "sectionWideCheckWork";
+  static rendererType = "boolean";
+}
+
+export class delegateCheckWorkToAnswerNumber extends NumberComponent {
+  static componentType = "delegateCheckWorkToAnswerNumber";
+  static rendererType = "number";
+}
+
+export class FromSubstitutions extends NumberComponent {
+  static componentType = "fromSubstitutions";
+  static rendererType = "number";
+}
+
+export class FromMapAncestor extends NumberComponent {
+  static componentType = "fromMapAncestor";
+  static rendererType = "number";
+}
+
+export class Condition extends When {
+  static componentType = "condition";
+}
+
+export class EncodedGeogebraContent extends TextComponent {
+  static componentType = "encodedGeogebraContent";
+  static rendererType = "text";
+}
+
+export class FromMathInsight extends TextComponent {
+  static componentType = "fromMathInsight";
+  static rendererType = "text";
 }

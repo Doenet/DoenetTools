@@ -33,7 +33,7 @@ import Tname from './components/Tname';
 import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
-import Xref from './components/Xref';
+import Ref from './components/Ref';
 import Point from './components/Point';
 import Coords from './components/Coords';
 import Line from './components/Line';
@@ -41,6 +41,7 @@ import LineSegment from './components/LineSegment';
 import Polyline from './components/Polyline';
 import Polygon from './components/Polygon';
 import Triangle from './components/Triangle';
+import Rectangle from './components/Rectangle';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
@@ -76,7 +77,6 @@ import Map from './components/Map';
 import Substitutions from './components/Substitutions';
 import CopyFromSubs from './components/CopyFromSubs';
 import IndexFromSubs from './components/IndexFromSubs';
-import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
@@ -94,9 +94,6 @@ import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
 import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
-import ConditionalInlineContent from './components/ConditionalInlineContent';
-import ConditionalText from './components/ConditionalText';
-import ConditionalMath from './components/ConditionalMath';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
 import Cell from './components/Cell';
@@ -104,7 +101,6 @@ import Row from './components/Row';
 import Column from './components/Column';
 import Cellblock from './components/Cellblock';
 import Table from './components/Table';
-import Problem from './components/Problem';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
@@ -120,7 +116,7 @@ import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
-import Url from './components/Url';
+import Embed from './components/Embed';
 import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
@@ -131,6 +127,7 @@ import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
+import ConsiderAsResponses from './components/ConsiderAsResponses';
 
 
 //Extended
@@ -156,6 +153,7 @@ import TextFromSingleStringChild from './components/abstract/TextFromSingleStrin
 import MathWithVariable from './components/abstract/MathWithVariable';
 import NumberBaseOperatorOrNumber from './components/abstract/NumberBaseOperatorOrNumber';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
+import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
@@ -189,11 +187,12 @@ const componentTypeArray = [
   Prop,
   Extract,
   Collect,
-  Xref,
+  Ref,
   Point, Coords,
   Line, LineSegment, Polyline,
   Polygon,
   Triangle,
+  Rectangle,
   Circle,
   Parabola,
   Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
@@ -221,7 +220,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, CopyFromSubs, IndexFromSubs, FromMapAncestor,
+  Map, Substitutions, CopyFromSubs, IndexFromSubs,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,
@@ -233,11 +232,7 @@ const componentTypeArray = [
   UpdateValue, MathTarget, NewMathValue,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
-  ConditionalInlineContent,
-  ConditionalText,
-  ConditionalMath,
   AsList,
-  Problem,
   Seeds, Variants, VariantControl,
   SelectFromSequence, Select,
   Group,
@@ -250,7 +245,7 @@ const componentTypeArray = [
   DiscreteInfiniteSet,
   Image,
   Video,
-  Url,
+  Embed,
   Meta,
   Hint, Solution,
   IntComma,
@@ -260,6 +255,7 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   Div,
+  ConsiderAsResponses,
 ];
 
 const componentTypeArrayExtended = [
@@ -288,6 +284,7 @@ const componentTypeArrayExtended = [
   MathWithVariable,
   NumberBaseOperatorOrNumber,
   InlineRenderInlineChildren,
+  TextOrInline,
 ];
 
 export function standardComponentClasses() {
@@ -347,6 +344,28 @@ export function componentTypesCreatingVariants() {
   const componentClasses = {};
   for (let ct of componentTypeArray) {
     if (ct.createsVariants) {
+      let newComponentType = ct.componentType;
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      newComponentType = newComponentType.toLowerCase();
+      if (newComponentType in componentClasses) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      componentClasses[newComponentType] = ct;
+    }
+  }
+  return componentClasses;
+}
+
+
+export function componentTypeWithPotentialVariants() {
+  const componentClasses = {};
+  for (let ct of componentTypeArray) {
+    if (ct.createsVariants ||
+      ct.setUpVariantIfVariantControlChild ||
+      ct.alwaysSetUpVariant
+    ) {
       let newComponentType = ct.componentType;
       if (newComponentType === undefined) {
         throw Error("Cannot create component as componentType is undefined for class " + ct)

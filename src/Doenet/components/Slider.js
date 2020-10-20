@@ -28,11 +28,11 @@ export default class Slider extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastOneNumbers = childLogic.newLeaf({
-      name: "atLeastOneNumbers",
+    let atLeastZeroNumbers = childLogic.newLeaf({
+      name: "atLeastZeroNumbers",
       componentType: 'number',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
     });
     let atLeastOneTexts = childLogic.newLeaf({
       name: "atLeastOneTexts",
@@ -50,7 +50,7 @@ export default class Slider extends BaseComponent {
     let numbersXorTextsXorSequence = childLogic.newOperator({
       name: "numbersXorTextsXorSequence",
       operator: 'xor',
-      propositions: [atLeastOneNumbers, atLeastOneTexts, /*exactlyOneSequence*/],
+      propositions: [atLeastOneTexts, atLeastZeroNumbers, /*exactlyOneSequence*/],
     });
 
     let atMostOneMarkers = childLogic.newLeaf({
@@ -85,7 +85,7 @@ export default class Slider extends BaseComponent {
         },
         numberChildren: {
           dependencyType: "childIdentity",
-          childLogicName: "atLeastOneNumbers",
+          childLogicName: "atLeastZeroNumbers",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -104,6 +104,7 @@ export default class Slider extends BaseComponent {
       public: true,
       isArray: true,
       entryPrefixes: ["item"],
+      entireArrayAtOnce: true,
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "childStateVariables",
@@ -112,7 +113,7 @@ export default class Slider extends BaseComponent {
         },
         numberChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneNumbers",
+          childLogicName: "atLeastZeroNumbers",
           variableNames: ["value"]
         },
         sliderType: {
@@ -120,15 +121,18 @@ export default class Slider extends BaseComponent {
           variableName: "sliderType"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         let items;
 
         if (dependencyValues.sliderType === "text") {
           items = dependencyValues.textChildren.map(x => x.stateValues.value);
-        } else {
+        } else if (dependencyValues.numberChildren.length > 0) {
           items = dependencyValues.numberChildren.map(x => x.stateValues.value);
           items.sort((a, b) => { return a - b; }); //sort in number order
+        } else {
+          // if no children, make items be integers from 0 to 10
+          items = [...Array(11).keys()];
         }
 
         return {
@@ -229,6 +233,7 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
+      essential: true,
       returnDependencies: () => ({
         sliderType: {
           dependencyType: "stateVariable",
@@ -246,7 +251,6 @@ export default class Slider extends BaseComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: { value: dependencyValues.items[dependencyValues.index] },
-          makeEssential: ["value"],
           setComponentType: { value: dependencyValues.sliderType },
         }
       },
@@ -294,40 +298,63 @@ export default class Slider extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.disabled = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        // collaborateGroups: {
-        //   dependencyType: "stateVariable",
-        //   variableName: "collaborateGroups"
-        // },
-        // collaboration: {
-        //   dependencyType: "flag",
-        //   flagName: "collaboration"
-        // }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-          disabled: false
-        }
-      })
-    }
+    // stateVariableDefinitions.disabled = {
+    //   forRenderer: true,
+    //   returnDependencies: () => ({
+    //     // collaborateGroups: {
+    //     //   dependencyType: "stateVariable",
+    //     //   variableName: "collaborateGroups"
+    //     // },
+    //     // collaboration: {
+    //     //   dependencyType: "flag",
+    //     //   flagName: "collaboration"
+    //     // }
+    //   }),
+    //   definition: ({ dependencyValues }) => ({
+    //     newValues: {
+    //       // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+    //       disabled: false
+    //     }
+    //   })
+    // }
 
     return stateVariableDefinitions;
   }
 
 
-  changeValue({ value }) {
+  changeValue({ value, transient }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "value",
-          value
-        }]
-      });
+      if (transient) {
+        this.coreFunctions.requestUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "value",
+            value
+          }],
+          transient
+        });
+      } else { 
+        this.coreFunctions.requestUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "value",
+            value
+          }],
+          event: {
+            verb: "selected",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            result: {
+              response: value,
+              responseText: value.toString()
+            }
+          }
+        });
+      }
     }
   }
 

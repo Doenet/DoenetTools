@@ -181,12 +181,12 @@ describe('Pluralize Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p><pluralize>one dog three cat two squirrel or 1 cat plus 7 goose</pluralize></p>
-    <p><pluralize>one hundred green milk plane flew through one big sky, rather six shiny sky</pluralize></p>
+    <p><pluralize>one hundred green plane flew through one big sky, rather than six shiny sky</pluralize></p>
     `}, "*");
     });
 
     cy.get('#\\/_p1').should('have.text', 'one dog three cats two squirrels or 1 cat plus 7 geese')
-    cy.get('#\\/_p2').should('have.text', 'one hundred green milk planes flew through one big sky, rather six shiny skies')
+    cy.get('#\\/_p2').should('have.text', 'one hundred green planes flew through one big sky, rather than six shiny skies')
 
   })
 
@@ -198,7 +198,7 @@ describe('Pluralize Tag Tests', function () {
     <p>How many geese? <textinput name="ngeese" prefill="1" /></p>
     <p>How many teeth? <textinput name="nteeth" prefill="1" /></p>
 
-    <p><pluralize>I have <ref prop="value">ngeese</ref> goose even if one doesn't have <ref prop="value">nteeth</ref> tooth</pluralize></p>
+    <p><pluralize>I have <copy prop="value" tname="ngeese" /> goose even if one doesn't have <copy prop="value" tname="nteeth" /> tooth</pluralize></p>
     `}, "*");
     });
 
@@ -218,6 +218,9 @@ describe('Pluralize Tag Tests', function () {
 
     cy.get('#\\/ngeese_input').clear().type("-1{enter}");
     cy.get('#\\/_p3').should('have.text', `I have -1 geese even if one doesn't have one thousand teeth`);
+
+    cy.get('#\\/ngeese_input').clear().type("-2{enter}");
+    cy.get('#\\/_p3').should('have.text', `I have -2 geese even if one doesn't have one thousand teeth`);
 
   })
 })

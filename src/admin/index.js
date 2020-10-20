@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetAdmin from "../React/DoenetAdmin";
+import DoenetAdmin from "../Tools/DoenetAdmin";
 
     ReactDOM.render(
       <DoenetAdmin />

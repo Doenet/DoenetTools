@@ -14,26 +14,26 @@ describe('Conditional Content Tag Tests', function () {
   <mathinput />
 
   <p>You typed 
-    <conditionalinlinecontent>
-      <if><ref prop="value">_mathinput1</ref> > 0</if>
+    <conditionalcontent>
+      <condition><copy prop="value" tname="_mathinput1" /> > 0</condition>
       a positive number.
-    </conditionalinlinecontent>
-    <conditionalinlinecontent>
-      <if><ref prop="value">_mathinput1</ref> < 0</if>
+    </conditionalcontent>
+    <conditionalcontent>
+      <condition><copy prop="value" tname="_mathinput1" /> < 0</condition>
       a negative number.
-    </conditionalinlinecontent>
-    <conditionalinlinecontent>
-      <if><ref prop="value">_mathinput1</ref> = 0</if>
+    </conditionalcontent>
+    <conditionalcontent>
+      <condition><copy prop="value" tname="_mathinput1" /> = 0</condition>
       zero.
-    </conditionalinlinecontent>
-    <conditionalinlinecontent>
-      <if>
-        !(<ref prop="value">_mathinput1</ref> > 0 or
-        <ref prop="value">_mathinput1</ref> < 0 or
-        <ref prop="value">_mathinput1</ref> = 0)
-      </if>
+    </conditionalcontent>
+    <conditionalcontent>
+      <condition>
+        !(<copy prop="value" tname="_mathinput1" /> > 0 or
+        <copy prop="value" tname="_mathinput1" /> < 0 or
+        <copy prop="value" tname="_mathinput1" /> = 0)
+      </condition>
       something else.
-    </conditionalinlinecontent>
+    </conditionalcontent>
   </p>
   `}, "*");
     });
@@ -73,67 +73,75 @@ describe('Conditional Content Tag Tests', function () {
   <text>a</text>
   <mathinput />
 
+    <section>
     <conditionalcontent>
-      <if><ref prop="value">_mathinput1</ref> > 0</if>
+      <condition><copy prop="value" tname="_mathinput1" /> > 0</condition>
       <p>You typed a positive number.</p>
     </conditionalcontent>
+    </section>
+    <section>
     <conditionalcontent>
-      <if><ref prop="value">_mathinput1</ref> < 0</if>
+      <condition><copy prop="value" tname="_mathinput1" /> < 0</condition>
       <p>You typed a negative number.</p>
     </conditionalcontent>
+    </section>
+    <section>
     <conditionalcontent>
-      <if><ref prop="value">_mathinput1</ref> = 0</if>
+      <condition><copy prop="value" tname="_mathinput1" /> = 0</condition>
       <p>You typed zero.</p>
     </conditionalcontent>
+    </section>
+    <section>
     <conditionalcontent>
-      <if>
-        !(<ref prop="value">_mathinput1</ref> > 0 or
-        <ref prop="value">_mathinput1</ref> < 0 or
-        <ref prop="value">_mathinput1</ref> = 0)
-      </if>
+      <condition>
+        !(<copy prop="value" tname="_mathinput1" /> > 0 or
+        <copy prop="value" tname="_mathinput1" /> < 0 or
+        <copy prop="value" tname="_mathinput1" /> = 0)
+      </condition>
       <p>You typed something else.</p>
     </conditionalcontent>
+    </section>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    cy.get('p#\\/_p1').should('not.exist');
-    cy.get('p#\\/_p2').should('not.exist');
-    cy.get('p#\\/_p3').should('not.exist');
-    cy.get('p#\\/_p4').invoke('text').then((text) => {
+    cy.get('#\\/_section1 p').should('not.exist');
+    cy.get('#\\/_section2 p').should('not.exist');
+    cy.get('#\\/_section3 p').should('not.exist');
+    cy.get('#\\/_section4 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
     cy.get('#\\/_mathinput1_input').clear().type("10{enter}");
-    cy.get('p#\\/_p1').invoke('text').then((text) => {
+    cy.get('#\\/_section1 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
-    cy.get('p#\\/_p2').should('not.exist');
-    cy.get('p#\\/_p3').should('not.exist');
-    cy.get('p#\\/_p4').should('not.exist');
+    cy.get('#\\/_section2 p').should('not.exist');
+    cy.get('#\\/_section3 p').should('not.exist');
+    cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/_mathinput1_input').clear().type("-5/9{enter}");
-    cy.get('p#\\/_p1').should('not.exist');
-    cy.get('p#\\/_p2').invoke('text').then((text) => {
+    cy.get('#\\/_section1 p').should('not.exist');
+    cy.get('#\\/_section2 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
-    cy.get('p#\\/_p3').should('not.exist');
-    cy.get('p#\\/_p4').should('not.exist');
+    cy.get('#\\/_section3 p').should('not.exist');
+    cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/_mathinput1_input').clear().type("5-5{enter}");
-    cy.get('p#\\/_p1').should('not.exist');
-    cy.get('p#\\/_p2').should('not.exist');
-    cy.get('p#\\/_p3').invoke('text').then((text) => {
+    cy.get('#\\/_section1 p').should('not.exist');
+    cy.get('#\\/_section2 p').should('not.exist');
+    cy.get('#\\/_section3 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
-    cy.get('p#\\/_p4').should('not.exist');
+    cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/_mathinput1_input').clear().type("-x{enter}");
-    cy.get('p#\\/_p1').should('not.exist');
-    cy.get('p#\\/_p2').should('not.exist');
-    cy.get('p#\\/_p3').should('not.exist');
-    cy.get('p#\\/_p4').invoke('text').then((text) => {
+    cy.get('#\\/_section1 p').should('not.exist');
+    cy.get('#\\/_section2 p').should('not.exist');
+    cy.get('#\\/_section3 p').should('not.exist');
+    cy.get('#\\/_section4 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
@@ -149,18 +157,18 @@ describe('Conditional Content Tag Tests', function () {
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
     <choiceinput inline="true"><choice>stable</choice><choice>unstable</choice></choiceinput>
-    <award><if>
-      <ref prop="selectedvalue">_choiceinput1</ref>
+    <award><condition>
+      <copy prop="selectedvalue" tname="_choiceinput1" />
       =
       <text>
-        <conditionaltext><if><abs><ref prop="value">_mathinput1</ref></abs> < 1</if>
+        <conditionalcontent><condition><abs><copy prop="value" tname="_mathinput1" /></abs> < 1</condition>
           stable
-        </conditionaltext>
-        <conditionaltext><if><abs><ref prop="value">_mathinput1</ref></abs> > 1</if>
+        </conditionalcontent>
+        <conditionalcontent><condition><abs><copy prop="value" tname="_mathinput1" /></abs> > 1</condition>
           unstable
-        </conditionaltext>
+        </conditionalcontent>
       </text>
-    </if></award>
+    </condition></award>
   </answer>
   </p>
   `}, "*");
@@ -230,18 +238,18 @@ describe('Conditional Content Tag Tests', function () {
   <p>Condition on <m>x</m>:
   <answer>
     <mathinput />
-    <award><if>
-      <ref prop="value">_mathinput1</ref>
+    <award><condition>
+      <copy prop="immediateValue" tname="_mathinput1" />
       =
       <math>
-        <conditionalmath><if><ref prop="selectedvalue">_choiceinput1</ref> = positive</if>
+        <conditionalcontent><condition><copy prop="selectedvalue" tname="_choiceinput1" /> = positive</condition>
           x > 0
-        </conditionalmath> +
-        <conditionalmath><if><ref prop="selectedvalue">_choiceinput1</ref> = negative</if>
+        </conditionalcontent>
+        <conditionalcontent><condition><copy prop="selectedvalue" tname="_choiceinput1" /> = negative</condition>
           x < 0
-        </conditionalmath>
+        </conditionalcontent>
       </math>
-    </if></award>
+    </condition></award>
   </answer>
   </p>
   `}, "*");

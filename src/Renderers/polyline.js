@@ -20,10 +20,28 @@ export default class Line extends DoenetRenderer {
   createGraphicalObject() {
 
 
+    if (this.doenetSvData.numericalVertices.length !== this.doenetSvData.nVertices ||
+      this.doenetSvData.numericalVertices.some(x => x.length !== 2)
+    ) {
+      return;
+    }
+
+
+    let validCoords = true;
+
+    for (let coords of this.doenetSvData.numericalVertices) {
+      if (!Number.isFinite(coords[0])) {
+        validCoords = false;
+      }
+      if (!Number.isFinite(coords[1])) {
+        validCoords = false;
+      }
+    }
+
     //things to be passed to JSXGraph as attributes
     this.jsxPolylineAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden && validCoords,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -47,7 +65,7 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 9,
     });
-    if (this.doenetSvData.draggable !== true) {
+    if (!this.doenetSvData.draggable && !this.doenetSvData.hidden && validCoords) {
       this.jsxPointAttributes.visible = false;
     }
 
@@ -65,10 +83,14 @@ export default class Line extends DoenetRenderer {
     this.polylineJXG = this.props.board.create('curve', [x, y], this.jsxPolylineAttributes);
 
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
-      this.pointsJXG[i].on('drag', x => this.onDragHandler(i));
+      this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
+      this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
+      this.pointsJXG[i].on('down', x => this.draggedPoint = null);
     }
 
-    this.polylineJXG.on('drag', x => this.onDragHandler(-1));
+    this.polylineJXG.on('drag', x => this.onDragHandler(-1, true));
+    this.polylineJXG.on('up', x => this.onDragHandler(-1, false));
+    this.polylineJXG.on('down', x => this.draggedPoint = null);
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     this.previousNVertices = this.doenetSvData.nVertices;
@@ -127,7 +149,9 @@ export default class Line extends DoenetRenderer {
         );
         this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
 
-        this.pointsJXG[i].on('drag', x => this.onDragHandler(i));
+        this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
+        this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
+        this.pointsJXG[i].on('down', x => this.draggedPoint = null);
       }
     } else if (this.doenetSvData.nVertices < this.previousNVertices) {
       for (let i = this.doenetSvData.nVertices; i < this.previousNVertices; i++) {
@@ -135,6 +159,9 @@ export default class Line extends DoenetRenderer {
       }
       this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
     }
+
+    this.previousNVertices = this.doenetSvData.nVertices;
+
 
     let shiftX = this.polylineJXG.transformMat[1][0];
     let shiftY = this.polylineJXG.transformMat[2][0];
@@ -147,7 +174,7 @@ export default class Line extends DoenetRenderer {
     }
 
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
       this.polylineJXG.visProp["visible"] = visible;
@@ -170,6 +197,13 @@ export default class Line extends DoenetRenderer {
       }
     }
 
+    if (this.componentName in sourceOfUpdate.sourceInformation) {
+      let vertexUpdated = sourceOfUpdate.sourceInformation[this.componentName].vertex;
+
+      if (Number.isFinite(vertexUpdated)) {
+        this.props.board.updateInfobox(this.pointsJXG[vertexUpdated]);
+      }
+    }
 
     this.polylineJXG.needsUpdate = true;
     this.polylineJXG.update().updateVisibility();
@@ -182,29 +216,37 @@ export default class Line extends DoenetRenderer {
   }
 
 
-  onDragHandler(i) {
+  onDragHandler(i, transient) {
+    if (transient) {
+      this.draggedPoint = i;
+    } else if (this.draggedPoint !== i) {
+      return;
+    }
+
     if (i === -1) {
-      let newPointcoords = this.polylineJXG.points.map(z => [z.usrCoords[1], z.usrCoords[2]]);
-      this.actions.movePolyline(newPointcoords);
+      let newPointcoords = {};
+      this.polylineJXG.points.forEach((z, i) => newPointcoords[i] = [z.usrCoords[1], z.usrCoords[2]]);
+      this.actions.movePolyline(newPointcoords, transient);
     } else {
       let newCoords = {};
       newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-      this.actions.movePolyline(newCoords);
+      this.actions.movePolyline(newCoords, transient, { vertex: i });
     }
   }
 
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

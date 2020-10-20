@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import DoenetCourse from '../Tools/DoenetCourse';
+import { initialize } from '../imports/courseInfo';
 
-import DoenetCourse from '../React/DoenetCourse';
+initialize();
 
     ReactDOM.render(
       <DoenetCourse/>
