@@ -147,7 +147,7 @@ export default function Slider(props) {
       }
   }, [SVs.index]);
 
-  if(SVs.hide){
+  if(SVs.hidden){
     return null;
   }
 
@@ -302,7 +302,7 @@ function handlePrevious(e) {
 //   // let [handlePos,setHandlePos] = useState(100);
 
 
-//   if (SVs.hide) {
+//   if (SVs.hidden) {
 //     return null;
 //   }
 
@@ -382,7 +382,7 @@ function handlePrevious(e) {
 
 //     console.log('RENDER')
 
-//     if (this.doenetSvData.hide) {
+//     if (this.doenetSvData.hidden) {
 //       return null;
 //     }
 

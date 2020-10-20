@@ -3095,7 +3095,7 @@ export default class BezierCurve extends Curve {
       parmax: this.stateValues.parameterizationMax,
       curveType: this.stateValues.curveType,
       flipFunction: this.stateValues.flipFunction,
-      visible: !this.stateValues.hide,
+      visible: !this.stateValues.hidden,
 
     };
     if (this.stateValues.curveType === "function") {

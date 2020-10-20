@@ -50,7 +50,7 @@ export default class Polygon extends DoenetRenderer {
 
     this.jsxPolygonAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -231,7 +231,7 @@ export default class Polygon extends DoenetRenderer {
       this.polygonJXG.vertices[i].update();
     }
 
-    let visibleNow = !this.doenetSvData.hide;
+    let visibleNow = !this.doenetSvData.hidden;
     if (!validCoords) {
       visibleNow = false;
     }
@@ -268,15 +268,16 @@ export default class Polygon extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 
