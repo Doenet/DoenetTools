@@ -37,7 +37,7 @@ function findTag(doc, tree, position) {
     let tag = {pos: -1, tagname: "", open: true}
     if (tree.children.length == 0) return tag;
 
-    console.log(tree);
+    // console.log(tree);
 
     let buffer = tree.children[0].buffer;
     let types = tree.children[0].group.types;
@@ -174,18 +174,42 @@ function getAttrs(doc, tree, init_i) {
     return attrs;
 }
 
+//Get the smallest Tree Buffer containing the position.
+//Returns null if there is none.
+function getTreeBuff(tree, position) {
+    let curr_tree = tree;
+    let offset = position;
+    while (typeof curr_tree !== "TreeBuffer") {
+        if (curr_tree.type.name !== "") return null;
+        let positions = curr_tree.positions;
+        for (let i=0; i<positions.length; i++) {
+            if (positions[i] <= offset) {
+                curr_tree = curr_tree.children[i];
+                offset -= positions[i];
+                break;
+            }
+        }
+    }
+    return curr_tree;
+}
+
 //Returns an object representing the properties of a tag
 //If given a closing tag it will only return the tag name
 function getTagProps(doc, tree, position) {
     let tag_props = {tagname: "", attrs: []};
     if (tree.children.length == 0) return tag_props;
 
-    let basic_tag_props = findTag(doc, tree, position);
+    console.log(tree);
+    let tree_buff = getTreeBuff(tree, position);
+    console.log(tree_buff);
+    if (tree_buff === null) return tag_props;
+
+    let basic_tag_props = findTag(doc, tree_buff, position);
     if (basic_tag_props.pos < 0) return tag_props;
     tag_props.tagname = basic_tag_props.tagname;
     
     if (!basic_tag_props.open) return tag_props;
-    tag_props.attrs = getAttrs(doc, tree, basic_tag_props.pos);
+    tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos);
 
     return tag_props;
 }
