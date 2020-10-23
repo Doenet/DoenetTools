@@ -1,7 +1,5 @@
 
-const play = `
-
-<p>
+const play = `<p pizza=cheese>
 The Tragedy of Macbeth
 Shakespeare homepage | Macbeth | Entire play
 ACT I

@@ -4,8 +4,8 @@ import play from './Editor/macbeth.js'
 
 function DoenetEditor() {
 
-    const content = "<cell rownum=3><outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
-    // const content = play;
+    // const content = "<cell rownum=3><outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
+    const content = play;
 
     return(
         <Editor content={content} mountKey="mountkey-1"/>

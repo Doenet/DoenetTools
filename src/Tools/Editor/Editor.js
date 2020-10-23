@@ -35,12 +35,9 @@ import {doenetml, attrsLookup} from './lang-doenetml.js';
 //(3) open: Boolean indicating if an open tag was found.
 function findTag(doc, tree, position) {
     let tag = {pos: -1, tagname: "", open: true}
-    if (tree.children.length == 0) return tag;
 
-    // console.log(tree);
-
-    let buffer = tree.children[0].buffer;
-    let types = tree.children[0].group.types;
+    let buffer = tree.buffer;
+    let types = tree.group.types;
     let sym_open = -1;
     let sym_close = -1;
     let sym_selfclose = -1;
@@ -132,15 +129,13 @@ function findTag(doc, tree, position) {
 //Finds the attributes for a tag given its buffer index init_i
 function getAttrs(doc, tree, init_i) {
     let attrs = [];
-    if (tree.children.length == 0) return attrs;
-
 
     let sym_attrname = -1;
     let sym_attrval = -1;
     let sym_unquoteval = -1;
 
-    let buffer = tree.children[0].buffer;
-    let types = tree.children[0].group.types;
+    let buffer = tree.buffer;
+    let types = tree.group.types;
 
     for (let i=0; i < types.length; i++) {
         if (types[i].name == "AttributeName") {
@@ -179,18 +174,18 @@ function getAttrs(doc, tree, init_i) {
 function getTreeBuff(tree, position) {
     let curr_tree = tree;
     let offset = position;
-    while (typeof curr_tree !== "TreeBuffer") {
-        if (curr_tree.type.name !== "") return null;
+    while (curr_tree && curr_tree.buffer === undefined) {
+        if (curr_tree.type.name === "Text") return null;
         let positions = curr_tree.positions;
-        for (let i=0; i<positions.length; i++) {
-            if (positions[i] <= offset) {
-                curr_tree = curr_tree.children[i];
-                offset -= positions[i];
-                break;
-            }
+        let infinum = 0;
+        for (let i=1; i<positions.length; i++) {
+            if (positions[i] > offset) break;
+            infinum = i;
         }
+        curr_tree = curr_tree.children[infinum];
+        offset -= positions[infinum];
     }
-    return curr_tree;
+    return {buffer: curr_tree, offset: offset};
 }
 
 //Returns an object representing the properties of a tag
@@ -199,14 +194,17 @@ function getTagProps(doc, tree, position) {
     let tag_props = {tagname: "", attrs: []};
     if (tree.children.length == 0) return tag_props;
 
-    console.log(tree);
-    let tree_buff = getTreeBuff(tree, position);
-    console.log(tree_buff);
-    if (tree_buff === null) return tag_props;
+    let bufferProps = getTreeBuff(tree, position);
+    if (bufferProps === null) return tag_props;
 
-    let basic_tag_props = findTag(doc, tree_buff, position);
+    let tree_buff = bufferProps.buffer;
+    let offset = bufferProps.offset;
+
+    let basic_tag_props = findTag(doc, tree_buff, offset);
     if (basic_tag_props.pos < 0) return tag_props;
     tag_props.tagname = basic_tag_props.tagname;
+
+    console.log(basic_tag_props);
     
     if (!basic_tag_props.open) return tag_props;
     tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos);
@@ -228,7 +226,7 @@ function TextForm(props) {
     const handleFormClick = function() {
         setForm(!isForm);
         if (tagval !== formEl.current.value) {
-            props.handleChange(props.offset1, props.offset2, formEl.current.value);
+            props.updateView(props.offset1, props.offset2, formEl.current.value);
         }
     };
 
@@ -255,7 +253,7 @@ function ToggleButtonWrapper(props) {
     let isSelected = props.tagval === "true" ? true : false
 
     const toggleCallback = function() {
-        props.handleChange(props.offset1, props.offset2, isSelected ? "false" : "true");
+        props.updateView(props.offset1, props.offset2, isSelected ? "false" : "true");
     };
 
     return(
@@ -279,7 +277,7 @@ function InfoPanel(props) {
 
     let tags_mentioned = {};
 
-    const handleChange = function(offset1, offset2, newval) {
+    const updateView = function(offset1, offset2, newval) {
         let transaction = {changes: {from: offset1, to: offset2, insert: newval}};
         view.dispatch(transaction);
         props.setView(view);
@@ -293,11 +291,11 @@ function InfoPanel(props) {
             {(x[1].toLowerCase() === "true" || x[1].toLowerCase() === "false") ?
                 <ToggleButtonWrapper tagname={x[0]} tagval={x[1]} 
                 offset1={x[2]} offset2={x[3]}
-                isSelected={false} handleChange={handleChange}/>
+                isSelected={false} updateView={updateView}/>
             :
                 <TextForm tagname={x[0]} tagval={x[1]} 
                 offset1={x[2]} offset2={x[3]}
-                handleChange={handleChange}/>
+                updateView={updateView}/>
                 
             }
         </li>
@@ -339,7 +337,7 @@ function Editor(props) {
         create() {return ""},
         //Updates value based on transaction
         update(value, tr) {
-            // console.log(tr.state.tree);
+            console.log(tr.state.tree);
             // console.log(tr.state.doc);
             // console.log(tr.state.selection);
     
@@ -381,6 +379,7 @@ function Editor(props) {
         <>
             <div id={mountKey}/>
             {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view} setView={setView}/>}
+            <p>Hey! Look at me!</p>
         </>
     )
 }
