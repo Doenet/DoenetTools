@@ -20,7 +20,7 @@ export default class ParametrizedCurve extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 5,
@@ -73,7 +73,7 @@ export default class ParametrizedCurve extends DoenetRenderer {
       this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
     }
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     this.curveJXG.name = this.doenetSvData.label;
 
@@ -102,14 +102,13 @@ export default class ParametrizedCurve extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} /></>
     }
 
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
 
     // don't think we want to return anything if not in board
     return <><a name={this.componentName} /></>

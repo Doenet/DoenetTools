@@ -28,7 +28,7 @@ export default class LineSegment extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -133,12 +133,18 @@ export default class LineSegment extends DoenetRenderer {
     this.lineSegmentJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[0]);
     this.lineSegmentJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[1]);
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
+      let actuallyChangedVisibility = this.lineSegmentJXG.visProp["visible"] !== visible;
       this.lineSegmentJXG.visProp["visible"] = visible;
       this.lineSegmentJXG.visPropCalc["visible"] = visible;
-      // this.lineSegmentJXG.setAttribute({visible: visible})
+
+      if (actuallyChangedVisibility) {
+        // at least for point, this function is incredibly slow, so don't run it if not necessary
+        // TODO: figure out how to make label disappear right away so don't need to run this function
+        this.lineSegmentJXG.setAttribute({ visible: visible })
+      }
     }
     else {
       this.lineSegmentJXG.visProp["visible"] = false;
@@ -195,15 +201,16 @@ export default class LineSegment extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null;
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

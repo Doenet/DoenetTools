@@ -16,7 +16,7 @@ module.exports = {
   // devtool: 'source-map',
   entry: {
     "index.js": "./src/index.js",
-    "admin/index.js": "./src/admin/index.js",
+    // "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
     "controls/index.js": "./src/controls/index.js",
     "course/index.js": "./src/course/index.js",
@@ -24,6 +24,7 @@ module.exports = {
     "docs/index.js": "./src/docs/index.js",
     "dragdrop/index.js": "./src/dragdrop/index.js",
     "editor/index.js": "./src/editor/index.js",
+    "editor-mirror/index.js": "./src/editor-mirror/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "guesteditor/index.js": "./src/guesteditor/index.js",
@@ -148,6 +149,12 @@ module.exports = {
       filename: "./editor/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
+    new HtmlWebPackPlugin({
+      chunks: ["editor-mirror/index.js"],
+      template: "./src/editor-mirror/index.html",
+      filename: "./editor-mirror/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
 
     // new HtmlWebPackPlugin({
     //   chunks: ["exam/index.js"],
@@ -248,5 +255,8 @@ module.exports = {
     port: 3000,
     // openPage: "protected",
   },
+  // optimization: {//Uncomment to debug bundled files
+  //   minimize: false
+  // }
   // devtool: 'source-map'
 };

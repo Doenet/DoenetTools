@@ -5745,39 +5745,41 @@ export default class Core {
         newDep.variableOptional = true;
       }
     } else if (dependencyDefinition.dependencyType === "parentStateVariable") {
-      if (!component.parentName) {
-        throw Error(`cannot have state variable ${stateVariable} of ${component.componentName} depend on parentStateVariables when parent isn't defined.`);
-      }
-      newDep.downstreamComponentName = component.parentName;
-      if (dependencyDefinition.variableName === undefined) {
-        throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
-      }
 
-      let parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[component.parentName];
-      if (!parentDependencies) {
-        parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[component.parentName] = [];
-      }
-      parentDependencies.push({
-        componentName: component.componentName,
-        stateVariables: allStateVariablesAffected,
-        dependencyName,
-      });
+      // if don't have a parent, then just skip
+      if (component.parentName) {
 
-      newDep.originalDownstreamVariableName = dependencyDefinition.variableName;
-      newDep.mappedDownstreamVariableName = this.substituteAliases({
-        stateVariables: [newDep.originalDownstreamVariableName],
-        componentClass: component.ancestors[0].componentClass
-      })[0];
-      newDep.valuesChanged = { [newDep.originalDownstreamVariableName]: { changed: true } };
-      let depUp = this.upstreamDependencies[component.parentName];
-      if (!depUp) {
-        depUp = this.upstreamDependencies[component.parentName] = {};
-      }
-      if (depUp[newDep.mappedDownstreamVariableName] === undefined) {
-        depUp[newDep.mappedDownstreamVariableName] = [];
-      }
-      depUp[newDep.mappedDownstreamVariableName].push(newDep);
+        newDep.downstreamComponentName = component.parentName;
+        if (dependencyDefinition.variableName === undefined) {
+          throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
+        }
 
+        let parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[component.parentName];
+        if (!parentDependencies) {
+          parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[component.parentName] = [];
+        }
+        parentDependencies.push({
+          componentName: component.componentName,
+          stateVariables: allStateVariablesAffected,
+          dependencyName,
+        });
+
+        newDep.originalDownstreamVariableName = dependencyDefinition.variableName;
+        newDep.mappedDownstreamVariableName = this.substituteAliases({
+          stateVariables: [newDep.originalDownstreamVariableName],
+          componentClass: component.ancestors[0].componentClass
+        })[0];
+        newDep.valuesChanged = { [newDep.originalDownstreamVariableName]: { changed: true } };
+        let depUp = this.upstreamDependencies[component.parentName];
+        if (!depUp) {
+          depUp = this.upstreamDependencies[component.parentName] = {};
+        }
+        if (depUp[newDep.mappedDownstreamVariableName] === undefined) {
+          depUp[newDep.mappedDownstreamVariableName] = [];
+        }
+        depUp[newDep.mappedDownstreamVariableName].push(newDep);
+
+      }
       // for parent state variable
       // always make variable optional so that don't get error
       // depending on parent (which a component can't control)
@@ -7180,7 +7182,7 @@ export default class Core {
 
         let depComponent = this.components[dep.downstreamComponentName];
 
-        if (!dep.variableOptional || dep.mappedDownstreamVariableName in depComponent.state) {
+        if (depComponent && (!dep.variableOptional || dep.mappedDownstreamVariableName in depComponent.state)) {
 
           value = depComponent.state[dep.mappedDownstreamVariableName].value;
 
@@ -7194,6 +7196,7 @@ export default class Core {
             usedDefault[dep.dependencyName] = true
           }
         } else {
+          // depComponent doesn't exist (could be for parent of document), or
           // variable is optional and doesn't exist
           value = null;
         }
@@ -8913,7 +8916,7 @@ export default class Core {
 
         let child = this._components[cName];
 
-        if (child.parentName === parentName) {
+        if (!child || child.parentName === parentName) {
           continue;
         }
 
