@@ -5,7 +5,7 @@ export default function Textfield(props) {
   //Assume small
   var textfield = {
         margin: '0px',
-        height: '40px',
+        height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
         borderRadius: '5px',
@@ -13,7 +13,7 @@ export default function Textfield(props) {
         text: 'Enter text here'
       }
   if (props.size === "medium") {
-    textfield.height = '85px'
+    textfield.height = '36px'
   }
   if (props.text) {
     textfield.text = props.text;
