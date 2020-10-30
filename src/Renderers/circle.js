@@ -29,7 +29,7 @@ export default class Circle extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 5,
@@ -92,7 +92,7 @@ export default class Circle extends DoenetRenderer {
     }
 
 
-    if(this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
+    if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
       this.props.board.itemsRenderedLowQuality[this.componentName] = this.circleJXG;
     }
 
@@ -106,7 +106,7 @@ export default class Circle extends DoenetRenderer {
     this.circleJXG.setRadius(this.doenetSvData.numericalRadius);
 
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
       this.circleJXG.visProp["visible"] = visible;
@@ -138,7 +138,7 @@ export default class Circle extends DoenetRenderer {
   }
 
   onDragHandler(transient) {
-    if(this.circleJXG !== undefined) {
+    if (this.circleJXG !== undefined) {
       this.actions.moveCircle({
         center: [this.circleJXG.center.X(), this.circleJXG.center.Y()],
         transient
@@ -149,15 +149,17 @@ export default class Circle extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
 
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null;
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

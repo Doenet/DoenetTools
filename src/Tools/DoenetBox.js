@@ -20,7 +20,7 @@ class DoenetBox extends Component {
     this.inputType = this.props.type;
     this.title = this.props.title;
     this.value = this.props.value;
-    this.callBack = this.props.parentFunction;
+    this.callBack = this.props.callBack;
     this.options = []
     this.selectBar = null
     this.className = "Section-container-odd"
@@ -66,7 +66,7 @@ class DoenetBox extends Component {
 
       this.options.push(<option key={val+(this.updateNumber++)} value={val} >{val}</option>)
     })
-    this.selectBar = (<select defaultValue={this.value} onChange = {(e)=>{this.value = e.target.value;this.props.parentFunction(e.target.value)}}>{this.options}</select>)
+    this.selectBar = (<select defaultValue={this.value} onChange = {(e)=>{this.value = e.target.value;this.props.callBack(e.target.value)}}>{this.options}</select>)
 
   }
   // render() {
@@ -84,7 +84,7 @@ class DoenetBox extends Component {
           <span className="SectionText">{this.title}</span>
           <span className="SectionValue">
           {this.writePriviledge?(<input onChange={
-            (e)=>{this.value = e.target.value;this.props.parentFunction(this.value);this.forceUpdate()}
+            (e)=>{this.value = e.target.value;this.props.callBack(this.value);this.forceUpdate()}
             // (e)=>{this.value=e.target.value;
             // this.AssignmentInfoChanged=true;
           }
@@ -103,7 +103,7 @@ class DoenetBox extends Component {
             
           {this.writePriviledge?(<label className="switch">
           <input onChange={
-            ()=>{this.value = !this.value;this.forceUpdate();this.props.parentFunction(this.value)}
+            ()=>{this.value = !this.value;this.forceUpdate();this.props.callBack(this.value)}
             // (e)=>{this.value=e.target.value;
             // this.AssignmentInfoChanged=true;
           }
@@ -124,7 +124,7 @@ class DoenetBox extends Component {
     //       <span className="SectionValue">
 
     //       {!this.writePriviledge?(<DateTimePicker
-    //       onChange={(date)=>{this.props.parentFunction(date.toString());this.setState({date:date})}}
+    //       onChange={(date)=>{this.props.callBack(date.toString());this.setState({date:date})}}
     //       // onChange={(date)=>{console.log("its type is ");console.log(new Date(date).toString())}}
     //       value={this.state.date}
     //       disableClock = {true}
@@ -144,7 +144,7 @@ class DoenetBox extends Component {
           <span className="SectionValue">
         {this.writePriviledge?(<DatePicker
           selected={this.state.date}
-          onChange={(date)=>{this.props.parentFunction(date.toString());
+          onChange={(date)=>{this.props.callBack(date.toString());
             this.setState({date:date})}}            
           showTimeSelect
           timeFormat="HH:mm:00"
@@ -154,7 +154,7 @@ class DoenetBox extends Component {
         />)
       :(<DatePicker
         selected={this.state.date}
-        onChange={(date)=>{this.props.parentFunction(date.toString());
+        onChange={(date)=>{this.props.callBack(date.toString());
           this.setState({date:date})}}  
           disabled          
         showTimeSelect

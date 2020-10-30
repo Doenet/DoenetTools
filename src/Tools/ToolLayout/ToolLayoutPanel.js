@@ -11,10 +11,11 @@ import './toollayout.css';
 import styled from 'styled-components';
 import SplitLayoutPanel from './SplitLayoutPanel';
 
+
 const MainContent = styled.div`
   width: 100%;
   overflow:auto;
-  height:  calc(100vh - ${props => props.height});
+  height: calc(100vh - ${props => props.height});
   flex-direction: row;
   display: flex;
 `;
@@ -163,9 +164,8 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
     const splitPanelProps = splitLayoutPanel && splitLayoutPanel.props;
     return (
       <>
-        {!this.context.panelHeadersControlVisible.hideMenu  
-          && this.props.isLeftPanel === undefined  
-        ? <div className="panels-header-content">
+      {/* removed an exclamation point here ! */}
+        {this.context.panelHeadersControlVisible.hideMenu ? <div className="panels-header-content">
           <div className="panels-header-controls">
             {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
               this.context.position === 'middle' ? middleOpenLeftRightButton() :

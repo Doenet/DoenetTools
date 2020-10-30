@@ -71,7 +71,7 @@ const showHideOverNewOverlayOnClick = () =>{
     >
 
 
-   
+   <NavPanel>Nav</NavPanel>
 
       <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
         // responsiveControls={[]}

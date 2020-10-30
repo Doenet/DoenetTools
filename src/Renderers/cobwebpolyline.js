@@ -26,7 +26,7 @@ export default class CobwebPolyline extends DoenetRenderer {
     }
 
     let functionAttributes = {
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: false,
       fixed: true, //this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 5,
@@ -39,7 +39,7 @@ export default class CobwebPolyline extends DoenetRenderer {
     this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], functionAttributes);
 
     let diagonalAttributes = {
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hidden,
       withLabel: false,
       fixed: true, //this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 5,
@@ -65,7 +65,7 @@ export default class CobwebPolyline extends DoenetRenderer {
     //things to be passed to JSXGraph as attributes
     this.jsxPolylineAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide && validCoords,
+      visible: !this.doenetSvData.hidden && validCoords,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -82,7 +82,7 @@ export default class CobwebPolyline extends DoenetRenderer {
 
     this.jsxPointAttributes = {
       fixed: !this.doenetSvData.draggable,
-      visible: !this.doenetSvData.hide && validCoords,
+      visible: !this.doenetSvData.hidden && validCoords,
       withLabel: true,
       name: "A",
       layer: 10 * this.doenetSvData.layer + 9,
@@ -231,7 +231,7 @@ export default class CobwebPolyline extends DoenetRenderer {
     }
 
 
-    let visible = !this.doenetSvData.hide;
+    let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
       this.polylineJXG.visProp["visible"] = visible;
@@ -302,15 +302,16 @@ export default class CobwebPolyline extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    return null
+    if (this.doenetSvData.hidden) {
+      return null;
+    }
+
+    // don't think we want to return anything if not in board
+    return <><a name={this.componentName} /></>
   }
 }
 

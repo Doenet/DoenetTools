@@ -10,6 +10,12 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
+function cmp($a, $b)
+{
+    return strcmp($a["shortname"], $b["shortname"]);
+}
+
+
 if ($userId == ""){
 
     $response_arr = array(
@@ -20,8 +26,16 @@ if ($userId == ""){
 }else{
 
     $_POST = json_decode(file_get_contents("php://input"),true);
+    $_POSTCOPY = json_decode(file_get_contents("php://input"),true);
     $number_items = count($_POST);
-    //var_dump(variable);
+    usort($_POSTCOPY, "cmp");
+    $positionflag = true; //assuming order is same
+    for ($i = 0; $i < count($_POST); $i++) {
+        if (strcmp($_POST[$i]["courseId"], $_POSTCOPY[$i]["courseId"]) !== 0 ){
+            $positionflag = false;
+        }
+    }
+    var_dump($positionflag);
     // $_POST = array(
     //     array(
     //         "courseId" => 'uTMfKhSmcNtLDaK8oJ3U',
@@ -48,7 +62,8 @@ if ($userId == ""){
         // var_dump($image);
         // var_dump($position);
 
-        $position = $position == "" ? 'NULL' : $position;
+        $position = $positionflag ? 'NULL' : $position;
+
         
 
         $sql = "SELECT  courseId, shortname, color, image
@@ -62,7 +77,7 @@ if ($userId == ""){
 
         // var_dump($row);
 
-        if($row['color'] === $color && $row['image'] == $image && $position === 'NULL'){
+        if($row['color'] === $color && $row['image'] == $image && $positionflag){
             // var_dump($row);
             $sql = "SELECT *
             FROM user_dashboard_modification as udm
