@@ -5,7 +5,7 @@ export default function ActionButton(props) {
   //Assume small
   var actionButton = {
         margin: '0px',
-        height: '40px',
+        height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         color: '#000',
         backgroundColor: '#FFF',
@@ -17,8 +17,8 @@ export default function ActionButton(props) {
         fontSize: '12px'
       };
   if (props.size === "medium") {
-    actionButton.height = '85px',
-    actionButton.fontSize = '24px'
+    actionButton.height = '36px',
+    actionButton.fontSize = '18px'
   };
   if (props.text) {
       actionButton.text = props.text;

@@ -5,21 +5,13 @@ import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js
 import Button from "../imports/PanelHeaderComponents/Button.js";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
+import ProgressBar from "../imports/PanelHeaderComponents/ProgressBar.js";
+import styled from 'styled-components';
 
 export default function attempt() {
 return (
 <div>
-  <p>Button</p>
-  <Button/>
-  <p>ToggleButton</p>
-  <ToggleButton/>
-  <p>ActionButton</p>
-  <ActionButton/>
-  <p>textfield</p>
-  <Textfield/>
-  <p>searchbar</p>
-  <SearchBar/>
-  
+<ProgressBar percent='15'/>
 </div>
 );
 };
