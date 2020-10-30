@@ -6,13 +6,9 @@ import { faTh, faUser, faArrowLeft, faBars, faCaretRight, faCaretDown } from '@f
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import styled from "styled-components";
-
-// import { animated, useSpring } from 'react-spring';
 import Menu from './menu.js'
 import MenuDropDown from '../imports/MenuDropDown.js';
-// import IndexedDB from '../services/IndexedDB';
-// import axios from 'axios';
-// import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
+
 
 
 const ExtendedHeader = styled.div`
@@ -81,7 +77,7 @@ const ProfilePictureLrg = styled.div`
 `;
 
 
-class DoenetHeader extends Component {
+class DoenetProfile extends Component {
 
   constructor(props) {
     super(props);
@@ -371,4 +367,4 @@ class DoenetHeader extends Component {
 
 }
 
-export default DoenetHeader;
+export default DoenetProfile;
