@@ -191,6 +191,7 @@ function getTreeBuff(tree, position) {
 //Returns an object representing the properties of a tag
 //If given a closing tag it will only return the tag name
 function getTagProps(doc, tree, position) {
+    console.log("This is the init position. ", position);
     let tag_props = {tagname: "", attrs: []};
     if (tree.children.length == 0) return tag_props;
 
@@ -199,6 +200,9 @@ function getTagProps(doc, tree, position) {
 
     let tree_buff = bufferProps.buffer;
     let offset = bufferProps.offset;
+
+    console.log(tree_buff);
+    console.log(offset);
 
     let basic_tag_props = findTag(doc, tree_buff, offset);
     if (basic_tag_props.pos < 0) return tag_props;
@@ -352,7 +356,7 @@ function Editor(props) {
 
     let startState = EditorState.create({
         doc: props.content,
-        extensions: [basicSetup, doenetml(), currentTag]
+        extensions: [ doenetml(), currentTag]
     });
 
     let view_init = new EditorView({
