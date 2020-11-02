@@ -34,6 +34,9 @@ const DropDownContent = styled.div`
     left: ${props => props.position === 'right' ? 0 : 'unset'};
     right: ${props => props.position === 'left' ? 0 : 'unset'};
     top: ${props => props.position === 'right' ? '35px' : 'unset'};
+    @media (max-width: 768px) {
+        right:-110px;
+      }
 
 `
 const DropDownContentItem = styled.div`

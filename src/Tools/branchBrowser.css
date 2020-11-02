@@ -175,7 +175,7 @@ tbody::-webkit-scrollbar-thumb {
 
 .infoPanel {
   display: inline-block;
-  width: 400px;
+  width:100%;
   height: 82vh;
   flex-wrap: wrap;
   overflow-y: scroll;
