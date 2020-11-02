@@ -7,10 +7,12 @@ import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
+import GlobalFont from "../fonts/GlobalFont.js";
 
 export default function attempt() {
 return (
 <div>
+  <GlobalFont/>
   <h1>DoenetControls</h1>
   <p>This is how all of the Panel Header Components look. It also has all of the props you can give them and how they work!</p>
 
