@@ -59,7 +59,7 @@ export function getCourses_CI(callback){
 //callback(success) true or false
 export function setSelected_CI(selectCourseId,callback=()=>{}){
 
-  getCourses(getCoursesCallback);
+  getCourses_CI(getCoursesCallback);
   function getCoursesCallback(courseListArray,selectedCourseObj){
     const {update} = useIndexedDB('SelectedCourse');
     let select = {};
@@ -93,7 +93,7 @@ export function updateCourses_CI(courseArray,callback=()=>{}){
 
     axios.post(url, courseArray)
       .then((resp) => {
-        // console.log(resp.data); //var_dump shows here
+        // console.log("api dump", resp.data); //var_dump shows here
         callback(true);
       })
       .catch(function (error) {

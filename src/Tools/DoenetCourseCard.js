@@ -10,18 +10,23 @@ import {
 } from "react-router-dom";
 
 const Container = Styled.div`
-  border-radius: 5px;
+  opacity: ${(props) => props.isDummy ? 0.5 : 1};
+  border: ${(props) => props.isDummy ? "1px solid darkblue" : "0px"};
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  height: 230px;
-  width: 230px;
+  font-size: 10px;
+  line-height: 12px;
+  border-radius: 4px;
+  box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
   display: flex; /*added*/
   flex-direction: column; /*added*/
   justify-content: space-between;
-  position: relative;
   background-image: url(${(props) => props.url});
   background-color: ${(props) => `#${props.color}`};
-  background-size: cover;
-  background-position: center;
 `;
 
 const Image = Styled.div`
@@ -67,7 +72,7 @@ const ShortNameContainer = Styled.p`
 
 
 const Card = props => (
-    <Container url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
+    <Container isDummy = {props.data.isDummy} url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
       <Menu
       data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} courseId = {props.data.courseId} updateCourseColor = {props.updateCourseColor}/>
       {/* <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} /> */}

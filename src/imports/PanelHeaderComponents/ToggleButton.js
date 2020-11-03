@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { doenetComponentForegroundActive } from "./theme.js"
+import { doenetComponentForegroundActive } from "./theme.js";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faTimes, faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 
 export default function ToggleButton(props) {
-    const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false)
+    const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
+    const [labelVisible, setLabelVisible] = useState(props.label ? 'inline' : 'none')
     //Assume small
     var toggleButton = {
         margin: '0px',
-        height: '40px',
+        height: '24px',
         border: `2px solid ${doenetComponentForegroundActive}`,
         color: `${doenetComponentForegroundActive}`,
         backgroundColor: '#FFF',
@@ -15,20 +18,39 @@ export default function ToggleButton(props) {
         text: 'Toggle Button',
         padding: '0px 10px 0px 10px',
         cursor: 'pointer',
-        fontSize: '12px'
+        fontSize: '12px',
+        textAlign: 'center'
       }
-    if (props.size === "medium") {
-        toggleButton.height = '85px',
-        toggleButton.fontSize = '24px'
+    var label ={
+        fontFamily: 'Arial',
+        text: 'Label:',
+        fontSize: '12px',
+        display: `${labelVisible}`
     }
-    if (props.text) {
-        toggleButton.text = props.text;
+    var icon = '';
+    if (props.size === "medium") {
+        toggleButton.height = '36px',
+        toggleButton.fontSize = '18px',
+        label.fontSize = '18px'
+    }
+    if (props.text || props.icon){
+        if (props.text && props.icon){
+            icon = props.icon;
+            toggleButton.text = props.text
+        }
+        else if (props.text){
+            toggleButton.text = props.text
+        }
+        else if (props.icon){
+            icon = props.icon;
+            toggleButton.text = ''
+        }
     }
     if (isSelected === true) {
         toggleButton.backgroundColor = `${doenetComponentForegroundActive}`;
         toggleButton.color = '#FFF';
-        toggleButton.border = '2px solid #FFF'
-        if (props.switch_text) toggleButton.text = props.switch_text;
+        toggleButton.border = '2px solid #FFF';
+        if (props.switch_text) toggleButton.text = props.switch_text
     }
     function handleClick() {
         if (isSelected === false) {
@@ -38,9 +60,13 @@ export default function ToggleButton(props) {
         }
         if (props.callback) props.callback();
     }
+    if (props.label) {
+        label.text = props.label
+    }
     return (
         <>
-            <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{toggleButton.text}</button>
+            <p style={label}>{label.text}</p>
+            <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{icon}{' '}{toggleButton.text}</button>
         </>
     )
 }

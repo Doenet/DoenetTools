@@ -1,98 +1,132 @@
 import React, { useState } from "react";
-import ToolLayout from "./ToolLayout/ToolLayout";
-import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
-import axios from 'axios';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faWaveSquare, faDatabase, faServer
+} from "@fortawesome/free-solid-svg-icons";
+import Tool from "../imports/Tool/Tool";
+import NavPanel from "../imports/Tool/NavPanel";
+import MainPanel from "../imports/Tool/MainPanel";
+import SupportPanel from "../imports/Tool/SupportPanel";
+import MenuPanel from '../imports/Tool/MenuPanel';
+import HeaderMenuPanelButton from '../imports/Tool/HeaderMenuPanelButton';
+import ResponsiveControls from '../imports/Tool/ResponsiveControls';
+import Overlay from "../imports/Tool/Overlay";
+const alphabet =
+  "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
+const finalIcon1 = <FontAwesomeIcon
+  icon={faServer}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
+const finalIcon2 = <FontAwesomeIcon
+  icon={faDatabase}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
+const finalIcon3 = <FontAwesomeIcon
+  icon={faWaveSquare}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
 
+ 
+export default function DoenetExampleTool(props) {
+const [showHideNewOverLay, setShowHideNewOverLay]=useState(false);
 
-export default function DoenetExampleTool(props){
- let [contentInteractionsDivs,setContentInteractionsDivs] = useState([])
-
-function recordContentInteraction({assignmentId, contentId, stateVariables}={}){
-//assignmentId, emailAddress (handle JWT and anonymous),  Attempt number, state glob
-let serializedStateVariables = JSON.stringify(stateVariables);
-
-if (assignmentId){
-  //Save Assignment Info
-  console.log('assignment')
+const showHideOverNewOverlayOnClick = () =>{
+  setShowHideNewOverLay(!showHideNewOverLay);
 }
-console.log('recordContentInteraction')
-const phpUrl = '/api/recordContentInteraction.php';
-      const data = {
-        assignmentId,
-        contentId,
-        stateVariables:serializedStateVariables,
-      }
 
-      axios.post(phpUrl, data)
-        .then(resp => {
-          console.log('save',resp.data);
-        });
+  return (
+
+<>
+
+{!showHideNewOverLay ? 
+    <Tool
+      onUndo={() => { console.log(">>>undo clicked") }}
+      onRedo={() => { console.log(">>>redo clicked") }}
+      title={"My Doc"}
+      // responsiveControls={[]}
+      headerMenuPanels={[
+        <HeaderMenuPanelButton buttonText="Add">{"content 1"}</HeaderMenuPanelButton>, <HeaderMenuPanelButton buttonText="Save">{"content 2"}</HeaderMenuPanelButton>
+      ]}
+    >
+
+
+   <NavPanel>
+     Nav Panel
+   </NavPanel>
+
+      <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
+        // responsiveControls={[]}
+      >
+        <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
+
+        <h3> This is Main Panel</h3>
+        <p>click Switch button in header to see support panel</p>
+        <p>Define responsiveControls to see for standard components section which are responsive and collapses according the width available</p>
+
+        <h2>Header Menu Panels </h2>
+        <p>Click add and save to see header menu panels section </p>
+      </MainPanel>
+
+      <SupportPanel
+        // responsiveControls={[]}
+      >
+        <h3>Support Panel Content</h3>
+
+        <p>Define responsiveControls to see for standard components section which are responsive and collapses according the width available</p>
+
+      
+      </SupportPanel>
+      <MenuPanel title="edit">
+        <h3>This is Menu Panel and can be switched to title="style" menu panel</h3>
+  
+      </MenuPanel>
+      <MenuPanel title="style">
+        Menu Panel Style Content
+  
+      </MenuPanel>
+    </Tool>
+    :
+
+        <Overlay
+          isOpen={showHideNewOverLay}
+          onUndo={()=>{}}
+          onRedo={()=>{}}
+          title={"my doc"}
+          onClose={() => { setShowHideNewOverLay(false) }}
+
+          // responsiveControls={[<ResponsiveControls/>]}  
+          headerMenuPanels={[]}
+        >
+          <MainPanel responsiveControls={[]}>
+            Overlay Main panel
+    </MainPanel>
+          <SupportPanel responsiveControls={[]}>
+            Overlay Support
+     </SupportPanel>
+        </Overlay> 
+    }
+</>
+  );
 }
 
-function loadContentInteractions({assignmentId, contentId, attemptNumber, submissionNumber, callback}={}){
-  //assignmentId, Attempt number, state glob
-  const phpUrl = '/api/loadContentInteractions.php';
-      const data = {
-        contentId,
-      }
-      console.log('data',data)
-      const payload = {
-        params: data
-      }
-
-      axios.get(phpUrl, payload)
-        .then(resp => {
-          console.log('load',resp.data);
-          if (callback){
-            callback({stateVariables:resp.data.stateVariables})
-          }
-          // let divs = [];
-          // for (let stringified of resp.data.stateVariables){
-          //   divs.push(<div>{JSON.stringify(stringified)}</div>)
-          // }
-    
-          // setContentInteractionsDivs(divs);
-        });
-  }
-    return (
-      <>
-        <ToolLayout toolName="Dashboard">
-
-       <ToolLayoutPanel
-            // menuControls={menuControls}
-            panelName="context"
-          >
-          <p>Left</p>
-          </ToolLayoutPanel> 
-
-       <ToolLayoutPanel
-            // menuControls={menuControlsEditor}
-            panelName="Editor">
-              <div>
-            <button onClick={()=>{recordContentInteraction({
-                contentId:'mycontentId',
-                stateVariables:{x:'1',y:'2'}
-            })}}>Record Content Interaction</button>
-            <br />
-            <br />
-            <br />
-            <br />
-            <button onClick={()=>{loadContentInteractions({
-              contentId:'mycontentId'
-            })}}>Update Content Interactions</button>
-            <br />
-            <b>Content Interactions</b>
-            {contentInteractionsDivs}
-            </div>
-            </ToolLayoutPanel>
-
-          {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
-            {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel>  */}
-        </ToolLayout>
-      </>
-    );
-  }
 
