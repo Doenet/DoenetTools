@@ -9,7 +9,7 @@ export default function Searchbar() {
     var searchBar = {
         margin: '0px',
         height: '24px',
-        border: `2px solid ${doenetComponentForegroundInactive}`,
+        border: `2px solid black`,
         borderRadius: '5px',
         position: 'relative',
         padding: '0px 70px 0px 30px',
@@ -43,7 +43,6 @@ export default function Searchbar() {
         height: '24px',
         border: `2px hidden`,
         backgroundColor: `${doenetComponentForegroundActive}`,
-        fontFamily: 'Arial',
         color: '#FFFFFF',
         borderRadius: '0px 3px 3px 0px',
         cursor: 'pointer',
