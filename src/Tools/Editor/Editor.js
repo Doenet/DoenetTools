@@ -33,7 +33,7 @@ import {doenetml, attrsLookup} from './lang-doenetml.js';
 //  -1 indicates no tag contains position
 //(2) tagname: The name of the tag containing position
 //(3) open: Boolean indicating if an open tag was found.
-function findTag(doc, tree, position) {
+function findTag(doc, tree, buff_offset, doc_offset) {
     let tag = {pos: -1, tagname: "", open: true}
 
     let buffer = tree.buffer;
@@ -68,10 +68,10 @@ function findTag(doc, tree, position) {
     if (sym_tagname < 0) return tag;
     //find pos
     for (let i=0; i < buffer.length; i+=4) {
-        if (position < buffer[i+1]) {
+        if (buff_offset < buffer[i+1]) {
             break; //No more nodes will contain position in its range
         } else {
-            if (position <= buffer[i+2] && (buffer[i]==sym_open || buffer[i]==sym_selfclose || buffer[i]==sym_close)) {
+            if (buff_offset <= buffer[i+2] && (buffer[i]==sym_open || buffer[i]==sym_selfclose || buffer[i]==sym_close)) {
                 tag.pos = i;
                 if (buffer[i]==sym_close) tag.open = false;
                 break;
@@ -86,7 +86,7 @@ function findTag(doc, tree, position) {
             break; 
         } else {
             if (buffer[i] == sym_tagname || buffer[i] == sym_mismatch) {
-                tag.tagname = doc.sliceString(buffer[i+1], buffer[i+2]);
+                tag.tagname = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
                 break;
             }
         }
@@ -101,7 +101,7 @@ function findTag(doc, tree, position) {
         for (let i=0; i < close_tag_i; i+=4) {
             if (in_open_tag && buffer[i+2] <= open_tag_end ) {
                 if (buffer[i] == sym_tagname || buffer[i] == sym_mismatch) {
-                    if (doc.sliceString(buffer[i+1],buffer[i+2]) == tag.tagname) {
+                    if (doc.sliceString(buffer[i+1]+doc_offset,buffer[i+2]+doc_offset) == tag.tagname) {
                         possible_indices.push(i);
                     }
                 }
@@ -127,7 +127,7 @@ function findTag(doc, tree, position) {
 }
 
 //Finds the attributes for a tag given its buffer index init_i
-function getAttrs(doc, tree, init_i) {
+function getAttrs(doc, tree, init_i, doc_offset) {
     let attrs = [];
 
     let sym_attrname = -1;
@@ -154,12 +154,12 @@ function getAttrs(doc, tree, init_i) {
         if (buffer[i+2] > subtree_end) break;
 
         if (buffer[i] == sym_attrname) {
-            let curr_attr = doc.sliceString(buffer[i+1], buffer[i+2]);
+            let curr_attr = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
             attrs.push([curr_attr, "", 0, 0]);
             curr_index += 1;
             name_exists = 1;
         } else if (name_exists && (buffer[i] == sym_attrval || buffer[i] == sym_unquoteval)) {
-            attrs[curr_index][1] = doc.sliceString(buffer[i+1], buffer[i+2]);
+            attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
             attrs[curr_index][2] = buffer[i+1];
             attrs[curr_index][3] = buffer[i+2];
             name_exists = 0;
@@ -173,25 +173,25 @@ function getAttrs(doc, tree, init_i) {
 //Returns null if there is none.
 function getTreeBuff(tree, position) {
     let curr_tree = tree;
-    let offset = position;
+    let buff_offset = position;
     while (curr_tree && curr_tree.buffer === undefined) {
         if (curr_tree.type.name === "Text") return null;
         let positions = curr_tree.positions;
         let infinum = 0;
         for (let i=1; i<positions.length; i++) {
-            if (positions[i] > offset) break;
+            if (positions[i] > buff_offset) break;
             infinum = i;
         }
         curr_tree = curr_tree.children[infinum];
-        offset -= positions[infinum];
+        buff_offset -= positions[infinum];
     }
-    return {buffer: curr_tree, offset: offset};
+    return {buffer: curr_tree, buff_offset: buff_offset, doc_offset: position-buff_offset};
 }
 
 //Returns an object representing the properties of a tag
 //If given a closing tag it will only return the tag name
 function getTagProps(doc, tree, position) {
-    console.log("This is the init position. ", position);
+    // console.log("This is the init position. ", position);
     let tag_props = {tagname: "", attrs: []};
     if (tree.children.length == 0) return tag_props;
 
@@ -199,16 +199,18 @@ function getTagProps(doc, tree, position) {
     if (bufferProps === null) return tag_props;
 
     let tree_buff = bufferProps.buffer;
-    let offset = bufferProps.offset;
+    let buff_offset = bufferProps.buff_offset;
+    let doc_offset = bufferProps.doc_offset;
 
-    console.log(tree_buff);
-    console.log(offset);
+    // console.log(tree_buff);
+    // console.log(buff_offset, doc_offset);
 
-    let basic_tag_props = findTag(doc, tree_buff, offset);
+    // TO DO: Fix findTag and getAttrs with the new argument.
+    let basic_tag_props = findTag(doc, tree_buff, buff_offset, doc_offset);
     if (basic_tag_props.pos < 0) return tag_props;
     tag_props.tagname = basic_tag_props.tagname;
 
-    console.log(basic_tag_props);
+    // console.log(basic_tag_props);
     
     if (!basic_tag_props.open) return tag_props;
     tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos);
@@ -341,9 +343,11 @@ function Editor(props) {
         create() {return ""},
         //Updates value based on transaction
         update(value, tr) {
-            console.log(tr.state.tree);
+            // console.log(tr.state.tree);
             // console.log(tr.state.doc);
             // console.log(tr.state.selection);
+
+            console.log("We ARE UPDATING");
     
             let position = tr.state.selection.ranges[0].to;
     
@@ -356,7 +360,7 @@ function Editor(props) {
 
     let startState = EditorState.create({
         doc: props.content,
-        extensions: [ doenetml(), currentTag]
+        extensions: [ basicSetup, doenetml(), currentTag]
     });
 
     let view_init = new EditorView({
@@ -372,6 +376,7 @@ function Editor(props) {
         containerRoot.appendChild(view.dom);
 
         // console.log(view.state.tree);
+        console.log("EDITOR MOUNTING");
 
         return function cleanup() {
             let editor = document.getElementById(mountKey);
