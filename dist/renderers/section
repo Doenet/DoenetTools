@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[33,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[40,2],{
 
-/***/ 645:
+/***/ 649:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 677:
+/***/ 688:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Section; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(649);
+/* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(38);
+/* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(34);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -217,6 +219,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
+
 var Section = /*#__PURE__*/function (_DoenetRenderer) {
   _inherits(Section, _DoenetRenderer);
 
@@ -231,6 +235,8 @@ var Section = /*#__PURE__*/function (_DoenetRenderer) {
   _createClass(Section, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
       if (this.doenetSvData.hide) {
         return null;
       }
@@ -267,10 +273,100 @@ var Section = /*#__PURE__*/function (_DoenetRenderer) {
         heading = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h5", {
           id: id
         }, title);
-      } else {
+      } else if (this.doenetSvData.level === 5) {
         heading = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h6", {
           id: id
         }, title);
+      }
+
+      var checkworkComponent = null;
+
+      if (this.doenetSvData.createSubmitAllButton) {
+        var validationState = "unvalidated";
+
+        if (this.doenetSvData.justSubmitted) {
+          if (this.doenetSvData.creditAchieved === 1) {
+            validationState = "correct";
+          } else if (this.doenetSvData.creditAchieved === 0) {
+            validationState = "incorrect";
+          } else {
+            validationState = "partialcorrect";
+          }
+        }
+
+        var checkWorkStyle = {
+          height: "23px",
+          display: "inline-block",
+          backgroundColor: "rgb(2, 117, 216)",
+          padding: "1px 6px 1px 6px",
+          color: "white",
+          fontWeight: "bold",
+          marginBottom: "30px" //Space after check work
+
+        };
+        var checkWorkText = "Check Work";
+
+        if (!this.doenetSvData.showCorrectness) {
+          checkWorkText = "Submit nse";
+        }
+
+        checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+          id: this.componentName + "_submit",
+          tabIndex: "0",
+          style: checkWorkStyle,
+          onClick: this.actions.submitAllAnswers,
+          onKeyPress: function onKeyPress(e) {
+            if (e.key === 'Enter') {
+              _this.actions.submitAllAnswers();
+            }
+          }
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
+          icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faLevelDownAlt */ "E"],
+          transform: {
+            rotate: 90
+          }
+        }), "\xA0", checkWorkText);
+
+        if (this.doenetSvData.showCorrectness) {
+          if (validationState === "correct") {
+            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+            checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+              id: this.componentName + "_correct",
+              style: checkWorkStyle
+            }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
+              icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faCheck */ "o"]
+            }), "\xA0 Correct");
+          } else if (validationState === "incorrect") {
+            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+            checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+              id: this.componentName + "_incorrect",
+              style: checkWorkStyle
+            }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
+              icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faTimes */ "V"]
+            }), "\xA0 Incorrect");
+          } else if (validationState === "partialcorrect") {
+            checkWorkStyle.backgroundColor = "#efab34";
+            var percent = Math.round(this.doenetSvData.creditAchieved * 100);
+            var partialCreditContents = "".concat(percent, "% Correct");
+            checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+              id: this.componentName + "_partial",
+              style: checkWorkStyle
+            }, partialCreditContents);
+          }
+        } else {
+          // showCorrectness is false
+          if (validationState !== "unvalidated") {
+            checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+            checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+              id: this.componentName + "_saved",
+              style: checkWorkStyle
+            }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
+              icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faCloud */ "s"]
+            }), "\xA0 Response Saved");
+          }
+        }
+
+        checkworkComponent = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, checkworkComponent);
       }
 
       if (this.doenetSvData.containerTag === "aside") {
@@ -278,13 +374,23 @@ var Section = /*#__PURE__*/function (_DoenetRenderer) {
           id: this.componentName
         }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
           name: this.componentName
-        }), heading, childrenToRender);
+        }), heading, childrenToRender, checkworkComponent);
+      } else if (this.doenetSvData.containerTag === "div") {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+          id: this.componentName
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+          name: this.componentName
+        }), heading, childrenToRender, checkworkComponent);
+      } else if (this.doenetSvData.containerTag === "none") {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
+          name: this.componentName
+        }), heading, childrenToRender, checkworkComponent);
       } else {
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("section", {
           id: this.componentName
         }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
           name: this.componentName
-        }), heading, childrenToRender);
+        }), heading, childrenToRender, checkworkComponent);
       }
     }
   }]);

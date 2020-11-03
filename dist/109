@@ -1,6 +1,6 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[109],{
 
-/***/ 1223:
+/***/ 1222:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14,10 +14,13 @@ __webpack_require__.r(__webpack_exports__);
 
 var conf = {
     comments: {
-        lineComment: ';',
-        blockComment: ['#|', '|#'],
+        lineComment: '#'
     },
-    brackets: [['(', ')'], ['{', '}'], ['[', ']']],
+    brackets: [
+        ['{', '}'],
+        ['[', ']'],
+        ['(', ')']
+    ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
@@ -29,89 +32,198 @@ var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-    ],
+    ]
 };
 var language = {
     defaultToken: '',
-    ignoreCase: true,
-    tokenPostfix: '.scheme',
-    brackets: [
-        { open: '(', close: ')', token: 'delimiter.parenthesis' },
-        { open: '{', close: '}', token: 'delimiter.curly' },
-        { open: '[', close: ']', token: 'delimiter.square' },
+    tokenPostfix: '.r',
+    roxygen: [
+        '@param',
+        '@return',
+        '@name',
+        '@rdname',
+        '@examples',
+        '@include',
+        '@docType',
+        '@S3method',
+        '@TODO',
+        '@aliases',
+        '@alias',
+        '@assignee',
+        '@author',
+        '@callGraphDepth',
+        '@callGraph',
+        '@callGraphPrimitives',
+        '@concept',
+        '@exportClass',
+        '@exportMethod',
+        '@exportPattern',
+        '@export',
+        '@formals',
+        '@format',
+        '@importClassesFrom',
+        '@importFrom',
+        '@importMethodsFrom',
+        '@import',
+        '@keywords',
+        '@method',
+        '@nord',
+        '@note',
+        '@references',
+        '@seealso',
+        '@setClass',
+        '@slot',
+        '@source',
+        '@title',
+        '@usage'
+    ],
+    constants: [
+        'NULL',
+        'FALSE',
+        'TRUE',
+        'NA',
+        'Inf',
+        'NaN ',
+        'NA_integer_',
+        'NA_real_',
+        'NA_complex_',
+        'NA_character_ ',
+        'T',
+        'F',
+        'LETTERS',
+        'letters',
+        'month.abb',
+        'month.name',
+        'pi',
+        'R.version.string'
     ],
     keywords: [
-        'case',
-        'do',
-        'let',
-        'loop',
+        'break',
+        'next',
+        'return',
         'if',
         'else',
-        'when',
-        'cons',
-        'car',
-        'cdr',
-        'cond',
-        'lambda',
-        'lambda*',
-        'syntax-rules',
-        'format',
-        'set!',
-        'quote',
-        'eval',
-        'append',
+        'for',
+        'in',
+        'repeat',
+        'while',
+        'array',
+        'category',
+        'character',
+        'complex',
+        'double',
+        'function',
+        'integer',
         'list',
-        'list?',
-        'member?',
-        'load',
+        'logical',
+        'matrix',
+        'numeric',
+        'vector',
+        'data.frame',
+        'factor',
+        'library',
+        'require',
+        'attach',
+        'detach',
+        'source'
     ],
-    constants: ['#t', '#f'],
-    operators: ['eq?', 'eqv?', 'equal?', 'and', 'or', 'not', 'null?'],
+    special: [
+        '\\n',
+        '\\r',
+        '\\t',
+        '\\b',
+        '\\a',
+        '\\f',
+        '\\v',
+        '\\\'',
+        '\\"',
+        '\\\\'
+    ],
+    brackets: [
+        { open: '{', close: '}', token: 'delimiter.curly' },
+        { open: '[', close: ']', token: 'delimiter.bracket' },
+        { open: '(', close: ')', token: 'delimiter.parenthesis' }
+    ],
     tokenizer: {
         root: [
-            [/#[xXoObB][0-9a-fA-F]+/, 'number.hex'],
-            [/[+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?/, 'number.float'],
-            [
-                /(?:\b(?:(define|define-syntax|define-macro))\b)(\s+)((?:\w|\-|\!|\?)*)/,
-                ['keyword', 'white', 'variable'],
-            ],
-            { include: '@whitespace' },
+            { include: '@numbers' },
             { include: '@strings' },
-            [
-                /[a-zA-Z_#][a-zA-Z0-9_\-\?\!\*]*/,
-                {
+            [/[{}\[\]()]/, '@brackets'],
+            { include: '@operators' },
+            [/#'/, 'comment.doc', '@roxygen'],
+            [/(^#.*$)/, 'comment'],
+            [/\s+/, 'white'],
+            [/[,:;]/, 'delimiter'],
+            [/@[a-zA-Z]\w*/, 'tag'],
+            [/[a-zA-Z]\w*/, {
                     cases: {
                         '@keywords': 'keyword',
                         '@constants': 'constant',
-                        '@operators': 'operators',
-                        '@default': 'identifier',
-                    },
-                },
-            ],
+                        '@default': 'identifier'
+                    }
+                }]
         ],
-        comment: [
-            [/[^\|#]+/, 'comment'],
-            [/#\|/, 'comment', '@push'],
-            [/\|#/, 'comment', '@pop'],
-            [/[\|#]/, 'comment'],
+        // Recognize Roxygen comments
+        roxygen: [
+            [/@\w+/, {
+                    cases: {
+                        '@roxygen': 'tag',
+                        '@eos': { token: 'comment.doc', next: '@pop' },
+                        '@default': 'comment.doc'
+                    }
+                }],
+            [/\s+/, {
+                    cases: {
+                        '@eos': { token: 'comment.doc', next: '@pop' },
+                        '@default': 'comment.doc'
+                    }
+                }],
+            [/.*/, { token: 'comment.doc', next: '@pop' }]
         ],
-        whitespace: [
-            [/[ \t\r\n]+/, 'white'],
-            [/#\|/, 'comment', '@comment'],
-            [/;.*$/, 'comment'],
+        // Recognize positives, negatives, decimals, imaginaries, and scientific notation
+        numbers: [
+            [/0[xX][0-9a-fA-F]+/, 'number.hex'],
+            [/-?(\d*\.)?\d+([eE][+\-]?\d+)?/, 'number']
         ],
+        // Recognize operators
+        operators: [
+            [/<{1,2}-/, 'operator'],
+            [/->{1,2}/, 'operator'],
+            [/%[^%\s]+%/, 'operator'],
+            [/\*\*/, 'operator'],
+            [/%%/, 'operator'],
+            [/&&/, 'operator'],
+            [/\|\|/, 'operator'],
+            [/<</, 'operator'],
+            [/>>/, 'operator'],
+            [/[-+=&|!<>^~*/:$]/, 'operator']
+        ],
+        // Recognize strings, including those broken across lines
         strings: [
-            [/"$/, 'string', '@popall'],
-            [/"(?=.)/, 'string', '@multiLineString'],
+            [/'/, 'string.escape', '@stringBody'],
+            [/"/, 'string.escape', '@dblStringBody']
         ],
-        multiLineString: [
-            [/[^\\"]+$/, 'string', '@popall'],
-            [/[^\\"]+/, 'string'],
-            [/\\./, 'string.escape'],
-            [/"/, 'string', '@popall'],
-            [/\\$/, 'string']
+        stringBody: [
+            [/\\./, {
+                    cases: {
+                        '@special': 'string',
+                        '@default': 'error-token'
+                    }
+                }],
+            [/'/, 'string.escape', '@popall'],
+            [/./, 'string'],
         ],
-    },
+        dblStringBody: [
+            [/\\./, {
+                    cases: {
+                        '@special': 'string',
+                        '@default': 'error-token'
+                    }
+                }],
+            [/"/, 'string.escape', '@popall'],
+            [/./, 'string'],
+        ]
+    }
 };
 
 

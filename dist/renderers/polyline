@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[29,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[36,2],{
 
-/***/ 645:
+/***/ 649:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 673:
+/***/ 684:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Line; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(649);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -458,6 +458,7 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
         this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
       }
 
+      this.previousNVertices = this.doenetSvData.nVertices;
       var shiftX = this.polylineJXG.transformMat[1][0];
       var shiftY = this.polylineJXG.transformMat[2][0];
 
@@ -485,6 +486,14 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
         for (var _i5 = 0; _i5 < this.doenetSvData.nVertices; _i5++) {
           this.pointsJXG[_i5].visProp["visible"] = false;
           this.pointsJXG[_i5].visPropCalc["visible"] = false;
+        }
+      }
+
+      if (this.componentName in sourceOfUpdate.sourceInformation) {
+        var vertexUpdated = sourceOfUpdate.sourceInformation[this.componentName].vertex;
+
+        if (Number.isFinite(vertexUpdated)) {
+          this.props.board.updateInfobox(this.pointsJXG[vertexUpdated]);
         }
       }
 
@@ -517,7 +526,9 @@ var Line = /*#__PURE__*/function (_DoenetRenderer) {
       } else {
         var newCoords = {};
         newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-        this.actions.movePolyline(newCoords, _transient);
+        this.actions.movePolyline(newCoords, _transient, {
+          vertex: i
+        });
       }
     }
   }, {
