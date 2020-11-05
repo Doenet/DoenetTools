@@ -216,6 +216,29 @@ export default class BaseComponent {
       })
     }
 
+    stateVariableDefinitions.isInactiveCompositeReplacement = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          isInactiveCompositeReplacement: {
+            variablesToCheck: ["isInactiveCompositeReplacement"]
+          }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: {
+              variableName: "isInactiveCompositeReplacement",
+              value: desiredStateVariableValues.isInactiveCompositeReplacement
+            }
+          }]
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 

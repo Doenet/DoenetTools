@@ -1806,14 +1806,16 @@ export default class Core {
         if (child.replacementsToWithhold > 0) {
           replacements = replacements.slice(0, -child.replacementsToWithhold);
           for (let ind = replacements.length; ind < child.replacements.length; ind++) {
-            child.replacements[ind].inactive = true;
-            child.replacements[ind].changedInactive = true;
+            this.changeInactiveComponentAndDescendants(
+              child.replacements[ind], true, updatesNeeded
+            );
           }
         }
 
         for (let ind = 0; ind < replacements.length; ind++) {
-          delete child.replacements[ind].inactive;
-          child.replacements[ind].changedInactive = true;
+          this.changeInactiveComponentAndDescendants(
+            child.replacements[ind], false, updatesNeeded
+          );
         }
 
 
@@ -1856,6 +1858,24 @@ export default class Core {
     }
 
     return { compositeChildNotReadyToExpand };
+  }
+
+  changeInactiveComponentAndDescendants(component, inactive, updatesNeeded) {
+    if (component.stateValues.isInactiveCompositeReplacement !== inactive) {
+      component.state.isInactiveCompositeReplacement.value = inactive;
+      this.markUpstreamDependentsStale({
+        component,
+        varName: "isInactiveCompositeReplacement",
+        updatesNeeded
+      });
+      this.recordActualChangeInUpstreamDependencies({
+        component,
+        varName: "isInactiveCompositeReplacement"
+      });
+      for (let childName in component.allChildren) {
+        this.changeInactiveComponentAndDescendants(this._components[childName], inactive, updatesNeeded)
+      }
+    }
   }
 
   substituteAdapters(component, updatesNeeded) {
@@ -7232,9 +7252,9 @@ export default class Core {
           componentType: depComponent.componentType,
         };
 
-        if (dep.componentIdentitiesChanged) {
-          changes[dep.dependencyName] = { componentIdentitiesChanged: true };
-          dep.componentIdentitiesChanged = false;
+        if (dep.componentIdentityChanged) {
+          changes[dep.dependencyName] = { componentIdentityChanged: true };
+          dep.componentIdentityChanged = false;
         }
       } else if (dep.dependencyType === "recursiveDependencyValues") {
         // first calculate value of state variable
@@ -10206,6 +10226,19 @@ export default class Core {
 
             foundVarChange = true;
 
+          } else if (varName === "__identity") {
+            // for __identity, we just mark upDep as changed
+
+            if (!upDep.valuesChanged) {
+              upDep.valuesChanged = { "__identity": {} };
+            }
+
+            upDep.componentIdentityChanged = true;
+
+            upDep.valuesChanged.__identity.potentialChange = true;
+
+            foundVarChange = true;
+
           }
 
         }
@@ -12050,7 +12083,7 @@ export default class Core {
     //   }
     // });
 
-    if (updatesNeeded.itemScoreChanges.length > 0) {
+    if (updatesNeeded.itemScoreChanges.size > 0) {
       if (event) {
         if (!event.context) {
           event.context = {};

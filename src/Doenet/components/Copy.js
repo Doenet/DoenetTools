@@ -274,7 +274,13 @@ export default class Copy extends CompositeComponent {
         let compositeClass = componentInfoObjects.allComponentClasses._composite;
         let targetClass = componentInfoObjects.allComponentClasses[stateValues.targetComponent.componentType];
 
-        let dependencies = {};
+        let dependencies = {
+          targetIsInactiveCompositeReplacement: {
+            dependencyType: "componentStateVariable",
+            componentIdentity: stateValues.targetComponent,
+            variableName: "isInactiveCompositeReplacement"
+          }
+        };
 
         // if copying a prop of a composite for which useReplacementsWhenCopyProp is set,
         // then the prop will be based on that composite's replacements
@@ -297,8 +303,11 @@ export default class Copy extends CompositeComponent {
         return dependencies;
       },
       definition: function ({ dependencyValues, componentInfoObjects }) {
+
         let effectiveTargetClasses;
-        if (dependencyValues.targetComponent) {
+        if (dependencyValues.targetIsInactiveCompositeReplacement) {
+          effectiveTargetClasses = [];
+        } else if (dependencyValues.targetComponent) {
           effectiveTargetClasses = [componentInfoObjects.allComponentClasses[dependencyValues.targetComponent.componentType]]
         } else if (dependencyValues.targetComponent === null) {
           effectiveTargetClasses = [];
