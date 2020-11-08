@@ -1,8 +1,10 @@
-/* written-tag{
-
-} */
-
 /* tags from complete-docs.json not present in code*/
 .reference-tag{
     color:#696969;
+}
+
+/* Fixes the height of the editor.
+  TO-DO: Move this up into the css files for each specific webpage*/
+.cm-wrap{
+    max-height: 65vh;
 }

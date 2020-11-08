@@ -127,12 +127,16 @@ function findTag(doc, tree, buff_offset, doc_offset) {
 }
 
 //Finds the attributes for a tag given its buffer index init_i
+//Returns an array of attributes. Each entry has the 
+//attr_name, attr_val, and document offsets of the attr_val
+//for rewrites by the Info Panel
 function getAttrs(doc, tree, init_i, doc_offset) {
     let attrs = [];
 
     let sym_attrname = -1;
     let sym_attrval = -1;
     let sym_unquoteval = -1;
+    let sym_is = -1; // The '=' symbol after attrname
 
     let buffer = tree.buffer;
     let types = tree.group.types;
@@ -144,6 +148,8 @@ function getAttrs(doc, tree, init_i, doc_offset) {
             sym_attrval = i;
         } else if (types[i].name == "UnquotedAttributeValue") {
             sym_unquoteval = i;
+        } else if (types[i].name == "Is") {
+            sym_is = i;
         }
     }
 
@@ -158,10 +164,14 @@ function getAttrs(doc, tree, init_i, doc_offset) {
             attrs.push([curr_attr, "", 0, 0]);
             curr_index += 1;
             name_exists = 1;
+        } else if (name_exists && buffer[i] == sym_is) {
+            let temp = buffer[i+2]+1+doc_offset;
+            attrs[curr_index][2] = temp;
+            attrs[curr_index][3] = temp;
         } else if (name_exists && (buffer[i] == sym_attrval || buffer[i] == sym_unquoteval)) {
             attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
-            attrs[curr_index][2] = buffer[i+1];
-            attrs[curr_index][3] = buffer[i+2];
+            attrs[curr_index][2] = buffer[i+1]+doc_offset;
+            attrs[curr_index][3] = buffer[i+2]+doc_offset;
             name_exists = 0;
         }
     }
@@ -209,12 +219,9 @@ function getTagProps(doc, tree, position) {
     let basic_tag_props = findTag(doc, tree_buff, buff_offset, doc_offset);
     if (basic_tag_props.pos < 0) return tag_props;
     tag_props.tagname = basic_tag_props.tagname;
-
-    // console.log(basic_tag_props);
     
     if (!basic_tag_props.open) return tag_props;
-    tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos);
-
+    tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos, doc_offset);
     return tag_props;
 }
 
@@ -246,10 +253,12 @@ function TextForm(props) {
 
     return (
         <>
-            {(isForm && tagval) ? 
+            {(isForm) ? 
                 <><label>{tagname}: </label><input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
                 </>
-            : <label onClick={handleTextClick}>{tagname}: {tagval}</label>}
+            : <label onClick={handleTextClick}>
+                {tagname}: {tagval}
+              </label>}
         </>
     )
 }
@@ -324,10 +333,10 @@ function InfoPanel(props) {
     return(
         <>
         <h1>{tagname}</h1>
-        {!tag_dict || !attrs ? <p>No props found</p> :
+        {!tag_dict && (attrs===undefined || attrs.length==0) ? <p>No props found</p> :
             <ul>
-                {attrs.map(attrToEntry)}
-                {Object.keys(tag_dict["properties"]).filter(x => tags_mentioned[x] === undefined).map(propToEntry)}
+                {attrs && attrs.length!=0 ? attrs.map(attrToEntry) : <></>}
+                {tag_dict ? Object.keys(tag_dict["properties"]).filter(x => tags_mentioned[x] === undefined).map(propToEntry) : <></>}
             </ul>
         } 
         </>
@@ -346,8 +355,6 @@ function Editor(props) {
             // console.log(tr.state.tree);
             // console.log(tr.state.doc);
             // console.log(tr.state.selection);
-
-            console.log("We ARE UPDATING");
     
             let position = tr.state.selection.ranges[0].to;
     
@@ -375,20 +382,16 @@ function Editor(props) {
         const containerRoot = document.getElementById(mountKey);
         containerRoot.appendChild(view.dom);
 
-        // console.log(view.state.tree);
-        console.log("EDITOR MOUNTING");
-
         return function cleanup() {
             let editor = document.getElementById(mountKey);
             editor.removeChild(editor.childNodes[0]);
         };
-    }, [view]);
+    }, [view]);  
 
     return(
         <>
             <div id={mountKey}/>
             {(curr_tag.tagname != "") && <InfoPanel curr_tag={curr_tag} view={view} setView={setView}/>}
-            <p>Hey! Look at me!</p>
         </>
     )
 }
