@@ -16,9 +16,9 @@ const Prev = styled.div`
   border-radius: 5px;
   color: white;
   // line-height: 0px;
-  z-index: 1;
+  z-index: 10;
   padding: 3px;
-  position: absolute;
+  // position: absolute;
   user-select: none;
   // left: ${props => `${props.left}px`};
   // top: ${props => `${props.top}px`};
@@ -42,12 +42,14 @@ export default class MathInput extends DoenetRenderer {
     this.textValue = this.doenetSvData.value.toString();
 
 
-    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 20, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
+    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     this.inputRef = React.createRef();
+    // this.mathInputRef = React.createRef();
     
 
     this.valueToRevertTo = this.mathExpression;
     this.textValueToRevertTo = this.textValue;
+    this.previewValue = "";
 
     //Remove __ value so it doesn't show
     if (this.textValue === '\uFF3F') { this.textValue = ""; }
@@ -57,9 +59,11 @@ export default class MathInput extends DoenetRenderer {
   static initializeChildrenOnConstruction = false;
 
   componentDidMount() {
-    this.setState({previewLeftOffset: this.inputRef.current.getBoundingClientRect().width + this.inputRef.current.getBoundingClientRect().left + 3, previewTopOffset: this.inputRef.current.getBoundingClientRect().top});
-    console.log('left offset', this.inputRef.current.getBoundingClientRect());
-    // console.log('width: ', this.doenetSvData.size * 10, 'offset: ',  this.inputRef.current.getBoundingClientRect().left);
+    // if (this && this.mathInputRef){
+    //   let rect = this.mathInputRef.current.getBoundingClientRect();
+    // // this.setState({previewLeftOffset: rect.width + rect.left + 2, previewTopOffset: rect.top -17}); 
+    // this.setState({previewLeftOffset: rect.left, previewTopOffset: rect.height + rect.top - 2 });
+    // }
   }
 
   calculateMathExpressionFromText(text) {
@@ -83,6 +87,24 @@ export default class MathInput extends DoenetRenderer {
         mathExpression: newMathExpression
       });
     }
+
+      //evalute math expression
+        let nextPreviewValue = newMathExpression.toLatex();
+
+        if (nextPreviewValue === "＿"){
+          //Error
+          clearTimeout(this.timer)
+          this.timer = setTimeout(()=>{
+            this.previewValue = "Err";
+            this.forceUpdate();
+          },1000)
+        }else{
+          //No Error
+          clearTimeout(this.timer)
+          this.previewValue = nextPreviewValue;
+        }
+
+
   }
 
   updateValidationState() {
@@ -195,7 +217,134 @@ export default class MathInput extends DoenetRenderer {
 
     } 
 
-    // TODO: how to fix case where have readyonly?
+    let checkWorkStyle = {
+      position: "relative",
+      width: "30px",
+      height: "24px",
+      fontSize: "20px",
+      fontWeight: "bold",
+      color: "#ffffff",
+      display: "inline-block",
+      textAlign: "center",
+      top: "3px",
+      padding: "2px",
+      zIndex: "0",
+    }
+  //Assume we don't have a check work button
+  let checkWorkButton = null;
+  if (this.doenetSvData.includeCheckWork) {
+
+    if (this.validationState === "unvalidated") {
+      checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+      checkWorkButton = <button
+        id={this.componentName + '_submit'}
+        tabIndex="0"
+        ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+        style={checkWorkStyle}
+        onClick={this.actions.submitAnswer}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            this.actions.submitAnswer();
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+      </button>
+    } else {
+      if (this.doenetSvData.showCorrectness) {
+        if (this.validationState === "correct") {
+          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+          checkWorkButton = <span
+            id={this.componentName + '_correct'}
+            style={checkWorkStyle}
+            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </span>
+        } else if (this.validationState === "partialcorrect") {
+          //partial credit
+
+          let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+          let partialCreditContents = `${percent} %`;
+          checkWorkStyle.width = "50px";
+
+          checkWorkStyle.backgroundColor = "#efab34";
+          checkWorkButton = <span
+            id={this.componentName + '_partial'}
+            style={checkWorkStyle}
+            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          >{partialCreditContents}</span>
+        } else {
+          //incorrect
+          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkButton = <span
+            id={this.componentName + '_incorrect'}
+            style={checkWorkStyle}
+            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          ><FontAwesomeIcon icon={faTimes} /></span>
+
+        }
+      } else {
+        // showCorrectness is false
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkButton = <span
+          id={this.componentName + '_saved'}
+          style={checkWorkStyle}
+          ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+        ><FontAwesomeIcon icon={faCloud} /></span>
+
+      }
+    }
+  }
+  return <React.Fragment>
+    <a name={this.componentName} />
+    
+    
+      <span className="textInputSurroundingBox"  id={this.componentName}>
+      <input
+        key={inputKey}
+        id={inputKey}
+        ref = {this.inputRef}
+        value={this.textValue}
+        disabled={this.doenetSvData.disabled}
+        onChange={this.onChangeHandler}
+        onKeyPress={this.handleKeyPress}
+        onKeyDown={this.handleKeyDown}
+        onBlur={this.handleBlur}
+        onFocus={this.handleFocus}
+        style={{
+          width: `${this.doenetSvData.size * 10}px`,
+          height: "22px",
+          fontSize: "14px",
+          borderWidth: "1px",
+          borderColor: surroundingBorderColor,
+          padding: "4px",
+          // position: "absolute",
+        }}
+      />
+      {checkWorkButton}
+      {this.textValue ? 
+      <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
+        <div>
+          <MathJax.Context input='tex'>
+              <div>
+                  <MathJax.Node inline>{this.textValue ? this.previewValue : ''}</MathJax.Node>
+              </div>
+          </MathJax.Context>
+        </div>
+      </Prev> : 
+      null}
+      </span>
+      
+    
+  
+  </React.Fragment>
+
+  }
+}
+
+
+ // TODO: how to fix case where have readyonly?
     // need to revert mathExpression in that case
 
     // else if(!this.mathExpression.equalsViaSyntax(this.doenetSvData.immediateValue)) {
@@ -212,130 +361,3 @@ export default class MathInput extends DoenetRenderer {
     //   this.textValueToRevertTo = this.textValue;
 
     // }
-
-
-    let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
-    }
-
-    //Assume we don't have a check work button
-    let checkWorkButton = null;
-    if (this.doenetSvData.includeCheckWork) {
-
-      if (this.validationState === "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-        checkWorkButton = <button
-          id={this.componentName + '_submit'}
-          tabIndex="0"
-          ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          style={checkWorkStyle}
-          onClick={this.actions.submitAnswer}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              this.actions.submitAnswer();
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-        </button>
-      } else {
-        if (this.doenetSvData.showCorrectness) {
-          if (this.validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-            checkWorkButton = <span
-              id={this.componentName + '_correct'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            >
-              <FontAwesomeIcon icon={faCheck} />
-            </span>
-          } else if (this.validationState === "partialcorrect") {
-            //partial credit
-
-            let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
-            let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = "50px";
-
-            checkWorkStyle.backgroundColor = "#efab34";
-            checkWorkButton = <span
-              id={this.componentName + '_partial'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            >{partialCreditContents}</span>
-          } else {
-            //incorrect
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-            checkWorkButton = <span
-              id={this.componentName + '_incorrect'}
-              style={checkWorkStyle}
-              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-            ><FontAwesomeIcon icon={faTimes} /></span>
-
-          }
-        } else {
-          // showCorrectness is false
-          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-          checkWorkButton = <span
-            id={this.componentName + '_saved'}
-            style={checkWorkStyle}
-            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          ><FontAwesomeIcon icon={faCloud} /></span>
-
-        }
-      }
-    }
-
-    // let leftOffset = `${this.doenetSvData.size * 10 + 20}px`;
-
-    return <React.Fragment>
-      <a name={this.componentName} />
-      <div className="textInputSurroundingBox" style = {{height: "35px", display: "inline-block", width:"112px", }} id={this.componentName}>
-        <input
-          key={inputKey}
-          id={inputKey}
-          ref = {this.inputRef}
-          value={this.textValue}
-          disabled={this.doenetSvData.disabled}
-          onChange={this.onChangeHandler}
-          onKeyPress={this.handleKeyPress}
-          onKeyDown={this.handleKeyDown}
-          onBlur={this.handleBlur}
-          onFocus={this.handleFocus}
-          style={{
-            width: `${this.doenetSvData.size * 10}px`,
-            height: "22px",
-            fontSize: "14px",
-            borderWidth: "1px",
-            borderColor: surroundingBorderColor,
-            padding: "4px",
-            position: "absolute",
-          }}
-        />
-        {checkWorkButton}
-        {/* {console.log("eval", this.mathExpression.toLatex())} */}
-        {this.textValue ? 
-        <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
-          <div>
-            <MathJax.Context input='tex'>
-                <div>
-                    <MathJax.Node inline>{this.textValue ? this.mathExpression.toLatex() : ''}</MathJax.Node>
-                </div>
-            </MathJax.Context>
-          </div>
-        </Prev> : 
-        null}
-      </div>
-    
-    </React.Fragment>
-
-  }
-}
