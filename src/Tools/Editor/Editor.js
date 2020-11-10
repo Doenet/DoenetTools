@@ -161,17 +161,23 @@ function getAttrs(doc, tree, init_i, doc_offset) {
 
         if (buffer[i] == sym_attrname) {
             let curr_attr = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
-            attrs.push([curr_attr, "", 0, 0]);
+            attrs.push([curr_attr, "", 0, 0, true]); // attr name, attr val, begin offset, end offset, has quotes?
             curr_index += 1;
             name_exists = 1;
         } else if (name_exists && buffer[i] == sym_is) {
-            let temp = buffer[i+2]+1+doc_offset;
+            let temp = buffer[i+2]+doc_offset;
             attrs[curr_index][2] = temp;
             attrs[curr_index][3] = temp;
-        } else if (name_exists && (buffer[i] == sym_attrval || buffer[i] == sym_unquoteval)) {
+        } else if (name_exists && buffer[i] == sym_attrval) {
+            attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset+1, buffer[i+2]+doc_offset-1); // +1 and -1 to remove quotes
+            attrs[curr_index][2] = buffer[i+1]+doc_offset; // offsets keep track of quotes
+            attrs[curr_index][3] = buffer[i+2]+doc_offset;
+            name_exists = 0;
+        } else if (buffer[i] == sym_unquoteval) {
             attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
             attrs[curr_index][2] = buffer[i+1]+doc_offset;
             attrs[curr_index][3] = buffer[i+2]+doc_offset;
+            attrs[curr_index][4] = false;
             name_exists = 0;
         }
     }
@@ -179,8 +185,8 @@ function getAttrs(doc, tree, init_i, doc_offset) {
     return attrs;
 }
 
-//Get the smallest Tree Buffer containing the position.
-//Returns null if there is none.
+// Get the smallest Tree Buffer containing the position.
+// Returns null if there is none.
 function getTreeBuff(tree, position) {
     let curr_tree = tree;
     let buff_offset = position;
@@ -198,8 +204,8 @@ function getTreeBuff(tree, position) {
     return {buffer: curr_tree, buff_offset: buff_offset, doc_offset: position-buff_offset};
 }
 
-//Returns an object representing the properties of a tag
-//If given a closing tag it will only return the tag name
+// Returns an object representing the properties of a tag
+// If given a closing tag it will only return the tag name
 function getTagProps(doc, tree, position) {
     // console.log("This is the init position. ", position);
     let tag_props = {tagname: "", attrs: []};
@@ -225,6 +231,23 @@ function getTagProps(doc, tree, position) {
     return tag_props;
 }
 
+// Button that puts quotes around an attribute value
+function QuoteButton(props) {
+
+    const onClick = function() {
+        props.updateView(props.offset1, props.offset2, "\"" + props.tagval + "\"");
+    };
+
+    return (
+        <>
+        <label>{props.tagname}: </label>
+        <button onClick={onClick}>{props.tagval}</button>
+        <label> {"<-- Add Quotes!"} </label>
+        </>
+    )
+}
+
+// Form that allows the user to change attr value's from the Info Panel
 function TextForm(props) {
     let { tagname } = props; let { tagval } = props;
     const [isForm, setForm] = useState(false);
@@ -239,7 +262,13 @@ function TextForm(props) {
     const handleFormClick = function() {
         setForm(!isForm);
         if (tagval !== formEl.current.value) {
-            props.updateView(props.offset1, props.offset2, formEl.current.value);
+            if (formEl.current.value === "") {
+                props.updateView(props.offset1, props.offset2, formEl.current.value);
+            } else if (tagval === "") {
+                props.updateView(props.offset1, props.offset2, "\"" + formEl.current.value + "\"");
+            } else {
+                props.updateView(props.offset1+1, props.offset2-1, formEl.current.value);
+            }
         }
     };
 
@@ -254,7 +283,8 @@ function TextForm(props) {
     return (
         <>
             {(isForm) ? 
-                <><label>{tagname}: </label><input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
+                <>
+                <label>{tagname}: </label><input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
                 </>
             : <label onClick={handleTextClick}>
                 {tagname}: {tagval}
@@ -263,12 +293,13 @@ function TextForm(props) {
     )
 }
 
+// Toggle Button for switching an attr value between true and false
 function ToggleButtonWrapper(props) {
 
     let isSelected = props.tagval === "true" ? true : false
 
     const toggleCallback = function() {
-        props.updateView(props.offset1, props.offset2, isSelected ? "false" : "true");
+        props.updateView(props.offset1, props.offset2, isSelected ? "\"false\"" : "\"true\"");
     };
 
     return(
@@ -300,19 +331,37 @@ function InfoPanel(props) {
     };
 
     const attrToEntry = function(x) {
-        tags_mentioned[x[0]] = 1;
-        return(
-        <li key={x[0]}>
-            {(x[1].toLowerCase() === "true" || x[1].toLowerCase() === "false") ?
+        if (tags_mentioned[x[0]]) {
+            tags_mentioned[x[0]] += 1;
+        } else {
+            tags_mentioned[x[0]] = 1;
+        }
+
+        if (!x[4]) {
+            return (
+                <li key={x[0] + tags_mentioned[x[0]].toString()}>
+                <QuoteButton tagname={x[0]} tagval={x[1]}
+                offset1={x[2]} offset2={x[3]}
+                updateView={updateView}/>
+                </li>
+            )
+        }
+
+        if (x[1].toLowerCase() === "true" || x[1].toLowerCase() === "false") {
+            return (
+                <li key={x[0] + tags_mentioned[x[0]].toString()}>
                 <ToggleButtonWrapper tagname={x[0]} tagval={x[1]} 
                 offset1={x[2]} offset2={x[3]}
                 isSelected={false} updateView={updateView}/>
-            :
-                <TextForm tagname={x[0]} tagval={x[1]} 
-                offset1={x[2]} offset2={x[3]}
-                updateView={updateView}/>
-                
-            }
+                </li>
+            )
+        }
+
+        return(
+        <li key={x[0] + tags_mentioned[x[0]].toString()}>
+            <TextForm tagname={x[0]} tagval={x[1]} 
+            offset1={x[2]} offset2={x[3]}
+            updateView={updateView}/>
         </li>
         )
     }
