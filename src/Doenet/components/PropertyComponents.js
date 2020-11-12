@@ -750,6 +750,11 @@ export class SymbolicEquality extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class ShowCorrectness extends BooleanComponent {
+  static componentType = "showCorrectness";
+  static rendererType = "boolean";
+}
+
 export class createIntervals extends BooleanComponent {
   static componentType = "createintervals";
   static rendererType = "boolean";

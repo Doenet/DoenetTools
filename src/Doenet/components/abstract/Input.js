@@ -31,7 +31,8 @@ export default class Input extends InlineComponent {
             "delegateCheckWorkToInput",
             "justSubmittedForSubmitButton",
             "creditAchievedForSubmitButton",
-            "submitAllAnswersAtAncestor"
+            "submitAllAnswersAtAncestor",
+            "showCorrectness",
           ]
         }
       }),
@@ -135,10 +136,19 @@ export default class Input extends InlineComponent {
         showCorrectnessFlag: {
           dependencyType: "flag",
           flagName: "showCorrectness"
-        }
+        },
+        answerAncestor: {
+          dependencyType: "stateVariable",
+          variableName: "answerAncestor"
+        },
       }),
       definition({ dependencyValues }) {
-        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        let showCorrectness;
+        if (dependencyValues.answerAncestor) {
+          showCorrectness = dependencyValues.answerAncestor.stateValues.showCorrectness;
+        } else {
+          showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        }
         return { newValues: { showCorrectness } }
       }
     }
