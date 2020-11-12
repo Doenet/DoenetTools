@@ -1520,7 +1520,7 @@ export default class Vector extends GraphicalComponent {
     stateVariableForNewComponent: "value",
   }];
 
-  moveVector({ tailcoords, headcoords, transient }) {
+  moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
 
     let updateInstructions = [];
 
@@ -1544,7 +1544,8 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: displacement.map(x => me.fromAst(x))
+          value: displacement.map(x => me.fromAst(x)),
+          sourceInformation
         })
 
       } else {
@@ -1553,7 +1554,8 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "tail",
-          value: tailcoords.map(x => me.fromAst(x))
+          value: tailcoords.map(x => me.fromAst(x)),
+          sourceInformation
         })
       }
 
@@ -1567,7 +1569,8 @@ export default class Vector extends GraphicalComponent {
             updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: displacement.map(x => me.fromAst(x))
+            value: displacement.map(x => me.fromAst(x)),
+            sourceInformation
           })
         }
       }
@@ -1582,7 +1585,8 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "head",
-          value: headcoords.map(x => me.fromAst(x))
+          value: headcoords.map(x => me.fromAst(x)),
+          sourceInformation
         })
       } else {
         // if based on displacement alone or displacement and tail
@@ -1596,7 +1600,8 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: displacement.map(x => me.fromAst(x))
+          value: displacement.map(x => me.fromAst(x)),
+          sourceInformation
         })
       }
 
@@ -1611,7 +1616,8 @@ export default class Vector extends GraphicalComponent {
             updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: displacement.map(x => me.fromAst(x))
+            value: displacement.map(x => me.fromAst(x)),
+            sourceInformation
           })
         }
       }

@@ -137,11 +137,34 @@ export default class Vector extends DoenetRenderer {
       this.vectorJXG.visProp["visible"] = visible;
       this.vectorJXG.visPropCalc["visible"] = visible;
       // this.vectorJXG.setAttribute({visible: visible})
+
+      this.point1JXG.visProp["visible"] = visible;
+      this.point1JXG.visPropCalc["visible"] = visible;
+
+      this.point2JXG.visProp["visible"] = visible;
+      this.point2JXG.visPropCalc["visible"] = visible;
+
     }
     else {
       this.vectorJXG.visProp["visible"] = false;
       this.vectorJXG.visPropCalc["visible"] = false;
       // this.vectorJXG.setAttribute({visible: false})
+
+      this.point1JXG.visProp["visible"] = false;
+      this.point1JXG.visPropCalc["visible"] = false;
+
+      this.point2JXG.visProp["visible"] = false;
+      this.point2JXG.visPropCalc["visible"] = false;
+
+    }
+
+    if (this.componentName in sourceOfUpdate.sourceInformation) {
+      let sourceInfo = sourceOfUpdate.sourceInformation[this.componentName]
+      if (sourceInfo.vertex === 1) {
+        this.props.board.updateInfobox(this.point1JXG);
+      } else if (sourceInfo.vertex === 2) {
+        this.props.board.updateInfobox(this.point2JXG);
+      }
     }
 
     this.vectorJXG.name = this.doenetSvData.label;
@@ -195,6 +218,10 @@ export default class Vector extends DoenetRenderer {
     if (this.tailBeingDragged) {
       performMove = true;
       instructions.tailcoords = [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()];
+    }
+
+    if (i == 1 || i == 2) {
+      instructions.sourceInformation = { vertex: i };
     }
 
     if (!transient) {
