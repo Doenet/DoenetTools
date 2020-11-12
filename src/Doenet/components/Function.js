@@ -388,7 +388,6 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         formula: {
           dependencyType: "stateVariable",
@@ -399,6 +398,20 @@ export default class Function extends InlineComponent {
         return { newValues: { latex: dependencyValues.formula.toLatex() } };
       }
     }
+
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+      }
+    }
+
 
     stateVariableDefinitions.minima = {
       public: true,

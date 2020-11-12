@@ -53,11 +53,23 @@ export default class MathRenderer extends DoenetRenderer {
     // This is just a stopgap solution that works in a few simple cases!!!
 
     let latexOrInputChildren = this.doenetSvData.latexWithInputChildren.map(
-      x=> typeof x === "number" ? this.children[x] : [beginDelim, x, endDelim]
+      x => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim
     )
 
-    return <><a name={this.componentName} /><span id={this.componentName}>
-      {latexOrInputChildren}
-    </span></>
+    // TODO: BADBADBAD
+    // Don't understand why MathJax isn't updating when using {latexOrInputChildren}
+    // so hard coded the only two cases using so far: with 1 or 2 entries
+
+    if (latexOrInputChildren.length === 0) {
+      return <><a name={this.componentName} /><span id={this.componentName}></span></>
+
+    } else if (latexOrInputChildren.length === 1) {
+      return <><a name={this.componentName} /><span id={this.componentName}>{latexOrInputChildren[0]}</span></>
+
+    } else if (latexOrInputChildren.length === 2) {
+      return <><a name={this.componentName} /><span id={this.componentName}>{latexOrInputChildren[0]}{latexOrInputChildren[1]}</span></>
+    } else {
+      return <><a name={this.componentName} /><span id={this.componentName}>{latexOrInputChildren[0]}</span></>
+    }
   }
 }

@@ -7,13 +7,11 @@ export class Section extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 1 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 1 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 }
 
@@ -26,13 +24,11 @@ export class Subsection extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 2 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 2 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 }
@@ -45,13 +41,11 @@ export class Subsubsection extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 3 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 }
@@ -64,13 +58,11 @@ export class Paragraphs extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 4 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 4 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 }
@@ -83,20 +75,21 @@ export class Aside extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 3 } })
-    }
+    stateVariableDefinitions.collapsible.definition = () => ({
+      newValues: { collapsible: true }
+    });
 
-    stateVariableDefinitions.containerTag = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { containerTag: "aside" } })
-    }
+    stateVariableDefinitions.open.defaultValue = false;
 
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
 
-    return stateVariableDefinitions
+    stateVariableDefinitions.containerTag.definition = () => ({
+      newValues: { containerTag: "aside" }
+    });
+
+    return stateVariableDefinitions;
   }
 
 }
@@ -117,18 +110,15 @@ export class Problem extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.sectionName = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { sectionName: "Problem" } })
-    }
+    stateVariableDefinitions.sectionName.definition = () => ({
+      newValues: { sectionName: "Problem" }
+    });
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 3 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 }
@@ -141,12 +131,11 @@ export class Exercise extends Problem {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.sectionName = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { sectionName: "Exercise" } })
-    }
+    stateVariableDefinitions.sectionName.definition = () => ({
+      newValues: { sectionName: "Exercise" }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 
@@ -161,18 +150,15 @@ export class Example extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.sectionName = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { sectionName: "Example" } })
-    }
+    stateVariableDefinitions.sectionName.definition = () => ({
+      newValues: { sectionName: "Example" }
+    });
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 3 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
 
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 
@@ -197,20 +183,15 @@ export class AnswerSet extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: null } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: null }
+    });
 
-    stateVariableDefinitions.containerTag = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { containerTag: "none" } })
-    }
+    stateVariableDefinitions.containerTag.definition = () => ({
+      newValues: { containerTag: "none" }
+    });
 
-
-    return stateVariableDefinitions
+    return stateVariableDefinitions;
   }
 
 }
@@ -224,18 +205,13 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 3 } })
-    }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
 
-    stateVariableDefinitions.containerTag = {
-      forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { containerTag: "aside" } })
-    }
-
+    stateVariableDefinitions.containerTag.definition = () => ({
+      newValues: { containerTag: "aside" }
+    });
 
     return stateVariableDefinitions
   }

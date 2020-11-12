@@ -420,6 +420,42 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.collapsible = {
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition() {
+        return { newValues: { collapsible: false } }
+      }
+    }
+
+    stateVariableDefinitions.open = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: true,
+      returnDependencies: () => ({}),
+      definition() {
+        return {
+          useEssentialOrDefaultValue: {
+            open: {
+              variablesToCheck: ["open"]
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "open",
+            value: desiredStateVariableValues.open
+          }]
+        }
+      }
+    }
+
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         titleChild: {
@@ -475,7 +511,7 @@ export default class SectioningComponent extends BlockComponent {
           } else {
             let chosenAnswer = null;
             if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
-              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber-1];
+              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber - 1];
             } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
               let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
               chosenAnswer = dependencyValues.answerDescendants[answerInd];
@@ -567,7 +603,9 @@ export default class SectioningComponent extends BlockComponent {
   }
 
   actions = {
-    submitAllAnswers: this.submitAllAnswers.bind(this)
+    submitAllAnswers: this.submitAllAnswers.bind(this),
+    revealSection: this.revealSection.bind(this),
+    closeSection: this.closeSection.bind(this),
   }
 
   submitAllAnswers() {
@@ -589,6 +627,44 @@ export default class SectioningComponent extends BlockComponent {
         actionName: "submitAnswer"
       })
     }
+  }
+
+  revealSection() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: true
+      }],
+      event: {
+        verb: "viewed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
+  }
+
+  closeSection() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: false
+      }],
+      event: {
+        verb: "closed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
   }
 
   static setUpVariant({

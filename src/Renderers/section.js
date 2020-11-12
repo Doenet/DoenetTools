@@ -25,6 +25,14 @@ export default class Section extends DoenetRenderer {
       title = this.doenetSvData.title;
     }
 
+    if (this.doenetSvData.collapsible) {
+      if (this.doenetSvData.open) {
+        title = <>{title} (close section)</>
+      } else {
+        title = <>{title} (open section)</>
+      }
+    }
+
     if (this.doenetSvData.level === 0) {
       heading = <h1 id={id}>{title}</h1>;
     } else if (this.doenetSvData.level === 1) {
@@ -35,7 +43,7 @@ export default class Section extends DoenetRenderer {
       heading = <h4 id={id}>{title}</h4>;
     } else if (this.doenetSvData.level === 4) {
       heading = <h5 id={id}>{title}</h5>;
-    } else if (this.doenetSvData.level === 5){
+    } else if (this.doenetSvData.level === 5) {
       heading = <h6 id={id}>{title}</h6>;
     }
 
@@ -135,33 +143,81 @@ export default class Section extends DoenetRenderer {
       checkworkComponent = <div>{checkworkComponent}</div>
     }
 
-    if (this.doenetSvData.containerTag === "aside") {
-      return <aside id={this.componentName} >
+    let content;
+
+    if (this.doenetSvData.collapsible) {
+
+      if (this.doenetSvData.open) {
+        content = <>
+          <a name={this.componentName} />
+          <span style={{
+            display: "block",
+            margin: "4px 4px 0px 4px",
+            padding: "6px",
+            border: "1px solid #ebebeb",
+            backgroundColor: "#ebebeb",
+            cursor: "pointer"
+          }}
+            onClick={this.actions.closeSection}>
+            <a name={this.componentName} />
+            {heading}
+          </span>
+          <span style={{
+            display: "block",
+            margin: "0px 4px 4px 4px",
+            padding: "6px",
+            border: "1px solid #ebebeb",
+            backgroundColor: "#fcfcfc",
+          }}>
+            {childrenToRender}
+            {checkworkComponent}
+          </span>
+        </>
+
+
+
+      } else {
+        content = <>
+          <a name={this.componentName} />
+          <span style={{
+            display: "block",
+            margin: "4px 4px 0px 4px",
+            padding: "6px",
+            border: "1px solid #ebebeb",
+            backgroundColor: "#ebebeb",
+            cursor: "pointer"
+          }}
+            onClick={this.actions.revealSection}>
+            {heading}
+          </span>
+        </>
+
+      }
+    } else {
+      content = <>
         <a name={this.componentName} />
         {heading}
         {childrenToRender}
         {checkworkComponent}
+      </>;
+    }
+
+    if (this.doenetSvData.containerTag === "aside") {
+      return <aside id={this.componentName} >
+        {content}
       </aside>
     } else if (this.doenetSvData.containerTag === "div") {
       return <div id={this.componentName} >
-        <a name={this.componentName} />
-        {heading}
-        {childrenToRender}
-        {checkworkComponent}
+        {content}
       </div>
     } else if (this.doenetSvData.containerTag === "none") {
       return <>
-        <a name={this.componentName} />
-        {heading}
-        {childrenToRender}
-        {checkworkComponent}
+        {content}
       </>
     } else {
+      // return <section id={this.componentName} style={{pageBreakAfter: "always"}} >
       return <section id={this.componentName} >
-        <a name={this.componentName} />
-        {heading}
-        {childrenToRender}
-        {checkworkComponent}
+        {content}
       </section>
     }
   }
