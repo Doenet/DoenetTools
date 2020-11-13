@@ -2,6 +2,7 @@
   "name": "doenet-core",
   "version": "0.4.0",
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "@blueprintjs/datetime": "^3.18.3",
     "@codemirror/next": "^0.10.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.29",
@@ -87,7 +88,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "regenerator-runtime": "^0.13.5",
+    "regenerator-runtime": "^0.13.7",
     "url-loader": "^1.1.2",
     "wait-on": "^5.2.0",
     "webpack": "^4.43.0",
