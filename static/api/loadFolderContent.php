@@ -16,18 +16,17 @@ $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
 $success = TRUE;
 $contents_arr = array();
 //If not given parentId then use the user's drive
-if ($folderId == ""){
-  $sql="
-  SELECT
-   driveId 
-  FROM user
-  WHERE userId = '$userId'
-  ";
+if ($parentId == ""){
+  // $sql="
+  // SELECT
+  //  driveId 
+  // FROM user
+  // WHERE userId = '$userId'
+  // ";
   
-  $result = $conn->query($sql); 
-  $row = $result->fetch_assoc();
-  $driveId = $row['driveId'];
-  $parentId = $driveId;
+  // $result = $conn->query($sql); 
+  // $row = $result->fetch_assoc();
+  $parentId = "content";
   $isRepo = FALSE;
 }
 
