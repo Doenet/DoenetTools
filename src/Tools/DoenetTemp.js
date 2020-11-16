@@ -54,7 +54,7 @@ function useNodes(_,parentId) {
 // }
 
 function Other(){
-  console.log(">>>TOP OF OTHER")
+  console.log("===TOP OF OTHER")
   const cache = useQueryCache();
   const [refresh,setRefresh] = useState(0)
 
@@ -86,15 +86,16 @@ function Other(){
     <button onClick={()=>{
     cache.setQueryData(["nodes","content"],(oldData)=>{
       console.log("other sqd",oldData);
-      return [{id: "f1", label: "Folder One", parentId: "content", type: "Folder"},
+      //Only update Folder 2 to Folder Two
+      return [oldData[0],
               {id: "f2", label: "Folder Two", parentId: "content", type: "Folder"}]
     })
-    }}>update folder 1 Label</button>
+    }}>update folder 2 Only</button>
   </>;
 }
 
 function Browser(){
-  console.log(">>>TOP OF BROWSER")
+  console.log("===TOP OF BROWSER")
   const [openNodes,setOpenNodes] = useState({});
   // const [selectedNodes,setSelectedNodes] = useState({});
 
@@ -159,8 +160,15 @@ function Browser(){
       </div>
   })} */}
   {data.map(node=>{
-    return <div key={`node${node.id}`}>{node.label}</div>
+    return <Node key={`node${node.id}`} queryData={node} />
+    // return <div key={`node${node.id}`}>{node.label}</div>
   })}
   <ReactQueryDevtools />
   </>
 }
+
+const Node = React.memo(function Node(props){
+  let data = props.queryData;
+  console.log("===NODE TOP ",data.id)
+  return <div >{data.label}</div>
+})
