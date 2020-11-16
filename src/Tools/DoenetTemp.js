@@ -13,20 +13,11 @@ const queryCache = new QueryCache();
 export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
-<Browser />
-<Other />
+<Browser drive="content" />
 </ReactQueryCacheProvider>
 </>
 };
 
-//TODO: HOW?
-// async function loadFolderContent(parentId){
-//   const { data } = await axios.get(
-//     `/api/loadFolderContent.php?parentId${parentId}`
-//   );
-//   //TODO: Handle fail
-//   return data.contents;
-// }
 const loadFolderContent = async (_,parentId) => {
     const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}`
@@ -39,7 +30,7 @@ const loadFolderContent = async (_,parentId) => {
 
 function useNodes(_,parentId) {
   if (!parentId){parentId = "content"}
-  return useQuery(["nodes",parentId], loadFolderContent,{staleTime:1000})
+  return useQuery(["nodes",parentId], loadFolderContent,{staleTime:10000})
 }
 
 // function useNodes(_,parentId) {
@@ -94,16 +85,18 @@ function Other(){
   </>;
 }
 
-function Browser(){
-  console.log("===TOP OF BROWSER")
-  const [openNodes,setOpenNodes] = useState({});
+function Browser(props){
+  console.log(`===TOP OF BROWSER drive=${props.drive}`)
+  const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
+  // const [openNodes,setOpenNodes] = useState({});
   // const [selectedNodes,setSelectedNodes] = useState({});
 
-  // const cache = useQueryCache();
+  const cache = useQueryCache();
   const { status, data, error, isFetching, isLoading } = useNodes();
  
-  //temp
-  // const [label,setLabel] = useState("")
+  //------------------------------------------
+  //****** End of use functions  ***********
+  //------------------------------------------
 
   if (isFetching){
     console.log(">>>Browser fetching")
@@ -112,6 +105,17 @@ function Browser(){
     console.log(">>>Browser loading")
     return "Loading...";
   }
+
+  //TODO: put off on a custom hook
+  let nodeArray = cache.getQueryData(["nodes",props.drive,"sort",sortingOrder]);
+  console.log(">>>gqd nodeArray",nodeArray)
+  if (!nodeArray){
+    nodeArray = [1,2,3]
+    console.log("SORTING!")
+    // cache.setQueryData(["nodes",props.drive,sortingOrder],nodeArray)
+    cache.setQueryData(["nodes",props.drive,"sort",sortingOrder],nodeArray,{cacheTime:Infinity})
+  }
+  console.log("nodeArray",nodeArray)
 
   //Only retrieves if it exists
   // let subData = cache.getQueryData(["nodes","f2"]);
@@ -128,9 +132,25 @@ function Browser(){
   //   }
   //   return data
   // }
-  
+  function buildNodes(parentId,sortingOrder,nodesJSX=[]){
+    //TODO:  array of sorted ids, querydata is id->node hash not an array
+    let nodeArray = cache.getQueryData(["nodes",props.drive]);
+    console.log(nodeArray)
+    for (const node of nodeArray){
+      nodesJSX.push(<Node key={`node${node.id}`} queryData={node} />)
+      //IF OPEN recurse here
+    // return <Node key={`node${node.id}`} queryData={node} />
+
+    }
+    // return <Node key={`node1`} queryData={node} />
+    return nodesJSX;
+  }
+  let pathDrive = props.drive; //TODO: React Router
+  const nodes = buildNodes(pathDrive,sortingOrder);
+
   return <>
   <h1>Browser</h1>
+  {nodes}
   {/* <button onClick={()=>{
   let subData = loadFolder("f1")
   subData.then((x)=>{
@@ -159,10 +179,10 @@ function Browser(){
       {node.label}
       </div>
   })} */}
-  {data.map(node=>{
+  {/* {data.map(node=>{
     return <Node key={`node${node.id}`} queryData={node} />
     // return <div key={`node${node.id}`}>{node.label}</div>
-  })}
+  })} */}
   <ReactQueryDevtools />
   </>
 }
