@@ -4,6 +4,7 @@ import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
 import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
 import Button from "../imports/PanelHeaderComponents/Button.js";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
@@ -41,15 +42,21 @@ return (
   <p style={{color: "blue"}}>text="Edit"</p>
   <ActionButton text="Edit" />
 
+  <h3>Placement</h3>
+  <p>These buttons look good next to each other.</p>
+  <ActionButton text="Edit"/>
+  <ActionButton text="Add"/>
+  <ActionButton text="Delete"/>
+
   <h2><u>ActionButtonGroup</u></h2>
-  <p>This is a way to put Action Buttons together</p>
+  <p>This is a way to put Action Buttons together. Use for 2 or more Action Buttons.</p>
   <p style={{color: "blue"}}>Place the normal ActionButtons within component ActionButtonGroup after importing as normal</p>
   <ActionButtonGroup>
     <ActionButton/> 
     <ActionButton/> 
     <ActionButton/> 
   </ActionButtonGroup>
-
+  
   <h2><u>Button</u></h2>
   <p>This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!</p>
   <Button/>
