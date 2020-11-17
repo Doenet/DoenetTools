@@ -14,7 +14,7 @@ $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
 
 $success = TRUE;
-$contents_arr = array();
+$results_arr = array();
 //If not given parentId then use the user's drive
 if ($parentId == ""){
   // $sql="
@@ -35,8 +35,32 @@ if ($isRepo){
 //TODO: Set $success = FALSE if user doesn't have access
 }
 
-if ($success){
 
+
+if ($success){
+  $results_arr[$parentId] = selectChildren($parentId,$userId,$conn);
+  $children_arr = array_keys($results_arr[$parentId]);
+  foreach ($children_arr as &$childId){
+    $results_arr[$childId] = selectChildren($childId,$userId,$conn);
+  }
+}
+
+// var_dump($results_arr);
+
+$response_arr = array(
+  "results"=>$results_arr,
+  "success"=>$success
+  );
+
+// set response code - 200 OK
+http_response_code(200);
+
+// make it json format
+echo json_encode($response_arr);
+$conn->close();
+
+function selectChildren($parentId,$userId,$conn){
+  $return_arr = array();
   //ADD FOLDERS AND REPOS
   $sql="
   SELECT 
@@ -60,23 +84,11 @@ if ($success){
     "parentId"=>$parentId,
     "type"=>$type
   );
-
-  array_push($contents_arr, $item);
+  $return_arr[$row['folderId']] = $item;
+  // array_push($return_arr, $item);
   }
+  return $return_arr;
 }
-
-
-$response_arr = array(
-  "contents"=>$contents_arr,
-  "success"=>$success
-  );
-
-// set response code - 200 OK
-http_response_code(200);
-
-// make it json format
-echo json_encode($response_arr);
-$conn->close();
 
 
 ?>

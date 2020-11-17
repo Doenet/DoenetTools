@@ -22,10 +22,10 @@ const loadFolderContent = async (_,parentId) => {
     const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}`
   );
-  console.log(">>>loadFolderContent",parentId,data.contents)
+  console.log(">>>loadFolderContent",parentId,data.results)
 
   //TODO: Handle fail
-  return data.contents;
+  return data.results;
 }
 
 function useNodes(_,parentId) {
@@ -88,11 +88,11 @@ function Other(){
 function Browser(props){
   console.log(`===TOP OF BROWSER drive=${props.drive}`)
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
-  // const [openNodes,setOpenNodes] = useState({});
+  const [openNodes,setOpenNodes] = useState({});
   // const [selectedNodes,setSelectedNodes] = useState({});
 
   const cache = useQueryCache();
-  const { status, data, error, isFetching, isLoading } = useNodes();
+  const { data, error, isFetching, isLoading } = useNodes(props.drive);
  
   //------------------------------------------
   //****** End of use functions  ***********
@@ -106,83 +106,61 @@ function Browser(props){
     return "Loading...";
   }
 
-  //TODO: put off on a custom hook
-  let nodeArray = cache.getQueryData(["nodes",props.drive,"sort",sortingOrder]);
-  console.log(">>>gqd nodeArray",nodeArray)
-  if (!nodeArray){
-    nodeArray = [1,2,3]
-    console.log("SORTING!")
-    // cache.setQueryData(["nodes",props.drive,sortingOrder],nodeArray)
-    cache.setQueryData(["nodes",props.drive,"sort",sortingOrder],nodeArray,{cacheTime:Infinity})
+  let pathDrive = props.drive; //TODO: React Router
+
+  function sortedChildren(parentId,sortingOrder){
+    let resultArray = cache.getQueryData(["nodes",parentId,sortingOrder]);
+
+    if (!resultArray){
+      console.log("SORTING!")
+      resultArray = [];
+      let childrenNodeObjs = data[parentId];
+      for (let nodeId of Object.keys(childrenNodeObjs)){
+        let nodeObj = childrenNodeObjs[nodeId];
+        resultArray.push(nodeObj);
+      }
+      //sort by label ascending
+      resultArray.sort((a,b)=>(a.label > b.label)? 1:-1);
+      //sort by label descending
+      // resultArray.sort((a,b)=>(a.label > b.label)? -1:1);
+      //sort by type ascending then label ascending
+      // resultArray.sort((a, b) => (a.type > b.type) ? 1 : (a.type === b.type) ? ((a.label > b.label) ? 1 : -1) : -1 )
+  
+      cache.setQueryData(["nodes",parentId,sortingOrder],resultArray,{cacheTime:Infinity})
+    }
+    return resultArray;
   }
-  console.log("nodeArray",nodeArray)
 
-  //Only retrieves if it exists
-  // let subData = cache.getQueryData(["nodes","f2"]);
-  // console.log(subData)
-  //Make a new query
+  function handleFolderToggle(isOpen,nodeId){
+    let newOpenNodes = {...openNodes};
+    if (isOpen){
+      delete newOpenNodes[nodeId];
+    }else{
+      newOpenNodes[nodeId] = true;
+    }
+    setOpenNodes(newOpenNodes);
+  }
 
-  // let loadFolder = async (parentId) => {
-  //   let data;
-  //   try {
-  //     data = await cache.fetchQuery(["nodes",parentId],loadFolderContent);
-
-  //   } catch (error){
-  //     console.log(error)
-  //   }
-  //   return data
-  // }
-  function buildNodes(parentId,sortingOrder,nodesJSX=[]){
-    //TODO:  array of sorted ids, querydata is id->node hash not an array
-    let nodeArray = cache.getQueryData(["nodes",props.drive]);
-    console.log(nodeArray)
+  function buildNodes(parentId,sortingOrder,nodesJSX=[],level=0){
+    let nodeArray = sortedChildren(parentId,sortingOrder);
     for (const node of nodeArray){
-      nodesJSX.push(<Node key={`node${node.id}`} queryData={node} />)
-      //IF OPEN recurse here
-    // return <Node key={`node${node.id}`} queryData={node} />
+      let isOpen = false;
+      if (openNodes[node.id]){ isOpen = true;}
+      
+      nodesJSX.push(<Node key={`node${node.id}`} queryData={node} isOpen={isOpen} handleFolderToggle={handleFolderToggle} level={level}/>)
+      if (isOpen){
+        buildNodes(node.id,sortingOrder,nodesJSX,level+1)
+      }
 
     }
-    // return <Node key={`node1`} queryData={node} />
     return nodesJSX;
   }
-  let pathDrive = props.drive; //TODO: React Router
   const nodes = buildNodes(pathDrive,sortingOrder);
 
   return <>
   <h1>Browser</h1>
   {nodes}
-  {/* <button onClick={()=>{
-  let subData = loadFolder("f1")
-  subData.then((x)=>{
-    setLabel(x[0].label)
-  })
-    // console.log(subData)
-  }}>get data</button>
-  <div>label:{label}</div> */}
   
-  {/* {data.map(node=>{
-    let isOpen = false;
-    if (openNodes[node.id]){ isOpen = true;}
-    let openOrClose = "Open";
-    if (isOpen){ openOrClose = "Close"}
-    return <div key={`node${node.id}`}>
-      <button onClick={()=>{
-        //Toggle node is open
-        let newOpenNodes = {...openNodes};
-        if (isOpen){
-          delete newOpenNodes[node.id];
-        }else{
-          newOpenNodes[node.id] = true;
-        }
-        setOpenNodes(newOpenNodes);
-      }}>{openOrClose}</button>
-      {node.label}
-      </div>
-  })} */}
-  {/* {data.map(node=>{
-    return <Node key={`node${node.id}`} queryData={node} />
-    // return <div key={`node${node.id}`}>{node.label}</div>
-  })} */}
   <ReactQueryDevtools />
   </>
 }
@@ -190,5 +168,9 @@ function Browser(props){
 const Node = React.memo(function Node(props){
   let data = props.queryData;
   console.log("===NODE TOP ",data.id)
-  return <div >{data.label}</div>
+  let openOrClose = "Open";
+  if (props.isOpen){ openOrClose = "Close"}
+  return <>
+  <div><button onClick={()=>props.handleFolderToggle(props.isOpen,data.id)}>{openOrClose}</button>{data.label}</div>
+  </>
 })
