@@ -219,7 +219,7 @@ export default class Function extends InlineComponent {
           curveDescription += "dotted ";
         }
 
-        curveDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        curveDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: curveDescription } };
       }

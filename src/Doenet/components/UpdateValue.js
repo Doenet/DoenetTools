@@ -1,6 +1,6 @@
-import BlockComponent from './abstract/BlockComponent';
+import InlineComponent from './abstract/InlineComponent';
 
-export default class UpdateValue extends BlockComponent {
+export default class UpdateValue extends InlineComponent {
   constructor(args) {
     super(args);
     this.updateValue = this.updateValue.bind(

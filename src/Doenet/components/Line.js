@@ -263,7 +263,7 @@ export default class Line extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        lineDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: lineDescription } };
       }

@@ -29,9 +29,10 @@ export default class Graph extends DoenetRenderer {
         boundingbox,
         axis: false,
         showCopyright: false,
+        showNavigation: this.doenetSvData.showNavigation
       });
 
-    if (this.doenetSvData.displayAxes) {
+    if (this.doenetSvData.displayXAxis) {
       let xaxisOptions = {};
       if (this.doenetSvData.xlabel) {
         xaxisOptions.name = this.doenetSvData.xlabel;
@@ -49,7 +50,16 @@ export default class Graph extends DoenetRenderer {
         minorTicks: 5,
         precision: 4,
       }
+
+      if (!this.doenetSvData.displayYAxis) {
+        xaxisOptions.ticks.drawZero = true;
+      }
+
       let xaxis = this.board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
+
+    }
+
+    if (this.doenetSvData.displayYAxis) {
 
       let yaxisOptions = {};
       if (this.doenetSvData.ylabel) {
@@ -68,6 +78,11 @@ export default class Graph extends DoenetRenderer {
         minorTicks: 4,
         precision: 4,
       }
+
+      if (!this.doenetSvData.displayXAxis) {
+        yaxisOptions.ticks.drawZero = true;
+      }
+
       let yaxis = this.board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
     }
 
@@ -171,7 +186,7 @@ export default class Graph extends DoenetRenderer {
       height: this.doenetSvData.numericalHeight,
     }
 
-    if(this.doenetSvData.hidden) {
+    if (this.doenetSvData.hidden) {
       divStyle.display = "none";
     }
 

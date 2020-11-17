@@ -30,6 +30,8 @@ export default class Vector extends GraphicalComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
+    properties.headDraggable = { default: true, forRenderer: true };
+    properties.tailDraggable = { default: true, forRenderer: true };
     return properties;
   }
 
@@ -309,7 +311,7 @@ export default class Vector extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        lineDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: lineDescription } };
 

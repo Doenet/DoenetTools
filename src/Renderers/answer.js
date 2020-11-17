@@ -40,6 +40,10 @@ export default class Answer extends DoenetRenderer {
         marginBottom: "30px",  //Space after check work
       }
 
+      if(this.doenetSvData.disabled) {
+        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+      }
+
       let checkWorkText = "Check Work";
       if (!this.doenetSvData.showCorrectness) {
         checkWorkText = "Submit Response";
@@ -47,6 +51,7 @@ export default class Answer extends DoenetRenderer {
       let checkworkComponent = (
         <button id={this.componentName + "_submit"}
           tabIndex="0"
+          disabled={this.doenetSvData.disabled}
           style={checkWorkStyle}
           onClick={submitAnswer}
           onKeyPress={(e) => {

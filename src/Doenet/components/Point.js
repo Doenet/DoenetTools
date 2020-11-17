@@ -208,16 +208,34 @@ export default class Point extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        return {
+          newValues: {
+            styleDescription: dependencyValues.selectedStyle.markerColor
+          }
+        };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
         let pointDescription = dependencyValues.selectedStyle.markerColor;
         if (dependencyValues.selectedStyle.markerStyle === "circle") {
           pointDescription += " point";
         } else {
           pointDescription += ` ${dependencyValues.selectedStyle.markerStyle}`
         }
-        return { newValues: { styleDescription: pointDescription } };
+        return { newValues: { styleDescriptionWithNoun: pointDescription } };
       }
     }
-
 
     // coordsShadow will be null unless point was created
     // via an adapter or ref prop or from serialized state with coords value

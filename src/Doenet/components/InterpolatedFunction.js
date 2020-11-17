@@ -123,7 +123,7 @@ export default class InterpolatedFunction extends Function {
           curveDescription += "dotted ";
         }
 
-        curveDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        curveDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: curveDescription } };
       }

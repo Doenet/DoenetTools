@@ -11,9 +11,11 @@ export default class Graph extends BlockComponent {
     properties.ymax = { default: 10, forRenderer: true };
     properties.width = { default: 300 };
     properties.height = { default: 300 };
-    properties.displayAxes = { default: true, forRenderer: true };
+    properties.displayXAxis = { default: true, forRenderer: true };
+    properties.displayYAxis = { default: true, forRenderer: true };
     properties.xlabel = { default: "", forRenderer: true };
     properties.ylabel = { default: "", forRenderer: true };
+    properties.showNavigation = { default: true, forRenderer: true };
     return properties;
   }
 

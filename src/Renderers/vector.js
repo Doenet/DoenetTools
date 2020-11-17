@@ -62,23 +62,52 @@ export default class Vector extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: layer + 1,
     });
-    if (this.doenetSvData.draggable !== true) {
+    if (!this.doenetSvData.draggable) {
       jsxPointAttributes.visible = false;
     }
 
     // create invisible points at endpoints
-    this.point1JXG = this.props.board.create('point', endpoints[0], jsxPointAttributes);
-    this.point2JXG = this.props.board.create('point', endpoints[1], jsxPointAttributes);
+    let tailPointAttributes = Object.assign({}, jsxPointAttributes);
+    if (!this.doenetSvData.tailDraggable) {
+      tailPointAttributes.visible = false;
+    }
+    this.point1JXG = this.props.board.create('point', endpoints[0], tailPointAttributes);
+    let headPointAttributes = Object.assign({}, jsxPointAttributes);
+    if (!this.doenetSvData.headDraggable) {
+      headPointAttributes.visible = false;
+    }
+    this.point2JXG = this.props.board.create('point', endpoints[1], headPointAttributes);
 
 
     this.vectorJXG = this.props.board.create('arrow', [this.point1JXG, this.point2JXG], jsxVectorAttributes);
 
-    this.point1JXG.on('drag', () => this.onDragHandler(1, true));
-    this.point2JXG.on('drag', () => this.onDragHandler(2, true));
-    this.vectorJXG.on('drag', () => this.onDragHandler(0, true));
-    this.point1JXG.on('up', () => this.onDragHandler(1, false));
-    this.point2JXG.on('up', () => this.onDragHandler(2, false));
-    this.vectorJXG.on('up', () => this.onDragHandler(0, false));
+    this.point1JXG.on('drag', e => this.onDragHandler(e, 0, true));
+    this.point2JXG.on('drag', e => this.onDragHandler(e, 1, true));
+    this.vectorJXG.on('drag', e => this.onDragHandler(e, -1, true));
+    this.point1JXG.on('up', e => this.onDragHandler(e, 0, false));
+    this.point2JXG.on('up', e => this.onDragHandler(e, 1, false));
+    this.vectorJXG.on('up', e => this.onDragHandler(e, -1, false));
+
+    this.point1JXG.on('down', function (e) {
+      this.headBeingDragged = false;
+      this.tailBeingDragged = false;
+    });
+    this.point2JXG.on('down', function (e) {
+      this.headBeingDragged = false;
+      this.tailBeingDragged = false;
+    });
+
+    // if drag vector, need to keep track of original point positions
+    // so that they won't get stuck in an attractor
+    this.vectorJXG.on('down', function (e) {
+      this.headBeingDragged = false;
+      this.tailBeingDragged = false;
+      this.pointerAtDown = [e.x, e.y];
+      this.pointsAtDown = [
+        [...this.vectorJXG.point1.coords.scrCoords],
+        [...this.vectorJXG.point2.coords.scrCoords]
+      ]
+    }.bind(this));
 
     return this.vectorJXG;
 
@@ -138,12 +167,41 @@ export default class Vector extends DoenetRenderer {
       this.vectorJXG.visPropCalc["visible"] = visible;
       // this.vectorJXG.setAttribute({visible: visible})
 
-      this.point1JXG.visProp["visible"] = visible;
-      this.point1JXG.visPropCalc["visible"] = visible;
 
-      this.point2JXG.visProp["visible"] = visible;
-      this.point2JXG.visPropCalc["visible"] = visible;
+      if (this.doenetSvData.draggable) {
+        this.vectorJXG.visProp["fixed"] = false;
 
+        if (this.doenetSvData.tailDraggable) {
+          this.point1JXG.visProp["visible"] = visible;
+          this.point1JXG.visPropCalc["visible"] = visible;
+          this.point1JXG.visProp["fixed"] = false;
+        } else {
+          this.point1JXG.visProp["visible"] = false;
+          this.point1JXG.visPropCalc["visible"] = false;
+          this.point1JXG.visProp["fixed"] = true;
+        }
+
+        if (this.doenetSvData.headDraggable) {
+          this.point2JXG.visProp["visible"] = visible;
+          this.point2JXG.visPropCalc["visible"] = visible;
+          this.point2JXG.visProp["fixed"] = false;
+        } else {
+          this.point2JXG.visProp["visible"] = false;
+          this.point2JXG.visPropCalc["visible"] = false;
+          this.point2JXG.visProp["fixed"] = true;
+        }
+      } else {
+        this.vectorJXG.visProp["fixed"] = true;
+
+        this.point1JXG.visProp["visible"] = false;
+        this.point1JXG.visPropCalc["visible"] = false;
+        this.point1JXG.visProp["fixed"] = true;
+
+        this.point2JXG.visProp["visible"] = false;
+        this.point2JXG.visPropCalc["visible"] = false;
+        this.point2JXG.visProp["fixed"] = true;
+
+      }
     }
     else {
       this.vectorJXG.visProp["visible"] = false;
@@ -160,9 +218,9 @@ export default class Vector extends DoenetRenderer {
 
     if (this.componentName in sourceOfUpdate.sourceInformation) {
       let sourceInfo = sourceOfUpdate.sourceInformation[this.componentName]
-      if (sourceInfo.vertex === 1) {
+      if (sourceInfo.vertex === 0) {
         this.props.board.updateInfobox(this.point1JXG);
-      } else if (sourceInfo.vertex === 2) {
+      } else if (sourceInfo.vertex === 1) {
         this.props.board.updateInfobox(this.point2JXG);
       }
     }
@@ -193,13 +251,12 @@ export default class Vector extends DoenetRenderer {
   }
 
 
-  onDragHandler(i, transient) {
+  onDragHandler(e, i, transient) {
 
     if (transient) {
-
-      if (i === 1) {
+      if (i === 0) {
         this.tailBeingDragged = true;
-      } else if (i === 2) {
+      } else if (i === 1) {
         this.headBeingDragged = true;
       } else {
         this.headBeingDragged = true;
@@ -213,26 +270,44 @@ export default class Vector extends DoenetRenderer {
 
     if (this.headBeingDragged) {
       performMove = true;
-      instructions.headcoords = [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()];
+      if (i === -1) {
+        instructions.headcoords = this.calculatePointPosition(e, 1)
+      } else {
+        instructions.headcoords = [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()];
+      }
     }
     if (this.tailBeingDragged) {
       performMove = true;
-      instructions.tailcoords = [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()];
+      if (i === -1) {
+        instructions.tailcoords = this.calculatePointPosition(e, 0)
+      } else {
+        instructions.tailcoords = [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()];
+      }
     }
 
-    if (i == 1 || i == 2) {
+    if (i === 0 || i === 1) {
       instructions.sourceInformation = { vertex: i };
-    }
-
-    if (!transient) {
-      this.headBeingDragged = false;
-      this.tailBeingDragged = false;
     }
 
     if (performMove) {
       this.actions.moveVector(instructions);
     }
 
+  }
+
+
+  calculatePointPosition(e, i) {
+    var o = this.props.board.origin.scrCoords;
+
+
+    let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0]
+      - o[1]) / this.props.board.unitX;
+    let calculatedY = (o[2] -
+      (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1]))
+      / this.props.board.unitY;
+    let pointCoords = [calculatedX, calculatedY];
+
+    return pointCoords;
   }
 
   componentDidMount() {

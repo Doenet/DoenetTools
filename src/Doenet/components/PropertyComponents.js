@@ -565,8 +565,13 @@ export class RenderAsAcuteAngle extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class DisplayAxes extends BooleanComponent {
-  static componentType = "displayaxes";
+export class DisplayXAxis extends BooleanComponent {
+  static componentType = "displayxaxis";
+  static rendererType = "boolean";
+}
+
+export class DisplayYAxis extends BooleanComponent {
+  static componentType = "displayyaxis";
   static rendererType = "boolean";
 }
 
@@ -937,4 +942,19 @@ export class EncodedGeogebraContent extends TextComponent {
 export class FromMathInsight extends TextComponent {
   static componentType = "fromMathInsight";
   static rendererType = "text";
+}
+
+export class HeadDraggable extends BooleanComponent {
+  static componentType = "headDraggable";
+  static rendererType = "boolean";
+}
+
+export class TailDraggable extends BooleanComponent {
+  static componentType = "tailDraggable";
+  static rendererType = "boolean";
+}
+
+export class ShowNavigation extends BooleanComponent {
+  static componentType = "showNavigation";
+  static rendererType = "boolean";
 }
