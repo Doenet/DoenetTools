@@ -2,7 +2,8 @@ import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
-
+import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 export default class Section extends DoenetRenderer {
 
   render() {
@@ -27,24 +28,38 @@ export default class Section extends DoenetRenderer {
 
     if (this.doenetSvData.collapsible) {
       if (this.doenetSvData.open) {
-        title = <>{title} (close section)</>
+        title = <><FontAwesomeIcon icon={twirlIsOpen} /> {title} (click to close)</>
       } else {
-        title = <>{title} (open section)</>
+        title = <><FontAwesomeIcon icon={twirlIsClosed} /> {title} (click to open)</>
       }
     }
 
-    if (this.doenetSvData.level === 0) {
-      heading = <h1 id={id}>{title}</h1>;
+    // if (this.doenetSvData.level === 0) {
+    //   heading = <h1 id={id}>{title}</h1>;
+    // } else if (this.doenetSvData.level === 1) {
+    //   heading = <h2 id={id}>{title}</h2>;
+    // } else if (this.doenetSvData.level === 2) {
+    //   heading = <h3 id={id}>{title}</h3>;
+    // } else if (this.doenetSvData.level === 3) {
+    //   heading = <h4 id={id}>{title}</h4>;
+    // } else if (this.doenetSvData.level === 4) {
+    //   heading = <h5 id={id}>{title}</h5>;
+    // } else if (this.doenetSvData.level === 5) {
+    //   heading = <h6 id={id}>{title}</h6>;
+    // }
+
+     if (this.doenetSvData.level === 0) {
+      heading = <span style={{fontSize:"30px"}} id={id}>{title}</span>;
     } else if (this.doenetSvData.level === 1) {
-      heading = <h2 id={id}>{title}</h2>;
+      heading = <span style={{fontSize:"26px"}} id={id}>{title}</span>;
     } else if (this.doenetSvData.level === 2) {
-      heading = <h3 id={id}>{title}</h3>;
+      heading = <span style={{fontSize:"22px"}} id={id}>{title}</span>;
     } else if (this.doenetSvData.level === 3) {
-      heading = <h4 id={id}>{title}</h4>;
+      heading = <span style={{fontSize:"18px"}} id={id}>{title}</span>;
     } else if (this.doenetSvData.level === 4) {
-      heading = <h5 id={id}>{title}</h5>;
+      heading = <span style={{fontSize:"14px"}} id={id}>{title}</span>;
     } else if (this.doenetSvData.level === 5) {
-      heading = <h6 id={id}>{title}</h6>;
+      heading = <span style={{fontSize:"12px"}} id={id}>{title}</span>;
     }
 
     let checkworkComponent = null;
@@ -154,7 +169,7 @@ export default class Section extends DoenetRenderer {
             display: "block",
             margin: "4px 4px 0px 4px",
             padding: "6px",
-            border: "1px solid #ebebeb",
+            border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}
@@ -166,8 +181,8 @@ export default class Section extends DoenetRenderer {
             display: "block",
             margin: "0px 4px 4px 4px",
             padding: "6px",
-            border: "1px solid #ebebeb",
-            backgroundColor: "#fcfcfc",
+            border: "1px solid #C9C9C9",
+            backgroundColor: "white",
           }}>
             {childrenToRender}
             {checkworkComponent}
@@ -183,7 +198,7 @@ export default class Section extends DoenetRenderer {
             display: "block",
             margin: "4px 4px 0px 4px",
             padding: "6px",
-            border: "1px solid #ebebeb",
+            border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}
