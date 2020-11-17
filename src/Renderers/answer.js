@@ -37,7 +37,7 @@ export default class Answer extends DoenetRenderer {
         padding: "1px 6px 1px 6px",
         color: "white",
         fontWeight: "bold",
-        marginBottom: "30px",  //Space after check work
+        //marginBottom: "30px",  //Space after check work
       }
 
       if(this.doenetSvData.disabled) {
