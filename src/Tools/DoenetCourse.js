@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import MenuDropDown from '../imports/MenuDropDown.js';
 import Overlay from "../imports/Overlay";
-import {CourseAssignments,CourseAssignmentControls} from "./courseAssignments";
+import {CourseAssignments,CourseAssignmentControls} from "./CourseAssignments";
 import LearnerAssignment from './LearnerAssignment';
 
 export default function DoenetCourse(props) {
