@@ -47,41 +47,16 @@ function Browser(props){
   console.log(`===TOP OF BROWSER drive=${props.drive}`)
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [toggleNodeId,setToggleNode] = useState([]);
-  let openNodesObj = useRef({});
-  let toggleAction = useRef([]);
+  const [openNodesObj,setOpenNodesObj] = useState({});
   // const [selectedNodes,setSelectedNodes] = useState({});
   const [loadData,setLoadData] = useState(0)
 
   const cache = useQueryCache();
-  // const { data, error, isFetching, isLoading } = useNodes(props.drive);
- 
-
-  
 
   // //------------------------------------------
   // //****** End of use functions  ***********
   // //------------------------------------------
 
-  //Handle open and closed folders
-  if (toggleAction.current.length > 0){
-    const [isOpen,nodeId] = toggleAction.current;
-  if (isOpen){
-    delete openNodesObj.current[nodeId]
-  }else{
-    openNodesObj.current[nodeId] = true;
-  }
-    toggleAction.current = [];
-  }
-
-  
-
-  // if (isFetching){
-  //   console.log(">>>Browser fetching")
-  // }
-  // if (isLoading){
-  //   console.log(">>>Browser loading")
-  //   return "Loading...";
-  // }
 
   let pathDrive = props.drive; //TODO: React Router
 
@@ -110,8 +85,15 @@ function Browser(props){
   }
 
   const handleFolderToggle = useCallback((wasOpen,nodeId)=>{
-    toggleAction.current = [wasOpen,nodeId];
-    setLoadData((x)=>x+1)
+    setOpenNodesObj((old)=>{
+      let newObj = {...old};
+      if (newObj[nodeId]){
+        delete newObj[nodeId];
+      }else{
+        newObj[nodeId] = true;
+      }
+      return newObj;
+    })
   },[])
 
   function buildNodes(parentId,sortingOrder,nodesJSX=[],level=0){
@@ -130,8 +112,8 @@ function Browser(props){
       let nodeArray = getSortedChildren(parentId,sortingOrder);
       for (const node of nodeArray){
         let isOpen = false;
-        if (openNodesObj.current[node.id]){ isOpen = true;}
-        console.log("determine isOpen",openNodesObj.current)
+        if (openNodesObj[node.id]){ isOpen = true;}
+        console.log("determine isOpen",openNodesObj)
         nodesJSX.push(<Node key={`node${node.id}`} queryData={node} isOpen={isOpen} handleFolderToggle={handleFolderToggle} level={level}/>)
         if (isOpen){
           buildNodes(node.id,sortingOrder,nodesJSX,level+1)
