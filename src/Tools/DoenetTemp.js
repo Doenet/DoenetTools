@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {
   useQuery,
   useQueryCache,
@@ -22,8 +22,6 @@ const loadFolderContent = async (_,parentId) => {
     const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}`
   );
-  console.log(">>>loadFolderContent",parentId,data.results)
-
   //TODO: Handle fail
   return data.results;
 }
@@ -44,77 +42,57 @@ function useNodes(_,parentId) {
 //   })
 // }
 
-function Other(){
-  console.log("===TOP OF OTHER")
-  const cache = useQueryCache();
-  const [refresh,setRefresh] = useState(0)
-
-  // let loadFolder = async (parentId) => {
-  //   let data;
-  //   try {
-  //     data = await cache.fetchQuery(["nodes",parentId],loadFolderContent);
-
-  //   } catch (error){
-  //     console.log(error)
-  //   }
-  //   return data
-  // }
-
-  // let f1text = cache.getQueryData(['nodes','f1'])
-
-  // loadFolder("f1").then((x)=>{
-  //   console.log(">>>other",x)
-  //   // setLabel(x[0].label)
-  // })
-  // let f1text = cache.getQuery(['nodes','f1'])
-  // console.log(">>>other f1text",f1text)
-  return <>
- 
-  <h1>OTHER</h1>
-  {/* <button onClick={()=>{
-    setRefresh(refresh + 1)
-    }}>refresh</button>{refresh} */}
-    <button onClick={()=>{
-    cache.setQueryData(["nodes","content"],(oldData)=>{
-      console.log("other sqd",oldData);
-      //Only update Folder 2 to Folder Two
-      return [oldData[0],
-              {id: "f2", label: "Folder Two", parentId: "content", type: "Folder"}]
-    })
-    }}>update folder 2 Only</button>
-  </>;
-}
 
 function Browser(props){
   console.log(`===TOP OF BROWSER drive=${props.drive}`)
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
-  const [openNodes,setOpenNodes] = useState({});
+  const [toggleNodeId,setToggleNode] = useState([]);
+  let openNodesObj = useRef({});
+  let toggleAction = useRef([]);
   // const [selectedNodes,setSelectedNodes] = useState({});
+  const [loadData,setLoadData] = useState(0)
 
   const cache = useQueryCache();
-  const { data, error, isFetching, isLoading } = useNodes(props.drive);
+  // const { data, error, isFetching, isLoading } = useNodes(props.drive);
  
-  //------------------------------------------
-  //****** End of use functions  ***********
-  //------------------------------------------
 
-  if (isFetching){
-    console.log(">>>Browser fetching")
+  
+
+  // //------------------------------------------
+  // //****** End of use functions  ***********
+  // //------------------------------------------
+
+  //Handle open and closed folders
+  if (toggleAction.current.length > 0){
+    const [isOpen,nodeId] = toggleAction.current;
+  if (isOpen){
+    delete openNodesObj.current[nodeId]
+  }else{
+    openNodesObj.current[nodeId] = true;
   }
-  if (isLoading){
-    console.log(">>>Browser loading")
-    return "Loading...";
+    toggleAction.current = [];
   }
+
+  
+
+  // if (isFetching){
+  //   console.log(">>>Browser fetching")
+  // }
+  // if (isLoading){
+  //   console.log(">>>Browser loading")
+  //   return "Loading...";
+  // }
 
   let pathDrive = props.drive; //TODO: React Router
 
-  function sortedChildren(parentId,sortingOrder){
+  function getSortedChildren(parentId,sortingOrder){
     let resultArray = cache.getQueryData(["nodes",parentId,sortingOrder]);
-
+    console.log(">>>resultArray",parentId,resultArray)
     if (!resultArray){
       console.log("SORTING!")
       resultArray = [];
-      let childrenNodeObjs = data[parentId];
+      let nodeData = cache.getQueryData(["nodes",parentId]);
+      let childrenNodeObjs = nodeData[parentId];
       for (let nodeId of Object.keys(childrenNodeObjs)){
         let nodeObj = childrenNodeObjs[nodeId];
         resultArray.push(nodeObj);
@@ -131,35 +109,48 @@ function Browser(props){
     return resultArray;
   }
 
-  function handleFolderToggle(isOpen,nodeId){
-    let newOpenNodes = {...openNodes};
-    if (isOpen){
-      delete newOpenNodes[nodeId];
-    }else{
-      newOpenNodes[nodeId] = true;
-    }
-    setOpenNodes(newOpenNodes);
-  }
+  const handleFolderToggle = useCallback((wasOpen,nodeId)=>{
+    toggleAction.current = [wasOpen,nodeId];
+    setLoadData((x)=>x+1)
+  },[])
 
   function buildNodes(parentId,sortingOrder,nodesJSX=[],level=0){
-    let nodeArray = sortedChildren(parentId,sortingOrder);
-    for (const node of nodeArray){
-      let isOpen = false;
-      if (openNodes[node.id]){ isOpen = true;}
-      
-      nodesJSX.push(<Node key={`node${node.id}`} queryData={node} isOpen={isOpen} handleFolderToggle={handleFolderToggle} level={level}/>)
-      if (isOpen){
-        buildNodes(node.id,sortingOrder,nodesJSX,level+1)
-      }
+    let folderData = cache.getQueryData(["nodes",parentId]);
+    if (!folderData){
+      //TODO: Make key unique
+      nodesJSX.push(<p key="nodata">Loading...</p>)
+        let folderQueryPromise = cache.fetchQuery(["nodes",parentId],loadFolderContent,{cacheTime:30000})
+        folderQueryPromise.then((data)=>{
+          //TODO: Store nodes,nodeid,"number of children" here
+          console.log(">>>DATA!!",data)
+          setLoadData((x)=>x+1)
+        })
+    }else{
 
+      let nodeArray = getSortedChildren(parentId,sortingOrder);
+      for (const node of nodeArray){
+        let isOpen = false;
+        if (openNodesObj.current[node.id]){ isOpen = true;}
+        console.log("determine isOpen",openNodesObj.current)
+        nodesJSX.push(<Node key={`node${node.id}`} queryData={node} isOpen={isOpen} handleFolderToggle={handleFolderToggle} level={level}/>)
+        if (isOpen){
+          buildNodes(node.id,sortingOrder,nodesJSX,level+1)
+        }
+  
+      }
     }
+
+
+  
     return nodesJSX;
   }
   const nodes = buildNodes(pathDrive,sortingOrder);
+  console.log(">>>loadData",loadData)
 
   return <>
   <h1>Browser</h1>
   {nodes}
+  <button onClick={()=>setLoadData((x)=>x+1)}>temp</button>
   
   <ReactQueryDevtools />
   </>
