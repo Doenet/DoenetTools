@@ -34,7 +34,10 @@ import {doenetml, attrsLookup} from './lang-doenetml.js';
 //(2) tagname: The name of the tag containing position
 //(3) open: Boolean indicating if an open tag was found.
 function findTag(doc, tree, buff_offset, doc_offset) {
-    let tag = {pos: -1, tagname: "", open: true}
+    let tag = {
+        pos: -1, 
+        tagname: "",
+        open: true};
 
     let buffer = tree.buffer;
     let types = tree.group.types;
@@ -155,30 +158,33 @@ function getAttrs(doc, tree, init_i, doc_offset) {
 
     let subtree_end = buffer[init_i+2];
     let curr_index = -1;
-    let name_exists = 0;
+    let name_exists = false;
     for (let i = init_i; i < buffer.length; i+= 4) {
         if (buffer[i+2] > subtree_end) break;
 
         if (buffer[i] == sym_attrname) {
             let curr_attr = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
-            attrs.push([curr_attr, "", 0, 0, true]); // attr name, attr val, begin offset, end offset, has quotes?
+            attrs.push({
+                attrname_props: [curr_attr, buffer[i+1]+doc_offset, buffer[i+2]+doc_offset], // attr name, begin offset, end offset
+                attrval_props: ["", 0, 0, true] // attr val, begin offset, end offset, has quotes?
+            });
             curr_index += 1;
-            name_exists = 1;
-        } else if (name_exists && buffer[i] == sym_is) {
+            name_exists = true;
+        } else if (name_exists && buffer[i] == sym_is) { // if there is an '=' give Info Panel ability to write attr val 
             let temp = buffer[i+2]+doc_offset;
-            attrs[curr_index][2] = temp;
-            attrs[curr_index][3] = temp;
+            attrs[curr_index]["attrval_props"][1] = temp;
+            attrs[curr_index]["attrval_props"][2] = temp;
         } else if (name_exists && buffer[i] == sym_attrval) {
-            attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset+1, buffer[i+2]+doc_offset-1); // +1 and -1 to remove quotes
-            attrs[curr_index][2] = buffer[i+1]+doc_offset; // offsets keep track of quotes
-            attrs[curr_index][3] = buffer[i+2]+doc_offset;
-            name_exists = 0;
+            attrs[curr_index]["attrval_props"][0] = doc.sliceString(buffer[i+1]+doc_offset+1, buffer[i+2]+doc_offset-1); // +1 and -1 to remove quotes
+            attrs[curr_index]["attrval_props"][1] = buffer[i+1]+doc_offset; // offsets keep track of quotes
+            attrs[curr_index]["attrval_props"][2] = buffer[i+2]+doc_offset;
+            name_exists = false;
         } else if (buffer[i] == sym_unquoteval) {
-            attrs[curr_index][1] = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
-            attrs[curr_index][2] = buffer[i+1]+doc_offset;
-            attrs[curr_index][3] = buffer[i+2]+doc_offset;
-            attrs[curr_index][4] = false;
-            name_exists = 0;
+            attrs[curr_index]["attrval_props"][0] = doc.sliceString(buffer[i+1]+doc_offset, buffer[i+2]+doc_offset);
+            attrs[curr_index]["attrval_props"][1] = buffer[i+1]+doc_offset;
+            attrs[curr_index]["attrval_props"][2] = buffer[i+2]+doc_offset;
+            attrs[curr_index]["attrval_props"][3] = false;
+            name_exists = false;
         }
     }
 
@@ -235,25 +241,21 @@ function getTagProps(doc, tree, position) {
 function QuoteButton(props) {
 
     const onClick = function() {
-        props.updateView(props.offset1, props.offset2, "\"" + props.tagval + "\"");
+        props.updateView(props.offset1, props.offset2, "\"" + props.name + "\"");
     };
 
     return (
         <>
-        <label>{props.tagname}: </label>
-        <button onClick={onClick}>{props.tagval}</button>
+        <button onClick={onClick}>{props.name}</button>
         <label> {"<-- Add Quotes!"} </label>
         </>
     )
 }
 
-// Form that allows the user to change attr value's from the Info Panel
-function TextForm(props) {
-    let { tagname } = props; let { tagval } = props;
+function NameForm(props) {
+    let { name } = props;
     const [isForm, setForm] = useState(false);
     const formEl = useRef(null);
-
-    if (!tagname) return null;
 
     const handleTextClick = function() {
         setForm(!isForm);
@@ -261,19 +263,17 @@ function TextForm(props) {
 
     const handleFormClick = function() {
         setForm(!isForm);
-        if (tagval !== formEl.current.value) {
+        if (name !== formEl.current.value) {
             if (formEl.current.value === "") {
-                props.updateView(props.offset1, props.offset2, formEl.current.value);
-            } else if (tagval === "") {
-                props.updateView(props.offset1, props.offset2, "\"" + formEl.current.value + "\"");
+                props.updateView(props.fulloffset1-1, props.fulloffset2, "");
             } else {
-                props.updateView(props.offset1+1, props.offset2-1, formEl.current.value);
+                props.updateView(props.offset1, props.offset2, formEl.current.value);
             }
         }
     };
 
     useEffect(() => {
-        if (isForm && tagval) formEl.current.focus();
+        if (isForm) formEl.current.focus();
     });
 
     const handleKeyUp = function(e) {
@@ -283,11 +283,51 @@ function TextForm(props) {
     return (
         <>
             {(isForm) ? 
-                <>
-                <label>{tagname}: </label><input type="text" ref={formEl} onClick={handleFormClick} defaultValue={tagval} onKeyUp={handleKeyUp}/>
-                </>
+                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={name} onKeyUp={handleKeyUp}/>
             : <label onClick={handleTextClick}>
-                {tagname}: {tagval}
+                {name}
+              </label>}
+        </>
+    )
+}
+
+// Form that allows the user to change attr value's from the Info Panel
+function ValForm(props) {
+    let { name } = props;
+    const [isForm, setForm] = useState(false);
+    const formEl = useRef(null);
+
+    const handleTextClick = function() {
+        setForm(!isForm);
+    }
+
+    const handleFormClick = function() {
+        setForm(!isForm);
+        if (name !== formEl.current.value) {
+            if (formEl.current.value === "") {
+                props.updateView(props.offset1, props.offset2, "");
+            } else if (name === "") {
+                props.updateView(props.offset1, props.offset2, "\"" + formEl.current.value + "\"");
+            } else {
+                props.updateView(props.offset1+1, props.offset2-1, formEl.current.value);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (isForm) formEl.current.focus();
+    });
+
+    const handleKeyUp = function(e) {
+        if (e.keyCode === 13) handleFormClick();
+    }
+
+    return (
+        <>
+            {(isForm) ? 
+                <input type="text" ref={formEl} onClick={handleFormClick} defaultValue={name} onKeyUp={handleKeyUp}/>
+            : <label onClick={handleTextClick}>
+                {name}
               </label>}
         </>
     )
@@ -296,7 +336,7 @@ function TextForm(props) {
 // Toggle Button for switching an attr value between true and false
 function ToggleButtonWrapper(props) {
 
-    let isSelected = props.tagval === "true" ? true : false
+    let isSelected = props.name === "true" ? true : false
 
     const toggleCallback = function() {
         props.updateView(props.offset1, props.offset2, isSelected ? "\"false\"" : "\"true\"");
@@ -304,7 +344,6 @@ function ToggleButtonWrapper(props) {
 
     return(
         <>
-        <label>{props.tagname}:</label>
         <ToggleButton text="False" switch_text="True" 
         isSelected={isSelected}
         callback={toggleCallback}/>
@@ -331,36 +370,54 @@ function InfoPanel(props) {
     };
 
     const attrToEntry = function(x) {
-        if (tags_mentioned[x[0]]) {
-            tags_mentioned[x[0]] += 1;
+        let name_props = x.attrname_props;
+        let val_props = x.attrval_props;
+
+        if (tags_mentioned[name_props[0]]) {
+            tags_mentioned[name_props[0]] += 1;
         } else {
-            tags_mentioned[x[0]] = 1;
+            tags_mentioned[name_props[0]] = 1;
         }
 
-        if (!x[4]) {
+        if (!val_props[3]) {
             return (
-                <li key={x[0] + tags_mentioned[x[0]].toString()}>
-                <QuoteButton tagname={x[0]} tagval={x[1]}
-                offset1={x[2]} offset2={x[3]}
-                updateView={updateView}/>
+                <li key={name_props[0] + tags_mentioned[name_props[0]].toString()}>
+                    <NameForm name={name_props[0]}
+                    offset1={name_props[1]} offset2={name_props[2]}
+                    fulloffset1={name_props[1]} fulloffset2={val_props[2]}
+                    updateView={updateView}/>
+                    {": "}
+                    <QuoteButton name={val_props[0]}
+                    offset1={val_props[1]} offset2={val_props[2]}
+                    updateView={updateView}/>
                 </li>
             )
         }
 
-        if (x[1].toLowerCase() === "true" || x[1].toLowerCase() === "false") {
+        if (val_props[0].toLowerCase() === "true" || val_props[0].toLowerCase() === "false") {
             return (
-                <li key={x[0] + tags_mentioned[x[0]].toString()}>
-                <ToggleButtonWrapper tagname={x[0]} tagval={x[1]} 
-                offset1={x[2]} offset2={x[3]}
-                isSelected={false} updateView={updateView}/>
+                <li key={name_props[0] + tags_mentioned[name_props[0]].toString()}>
+                    <NameForm name={name_props[0]}
+                    offset1={name_props[1]} offset2={name_props[2]}
+                    fulloffset1={name_props[1]} fulloffset2={val_props[2]}
+                    updateView={updateView}/>
+                    {": "}
+                    <ToggleButtonWrapper name={val_props[0]} 
+                    offset1={val_props[1]} offset2={val_props[2]}
+                    updateView={updateView}/>
                 </li>
             )
         }
 
         return(
-        <li key={x[0] + tags_mentioned[x[0]].toString()}>
-            <TextForm tagname={x[0]} tagval={x[1]} 
-            offset1={x[2]} offset2={x[3]}
+        <li key={name_props[0] + tags_mentioned[name_props[0]].toString()}>
+            <NameForm name={name_props[0]}
+            offset1={name_props[1]} offset2={name_props[2]}
+            fulloffset1={name_props[1]} fulloffset2={val_props[2]}
+            updateView={updateView}/>
+            {": "}
+            <ValForm name={val_props[0]}
+            offset1={val_props[1]} offset2={val_props[2]}
             updateView={updateView}/>
         </li>
         )
