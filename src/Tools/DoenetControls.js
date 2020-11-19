@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import GlobalFont from "../fonts/GlobalFont.js";
 import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
-import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
+// import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
 
 export default function attempt() {
 return (
@@ -143,6 +143,8 @@ return (
   <h3>Units</h3>
   <p style={{color: "blue"}}>units=["EM", "PT", "PX"] but put the array in the curly brackets.</p>
   <p>Adds the units to the menu. Required for the commponent to work.</p>
+  <UnitMenu units={["EM", "PT", "PX"]}/>
+  <UnitMenu units={["EM", "PT", "PX"]}/>
   <UnitMenu units={["EM", "PT", "PX"]}/>
 
   <h3>Defaults</h3>

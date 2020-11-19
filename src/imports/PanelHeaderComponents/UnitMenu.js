@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
+import "./theme.css";
 
 const Textfield = styled.input`
   border-radius: 5px;
   border: 2px solid black;
+  z-index: 0;
   height: 24px;
   width: 48px;
   bottom: 10px;
@@ -36,7 +38,6 @@ const Units = styled.button`
   height: 24px;
   width: 34px;
   position: relative;
-  z-index: 1;
   color: white;
   font-size: 12px;
   right: 36px;
@@ -44,13 +45,13 @@ const Units = styled.button`
     cursor: pointer;
   }
 `;
-
+//TODO: fix overlay
 const Unit = styled.div`
   display: none;
-  position: absolute;
+  position: relative;
   background-color: #e2e2e2;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 9999;
   border: 2px black;
   border-radius: 5px;
   ${Units}:hover & {
@@ -65,7 +66,6 @@ const Unitoption = styled.button`
   height: 24px;
   border: 1px black solid;
   :hover {
-    opacity: 0.75;
     cursor: pointer;
   }
   ${(props) =>
@@ -106,6 +106,21 @@ export default function UnitMenu(props) {
       var abX = ev.clientX - initialClickLabelPosition.current[0]
       var abY = ev.clientY - initialClickLabelPosition.current[1]
       var calcDist = Math.sqrt((abX ** 2) + (abY ** 2))
+      if (calcDist > 100) {
+        calcDist = calcDist * 1.5
+      }
+      if (calcDist > 200) {
+        calcDist = calcDist * 2
+      }
+      if (calcDist > 500) {
+        calcDist = calcDist * 2.5
+      }
+      if (calcDist > 1000) {
+        calcDist = calcDist * 3
+      }
+      if (calcDist > 10000) {
+        calcDist = calcDist * 4
+      }
       if (abX < 0) {
         var newVal = Math.round(calcDist * -1)
       } else {
@@ -191,6 +206,7 @@ export default function UnitMenu(props) {
             initialClickLabelPosition.current = [e.clientX, e.clientY]
             start()
           }}
+          className='noselect'
         >
           {labelText}
         </Label>
