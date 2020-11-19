@@ -45,7 +45,7 @@ const Units = styled.button`
     cursor: pointer;
   }
 `;
-//TODO: fix overlay
+
 const Unit = styled.div`
   display: none;
   position: relative;

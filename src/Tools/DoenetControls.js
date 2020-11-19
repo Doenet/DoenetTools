@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import GlobalFont from "../fonts/GlobalFont.js";
 import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
-// import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
 
 export default function attempt() {
 return (
