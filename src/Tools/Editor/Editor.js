@@ -37,6 +37,7 @@ function findTag(doc, tree, buff_offset, doc_offset) {
     let tag = {
         pos: -1, 
         tagname: "",
+        tagend: -1,
         open: true};
 
     let buffer = tree.buffer;
@@ -126,6 +127,7 @@ function findTag(doc, tree, buff_offset, doc_offset) {
         }
     }
 
+    if (tag.open) tag.tagend = buffer[tag.pos+2]+doc_offset; // set end of tag (for AddAttrButton)
     return tag;
 }
 
@@ -214,7 +216,11 @@ function getTreeBuff(tree, position) {
 // If given a closing tag it will only return the tag name
 function getTagProps(doc, tree, position) {
     // console.log("This is the init position. ", position);
-    let tag_props = {tagname: "", attrs: []};
+    let tag_props = {
+        tagname: "",
+        tagend: -1,
+        attrs: []
+    };
     if (tree.children.length == 0) return tag_props;
 
     let bufferProps = getTreeBuff(tree, position);
@@ -227,10 +233,10 @@ function getTagProps(doc, tree, position) {
     // console.log(tree_buff);
     // console.log(buff_offset, doc_offset);
 
-    // TO DO: Fix findTag and getAttrs with the new argument.
     let basic_tag_props = findTag(doc, tree_buff, buff_offset, doc_offset);
     if (basic_tag_props.pos < 0) return tag_props;
     tag_props.tagname = basic_tag_props.tagname;
+    if (basic_tag_props.open) tag_props.tagend = basic_tag_props.tagend;
     
     if (!basic_tag_props.open) return tag_props;
     tag_props.attrs = getAttrs(doc, tree_buff, basic_tag_props.pos, doc_offset);
@@ -351,6 +357,65 @@ function ToggleButtonWrapper(props) {
     )
 }
 
+function NewForm(props) { // Form made when clicking the button in InfoPanel to add new attribute
+    const [name_isForm, setNameForm] = useState(false);
+    const [val_isForm, setValForm] = useState(false);
+    const name_ref = useRef(null);
+    const val_ref = useRef(null);
+
+    const [currVal, setCurrVal] = useState("<Type in Me!>");
+
+    let { offset } = props;
+
+    const handleNameTextClick = function() {
+        setNameForm(!name_isForm);
+    }
+
+    const handleValTextClick = function() {
+        setValForm(!val_isForm);
+    }
+
+    const handleNameFormClick = function() {
+        setNameForm(!name_isForm);
+        props.setNewAttr(false);
+        if (name_ref.current.value !== "") {
+            let spacing = props.addSpace ? " " : "";
+            let val = val_isForm ? val_ref.current.value : currVal;
+            props.updateView(offset, offset, spacing + name_ref.current.value + "=" + "\"" + val + "\"");
+        }
+    };
+
+    const handleValFormClick = function() {
+        setValForm(!val_isForm);
+        setCurrVal(val_ref.current.value);
+    };
+
+    const handleNameKeyUp = function(e) {
+        if (e.keyCode === 13) handleNameFormClick();
+    }
+
+    const handleValKeyUp = function(e) {
+        if (e.keyCode === 13) handleValFormClick();
+    }
+    
+    return (
+        <>
+        {(name_isForm) ? 
+                <input type="text" ref={name_ref} onClick={handleNameFormClick} onKeyUp={handleNameKeyUp}/>
+            : <label onClick={handleNameTextClick}>
+                {"<Type in Me!>"}
+              </label>}
+        {": "}
+        {(val_isForm) ? 
+                <input type="text" ref={val_ref} onClick={handleValFormClick} onKeyUp={handleValKeyUp}/>
+            : <label onClick={handleValTextClick}>
+                {currVal}
+              </label>}
+        </>
+    )
+
+}
+
 function InfoPanel(props) {
     let { curr_tag } = props;
     let { view } = props;
@@ -361,6 +426,10 @@ function InfoPanel(props) {
     let tag_dict = attrsLookup(tagname);
 
     let tags_mentioned = {};
+
+    let furthest_val_dist = curr_tag.tagend-1; // Used to determine where to insert new attrs from AddAttrButton
+
+    const [isNewAttr, setNewAttr] = useState(false);
 
     const updateView = function(offset1, offset2, newval) {
         let transaction = {changes: {from: offset1, to: offset2, insert: newval}};
@@ -378,6 +447,8 @@ function InfoPanel(props) {
         } else {
             tags_mentioned[name_props[0]] = 1;
         }
+
+        furthest_val_dist = val_props[2];
 
         if (!val_props[3]) {
             return (
@@ -439,12 +510,28 @@ function InfoPanel(props) {
     return(
         <>
         <h1>{tagname}</h1>
-        {!tag_dict && (attrs===undefined || attrs.length==0) ? <p>No props found</p> :
             <ul>
-                {attrs && attrs.length!=0 ? attrs.map(attrToEntry) : <></>}
+                {attrs!==undefined && attrs.length!=0 ? attrs.map(attrToEntry) : <></>}
                 {tag_dict ? Object.keys(tag_dict["properties"]).filter(x => tags_mentioned[x] === undefined).map(propToEntry) : <></>}
+                {!tag_dict && (attrs===undefined || attrs.length==0) ? <div>No props found</div> : <></>}
+                {(tagname && tagname != "") ? (isNewAttr ?
+                    <>
+                    <li key={"temp_form"}>
+                    <NewForm offset={furthest_val_dist} addSpace={furthest_val_dist+1 == curr_tag.tagend}
+                    setNewAttr={setNewAttr} updateView={updateView}/>
+                    </li>
+                    <li key={"undo_button"}>
+                    <button onClick={() => setNewAttr(!isNewAttr)}>{"Click Me to Undo"}</button>
+                    </li>
+                    </>
+                :
+                    <li key={"attr_button"}>
+                    <button onClick={() => setNewAttr(!isNewAttr)}>{"Click me to add new Type!"}</button>
+                    </li>)
+                :
+                    <></>
+                }
             </ul>
-        } 
         </>
     )
 
