@@ -49,8 +49,11 @@ function Browser(props){
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
-  // const [selectedNodes,setSelectedNodes] = useState({});
+  const [selectedNodes,setSelectedNodes] = useState({});
   const [refreshNumber,setRefresh] = useState(0)
+
+  let nodeIdRefArray = useRef([])
+  let lastSelectedNodeIdRef = useRef("")
 
   const cache = useQueryCache();
 
@@ -60,6 +63,74 @@ function Browser(props){
 
 
   let pathDrive = props.drive; //TODO: React Router
+
+  const handleFolderToggle = useCallback((nodeId)=>{
+    setOpenNodesObj((old)=>{
+      let newObj = {...old};
+      if (newObj[nodeId]){
+        delete newObj[nodeId];
+      }else{
+        newObj[nodeId] = true;
+      }
+      return newObj;
+    })
+  },[])
+
+  const handleClickNode = useCallback(({ nodeData, shiftKey, metaKey})=>{
+    //TODO: if browser isNav then set path
+    if (!shiftKey && !metaKey){
+      //Only select this node
+      setSelectedNodes((old)=>{
+        let newObj = {};
+        newObj[nodeData.id] = true;
+        lastSelectedNodeIdRef.current = nodeData.id;
+        return newObj;
+      })
+    }else if (shiftKey && !metaKey){
+      //Add selection to range including the end points 
+      //of last selected to current nodeid      
+      let indexOfLastSelected = 0;
+      if (lastSelectedNodeIdRef.current !== ""){indexOfLastSelected = nodeIdRefArray.current.indexOf(lastSelectedNodeIdRef.current) }
+      let indexOfNode = nodeIdRefArray.current.indexOf(nodeData.id);
+      let startIndex = Math.min(indexOfNode,indexOfLastSelected);
+      let endIndex = Math.max(indexOfNode,indexOfLastSelected);
+      
+      setSelectedNodes((old)=>{
+        let newObj = {...old};
+        for (let i = startIndex; i <= endIndex;i++){
+          newObj[nodeIdRefArray.current[i]] = true;
+        }
+        return newObj;
+      })
+    }else if (!shiftKey && metaKey){
+      //Toggle select on this node
+      setSelectedNodes((old)=>{
+        let newObj = {...old};
+        if (newObj[nodeData.id]){
+          delete newObj[nodeData.id];
+        }else{
+          newObj[nodeData.id] = true;
+          lastSelectedNodeIdRef.current = nodeData.id;
+      }
+        return newObj;
+      })
+    }
+    
+    // setSelectedNodes((old)=>{
+    //   let newObj = {...old};
+    //   newObj[nodeData.id] = true;
+    //   return newObj;
+    // })
+    // setOpenNodesObj((old)=>{
+    //   let newObj = {...old};
+    //   if (newObj[nodeId]){
+    //     delete newObj[nodeId];
+    //   }else{
+    //     newObj[nodeId] = true;
+    //   }
+    //   return newObj;
+    // })
+  },[])
 
   function getSortedChildren(parentId,sortingOrder){
     let resultArray = cache.getQueryData(["nodes",parentId,sortingOrder]);
@@ -85,20 +156,6 @@ function Browser(props){
     return resultArray;
   }
 
-  const handleFolderToggle = useCallback((nodeId)=>{
-    setOpenNodesObj((old)=>{
-      let newObj = {...old};
-      if (newObj[nodeId]){
-        delete newObj[nodeId];
-      }else{
-        newObj[nodeId] = true;
-      }
-      return newObj;
-    })
-  },[])
-
-  
-
   function buildNodes(parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0){
     let folderData = cache.getQueryData(["nodes",parentId]);
     if (!folderData){
@@ -116,6 +173,8 @@ function Browser(props){
         nodeIdArray.push(node.id);
         let isOpen = false;
         if (openNodesObj[node.id]){ isOpen = true;}
+        let appearance = "default";
+        if (selectedNodes[node.id]){ appearance = "selected";}
 
         nodesJSX.push(<Node 
           key={`node${node.id}`} 
@@ -123,7 +182,9 @@ function Browser(props){
           nodeId={node.id}
           parentId={parentId}
           isOpen={isOpen} 
+          appearance={appearance}
           handleFolderToggle={handleFolderToggle} 
+          handleClickNode={handleClickNode}
           level={level}/>)
         if (isOpen){
           buildNodes(node.id,sortingOrder,nodesJSX,nodeIdArray,level+1)
@@ -137,7 +198,7 @@ function Browser(props){
     return [nodesJSX,nodeIdArray];
   }
   const [nodes,nodeIdArray] = buildNodes(pathDrive,sortingOrder);
-  console.log(">>>nodeIdArray",nodeIdArray)
+  nodeIdRefArray.current = nodeIdArray;
 
   return <>
   <h1>Browser</h1>
@@ -171,26 +232,36 @@ const Node = React.memo(function Node(props){
   const {data,isLoading,isFetching} = useQuery(["nodes",props.parentId],loadFolderContent,{staleTime:30000})
   const nodeData = data[props.parentId][props.nodeId];
   console.log("===NODE TOP id",props.parentId,props.nodeId)
-  console.log(">>>nodeData",nodeData)
+  // console.log(">>>nodeData",nodeData)
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
-  // let propdata = props.queryData;
   let children = data[props.nodeId];
   let numChildren = Object.keys(children).length;
 
   //Toggle
   let openOrClose = "Open";
   if (props.isOpen){ openOrClose = "Close"}
-  const toggle = <button onClick={()=>props.handleFolderToggle(props.nodeId)}>{openOrClose}</button>
+  const toggle = <button onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    props.handleFolderToggle(props.nodeId);
+  }}>{openOrClose}</button>
 
   //Delete
   const deleteNode = <button>X</button>
 
   return <>
   <div
+    onClick={(e) => {
+      props.handleClickNode({ nodeData, shiftKey: e.shiftKey, metaKey: e.metaKey })
+    }} 
+    onDoubleClick={(e) => {
+      props.handleFolderToggle(props.nodeId)
+    }} 
+
   style={{
       cursor: "pointer",
       width: "300px",
