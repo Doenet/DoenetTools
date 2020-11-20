@@ -7,6 +7,7 @@ import {
 } from 'react-query'
 import axios from "axios";
 import './util.css';
+import nanoid from 'nanoid';
 import { ReactQueryDevtools } from 'react-query-devtools'
 
 const queryCache = new QueryCache();
@@ -54,13 +55,14 @@ function Browser(props){
 
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
-
+  let browserId = useRef("");
+  
   const cache = useQueryCache();
 
   // //------------------------------------------
   // //****** End of use functions  ***********
   // //------------------------------------------
-
+  if (browserId.current === ""){ browserId.current = nanoid();}
 
   let pathDrive = props.drive; //TODO: React Router
 
@@ -132,6 +134,10 @@ function Browser(props){
     // })
   },[])
 
+  const handleDeselectAll = useCallback(()=>{
+    setSelectedNodes({})
+  })
+
   function getSortedChildren(parentId,sortingOrder){
     let resultArray = cache.getQueryData(["nodes",parentId,sortingOrder]);
     console.log(">>>resultArray",parentId,resultArray)
@@ -178,13 +184,14 @@ function Browser(props){
 
         nodesJSX.push(<Node 
           key={`node${node.id}`} 
-          // queryData={node} 
+          browserId={browserId.current}
           nodeId={node.id}
           parentId={parentId}
           isOpen={isOpen} 
           appearance={appearance}
           handleFolderToggle={handleFolderToggle} 
           handleClickNode={handleClickNode}
+          handleDeselectAll={handleDeselectAll}
           level={level}/>)
         if (isOpen){
           buildNodes(node.id,sortingOrder,nodesJSX,nodeIdArray,level+1)
@@ -192,8 +199,6 @@ function Browser(props){
   
       }
     }
-
-
   
     return [nodesJSX,nodeIdArray];
   }
@@ -203,7 +208,7 @@ function Browser(props){
   return <>
   <h1>Browser</h1>
   {nodes}
-  <button onClick={()=>setRefresh((x)=>x+1)}>temp for refresh testing</button>
+  {/* <button onClick={()=>setRefresh((x)=>x+1)}>temp for refresh testing</button> */}
   
   <ReactQueryDevtools />
   </>
@@ -244,23 +249,48 @@ const Node = React.memo(function Node(props){
   //Toggle
   let openOrClose = "Open";
   if (props.isOpen){ openOrClose = "Close"}
-  const toggle = <button onClick={(e)=>{
+  const toggle = <button 
+  data-doenet-browserid={props.browserId}
+  tabIndex={0}
+  onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     props.handleFolderToggle(props.nodeId);
   }}>{openOrClose}</button>
 
   //Delete
-  const deleteNode = <button>X</button>
+  const deleteNode = <button
+  data-doenet-browserid={props.browserId}
+  tabIndex={-1}
+  onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+  }}
+  onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  >X</button>
 
   return <>
   <div
+    data-doenet-browserid={props.browserId}
+    tabIndex={0}
+    className="noselect nooutline" 
     onClick={(e) => {
       props.handleClickNode({ nodeData, shiftKey: e.shiftKey, metaKey: e.metaKey })
     }} 
     onDoubleClick={(e) => {
       props.handleFolderToggle(props.nodeId)
     }} 
+    onBlur={(e) => {
+      //Only clear if focus goes outside of this node group
+       if (e.relatedTarget === null ||
+        e.relatedTarget.dataset.doenetBrowserid !== props.browserId
+        ){
+      props.handleDeselectAll();
+      }
+    }}
 
   style={{
       cursor: "pointer",
