@@ -6,6 +6,7 @@ import {
   ReactQueryCacheProvider,
 } from 'react-query'
 import axios from "axios";
+import './util.css';
 import { ReactQueryDevtools } from 'react-query-devtools'
 
 const queryCache = new QueryCache();
@@ -28,7 +29,7 @@ const loadFolderContent = async (_,parentId) => {
 
 function useNodes(_,parentId) {
   if (!parentId){parentId = "content"}
-  return useQuery(["nodes",parentId], loadFolderContent,{staleTime:10000})
+  return useQuery(["nodes",parentId], loadFolderContent,{staleTime:30000})
 }
 
 // function useNodes(_,parentId) {
@@ -49,7 +50,7 @@ function Browser(props){
   const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
   // const [selectedNodes,setSelectedNodes] = useState({});
-  const [loadData,setLoadData] = useState(0)
+  const [refreshNumber,setRefresh] = useState(0)
 
   const cache = useQueryCache();
 
@@ -84,7 +85,7 @@ function Browser(props){
     return resultArray;
   }
 
-  const handleFolderToggle = useCallback((wasOpen,nodeId)=>{
+  const handleFolderToggle = useCallback((nodeId)=>{
     setOpenNodesObj((old)=>{
       let newObj = {...old};
       if (newObj[nodeId]){
@@ -96,27 +97,36 @@ function Browser(props){
     })
   },[])
 
-  function buildNodes(parentId,sortingOrder,nodesJSX=[],level=0){
+  
+
+  function buildNodes(parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0){
     let folderData = cache.getQueryData(["nodes",parentId]);
     if (!folderData){
       //TODO: Make key unique
-      nodesJSX.push(<p key="nodata">Loading...</p>)
+      nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
         let folderQueryPromise = cache.fetchQuery(["nodes",parentId],loadFolderContent,{cacheTime:30000})
         folderQueryPromise.then((data)=>{
-          //TODO: Store nodes,nodeid,"number of children" here
-          console.log(">>>DATA!!",data)
-          setLoadData((x)=>x+1)
+          setRefresh((x)=>x+1)
         })
     }else{
 
       let nodeArray = getSortedChildren(parentId,sortingOrder);
+      if (nodeArray.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
       for (const node of nodeArray){
+        nodeIdArray.push(node.id);
         let isOpen = false;
         if (openNodesObj[node.id]){ isOpen = true;}
-        console.log("determine isOpen",openNodesObj)
-        nodesJSX.push(<Node key={`node${node.id}`} queryData={node} isOpen={isOpen} handleFolderToggle={handleFolderToggle} level={level}/>)
+
+        nodesJSX.push(<Node 
+          key={`node${node.id}`} 
+          // queryData={node} 
+          nodeId={node.id}
+          parentId={parentId}
+          isOpen={isOpen} 
+          handleFolderToggle={handleFolderToggle} 
+          level={level}/>)
         if (isOpen){
-          buildNodes(node.id,sortingOrder,nodesJSX,level+1)
+          buildNodes(node.id,sortingOrder,nodesJSX,nodeIdArray,level+1)
         }
   
       }
@@ -124,26 +134,75 @@ function Browser(props){
 
 
   
-    return nodesJSX;
+    return [nodesJSX,nodeIdArray];
   }
-  const nodes = buildNodes(pathDrive,sortingOrder);
-  console.log(">>>loadData",loadData)
+  const [nodes,nodeIdArray] = buildNodes(pathDrive,sortingOrder);
+  console.log(">>>nodeIdArray",nodeIdArray)
 
   return <>
   <h1>Browser</h1>
   {nodes}
-  <button onClick={()=>setLoadData((x)=>x+1)}>temp</button>
+  <button onClick={()=>setRefresh((x)=>x+1)}>temp for refresh testing</button>
   
   <ReactQueryDevtools />
   </>
 }
 
+const EmptyNode =  React.memo(function Node(props){
+  return (<div style={{
+    width: "300px",
+    padding: "4px",
+    border: "1px solid black",
+    backgroundColor: "white",
+    margin: "2px"
+  }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
+})
+const LoadingNode =  React.memo(function Node(props){
+  return (<div style={{
+    width: "300px",
+    padding: "4px",
+    border: "1px solid black",
+    backgroundColor: "white",
+    margin: "2px"
+  }} ><div className="noselect" style={{ textAlign: "center" }} >LOADING...</div></div>)
+})
+
 const Node = React.memo(function Node(props){
-  let data = props.queryData;
-  console.log("===NODE TOP ",data.id)
+  const {data,isLoading,isFetching} = useQuery(["nodes",props.parentId],loadFolderContent,{staleTime:30000})
+  const nodeData = data[props.parentId][props.nodeId];
+  console.log("===NODE TOP id",props.parentId,props.nodeId)
+  console.log(">>>nodeData",nodeData)
+  const indentPx = 20;
+  let bgcolor = "#e2e2e2";
+  if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
+  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
+  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+  // let propdata = props.queryData;
+  let children = data[props.nodeId];
+  let numChildren = Object.keys(children).length;
+
+  //Toggle
   let openOrClose = "Open";
   if (props.isOpen){ openOrClose = "Close"}
+  const toggle = <button onClick={()=>props.handleFolderToggle(props.nodeId)}>{openOrClose}</button>
+
+  //Delete
+  const deleteNode = <button>X</button>
+
   return <>
-  <div><button onClick={()=>props.handleFolderToggle(props.isOpen,data.id)}>{openOrClose}</button>{data.label}</div>
+  <div
+  style={{
+      cursor: "pointer",
+      width: "300px",
+      padding: "4px",
+      border: "1px solid black",
+      backgroundColor: bgcolor,
+      margin: "2px"
+    }} ><div 
+    className="noselect" 
+    style={{
+      marginLeft: `${props.level * indentPx}px`
+    }}>{toggle} [FOLDER] {nodeData.label} ({numChildren}){deleteNode}</div></div>
+  
   </>
 })
