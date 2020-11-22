@@ -5,8 +5,8 @@ export default function Button(props) {
   //Assume small
   var button = {
         margin: '0px',
-        height: '40px',
-        border: `2px hidden`,
+        height: '24px',
+        border: `hidden`,
         backgroundColor: `${doenetComponentForegroundActive}`,
         fontFamily: 'Arial',
         color: '#FFFFFF',
@@ -17,8 +17,8 @@ export default function Button(props) {
         fontSize: '12px'
       };
   if (props.size === "medium") {
-    button.height = '85px',
-    button.fontSize = '24px'
+    button.height = '36px',
+    button.fontSize = '18px'
   };
   if (button.width < button.height) {
     button.width = '85px'

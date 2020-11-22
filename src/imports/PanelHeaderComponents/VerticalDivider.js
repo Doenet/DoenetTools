@@ -7,7 +7,7 @@ export default function VerticalDivider() {
     borderRadius: '5px',
     borderLeft: `5px solid ${doenetComponentBackgroundActive}`,
     borderRight: '0px',
-    height: '95px',
+    height: '52px',
     width: '0px',
     display: 'inline-block',
     margin: '0px',
