@@ -8,45 +8,62 @@ import {
 import axios from "axios";
 import './util.css';
 import nanoid from 'nanoid';
+// import { useHistory } from "react-router-dom";
 import { ReactQueryDevtools } from 'react-query-devtools'
-
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  useHistory
+} from "react-router-dom";
 const queryCache = new QueryCache();
 
 export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
-<Browser drive="content" />
+  <div style={{display:"flex"}}> 
+  <div>
+  <BrowserRouted drive="content" isNav={true} />
+  <BrowserRouted drive="assignment" isNav={true} />
+  </div>
+  <div>
+  <BrowserRouted drive="content" />
+  <BrowserRouted drive="assignment" />
+  </div>
+  </div>
+  <ReactQueryDevtools />
+
 </ReactQueryCacheProvider>
 </>
 };
 
-const loadFolderContent = async (_,parentId) => {
-    const { data } = await axios.get(
-    `/api/loadFolderContent.php?parentId=${parentId}`
+
+
+// function useNodes(_,parentId,driveId) {
+//   if (!parentId){parentId = props.drive}
+//   return useQuery(["nodes",{parentId,driveId:props.drive}], loadFolderContent,{staleTime:30000})
+// }
+
+const loadFolderContent = async (_,parentId,driveId) => {
+  console.log(">>>parentId",parentId,"driveId",driveId)
+  // console.log(`/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`)
+  const { data } = await axios.get(
+    `/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`
   );
+  console.log("data",data)
   //TODO: Handle fail
   return data.results;
 }
 
-function useNodes(_,parentId) {
-  if (!parentId){parentId = "content"}
-  return useQuery(["nodes",parentId], loadFolderContent,{staleTime:30000})
-}
-
-// function useNodes(_,parentId) {
-//   if (!parentId){parentId = "content"}
-//   return useQuery(["nodes",parentId], async (parentId)=>{
-//     const { data } = await axios.get(
-//       `/api/loadFolderContent.php?parentId${parentId}`
-//     );
-//     //TODO: Handle fail
-//     return data.contents;
-//   })
-// }
-
+function BrowserRouted(props){
+  return <Router><Switch>
+           <Route path="/" render={(routeprops)=><Browser route={{...routeprops}} {...props} />}></Route>
+         </Switch></Router>
+ }
 
 function Browser(props){
   console.log(`===TOP OF BROWSER drive=${props.drive}`)
+
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
@@ -58,13 +75,7 @@ function Browser(props){
   let browserId = useRef("");
   
   const cache = useQueryCache();
-
-  // //------------------------------------------
-  // //****** End of use functions  ***********
-  // //------------------------------------------
-  if (browserId.current === ""){ browserId.current = nanoid();}
-
-  let pathDrive = props.drive; //TODO: React Router
+  let history = useHistory();
 
   const handleFolderToggle = useCallback((nodeId)=>{
     setOpenNodesObj((old)=>{
@@ -79,73 +90,89 @@ function Browser(props){
   },[])
 
   const handleClickNode = useCallback(({ nodeData, shiftKey, metaKey})=>{
-    //TODO: if browser isNav then set path
-    if (!shiftKey && !metaKey){
-      //Only select this node
-      setSelectedNodes((old)=>{
-        let newObj = {};
-        newObj[nodeData.id] = true;
-        lastSelectedNodeIdRef.current = nodeData.id;
-        return newObj;
-      })
-    }else if (shiftKey && !metaKey){
-      //Add selection to range including the end points 
-      //of last selected to current nodeid      
-      let indexOfLastSelected = 0;
-      if (lastSelectedNodeIdRef.current !== ""){indexOfLastSelected = nodeIdRefArray.current.indexOf(lastSelectedNodeIdRef.current) }
-      let indexOfNode = nodeIdRefArray.current.indexOf(nodeData.id);
-      let startIndex = Math.min(indexOfNode,indexOfLastSelected);
-      let endIndex = Math.max(indexOfNode,indexOfLastSelected);
-      
-      setSelectedNodes((old)=>{
-        let newObj = {...old};
-        for (let i = startIndex; i <= endIndex;i++){
-          newObj[nodeIdRefArray.current[i]] = true;
-        }
-        return newObj;
-      })
-    }else if (!shiftKey && metaKey){
-      //Toggle select on this node
-      setSelectedNodes((old)=>{
-        let newObj = {...old};
-        if (newObj[nodeData.id]){
-          delete newObj[nodeData.id];
-        }else{
+    if (props.isNav){
+      history.push(`/${props.drive}:${nodeData.id}/`)
+    }else{
+      if (!shiftKey && !metaKey){
+        //Only select this node
+        setSelectedNodes((old)=>{
+          let newObj = {};
           newObj[nodeData.id] = true;
           lastSelectedNodeIdRef.current = nodeData.id;
+          return newObj;
+        })
+      }else if (shiftKey && !metaKey){
+        //Add selection to range including the end points 
+        //of last selected to current nodeid      
+        let indexOfLastSelected = 0;
+        if (lastSelectedNodeIdRef.current !== ""){indexOfLastSelected = nodeIdRefArray.current.indexOf(lastSelectedNodeIdRef.current) }
+        let indexOfNode = nodeIdRefArray.current.indexOf(nodeData.id);
+        let startIndex = Math.min(indexOfNode,indexOfLastSelected);
+        let endIndex = Math.max(indexOfNode,indexOfLastSelected);
+        
+        setSelectedNodes((old)=>{
+          let newObj = {...old};
+          for (let i = startIndex; i <= endIndex;i++){
+            newObj[nodeIdRefArray.current[i]] = true;
+          }
+          return newObj;
+        })
+      }else if (!shiftKey && metaKey){
+        //Toggle select on this node
+        setSelectedNodes((old)=>{
+          let newObj = {...old};
+          if (newObj[nodeData.id]){
+            delete newObj[nodeData.id];
+          }else{
+            newObj[nodeData.id] = true;
+            lastSelectedNodeIdRef.current = nodeData.id;
+        }
+          return newObj;
+        })
       }
-        return newObj;
-      })
     }
     
-    // setSelectedNodes((old)=>{
-    //   let newObj = {...old};
-    //   newObj[nodeData.id] = true;
-    //   return newObj;
-    // })
-    // setOpenNodesObj((old)=>{
-    //   let newObj = {...old};
-    //   if (newObj[nodeId]){
-    //     delete newObj[nodeId];
-    //   }else{
-    //     newObj[nodeId] = true;
-    //   }
-    //   return newObj;
-    // })
+    
   },[])
 
   const handleDeselectAll = useCallback(()=>{
     setSelectedNodes({})
   })
 
-  function getSortedChildren(parentId,sortingOrder){
-    let resultArray = cache.getQueryData(["nodes",parentId,sortingOrder]);
-    console.log(">>>resultArray",parentId,resultArray)
+ 
+  // //------------------------------------------
+  // //****** End of use functions  ***********
+  // //------------------------------------------
+  if (browserId.current === ""){ browserId.current = nanoid();}
+
+  let pathFolderId = props.drive; //default to root
+  let pathDriveId = props.drive; //default to root
+  let routePathDriveId = "";
+  let routePathFolderId = "";  
+  if (props.route){
+    let driveFolderPath = props.route.location.pathname.split("/").filter(i=>i)[0] //filter out ""
+      //use defaults if not defined
+      if (driveFolderPath !== undefined){
+       [routePathDriveId,routePathFolderId] = driveFolderPath.split(":");
+        if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
+        if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
+      }
+    }
+    //Only show non navigation when drive matches route
+  if (!props.isNav && routePathDriveId !== props.drive){ return null;}
+  
+
+
+  function getSortedChildren(driveId,parentId,sortingOrder){
+
+    let resultArray = cache.getQueryData(["nodes",driveId,parentId,sortingOrder]);
     if (!resultArray){
       console.log("SORTING!")
       resultArray = [];
-      let nodeData = cache.getQueryData(["nodes",parentId]);
+      let nodeData = cache.getQueryData(["nodes",driveId,parentId]);
+      //TODO: Handle empty array
       let childrenNodeObjs = nodeData[parentId];
+      if (childrenNodeObjs === undefined){ childrenNodeObjs = {}}
       for (let nodeId of Object.keys(childrenNodeObjs)){
         let nodeObj = childrenNodeObjs[nodeId];
         resultArray.push(nodeObj);
@@ -157,35 +184,42 @@ function Browser(props){
       //sort by type ascending then label ascending
       // resultArray.sort((a, b) => (a.type > b.type) ? 1 : (a.type === b.type) ? ((a.label > b.label) ? 1 : -1) : -1 )
   
-      cache.setQueryData(["nodes",parentId,sortingOrder],resultArray,{cacheTime:Infinity})
+      cache.setQueryData(["nodes",driveId,parentId,sortingOrder],resultArray,{cacheTime:Infinity})
     }
     return resultArray;
   }
 
-  function buildNodes(parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0){
-    let folderData = cache.getQueryData(["nodes",parentId]);
+  function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
+
+    let folderData = cache.getQueryData(["nodes",driveId,parentId]);
     if (!folderData){
       //TODO: Make key unique
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
-        let folderQueryPromise = cache.fetchQuery(["nodes",parentId],loadFolderContent,{cacheTime:30000})
+        let folderQueryPromise = cache.fetchQuery(["nodes",driveId,parentId],loadFolderContent,{cacheTime:30000})
         folderQueryPromise.then((data)=>{
           setRefresh((x)=>x+1)
         })
     }else{
 
-      let nodeArray = getSortedChildren(parentId,sortingOrder);
+      let nodeArray = getSortedChildren(driveId,parentId,sortingOrder);
       if (nodeArray.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
       for (const node of nodeArray){
         nodeIdArray.push(node.id);
         let isOpen = false;
         if (openNodesObj[node.id]){ isOpen = true;}
         let appearance = "default";
-        if (selectedNodes[node.id]){ appearance = "selected";}
+        if (props.isNav && pathFolderId === node.id && pathDriveId === props.drive){
+          //Only select the current path folder if we are a navigation browser
+          appearance = "selected";
+        }else if (selectedNodes[node.id]){ 
+          appearance = "selected";
+        }
 
         nodesJSX.push(<Node 
           key={`node${node.id}`} 
           browserId={browserId.current}
           nodeId={node.id}
+          driveId={props.drive}
           parentId={parentId}
           isOpen={isOpen} 
           appearance={appearance}
@@ -194,7 +228,7 @@ function Browser(props){
           handleDeselectAll={handleDeselectAll}
           level={level}/>)
         if (isOpen){
-          buildNodes(node.id,sortingOrder,nodesJSX,nodeIdArray,level+1)
+          buildNodes({driveId:pathDriveId,parentId:node.id,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
         }
   
       }
@@ -202,15 +236,25 @@ function Browser(props){
   
     return [nodesJSX,nodeIdArray];
   }
-  const [nodes,nodeIdArray] = buildNodes(pathDrive,sortingOrder);
+
+  let rootParentId = pathFolderId;
+  let displayDriveId = pathDriveId;
+  //If navigation then build from root
+  if(props.isNav){
+    rootParentId = props.drive;
+    displayDriveId = props.drive;
+  }
+  console.log(">>>rootParentId",rootParentId)
+  const [nodes,nodeIdArray] = buildNodes({driveId:displayDriveId,parentId:rootParentId,sortingOrder});
   nodeIdRefArray.current = nodeIdArray;
 
   return <>
-  <h1>Browser</h1>
+  <div>
+  <h3>{props.drive} {props.isNav?"Nav":null}</h3>
   {nodes}
+  </div>
   {/* <button onClick={()=>setRefresh((x)=>x+1)}>temp for refresh testing</button> */}
   
-  <ReactQueryDevtools />
   </>
 }
 
@@ -234,7 +278,7 @@ const LoadingNode =  React.memo(function Node(props){
 })
 
 const Node = React.memo(function Node(props){
-  const {data,isLoading,isFetching} = useQuery(["nodes",props.parentId],loadFolderContent,{staleTime:30000})
+  const {data,isLoading,isFetching} = useQuery(["nodes",props.driveId,props.parentId],loadFolderContent,{staleTime:30000})
   const nodeData = data[props.parentId][props.nodeId];
   console.log("===NODE TOP id",props.parentId,props.nodeId)
   // console.log(">>>nodeData",nodeData)

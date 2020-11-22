@@ -11,6 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
+$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
 
 $success = TRUE;
@@ -38,10 +39,10 @@ if ($isRepo){
 
 
 if ($success){
-  $results_arr[$parentId] = selectChildren($parentId,$userId,$conn);
+  $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
   $children_arr = array_keys($results_arr[$parentId]);
   foreach ($children_arr as &$childId){
-    $results_arr[$childId] = selectChildren($childId,$userId,$conn);
+    $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
   }
 }
 
@@ -59,7 +60,7 @@ http_response_code(200);
 echo json_encode($response_arr);
 $conn->close();
 
-function selectChildren($parentId,$userId,$conn){
+function selectChildren($parentId,$userId,$driveId,$conn){
   $return_arr = array();
   //ADD FOLDERS AND REPOS
   $sql="
@@ -72,6 +73,7 @@ function selectChildren($parentId,$userId,$conn){
   FROM folder AS f
   WHERE userId = '$userId'
   AND parentId = '$parentId'
+  AND driveId = '$driveId'
   ";
 
   $result = $conn->query($sql); 
