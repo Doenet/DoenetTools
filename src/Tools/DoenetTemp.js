@@ -38,15 +38,12 @@ return <>
 };
 
 
-
 // function useNodes(_,parentId,driveId) {
 //   if (!parentId){parentId = props.drive}
 //   return useQuery(["nodes",{parentId,driveId:props.drive}], loadFolderContent,{staleTime:30000})
 // }
 
-const loadFolderContent = async (_,parentId,driveId) => {
-  console.log(">>>parentId",parentId,"driveId",driveId)
-  // console.log(`/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`)
+const loadFolderContent = async (_,driveId,parentId) => {
   const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`
   );
