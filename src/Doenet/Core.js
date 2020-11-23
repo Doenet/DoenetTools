@@ -3249,7 +3249,7 @@ export default class Core {
     for (let varName in targetComponent.state) {
       let stateObj = targetComponent.state[varName];
       if (stateObj.isProperty || varName in stateVariablesToShadow) {
-        continue; // aleady are shadowing
+        continue; // already are shadowing
       }
       if (stateObj.isResolved) {
         // evaluate so know if it is essential
@@ -3257,10 +3257,10 @@ export default class Core {
       }
       if (!stateObj.neverShadow) {
         if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
-          || (stateObj.isArray
+          || (stateObj.isArray && stateObj.isResolved
             && targetComponent.state[stateObj.arraySizeStateVariable].isResolved
             && stateObj.getAllArrayKeys(stateObj.arraySize).length > 0
-            && stateObj.getAllArrayKeys(stateObj.arraySize).every(x => stateObj.essentialByArrayKey[x])
+            && stateObj.getAllArrayKeys(stateObj.arraySize).some(x => stateObj.essentialByArrayKey[x])
           )
         ) {
           if (!stateVariablesToShadow.includes(varName)) {
@@ -6295,7 +6295,7 @@ export default class Core {
             if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
               || (stateObj.isArray
                 && stateObj.getAllArrayKeys(stateObj.arraySize).length > 0
-                && stateObj.getAllArrayKeys(stateObj.arraySize).every(x => stateObj.essentialByArrayKey[x])
+                && stateObj.getAllArrayKeys(stateObj.arraySize).some(x => stateObj.essentialByArrayKey[x])
               )
             ) {
               stateVariablesToShadow.push(varName);

@@ -323,7 +323,7 @@ export default class MathInput extends DoenetRenderer {
         }}
       />
       {checkWorkButton}
-      {this.textValue ? 
+      {/* {this.textValue ? 
       <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
         <div>
           <MathJax.Context input='tex'>
@@ -333,7 +333,7 @@ export default class MathInput extends DoenetRenderer {
           </MathJax.Context>
         </div>
       </Prev> : 
-      null}
+      null} */}
       </span>
       
     

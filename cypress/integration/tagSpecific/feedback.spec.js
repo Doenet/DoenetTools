@@ -485,16 +485,16 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <aside name="feedback1" title=""><copy prop="feedback" tname="_award1" /></aside>
+  <subsection name="feedback1" title=""><copy prop="feedback" tname="_award1" /></subsection>
   
   <p>Award 2 feedback:</p>
-  <aside name="feedback2" title=""><copy prop="feedback" tname="_award2" /></aside>
+  <subsection name="feedback2" title=""><copy prop="feedback" tname="_award2" /></subsection>
 
   <p>Award 3 feedback:</p>
-  <aside name="feedback3" title=""><copy prop="feedback" tname="_award3" /></aside>
+  <subsection name="feedback3" title=""><copy prop="feedback" tname="_award3" /></subsection>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -549,38 +549,38 @@ describe('Feedback Tag Tests', function () {
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
 
       cy.log("Type cos(pi x)")
       cy.get(mathinputAnchor).clear().type(`cos(pi x)`);
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').should('have.text', '')
-      cy.get('#\\/feedback2').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback2').should('have.text', ' FeedbackClose, but wrong trignometric function')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackClose, but wrong trignometric function')
 
 
       cy.log("Enter x")
@@ -596,8 +596,8 @@ describe('Feedback Tag Tests', function () {
       cy.get(mathinputPartialAnchor).should('have.text', '30 %');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
-      cy.get('#\\/feedback3').should('have.text', 'You lost pi')
-      cy.get('#\\/feedback4').should('have.text', 'You lost pi')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
 
     })
   });
@@ -618,7 +618,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -646,24 +646,24 @@ describe('Feedback Tag Tests', function () {
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Select half correct answer")
       cy.get(choiceinputAnchor).contains(`cat`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Select half incorrect answer")
       cy.get(choiceinputAnchor).contains(`monkey`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();

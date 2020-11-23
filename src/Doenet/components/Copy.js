@@ -1664,148 +1664,53 @@ export function replacementFromProp({ component, components, componentOrReplacem
   let propVariablesCopiedByReplacement = [];
 
   let replacementInd = -1;
-  for (let [targetInd, componentType] of component.stateValues.componentTypeByTarget.entries()) {
-    let propVariableObj = component.stateValues.propVariableObjs[targetInd];
-    let numReplacementsForTarget = 1;
-    if (Array.isArray(componentType)) {
-      numReplacementsForTarget = componentType.length;
-    }
 
-    let targetName = componentOrReplacementNames[targetInd];
-    let targetComponent = components[targetName];
-
-    let stateVarObj = targetComponent.state[propVariableObj.varName];
-
-    if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
-
-      let arrayStateVarObj, unflattenedArrayKeys;
-      if (stateVarObj.isArray) {
-        arrayStateVarObj = stateVarObj;
-        unflattenedArrayKeys = stateVarObj.getAllArrayKeys(stateVarObj.arraySize, false);
-      } else {
-        arrayStateVarObj = targetComponent.state[stateVarObj.arrayStateVariable];
-        unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
+  if (component.stateValues.componentTypeByTarget) {
+    for (let [targetInd, componentType] of component.stateValues.componentTypeByTarget.entries()) {
+      let propVariableObj = component.stateValues.propVariableObjs[targetInd];
+      let numReplacementsForTarget = 1;
+      if (Array.isArray(componentType)) {
+        numReplacementsForTarget = componentType.length;
       }
 
-      let wrappingComponents = stateVarObj.wrappingComponents;
-      let numWrappingComponents = wrappingComponents.length;
+      let targetName = componentOrReplacementNames[targetInd];
+      let targetComponent = components[targetName];
 
-      if (numWrappingComponents === 0) {
-        // return flattened entries
+      let stateVarObj = targetComponent.state[propVariableObj.varName];
 
-        let flattenedArrayKeys = flattenDeep(unflattenedArrayKeys);
+      if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
 
-        for (let ind = 0; ind < numReplacementsForTarget; ind++) {
-          replacementInd++;
-          let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
-
-          let replacementClass = component.stateValues.replacementClasses[replacementInd];
-
-          let componentType = replacementClass.componentType.toLowerCase();
-
-          let arrayKey = flattenedArrayKeys[ind];
-
-          if (arrayKey) {
-            let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-
-            propVariablesCopied.push(propVariable);
-
-            if (propVariableObj.containsComponentNamesToCopy) {
-
-              let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-              let componentToCopy = components[componentNameToCopy];
-
-              if (componentToCopy) {
-                while (componentToCopy.replacementOf
-                  && componentToCopy.replacementOf.replacements.length === 1
-                ) {
-                  componentToCopy = componentToCopy.replacementOf;
-                }
-
-                let stateForReplacementCopy;
-                if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
-                  stateForReplacementCopy = {
-                    targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
-                  }
-                }
-
-                let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                serializedReplacements.push({
-                  componentType: "copy",
-                  children: [{
-                    componentType: "tname",
-                    state: { targetName: componentToCopy.componentName },
-                  }],
-                  state: stateForReplacementCopy,
-                  uniqueIdentifier,
-                });
-
-                propVariablesCopied.push(componentToCopy.componentName)
-
-              } else {
-                // just give an empty component of componentType
-
-                let uniqueIdentifierBase = componentType + "|empty";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                serializedReplacements.push({
-                  componentType,
-                  uniqueIdentifier,
-                })
-                propVariablesCopied.push(null)
-
-              }
-
-            } else {
-              let uniqueIdentifierBase = targetName + "|shadow|" + propVariable;
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              serializedReplacements.push({
-                componentType: componentType,
-                downstreamDependencies: {
-                  [targetName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
-                },
-                uniqueIdentifier,
-              })
-            }
-          } else {
-            // didn't match an array key, so just add an empty component of componentType
-            let uniqueIdentifierBase = componentType + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier,
-            })
-          }
+        let arrayStateVarObj, unflattenedArrayKeys;
+        if (stateVarObj.isArray) {
+          arrayStateVarObj = stateVarObj;
+          unflattenedArrayKeys = stateVarObj.getAllArrayKeys(stateVarObj.arraySize, false);
+        } else {
+          arrayStateVarObj = targetComponent.state[stateVarObj.arrayStateVariable];
+          unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
         }
-      } else {
 
-        let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
+        let wrappingComponents = stateVarObj.wrappingComponents;
+        let numWrappingComponents = wrappingComponents.length;
 
-          let pieces = [];
-          let propVariablesCopiedByPiece = [];
+        if (numWrappingComponents === 0) {
+          // return flattened entries
 
-          if (nDimensionsLeft > 1) {
-            // since nDimensionsLeft > 1, each component of subArray should be an array
-            for (let subSubArrayKeys of subArrayKeys) {
-              // recurse down to previous dimension
-              let result = createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1);
-              pieces.push(...result.pieces);
-              propVariablesCopiedByPiece.push(...result.propVariablesCopiedByPiece);
-            }
+          let flattenedArrayKeys = flattenDeep(unflattenedArrayKeys);
 
-          } else {
-            // down to last piece
-            for (let arrayKey of subArrayKeys) {
+          for (let ind = 0; ind < numReplacementsForTarget; ind++) {
+            replacementInd++;
+            let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
+
+            let replacementClass = component.stateValues.replacementClasses[replacementInd];
+
+            let componentType = replacementClass.componentType.toLowerCase();
+
+            let arrayKey = flattenedArrayKeys[ind];
+
+            if (arrayKey) {
               let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-              let propVariablesCopiedForThisPiece = [propVariable];
+
+              propVariablesCopied.push(propVariable);
 
               if (propVariableObj.containsComponentNamesToCopy) {
 
@@ -1826,41 +1731,41 @@ export function replacementFromProp({ component, components, componentOrReplacem
                     }
                   }
 
-
                   let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
                   let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-                  pieces.push({
+                  serializedReplacements.push({
                     componentType: "copy",
                     children: [{
                       componentType: "tname",
                       state: { targetName: componentToCopy.componentName },
                     }],
                     state: stateForReplacementCopy,
-                    uniqueIdentifier
+                    uniqueIdentifier,
                   });
-                  propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
+
+                  propVariablesCopied.push(componentToCopy.componentName)
 
                 } else {
                   // just give an empty component of componentType
-                  let uniqueIdentifierBase = arrayStateVarObj.componentType + "|empty";
+
+                  let uniqueIdentifierBase = componentType + "|empty";
                   let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-                  pieces.push({
-                    componentType: arrayStateVarObj.componentType,
+                  serializedReplacements.push({
+                    componentType,
                     uniqueIdentifier,
                   })
-                  propVariablesCopiedForThisPiece.push(null)
+                  propVariablesCopied.push(null)
 
                 }
 
               } else {
-
                 let uniqueIdentifierBase = targetName + "|shadow|" + propVariable;
                 let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-                pieces.push({
-                  componentType: arrayStateVarObj.componentType,
+                serializedReplacements.push({
+                  componentType: componentType,
                   downstreamDependencies: {
                     [targetName]: [{
                       dependencyType: "referenceShadow",
@@ -1871,163 +1776,261 @@ export function replacementFromProp({ component, components, componentOrReplacem
                   uniqueIdentifier,
                 })
               }
-
-              propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
-            }
-          }
-
-          // we wrap this dimension if have corresponding wrapping components
-          let wrapCs = wrappingComponents[nDimensionsLeft - 1];
-          if (pieces.length > 0 && wrapCs && wrapCs.length > 0) {
-            for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
-              let uniqueIdentifierBase = wrapCs[ind] + "|wrapper";
+            } else {
+              // didn't match an array key, so just add an empty component of componentType
+              let uniqueIdentifierBase = componentType + "|empty";
               let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-              pieces = [{
-                componentType: wrapCs[ind],
-                children: pieces,
+              serializedReplacements.push({
+                componentType,
                 uniqueIdentifier,
-              }]
+              })
             }
-            propVariablesCopiedByPiece = [flattenDeep(propVariablesCopiedByPiece)];
           }
+        } else {
 
-          return { pieces, propVariablesCopiedByPiece };
+          let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
 
-        }
+            let pieces = [];
+            let propVariablesCopiedByPiece = [];
 
-        let result = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+            if (nDimensionsLeft > 1) {
+              // since nDimensionsLeft > 1, each component of subArray should be an array
+              for (let subSubArrayKeys of subArrayKeys) {
+                // recurse down to previous dimension
+                let result = createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1);
+                pieces.push(...result.pieces);
+                propVariablesCopiedByPiece.push(...result.propVariablesCopiedByPiece);
+              }
 
-        let newReplacements = result.pieces;
-        propVariablesCopiedByReplacement = result.propVariablesCopiedByPiece;
+            } else {
+              // down to last piece
+              for (let arrayKey of subArrayKeys) {
+                let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+                let propVariablesCopiedForThisPiece = [propVariable];
 
+                if (propVariableObj.containsComponentNamesToCopy) {
 
-        // add downstream dependencies to top level replacements
-        // (which are wrappers, so didn't get downstream dependencies originally)
-        for (let replacement of newReplacements) {
-          replacement.downstreamDependencies = {
-            [targetName]: [{
-              dependencyType: "referenceShadow",
-              compositeName: component.componentName,
-              propVariable: propVariableObj.varName,
-              ignorePrimaryStateVariable: true,
-            }]
-          }
-        }
+                  let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+                  let componentToCopy = components[componentNameToCopy];
 
-        replacementInd += newReplacements.length;
+                  if (componentToCopy) {
+                    while (componentToCopy.replacementOf
+                      && componentToCopy.replacementOf.replacements.length === 1
+                    ) {
+                      componentToCopy = componentToCopy.replacementOf;
+                    }
 
-        serializedReplacements.push(...newReplacements);
-
-        if (newReplacements.length < numReplacementsForTarget) {
-          // we didn't create enough replacements,
-          // which could happen if we have includeUndefinedArrayEntries set
-
-          // just create additional replacements,
-          // even though they won't yet refer to the right dependencies
-
-          for (let ind = newReplacements.length; ind < numReplacementsForTarget; ind++) {
-            replacementInd++;
-            propVariablesCopiedByReplacement[replacementInd] = [];
-
-            let replacementClass = component.stateValues.replacementClasses[replacementInd];
-            let componentType = replacementClass.componentType.toLowerCase();
-
-            // just add an empty component of componentType
-
-            let uniqueIdentifierBase = componentType + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier,
-            })
-          }
-
-        } else if (newReplacements > numReplacementsForTarget) {
-          throw Error(`Something went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
-        }
-
-      }
+                    let stateForReplacementCopy;
+                    if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
+                      stateForReplacementCopy = {
+                        targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
+                      }
+                    }
 
 
-    } else {
-      // if not array or array entry
+                    let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+                    let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-      for (let ind = 0; ind < numReplacementsForTarget; ind++) {
-        replacementInd++;
-        let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
+                    pieces.push({
+                      componentType: "copy",
+                      children: [{
+                        componentType: "tname",
+                        state: { targetName: componentToCopy.componentName },
+                      }],
+                      state: stateForReplacementCopy,
+                      uniqueIdentifier
+                    });
+                    propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
 
-        let replacementClass = component.stateValues.replacementClasses[replacementInd];
+                  } else {
+                    // just give an empty component of componentType
+                    let uniqueIdentifierBase = arrayStateVarObj.componentType + "|empty";
+                    let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-        let componentType = replacementClass.componentType.toLowerCase();
+                    pieces.push({
+                      componentType: arrayStateVarObj.componentType,
+                      uniqueIdentifier,
+                    })
+                    propVariablesCopiedForThisPiece.push(null)
 
-        propVariablesCopied.push(propVariableObj.varName);
+                  }
 
-        if (propVariableObj.containsComponentNamesToCopy) {
+                } else {
 
-          let componentNameToCopy = targetComponent.state[propVariableObj.varName].value
-          let componentToCopy = components[componentNameToCopy];
+                  let uniqueIdentifierBase = targetName + "|shadow|" + propVariable;
+                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-          if (componentToCopy) {
-            while (componentToCopy.replacementOf
-              && componentToCopy.replacementOf.replacements.length === 1
-            ) {
-              componentToCopy = componentToCopy.replacementOf;
-            }
+                  pieces.push({
+                    componentType: arrayStateVarObj.componentType,
+                    downstreamDependencies: {
+                      [targetName]: [{
+                        dependencyType: "referenceShadow",
+                        compositeName: component.componentName,
+                        propVariable
+                      }]
+                    },
+                    uniqueIdentifier,
+                  })
+                }
 
-            let stateForReplacementCopy;
-            if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
-              stateForReplacementCopy = {
-                targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
+                propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
               }
             }
 
-            let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+            // we wrap this dimension if have corresponding wrapping components
+            let wrapCs = wrappingComponents[nDimensionsLeft - 1];
+            if (pieces.length > 0 && wrapCs && wrapCs.length > 0) {
+              for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
+                let uniqueIdentifierBase = wrapCs[ind] + "|wrapper";
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-            serializedReplacements.push({
-              componentType: "copy",
-              children: [{
-                componentType: "tname",
-                state: { targetName: componentToCopy.componentName },
-              }],
-              state: stateForReplacementCopy,
-              uniqueIdentifier,
-            });
+                pieces = [{
+                  componentType: wrapCs[ind],
+                  children: pieces,
+                  uniqueIdentifier,
+                }]
+              }
+              propVariablesCopiedByPiece = [flattenDeep(propVariablesCopiedByPiece)];
+            }
 
-            propVariablesCopied.push(componentToCopy.componentName);
-
-          } else {
-            // just give an empty component of componentType
-            let uniqueIdentifierBase = componentType + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier,
-            })
-
-            propVariablesCopied.push(null);
+            return { pieces, propVariablesCopiedByPiece };
 
           }
 
-        } else {
+          let result = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
 
-          let uniqueIdentifierBase = targetName + "|shadow|" + propVariableObj.varName;
-          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+          let newReplacements = result.pieces;
+          propVariablesCopiedByReplacement = result.propVariablesCopiedByPiece;
 
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
+
+          // add downstream dependencies to top level replacements
+          // (which are wrappers, so didn't get downstream dependencies originally)
+          for (let replacement of newReplacements) {
+            replacement.downstreamDependencies = {
               [targetName]: [{
                 dependencyType: "referenceShadow",
                 compositeName: component.componentName,
                 propVariable: propVariableObj.varName,
+                ignorePrimaryStateVariable: true,
               }]
-            },
-            uniqueIdentifier,
-          })
+            }
+          }
+
+          replacementInd += newReplacements.length;
+
+          serializedReplacements.push(...newReplacements);
+
+          if (newReplacements.length < numReplacementsForTarget) {
+            // we didn't create enough replacements,
+            // which could happen if we have includeUndefinedArrayEntries set
+
+            // just create additional replacements,
+            // even though they won't yet refer to the right dependencies
+
+            for (let ind = newReplacements.length; ind < numReplacementsForTarget; ind++) {
+              replacementInd++;
+              propVariablesCopiedByReplacement[replacementInd] = [];
+
+              let replacementClass = component.stateValues.replacementClasses[replacementInd];
+              let componentType = replacementClass.componentType.toLowerCase();
+
+              // just add an empty component of componentType
+
+              let uniqueIdentifierBase = componentType + "|empty";
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+              serializedReplacements.push({
+                componentType,
+                uniqueIdentifier,
+              })
+            }
+
+          } else if (newReplacements > numReplacementsForTarget) {
+            throw Error(`Something went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
+          }
+
+        }
+
+
+      } else {
+        // if not array or array entry
+
+        for (let ind = 0; ind < numReplacementsForTarget; ind++) {
+          replacementInd++;
+          let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
+
+          let replacementClass = component.stateValues.replacementClasses[replacementInd];
+
+          let componentType = replacementClass.componentType.toLowerCase();
+
+          propVariablesCopied.push(propVariableObj.varName);
+
+          if (propVariableObj.containsComponentNamesToCopy) {
+
+            let componentNameToCopy = targetComponent.state[propVariableObj.varName].value
+            let componentToCopy = components[componentNameToCopy];
+
+            if (componentToCopy) {
+              while (componentToCopy.replacementOf
+                && componentToCopy.replacementOf.replacements.length === 1
+              ) {
+                componentToCopy = componentToCopy.replacementOf;
+              }
+
+              let stateForReplacementCopy;
+              if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
+                stateForReplacementCopy = {
+                  targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
+                }
+              }
+
+              let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+              serializedReplacements.push({
+                componentType: "copy",
+                children: [{
+                  componentType: "tname",
+                  state: { targetName: componentToCopy.componentName },
+                }],
+                state: stateForReplacementCopy,
+                uniqueIdentifier,
+              });
+
+              propVariablesCopied.push(componentToCopy.componentName);
+
+            } else {
+              // just give an empty component of componentType
+              let uniqueIdentifierBase = componentType + "|empty";
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+              serializedReplacements.push({
+                componentType,
+                uniqueIdentifier,
+              })
+
+              propVariablesCopied.push(null);
+
+            }
+
+          } else {
+
+            let uniqueIdentifierBase = targetName + "|shadow|" + propVariableObj.varName;
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+            serializedReplacements.push({
+              componentType,
+              downstreamDependencies: {
+                [targetName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable: propVariableObj.varName,
+                }]
+              },
+              uniqueIdentifier,
+            })
+          }
         }
       }
     }
