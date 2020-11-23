@@ -12,6 +12,8 @@ $userId = $jwtArray['userId'];
 
 $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$folderId = mysqli_real_escape_string($conn,$_REQUEST["folderId"]);
+$label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
 
 $success = TRUE;
@@ -39,17 +41,19 @@ if ($isRepo){
 
 
 if ($success){
-  $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
-  $children_arr = array_keys($results_arr[$parentId]);
-  // foreach ($children_arr as &$childId){
-  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
-  // }
+  $sql="
+  INSERT INTO folder 
+  (driveId,folderId,parentId,label,userId,creationDate)
+  VALUES
+  ('$driveId','$folderId','$parentId','$label','$userId',NOW())
+  ";
+  $result = $conn->query($sql); 
+
 }
 
 // var_dump($results_arr);
 
 $response_arr = array(
-  "results"=>$results_arr,
   "success"=>$success
   );
 
@@ -59,38 +63,5 @@ http_response_code(200);
 // make it json format
 echo json_encode($response_arr);
 $conn->close();
-
-function selectChildren($parentId,$userId,$driveId,$conn){
-  $return_arr = array();
-  //ADD FOLDERS AND REPOS
-  $sql="
-  SELECT 
-    f.folderId as folderId,
-    f.label as label,
-    f.parentId as parentId,
-    f.creationDate as creationDate,
-    f.isRepo as isRepo
-  FROM folder AS f
-  WHERE userId = '$userId'
-  AND parentId = '$parentId'
-  AND driveId = '$driveId'
-  ";
-
-  $result = $conn->query($sql); 
-  while($row = $result->fetch_assoc()){ 
-    $type = "Folder";
-    if ($row['isRepo']){$type = "Repo";}
-  $item = array(
-    "id"=>$row['folderId'],
-    "label"=>$row['label'],
-    "parentId"=>$parentId,
-    "type"=>$type
-  );
-  $return_arr[$row['folderId']] = $item;
-  // array_push($return_arr, $item);
-  }
-  return $return_arr;
-}
-
 
 ?>

@@ -4,6 +4,7 @@ import {
   useQueryCache,
   QueryCache,
   ReactQueryCacheProvider,
+  useMutation,
 } from 'react-query'
 import axios from "axios";
 import './util.css';
@@ -21,14 +22,16 @@ const queryCache = new QueryCache();
 export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
+  <AddNode type="Folder" />
+  {/* <AddNode type="DoenetMl" /> */}
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} />
-  <BrowserRouted drive="assignment" isNav={true} />
+  {/* <BrowserRouted drive="assignment" isNav={true} /> */}
   </div>
   <div>
-  <BrowserRouted drive="content" />
-  <BrowserRouted drive="assignment" />
+  {/* <BrowserRouted drive="content" /> */}
+  {/* <BrowserRouted drive="assignment" /> */}
   </div>
   </div>
   <ReactQueryDevtools />
@@ -42,12 +45,64 @@ return <>
 //   if (!parentId){parentId = props.drive}
 //   return useQuery(["nodes",{parentId,driveId:props.drive}], loadFolderContent,{staleTime:30000})
 // }
+const addFolderMutation = ({label, driveId, parentId}) =>{
+  const folderId = nanoid();
+
+  const data = {parentId,folderId,driveId,label}
+  console.log(">>>data",data)
+    const payload = {
+      params: data
+    }
+    axios.get("/api/addFolder.php", payload)
+    .then((resp)=>console.log(">>>addFolderMutation resp.data",resp.data))
+
+  return {driveId,parentId}
+} 
+
+function AddNode(props){
+
+  function AddNodeButton(props){
+    const cache = useQueryCache();
+    const [label,setLabel] = useState('')
+    const [addFolder] = useMutation(addFolderMutation,{onSuccess:(obj)=>{
+      console.log("SUCCESS!",obj)
+      console.log(">>>REMOVING!!!",["nodes",obj.driveId,obj.parentId,"alphabetical label ascending"])
+      cache.removeQueries(["nodes",obj.driveId,obj.parentId,"alphabetical label ascending"])
+      console.log(">>>invalidateQueries",["nodes",obj.driveId,obj.parentId])
+      cache.invalidateQueries(["nodes",obj.driveId,obj.parentId])
+      
+    }});
+
+    let routePathDriveId = "";
+    let routePathFolderId = "";
+    let driveFolderPath = props.route.location.pathname.split("/").filter(i=>i)[0] //filter out ""
+    
+    if (driveFolderPath !== undefined){
+      [routePathDriveId,routePathFolderId] = driveFolderPath.split(":");
+      if (routePathDriveId !== "" && routePathFolderId === ""){routePathFolderId = routePathDriveId;}
+    }
+
+    if (props.type === "Folder"){
+      return (<span><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} /><button disabled={routePathFolderId === ""} 
+      onClick={()=>{
+        addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label});
+        setLabel('');  //reset input field
+      }}>Add {props.type}</button></span>)
+    }
+      return <span>Unknown type {props.type}</span>
+    
+    
+  }
+  return <Router><Switch>
+           <Route path="/" render={(routeprops)=><AddNodeButton route={{...routeprops}} {...props} />}></Route>
+         </Switch></Router>
+ }
 
 const loadFolderContent = async (_,driveId,parentId) => {
   const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`
   );
-  console.log("data",data)
+  console.log(`>>>loadFolderContent driveId "${driveId}" parentId "${parentId}" data`,data)
   //TODO: Handle fail
   return data.results;
 }
@@ -189,6 +244,7 @@ function Browser(props){
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
     let folderData = cache.getQueryData(["nodes",driveId,parentId]);
+    console.log(">>>buildNodes folderData",folderData)
     if (!folderData){
       //TODO: Make key unique
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
@@ -199,6 +255,7 @@ function Browser(props){
     }else{
 
       let nodeArray = getSortedChildren(driveId,parentId,sortingOrder);
+      console.log(">>>buildNodes nodeArray",nodeArray)
       if (nodeArray.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
       for (const node of nodeArray){
         nodeIdArray.push(node.id);
@@ -241,7 +298,6 @@ function Browser(props){
     rootParentId = props.drive;
     displayDriveId = props.drive;
   }
-  console.log(">>>rootParentId",rootParentId)
   const [nodes,nodeIdArray] = buildNodes({driveId:displayDriveId,parentId:rootParentId,sortingOrder});
   nodeIdRefArray.current = nodeIdArray;
 
@@ -274,18 +330,23 @@ const LoadingNode =  React.memo(function Node(props){
   }} ><div className="noselect" style={{ textAlign: "center" }} >LOADING...</div></div>)
 })
 
-const Node = React.memo(function Node(props){
-  const {data,isLoading,isFetching} = useQuery(["nodes",props.driveId,props.parentId],loadFolderContent,{staleTime:30000})
-  const nodeData = data[props.parentId][props.nodeId];
+const Node = function Node(props){
+  // const Node = React.memo(function Node(props){
   console.log("===NODE TOP id",props.parentId,props.nodeId)
-  // console.log(">>>nodeData",nodeData)
+  const {data} = useQuery(["nodes",props.driveId,props.parentId],loadFolderContent,{notifyOnStatusChange:false,staleTime:30000})
+  const children = useQuery(["nodes",props.driveId,props.nodeId],loadFolderContent,{notifyOnStatusChange:false,staleTime:30000})
+  const nodeData = data[props.parentId][props.nodeId];
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
-  let children = data[props.nodeId];
-  let numChildren = Object.keys(children).length;
+  // let children = data[props.nodeId];
+  // let numChildren = Object.keys(children).length;
+  let numChildren = 0;
+  if (children && children.data){
+    numChildren = Object.keys(children.data[props.nodeId]).length;
+  }
 
   //Toggle
   let openOrClose = "Open";
@@ -347,4 +408,5 @@ const Node = React.memo(function Node(props){
     }}>{toggle} [FOLDER] {nodeData.label} ({numChildren}){deleteNode}</div></div>
   
   </>
-})
+}
+// })
