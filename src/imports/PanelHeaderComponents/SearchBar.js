@@ -14,7 +14,8 @@ export default function Searchbar() {
         position: 'relative',
         padding: '0px 70px 0px 30px',
         color: '#000',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        width: '220px'
        }
     var searchIcon = {
         margin: '6px 0px 0px 6px',
