@@ -282,7 +282,7 @@ function Browser(props){
           handleDeselectAll={handleDeselectAll}
           level={level}/>)
         if (isOpen){
-          buildNodes({driveId:pathDriveId,parentId:node.id,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
+          buildNodes({driveId,parentId:node.id,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
         }
   
       }
