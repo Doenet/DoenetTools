@@ -113,10 +113,32 @@ function BrowserRouted(props){
          </Switch></Router>
  }
 
+ const deleteFolderMutation = ({driveId, parentId, nodeId }) =>{
+
+  const data = {driveId,parentId,folderId:nodeId}
+    const payload = {
+      params: data
+    }
+    axios.get("/api/deleteFolder.php", payload)
+    .then((resp)=>{
+      console.log(">>>resp.data",resp.data)
+    })
+
+  return {driveId,parentId,nodeId}
+} 
+
 function Browser(props){
   console.log(`===TOP OF BROWSER drive=${props.drive}`)
   const browser = useQuery(["browser",props.drive],()=>{}) //For refreshing Browser after nodes mutate
-
+  const [deleteFolder] = useMutation(deleteFolderMutation,{onSuccess:(obj)=>{
+    cache.removeQueries(["nodes",obj.driveId,obj.parentId,"alphabetical label ascending"])
+    cache.removeQueries(["nodes",obj.driveId,obj.parentId])
+    // cache.invalidateQueries(["nodes",obj.driveId,obj.parentId])
+    // .then((x)=>{
+      //Wait for node data to finish updating then refresh browser
+      cache.invalidateQueries(["browser",obj.driveId])
+    // })
+  }});
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [toggleNodeId,setToggleNode] = useState([]);
@@ -275,6 +297,7 @@ function Browser(props){
           nodeId={node.id}
           driveId={props.drive}
           parentId={parentId}
+          deleteFolder={deleteFolder}
           isOpen={isOpen} 
           appearance={appearance}
           handleFolderToggle={handleFolderToggle} 
@@ -369,6 +392,7 @@ const LoadingNode =  React.memo(function Node(props){
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
+    props.deleteFolder({driveId:props.driveId,parentId:props.parentId,nodeId:props.nodeId})
   }}
   onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}

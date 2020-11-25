@@ -69,11 +69,13 @@ function selectChildren($parentId,$userId,$driveId,$conn){
     f.label as label,
     f.parentId as parentId,
     f.creationDate as creationDate,
-    f.isRepo as isRepo
+    f.isRepo as isRepo,
+    f.isDeleted as isDeleted
   FROM folder AS f
   WHERE userId = '$userId'
   AND parentId = '$parentId'
   AND driveId = '$driveId'
+  AND isDeleted = 0
   ";
 
   $result = $conn->query($sql); 

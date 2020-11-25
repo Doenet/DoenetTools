@@ -13,40 +13,27 @@ $userId = $jwtArray['userId'];
 $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $folderId = mysqli_real_escape_string($conn,$_REQUEST["folderId"]);
-$label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
-$isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
+// $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
 
 $success = TRUE;
 $results_arr = array();
-//If not given parentId then use the user's drive
-if ($parentId == ""){
-  // $sql="
-  // SELECT
-  //  driveId 
-  // FROM user
-  // WHERE userId = '$userId'
-  // ";
-  
-  // $result = $conn->query($sql); 
-  // $row = $result->fetch_assoc();
-  $parentId = "content";
-  $isRepo = FALSE;
-}
-
-if ($isRepo){
-//Is the user is a part of the group or is the repo public?
-//TODO: Set $success = FALSE if user doesn't have access
-}
-
 
 
 if ($success){
-  $sql="
-  INSERT INTO folder 
-  (driveId,folderId,parentId,label,userId,creationDate,isRepo)
-  VALUES
-  ('$driveId','$folderId','$parentId','$label','$userId',NOW(),0)
+  // $sql="
+  // DELETE FROM folder 
+  // WHERE driveId = '$driveId'
+  // AND folderId = '$folderId'
+  // AND parentId = '$parentId'
+  // ";
+    $sql="
+  UPDATE folder 
+  SET isDeleted='1'
+  WHERE driveId = '$driveId'
+  AND folderId = '$folderId'
+  AND parentId = '$parentId'
   ";
+  echo $sql;
   $result = $conn->query($sql); 
 
 }
