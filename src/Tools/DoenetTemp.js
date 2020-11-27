@@ -23,7 +23,7 @@ const queryCache = new QueryCache();
 export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
-  {/* <AddNode type="Folder" /> */}
+  <AddNode type="Folder" />
   {/* <AddNode type="DoenetMl" /> */}
   <div style={{display:"flex"}}> 
   <div>
@@ -40,6 +40,57 @@ return <>
 </ReactQueryCacheProvider>
 </>
 };
+
+const addFolderMutation = ({label, driveId, parentId}) =>{
+  const folderId = nanoid();
+
+  const data = {parentId,folderId,driveId,label}
+    const payload = {
+      params: data
+    }
+    axios.get("/api/addFolder.php", payload)
+    .then((resp)=>{})
+
+  return {driveId,parentId}
+} 
+
+function AddNode(props){
+
+  function AddNodeButton(props){
+    const cache = useQueryCache();
+    const [label,setLabel] = useState('')
+    const [addFolder] = useMutation(addFolderMutation,{onSuccess:(obj)=>{
+      console.log("add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
+      // console.log(">>>query observers",query.observers)
+    const query = cache.getQuery(["nodes","content","content"]);
+    query.observers[0].fetchMore(obj.parentId); //IS THIS GOOD PRACTICE?
+      
+    }});
+
+    let routePathDriveId = "";
+    let routePathFolderId = "";
+    let driveFolderPath = props.route.location.pathname.split("/").filter(i=>i)[0] //filter out ""
+    
+    if (driveFolderPath !== undefined){
+      [routePathDriveId,routePathFolderId] = driveFolderPath.split(":");
+      if (routePathDriveId !== "" && routePathFolderId === ""){routePathFolderId = routePathDriveId;}
+    }
+
+    if (props.type === "Folder"){
+      return (<span><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} /><button disabled={routePathFolderId === ""} 
+      onClick={()=>{
+        addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label});
+        setLabel('');  //reset input field
+      }}>Add {props.type}</button></span>)
+    }
+      return <span>Unknown type {props.type}</span>
+    
+    
+  }
+  return <Router><Switch>
+           <Route path="/" render={(routeprops)=><AddNodeButton route={{...routeprops}} {...props} />}></Route>
+         </Switch></Router>
+ }
 
 
 
@@ -92,11 +143,11 @@ function Browser(props){
     isFetching, 
     isFetchingMore, 
     fetchMore, 
-    canFetchMore, 
     error} = useInfiniteQuery(['nodes',pathDriveId,rootFolderId], fetchChildrenNodes, {
+      refetchOnWindowFocus: false,
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
-        console.log("Success!",data)
+        console.log("useInfiniteQuery Success!",data)
         let nodeId = Object.keys(data[indexOfLastItem])[0];
         nodeHash.current[nodeId] = indexOfLastItem;
       },
@@ -109,7 +160,7 @@ function Browser(props){
     }})
 
  
-  console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching)
+  console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
 
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
