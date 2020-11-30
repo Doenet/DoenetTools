@@ -21,18 +21,34 @@ import {
 const queryCache = new QueryCache();
 
 export default function app() {
+
+  let syncNodeIdToDataIndex = useRef({});
+  let syncNodeIdToChildren = useRef({});
+
+  let driveSync = {update,get}
+
+  function update(driveId,nodeIdToDataIndex,nodeIdToChildren){
+    // console.log("UPDATE",driveId,nodeIdToDataIndex,nodeIdToChildren)
+    syncNodeIdToDataIndex.current[driveId] = nodeIdToDataIndex;
+    syncNodeIdToChildren.current[driveId] = nodeIdToChildren;
+  }
+  function get(driveId){
+    console.log("GET",driveId)
+    return [syncNodeIdToDataIndex.current[driveId],syncNodeIdToChildren.current[driveId]];
+  }
+
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
   <AddNode type="Folder" />
   {/* <AddNode type="DoenetMl" /> */}
   <div style={{display:"flex"}}> 
   <div>
-  <BrowserRouted drive="content" isNav={true} />
-  {/* <BrowserRouted drive="assignment" isNav={true} /> */}
+  <BrowserRouted drive="content" isNav={true} driveSync={driveSync}/>
+  <BrowserRouted drive="assignment" isNav={true} driveSync={driveSync}/>
   </div>
   <div>
-  {/* <BrowserRouted drive="content" /> */}
-  {/* <BrowserRouted drive="assignment" /> */}
+  <BrowserRouted drive="content" driveSync={driveSync}/>
+  <BrowserRouted drive="assignment" driveSync={driveSync}/>
   </div>
   </div>
   <ReactQueryDevtools />
@@ -89,39 +105,21 @@ function AddNode(props){
       (old)=>{
         //We are adding a folder so we need the previous folders
         //Find the most recent mention of parentId
-        let newObj;
-        console.log(">>>old",old);
-        console.log(JSON.parse(JSON.stringify(old)));
+        // console.log(">>>old",old);
+        // console.log(JSON.parse(JSON.stringify(old)));
         
 
-      //   for (let i = old.length-1; i >= 0; i--){
-      //     console.log(">>>old i",i,old[i]);
-      //     //If we had the info already then make a copy
-      //     if (Object.keys(old[i])[0] === obj.parentId){
-      //       newObj = {...old[i]}
-      //       break;
-      //     }
-      //   }
-      //   console.log(">>>newObj before",newObj)
-      //   //if hasn't been loaded yet then we don't need to track it
-      //   if (newObj === undefined){
-      //     return old
-      //   }
-      // newObj = {}
-      // newObj[obj.parentId] = {}
-      //   newObj[obj.parentId][obj.folderId] = {
-      //     id:obj.folderId,
-      //     label,
-      //     parentId:obj.parentId,
-      //     type:"Folder"
-      //   }
-      // old.push(newObj);
-      old.push({add:{
-          id:obj.folderId,
-          label,
-          parentId:obj.parentId,
-          type:"Folder"
-      }})
+      old.push({
+          add:{
+            driveId:obj.driveId,
+            node:{
+            id:obj.folderId,
+            label,
+            parentId:obj.parentId,
+            type:"Folder"
+            }
+          }
+      })
       return old
       })
       // cache.fetchMore(obj.parentId); //Doesn't work
@@ -199,8 +197,8 @@ function Browser(props){
     rootFolderId = props.drive;
   }
 
-  let nodeHash = useRef({});
-  let nodeChildrenHash = useRef({});
+  let nodeIdToDataIndex = useRef({});
+  let nodeIdToChildren = useRef({});
 
   const {
     data,
@@ -212,50 +210,68 @@ function Browser(props){
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
         console.log(">>>useInfiniteQuery Success!",data)
-        
+        //Protect if data is already converted to an array
+        if (Array.isArray(data[indexOfLastItem])){ 
+          console.log(">>>Needs update!!!!")
+          // console.log(">>>before sync",nodeIdToDataIndex.current,nodeIdToChildren.current)
+         let [nodeIdToDataIndexTemp,nodeIdToChildrenTemp] = props.driveSync.get(props.drive);
+         nodeIdToDataIndex.current = nodeIdToDataIndexTemp;
+         nodeIdToChildren.current = nodeIdToChildrenTemp;
+          // console.log(">>>after sync",nodeIdToDataIndex.current,nodeIdToChildren.current)
+        }else{
+
         let parentNodeId = Object.keys(data[indexOfLastItem])[0];
         if (parentNodeId === "add"){
           //Latest data is instructions for adding
-          const addFolderObj = data[indexOfLastItem].add;
-          let childrenIds = [];
-          if (nodeHash.current[addFolderObj.parentId]){
-            childrenIds = [...data[nodeHash.current[addFolderObj.parentId]]]
+          const addFolderObj = data[indexOfLastItem].add.node;
+          console.log(">>>ADD!!!",data[indexOfLastItem])
+          if (data[indexOfLastItem].add.driveId === props.drive){
+            let childrenIds = [];
+            if (nodeIdToDataIndex.current[addFolderObj.parentId]){
+              childrenIds = [...data[nodeIdToDataIndex.current[addFolderObj.parentId]]]
+            }
+            nodeIdToDataIndex.current[addFolderObj.parentId] = indexOfLastItem;
+            nodeIdToChildren.current[addFolderObj.id] = addFolderObj;
+            childrenIds.push(addFolderObj.id)
+            data[indexOfLastItem] = childrenIds;
           }
-          nodeHash.current[addFolderObj.parentId] = indexOfLastItem;
-          nodeChildrenHash.current[addFolderObj.id] = addFolderObj;
-          childrenIds.push(addFolderObj.id)
-          data[indexOfLastItem] = childrenIds;
+          
         }else if (parentNodeId === "delete"){
           //Latest data is instructions for delete
           const deleteFolderObj = data[indexOfLastItem].delete;
-          let childrenIds = [];
-          if (nodeHash.current[deleteFolderObj.parentId]){
-            childrenIds = [...data[nodeHash.current[deleteFolderObj.parentId]]]
-          }
-          nodeHash.current[deleteFolderObj.parentId] = indexOfLastItem;
-          console.log(JSON.parse(JSON.stringify(childrenIds)));
-          
-          childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
-          console.log(JSON.parse(JSON.stringify(childrenIds)));
+          if (deleteFolderObj.driveId === props.drive){
+            let childrenIds = [];
+            if (nodeIdToDataIndex.current[deleteFolderObj.parentId]){
+              childrenIds = [...data[nodeIdToDataIndex.current[deleteFolderObj.parentId]]]
+            }
+            nodeIdToDataIndex.current[deleteFolderObj.parentId] = indexOfLastItem;
+            console.log(JSON.parse(JSON.stringify(childrenIds)));
+            
+            childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
+            console.log(JSON.parse(JSON.stringify(childrenIds)));
 
-          console.log(">>>DELETE",deleteFolderObj)
-          data[indexOfLastItem] = childrenIds;
-        
+            console.log(">>>DELETE",deleteFolderObj)
+            data[indexOfLastItem] = childrenIds;
+          }
         }else{
-          nodeHash.current[parentNodeId] = indexOfLastItem;
+          nodeIdToDataIndex.current[parentNodeId] = indexOfLastItem;
           let childrenIds = [];
           for (let nodeId of Object.keys(data[indexOfLastItem][parentNodeId])){
             childrenIds.push(nodeId)
             //Need to not change object to prevent refreshes so reuse the same one
-            if (!nodeChildrenHash.current[nodeId]){
-              nodeChildrenHash.current[nodeId] = data[indexOfLastItem][parentNodeId][nodeId];
+            if (!nodeIdToChildren.current[nodeId]){
+              nodeIdToChildren.current[nodeId] = data[indexOfLastItem][parentNodeId][nodeId];
             }
           }
           data[indexOfLastItem] = childrenIds;
         }
+
+        console.log(">>>nodeIdToDataIndex.current",nodeIdToDataIndex.current)
+        console.log(">>>nodeIdToChildren.current",nodeIdToChildren.current)
+        props.driveSync.update(props.drive,nodeIdToDataIndex.current,nodeIdToChildren.current)
+      }
         
-        console.log(">>>nodeHash",nodeHash)
-        console.log(">>>nodeChildrenHash.current",nodeChildrenHash.current)
+        
         // cache.setQueryData(['nodes',props.drive],['test'])
         // return [1,2];
       },
@@ -279,7 +295,7 @@ function Browser(props){
     }});
 
  
-  // console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
+  // console.log(">>>useInfiniteQuery data",data,"nodeIdToDataIndex",nodeIdToDataIndex.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
 
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
@@ -377,7 +393,7 @@ function Browser(props){
   }
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
-    let index = nodeHash.current[parentId];
+    let index = nodeIdToDataIndex.current[parentId];
 
     let parentArr = data[index];
 
@@ -393,7 +409,7 @@ function Browser(props){
 
       for(let nodeId of parentArr){
         nodeIdArray.push(nodeId); //needed to calculate shift click selections
-        let node = nodeChildrenHash.current[nodeId];
+        let node = nodeIdToChildren.current[nodeId];
         let isOpen = false;
         if (openNodesObj[nodeId]){ isOpen = true;}
         
