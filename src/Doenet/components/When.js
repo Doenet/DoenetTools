@@ -8,7 +8,7 @@ export default class When extends BaseComponent {
   static componentType = "when";
   static rendererType = undefined;
 
-  static alwaysContinueUpstreamUpdates = true;
+  static stateVariableForPropertyValue = "conditionSatisfied";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

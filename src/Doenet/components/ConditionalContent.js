@@ -1,6 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { postProcessCopy } from '../utils/copy';
-import ComponentSize from './abstract/ComponentSize';
 
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalcontent";

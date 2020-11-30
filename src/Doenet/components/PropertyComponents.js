@@ -860,11 +860,6 @@ export class MergeMathLists extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class MergeNumberLists extends BooleanComponent {
-  static componentType = "mergenumberlists";
-  static rendererType = "boolean";
-}
-
 export class AttractThreshold extends NumberComponent {
   static componentType = "attractthreshold";
   static rendererType = "number";

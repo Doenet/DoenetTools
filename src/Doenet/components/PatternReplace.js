@@ -3,8 +3,6 @@ import BaseComponent from './abstract/BaseComponent';
 export class Pattern extends BaseComponent {
   static componentType="pattern";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -23,8 +21,6 @@ export class Pattern extends BaseComponent {
 
 export class Replace extends BaseComponent {
   static componentType="replace";
-
-  static alwaysContinueUpstreamUpdates = true;
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);

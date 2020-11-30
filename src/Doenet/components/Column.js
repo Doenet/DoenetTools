@@ -4,8 +4,6 @@ export default class Column extends BaseComponent {
   static componentType = "column";
   static rendererType = "container";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 

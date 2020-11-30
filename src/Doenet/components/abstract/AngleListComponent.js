@@ -4,8 +4,6 @@ import { breakStringsAndOthersIntoComponentsByStringCommas } from '../commonsuga
 export default class AngleListComponent extends BaseComponent {
   static componentType = "_anglelistcomponent";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.hide = { default: true };

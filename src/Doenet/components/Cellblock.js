@@ -5,8 +5,6 @@ export default class Cellblock extends BaseComponent {
   static componentType = "cellblock";
   static rendererType = "container";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
