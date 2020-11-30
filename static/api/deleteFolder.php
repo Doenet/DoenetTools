@@ -33,7 +33,7 @@ if ($success){
   AND folderId = '$folderId'
   AND parentId = '$parentId'
   ";
-  echo $sql;
+  // echo $sql;
   $result = $conn->query($sql); 
 
 }

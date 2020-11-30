@@ -28,11 +28,11 @@ return <>
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} />
-  <BrowserRouted drive="assignment" isNav={true} />
+  {/* <BrowserRouted drive="assignment" isNav={true} /> */}
   </div>
   <div>
-  <BrowserRouted drive="content" />
-  <BrowserRouted drive="assignment" />
+  {/* <BrowserRouted drive="content" /> */}
+  {/* <BrowserRouted drive="assignment" /> */}
   </div>
   </div>
   <ReactQueryDevtools />
@@ -57,6 +57,25 @@ const addFolderMutation = ({label, driveId, parentId}) =>{
 
   return {driveId,parentId,folderId,label}
 } 
+
+const deleteFolderMutation = ({driveId, parentId, folderId}) =>{
+
+  const data = {driveId,parentId,folderId}
+    const payload = {
+      params: data
+    }
+  console.log('>>>deleteFolderMutation',data)
+
+    axios.get("/api/deleteFolder.php", payload)
+    .then((resp)=>{
+      console.log('>>>delete folder mutation completed')
+      console.log(resp.data)
+    })
+
+  return {driveId,parentId,folderId}
+} 
+
+
 
 function AddNode(props){
 
@@ -133,8 +152,6 @@ function AddNode(props){
          </Switch></Router>
  }
 
-
-
 const fetchChildrenNodes = async (queryKey,driveId,fetchMoreParentId) => {
   let parentId = fetchMoreParentId;
   if (!parentId){
@@ -199,6 +216,42 @@ function Browser(props){
         // console.log(">>>allGroups",allGroups)
         return lastGroup.nextCursor;
     }})
+
+    const [deleteFolder] = useMutation(deleteFolderMutation,{
+      // onSettled:(obj)=>{
+      //   console.log(">>>add folder SETTLED",obj);
+      // },
+      // onMutate:(obj)=>{
+      //   console.log(">>>add folder Mutate",obj);
+      // },
+      onSuccess:(obj)=>{
+      console.log(">>>delete folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
+      cache.setQueryData(["nodes",obj.driveId],
+      (old)=>{
+      //Find the most recent mention of parentId
+        let newObj;
+      console.log(">>>delete old",old);
+
+        for (let i = old.length-1; i >= 0; i--){
+          console.log(">>>old i",i,old[i]);
+          //If we had the info already then make a copy
+          if (Object.keys(old[i])[0] === obj.parentId){
+            newObj = {...old[i]}
+            break;
+          }
+        }
+        console.log(">>>newObj before",newObj)
+        //if hasn't been loaded yet then we don't need to track it
+        if (newObj === undefined){
+          return old
+        }
+        delete newObj[obj.parentId][obj.folderId];
+    
+      old.push(newObj);
+      return old
+      })
+      
+    }});
 
  
   // console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
@@ -292,8 +345,9 @@ function Browser(props){
 
   // if (isFetching){ return <div>Loading...</div>}
 
-  function deleteFolder(nodeId){
-    console.log(">>>delete",nodeId)
+  function deleteFolderHandler(nodeObj){
+    // console.log(">>>delete",nodeObj)
+    deleteFolder(nodeObj);
   }
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
@@ -332,7 +386,7 @@ function Browser(props){
           nodeId={node.id}
           driveId={props.drive}
           parentId={parentId}
-          deleteFolder={deleteFolder}
+          deleteFolderHandler={deleteFolderHandler}
           isOpen={isOpen} 
           appearance={appearance}
           handleFolderToggle={handleFolderToggle} 
@@ -423,7 +477,7 @@ const LoadingNode =  React.memo(function Node(props){
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
-    props.deleteFolder({driveId:props.driveId,parentId:props.parentId,nodeId:props.nodeId})
+    props.deleteFolderHandler({driveId:props.driveId,parentId:props.parentId,folderId:props.nodeId})
   }}
   onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
