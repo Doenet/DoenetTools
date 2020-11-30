@@ -31,7 +31,7 @@ return <>
   {/* <BrowserRouted drive="assignment" isNav={true} /> */}
   </div>
   <div>
-  {/* <BrowserRouted drive="content" /> */}
+  <BrowserRouted drive="content" />
   {/* <BrowserRouted drive="assignment" /> */}
   </div>
   </div>
@@ -44,14 +44,18 @@ return <>
 const addFolderMutation = ({label, driveId, parentId}) =>{
   const folderId = nanoid();
 
-  const data = {parentId,folderId,driveId,label}
+  const data = {driveId,parentId,folderId,label}
     const payload = {
       params: data
     }
-    axios.get("/api/addFolder.php", payload)
-    .then((resp)=>{})
+  console.log('>>>addFolderMutation',data)
 
-  return {driveId,parentId}
+    axios.get("/api/addFolder.php", payload)
+    .then((resp)=>{
+      // console.log('>>>add folder mutation completed')
+    })
+
+  return {driveId,parentId,folderId,label}
 } 
 
 function AddNode(props){
@@ -59,11 +63,47 @@ function AddNode(props){
   function AddNodeButton(props){
     const cache = useQueryCache();
     const [label,setLabel] = useState('')
-    const [addFolder] = useMutation(addFolderMutation,{onSuccess:(obj)=>{
-      console.log("add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
+    const [addFolder] = useMutation(addFolderMutation,{
+      // onSettled:(obj)=>{
+      //   console.log(">>>add folder SETTLED",obj);
+      // },
+      // onMutate:(obj)=>{
+      //   console.log(">>>add folder Mutate",obj);
+      // },
+      onSuccess:(obj)=>{
+      console.log(">>>add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
+      cache.setQueryData(["nodes",obj.driveId,"content"],
+      (old)=>{
+        //Find the most recent mention of parentId
+        let newObj;
+      console.log(">>>old",old);
+
+        for (let i = old.length-1; i >= 0; i--){
+          console.log(">>>old i",i,old[i]);
+          //If we had the info already then make a copy
+          if (Object.keys(old[i])[0] === obj.parentId){
+            newObj = {...old[i]}
+            break;
+          }
+        }
+        console.log(">>>newObj before",newObj)
+        //if hasn't been loaded yet then we don't need to track it
+        if (newObj === undefined){
+          return old
+        }
+        newObj[obj.parentId][obj.folderId] = {
+          id:obj.folderId,
+          label,
+          parentId:obj.parentId,
+          type:"Folder"
+        }
+      old.push(newObj);
+      return old
+      })
+      // cache.fetchMore(obj.parentId); //Doesn't work
       // console.log(">>>query observers",query.observers)
-    const query = cache.getQuery(["nodes","content","content"]);
-    query.observers[0].fetchMore(obj.parentId); //IS THIS GOOD PRACTICE?
+    // const query = cache.getQuery(["nodes","content","content"]);
+    // query.observers[0].fetchMore(obj.parentId); //IS THIS BEST PRACTICE?
       
     }});
 
@@ -79,7 +119,8 @@ function AddNode(props){
     if (props.type === "Folder"){
       return (<span><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} /><button disabled={routePathFolderId === ""} 
       onClick={()=>{
-        addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label});
+        addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label})
+        // .then((obj)=>{console.log(">>>add folder THEN",obj)});
         setLabel('');  //reset input field
       }}>Add {props.type}</button></span>)
     }
@@ -147,20 +188,20 @@ function Browser(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
-        console.log("useInfiniteQuery Success!",data)
+        console.log(">>>useInfiniteQuery Success!",data)
         let nodeId = Object.keys(data[indexOfLastItem])[0];
         nodeHash.current[nodeId] = indexOfLastItem;
+        console.log(">>>nodeHash",nodeHash)
       },
       getFetchMore: (lastGroup, allGroups) => {
-        console.log("===getFetchMore===")
-        console.log(">>>lastGroup",lastGroup)
-        console.log(">>>allGroups",allGroups)
-        // return lastGroup.nextCursor;
+        // console.log("===getFetchMore===")
+        // console.log(">>>lastGroup",lastGroup)
+        // console.log(">>>allGroups",allGroups)
         return lastGroup.nextCursor;
     }})
 
  
-  console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
+  // console.log(">>>useInfiniteQuery data",data,"nodeHash",nodeHash.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
 
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
@@ -269,7 +310,7 @@ function Browser(props){
 
     }else{
       let parentObj = parentContainerObj[parentId];
-      console.log(">>>parentObj",parentObj,Object.keys(parentObj).length)
+      // console.log(">>>parentObj",parentObj,Object.keys(parentObj).length)
       if (Object.keys(parentObj).length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
       for(let nodeId of Object.keys(parentObj)){
