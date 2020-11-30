@@ -28,11 +28,11 @@ return <>
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} />
-  {/* <BrowserRouted drive="assignment" isNav={true} /> */}
+  <BrowserRouted drive="assignment" isNav={true} />
   </div>
   <div>
   <BrowserRouted drive="content" />
-  {/* <BrowserRouted drive="assignment" /> */}
+  <BrowserRouted drive="assignment" />
   </div>
   </div>
   <ReactQueryDevtools />
@@ -72,7 +72,7 @@ function AddNode(props){
       // },
       onSuccess:(obj)=>{
       console.log(">>>add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
-      cache.setQueryData(["nodes",obj.driveId,"content"],
+      cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
         //Find the most recent mention of parentId
         let newObj;
@@ -135,12 +135,12 @@ function AddNode(props){
 
 
 
-const fetchChildrenNodes = async (queryKey,driveId,queryParentId,fetchMoreParentId) => {
+const fetchChildrenNodes = async (queryKey,driveId,fetchMoreParentId) => {
   let parentId = fetchMoreParentId;
   if (!parentId){
-    parentId = queryParentId;
+    parentId = driveId;
   }
-  console.log(`fetchChildrenNodes driveId='${driveId}' parentId='${parentId}' `)
+  // console.log(`>>>fetchChildrenNodes driveId='${driveId}' parentId='${parentId}' fetchMoreParentId='${fetchMoreParentId}' `)
 
   const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`
@@ -184,7 +184,7 @@ function Browser(props){
     isFetching, 
     isFetchingMore, 
     fetchMore, 
-    error} = useInfiniteQuery(['nodes',pathDriveId,rootFolderId], fetchChildrenNodes, {
+    error} = useInfiniteQuery(['nodes',props.drive], fetchChildrenNodes, {
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
@@ -304,17 +304,17 @@ function Browser(props){
     if (parentContainerObj === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
-      console.log("NEED parentId",parentId)
+      console.log(">>>NEED info for parentId",parentId)
       fetchMore(parentId);
       
 
     }else{
       let parentObj = parentContainerObj[parentId];
-      // console.log(">>>parentObj",parentObj,Object.keys(parentObj).length)
+      console.log(">>>parentContainerObj",parentContainerObj)
       if (Object.keys(parentObj).length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
       for(let nodeId of Object.keys(parentObj)){
-        nodeIdArray.push(nodeId);
+        nodeIdArray.push(nodeId); //needed to calculate shift click selections
         let node = parentObj[nodeId];
         let isOpen = false;
         if (openNodesObj[nodeId]){ isOpen = true;}
