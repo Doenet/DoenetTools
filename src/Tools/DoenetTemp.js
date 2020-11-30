@@ -83,40 +83,45 @@ function AddNode(props){
     const cache = useQueryCache();
     const [label,setLabel] = useState('')
     const [addFolder] = useMutation(addFolderMutation,{
-      // onSettled:(obj)=>{
-      //   console.log(">>>add folder SETTLED",obj);
-      // },
-      // onMutate:(obj)=>{
-      //   console.log(">>>add folder Mutate",obj);
-      // },
       onSuccess:(obj)=>{
       console.log(">>>add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
+        //We are adding a folder so we need the previous folders
         //Find the most recent mention of parentId
         let newObj;
-      console.log(">>>old",old);
+        console.log(">>>old",old);
+        console.log(JSON.parse(JSON.stringify(old)));
+        
 
-        for (let i = old.length-1; i >= 0; i--){
-          console.log(">>>old i",i,old[i]);
-          //If we had the info already then make a copy
-          if (Object.keys(old[i])[0] === obj.parentId){
-            newObj = {...old[i]}
-            break;
-          }
-        }
-        console.log(">>>newObj before",newObj)
-        //if hasn't been loaded yet then we don't need to track it
-        if (newObj === undefined){
-          return old
-        }
-        newObj[obj.parentId][obj.folderId] = {
+      //   for (let i = old.length-1; i >= 0; i--){
+      //     console.log(">>>old i",i,old[i]);
+      //     //If we had the info already then make a copy
+      //     if (Object.keys(old[i])[0] === obj.parentId){
+      //       newObj = {...old[i]}
+      //       break;
+      //     }
+      //   }
+      //   console.log(">>>newObj before",newObj)
+      //   //if hasn't been loaded yet then we don't need to track it
+      //   if (newObj === undefined){
+      //     return old
+      //   }
+      // newObj = {}
+      // newObj[obj.parentId] = {}
+      //   newObj[obj.parentId][obj.folderId] = {
+      //     id:obj.folderId,
+      //     label,
+      //     parentId:obj.parentId,
+      //     type:"Folder"
+      //   }
+      // old.push(newObj);
+      old.push({add:{
           id:obj.folderId,
           label,
           parentId:obj.parentId,
           type:"Folder"
-        }
-      old.push(newObj);
+      }})
       return old
       })
       // cache.fetchMore(obj.parentId); //Doesn't work
@@ -195,6 +200,7 @@ function Browser(props){
   }
 
   let nodeHash = useRef({});
+  let nodeChildrenHash = useRef({});
 
   const {
     data,
@@ -206,49 +212,68 @@ function Browser(props){
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
         console.log(">>>useInfiniteQuery Success!",data)
-        let nodeId = Object.keys(data[indexOfLastItem])[0];
-        nodeHash.current[nodeId] = indexOfLastItem;
+        
+        let parentNodeId = Object.keys(data[indexOfLastItem])[0];
+        if (parentNodeId === "add"){
+          //Latest data is instructions for adding
+          const addFolderObj = data[indexOfLastItem].add;
+          let childrenIds = [];
+          if (nodeHash.current[addFolderObj.parentId]){
+            childrenIds = [...data[nodeHash.current[addFolderObj.parentId]]]
+          }
+          nodeHash.current[addFolderObj.parentId] = indexOfLastItem;
+          nodeChildrenHash.current[addFolderObj.id] = addFolderObj;
+          childrenIds.push(addFolderObj.id)
+          data[indexOfLastItem] = childrenIds;
+        }else if (parentNodeId === "delete"){
+          //Latest data is instructions for delete
+          const deleteFolderObj = data[indexOfLastItem].delete;
+          let childrenIds = [];
+          if (nodeHash.current[deleteFolderObj.parentId]){
+            childrenIds = [...data[nodeHash.current[deleteFolderObj.parentId]]]
+          }
+          nodeHash.current[deleteFolderObj.parentId] = indexOfLastItem;
+          console.log(JSON.parse(JSON.stringify(childrenIds)));
+          
+          childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
+          console.log(JSON.parse(JSON.stringify(childrenIds)));
+
+          console.log(">>>DELETE",deleteFolderObj)
+          data[indexOfLastItem] = childrenIds;
+        
+        }else{
+          nodeHash.current[parentNodeId] = indexOfLastItem;
+          let childrenIds = [];
+          for (let nodeId of Object.keys(data[indexOfLastItem][parentNodeId])){
+            childrenIds.push(nodeId)
+            //Need to not change object to prevent refreshes so reuse the same one
+            if (!nodeChildrenHash.current[nodeId]){
+              nodeChildrenHash.current[nodeId] = data[indexOfLastItem][parentNodeId][nodeId];
+            }
+          }
+          data[indexOfLastItem] = childrenIds;
+        }
+        
         console.log(">>>nodeHash",nodeHash)
+        console.log(">>>nodeChildrenHash.current",nodeChildrenHash.current)
+        // cache.setQueryData(['nodes',props.drive],['test'])
+        // return [1,2];
       },
       getFetchMore: (lastGroup, allGroups) => {
         // console.log("===getFetchMore===")
         // console.log(">>>lastGroup",lastGroup)
         // console.log(">>>allGroups",allGroups)
         return lastGroup.nextCursor;
+        // return [1,2];
     }})
 
     const [deleteFolder] = useMutation(deleteFolderMutation,{
-      // onSettled:(obj)=>{
-      //   console.log(">>>add folder SETTLED",obj);
-      // },
-      // onMutate:(obj)=>{
-      //   console.log(">>>add folder Mutate",obj);
-      // },
       onSuccess:(obj)=>{
       console.log(">>>delete folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
-      //Find the most recent mention of parentId
-        let newObj;
-      console.log(">>>delete old",old);
-
-        for (let i = old.length-1; i >= 0; i--){
-          console.log(">>>old i",i,old[i]);
-          //If we had the info already then make a copy
-          if (Object.keys(old[i])[0] === obj.parentId){
-            newObj = {...old[i]}
-            break;
-          }
-        }
-        console.log(">>>newObj before",newObj)
-        //if hasn't been loaded yet then we don't need to track it
-        if (newObj === undefined){
-          return old
-        }
-        delete newObj[obj.parentId][obj.folderId];
-    
-      old.push(newObj);
-      return old
+        old.push({delete:obj}); //Flag information about delete
+        return old
       })
       
     }});
@@ -281,6 +306,7 @@ function Browser(props){
       return newObj;
     })
   },[])
+
 
   const handleClickNode = useCallback(({ nodeData, shiftKey, metaKey})=>{
     if (props.isNav){
@@ -353,9 +379,9 @@ function Browser(props){
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
     let index = nodeHash.current[parentId];
 
-    let parentContainerObj = data[index];
+    let parentArr = data[index];
 
-    if (parentContainerObj === undefined){
+    if (parentArr === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
       console.log(">>>NEED info for parentId",parentId)
@@ -363,15 +389,14 @@ function Browser(props){
       
 
     }else{
-      let parentObj = parentContainerObj[parentId];
-      console.log(">>>parentContainerObj",parentContainerObj)
-      if (Object.keys(parentObj).length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
+      if (parentArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
-      for(let nodeId of Object.keys(parentObj)){
+      for(let nodeId of parentArr){
         nodeIdArray.push(nodeId); //needed to calculate shift click selections
-        let node = parentObj[nodeId];
+        let node = nodeChildrenHash.current[nodeId];
         let isOpen = false;
         if (openNodesObj[nodeId]){ isOpen = true;}
+        
         let appearance = "default";
         if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
           //Only select the current path folder if we are a navigation browser
