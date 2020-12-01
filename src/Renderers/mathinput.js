@@ -6,50 +6,59 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 import MathJax from 'react-mathjax2';
+import { addStyles, EditableMathField } from "react-mathquill";
 
-const Prev = styled.div`
-  font-size: 23px;
-  // min-height: 30px;
-  background: rgba(0, 0, 0, 0.8);
-  width: auto;
-  display: inline-block;
-  border-radius: 5px;
-  color: white;
-  // line-height: 0px;
-  z-index: 10;
-  padding: 3px;
-  // position: absolute;
-  user-select: none;
-  // left: ${props => `${props.left}px`};
-  // top: ${props => `${props.top}px`};
-`;
+addStyles(); //Styling for react-mathquill input field
+
+// const Prev = styled.div`
+//   font-size: 23px;
+//   // min-height: 30px;
+//   background: rgba(0, 0, 0, 0.8);
+//   width: auto;
+//   display: inline-block;
+//   border-radius: 5px;
+//   color: white;
+//   // line-height: 0px;
+//   z-index: 10;
+//   padding: 3px;
+//   // position: absolute;
+//   user-select: none;
+//   // left: ${props => `${props.left}px`};
+//   // top: ${props => `${props.top}px`};
+// `;
 
 
 export default class MathInput extends DoenetRenderer {
   constructor(props) {
     super(props);
 
+    this.state = {latex: ""};
+    // const [latex, setLatex] = useState("");
+    // const config = {
+    //   autoCommands: "sqrt pi theta",
+    //   autoOperatorNames: "cos sin"
+    // };
+
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.handleDragEnter = this.handleDragEnter.bind(this);
-    this.handleDragThrough = this.handleDragThrough.bind(this);
-    this.handleDragExit = this.handleDragExit.bind(this);
+    // this.handleDragEnter = this.handleDragEnter.bind(this);
+    // this.handleDragThrough = this.handleDragThrough.bind(this);
+    // this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.value;
     this.textValue = this.doenetSvData.value.toString();
 
-
-    this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
-    this.inputRef = React.createRef();
+    // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
+    // this.inputRef = React.createRef();
     // this.mathInputRef = React.createRef();
     
 
     this.valueToRevertTo = this.mathExpression;
     this.textValueToRevertTo = this.textValue;
-    this.previewValue = "";
+    // this.previewValue = "";
 
     //Remove __ value so it doesn't show
     if (this.textValue === '\uFF3F') { this.textValue = ""; }
@@ -66,10 +75,10 @@ export default class MathInput extends DoenetRenderer {
     // }
   }
 
-  calculateMathExpressionFromText(text) {
+  calculateMathExpressionFromLatex(text) {
     let expression;
     try {
-      expression = me.fromText(text);
+      expression = me.fromLatex(text);
     } catch (e) {
       // TODO: error on bad text
       expression = me.fromAst('\uFF3F');
@@ -78,9 +87,9 @@ export default class MathInput extends DoenetRenderer {
     return expression;
   }
 
-  updateImmediateValueFromText(text) {
+  updateImmediateValueFromLatex(text) {
     this.textValue = text;
-    let newMathExpression = this.calculateMathExpressionFromText(text);
+    let newMathExpression = this.calculateMathExpressionFromLatex(text);
     if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
@@ -88,21 +97,21 @@ export default class MathInput extends DoenetRenderer {
       });
     }
 
-      //evalute math expression
-        let nextPreviewValue = newMathExpression.toLatex();
+      // //evalute math expression
+      //   let nextPreviewValue = newMathExpression.toLatex();
 
-        if (nextPreviewValue === "＿"){
-          //Error
-          clearTimeout(this.timer)
-          this.timer = setTimeout(()=>{
-            this.previewValue = "Err";
-            this.forceUpdate();
-          },1000)
-        }else{
-          //No Error
-          clearTimeout(this.timer)
-          this.previewValue = nextPreviewValue;
-        }
+      //   if (nextPreviewValue === "＿"){
+      //     //Error
+      //     clearTimeout(this.timer)
+      //     this.timer = setTimeout(()=>{
+      //       this.previewValue = "Err";
+      //       this.forceUpdate();
+      //     },1000)
+      //   }else{
+      //     //No Error
+      //     clearTimeout(this.timer)
+      //     this.previewValue = nextPreviewValue;
+      //   }
 
 
   }
@@ -121,28 +130,28 @@ export default class MathInput extends DoenetRenderer {
     }
   }
 
-  handleDragEnter(e) {
-    this.setState({
-      isDragging: true,
-      clickXOffset: e.pageX - this.state.previewLeftOffset,
-      clickYOffset: e.pageY - this.state.previewTopOffset,
-    })
-  }
+  // handleDragEnter(e) {
+  //   this.setState({
+  //     isDragging: true,
+  //     clickXOffset: e.pageX - this.state.previewLeftOffset,
+  //     clickYOffset: e.pageY - this.state.previewTopOffset,
+  //   })
+  // }
 
-  handleDragThrough(e) {
-    if(this.state.isDragging){
-      // console.log();
-      this.setState({previewLeftOffset: e.pageX - this.state.clickXOffset, previewTopOffset: e.pageY - this.state.clickYOffset});
-    }
-  }
+  // handleDragThrough(e) {
+  //   if(this.state.isDragging){
+  //     // console.log();
+  //     this.setState({previewLeftOffset: e.pageX - this.state.clickXOffset, previewTopOffset: e.pageY - this.state.clickYOffset});
+  //   }
+  // }
 
-  handleDragExit(e){
-    this.setState({
-      isDragging: false,
-      clickXOffset: 0,
-      clickYOffset: 0,
-    })
-  }
+  // handleDragExit(e){
+  //   this.setState({
+  //     isDragging: false,
+  //     clickXOffset: 0,
+  //     clickYOffset: 0,
+  //   })
+  // }
 
   handleKeyPress(e) {
     if (e.key === "Enter") {
@@ -187,9 +196,11 @@ export default class MathInput extends DoenetRenderer {
   }
 
   onChangeHandler(e) {
-    this.updateImmediateValueFromText(e.target.value)
+    this.updateImmediateValueFromLatex(e)
     this.forceUpdate();
   }
+
+
 
   render() {
 
@@ -199,7 +210,7 @@ export default class MathInput extends DoenetRenderer {
 
     this.updateValidationState();
 
-    const inputKey = this.componentName + '_input';
+    // const inputKey = this.componentName + '_input';
 
     let surroundingBorderColor = "#efefef";
     if (this.focused) {
@@ -301,7 +312,7 @@ export default class MathInput extends DoenetRenderer {
     
     
       <span className="textInputSurroundingBox"  id={this.componentName}>
-      <input
+      {/* <input
         key={inputKey}
         id={inputKey}
         ref = {this.inputRef}
@@ -321,9 +332,19 @@ export default class MathInput extends DoenetRenderer {
           padding: "4px",
           // position: "absolute",
         }}
-      />
+      /> */}
+      <span style = {{margin: "10px"}}>
+        <EditableMathField
+          latex={""}
+          config={{autoCommands: "sqrt pi theta integral"}}//more commands go here
+          onChange={(mathField) => {
+            this.onChangeHandler(mathField.latex())
+          }}
+        />
+        {/* <p>{this.mathExpression.toLatex()}</p> */}
+      </span>
       {checkWorkButton}
-      {this.textValue ? 
+      {/* {this.textValue ? 
       <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
         <div>
           <MathJax.Context input='tex'>
@@ -333,7 +354,7 @@ export default class MathInput extends DoenetRenderer {
           </MathJax.Context>
         </div>
       </Prev> : 
-      null}
+      null} */}
       </span>
       
     
