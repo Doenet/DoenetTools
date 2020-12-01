@@ -22,13 +22,65 @@ const queryCache = new QueryCache();
 
 export default function app() {
 
+  const [moveNodes] = useMutation(mutationMoveNodes, {
+    onSuccess:(obj)=>{
+      console.log(">>>move nodes",obj)
+      //Sort into drives
+      //Remove from sources
+       // cache.setQueryData(["nodes",obj.driveId],
+      // (old)=>{
+      //   //We are adding a folder so we need the previous folders
+      //   //Find the most recent mention of parentId
+        
+
+      // old.push({
+      //     add:{
+      //       driveId:obj.driveId,
+      //       node:{
+      //       id:obj.folderId,
+      //       label,
+      //       parentId:obj.parentId,
+      //       type:"Folder"
+      //       }
+      //     }
+      // })
+      // return old
+      // })
+
+      //Convert to new types
+      //TODO: convert data from content to assignments 
+      //and assignments to content
+
+      //Add to Destination
+      // cache.setQueryData(["nodes",obj.driveId],
+      // (old)=>{
+      //   //We are adding a folder so we need the previous folders
+      //   //Find the most recent mention of parentId
+        
+
+      // old.push({
+      //     add:{
+      //       driveId:obj.driveId,
+      //       node:{
+      //       id:obj.folderId,
+      //       label,
+      //       parentId:obj.parentId,
+      //       type:"Folder"
+      //       }
+      //     }
+      // })
+      // return old
+      // })
+    }
+  })
+
+  //driveSync
   let syncNodeIdToDataIndex = useRef({});
   let syncNodeIdToChildren = useRef({});
 
   let driveSync = {update,get}
 
   function update(driveId,nodeIdToDataIndex,nodeIdToChildren){
-    // console.log("UPDATE",driveId,nodeIdToDataIndex,nodeIdToChildren)
     syncNodeIdToDataIndex.current[driveId] = nodeIdToDataIndex;
     syncNodeIdToChildren.current[driveId] = nodeIdToChildren;
   }
@@ -40,15 +92,28 @@ export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
   <AddNode type="Folder" />
-  {/* <AddNode type="DoenetMl" /> */}
+  <button onClick={()=>{
+    moveNodes({sourceArr:[
+      {driveId:"content",parentId:"f2",nodeId:"uG8qTnZAOk9rbf7nhn3Ga",type:"folder"},
+      {driveId:"content",parentId:"f2",nodeId:"S-MMeUy1ZZtK7x5PXWUFV",type:"folder"},
+      {driveId:"content",parentId:"f2",nodeId:"pGSy25ktWmK5-2hi4VAad",type:"folder"},
+    ],destinationObj:{driveId:"course",parentId:"h2"}})
+  }} >Move to Course</button>
+    <button onClick={()=>{
+moveNodes({sourceArr:[
+  {driveId:"course",parentId:"h2",nodeId:"uG8qTnZAOk9rbf7nhn3Ga",type:"folder"},
+  {driveId:"course",parentId:"h2",nodeId:"S-MMeUy1ZZtK7x5PXWUFV",type:"folder"},
+  {driveId:"course",parentId:"h2",nodeId:"pGSy25ktWmK5-2hi4VAad",type:"folder"},
+],destinationObj:{driveId:"content",parentId:"f2"}})
+}} >Move to Content</button>
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} driveSync={driveSync}/>
-  <BrowserRouted drive="assignment" isNav={true} driveSync={driveSync}/>
+  <BrowserRouted drive="course" isNav={true} driveSync={driveSync}/>
   </div>
   <div>
   <BrowserRouted drive="content" driveSync={driveSync}/>
-  <BrowserRouted drive="assignment" driveSync={driveSync}/>
+  <BrowserRouted drive="course" driveSync={driveSync}/>
   </div>
   </div>
   <ReactQueryDevtools />
@@ -57,6 +122,17 @@ return <>
 </>
 };
 
+const mutationMoveNodes = ({sourceArr, destinationObj}) => {
+ console.log(">>source dest",sourceArr,destinationObj)
+    const payload = {sourceArr, destinationObj}
+    axios.post("/api/moveNodes.php", payload)
+    .then((resp)=>{
+      console.log(">>>MOVE resp",resp.data)
+    })
+
+  return {sourceArr, destinationObj}
+} 
+
 const addFolderMutation = ({label, driveId, parentId}) =>{
   const folderId = nanoid();
 
@@ -64,11 +140,9 @@ const addFolderMutation = ({label, driveId, parentId}) =>{
     const payload = {
       params: data
     }
-  console.log('>>>addFolderMutation',data)
 
     axios.get("/api/addFolder.php", payload)
     .then((resp)=>{
-      // console.log('>>>add folder mutation completed')
     })
 
   return {driveId,parentId,folderId,label}
@@ -80,18 +154,13 @@ const deleteFolderMutation = ({driveId, parentId, folderId}) =>{
     const payload = {
       params: data
     }
-  console.log('>>>deleteFolderMutation',data)
 
     axios.get("/api/deleteFolder.php", payload)
     .then((resp)=>{
-      console.log('>>>delete folder mutation completed')
-      console.log(resp.data)
     })
 
   return {driveId,parentId,folderId}
 } 
-
-
 
 function AddNode(props){
 
@@ -100,13 +169,10 @@ function AddNode(props){
     const [label,setLabel] = useState('')
     const [addFolder] = useMutation(addFolderMutation,{
       onSuccess:(obj)=>{
-      console.log(">>>add folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
         //We are adding a folder so we need the previous folders
         //Find the most recent mention of parentId
-        // console.log(">>>old",old);
-        // console.log(JSON.parse(JSON.stringify(old)));
         
 
       old.push({
@@ -122,10 +188,7 @@ function AddNode(props){
       })
       return old
       })
-      // cache.fetchMore(obj.parentId); //Doesn't work
-      // console.log(">>>query observers",query.observers)
-    // const query = cache.getQuery(["nodes","content","content"]);
-    // query.observers[0].fetchMore(obj.parentId); //IS THIS BEST PRACTICE?
+     
       
     }});
 
@@ -142,7 +205,6 @@ function AddNode(props){
       return (<span><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} /><button disabled={routePathFolderId === ""} 
       onClick={()=>{
         addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label})
-        // .then((obj)=>{console.log(">>>add folder THEN",obj)});
         setLabel('');  //reset input field
       }}>Add {props.type}</button></span>)
     }
@@ -209,22 +271,17 @@ function Browser(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         const indexOfLastItem = data.length-1;
-        console.log(">>>useInfiniteQuery Success!",data)
         //Protect if data is already converted to an array
         if (Array.isArray(data[indexOfLastItem])){ 
-          console.log(">>>Needs update!!!!")
-          // console.log(">>>before sync",nodeIdToDataIndex.current,nodeIdToChildren.current)
          let [nodeIdToDataIndexTemp,nodeIdToChildrenTemp] = props.driveSync.get(props.drive);
          nodeIdToDataIndex.current = nodeIdToDataIndexTemp;
          nodeIdToChildren.current = nodeIdToChildrenTemp;
-          // console.log(">>>after sync",nodeIdToDataIndex.current,nodeIdToChildren.current)
         }else{
 
         let parentNodeId = Object.keys(data[indexOfLastItem])[0];
         if (parentNodeId === "add"){
           //Latest data is instructions for adding
           const addFolderObj = data[indexOfLastItem].add.node;
-          console.log(">>>ADD!!!",data[indexOfLastItem])
           if (data[indexOfLastItem].add.driveId === props.drive){
             let childrenIds = [];
             if (nodeIdToDataIndex.current[addFolderObj.parentId]){
@@ -250,7 +307,6 @@ function Browser(props){
             childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
             console.log(JSON.parse(JSON.stringify(childrenIds)));
 
-            console.log(">>>DELETE",deleteFolderObj)
             data[indexOfLastItem] = childrenIds;
           }
         }else{
@@ -266,26 +322,17 @@ function Browser(props){
           data[indexOfLastItem] = childrenIds;
         }
 
-        console.log(">>>nodeIdToDataIndex.current",nodeIdToDataIndex.current)
-        console.log(">>>nodeIdToChildren.current",nodeIdToChildren.current)
         props.driveSync.update(props.drive,nodeIdToDataIndex.current,nodeIdToChildren.current)
       }
         
         
-        // cache.setQueryData(['nodes',props.drive],['test'])
-        // return [1,2];
       },
       getFetchMore: (lastGroup, allGroups) => {
-        // console.log("===getFetchMore===")
-        // console.log(">>>lastGroup",lastGroup)
-        // console.log(">>>allGroups",allGroups)
         return lastGroup.nextCursor;
-        // return [1,2];
     }})
 
     const [deleteFolder] = useMutation(deleteFolderMutation,{
       onSuccess:(obj)=>{
-      console.log(">>>delete folder SUCCESS!",obj) //TODO: needs original drive and root folderId to get cache
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
         old.push({delete:obj}); //Flag information about delete
@@ -295,8 +342,6 @@ function Browser(props){
     }});
 
  
-  // console.log(">>>useInfiniteQuery data",data,"nodeIdToDataIndex",nodeIdToDataIndex.current,"isFetching",isFetching,"isFetchingMore",isFetchingMore)
-
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [toggleNodeId,setToggleNode] = useState([]);
@@ -388,7 +433,6 @@ function Browser(props){
   // if (isFetching){ return <div>Loading...</div>}
 
   function deleteFolderHandler(nodeObj){
-    // console.log(">>>delete",nodeObj)
     deleteFolder(nodeObj);
   }
 
@@ -400,9 +444,7 @@ function Browser(props){
     if (parentArr === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
-      console.log(">>>NEED info for parentId",parentId)
       fetchMore(parentId);
-      
 
     }else{
       if (parentArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
@@ -555,7 +597,7 @@ const LoadingNode =  React.memo(function Node(props){
     className="noselect" 
     style={{
       marginLeft: `${props.level * indentPx}px`
-    }}>{toggle} [FOLDER] {props.node.label} ({numChildren}){deleteNode}</div></div>
+    }}>{toggle} [FOLDER] {props.node.label} {deleteNode}</div></div>
   
   </>
 // }
