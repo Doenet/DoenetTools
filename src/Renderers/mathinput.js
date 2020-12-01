@@ -75,7 +75,7 @@ export default class MathInput extends DoenetRenderer {
     // }
   }
 
-  calculateMathExpressionFromText(text) {
+  calculateMathExpressionFromLatex(text) {
     let expression;
     try {
       expression = me.fromLatex(text);
@@ -87,9 +87,9 @@ export default class MathInput extends DoenetRenderer {
     return expression;
   }
 
-  updateImmediateValueFromText(text) {
+  updateImmediateValueFromLatex(text) {
     this.textValue = text;
-    let newMathExpression = this.calculateMathExpressionFromText(text);
+    let newMathExpression = this.calculateMathExpressionFromLatex(text);
     if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
@@ -196,7 +196,7 @@ export default class MathInput extends DoenetRenderer {
   }
 
   onChangeHandler(e) {
-    this.updateImmediateValueFromText(e)
+    this.updateImmediateValueFromLatex(e)
     this.forceUpdate();
   }
 
@@ -333,16 +333,16 @@ export default class MathInput extends DoenetRenderer {
           // position: "absolute",
         }}
       /> */}
-      <div>
+      <span style = {{margin: "10px"}}>
         <EditableMathField
-          // latex={this.mathExpression.toLatex()}
-          //config={{autoCommand: "sqrt pi thet"}}
+          latex={""}
+          config={{autoCommands: "sqrt pi theta integral"}}//more commands go here
           onChange={(mathField) => {
             this.onChangeHandler(mathField.latex())
           }}
         />
-        <p>{this.mathExpression.toLatex()}</p>
-      </div>
+        {/* <p>{this.mathExpression.toLatex()}</p> */}
+      </span>
       {checkWorkButton}
       {/* {this.textValue ? 
       <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
