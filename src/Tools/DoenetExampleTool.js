@@ -14,6 +14,9 @@ import MenuPanel from "../imports/Tool/MenuPanel";
 import HeaderMenuPanelButton from "../imports/Tool/HeaderMenuPanelButton";
 import ResponsiveControls from "../imports/Tool/ResponsiveControls";
 import Overlay from "../imports/Tool/Overlay";
+import CollapseSection from "../imports/CollapseSection";
+import MenuPanelSection from "../imports/Tool/MenuPanelSection"
+
 const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
@@ -120,12 +123,17 @@ export default function DoenetExampleTool(props) {
               which are responsive and collapses according the width available
             </p>
           </SupportPanel>
-          <MenuPanel title="edit">
-            <h3>
-              This is Menu Panel and can be switched to title="style" menu panel
-            </h3>
+          <MenuPanel>
+            <MenuPanelSection title="edit">
+              <CollapseSection>
+              </CollapseSection>
+              <CollapseSection>
+              </CollapseSection>
+            </MenuPanelSection>
+            <MenuPanelSection title="style">
+              Menu Panel Style Content
+            </MenuPanelSection>
           </MenuPanel>
-          <MenuPanel title="style">Menu Panel Style Content</MenuPanel>
         </Tool>
       ) : (
         <Overlay

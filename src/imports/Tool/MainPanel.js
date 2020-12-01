@@ -10,13 +10,9 @@ import axios from "axios";
 import DoenetProfile from "../../../src/Tools/DoenetProfile";
 import ResponsiveControlsWrapper from "../Tool/ResponsiveControlsWrapper";
 
-const MainpanelDiv = styled.div`
-  width: 100%;
-`;
-
 const MenuContainer = styled.div`
-grid-column: 2 / 3;
-`
+  grid-area: mainPanel;
+`;
 
 export default function MainPanel(props) {
   const [showHideSupportPanel, setshowHideSupportPanel] = useState(false);
@@ -275,12 +271,13 @@ export default function MainPanel(props) {
                   }}
                 >
                   {props.headerMenuPanels &&
-                    props.headerMenuPanels.map((hmpObj) =>
+                    props.headerMenuPanels.map((hmpObj, index) =>
                       React.cloneElement(hmpObj, {
                         buttonText: hmpObj.props.buttonText,
                         buttonClick: () => {
                           showHideOverLayFunc(hmpObj);
                         },
+                        key: index,
                       })
                     )}
                 </div>

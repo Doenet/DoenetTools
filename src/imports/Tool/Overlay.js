@@ -50,19 +50,25 @@ const OverlayWrapper = styled.div`
 const OverlayContent = styled.div`
   width: 100vw;
   height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr 240px;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas: "navPanel header menuPanel" "navPanel mainPanel menuPanel";
+  overflow: scroll;
 `;
 const OverlayHeaderWrapper = styled.div`
-  display: flex;
+  grid-area: header;
+  /* display: flex; */
   background-color: #288ae9;
-  height: 50px;
+  /* height: 50px; */
 `;
 const OverlayContainer = styled.div`
-  display: flex;
+  grid-area: mainPanel;
+  /* display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  overflow: scroll;
-  background-color: white;
+  background-color: white; */
 `;
 
 const OverlayName = styled.span`
@@ -193,15 +199,15 @@ export default function Overlay(props) {
       <OverlayWrapper className={props.isOpen ? "on" : "off"}>
         <OverlayContent>
           <OverlayHeaderWrapper>
-            <div
+            {/* <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "auto 1fr 240px",
-                height: "50px",
-                width: "100%",
+                // display: "grid",
+                // gridTemplateColumns: "auto 1fr 240px",
+                // height: "50px",
+                // width: "100%",
               }}
-            >
-              <div style={{gridColumn: "2/3", height: "50px", display: "flex"}}>
+            > */}
+              <div style={{height: "50px", display: "flex"}}>
                 <div style={{ margin: "2px", padding: "4px", width: "135px" }}>
                   <div style={{ display: "flex" }}>
                     <img id="doenetLogo" src={doenetImage} height="40px" />
@@ -249,7 +255,7 @@ export default function Overlay(props) {
                   >
                     {props.title}
                   </div>
-                  <div style={{ display: "flex"}}>
+                  <div style={{ display: "flex" }}>
                     {props.responsiveControlsFromTools ? (
                       <div /*ref={setHeaderCtrlGroupRef}*/
                         style={{
@@ -281,7 +287,7 @@ export default function Overlay(props) {
                   width: "240px",
                   justifyContent: "space-between",
                   borderLeft: "1px solid black",
-                  gridColumn: "3/4",
+                  gridArea: "menuPanelHeader",
                 }}
               >
                 {/* {props.headerMenuPanels &&
@@ -330,7 +336,7 @@ export default function Overlay(props) {
                     );
                   })}
               </div>
-            </div>
+            {/* </div> */}
 
             <OverlayClose onClick={() => props.onClose()} name="closeOverlay">
               <FontAwesomeIcon
