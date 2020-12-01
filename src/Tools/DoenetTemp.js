@@ -99,7 +99,7 @@ export default function app() {
 return <>
 <ReactQueryCacheProvider queryCache={queryCache}>
   <AddNode type="Folder" />
-  <button onClick={()=>{
+  {/* <button onClick={()=>{
     moveNodes({selectedNodesArr,destinationObj:{driveId:"course",parentId:"h2"}})
   }} >Move to Course</button>
     <button onClick={()=>{
@@ -108,15 +108,15 @@ moveNodes({sourceArr:[
   {driveId:"course",parentId:"h2",nodeId:"S-MMeUy1ZZtK7x5PXWUFV",type:"folder"},
   {driveId:"course",parentId:"h2",nodeId:"pGSy25ktWmK5-2hi4VAad",type:"folder"},
 ],destinationObj:{driveId:"content",parentId:"f2"}})
-}} >Move to Content</button>
+}} >Move to Content</button> */}
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} driveSync={driveSync} />
-  <BrowserRouted drive="course" isNav={true} driveSync={driveSync} />
+  {/* <BrowserRouted drive="course" isNav={true} driveSync={driveSync} /> */}
   </div>
   <div>
-  <BrowserRouted drive="content" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
-  <BrowserRouted drive="course" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
+  {/* <BrowserRouted drive="content" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/> */}
+  {/* <BrowserRouted drive="course" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/> */}
   </div>
   </div>
   <ReactQueryDevtools />
@@ -221,6 +221,8 @@ function AddNode(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,fetchMoreParentId) => {
+  console.log(">>>queryKey",queryKey,driveId,fetchMoreParentId)
+  if (!fetchMoreParentId){return {init:true}} //First Query returns no data
   let parentId = fetchMoreParentId;
   if (!parentId){
     parentId = driveId;
@@ -273,60 +275,81 @@ function Browser(props){
     error} = useInfiniteQuery(['nodes',props.drive], fetchChildrenNodes, {
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
-        const indexOfLastItem = data.length-1;
-        //Protect if data is already converted to an array
-        if (Array.isArray(data[indexOfLastItem])){ 
-         let [nodeIdToDataIndexTemp,nodeIdToChildrenTemp] = props.driveSync.get(props.drive);
-         nodeIdToDataIndex.current = nodeIdToDataIndexTemp;
-         nodeIdToChildren.current = nodeIdToChildrenTemp;
+        console.log(">>>data",data);
+        if (Object.keys(data[0])[0] === "init"){
+          data[0] = {folderChildren:{},node:{}}
         }else{
+          console.log(">>>data[1]",data[1])
+          let actionOrId = Object.keys(data[1])[0];
+          if (actionOrId === "add"){
+            console.log(">>>ADD!!!!")
+          }else{
+            let contentIds = [];
+            for (let nodeId of Object.keys(data[1][actionOrId])){
+              let nodeObj = data[1][actionOrId][nodeId];
+              contentIds.push(nodeId);
+              data[0].node[nodeId] = nodeObj;
 
-        let parentNodeId = Object.keys(data[indexOfLastItem])[0];
-        if (parentNodeId === "add"){
-          //Latest data is instructions for adding
-          const addFolderObj = data[indexOfLastItem].add.node;
-          if (data[indexOfLastItem].add.driveId === props.drive){
-            let childrenIds = [];
-            if (nodeIdToDataIndex.current[addFolderObj.parentId]){
-              childrenIds = [...data[nodeIdToDataIndex.current[addFolderObj.parentId]]]
             }
-            nodeIdToDataIndex.current[addFolderObj.parentId] = indexOfLastItem;
-            nodeIdToChildren.current[addFolderObj.id] = addFolderObj;
-            childrenIds.push(addFolderObj.id)
-            data[indexOfLastItem] = childrenIds;
+            data[0].folderChildren[actionOrId] = {sortings:{0:contentIds}};
+            data.pop();
+            console.log(data)
           }
-          
-        }else if (parentNodeId === "delete"){
-          //Latest data is instructions for delete
-          const deleteFolderObj = data[indexOfLastItem].delete;
-          if (deleteFolderObj.driveId === props.drive){
-            let childrenIds = [];
-            if (nodeIdToDataIndex.current[deleteFolderObj.parentId]){
-              childrenIds = [...data[nodeIdToDataIndex.current[deleteFolderObj.parentId]]]
-            }
-            nodeIdToDataIndex.current[deleteFolderObj.parentId] = indexOfLastItem;
-            console.log(JSON.parse(JSON.stringify(childrenIds)));
-            
-            childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
-            console.log(JSON.parse(JSON.stringify(childrenIds)));
-
-            data[indexOfLastItem] = childrenIds;
-          }
-        }else{
-          nodeIdToDataIndex.current[parentNodeId] = indexOfLastItem;
-          let childrenIds = [];
-          for (let nodeId of Object.keys(data[indexOfLastItem][parentNodeId])){
-            childrenIds.push(nodeId)
-            //Need to not change object to prevent refreshes so reuse the same one
-            if (!nodeIdToChildren.current[nodeId]){
-              nodeIdToChildren.current[nodeId] = data[indexOfLastItem][parentNodeId][nodeId];
-            }
-          }
-          data[indexOfLastItem] = childrenIds;
         }
+      //   const indexOfLastItem = data.length-1;
+      //   //Protect if data is already converted to an array
+      //   if (Array.isArray(data[indexOfLastItem])){ 
+      //    let [nodeIdToDataIndexTemp,nodeIdToChildrenTemp] = props.driveSync.get(props.drive);
+      //    nodeIdToDataIndex.current = nodeIdToDataIndexTemp;
+      //    nodeIdToChildren.current = nodeIdToChildrenTemp;
+      //   }else{
 
-        props.driveSync.update(props.drive,nodeIdToDataIndex.current,nodeIdToChildren.current)
-      }
+      //   let parentNodeId = Object.keys(data[indexOfLastItem])[0];
+      //   if (parentNodeId === "add"){
+      //     //Latest data is instructions for adding
+      //     const addFolderObj = data[indexOfLastItem].add.node;
+      //     if (data[indexOfLastItem].add.driveId === props.drive){
+      //       let childrenIds = [];
+      //       if (nodeIdToDataIndex.current[addFolderObj.parentId]){
+      //         childrenIds = [...data[nodeIdToDataIndex.current[addFolderObj.parentId]]]
+      //       }
+      //       nodeIdToDataIndex.current[addFolderObj.parentId] = indexOfLastItem;
+      //       nodeIdToChildren.current[addFolderObj.id] = addFolderObj;
+      //       childrenIds.push(addFolderObj.id)
+      //       data[indexOfLastItem] = childrenIds;
+      //     }
+          
+      //   }else if (parentNodeId === "delete"){
+      //     //Latest data is instructions for delete
+      //     const deleteFolderObj = data[indexOfLastItem].delete;
+      //     if (deleteFolderObj.driveId === props.drive){
+      //       let childrenIds = [];
+      //       if (nodeIdToDataIndex.current[deleteFolderObj.parentId]){
+      //         childrenIds = [...data[nodeIdToDataIndex.current[deleteFolderObj.parentId]]]
+      //       }
+      //       nodeIdToDataIndex.current[deleteFolderObj.parentId] = indexOfLastItem;
+      //       console.log(JSON.parse(JSON.stringify(childrenIds)));
+            
+      //       childrenIds.splice(childrenIds.indexOf(deleteFolderObj.id),1)
+      //       console.log(JSON.parse(JSON.stringify(childrenIds)));
+
+      //       data[indexOfLastItem] = childrenIds;
+      //     }
+      //   }else{
+      //     nodeIdToDataIndex.current[parentNodeId] = indexOfLastItem;
+      //     let childrenIds = [];
+      //     for (let nodeId of Object.keys(data[indexOfLastItem][parentNodeId])){
+      //       childrenIds.push(nodeId)
+      //       //Need to not change object to prevent refreshes so reuse the same one
+      //       if (!nodeIdToChildren.current[nodeId]){
+      //         nodeIdToChildren.current[nodeId] = data[indexOfLastItem][parentNodeId][nodeId];
+      //       }
+      //     }
+      //     data[indexOfLastItem] = childrenIds;
+      //   }
+
+      //   props.driveSync.update(props.drive,nodeIdToDataIndex.current,nodeIdToChildren.current)
+      // }
         
         
       },
@@ -456,6 +479,7 @@ function Browser(props){
   if (!props.isNav && routePathDriveId !== props.drive){ return null;}
   
 
+
   // if (isFetching){ return <div>Loading...</div>}
 
   function deleteFolderHandler(nodeObj){
@@ -512,16 +536,18 @@ function Browser(props){
 
   let nodes = <></>
   let nodeIdArray = [];
-  if (data){
-    [nodes,nodeIdArray] = buildNodes({driveId:props.driveId,parentId:rootFolderId,sortingOrder});
-    nodeIdRefArray.current = nodeIdArray;
-  }
+  // if (data){
+  //   [nodes,nodeIdArray] = buildNodes({driveId:props.driveId,parentId:rootFolderId,sortingOrder});
+  //   nodeIdRefArray.current = nodeIdArray;
+  // }
   
 
   return <>
   <div>
   <h3>{props.drive} {props.isNav?"Nav":null}</h3>
   </div>
+  
+  <button onClick={()=>{fetchMore('f2');}}>fetch f2</button>
   {nodes}
   {/* <button onClick={()=>{
     fetchMore('f1');
