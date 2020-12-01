@@ -10,8 +10,13 @@ import axios from "axios";
 import DoenetProfile from "../../../src/Tools/DoenetProfile";
 import ResponsiveControlsWrapper from "../Tool/ResponsiveControlsWrapper";
 
-const MenuContainer = styled.div`
+const MainPanelDiv = styled.div`
   grid-area: mainPanel;
+`;
+
+const HeaderDiv = styled.div`
+  grid-area: header;
+  position: relative;
 `;
 
 export default function MainPanel(props) {
@@ -137,43 +142,95 @@ export default function MainPanel(props) {
   console.log(">>>props from overlay", props);
 
   return (
-    <MenuContainer>
-      {props.showHideNavPanel !== undefined && props.showHideNavPanel ? (
-        <button
-          onClick={() => {
-            showNavPanel();
-          }}
-          className="middleLeftButton circle"
-        >
-          <FontAwesomeIcon
-            icon={faBars}
-            style={{
-              display: "block",
-              alignSelf: "center",
-              fontSize: "16px",
+    <>
+      <MainPanelDiv>
+        {props.showHideNavPanel !== undefined && props.showHideNavPanel ? (
+          <button
+            onClick={() => {
+              showNavPanel();
             }}
-          />
-        </button>
-      ) : (
-        ""
-      )}
-      {props.fromOverlayNew === undefined && (
-        <HeaderMenuPanelContent
-          open={showHideOverlay}
-          onClose={() => {
-            overlayOnClose();
-          }}
-          body={activeHeaderPanelContent}
-        />
-      )}
-      <div>
+            className="middleLeftButton circle"
+          >
+            <FontAwesomeIcon
+              icon={faBars}
+              style={{
+                display: "block",
+                alignSelf: "center",
+                fontSize: "16px",
+              }}
+            />
+          </button>
+        ) : (
+          ""
+        )}
+        <div>
+          <div
+            style={{
+              display:
+                showHideSupportPanel || props.showHideOverlayFromOverlayNew
+                  ? "flex"
+                  : "block",
+            }}
+          >
+            <div
+              style={{
+                width:
+                  showHideSupportPanel || props.showHideOverlayFromOverlayNew
+                    ? "50%"
+                    : "100%",
+                height: "100%",
+              }}
+            >
+              {props.responsiveControls ? (
+                <div
+                  style={{
+                    display: "flex",
+                    height: "32px",
+                    borderBottom: "1px solid black",
+                  }}
+                >
+                  {/* <ResponsiveControlsWrapper mainPanelWidth={mainPanelHeaderGrpWidth}>{props.responsiveControls}</ResponsiveControlsWrapper> */}
+                  {props.responsiveControls}
+                </div>
+              ) : (
+                ""
+              )}
+
+              <div
+                style={{
+                  height: props.responsiveControls
+                    ? "calc(100vh - 82px)"
+                    : "calc(100vh - 60px)",
+                  overflow: "scroll",
+                }}
+              >
+                {props.children}
+              </div>
+            </div>
+            {showHideSupportPanel || props.showHideOverlayFromOverlayNew ? (
+              <div
+                style={{
+                  borderLeft: "1px solid black",
+                  width: "50%",
+                  overflow: "scroll",
+                }}
+              >
+                {props.supportPanelObj}
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+      </MainPanelDiv>
+      <HeaderDiv>
         {props.fromOverlayNew === undefined ? (
           <div
             style={{
               display: "flex ",
-              height: "50px",
               borderBottom: "1px solid black",
               width: "100%",
+              height: "100%"
             }}
           >
             <div style={{ width: "135px", margin: "2px", padding: "4px" }}>
@@ -287,65 +344,16 @@ export default function MainPanel(props) {
         ) : (
           ""
         )}
-
-        <div
-          style={{
-            display:
-              showHideSupportPanel || props.showHideOverlayFromOverlayNew
-                ? "flex"
-                : "block",
-          }}
-        >
-          <div
-            style={{
-              width:
-                showHideSupportPanel || props.showHideOverlayFromOverlayNew
-                  ? "50%"
-                  : "100%",
-              height: "100%",
+        {props.fromOverlayNew === undefined && (
+          <HeaderMenuPanelContent
+            open={showHideOverlay}
+            onClose={() => {
+              overlayOnClose();
             }}
-          >
-            {props.responsiveControls ? (
-              <div
-                style={{
-                  display: "flex",
-                  height: "32px",
-                  borderBottom: "1px solid black",
-                }}
-              >
-                {/* <ResponsiveControlsWrapper mainPanelWidth={mainPanelHeaderGrpWidth}>{props.responsiveControls}</ResponsiveControlsWrapper> */}
-                {props.responsiveControls}
-              </div>
-            ) : (
-              ""
-            )}
-
-            <div
-              style={{
-                height: props.responsiveControls
-                  ? "calc(100vh - 82px)"
-                  : "calc(100vh - 50px)",
-                overflow: "scroll",
-              }}
-            >
-              {props.children}
-            </div>
-          </div>
-          {showHideSupportPanel || props.showHideOverlayFromOverlayNew ? (
-            <div
-              style={{
-                borderLeft: "1px solid black",
-                width: "50%",
-                overflow: "scroll",
-              }}
-            >
-              {props.supportPanelObj}
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-    </MenuContainer>
+            body={activeHeaderPanelContent}
+          />
+        )}
+      </HeaderDiv>
+    </>
   );
 }

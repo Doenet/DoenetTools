@@ -10,7 +10,6 @@ const ToolContainer = styled.div`
 
 export default function Tool(props) {
   //console.log(props.responsiveControls, "props.responsiveControls in tool");
-  const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
   const [supportPanelObj, setSupportPanelObj] = React.useState({});
   const [navPanelObj, setNavPanelObj] = React.useState(null);
   const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
@@ -82,16 +81,11 @@ export default function Tool(props) {
                 headerMenuPanels: props.headerMenuPanels,
                 key: index,
               });
-            case "MenuPanel":
-              return React.cloneElement(obj, {
-                panelDataIndex: panelDataIndex,
-                setPanelDataIndex: setPanelDataIndex,
-                key: index,
-              });
             case "NavPanel":
               return navPanelObj ? (!showHideNavPanel ? navPanelObj : "") : "";
             case "SupportPanel":
               return (null);
+            case "MenuPanel":
             default:
               return React.cloneElement(obj, { key: index });
           }

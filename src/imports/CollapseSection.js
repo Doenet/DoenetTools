@@ -14,7 +14,7 @@ PROPS:
 CollapseSection
 - widthCSS
   this props is passed directly as a string to the css of the most-parent element returned by the component. You can set this to any valid value of the CSS property `width`.
-  Defaults to: "250px"
+  Defaults to: "240px"
 - title
   The text that appears in the header of the collapsible section
   Defaults to: "Untitled Section". If you want no title, pass "" as the title.
@@ -87,7 +87,7 @@ export default function CollapseSection(props) {
     headerStyle.backgroundColor = props.headerBackground || "lightgrey";
     headerStyle.color = props.headerTextColor || "black";
 
-    const sectionStyle = {width: props.widthCSS || "250px"};
+    const sectionStyle = {width: props.widthCSS || "240px"};
 
     if (props.iconElements !== undefined) {
         var iconElements = props.iconElements.map((iconEl, index) => (

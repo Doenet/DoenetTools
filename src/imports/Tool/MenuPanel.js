@@ -14,21 +14,22 @@ const SectionDiv = styled.div`
 `;
 
 const ButtonDiv = styled.div`
-  border-bottom: 1px solid #3D3D3D;
-  border-right: 1px solid #3D3D3D;
+  border-bottom: 1px solid #3d3d3d;
+  border-right: 1px solid #3d3d3d;
   width: 100%;
-`
+`;
 const HeaderButton = styled.button`
   border: none;
   background-color: white;
   width: 100%;
   height: 100%;
-`
-
+`;
 
 export default function MenuPanel(props) {
+  const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
+
   const showHideMenuPanelContent = (index) => {
-    props.setPanelDataIndex(index);
+    setPanelDataIndex(index);
   };
 
   React.useEffect(() => {
@@ -40,8 +41,8 @@ export default function MenuPanel(props) {
           typeof obj.type === "function" &&
           obj.type.name === "MenuPanel"
         ) {
-          if (props.panelDataIndex === -1) {
-            props.setPanelDataIndex((prevState) => {
+          if (panelDataIndex === -1) {
+            setPanelDataIndex((prevState) => {
               //console.log(prevState);
               let oldIndex = prevState;
               if (oldIndex === -1) {
@@ -53,7 +54,7 @@ export default function MenuPanel(props) {
         }
       });
     }
-  }, [props.panelDataIndex]);
+  }, [panelDataIndex]);
 
   console.log(">>>MenuPanel Props:", props);
   return (
@@ -64,24 +65,26 @@ export default function MenuPanel(props) {
           props.children.map((obj, index) => {
             switch (obj?.type?.name) {
               case "MenuPanelSection":
+                let bg = index === panelDataIndex ? "#8FB8DE" : "#E2E2E2";
                 return (
                   <ButtonDiv key={index}>
-                      <HeaderButton
-                        onClick={() => {
-                          showHideMenuPanelContent(index);
-                        }}
-                      >
-                        {obj.props.title}
-                      </HeaderButton>
+                    <HeaderButton
+                      onClick={() => {
+                        showHideMenuPanelContent(index);
+                      }}
+                      style={{backgroundColor: bg}}
+                    >
+                      {obj.props.title}
+                    </HeaderButton>
                   </ButtonDiv>
                 );
+              default:
+                return null;
             }
           })}
       </HeaderDiv>
       <SectionDiv>
-        {props.panelDataIndex !== -1
-          ? props.children[props.panelDataIndex]
-          : ""}
+        {panelDataIndex !== -1 ? props.children[panelDataIndex] : ""}
       </SectionDiv>
     </>
   );

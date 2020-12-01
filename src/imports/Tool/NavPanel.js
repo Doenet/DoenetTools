@@ -9,8 +9,8 @@ const NavPanelDiv = styled.div`
   width: 240px;
   display: flex;
   height: 100vh;
-  color: white;
-  background-color: #288ae9;
+  color: black;
+  background-color: #8FB8DE;
   overflow: scroll;
 `;
 
