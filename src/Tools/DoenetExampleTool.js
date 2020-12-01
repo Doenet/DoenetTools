@@ -149,12 +149,17 @@ export default function DoenetExampleTool(props) {
         >
           <MainPanel responsiveControls={[]}>Overlay Main panel</MainPanel>
           <SupportPanel responsiveControls={[]}>Overlay Support</SupportPanel>
-          <MenuPanel title="edit">
-            <h3>
-              This is Menu Panel and can be switched to title="style" menu panel
-            </h3>
+          <MenuPanel>
+            <MenuPanelSection title="edit">
+              <CollapseSection>
+              </CollapseSection>
+              <CollapseSection>
+              </CollapseSection>
+            </MenuPanelSection>
+            <MenuPanelSection title="style">
+              Menu Panel Style Content
+            </MenuPanelSection>
           </MenuPanel>
-          <MenuPanel title="style">Menu Panel Style Content</MenuPanel>
         </Overlay>
       )}
     </>

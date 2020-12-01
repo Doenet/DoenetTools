@@ -223,8 +223,8 @@ export default function MainPanel(props) {
           </div>
         </div>
       </MainPanelDiv>
-      <HeaderDiv>
         {props.fromOverlayNew === undefined ? (
+          <HeaderDiv>
           <div
             style={{
               display: "flex ",
@@ -341,10 +341,6 @@ export default function MainPanel(props) {
               )}
             </div>
           </div>
-        ) : (
-          ""
-        )}
-        {props.fromOverlayNew === undefined && (
           <HeaderMenuPanelContent
             open={showHideOverlay}
             onClose={() => {
@@ -352,8 +348,10 @@ export default function MainPanel(props) {
             }}
             body={activeHeaderPanelContent}
           />
+          </HeaderDiv>
+        ) : (
+          ""
         )}
-      </HeaderDiv>
     </>
   );
 }

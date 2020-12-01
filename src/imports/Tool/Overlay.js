@@ -53,13 +53,13 @@ const OverlayContent = styled.div`
   display: grid;
   grid-template-columns: auto 1fr 240px;
   grid-template-rows: 60px 1fr;
-  grid-template-areas: "navPanel header menuPanel" "navPanel mainPanel menuPanel";
+  grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel";
   overflow: scroll;
 `;
 const OverlayHeaderWrapper = styled.div`
   grid-area: header;
   /* display: flex; */
-  background-color: #288ae9;
+  background-color: #8fb8de;
   /* height: 50px; */
 `;
 const OverlayContainer = styled.div`
@@ -114,7 +114,6 @@ const Container = styled.div`
 
 export default function Overlay(props) {
   //console.log(props.responsiveControls, "props.responsiveControls in tool");
-  const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
   const [supportPanelObj, setSupportPanelObj] = React.useState({});
   const [navPanelObj, setNavPanelObj] = React.useState(null);
   const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
@@ -122,10 +121,6 @@ export default function Overlay(props) {
   const [headerCtrlGroupEl, setHeaderCtrlGroupEl] = useState(null);
   const [activeHeaderPanelContent, setActiveHeaderPanelContent] = useState();
   const [showHideSupportPanel, setshowHideSupportPanel] = useState(false);
-
-  const showHideMenuPanelContent = (index) => {
-    setPanelDataIndex(index);
-  };
 
   const hideNavPanel = (showHideNavPanelFlag) => {
     if (showHideNavPanelFlag !== undefined) {
@@ -148,23 +143,6 @@ export default function Overlay(props) {
   React.useEffect(() => {
     if (props.children && Array.isArray(props.children)) {
       props.children.map((obj, index) => {
-        if (
-          obj &&
-          obj.type &&
-          typeof obj.type === "function" &&
-          obj.type.name === "MenuPanel"
-        ) {
-          if (panelDataIndex === -1) {
-            setPanelDataIndex((prevState) => {
-              //console.log(prevState);
-              let oldIndex = prevState;
-              if (oldIndex === -1) {
-                return index;
-              }
-              return oldIndex;
-            });
-          }
-        }
         if (
           obj &&
           obj.type &&
@@ -199,144 +177,99 @@ export default function Overlay(props) {
       <OverlayWrapper className={props.isOpen ? "on" : "off"}>
         <OverlayContent>
           <OverlayHeaderWrapper>
-            {/* <div
-              style={{
-                // display: "grid",
-                // gridTemplateColumns: "auto 1fr 240px",
-                // height: "50px",
-                // width: "100%",
-              }}
-            > */}
-              <div style={{height: "50px", display: "flex"}}>
-                <div style={{ margin: "2px", padding: "4px", width: "135px" }}>
-                  <div style={{ display: "flex" }}>
-                    <img id="doenetLogo" src={doenetImage} height="40px" />
-                    <div style={{ display: "flex", padding: "4px" }}>
-                      {props.onUndo ? (
-                        <button
-                          style={{
-                            border: "none",
-                            background: "none",
-                            height: "35px",
-                            fontSize: "20px",
-                          }}
-                          onClick={props.onUndo}
-                        >
-                          <FontAwesomeIcon icon={faReply} />
-                        </button>
-                      ) : (
-                        ""
-                      )}
-                      {props.onRedo ? (
-                        <button
-                          style={{
-                            border: "none",
-                            background: "none",
-                            height: "35px",
-                            fontSize: "20px",
-                          }}
-                          onClick={props.onRedo}
-                        >
-                          <FontAwesomeIcon icon={faShare} />
-                        </button>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ width: "100%" }}>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      height: "14px",
-                      width: "60px",
-                    }}
-                  >
-                    {props.title}
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    {props.responsiveControlsFromTools ? (
-                      <div /*ref={setHeaderCtrlGroupRef}*/
+            <div style={{ height: "50px", display: "flex" }}>
+              <div style={{ margin: "2px", padding: "4px", width: "135px" }}>
+                <div style={{ display: "flex" }}>
+                  <img id="doenetLogo" src={doenetImage} height="40px" />
+                  <div style={{ display: "flex", padding: "4px" }}>
+                    {props.onUndo ? (
+                      <button
                         style={{
-                          //  border: "1px solid black",
-                          display: "flex",
-                          width: "100%",
-                          //  resize: 'horizontal',
-                          overflow: "auto",
+                          border: "none",
+                          background: "none",
+                          height: "35px",
+                          fontSize: "20px",
                         }}
+                        onClick={props.onUndo}
                       >
-                        <ResponsiveControlsWrapper
-                          mainPanelWidth={headerCtrlGrpWidth}
-                        >
-                          {props.responsiveControlsFromTools}
-                        </ResponsiveControlsWrapper>
-                      </div>
+                        <FontAwesomeIcon icon={faReply} />
+                      </button>
                     ) : (
                       ""
                     )}
-                    <div style={{ alignSelf: "flex-end" }}>
-                      <Switch onChange={onSwitchClick} />
-                    </div>
+                    {props.onRedo ? (
+                      <button
+                        style={{
+                          border: "none",
+                          background: "none",
+                          height: "35px",
+                          fontSize: "20px",
+                        }}
+                        onClick={props.onRedo}
+                      >
+                        <FontAwesomeIcon icon={faShare} />
+                      </button>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  width: "240px",
-                  justifyContent: "space-between",
-                  borderLeft: "1px solid black",
-                  gridArea: "menuPanelHeader",
-                }}
-              >
-                {/* {props.headerMenuPanels &&
-                    props.headerMenuPanels.map((hmpObj) =>
-                      React.cloneElement(hmpObj, {
-                        buttonText: hmpObj.props.buttonText,
-                        buttonClick: () => {
-                          showHideOverLayFunc(hmpObj);
-                        },
-                      })
-                    )} */}{" "}
-                {/*this is the box with the buttons*/}
-                {props.children &&
-                  Array.isArray(props.children) &&
-                  props.children.map((obj, index) => {
-                    return (
-                      obj &&
-                      obj.type &&
-                      typeof obj.type === "function" &&
-                      obj.type.name === "MenuPanel" && (
-                        <div
-                          style={{
-                            width: "100%",
-                            borderBottom: "1px solid #3d3d3d",
-                            borderRight: "1px solid #3d3d3d",
-                          }}
-                        >
-                          <div style={{ height: "50px", textAlign: "center" }}>
-                            <button //NOTE: this is the button on the top of the panel!!
-                              style={{
-                                border: "none",
-                                backgroundColor:
-                                  index === panelDataIndex ? "blue" : "white",
-                                width: "100%",
-                                height: "50px",
-                              }}
-                              onClick={() => {
-                                showHideMenuPanelContent(index);
-                              }}
-                            >
-                              {obj.props.title}
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    );
-                  })}
+              <div style={{ width: "100%" }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    height: "14px",
+                    width: "60px",
+                  }}
+                >
+                  {props.title}
+                </div>
+                <div style={{ display: "flex" }}>
+                  {props.responsiveControlsFromTools ? (
+                    <div /*ref={setHeaderCtrlGroupRef}*/
+                      style={{
+                        //  border: "1px solid black",
+                        display: "flex",
+                        width: "100%",
+                        //  resize: 'horizontal',
+                        overflow: "auto",
+                      }}
+                    >
+                      <ResponsiveControlsWrapper
+                        mainPanelWidth={headerCtrlGrpWidth}
+                      >
+                        {props.responsiveControlsFromTools}
+                      </ResponsiveControlsWrapper>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  <div style={{ alignSelf: "flex-end" }}>
+                    <Switch onChange={onSwitchClick} />
+                  </div>
+                </div>
               </div>
-            {/* </div> */}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                width: "240px",
+                justifyContent: "space-between",
+                borderLeft: "1px solid black",
+                gridArea: "menuPanelHeader",
+              }}
+            >
+              {props.headerMenuPanels &&
+                props.headerMenuPanels.map((hmpObj) =>
+                  React.cloneElement(hmpObj, {
+                    buttonText: hmpObj.props.buttonText,
+                    buttonClick: () => {
+                      showHideOverLayFunc(hmpObj);
+                    },
+                  })
+                )}
+            </div>
 
             <OverlayClose onClick={() => props.onClose()} name="closeOverlay">
               <FontAwesomeIcon
@@ -352,63 +285,32 @@ export default function Overlay(props) {
             </OverlayClose>
           </OverlayHeaderWrapper>
 
-          <OverlayContainer>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "auto 1fr 240px",
-                height: "100vh",
-                width: "100vw",
-              }}
-            >
-              {navPanelObj ? (!showHideNavPanel ? navPanelObj : "") : ""}
-              {props.children &&
-                Array.isArray(props.children) &&
-                props.children.map((obj) => {
-                  console.log("obj.type.name", obj.type.name);
-                  return (
-                    obj &&
-                    obj.type &&
-                    typeof obj.type === "function" &&
-                    obj.type.name === "MainPanel" && (
-                      <>
-                        {obj.type.name === "MainPanel"
-                          ? React.cloneElement(obj, {
-                              fromOverlayNew: true,
-                              showHideOverlayFromOverlayNew: showHideSupportPanel,
-                              responsiveControlsFromTools:
-                                props.responsiveControls,
-                              responsiveControls: obj.props.responsiveControls,
-                              hideNavPanel: hideNavPanel,
-                              showHideNavPanel: showHideNavPanel,
-                              onUndo: props.onUndo,
-                              onRedo: props.onRedo,
-                              title: props.title,
-                              supportPanelObj: supportPanelObj,
-                              headerMenuPanels: props.headerMenuPanels,
-                            })
-                          : obj}
-                      </>
-                    )
-                  );
-                })}
-              <div
-                style={{
-                  gridColumn: "3 / 4",
-                  width: "240px",
-                  height: "100vh",
-                  borderLeft: "1px solid black",
-                }}
-              >
-                <div
-                  style={{ height: "calc(100vh - 50px)", overflow: "scroll" }}
-                >
-                  {panelDataIndex !== -1
-                    ? props.children[panelDataIndex].props.children
-                    : ""}
-                </div>
-              </div>
-              {/* {props.children &&
+          {props.children &&
+            Array.isArray(props.children) &&
+            props.children.map((obj, index) => {
+              switch (obj?.type?.name) {
+                case "MainPanel":
+                  return React.cloneElement(obj, {
+                    fromOverlayNew: true,
+                    showHideOverlayFromOverlayNew: showHideSupportPanel,
+                    responsiveControlsFromTools: props.responsiveControls,
+                    responsiveControls: obj.props.responsiveControls,
+                    hideNavPanel: hideNavPanel,
+                    showHideNavPanel: showHideNavPanel,
+                    onUndo: props.onUndo,
+                    onRedo: props.onRedo,
+                    title: props.title,
+                    supportPanelObj: supportPanelObj,
+                    headerMenuPanels: props.headerMenuPanels,
+                  });
+                case "SupportPanel":
+                  return null;
+                case "MenuPanel":
+                default:
+                  return React.cloneElement(obj, { key: index });
+              }
+            })}
+          {/* {props.children &&
                 !Array.isArray(props.children) &&
                 React.cloneElement(props.children, {
                   fromOverlayNew: true,
@@ -422,8 +324,6 @@ export default function Overlay(props) {
                   supportPanelObj: supportPanelObj,
                   headerMenuPanels: props.headerMenuPanels,
                 })} */}
-            </div>
-          </OverlayContainer>
         </OverlayContent>
       </OverlayWrapper>
     </>
