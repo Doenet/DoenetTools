@@ -229,7 +229,6 @@ function BrowserRouted(props){
          </Switch></Router>
  }
 
-
 function Browser(props){
   console.log(`=== BROWSER='${props.drive}' isNav='${props.isNav}'`)
   let pathFolderId = props.drive; //default 
@@ -250,9 +249,6 @@ function Browser(props){
   if(props.isNav){
     rootFolderId = props.drive;
   }
-
-  let nodeIdToDataIndex = useRef({}); //DELETE
-  let nodeIdToChildren = useRef({}); //DELETE
 
   const {
     data,
@@ -343,10 +339,11 @@ function Browser(props){
     })
   },[])
 
-  function updateSelection(nodeIdObj){
-    //setSelectedNodes
+  const updateToolWithSelection = useCallback((nodeIdObj)=>{
+  // function updateToolWithSelection(nodeIdObj){
       //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
-      let selectedArr = [];
+    let data = cache.getQueryData(["nodes",props.drive]);
+    let selectedArr = [];
       for (let nodeId of Object.keys(nodeIdObj)){
         let obj = data[0].nodeObjs[nodeId];
         let parentId = obj.parentId;
@@ -358,19 +355,20 @@ function Browser(props){
           selectedArr
         });
       }
-  }
+  },[])
 
   const handleClickNode = useCallback(({ nodeData, shiftKey, metaKey})=>{
     if (props.isNav){
       history.push(`/${props.drive}:${nodeData.id}/`)
     }else{
+    
       if (!shiftKey && !metaKey){
         //Only select this node
         setSelectedNodes((old)=>{
           let newObj = {};
           newObj[nodeData.id] = true;
           lastSelectedNodeIdRef.current = nodeData.id;
-          updateSelection(newObj)
+          updateToolWithSelection(newObj)
           return newObj;
         })
       }else if (shiftKey && !metaKey){
@@ -389,7 +387,7 @@ function Browser(props){
           for (let i = startIndex; i <= endIndex;i++){
             newObj[nodeIdRefArray.current[i]] = true;
           }
-          updateSelection(newObj)
+          updateToolWithSelection(newObj)
           return newObj;
         })
       }else if (!shiftKey && metaKey){
@@ -402,13 +400,14 @@ function Browser(props){
             newObj[nodeData.id] = true;
             lastSelectedNodeIdRef.current = nodeData.id;
         }
-          updateSelection(newObj)
+          updateToolWithSelection(newObj)
           return newObj;
         })
       }
+ 
       
     }
-    
+
     
   },[])
 
