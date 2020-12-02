@@ -364,8 +364,17 @@ function Browser(props){
     
       if (!shiftKey && !metaKey){
         //Only select this node
+        // setSelectedNodes((old)=>{
+        //   let newObj = {};
+        //   newObj[nodeData.id] = true;
+        //   lastSelectedNodeIdRef.current = nodeData.id;
+        //   updateToolWithSelection(newObj)
+        //   return newObj;
+        // })
+
+        //Add this node to selection
         setSelectedNodes((old)=>{
-          let newObj = {};
+          let newObj = {...old};
           newObj[nodeData.id] = true;
           lastSelectedNodeIdRef.current = nodeData.id;
           updateToolWithSelection(newObj)
@@ -564,7 +573,8 @@ const LoadingNode =  React.memo(function Node(props){
     data-doenet-browserid={props.browserId}
     tabIndex={0}
     className="noselect nooutline" 
-    onClick={(e) => {
+    onMouseDown={(e) => {
+      // onClick={(e) => {
       props.handleClickNode({ nodeData:props.node, shiftKey: e.shiftKey, metaKey: e.metaKey })
     }} 
     onDoubleClick={(e) => {
