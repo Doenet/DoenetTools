@@ -9,15 +9,23 @@ include "db_connection.php";
 
 $_POST = json_decode(file_get_contents("php://input"),true); 
 
-$destinationObj = mysqli_real_escape_string($conn,$_POST["destinationObj"]); 
-var_dump($_POST);
-// $number_items = count($_POST["sourceArr"]);
+$sourceDriveId = mysqli_real_escape_string($conn,$_POST["selectedNodes"]["driveId"]); 
+$destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["driveId"]); 
+$destinationParentId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["parentId"]); 
 
-// for ($i = 0; $i < $number_items; $i++) {
-//   $stuff =  mysqli_real_escape_string($conn,$_POST["sourceArr"][$i]);
-//   var_dump($stuff);
-//   // $itemType =  mysqli_real_escape_string($conn,$_POST["sourceArr"][$i]);
-// }
+$number_items = count($_POST["selectedNodes"]["selectedArr"]);
+$source_items = array();
+for ($i = 0; $i < $number_items; $i++) {
+  $parentId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["parentId"]);
+  $nodeId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
+  $type =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["type"]);
+  array_push($source_items,array(
+    "parentId"=>$parentId,
+    "nodeId"=>$nodeId,
+    "type"=>$type
+  ));
+}
+// var_dump($source_items);
 $response_arr = array( 
     "success" => TRUE,
    );

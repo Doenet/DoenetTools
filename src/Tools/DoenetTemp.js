@@ -21,63 +21,96 @@ import {
 const queryCache = new QueryCache();
 
 export default function app() {
+  
+
+return <>
+<ReactQueryCacheProvider queryCache={queryCache}>
+  <Tool />
+  <ReactQueryDevtools />
+</ReactQueryCacheProvider>
+</>
+};
+
+//TODO: Replace with the real <Tool /> component
+function Tool(props){
+
+  const cache = useQueryCache();
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
 
   const setSelectedNodes = useCallback((selectedNodes)=>{
-    console.log(">>>Tool selectedNodes",selectedNodes);
     selectedNodesArr.current = selectedNodes;
   });
 
+  const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
+       const payload = {selectedNodes, destinationObj}
+       axios.post("/api/moveNodes.php", payload)
+       .then((resp)=>{
+         console.log(">>>MOVE resp",resp.data)
+       })
+   
+     return {selectedNodes, destinationObj}
+   } 
+
   const [moveNodes] = useMutation(mutationMoveNodes, {
-    onSuccess:(obj)=>{
-      console.log(">>>move nodes",obj)
-      //Sort into drives
-      //Remove from sources
-       // cache.setQueryData(["nodes",obj.driveId],
-      // (old)=>{
-      //   //We are adding a folder so we need the previous folders
-      //   //Find the most recent mention of parentId
-        
-
-      // old.push({
-      //     add:{
-      //       driveId:obj.driveId,
-      //       node:{
-      //       id:obj.folderId,
-      //       label,
-      //       parentId:obj.parentId,
-      //       type:"Folder"
-      //       }
-      //     }
-      // })
-      // return old
-      // })
-
+    onSuccess:(params)=>{
+      const sourceDriveId = params.selectedNodes.driveId;
+      const destinationDriveId = params.destinationObj.driveId;
+      const destinationParentId = params.destinationObj.parentId;
       //Convert to new types
       //TODO: convert data from content to assignments 
       //and assignments to content
 
-      //Add to Destination
-      // cache.setQueryData(["nodes",obj.driveId],
-      // (old)=>{
-      //   //We are adding a folder so we need the previous folders
-      //   //Find the most recent mention of parentId
-        
+      console.log(`>>>move from drive ${sourceDriveId} to ${destinationDriveId}`)
 
-      // old.push({
-      //     add:{
-      //       driveId:obj.driveId,
-      //       node:{
-      //       id:obj.folderId,
-      //       label,
-      //       parentId:obj.parentId,
-      //       type:"Folder"
-      //       }
-      //     }
-      // })
-      // return old
-      // })
+      console.log(">>>selectedNodes",params.selectedNodes)
+      if (sourceDriveId === destinationDriveId){
+        //move nodes in a drive
+        cache.setQueryData(["nodes",sourceDriveId],
+      (old)=>{
+      old.push({
+          move:{
+            destinationParentId,
+            nodeIds:params.selectedNodes.selectedArr,
+          }
+      })
+      return old
+      })
+      }else{
+        //delete from source drive
+        cache.setQueryData(["nodes",sourceDriveId],
+      (old)=>{
+      old.push({
+          deleteArr:params.selectedNodes.selectedArr
+      })
+      return old
+      })
+
+///************NEED THE ACTUAL SOURCE OBJECTS HERE TO ADD TO ANOTHER QUERY CACHE 
+///params.selectedNodes.selectedArr
+
+
+
+
+
+        //and add to desination drive
+        cache.setQueryData(["nodes",destinationDriveId],
+      (old)=>{
+      old.push({
+          addArr:{
+            destinationParentId,
+            nodeArr:params.selectedNodes.selectedArr
+          }
+      })
+      return old
+      })
+      }
+
+
+       
+
+      
+
     }
   })
 
@@ -95,16 +128,19 @@ export default function app() {
     console.log("GET",driveId)
     return [syncNodeIdToDataIndex.current[driveId],syncNodeIdToChildren.current[driveId]];
   }
+  return (<>
+<AddNode type="Folder" />
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+  }} >Move to content folder 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
+  }} >Move to course Header 1</button>
 
-return <>
-<ReactQueryCacheProvider queryCache={queryCache}>
-  <AddNode type="Folder" />
-  {/* <button onClick={()=>{
-    moveNodes({selectedNodesArr,destinationObj:{driveId:"course",parentId:"h2"}})
-  }} >Move to Course header 2</button>
-    <button onClick={()=>{
-    moveNodes({selectedNodesArr,destinationObj:{driveId:"content",parentId:"f2"}})
-}} >Move to Content Folder 2</button> */}
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} driveSync={driveSync} />
@@ -115,22 +151,11 @@ return <>
   <BrowserRouted drive="course" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
   </div>
   </div>
-  <ReactQueryDevtools />
+  </>
+  )
+}
 
-</ReactQueryCacheProvider>
-</>
-};
 
-const mutationMoveNodes = ({sourceArr, destinationObj}) => {
- console.log(">>source dest",sourceArr,destinationObj)
-    const payload = {sourceArr, destinationObj}
-    axios.post("/api/moveNodes.php", payload)
-    .then((resp)=>{
-      console.log(">>>MOVE resp",resp.data)
-    })
-
-  return {sourceArr, destinationObj}
-} 
 
 const addFolderMutation = ({label, driveId, parentId}) =>{
   const folderId = nanoid();
@@ -170,6 +195,7 @@ function AddNode(props){
       onSuccess:(obj)=>{
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
+        console.log(">>>ADD!!!!!!!!!!!old",old)
       //Provide infinitequery with what we know of the new addition
       old.push({
           add:{
@@ -198,7 +224,11 @@ function AddNode(props){
     }
 
     if (props.type === "Folder"){
-      return (<span><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} /><button disabled={routePathFolderId === ""} 
+      return (<span>
+        <input data-doenet-browser-stayselected = {true} type="text" value={label} onChange={(e)=>setLabel(e.target.value)} />
+        <button 
+        data-doenet-browser-stayselected = {true}
+        disabled={routePathFolderId === ""} 
       onClick={()=>{
         addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label})
         setLabel('');  //reset input field
@@ -269,17 +299,58 @@ function Browser(props){
             let nodeId = data[1].add.nodeObj.id;
             if (data[0].folderChildrenIds[parentId]){
               //Append children and don't add if we haven't loaded the other items
+              //TODO: test if this exists first????
               data[0].folderChildrenIds[parentId].defaultArr.push(nodeId);
               data[0].nodeObjs[nodeId] = data[1].add.nodeObj;
             }
-            data.pop();          
+            data.pop();   
+          }else if (actionOrId === "addArr"){
+            let dParentId = data[1].addArr.destinationParentId;
+            for (let nodeObj of data[1].addArr.nodeArr){
+              let nodeId = nodeObj.nodeId;
+              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultArr
+              if (destArr){
+                destArr.push(nodeId);
+              }
+              data[0].nodeObjs[nodeId] = nodeObj;
+            }
+              data.pop(); 
+
           }else if (actionOrId === "delete"){
             let parentId = data[1].delete.parentId;
             let nodeId = data[1].delete.folderId;
             let childrenIds = data[0].folderChildrenIds[parentId].defaultArr;
             childrenIds.splice(childrenIds.indexOf(nodeId),1);
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
-            data.pop();          
+            data.pop();    
+          }else if (actionOrId === "deleteArr"){
+            for (let nodeInfo of data[1].deleteArr){
+              const nodeId = nodeInfo.nodeId;
+              const parentId = nodeInfo.parentId;
+              let childrenIds = data[0].folderChildrenIds[parentId].defaultArr;
+              childrenIds.splice(childrenIds.indexOf(nodeId),1);
+            }
+            data.pop();    
+          }else if (actionOrId === "move"){
+            let dParentId = data[1].move.destinationParentId;
+            for (let nodeObj of data[1].move.nodeIds){
+              let nodeId = nodeObj.nodeId;
+              //update parentIds in nodeObjs
+              data[0].nodeObjs[nodeId].parentId = dParentId;
+              //add to destination
+              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultArr;
+              //Only add if it exists
+              if (destArr){
+                destArr.push(nodeId);
+              }
+              //remove from source
+              let sParentArr = data[0].folderChildrenIds?.[nodeObj.parentId]?.defaultArr;
+              //Only remove if it exists
+              if (sParentArr){
+                sParentArr.splice(sParentArr.indexOf(nodeId),1);
+              }
+            }
+            data.pop();        
           }else{
             //fetchMore
             let contentIds = [];
@@ -340,14 +411,13 @@ function Browser(props){
   },[])
 
   const updateToolWithSelection = useCallback((nodeIdObj)=>{
-  // function updateToolWithSelection(nodeIdObj){
-      //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
+      //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id",type:"folder"}]}
     let data = cache.getQueryData(["nodes",props.drive]);
     let selectedArr = [];
       for (let nodeId of Object.keys(nodeIdObj)){
         let obj = data[0].nodeObjs[nodeId];
         let parentId = obj.parentId;
-        selectedArr.push({parentId,nodeId})
+        selectedArr.push({parentId,nodeId,type:obj.type})
       }
       if (props.setSelectedNodes){
         props.setSelectedNodes({
@@ -516,6 +586,7 @@ const EmptyNode =  React.memo(function Node(props){
     margin: "2px"
   }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
 })
+
 const LoadingNode =  React.memo(function Node(props){
   return (<div style={{
     width: "300px",
@@ -583,7 +654,8 @@ const LoadingNode =  React.memo(function Node(props){
     onBlur={(e) => {
       //Only clear if focus goes outside of this node group
        if (e.relatedTarget === null ||
-        e.relatedTarget.dataset.doenetBrowserid !== props.browserId
+        (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+        !e.relatedTarget.dataset.doenetBrowserStayselected)
         ){
       props.handleDeselectAll();
       }
