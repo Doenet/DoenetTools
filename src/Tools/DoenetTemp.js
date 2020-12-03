@@ -535,35 +535,47 @@ function Browser(props){
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
       for(let nodeId of childrenIdsArr){
-        nodeIdArray.push(nodeId); //needed to calculate shift click selections
-        let nodeObj = data[0].nodeObjs[nodeId];
-        let isOpen = false;
-        if (openNodesObj[nodeId]){ isOpen = true;}
+        //If folder we need to know how many child nodes it has
+        let grandChildrenIdsArr = data[0]?.folderChildrenIds?.[nodeId]?.defaultOrder;
+        let numChildren = "?";
+        if (grandChildrenIdsArr === undefined){
+          //Need data
+          fetchMore(nodeId);
+        }else{
+          numChildren = grandChildrenIdsArr.length;
+        }
+          nodeIdArray.push(nodeId); //needed to calculate shift click selections
+          let nodeObj = data[0].nodeObjs[nodeId];
+          let isOpen = false;
+          if (openNodesObj[nodeId]){ isOpen = true;}
+          
+          let appearance = "default";
+          if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
+            //Only select the current path folder if we are a navigation browser
+            appearance = "selected";
+          }else if (selectedNodes[nodeId]){ 
+            appearance = "selected";
+          }
+          nodesJSX.push(<Node 
+            key={`node${nodeId}`} 
+            browserId={browserId.current}
+            node={nodeObj}
+            nodeId={nodeId}
+            driveId={props.drive}
+            parentId={parentId}
+            isOpen={isOpen} 
+            appearance={appearance}
+            numChildren={numChildren}
+            handleFolderToggle={handleFolderToggle} 
+            deleteFolderHandler={deleteFolderHandler}
+            handleClickNode={handleClickNode}
+            handleDeselectAll={handleDeselectAll}
+            level={level}/>)
+          if (isOpen){
+            buildNodes({driveId,parentId:nodeId,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
+          }
         
-        let appearance = "default";
-        if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
-          //Only select the current path folder if we are a navigation browser
-          appearance = "selected";
-        }else if (selectedNodes[nodeId]){ 
-          appearance = "selected";
-        }
-        nodesJSX.push(<Node 
-          key={`node${nodeId}`} 
-          browserId={browserId.current}
-          node={nodeObj}
-          nodeId={nodeId}
-          driveId={props.drive}
-          parentId={parentId}
-          isOpen={isOpen} 
-          appearance={appearance}
-          handleFolderToggle={handleFolderToggle} 
-          deleteFolderHandler={deleteFolderHandler}
-          handleClickNode={handleClickNode}
-          handleDeselectAll={handleDeselectAll}
-          level={level}/>)
-        if (isOpen){
-          buildNodes({driveId,parentId:nodeId,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
-        }
+        
       }
     }
     return [nodesJSX,nodeIdArray];
@@ -615,7 +627,7 @@ const LoadingNode =  React.memo(function Node(props){
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
 
-  let numChildren = 0;
+  // let numChildren = 0;
   // if (children && children.data){
   //   numChildren = Object.keys(children.data[props.nodeId]).length;
   // }
@@ -680,7 +692,7 @@ const LoadingNode =  React.memo(function Node(props){
     className="noselect" 
     style={{
       marginLeft: `${props.level * indentPx}px`
-    }}>{toggle} [FOLDER] {props.node.label} {deleteNode}</div></div>
+    }}>{toggle} [FOLDER] {props.node.label} ({props.numChildren}) {deleteNode}</div></div>
   
   </>
 // }
