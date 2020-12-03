@@ -360,14 +360,17 @@ function Browser(props){
             }
             data.pop();        
           }else{
-            //fetchMore
-            let contentIds = [];
-            for (let nodeId of Object.keys(data[1][actionOrId])){
-              let nodeObj = data[1][actionOrId][nodeId];
-              contentIds.push(nodeId);
-              data[0].nodeObjs[nodeId] = nodeObj;
+            //handle fetchMore
+            for (let cNodeId of Object.keys(data[1])){
+              let contentIds = [];
+              for (let gcNodeId of Object.keys(data[1][cNodeId])){
+                let nodeObj = data[1][actionOrId][gcNodeId];
+                if (nodeObj === undefined){nodeObj = {}}
+                contentIds.push(gcNodeId);
+                data[0].nodeObjs[gcNodeId] = nodeObj;
+              }
+              data[0].folderChildrenIds[cNodeId] = {defaultOrder:contentIds};
             }
-            data[0].folderChildrenIds[actionOrId] = {defaultOrder:contentIds};
             data.pop();
           }
         }
@@ -530,6 +533,7 @@ function Browser(props){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
       fetchMore(parentId);
+
     }else{
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
