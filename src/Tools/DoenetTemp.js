@@ -60,10 +60,12 @@ function Tool(props){
       //Convert to new types
       //TODO: convert data from content to assignments 
       //and assignments to content
-
+      console.log(">>>>>>>>>>>>>>>>>>")
       console.log(`>>>move from drive ${sourceDriveId} to ${destinationDriveId}`)
+      console.log(">>>>>>>>>>>>>>>>>>")
 
       console.log(">>>selectedNodes",params.selectedNodes)
+      console.log(">>>selectedNodes",params.selectedNodes.selectedArr)
       if (sourceDriveId === destinationDriveId){
         //move nodes in a drive
         cache.setQueryData(["nodes",sourceDriveId],
@@ -77,6 +79,18 @@ function Tool(props){
       return old
       })
       }else{
+        //move nodes to a new drive
+
+        //copy node information
+        let sourceData = cache.getQueryData(["nodes",sourceDriveId]);
+        let selectedFullArr = [];
+        
+        for (let nodeObj of params.selectedNodes.selectedArr){
+          const nodeId = nodeObj.nodeId;
+          const nodeFullObj = sourceData[0].nodeObjs[nodeId];
+          selectedFullArr.push({...nodeFullObj})
+        }
+
         //delete from source drive
         cache.setQueryData(["nodes",sourceDriveId],
       (old)=>{
@@ -86,12 +100,6 @@ function Tool(props){
       return old
       })
 
-///************NEED THE ACTUAL SOURCE OBJECTS HERE TO ADD TO ANOTHER QUERY CACHE 
-///params.selectedNodes.selectedArr
-
-
-
-
 
         //and add to desination drive
         cache.setQueryData(["nodes",destinationDriveId],
@@ -99,7 +107,7 @@ function Tool(props){
       old.push({
           addArr:{
             destinationParentId,
-            nodeArr:params.selectedNodes.selectedArr
+            nodeArr:selectedFullArr
           }
       })
       return old
@@ -300,15 +308,15 @@ function Browser(props){
             if (data[0].folderChildrenIds[parentId]){
               //Append children and don't add if we haven't loaded the other items
               //TODO: test if this exists first????
-              data[0].folderChildrenIds[parentId].defaultArr.push(nodeId);
+              data[0].folderChildrenIds[parentId].defaultOrder.push(nodeId);
               data[0].nodeObjs[nodeId] = data[1].add.nodeObj;
             }
             data.pop();   
           }else if (actionOrId === "addArr"){
             let dParentId = data[1].addArr.destinationParentId;
             for (let nodeObj of data[1].addArr.nodeArr){
-              let nodeId = nodeObj.nodeId;
-              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultArr
+              let nodeId = nodeObj.id;
+              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultOrder
               if (destArr){
                 destArr.push(nodeId);
               }
@@ -319,7 +327,7 @@ function Browser(props){
           }else if (actionOrId === "delete"){
             let parentId = data[1].delete.parentId;
             let nodeId = data[1].delete.folderId;
-            let childrenIds = data[0].folderChildrenIds[parentId].defaultArr;
+            let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
             childrenIds.splice(childrenIds.indexOf(nodeId),1);
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
             data.pop();    
@@ -327,7 +335,7 @@ function Browser(props){
             for (let nodeInfo of data[1].deleteArr){
               const nodeId = nodeInfo.nodeId;
               const parentId = nodeInfo.parentId;
-              let childrenIds = data[0].folderChildrenIds[parentId].defaultArr;
+              let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
               childrenIds.splice(childrenIds.indexOf(nodeId),1);
             }
             data.pop();    
@@ -338,13 +346,13 @@ function Browser(props){
               //update parentIds in nodeObjs
               data[0].nodeObjs[nodeId].parentId = dParentId;
               //add to destination
-              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultArr;
+              let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultOrder;
               //Only add if it exists
               if (destArr){
                 destArr.push(nodeId);
               }
               //remove from source
-              let sParentArr = data[0].folderChildrenIds?.[nodeObj.parentId]?.defaultArr;
+              let sParentArr = data[0].folderChildrenIds?.[nodeObj.parentId]?.defaultOrder;
               //Only remove if it exists
               if (sParentArr){
                 sParentArr.splice(sParentArr.indexOf(nodeId),1);
@@ -359,7 +367,7 @@ function Browser(props){
               contentIds.push(nodeId);
               data[0].nodeObjs[nodeId] = nodeObj;
             }
-            data[0].folderChildrenIds[actionOrId] = {defaultArr:contentIds};
+            data[0].folderChildrenIds[actionOrId] = {defaultOrder:contentIds};
             data.pop();
           }
         }
@@ -517,7 +525,7 @@ function Browser(props){
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.defaultArr;
+    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.defaultOrder;
 
     if (childrenIdsArr === undefined){
       //Need data
