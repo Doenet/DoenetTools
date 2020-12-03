@@ -442,22 +442,21 @@ function Browser(props){
     
       if (!shiftKey && !metaKey){
         //Only select this node
-        // setSelectedNodes((old)=>{
-        //   let newObj = {};
-        //   newObj[nodeData.id] = true;
-        //   lastSelectedNodeIdRef.current = nodeData.id;
-        //   updateToolWithSelection(newObj)
-        //   return newObj;
-        // })
-
-        //Add this node to selection
         setSelectedNodes((old)=>{
-          let newObj = {...old};
-          newObj[nodeData.id] = true;
+          let newObj; 
+          //if already selected then leave selections the way they are
+          //else only select the current node
+          if (old[nodeData.id]){
+            newObj = {...old};
+          }else{
+            newObj = {};
+            newObj[nodeData.id] = true;
+          }
           lastSelectedNodeIdRef.current = nodeData.id;
           updateToolWithSelection(newObj)
           return newObj;
         })
+
       }else if (shiftKey && !metaKey){
         //Add selection to range including the end points 
         //of last selected to current nodeid      
