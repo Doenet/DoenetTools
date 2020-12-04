@@ -47,7 +47,8 @@ function Tool(props){
        const payload = {selectedNodes, destinationObj}
        axios.post("/api/moveNodes.php", payload)
        .then((resp)=>{
-        //  console.log(">>>MOVE resp",resp.data)
+         console.log(">>>MOVE resp")
+         console.log(resp.data)
        })
       }
      return {selectedNodes, destinationObj}
@@ -118,20 +119,7 @@ function Tool(props){
     }
   })
 
-  //driveSync
-  let syncNodeIdToDataIndex = useRef({});
-  let syncNodeIdToChildren = useRef({});
 
-  let driveSync = {update,get}
-
-  function update(driveId,nodeIdToDataIndex,nodeIdToChildren){
-    syncNodeIdToDataIndex.current[driveId] = nodeIdToDataIndex;
-    syncNodeIdToChildren.current[driveId] = nodeIdToChildren;
-  }
-  function get(driveId){
-    console.log("GET",driveId)
-    return [syncNodeIdToDataIndex.current[driveId],syncNodeIdToChildren.current[driveId]];
-  }
   return (<>
 <AddNode type="Folder" />
 <div>
@@ -139,11 +127,14 @@ function Tool(props){
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+    .then((x)=>{selectedNodesArr.current = {}})
   }} >Move to content folder 1</button>
   <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f2"}})
+    .then((x)=>{selectedNodesArr.current = {}})
+
   }} >Move to content folder 2</button>
 </div>
 <div>
@@ -151,23 +142,28 @@ function Tool(props){
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
+    .then((x)=>{selectedNodesArr.current = {}})
+
   }} >Move to course Header 1</button>
   <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h2"}})
+    .then((x)=>{selectedNodesArr.current = {}})
+
+
   }} >Move to course Header 2</button>
 </div>
   
 
   <div style={{display:"flex"}}> 
   <div>
-  <BrowserRouted drive="content" isNav={true} driveSync={driveSync} />
-  <BrowserRouted drive="course" isNav={true} driveSync={driveSync} />
+  <BrowserRouted drive="content" isNav={true} />
+  <BrowserRouted drive="course" isNav={true} />
   </div>
   <div>
-  <BrowserRouted drive="content" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
-  <BrowserRouted drive="course" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes}/>
   </div>
   </div>
   </>
