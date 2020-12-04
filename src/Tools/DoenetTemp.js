@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect, useRef} from 'react';
+import React, {useState, useCallback, useEffect, useRef, useContext} from 'react';
 import {
   useQuery,
   useQueryCache,
@@ -18,16 +18,25 @@ import {
   Route,
   useHistory
 } from "react-router-dom";
+import {
+  DropTargetsProvider,
+  DropTargetsContext,
+  WithDropTarget  
+} from '../imports/DropTarget';
+import Draggable from '../imports/Draggable';
+
 const queryCache = new QueryCache();
 
 export default function app() {
   
 
 return <>
-<ReactQueryCacheProvider queryCache={queryCache}>
-  <Tool />
-  <ReactQueryDevtools />
-</ReactQueryCacheProvider>
+  <DropTargetsProvider>
+    <ReactQueryCacheProvider queryCache={queryCache}>
+      <Tool />
+      <ReactQueryDevtools />
+    </ReactQueryCacheProvider>
+  </DropTargetsProvider>
 </>
 };
 
@@ -397,7 +406,9 @@ function Browser(props){
   const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
+  const [draggedId, setDraggedId] = useState(null);
   const [refreshNumber,setRefresh] = useState(0)
+  const { dropState, dropActions } = useContext(DropTargetsContext);
 
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
@@ -505,6 +516,24 @@ function Browser(props){
     }
   })
 
+  const onDragStart = ({ id }) => {
+    setDraggedId(id);
+  };
+
+  const onDrag = ({ clientX, clientY, translation, id }) => {
+    dropActions.handleDrag(clientX, clientY, id);
+  };
+
+  const onDragOverContainer = ({ id }) => {
+    // console.log("onDragOver", id);
+    // how to insert dummy object?
+  };
+
+  const onDragEnd = () => {
+    dropActions.handleDrop();
+    setDraggedId(null);
+  };
+
  
   // //------------------------------------------
   // //****** End of use functions  ***********
@@ -518,6 +547,19 @@ function Browser(props){
 
 
   // if (isFetching){ return <div>Loading...</div>}
+
+  function renderDragGhost(element) {
+    const dragGhostId = `drag-ghost-${props.driveId}`;
+    // const numItems = state.mode == "DRAGGING" ? state.draggedItemData.draggedItemIds.size : 0;
+    // const innerNode = state.mode == "DRAGGING" && state.draggedItemData.draggedNodeElement ?
+    //   state.draggedItemData.draggedNodeElement :
+    //   <div>Test</div>;    
+
+    const numItems = 4;
+    const innerNode = <div>Test</div>;    
+    
+    return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
+  }
 
   function deleteFolderHandler(nodeObj){
     deleteFolder(nodeObj);
@@ -555,8 +597,13 @@ function Browser(props){
             appearance = "selected";
           }else if (selectedNodes[nodeId]){ 
             appearance = "selected";
+          } else if (draggedId === nodeId) {
+            appearance = "dragged";
+          } else if (dropState.activeDropTargetId === nodeId) {
+            appearance = "dropperview";
           }
-          nodesJSX.push(<Node 
+
+          let nodeJSX = <Node 
             key={`node${nodeId}`} 
             browserId={browserId.current}
             node={nodeObj}
@@ -570,7 +617,31 @@ function Browser(props){
             deleteFolderHandler={deleteFolderHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
-            level={level}/>)
+            level={level}/>;
+  
+          nodeJSX = <Draggable
+            id={nodeId}
+            onDragStart={onDragStart}
+            onDrag={onDrag}
+            onDragEnd={onDragEnd}
+            ghostElement={renderDragGhost(nodeJSX)}
+          >
+            { nodeJSX } 
+          </Draggable>
+  
+          nodeJSX = <WithDropTarget
+            id={nodeId}
+            dropProps={{dropState: dropState, dropActions: dropActions}}
+            dropCallbacks={{
+              onDragOver: () => onDragOverContainer({ id: nodeId }),
+              onDrop: () => {}
+            }}
+          >
+            { nodeJSX } 
+          </WithDropTarget>
+  
+          nodesJSX.push(nodeJSX);
+
           if (isOpen){
             buildNodes({driveId,parentId:nodeId,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
           }
@@ -697,3 +768,71 @@ const LoadingNode =  React.memo(function Node(props){
   </>
 // }
 })
+
+const DragGhost = ({ id, element, numItems }) => {
+
+  return (
+    <div id={id}>
+    {
+      numItems < 2 ? 
+        <div
+          style={{
+            boxShadow: 'rgba(0, 0, 0, 0.20) 3px 3px 3px 3px',
+            borderRadius: '4px',
+            animation: 'dragAnimation 2s',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: "#fff"
+          }}>
+          { element }
+        </div>
+      :
+      <div style={{minWidth: "300px"}}>
+        <div
+          style={{
+            position: 'absolute',
+            zIndex: "5",
+            top: "-10px",
+            right: "-15px",
+            borderRadius: '25px',
+            background: '#bc0101',
+            fontSize: '12px',
+            color: 'white',
+            width: '25px',
+            height: '25px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+          {numItems}
+        </div>
+        <div
+          style={{
+            boxShadow: 'rgba(0, 0, 0, 0.30) 4px 4px 2px 0px',
+            borderRadius: '4px',
+            padding: "0 5px 5px 0",
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            zIndex: "1",
+            background: "#fff"
+          }}>
+          <div
+            style={{
+              borderRadius: '4px',
+              boxShadow: 'rgba(0, 0, 0, 0.20) 3px 3px 2px 2px',
+              border: '1px solid rgba(0, 0, 0, 0.20)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: "2"
+            }}>
+            { element }
+          </div>
+        </div>
+      </div>
+    }      
+    </div>
+  )
+}
