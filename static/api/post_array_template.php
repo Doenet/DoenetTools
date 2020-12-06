@@ -28,7 +28,6 @@ for ($i = 0; $i < $number_items; $i++) {
 // var_dump($source_items);
 $sql = "INSERT INTO folder (driveId,folderId,parentId)
         VALUES ";
-foreach($souce_items)
 
 $sql = $sql . "ON DUPLICATE KEY UPDATE";
 echo $sql;

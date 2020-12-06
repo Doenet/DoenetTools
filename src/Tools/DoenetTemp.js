@@ -37,6 +37,11 @@ function Tool(props){
   const cache = useQueryCache();
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
+  let clearSelectionFunctions = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
+
+  function regClearSelection(browserId,clearFunc){
+    clearSelectionFunctions.current[browserId] = clearFunc;
+  }
 
   const setSelectedNodes = useCallback((selectedNodes)=>{
     selectedNodesArr.current = selectedNodes;
@@ -123,17 +128,26 @@ function Tool(props){
   return (<>
 <AddNode type="Folder" />
 <div>
+  <button onClick={()=>{console.log(clearSelectionFunctions.current)}}>Log Registration</button>
 <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
-    .then((x)=>{selectedNodesArr.current = {}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
   }} >Move to content folder 1</button>
   <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f2"}})
-    .then((x)=>{selectedNodesArr.current = {}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
 
   }} >Move to content folder 2</button>
 </div>
@@ -142,14 +156,22 @@ function Tool(props){
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
-    .then((x)=>{selectedNodesArr.current = {}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
 
   }} >Move to course Header 1</button>
   <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h2"}})
-    .then((x)=>{selectedNodesArr.current = {}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
 
 
   }} >Move to course Header 2</button>
@@ -162,8 +184,8 @@ function Tool(props){
   <BrowserRouted drive="course" isNav={true} />
   </div>
   <div>
-  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes}/>
-  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
   </div>
   </div>
   </>
@@ -408,9 +430,6 @@ function Browser(props){
     }});
 
  
-
-  
-
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
   let browserId = useRef("");
@@ -441,6 +460,7 @@ function Browser(props){
       }
       if (props.setSelectedNodes){
         props.setSelectedNodes({
+          browserId:browserId.current,
           driveId:props.drive,
           selectedArr
         });
@@ -516,11 +536,18 @@ function Browser(props){
     }
   })
 
+  if (browserId.current === ""){ browserId.current = nanoid();}
+
+  useEffect(()=>{
+    if (props.regClearSelection){
+      props.regClearSelection(browserId.current,handleDeselectAll);
+    }
+  },[])
  
   // //------------------------------------------
   // //****** End of use functions  ***********
   // //------------------------------------------
-  if (browserId.current === ""){ browserId.current = nanoid();}
+
 
   
     //Only show non navigation when drive matches route
