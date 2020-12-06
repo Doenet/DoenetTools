@@ -10,40 +10,55 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
     actionType: null
   });
 
+  const timerRef = useRef(null);
+  const targetEvent = useRef(null);
+  const [initializingDrag, setInitializingDrag] = useState(false); 
+
   const handleMouseDown = useCallback(
     (ev) => {
-      let clientX = ev.clientX,
+      setInitializingDrag(true);
+      targetEvent.current = { ...ev };      
+
+      timerRef.current = setTimeout(() => {
+        let ev = targetEvent.current;
+        let clientX = ev.clientX,
         clientY = ev.clientY,
         actionType = "mouse";
-      if (ev.type === "touchstart") {
-        clientX = ev.touches[0]?.clientX;
-        clientY = ev.touches[0]?.clientY;
-        actionType = "touch";
-      }
-
-      setState((state) => ({
-        ...state,
-        isDragging: true,
-        origin: { x: clientX, y: clientY },
-        actionType: actionType
-      }));
-      // if (onDragStart) onDragStart({ id });
-      onDragStart?.({ id });
+        if (ev.type === "touchstart") {
+          clientX = ev.touches[0]?.clientX;
+          clientY = ev.touches[0]?.clientY;
+          actionType = "touch";
+        }
+        setState((state) => ({
+          ...state,
+          isDragging: true,
+          origin: { x: clientX, y: clientY },
+          actionType: actionType
+        }));
+        onDragStart?.({ id });
+        timerRef.current = null;
+      }, 300);
     },
     [onDragStart, id]
   );
 
   const handleMouseUp = useCallback(() => {
-    setState((state) => ({
-      ...state,
-      isDragging: false,
-      actionType: null
-    }));
-    onDragEnd?.();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    } else {
+      setState((state) => ({
+        ...state,
+        isDragging: false,
+        actionType: null
+      }));
+      onDragEnd?.();
+    }
+    setInitializingDrag(false);
   }, [onDragEnd]);
 
   const handleMouseMove = useCallback(
     (ev) => {
+      if (!state.isDragging) return;
       let clientX = ev.clientX,
         clientY = ev.clientY;
       if (ev.type === "touchmove") {
@@ -68,26 +83,34 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
   );
 
   useEffect(() => {
-    if (state.isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
+    if (initializingDrag) {
       window.addEventListener("mouseup", handleMouseUp);
-      window.addEventListener("touchmove", handleMouseMove);
       window.addEventListener("touchend", handleMouseUp);
     } else {
-      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchmove", handleMouseMove);
       window.removeEventListener("touchend", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleMouseUp);
+    };
+  }, [initializingDrag, handleMouseUp]);
 
+
+  useEffect(() => {
+    if (state.isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("touchmove", handleMouseMove);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleMouseMove);
       setState((state) => ({ ...state, translation: { x: 0, y: 0 } }));
     }
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("touchmove", handleMouseMove);
-      window.removeEventListener("touchend", handleMouseUp);
     };
-  }, [state.isDragging, handleMouseMove, handleMouseUp]);
+  }, [state.isDragging, handleMouseMove]);
 
   const styles = {
     cursor: state.isDragging ? "-webkit-grabbing" : "-webkit-grab",
@@ -98,7 +121,6 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
     // zIndex: state.isDragging ? 2 : 1,
     // position: state.isDragging ? "absolute" : "relative"
   };
-
   const ghostStyles = {
     cursor: state.isDragging ? "-webkit-grabbing" : "-webkit-grab",
     transform: state.isDragging
@@ -112,7 +134,6 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
     top: state.origin.y
 
   }
-
   return (
     <div
       key={`draggable${id}`}
