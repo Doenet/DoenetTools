@@ -15,7 +15,7 @@
     "compromise-numbers": "^1.0.0",
     "crypto": "^1.0.1",
     "csv-parse": "^4.14.1",
-    "csv-parser": "^2.3.3",
+    "csv-parser": "^2.3.5",
     "handsontable": "^6.2.2",
     "math-expressions": "2.0.0-alpha26",
     "mersenne-twister": "1.1.0",
@@ -40,7 +40,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "stats.js": "0.17.0",
     "styled-components": "^5.2.1",
-    "three": "0.93.0",
+    "three": "^0.123.0",
     "three-text2d": "0.4.1"
   },
   "scripts": {
