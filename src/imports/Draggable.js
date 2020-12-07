@@ -126,9 +126,11 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
     transform: state.isDragging
       ? `translate(${state.translation.x}px, ${state.translation.y}px)`
       : "",
-    transition: state.isDragging ? "none" : "transform 500ms",
+    transition: state.isDragging ? "visibility 0s, opacity 0.2s linear" : "visibility 0s, opacity 0.2s linear, transform 500ms",
     zIndex: state.isDragging ? 2 : 1,
     opacity: state.isDragging ? 1 : 0,
+    visibility: state.isDragging ? "visible" : "hidden",
+    height: state.isDragging ? "auto" : "0",
     position: state.isDragging ? "absolute" : "relative",
     left: state.origin.x,
     top: state.origin.y
@@ -142,7 +144,7 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
       onTouchStart={handleMouseDown}
     >
       { children }
-      { state.isDragging && <div style={ghostStyles}>{ghostElement}</div>}
+      <div style={ghostStyles}>{ghostElement}</div>
     </div>
   );
 };

@@ -631,13 +631,13 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
-          if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
+          if (draggedId == nodeId) {
+            appearance = "dragged";
+          } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
             appearance = "selected";
-          }else if (selectedNodes[nodeId]){ 
+          } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
-          } else if (draggedId === nodeId) {
-            appearance = "dragged";
           } else if (dropState.activeDropTargetId === nodeId) {
             appearance = "dropperview";
           }
