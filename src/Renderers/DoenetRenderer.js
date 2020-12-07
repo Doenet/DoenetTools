@@ -1,3 +1,4 @@
+import nanoid from 'nanoid';
 import React, { Component } from 'react';
 
 
@@ -78,8 +79,11 @@ export default class DoenetRenderer extends Component {
 
 
   createChildFromInstructions(childInstructions) {
+    // add nanoid to key so that will have unique key if recreate
+    // renderer for a component with the same name as an old one
+    // TODO: is this the best way to do it?
     let propsForChild = {
-      key: childInstructions.componentName,
+      key: childInstructions.componentName + nanoid(10),
       componentInstructions: childInstructions,
       rendererClasses: this.props.rendererClasses,
       rendererUpdateMethods: this.props.rendererUpdateMethods,

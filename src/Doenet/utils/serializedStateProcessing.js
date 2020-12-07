@@ -555,7 +555,7 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               throw Error("Component name must begin with a letter");
             }
             if (!(/^[a-zA-Z0-9_-]+$/.test(prescribedName))) {
-              throw Error("Component name can contain only letters, numbers, hypens, and underscores");
+              throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
             }
           }
 

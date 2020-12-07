@@ -1246,7 +1246,7 @@ export default class Copy extends CompositeComponent {
     }
   }
 
-  static createSerializedReplacements({ component, components, componentInfoObjects, workspace }) {
+  static createSerializedReplacements({ component, components, workspace }) {
 
     // if (component.state.contentIDChild !== undefined) {
     //   if (!component.state.serializedStateForContentId) {
@@ -1540,9 +1540,37 @@ export default class Copy extends CompositeComponent {
       return replacementChanges;
     }
 
-    return replacementChanges;
 
     // copy not determined by a prop
+
+    // if have no replacements, try creating new replacements
+
+    if (component.replacements.length === 0) {
+      console.log(`let's create new ones!`);
+
+
+      let result = this.createSerializedReplacements({
+        component, components, workspace
+      });
+
+      if (result.replacements.length > 0) {
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: result.replacements
+        };
+
+        replacementChanges.push(replacementInstruction);
+
+      }
+
+    }
+
+
+    return replacementChanges;
+
 
     // if(componentChanges.length > 1) {
     //   console.log("****** if had multiple adds or deletes, might not be putting children in right place. ******");

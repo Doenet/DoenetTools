@@ -436,8 +436,8 @@ export default class Core {
     }
 
     this.finishUpdate({
-      addedComponents: addedComponents,
-      deletedComponents: deletedComponents,
+      addedComponents,
+      deletedComponents,
       init: initialAdd,
     });
 
@@ -445,7 +445,7 @@ export default class Core {
   }
 
 
-  updateRendererInstructions({ componentNames, sourceOfUpdate }) {
+  updateRendererInstructions({ componentNames, sourceOfUpdate, recreatedComponents = {} }) {
 
     let renderersToUpdate = [];
     let deletedRenderers = [];
@@ -492,7 +492,7 @@ export default class Core {
         let deletedChildren = [];
 
         for (let [ind, childName] of previousChildNames.entries()) {
-          if (currentChildNames.includes(childName)) {
+          if (currentChildNames.includes(childName) && !recreatedComponents[childName]) {
             keptChildren.push(childName);
           } else {
             deletedChildren.push({ childName, ind })
@@ -547,7 +547,7 @@ export default class Core {
 
         // last, add the new children and create instructions to add the renderers
         for (let [ind, name] of currentChildNames.entries()) {
-          if (!previousChildNames.includes(name)) {
+          if (!previousChildNames.includes(name) || recreatedComponents[name]) {
 
             let comp = this._components[name];
             if (comp && comp.rendererType) {
@@ -679,6 +679,7 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
+      recreatedComponents: {},
       itemScoreChanges: new Set(),
       parentsToUpdateDescendants: new Set(),
     }
@@ -929,7 +930,7 @@ export default class Core {
 
         let keepSerializedInds = componentClass.keepChildrenSerialized({
           serializedComponent,
-          allComponentClasses: this.allComponentClasses,
+          componentInfoObjects: this.componentInfoObjects,
         });
 
         for (let ind of keepSerializedInds) {
@@ -1023,6 +1024,9 @@ export default class Core {
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
+    if (updatesNeeded.deletedComponents[componentName]) {
+      updatesNeeded.recreatedComponents[componentName] = true;
+    }
     delete updatesNeeded.deletedComponents[componentName];
     delete updatesNeeded.deletedStateVariables[componentName];
 
@@ -1664,6 +1668,9 @@ export default class Core {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
 
+            // Note: nameForChild will only be used
+            // to prepend identifier for unique names of grandchildren
+            // whose names aren't specified
             let nameForChild = createUniqueName(component.componentType,
               longNameId);
 
@@ -1676,9 +1683,15 @@ export default class Core {
             if (theReplacement.children !== undefined) {
               let ind = -1;
               for (let grandchild of theReplacement.children) {
-                if (grandchild.componentType === "string") {
+
+                // skip string and property grandchildren
+                if (grandchild.componentType === "string"
+                  || grandchild.doenetAttributes
+                  && grandchild.doenetAttributes.createdFromProperty
+                ) {
                   continue;
                 }
+
                 ind++;
                 let nameForGrandchild = name[ind];
                 if (nameForGrandchild === undefined) {
@@ -5208,6 +5221,7 @@ export default class Core {
     // console.log(JSON.parse(JSON.stringify(downDeps)))
     // console.log(downDepName);
     // console.log(downDeps[downDepName].upstreamComponentName)
+    // console.log(downstreamComponentName);
 
     // if downstreamComponentName is specified, then just delete that componentName
     // from the downstream dependency, leaving the others, if there are more than
@@ -6028,6 +6042,8 @@ export default class Core {
         expandReplacements: true,
         componentIdentitiesChanged: true,
       };
+
+      depDescription.compositeDep = dep2;
 
       for (let compositeName of dep2.downstreamComponentNames) {
         let compositeUp = this.upstreamDependencies[compositeName];
@@ -9580,7 +9596,11 @@ export default class Core {
 
           if (compositesFoundChanged) {
 
-            // change upstream dependencies
+            let compositeDep = depDescription.compositeDep;
+
+
+            // change upstream dependencies of compositeDep
+
             for (let currentCompositeName of currentDep.compositesFound) {
               if (!compositesFound.includes(currentCompositeName)) {
                 // lost a composite.  remove dependency
@@ -9589,7 +9609,7 @@ export default class Core {
                 let upDeps = compositeUpDep.__replacements;
                 if (upDeps) {
                   for (let [ind, u] of upDeps.entries()) {
-                    if (u === currentDep) {
+                    if (u === compositeDep) {
                       upDeps.splice(ind, 1);
                       break;
                     }
@@ -9618,7 +9638,7 @@ export default class Core {
                 if (compositeUpDep.__replacements === undefined) {
                   compositeUpDep.__replacements = [];
                 }
-                compositeUpDep.__replacements.push(currentDep);
+                compositeUpDep.__replacements.push(compositeDep);
 
                 // add to replacementDependenciesByComposite
                 if (!this.componentIdentityDependencies.replacementDependenciesByComposite[newCompositeName]) {
@@ -9630,6 +9650,7 @@ export default class Core {
 
 
             currentDep.compositesFound = compositesFound;
+            compositeDep.downstreamComponentNames = compositesFound;
 
           }
 
@@ -10383,7 +10404,7 @@ export default class Core {
 
   }
 
-  updateDependencies(updatesNeeded, compositesBeingExpanded) {
+  updateDependencies(updatesNeeded, compositesBeingExpanded, prevUpdatesleft) {
 
     // first update descendant dependencies
     if (updatesNeeded.parentsToUpdateDescendants.size > 0) {
@@ -10613,12 +10634,20 @@ export default class Core {
     if ((updatesNeeded.componentsToUpdateDependencies.length > 0 && dependencyChanges.length > 0)
       || updatesNeeded.parentsToUpdateDescendants.size > 0
     ) {
-      // TODO: address case where have continued dependencies to update
-      // How do we make sure don't have infinite loop?
-      console.log(`since found more components to update dependencies, will try to recurse`)
-      console.log(updatesNeeded.componentsToUpdateDependencies)
-      console.log(updatesNeeded.parentsToUpdateDescendants)
-      this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+
+      let nUpdatesLeft = updatesNeeded.componentsToUpdateDependencies.length +
+        updatesNeeded.parentsToUpdateDescendants.size;
+
+      // Avoid infinite loop by making sure number of updates left is decreasing
+      if (!prevUpdatesleft || nUpdatesLeft < prevUpdatesleft) {
+
+        // TODO: address case where have continued dependencies to update
+        console.log(`since found more components to update dependencies, will try to recurse`)
+        console.log(updatesNeeded.componentsToUpdateDependencies)
+        console.log(updatesNeeded.parentsToUpdateDescendants)
+
+        this.updateDependencies(updatesNeeded, compositesBeingExpanded, nUpdatesLeft);
+      }
       // throw Error("Need to address further updates to dependencies caused by composite changes")
     }
 
@@ -10793,8 +10822,8 @@ export default class Core {
 
     return {
       success: true,
-      deletedComponents: deletedComponents,
-      addedComponents: addedComponents,
+      deletedComponents,
+      addedComponents,
     }
   }
 
@@ -11178,9 +11207,9 @@ export default class Core {
 
       let results = {
         success: true,
-        deletedComponents: deletedComponents,
-        addedComponents: addedComponents,
-        parentsOfDeleted: parentsOfDeleted,
+        deletedComponents,
+        addedComponents,
+        parentsOfDeleted,
       };
 
       return results;
@@ -11534,9 +11563,9 @@ export default class Core {
 
     let results = {
       success: true,
-      deletedComponents: deletedComponents,
-      addedComponents: addedComponents,
-      parentsOfDeleted: parentsOfDeleted,
+      deletedComponents,
+      addedComponents,
+      parentsOfDeleted,
     };
 
     return results;
@@ -11993,6 +12022,7 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
+      recreatedComponents: {},
       itemScoreChanges: new Set(),
       parentsToUpdateDescendants: new Set(),
     }
@@ -12185,6 +12215,7 @@ export default class Core {
         unresolvedByDependent: {},
         deletedStateVariables: {},
         deletedComponents: {},
+        recreatedComponents: {},
         itemScoreChanges: new Set(),
         parentsToUpdateDescendants: new Set(),
       }
@@ -12239,7 +12270,11 @@ export default class Core {
     // get unique list of components touched
     updatesNeeded.componentsTouched = [...new Set(updatesNeeded.componentsTouched)];
 
-    this.updateRendererInstructions({ componentNames: updatesNeeded.componentsTouched, sourceOfUpdate });
+    this.updateRendererInstructions({
+      componentNames: updatesNeeded.componentsTouched,
+      sourceOfUpdate,
+      recreatedComponents: updatesNeeded.recreatedComponents
+    });
 
     this.finishUpdate();
 

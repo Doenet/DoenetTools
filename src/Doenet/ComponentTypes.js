@@ -128,6 +128,10 @@ import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
+import SelectByIndex from './components/SelectByIndex';
+import Case from './components/Case';
+import Else from './components/Else';
+import SelectByCondition from './components/SelectByCondition';
 
 
 //Extended
@@ -256,6 +260,10 @@ const componentTypeArray = [
   CollaborateGroupSetup,
   Div,
   ConsiderAsResponses,
+  SelectByIndex,
+  Case,
+  Else,
+  SelectByCondition,
 ];
 
 const componentTypeArrayExtended = [

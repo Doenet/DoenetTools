@@ -15,7 +15,7 @@ export default class Select extends CompositeComponent {
   static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
 
-  static keepChildrenSerialized({ serializedComponent, allComponentClasses }) {
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return [];
     }
@@ -25,7 +25,7 @@ export default class Select extends CompositeComponent {
       let ct = componentType.toLowerCase();
       propertyClasses.push({
         componentType: ct,
-        class: allComponentClasses[ct]
+        class: componentInfoObjects.allComponentClasses[ct]
       });
     }
 
@@ -37,9 +37,10 @@ export default class Select extends CompositeComponent {
     for (let [ind, child] of serializedComponent.children.entries()) {
       let propFound = false;
       for (let propObj of propertyClasses) {
-        if ((child.componentType === propObj.componentType ||
-          propObj.class.isPrototypeOf(allComponentClasses[child.componentType])) &&
-          !propObj.propFound) {
+        if (componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: propObj.componentType
+        }) && !propObj.propFound) {
           propFound = propObj.propFound = true;
           break;
         }
@@ -257,7 +258,7 @@ export default class Select extends CompositeComponent {
         //     makeImmutable: ["selectedIndices"]
         //   }
         // }
-        
+
 
         if (dependencyValues.numberToSelect < 1 || dependencyValues.numberOfChildren === 0) {
           return {

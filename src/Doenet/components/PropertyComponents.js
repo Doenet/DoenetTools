@@ -953,3 +953,8 @@ export class ShowNavigation extends BooleanComponent {
   static componentType = "showNavigation";
   static rendererType = "boolean";
 }
+
+export class SelectIndices extends NumberList {
+  static componentType = "selectIndices";
+  static rendererType = "numberlist";
+}
