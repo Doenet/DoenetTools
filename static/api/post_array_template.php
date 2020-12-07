@@ -14,23 +14,24 @@ $destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["
 $destinationParentId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["parentId"]); 
 
 $number_items = count($_POST["selectedNodes"]["selectedArr"]);
-$new_values = "";
+$source_items = array();
 for ($i = 0; $i < $number_items; $i++) {
   $parentId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["parentId"]);
   $nodeId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
   $type =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["type"]);
-  $new_values = $new_values . "('$destinationDriveId','$nodeId','$destinationParentId'),";
+  array_push($source_items,array(
+    "parentId"=>$parentId,
+    "nodeId"=>$nodeId,
+    "type"=>$type
+  ));
 }
-$new_values = rtrim($new_values,",");
 // var_dump($source_items);
 $sql = "INSERT INTO folder (driveId,folderId,parentId)
         VALUES ";
-$sql = $sql . $new_values;
-$sql = $sql . " ON DUPLICATE KEY UPDATE 
-driveId = VALUES(driveId),
-parentId = VALUES(parentId) ";
+
+$sql = $sql . "ON DUPLICATE KEY UPDATE";
 echo $sql;
-$result = $conn->query($sql); 
+
 $response_arr = array( 
     "success" => TRUE,
    );

@@ -41,9 +41,9 @@ if ($isRepo){
 if ($success){
   $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
   $children_arr = array_keys($results_arr[$parentId]);
-  // foreach ($children_arr as &$childId){
-  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
-  // }
+  foreach ($children_arr as &$childId){
+    $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  }
 }
 
 // var_dump($results_arr);

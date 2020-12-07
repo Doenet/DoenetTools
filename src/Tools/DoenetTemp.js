@@ -46,126 +46,155 @@ function Tool(props){
   const cache = useQueryCache();
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
+  let clearSelectionFunctions = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
+
+  function regClearSelection(browserId,clearFunc){
+    clearSelectionFunctions.current[browserId] = clearFunc;
+  }
 
   const setSelectedNodes = useCallback((selectedNodes)=>{
     selectedNodesArr.current = selectedNodes;
   });
 
   const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
+    if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
        axios.post("/api/moveNodes.php", payload)
        .then((resp)=>{
-         console.log(">>>MOVE resp",resp.data)
+         console.log(">>>MOVE resp")
+         console.log(resp.data)
        })
-   
+      }
      return {selectedNodes, destinationObj}
    } 
 
   const [moveNodes] = useMutation(mutationMoveNodes, {
     onSuccess:(params)=>{
-      const sourceDriveId = params.selectedNodes.driveId;
-      const destinationDriveId = params.destinationObj.driveId;
-      const destinationParentId = params.destinationObj.parentId;
-      //Convert to new types
-      //TODO: convert data from content to assignments 
-      //and assignments to content
-      console.log(">>>>>>>>>>>>>>>>>>")
-      console.log(`>>>move from drive ${sourceDriveId} to ${destinationDriveId}`)
-      console.log(">>>>>>>>>>>>>>>>>>")
-
-      console.log(">>>selectedNodes",params.selectedNodes)
-      console.log(">>>selectedNodes",params.selectedNodes.selectedArr)
-      if (sourceDriveId === destinationDriveId){
-        //move nodes in a drive
-        cache.setQueryData(["nodes",sourceDriveId],
-      (old)=>{
-      old.push({
-          move:{
-            destinationParentId,
-            nodeIds:params.selectedNodes.selectedArr,
+      if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
+        const sourceDriveId = params.selectedNodes.driveId;
+        const destinationDriveId = params.destinationObj.driveId;
+        const destinationParentId = params.destinationObj.parentId;
+        //Convert to new types
+        //TODO: convert data from content to assignments 
+        //and assignments to content
+        console.log(`>>>move from drive ${sourceDriveId} to ${destinationDriveId}`)
+        console.log(">>>selectedNodes",params.selectedNodes)
+        console.log(">>>selectedNodes selectedArr",params.selectedNodes.selectedArr)
+        if (sourceDriveId === destinationDriveId){
+          console.log(">>>DRIVES MATCH")
+          //move nodes in a drive
+          cache.setQueryData(["nodes",sourceDriveId],
+        (old)=>{
+        old.push({
+            move:{
+              destinationParentId,
+              nodeIds:params.selectedNodes.selectedArr,
+            }
+        })
+        return old
+        })
+        }else{
+          //move nodes to a new drive
+          console.log(">>>DRIVES DONT MATCH")
+  
+          //copy node information
+          let sourceData = cache.getQueryData(["nodes",sourceDriveId]);
+          let selectedFullArr = [];
+          
+          for (let nodeObj of params.selectedNodes.selectedArr){
+            const nodeId = nodeObj.nodeId;
+            const nodeFullObj = sourceData[0].nodeObjs[nodeId];
+            selectedFullArr.push({...nodeFullObj})
           }
-      })
-      return old
-      })
-      }else{
-        //move nodes to a new drive
-
-        //copy node information
-        let sourceData = cache.getQueryData(["nodes",sourceDriveId]);
-        let selectedFullArr = [];
-        
-        for (let nodeObj of params.selectedNodes.selectedArr){
-          const nodeId = nodeObj.nodeId;
-          const nodeFullObj = sourceData[0].nodeObjs[nodeId];
-          selectedFullArr.push({...nodeFullObj})
+  
+          //delete from source drive
+          cache.setQueryData(["nodes",sourceDriveId],
+        (old)=>{
+        old.push({
+            deleteArr:params.selectedNodes.selectedArr
+        })
+        return old
+        })
+  
+  
+          //and add to desination drive
+          cache.setQueryData(["nodes",destinationDriveId],
+        (old)=>{
+        old.push({
+            addArr:{
+              destinationParentId,
+              nodeArr:selectedFullArr
+            }
+        })
+        return old
+        })
         }
-
-        //delete from source drive
-        cache.setQueryData(["nodes",sourceDriveId],
-      (old)=>{
-      old.push({
-          deleteArr:params.selectedNodes.selectedArr
-      })
-      return old
-      })
-
-
-        //and add to desination drive
-        cache.setQueryData(["nodes",destinationDriveId],
-      (old)=>{
-      old.push({
-          addArr:{
-            destinationParentId,
-            nodeArr:selectedFullArr
-          }
-      })
-      return old
-      })
       }
-
-
-       
-
-      
-
     }
   })
 
-  //driveSync
-  let syncNodeIdToDataIndex = useRef({});
-  let syncNodeIdToChildren = useRef({});
 
-  let driveSync = {update,get}
-
-  function update(driveId,nodeIdToDataIndex,nodeIdToChildren){
-    syncNodeIdToDataIndex.current[driveId] = nodeIdToDataIndex;
-    syncNodeIdToChildren.current[driveId] = nodeIdToChildren;
-  }
-  function get(driveId){
-    console.log("GET",driveId)
-    return [syncNodeIdToDataIndex.current[driveId],syncNodeIdToChildren.current[driveId]];
-  }
   return (<>
 <AddNode type="Folder" />
+<div>
+  <button onClick={()=>{console.log(clearSelectionFunctions.current)}}>Log Registration</button>
 <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
   }} >Move to content folder 1</button>
   <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+  }} >Move to content folder 2</button>
+</div>
+<div>
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
     moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
   }} >Move to course Header 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+
+  }} >Move to course Header 2</button>
+</div>
+  
 
   <div style={{display:"flex"}}> 
   <div>
-  <BrowserRouted drive="content" isNav={true} driveSync={driveSync} />
-  <BrowserRouted drive="course" isNav={true} driveSync={driveSync} />
+  <BrowserRouted drive="content" isNav={true} />
+  <BrowserRouted drive="course" isNav={true} />
   </div>
   <div>
-  <BrowserRouted drive="content" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
-  <BrowserRouted drive="course" driveSync={driveSync} setSelectedNodes={setSelectedNodes}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
   </div>
   </div>
   </>
@@ -212,7 +241,6 @@ function AddNode(props){
       onSuccess:(obj)=>{
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
-        console.log(">>>ADD!!!!!!!!!!!old",old)
       //Provide infinitequery with what we know of the new addition
       old.push({
           add:{
@@ -297,6 +325,14 @@ function Browser(props){
     rootFolderId = props.drive;
   }
 
+  const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
+  const [toggleNodeId,setToggleNode] = useState([]);
+  const [openNodesObj,setOpenNodesObj] = useState({});
+  const [selectedNodes,setSelectedNodes] = useState({});
+  const [refreshNumber,setRefresh] = useState(0)
+  const [draggedId, setDraggedId] = useState(null);
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+
   const {
     data,
     isFetching, 
@@ -305,11 +341,9 @@ function Browser(props){
     error} = useInfiniteQuery(['nodes',props.drive], fetchChildrenNodes, {
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
-        console.log(">>>ONSUCCESS")
         if (Object.keys(data[0])[0] === "init"){
           data[0] = {folderChildrenIds:{},nodeObjs:{}}
         }else if (data[1]){
-          console.log(">>>data[1]",data[1])
           let actionOrId = Object.keys(data[1])[0];
           if (actionOrId === "add"){
             let parentId = data[1].add.nodeObj.parentId;
@@ -329,6 +363,7 @@ function Browser(props){
               if (destArr){
                 destArr.push(nodeId);
               }
+              nodeObj.parentId = dParentId;
               data[0].nodeObjs[nodeId] = nodeObj;
             }
               data.pop(); 
@@ -344,6 +379,7 @@ function Browser(props){
             for (let nodeInfo of data[1].deleteArr){
               const nodeId = nodeInfo.nodeId;
               const parentId = nodeInfo.parentId;
+
               let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
               childrenIds.splice(childrenIds.indexOf(nodeId),1);
             }
@@ -367,16 +403,20 @@ function Browser(props){
                 sParentArr.splice(sParentArr.indexOf(nodeId),1);
               }
             }
-            data.pop();        
+            data.pop();       
+            
           }else{
-            //fetchMore
-            let contentIds = [];
-            for (let nodeId of Object.keys(data[1][actionOrId])){
-              let nodeObj = data[1][actionOrId][nodeId];
-              contentIds.push(nodeId);
-              data[0].nodeObjs[nodeId] = nodeObj;
+            //handle fetchMore
+            for (let cNodeId of Object.keys(data[1])){
+              let contentIds = [];
+              for (let gcNodeId of Object.keys(data[1][cNodeId])){
+                let nodeObj = data[1][cNodeId][gcNodeId];
+                // if (nodeObj === undefined){nodeObj = {}}
+                contentIds.push(gcNodeId);
+                data[0].nodeObjs[gcNodeId] = nodeObj;
+              }
+              data[0].folderChildrenIds[cNodeId] = {defaultOrder:contentIds};
             }
-            data[0].folderChildrenIds[actionOrId] = {defaultOrder:contentIds};
             data.pop();
           }
         }
@@ -401,15 +441,6 @@ function Browser(props){
     }});
 
  
-
-  const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
-  const [toggleNodeId,setToggleNode] = useState([]);
-  const [openNodesObj,setOpenNodesObj] = useState({});
-  const [selectedNodes,setSelectedNodes] = useState({});
-  const [draggedId, setDraggedId] = useState(null);
-  const [refreshNumber,setRefresh] = useState(0)
-  const { dropState, dropActions } = useContext(DropTargetsContext);
-
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
   let browserId = useRef("");
@@ -440,6 +471,7 @@ function Browser(props){
       }
       if (props.setSelectedNodes){
         props.setSelectedNodes({
+          browserId:browserId.current,
           driveId:props.drive,
           selectedArr
         });
@@ -453,22 +485,21 @@ function Browser(props){
     
       if (!shiftKey && !metaKey){
         //Only select this node
-        // setSelectedNodes((old)=>{
-        //   let newObj = {};
-        //   newObj[nodeData.id] = true;
-        //   lastSelectedNodeIdRef.current = nodeData.id;
-        //   updateToolWithSelection(newObj)
-        //   return newObj;
-        // })
-
-        //Add this node to selection
         setSelectedNodes((old)=>{
-          let newObj = {...old};
-          newObj[nodeData.id] = true;
+          let newObj; 
+          //if already selected then leave selections the way they are
+          //else only select the current node
+          if (old[nodeData.id]){
+            newObj = {...old};
+          }else{
+            newObj = {};
+            newObj[nodeData.id] = true;
+          }
           lastSelectedNodeIdRef.current = nodeData.id;
           updateToolWithSelection(newObj)
           return newObj;
         })
+
       }else if (shiftKey && !metaKey){
         //Add selection to range including the end points 
         //of last selected to current nodeid      
@@ -534,11 +565,18 @@ function Browser(props){
     setDraggedId(null);
   };
 
+  if (browserId.current === ""){ browserId.current = nanoid();}
+
+  useEffect(()=>{
+    if (props.regClearSelection){
+      props.regClearSelection(browserId.current,handleDeselectAll);
+    }
+  },[])
  
   // //------------------------------------------
   // //****** End of use functions  ***********
   // //------------------------------------------
-  if (browserId.current === ""){ browserId.current = nanoid();}
+
 
   
     //Only show non navigation when drive matches route
@@ -573,6 +611,7 @@ function Browser(props){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
       fetchMore(parentId);
+
     }else{
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
@@ -763,7 +802,7 @@ const LoadingNode =  React.memo(function Node(props){
     className="noselect" 
     style={{
       marginLeft: `${props.level * indentPx}px`
-    }}>{toggle} [FOLDER] {props.node.label} ({props.numChildren}) {deleteNode}</div></div>
+    }}>{toggle} [F] {props.node.label} ({props.numChildren}) {deleteNode}</div></div>
   
   </>
 // }
