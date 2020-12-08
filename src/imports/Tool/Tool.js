@@ -4,8 +4,8 @@ import styled from "styled-components";
 const ToolContainer = styled.div`
   display: grid;
   grid-template-columns: auto 1fr 240px;
-  grid-template-rows: 60px 1fr;
-  grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel";
+  grid-template-rows: 60px 1fr auto;
+  grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel" "navPanel mainPanel menuPanelSecondary";
 `;
 
 export default function Tool(props) {

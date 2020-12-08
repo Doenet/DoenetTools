@@ -15,7 +15,11 @@ import HeaderMenuPanelButton from "../imports/Tool/HeaderMenuPanelButton";
 import ResponsiveControls from "../imports/Tool/ResponsiveControls";
 import Overlay from "../imports/Tool/Overlay";
 import CollapseSection from "../imports/CollapseSection";
-import MenuPanelSection from "../imports/Tool/MenuPanelSection"
+import MenuPanelSection from "../imports/Tool/MenuPanelSection";
+import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
+import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
+import Menu from "../imports/PanelHeaderComponents/Menu";
+import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
 
 const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
@@ -124,11 +128,31 @@ export default function DoenetExampleTool(props) {
             </p>
           </SupportPanel>
           <MenuPanel>
-            <MenuPanelSection title="edit">
+            <MenuPanelSection title="Font">
               <CollapseSection>
+                <SectionDivider type="single">
+                  <ActionButton
+                    handleClick={() => {
+                      alert();
+                    }}
+                  />
+                  <Menu label="actions">
+                    <MenuItem
+                      value="Times"
+                      onSelect={() => {
+                        alert("Times Selected");
+                      }}
+                    />
+                    <MenuItem
+                      value="Ariel"
+                      onSelect={() => {
+                        alert("Ariel Selected");
+                      }}
+                    />
+                  </Menu>
+                </SectionDivider>
               </CollapseSection>
-              <CollapseSection>
-              </CollapseSection>
+              <CollapseSection></CollapseSection>
             </MenuPanelSection>
             <MenuPanelSection title="style">
               Menu Panel Style Content
@@ -150,11 +174,31 @@ export default function DoenetExampleTool(props) {
           <MainPanel responsiveControls={[]}>Overlay Main panel</MainPanel>
           <SupportPanel responsiveControls={[]}>Overlay Support</SupportPanel>
           <MenuPanel>
-            <MenuPanelSection title="edit">
+            <MenuPanelSection title="Font">
               <CollapseSection>
+                <SectionDivider type="single">
+                  <ActionButton
+                    handleClick={() => {
+                      alert();
+                    }}
+                  />
+                  <Menu label="actions">
+                    <MenuItem
+                      value="Times"
+                      onSelect={() => {
+                        alert("Times Selected");
+                      }}
+                    />
+                    <MenuItem
+                      value="Ariel"
+                      onSelect={() => {
+                        alert("Ariel Selected");
+                      }}
+                    />
+                  </Menu>
+                </SectionDivider>
               </CollapseSection>
-              <CollapseSection>
-              </CollapseSection>
+              <CollapseSection></CollapseSection>
             </MenuPanelSection>
             <MenuPanelSection title="style">
               Menu Panel Style Content
