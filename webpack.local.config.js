@@ -34,7 +34,7 @@ module.exports = {
     // "signout/index.js": "./src/signout/index.js",
     // "test/index.js": "./src/test/index.js",
     // "viewer/index.js": "./src/viewer/index.js",
-    // "exampletool/index.js": "./src/exampletool/index.js",
+    "exampletool/index.js": "./src/exampletool/index.js",
     // "temp/index.js": "./src/temp/index.js"
     
   },
