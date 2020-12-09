@@ -126,8 +126,8 @@ function Tool(props){
 
 
   return (<>
-<AddNode type="Folder" />
-<div>
+ <AddItem type="Folder" />
+{/* <div>
   <button onClick={()=>{console.log(clearSelectionFunctions.current)}}>Log Registration</button>
 <button 
       data-doenet-browser-stayselected = {true}
@@ -175,7 +175,7 @@ function Tool(props){
 
 
   }} >Move to course Header 2</button>
-</div>
+</div> */}
   
 
   <div style={{display:"flex"}}> 
@@ -194,19 +194,20 @@ function Tool(props){
 
 
 
-const addFolderMutation = ({label, driveId, parentId}) =>{
-  const folderId = nanoid();
+const addItemMutation = ({label, driveId, parentId,type}) =>{
+  const itemId = nanoid();
 
-  const data = {driveId,parentId,folderId,label}
+  const data = {driveId,parentId,itemId,label,type}
     const payload = {
       params: data
     }
 
-    axios.get("/api/addFolder.php", payload)
+    axios.get("/api/addItem.php", payload)
     .then((resp)=>{
+      console.log(">>>addItem ",resp.data)
     })
 
-  return {driveId,parentId,folderId,label}
+  return {driveId,parentId,itemId,label,type}
 } 
 
 const deleteFolderMutation = ({driveId, parentId, folderId}) =>{
@@ -223,12 +224,12 @@ const deleteFolderMutation = ({driveId, parentId, folderId}) =>{
   return {driveId,parentId,folderId}
 } 
 
-function AddNode(props){
+function AddItem(props){
 
-  function AddNodeButton(props){
+  function AddItemButton(props){
     const cache = useQueryCache();
     const [label,setLabel] = useState('')
-    const [addFolder] = useMutation(addFolderMutation,{
+    const [addItem] = useMutation(addItemMutation,{
       onSuccess:(obj)=>{
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
@@ -237,10 +238,10 @@ function AddNode(props){
           add:{
             driveId:obj.driveId,
             nodeObj:{
-            id:obj.folderId,
+            id:obj.itemId,
             label,
             parentId:obj.parentId,
-            type:"Folder"
+            type:obj.type
             }
           }
       })
@@ -266,7 +267,7 @@ function AddNode(props){
         data-doenet-browser-stayselected = {true}
         disabled={routePathFolderId === ""} 
       onClick={()=>{
-        addFolder({driveId:routePathDriveId,parentId:routePathFolderId,label})
+        addItem({driveId:routePathDriveId,parentId:routePathFolderId,label,type:props.type})
         setLabel('');  //reset input field
       }}>Add {props.type}</button></span>)
     }
@@ -275,7 +276,7 @@ function AddNode(props){
     
   }
   return <Router><Switch>
-           <Route path="/" render={(routeprops)=><AddNodeButton route={{...routeprops}} {...props} />}></Route>
+           <Route path="/" render={(routeprops)=><AddItemButton route={{...routeprops}} {...props} />}></Route>
          </Switch></Router>
  }
 

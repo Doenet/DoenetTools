@@ -602,6 +602,68 @@ INSERT INTO `header_name` VALUES ('kwpKwEwW144tqROdo9dl5','header1'),('DB-pHP_Vw
 UNLOCK TABLES;
 
 --
+-- Table structure for table `items_1NkSXq2C3VC0RvlTRPbZa`
+--
+
+DROP TABLE IF EXISTS `items_1NkSXq2C3VC0RvlTRPbZa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `items_1NkSXq2C3VC0RvlTRPbZa` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `creationDate` timestamp NULL DEFAULT NULL,
+  `isDeleted` int(1) NOT NULL DEFAULT '0',
+  `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `folderId` (`itemId`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `items_1NkSXq2C3VC0RvlTRPbZa`
+--
+
+LOCK TABLES `items_1NkSXq2C3VC0RvlTRPbZa` WRITE;
+/*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` DISABLE KEYS */;
+INSERT INTO `items_1NkSXq2C3VC0RvlTRPbZa` VALUES (1,'content','content','f1','Folder 1','2020-12-08 23:05:12',0,'Folder'),(2,'content','content','f2','Folder 2','2020-12-08 23:05:12',0,'Folder'),(3,'content','f2','jDA8GzojRXGv_m3azFxBv','Folder A','2020-12-09 17:47:30',0,'Folder'),(4,'course','course','f3','Folder 3','2020-12-08 23:05:12',0,'Folder');
+/*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `items_public`
+--
+
+DROP TABLE IF EXISTS `items_public`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `items_public` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `creationDate` timestamp NULL DEFAULT NULL,
+  `isDeleted` int(1) NOT NULL DEFAULT '0',
+  `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `folderId` (`itemId`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `items_public`
+--
+
+LOCK TABLES `items_public` WRITE;
+/*!40000 ALTER TABLE `items_public` DISABLE KEYS */;
+INSERT INTO `items_public` VALUES (1,'content','content','f1','Folder 1','2020-12-08 23:05:12',0,'Folder'),(2,'content','content','f2','Folder 2','2020-12-08 23:05:12',0,'Folder');
+/*!40000 ALTER TABLE `items_public` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `keyword`
 --
 
@@ -1064,4 +1126,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-07 16:54:41
+-- Dump completed on 2020-12-09 17:49:17
