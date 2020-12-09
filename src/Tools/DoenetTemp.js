@@ -473,9 +473,16 @@ function Browser(props){
       }
   },[])
 
-  const handleClickNode = useCallback(({ nodeId, shiftKey, metaKey})=>{
+  const handleClickNode = useCallback(({ nodeId, parentId, type, shiftKey, metaKey})=>{
     if (props.isNav){
-      history.push(`/${props.drive}:${nodeId}/`)
+      if (type === 'Folder'){
+        history.push(`/${props.drive}:${nodeId}/`)
+      }else{
+        //TODO: handle not a folder actions here
+        history.push(`/${props.drive}:${parentId}/`)
+
+      }
+      
     }else{
     
       if (!shiftKey && !metaKey){
@@ -708,7 +715,7 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect nooutline" 
       onMouseDown={(e) => {
         // onClick={(e) => {
-        props.handleClickNode({ nodeId:props.nodeId, shiftKey: e.shiftKey, metaKey: e.metaKey })
+        props.handleClickNode({ nodeId:props.nodeId, parentId:props.parentId, type:props.type, shiftKey: e.shiftKey, metaKey: e.metaKey })
       }} 
       onDoubleClick={(e) => {
         props.handleFolderToggle(props.nodeId)
@@ -745,7 +752,7 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect nooutline" 
       onMouseDown={(e) => {
         // onClick={(e) => {
-        props.handleClickNode({ nodeId:props.nodeId, shiftKey: e.shiftKey, metaKey: e.metaKey })
+        props.handleClickNode({ nodeId:props.nodeId, parentId:props.parentId, type:props.type, shiftKey: e.shiftKey, metaKey: e.metaKey })
       }} 
       onBlur={(e) => {
         //Only clear if focus goes outside of this node group
