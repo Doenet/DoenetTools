@@ -7,6 +7,9 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 $_POST = json_decode(file_get_contents("php://input"),true); 
 
 $sourceDriveId = mysqli_real_escape_string($conn,$_POST["selectedNodes"]["driveId"]); 
@@ -17,19 +20,17 @@ $number_items = count($_POST["selectedNodes"]["selectedArr"]);
 $new_values = "";
 for ($i = 0; $i < $number_items; $i++) {
   $parentId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["parentId"]);
-  $nodeId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
+  $itemId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
   $type =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["type"]);
-  $new_values = $new_values . "('$destinationDriveId','$nodeId','$destinationParentId'),";
+  $new_values = $new_values . "('$destinationDriveId','$destinationParentId','$itemId'),";
 }
 $new_values = rtrim($new_values,",");
-// var_dump($source_items);
-$sql = "INSERT INTO folder (driveId,folderId,parentId)
+$sql = "INSERT INTO items_$userId (driveId, parentId, itemId)
         VALUES ";
 $sql = $sql . $new_values;
 $sql = $sql . " ON DUPLICATE KEY UPDATE 
 driveId = VALUES(driveId),
 parentId = VALUES(parentId) ";
-echo $sql;
 $result = $conn->query($sql); 
 $response_arr = array( 
     "success" => TRUE,

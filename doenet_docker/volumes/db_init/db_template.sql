@@ -535,7 +535,7 @@ CREATE TABLE `folder` (
   `isDemo` int(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`folderId`)
-) ENGINE=InnoDB AUTO_INCREMENT=266 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=268 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -544,7 +544,7 @@ CREATE TABLE `folder` (
 
 LOCK TABLES `folder` WRITE;
 /*!40000 ALTER TABLE `folder` DISABLE KEYS */;
-INSERT INTO `folder` VALUES (1,'content','f1','content','Folder 1','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(3,'content','r1','content','Repo 1',NULL,'group1','2020-11-12 00:00:00',1,0,0,0),(5,'course','f3','h2','Folder 3','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(10,'course','h1','course','Header 1','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(11,'course','h2','course','Header 2','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(98,'content','f2','content','Folder 2','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-24 23:40:15',0,0,0,0),(218,'content','content','root','Content','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(219,'course','course','root','Course','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(220,'course','W3CdI2mjkCof-cPupksT7','h2','One','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:20',0,0,0,0),(221,'course','sU0slAY21pL7n2WlIpt9R','h2','Two','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:24',0,0,0,0),(222,'course','9iPEYZQ5xb32YEWLTGF6u','h1','Three','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:29',0,0,0,0),(228,'content','ldIqylIoR5eg2wG6mGgH5','f1','new label here a','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-04 00:15:30',0,0,0,0),(229,'content','9Q2J1ryZCdWEHj6JMWNpT','f1','new label here b','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-04 15:17:44',0,0,0,0);
+INSERT INTO `folder` VALUES (1,'content','f1','content','Folder 1','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(3,'content','r1','content','Repo 1',NULL,'group1','2020-11-12 00:00:00',1,0,0,0),(5,'course','f3','h2','Folder 3','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(10,'course','h1','course','Header 1','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(11,'course','h2','course','Header 2','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(98,'content','f2','content','Folder 2','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-24 23:40:15',0,0,0,0),(218,'content','content','root','Content','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(219,'course','course','root','Course','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-11-12 00:00:00',1,0,0,0),(220,'course','W3CdI2mjkCof-cPupksT7','h2','One','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:20',0,0,0,0),(221,'course','sU0slAY21pL7n2WlIpt9R','h2','Two','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:24',0,0,0,0),(222,'course','9iPEYZQ5xb32YEWLTGF6u','h1','Three','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-02 21:39:29',0,0,0,0),(228,'content','ldIqylIoR5eg2wG6mGgH5','f1','new label here a','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-04 00:15:30',0,0,0,0),(229,'content','9Q2J1ryZCdWEHj6JMWNpT','f1','new label here b','1NkSXq2C3VC0RvlTRPbZa',NULL,'2020-12-04 15:17:44',0,0,0,0),(266,'content','','f1',NULL,NULL,NULL,NULL,0,0,NULL,0);
 /*!40000 ALTER TABLE `folder` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -619,7 +619,7 @@ CREATE TABLE `items_1NkSXq2C3VC0RvlTRPbZa` (
   `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -628,7 +628,7 @@ CREATE TABLE `items_1NkSXq2C3VC0RvlTRPbZa` (
 
 LOCK TABLES `items_1NkSXq2C3VC0RvlTRPbZa` WRITE;
 /*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` DISABLE KEYS */;
-INSERT INTO `items_1NkSXq2C3VC0RvlTRPbZa` VALUES (1,'content','content','f1','Folder 1','2020-12-08 23:05:12',0,'Folder'),(2,'content','content','f2','Folder 2','2020-12-08 23:05:12',0,'Folder'),(3,'content','f2','jDA8GzojRXGv_m3azFxBv','Folder A','2020-12-09 17:47:30',0,'Folder'),(4,'course','course','f3','Folder 3','2020-12-08 23:05:12',0,'Folder');
+INSERT INTO `items_1NkSXq2C3VC0RvlTRPbZa` VALUES (1,'content','content','f1','Folder 1','2020-12-08 23:05:12',0,'Folder'),(2,'content','content','f2','Folder 2','2020-12-08 23:05:12',0,'Folder'),(3,'content','f2','jDA8GzojRXGv_m3azFxBv','Folder A','2020-12-09 17:47:30',0,'Folder'),(4,'course','course','h1','Header 1','2020-12-08 23:05:12',0,'Folder'),(5,'course','h2','K-bfyQkjmEBwh3VuUTM8-','URL 1','2020-12-09 18:46:36',0,'Url'),(6,'content','f2','b5D01w2djN1SVd5-tVxPA','URL 2','2020-12-09 19:03:54',0,'Url'),(8,'content','f2','u2tAF73dYSudjTgj6I1BH','URL 3','2020-12-09 19:06:57',0,'Url'),(14,'course','course','h2','Header 2','2020-12-08 23:05:12',0,'Folder');
 /*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1126,4 +1126,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-09 17:49:17
+-- Dump completed on 2020-12-09 19:54:12

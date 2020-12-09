@@ -50,7 +50,7 @@ function Tool(props){
   const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
-       axios.post("/api/moveNodes.php", payload)
+       axios.post("/api/moveItems.php", payload)
        .then((resp)=>{
          console.log(">>>MOVE resp")
          console.log(resp.data)
@@ -128,8 +128,7 @@ function Tool(props){
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
-{/* <div>
-  <button onClick={()=>{console.log(clearSelectionFunctions.current)}}>Log Registration</button>
+<div>
 <button 
       data-doenet-browser-stayselected = {true}
   onClick={()=>{
@@ -176,7 +175,7 @@ function Tool(props){
 
 
   }} >Move to course Header 2</button>
-</div> */}
+</div>
   
 
   <div style={{display:"flex"}}> 
