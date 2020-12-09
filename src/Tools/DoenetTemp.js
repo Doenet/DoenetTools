@@ -127,6 +127,7 @@ function Tool(props){
 
   return (<>
  <AddItem type="Folder" />
+ <AddItem type="Url" />
 {/* <div>
   <button onClick={()=>{console.log(clearSelectionFunctions.current)}}>Log Registration</button>
 <button 
@@ -204,24 +205,23 @@ const addItemMutation = ({label, driveId, parentId,type}) =>{
 
     axios.get("/api/addItem.php", payload)
     .then((resp)=>{
-      console.log(">>>addItem ",resp.data)
     })
 
   return {driveId,parentId,itemId,label,type}
 } 
 
-const deleteFolderMutation = ({driveId, parentId, folderId}) =>{
+const deleteItemMutation = ({driveId, parentId, itemId}) =>{
 
-  const data = {driveId,parentId,folderId}
+  const data = {driveId,parentId,itemId}
     const payload = {
       params: data
     }
 
-    axios.get("/api/deleteFolder.php", payload)
+    axios.get("/api/deleteItem.php", payload)
     .then((resp)=>{
     })
 
-  return {driveId,parentId,folderId}
+  return {driveId,parentId,itemId}
 } 
 
 function AddItem(props){
@@ -260,10 +260,16 @@ function AddItem(props){
       if (routePathDriveId !== "" && routePathFolderId === ""){routePathFolderId = routePathDriveId;}
     }
 
-    if (props.type === "Folder"){
+    if (props.type === "Folder" || props.type === "Url"){ //List of types accepted
       return (<span>
-        <input data-doenet-browser-stayselected = {true} type="text" value={label} onChange={(e)=>setLabel(e.target.value)} />
+        <input 
+        className="noselect nooutline" 
+        data-doenet-browser-stayselected = {true} 
+        type="text" 
+        value={label} 
+        onChange={(e)=>setLabel(e.target.value)} />
         <button 
+        className="noselect nooutline" 
         data-doenet-browser-stayselected = {true}
         disabled={routePathFolderId === ""} 
       onClick={()=>{
@@ -360,7 +366,7 @@ function Browser(props){
 
           }else if (actionOrId === "delete"){
             let parentId = data[1].delete.parentId;
-            let nodeId = data[1].delete.folderId;
+            let nodeId = data[1].delete.itemId;
             let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
             childrenIds.splice(childrenIds.indexOf(nodeId),1);
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
@@ -420,7 +426,7 @@ function Browser(props){
         return lastGroup.nextCursor;
     }})
 
-    const [deleteFolder] = useMutation(deleteFolderMutation,{
+    const [deleteItem] = useMutation(deleteItemMutation,{
       onSuccess:(obj)=>{
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
@@ -468,9 +474,9 @@ function Browser(props){
       }
   },[])
 
-  const handleClickNode = useCallback(({ nodeData, shiftKey, metaKey})=>{
+  const handleClickNode = useCallback(({ nodeId, shiftKey, metaKey})=>{
     if (props.isNav){
-      history.push(`/${props.drive}:${nodeData.id}/`)
+      history.push(`/${props.drive}:${nodeId}/`)
     }else{
     
       if (!shiftKey && !metaKey){
@@ -479,13 +485,13 @@ function Browser(props){
           let newObj; 
           //if already selected then leave selections the way they are
           //else only select the current node
-          if (old[nodeData.id]){
+          if (old[nodeId]){
             newObj = {...old};
           }else{
             newObj = {};
-            newObj[nodeData.id] = true;
+            newObj[nodeId] = true;
           }
-          lastSelectedNodeIdRef.current = nodeData.id;
+          lastSelectedNodeIdRef.current = nodeId;
           updateToolWithSelection(newObj)
           return newObj;
         })
@@ -497,7 +503,7 @@ function Browser(props){
         if (lastSelectedNodeIdRef.current !== ""){
           indexOfLastSelected = nodeIdRefArray.current.indexOf(lastSelectedNodeIdRef.current) 
         }
-        let indexOfNode = nodeIdRefArray.current.indexOf(nodeData.id);
+        let indexOfNode = nodeIdRefArray.current.indexOf(nodeId);
         let startIndex = Math.min(indexOfNode,indexOfLastSelected);
         let endIndex = Math.max(indexOfNode,indexOfLastSelected);
         
@@ -513,11 +519,11 @@ function Browser(props){
         //Toggle select on this node
         setSelectedNodes((old)=>{
           let newObj = {...old};
-          if (newObj[nodeData.id]){
-            delete newObj[nodeData.id];
+          if (newObj[nodeId]){
+            delete newObj[nodeId];
           }else{
-            newObj[nodeData.id] = true;
-            lastSelectedNodeIdRef.current = nodeData.id;
+            newObj[nodeId] = true;
+            lastSelectedNodeIdRef.current = nodeId;
         }
           updateToolWithSelection(newObj)
           return newObj;
@@ -558,8 +564,8 @@ function Browser(props){
 
   // if (isFetching){ return <div>Loading...</div>}
 
-  function deleteFolderHandler(nodeObj){
-    deleteFolder(nodeObj);
+  function deleteItemHandler(nodeObj){
+    deleteItem(nodeObj);
   }
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
@@ -599,15 +605,16 @@ function Browser(props){
           nodesJSX.push(<Node 
             key={`node${nodeId}`} 
             browserId={browserId.current}
-            node={nodeObj}
             nodeId={nodeId}
             driveId={props.drive}
             parentId={parentId}
-            isOpen={isOpen} 
+            label={nodeObj.label}
+            type={nodeObj.type}
             appearance={appearance}
+            isOpen={isOpen} 
             numChildren={numChildren}
             handleFolderToggle={handleFolderToggle} 
-            deleteFolderHandler={deleteFolderHandler}
+            deleteItemHandler={deleteItemHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
             level={level}/>)
@@ -667,11 +674,6 @@ const LoadingNode =  React.memo(function Node(props){
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
 
-  // let numChildren = 0;
-  // if (children && children.data){
-  //   numChildren = Object.keys(children.data[props.nodeId]).length;
-  // }
-
   //Toggle
   let openOrClose = "Open";
   if (props.isOpen){ openOrClose = "Close"}
@@ -693,47 +695,86 @@ const LoadingNode =  React.memo(function Node(props){
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
-    props.deleteFolderHandler({driveId:props.driveId,parentId:props.parentId,folderId:props.nodeId})
+    props.deleteItemHandler({driveId:props.driveId,parentId:props.parentId,itemId:props.nodeId})
   }}
   onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
   >X</button>
 
-  return <>
-  <div
-    data-doenet-browserid={props.browserId}
-    tabIndex={0}
-    className="noselect nooutline" 
-    onMouseDown={(e) => {
-      // onClick={(e) => {
-      props.handleClickNode({ nodeData:props.node, shiftKey: e.shiftKey, metaKey: e.metaKey })
-    }} 
-    onDoubleClick={(e) => {
-      props.handleFolderToggle(props.nodeId)
-    }} 
-    onBlur={(e) => {
-      //Only clear if focus goes outside of this node group
-       if (e.relatedTarget === null ||
-        (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
-        !e.relatedTarget.dataset.doenetBrowserStayselected)
-        ){
-      props.handleDeselectAll();
-      }
-    }}
-
-  style={{
-      cursor: "pointer",
-      width: "300px",
-      padding: "4px",
-      border: "1px solid black",
-      backgroundColor: bgcolor,
-      margin: "2px"
-    }} ><div 
-    className="noselect" 
-    style={{
-      marginLeft: `${props.level * indentPx}px`
-    }}>{toggle} [F] {props.node.label} ({props.numChildren}) {deleteNode}</div></div>
+  if (props.type === "Folder"){
+    return <>
+    <div
+      data-doenet-browserid={props.browserId}
+      tabIndex={0}
+      className="noselect nooutline" 
+      onMouseDown={(e) => {
+        // onClick={(e) => {
+        props.handleClickNode({ nodeId:props.nodeId, shiftKey: e.shiftKey, metaKey: e.metaKey })
+      }} 
+      onDoubleClick={(e) => {
+        props.handleFolderToggle(props.nodeId)
+      }} 
+      onBlur={(e) => {
+        //Only clear if focus goes outside of this node group
+         if (e.relatedTarget === null ||
+          (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+          !e.relatedTarget.dataset.doenetBrowserStayselected)
+          ){
+        props.handleDeselectAll();
+        }
+      }}
   
-  </>
+    style={{
+        cursor: "pointer",
+        width: "300px",
+        padding: "4px",
+        border: "1px solid black",
+        backgroundColor: bgcolor,
+        margin: "2px"
+      }} ><div 
+      className="noselect" 
+      style={{
+        marginLeft: `${props.level * indentPx}px`
+      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode}</div></div>
+    
+    </>
+  }else if (props.type === "Url"){
+    return <>
+    <div
+      data-doenet-browserid={props.browserId}
+      tabIndex={0}
+      className="noselect nooutline" 
+      onMouseDown={(e) => {
+        // onClick={(e) => {
+        props.handleClickNode({ nodeId:props.nodeId, shiftKey: e.shiftKey, metaKey: e.metaKey })
+      }} 
+      onBlur={(e) => {
+        //Only clear if focus goes outside of this node group
+         if (e.relatedTarget === null ||
+          (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+          !e.relatedTarget.dataset.doenetBrowserStayselected)
+          ){
+        props.handleDeselectAll();
+        }
+      }}
+  
+    style={{
+        cursor: "pointer",
+        width: "300px",
+        padding: "4px",
+        border: "1px solid black",
+        backgroundColor: bgcolor,
+        margin: "2px"
+      }} ><div 
+      className="noselect" 
+      style={{
+        marginLeft: `${props.level * indentPx}px`
+      }}>[U] {props.label} {deleteNode}</div></div>
+    
+    </>
+  }else{
+    return <div>{props.type} not available </div>
+  }
+  
 // }
 })
