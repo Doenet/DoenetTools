@@ -1,6 +1,6 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[90],{
 
-/***/ 1202:
+/***/ 1204:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13,8 +13,6 @@ __webpack_require__.r(__webpack_exports__);
  *--------------------------------------------------------------------------------------------*/
 
 var conf = {
-    // the default separators except `@$`
-    wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
     comments: {
         lineComment: '//',
         blockComment: ['/*', '*/'],
@@ -22,7 +20,7 @@ var conf = {
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')'],
+        ['(', ')']
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
@@ -37,110 +35,158 @@ var conf = {
         { open: '(', close: ')' },
         { open: '"', close: '"' },
         { open: '\'', close: '\'' },
-        { open: '<', close: '>' },
-    ],
-    folding: {
-        markers: {
-            start: new RegExp("^\\s*//\\s*(?:(?:#?region\\b)|(?:<editor-fold\\b))"),
-            end: new RegExp("^\\s*//\\s*(?:(?:#?endregion\\b)|(?:</editor-fold>))")
-        }
-    }
+    ]
 };
 var language = {
     defaultToken: '',
-    tokenPostfix: '.java',
+    tokenPostfix: '.objective-c',
     keywords: [
-        'abstract', 'continue', 'for', 'new', 'switch', 'assert', 'default',
-        'goto', 'package', 'synchronized', 'boolean', 'do', 'if', 'private',
-        'this', 'break', 'double', 'implements', 'protected', 'throw', 'byte',
-        'else', 'import', 'public', 'throws', 'case', 'enum', 'instanceof', 'return',
-        'transient', 'catch', 'extends', 'int', 'short', 'try', 'char', 'final',
-        'interface', 'static', 'void', 'class', 'finally', 'long', 'strictfp',
-        'volatile', 'const', 'float', 'native', 'super', 'while', 'true', 'false'
+        '#import',
+        '#include',
+        '#define',
+        '#else',
+        '#endif',
+        '#if',
+        '#ifdef',
+        '#ifndef',
+        '#ident',
+        '#undef',
+        '@class',
+        '@defs',
+        '@dynamic',
+        '@encode',
+        '@end',
+        '@implementation',
+        '@interface',
+        '@package',
+        '@private',
+        '@protected',
+        '@property',
+        '@protocol',
+        '@public',
+        '@selector',
+        '@synthesize',
+        '__declspec',
+        'assign',
+        'auto',
+        'BOOL',
+        'break',
+        'bycopy',
+        'byref',
+        'case',
+        'char',
+        'Class',
+        'const',
+        'copy',
+        'continue',
+        'default',
+        'do',
+        'double',
+        'else',
+        'enum',
+        'extern',
+        'FALSE',
+        'false',
+        'float',
+        'for',
+        'goto',
+        'if',
+        'in',
+        'int',
+        'id',
+        'inout',
+        'IMP',
+        'long',
+        'nil',
+        'nonatomic',
+        'NULL',
+        'oneway',
+        'out',
+        'private',
+        'public',
+        'protected',
+        'readwrite',
+        'readonly',
+        'register',
+        'return',
+        'SEL',
+        'self',
+        'short',
+        'signed',
+        'sizeof',
+        'static',
+        'struct',
+        'super',
+        'switch',
+        'typedef',
+        'TRUE',
+        'true',
+        'union',
+        'unsigned',
+        'volatile',
+        'void',
+        'while',
     ],
-    operators: [
-        '=', '>', '<', '!', '~', '?', ':',
-        '==', '<=', '>=', '!=', '&&', '||', '++', '--',
-        '+', '-', '*', '/', '&', '|', '^', '%', '<<',
-        '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=',
-        '^=', '%=', '<<=', '>>=', '>>>='
-    ],
-    // we include these common regular expressions
-    symbols: /[=><!~?:&|+\-*\/\^%]+/,
-    escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
-    digits: /\d+(_+\d+)*/,
-    octaldigits: /[0-7]+(_+[0-7]+)*/,
-    binarydigits: /[0-1]+(_+[0-1]+)*/,
-    hexdigits: /[[0-9a-fA-F]+(_+[0-9a-fA-F]+)*/,
-    // The main tokenizer for our languages
+    decpart: /\d(_?\d)*/,
+    decimal: /0|@decpart/,
     tokenizer: {
         root: [
-            // identifiers and keywords
-            [/[a-zA-Z_$][\w$]*/, {
+            { include: '@comments' },
+            { include: '@whitespace' },
+            { include: '@numbers' },
+            { include: '@strings' },
+            [/[,:;]/, 'delimiter'],
+            [/[{}\[\]()<>]/, '@brackets'],
+            [/[a-zA-Z@#]\w*/, {
                     cases: {
-                        '@keywords': { token: 'keyword.$0' },
+                        '@keywords': 'keyword',
                         '@default': 'identifier'
                     }
                 }],
-            // whitespace
-            { include: '@whitespace' },
-            // delimiters and operators
-            [/[{}()\[\]]/, '@brackets'],
-            [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
-                    cases: {
-                        '@operators': 'delimiter',
-                        '@default': ''
-                    }
-                }],
-            // @ annotations.
-            [/@\s*[a-zA-Z_\$][\w\$]*/, 'annotation'],
-            // numbers
-            [/(@digits)[eE]([\-+]?(@digits))?[fFdD]?/, 'number.float'],
-            [/(@digits)\.(@digits)([eE][\-+]?(@digits))?[fFdD]?/, 'number.float'],
-            [/0[xX](@hexdigits)[Ll]?/, 'number.hex'],
-            [/0(@octaldigits)[Ll]?/, 'number.octal'],
-            [/0[bB](@binarydigits)[Ll]?/, 'number.binary'],
-            [/(@digits)[fFdD]/, 'number.float'],
-            [/(@digits)[lL]?/, 'number'],
-            // delimiter: after number because of .\d floats
-            [/[;,.]/, 'delimiter'],
-            // strings
-            [/"([^"\\]|\\.)*$/, 'string.invalid'],
-            [/"/, 'string', '@string'],
-            // characters
-            [/'[^\\']'/, 'string'],
-            [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
-            [/'/, 'string.invalid']
+            [/[<>=\\+\\-\\*\\/\\^\\|\\~,]|and\\b|or\\b|not\\b]/, 'operator'],
         ],
         whitespace: [
-            [/[ \t\r\n]+/, ''],
-            [/\/\*\*(?!\/)/, 'comment.doc', '@javadoc'],
-            [/\/\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
+            [/\s+/, 'white'],
+        ],
+        comments: [
+            ['\\/\\*', 'comment', '@comment'],
+            ['\\/\\/+.*', 'comment'],
         ],
         comment: [
-            [/[^\/*]+/, 'comment'],
-            // [/\/\*/, 'comment', '@push' ],    // nested comment not allowed :-(
-            // [/\/\*/,    'comment.invalid' ],    // this breaks block comments in the shape of /* //*/
-            [/\*\//, 'comment', '@pop'],
-            [/[\/*]/, 'comment']
+            ['\\*\\/', 'comment', '@pop'],
+            ['.', 'comment',],
         ],
-        //Identical copy of comment above, except for the addition of .doc
-        javadoc: [
-            [/[^\/*]+/, 'comment.doc'],
-            // [/\/\*/, 'comment.doc', '@push' ],    // nested comment not allowed :-(
-            [/\/\*/, 'comment.doc.invalid'],
-            [/\*\//, 'comment.doc', '@pop'],
-            [/[\/*]/, 'comment.doc']
+        numbers: [
+            [/0[xX][0-9a-fA-F]*(_?[0-9a-fA-F])*/, 'number.hex'],
+            [/@decimal((\.@decpart)?([eE][\-+]?@decpart)?)[fF]*/, {
+                    cases: {
+                        '(\\d)*': 'number',
+                        '$0': 'number.float'
+                    }
+                }]
         ],
-        string: [
+        // Recognize strings, including those broken across lines with \ (but not without)
+        strings: [
+            [/'$/, 'string.escape', '@popall'],
+            [/'/, 'string.escape', '@stringBody'],
+            [/"$/, 'string.escape', '@popall'],
+            [/"/, 'string.escape', '@dblStringBody']
+        ],
+        stringBody: [
+            [/[^\\']+$/, 'string', '@popall'],
+            [/[^\\']+/, 'string'],
+            [/\\./, 'string'],
+            [/'/, 'string.escape', '@popall'],
+            [/\\$/, 'string']
+        ],
+        dblStringBody: [
+            [/[^\\"]+$/, 'string', '@popall'],
             [/[^\\"]+/, 'string'],
-            [/@escapes/, 'string.escape'],
-            [/\\./, 'string.escape.invalid'],
-            [/"/, 'string', '@pop']
-        ],
-    },
+            [/\\./, 'string'],
+            [/"/, 'string.escape', '@popall'],
+            [/\\$/, 'string']
+        ]
+    }
 };
 
 

@@ -1,5 +1,5 @@
 import React from "react";
-import "./Menu.css"
+
 const MenuContext = React.createContext(null);
 
 export default function Menu(props) {

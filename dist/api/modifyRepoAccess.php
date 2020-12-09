@@ -11,7 +11,7 @@ $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
 $repoId =  mysqli_real_escape_string($conn,$_POST["repoId"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
-$owner = mysqli_real_escape_string($conn,$_POST["owner"]) == true ? 1 : 0;
+$owner = (mysqli_real_escape_string($conn,$_POST["owner"]) == true) ? 1 : 0;
 
 if ($operationType == "insert") {
   //TEST if link already exists 

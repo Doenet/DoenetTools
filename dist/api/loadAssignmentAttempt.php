@@ -22,27 +22,9 @@ if (!isset($_REQUEST["assignmentId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No attemptNumber specified!";
 } else {
-
-
     $assignmentId = mysqli_real_escape_string($conn, $_REQUEST["assignmentId"]);
     $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
     $userId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
-    $attemptTaken = false;
-
-    $sql = "SELECT *
-    FROM user_assignment_attempt AS uaa
-    WHERE uaa.userId = '$userId'
-    AND uaa.assignmentId = '$assignmentId'
-    AND uaa.attemptNumber = '$attemptNumber'
-    ";
-
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0){
-        $attemptTaken = true;
-    }
-
-
 
     $sql = "
 	SELECT 
@@ -71,11 +53,11 @@ if (!isset($_REQUEST["assignmentId"])) {
 
     $result = $conn->query($sql); 
     $response_arr = array();
-    
+
+
     if ($result->num_rows == 1){
         $row = $result->fetch_assoc();
         $response_arr = array(
-            "assignmentAttempted" => $attemptTaken,
             "doenetML"=>$row['doenetML'],
             "stateVariables"=>$row['stateVariables'],
             "variant"=>$row['variant'],
@@ -93,46 +75,8 @@ if (!isset($_REQUEST["assignmentId"])) {
         echo json_encode($response_arr);
         
     } else if ($result->num_rows == 0) {
-
-        $sql = "SELECT
-        c.doenetML,
-        ua.creditOverride
-        FROM user_assignment AS ua
-        LEFT JOIN assignment AS a
-        ON a.assignmentId = '$assignmentId'
-        LEFT JOIN content AS c
-        ON a.contentId = c.contentId
-        WHERE ua.userId = '$userId'
-        AND ua.assignmentId = '$assignmentId'; 
-        ";
-
-        $result = $conn->query($sql); 
-        if($result->num_rows == 0){
-            echo "no rows";
-        }
-        else{
-            $row = $result->fetch_assoc();
-
-            $response_arr = array(
-                "assignmentAttempted" => $attemptTaken,
-                "doenetML"=>$row['doenetML'],
-                "stateVariables"=> array(),
-                "variant"=>array(),
-                "assignmentCredit"=>0,
-                "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
-                "attemptCredit"=>0,
-                "attemptCreditOverride"=>0,
-                "timestamp"=> NULL, 
-
-            );
-
-            // set response code - 200 OK
-            http_response_code(200);
-
-            // make it json format
-            echo json_encode($response_arr);
-        }
-        
+        http_response_code(404);
+        echo "Database Retrieval Error: No attempt with the assignmentId: '$assignmentId', userId: '$userId', and attemptNumber: '$attemptNumber'!";
     } else {
         http_response_code(500);
         echo "Database Retrieval Error: Too Many Attempts Returned!";

@@ -17,25 +17,20 @@ $userId = $jwtArray['userId'];
 $sql = "
 SELECT id
 FROM repo_access
-WHERE userId = '$userId' AND repoId = '$repoId' AND owner = '1'
+WHERE userId = '$userId' AND repoId = '$repoId'
 ";
 
 $result = $conn->query($sql); 
-$hasPermissionToRemove = $result->num_rows > 0;
+$permisionToRemove = $result->num_rows;
 $userId = $result->userId;
 $row = $result->fetch_assoc();
 $userId = $row["userId"];
 
-if (!$hasPermissionToRemove) {
-  $response_message = "Must be owner to remove access";
-}
-
 $response_arr = array(
   "success"=>"0",
-  "message"=>$response_message
 );
 
-if ($hasPermissionToRemove ){
+if ($permisionToRemove > 0 ){
 //  User has permission to remove the user, so remove them
   $sql = "
   DELETE FROM repo_access

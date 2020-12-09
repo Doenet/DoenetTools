@@ -17,7 +17,7 @@ if (!isset($_GET["assignmentId"])) {
     echo "Database Retrieval Error: No assignment specified!";
 } else {
     $assignmentId = mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-    // echo($assignmentId);
+
     // check to make sure assignment exists
     $sql = "
         SELECT assignmentId

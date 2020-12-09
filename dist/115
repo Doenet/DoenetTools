@@ -1,6 +1,6 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[115],{
 
-/***/ 1228:
+/***/ 1229:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15,19 +15,71 @@ __webpack_require__.r(__webpack_exports__);
 var conf = {
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/'],
+        blockComment: ['(*', '*)'],
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')']
+        ['(', ')'],
+        ['var', 'end_var'],
+        ['var_input', 'end_var'],
+        ['var_output', 'end_var'],
+        ['var_in_out', 'end_var'],
+        ['var_temp', 'end_var'],
+        ['var_global', 'end_var'],
+        ['var_access', 'end_var'],
+        ['var_external', 'end_var'],
+        ['type', 'end_type'],
+        ['struct', 'end_struct'],
+        ['program', 'end_program'],
+        ['function', 'end_function'],
+        ['function_block', 'end_function_block'],
+        ['action', 'end_action'],
+        ['step', 'end_step'],
+        ['initial_step', 'end_step'],
+        ['transaction', 'end_transaction'],
+        ['configuration', 'end_configuration'],
+        ['tcp', 'end_tcp'],
+        ['recource', 'end_recource'],
+        ['channel', 'end_channel'],
+        ['library', 'end_library'],
+        ['folder', 'end_folder'],
+        ['binaries', 'end_binaries'],
+        ['includes', 'end_includes'],
+        ['sources', 'end_sources']
     ],
     autoClosingPairs: [
         { open: '[', close: ']' },
         { open: '{', close: '}' },
         { open: '(', close: ')' },
-        { open: '\'', close: '\'', notIn: ['string', 'comment'] },
-        { open: '"', close: '"', notIn: ['string'] },
+        { open: '/*', close: '*/' },
+        { open: '\'', close: '\'', notIn: ['string_sq'] },
+        { open: '"', close: '"', notIn: ['string_dq'] },
+        { open: 'var_input', close: 'end_var' },
+        { open: 'var_output', close: 'end_var' },
+        { open: 'var_in_out', close: 'end_var' },
+        { open: 'var_temp', close: 'end_var' },
+        { open: 'var_global', close: 'end_var' },
+        { open: 'var_access', close: 'end_var' },
+        { open: 'var_external', close: 'end_var' },
+        { open: 'type', close: 'end_type' },
+        { open: 'struct', close: 'end_struct' },
+        { open: 'program', close: 'end_program' },
+        { open: 'function', close: 'end_function' },
+        { open: 'function_block', close: 'end_function_block' },
+        { open: 'action', close: 'end_action' },
+        { open: 'step', close: 'end_step' },
+        { open: 'initial_step', close: 'end_step' },
+        { open: 'transaction', close: 'end_transaction' },
+        { open: 'configuration', close: 'end_configuration' },
+        { open: 'tcp', close: 'end_tcp' },
+        { open: 'recource', close: 'end_recource' },
+        { open: 'channel', close: 'end_channel' },
+        { open: 'library', close: 'end_library' },
+        { open: 'folder', close: 'end_folder' },
+        { open: 'binaries', close: 'end_binaries' },
+        { open: 'includes', close: 'end_includes' },
+        { open: 'sources', close: 'end_sources' }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
@@ -35,6 +87,32 @@ var conf = {
         { open: '(', close: ')' },
         { open: '"', close: '"' },
         { open: '\'', close: '\'' },
+        { open: 'var', close: 'end_var' },
+        { open: 'var_input', close: 'end_var' },
+        { open: 'var_output', close: 'end_var' },
+        { open: 'var_in_out', close: 'end_var' },
+        { open: 'var_temp', close: 'end_var' },
+        { open: 'var_global', close: 'end_var' },
+        { open: 'var_access', close: 'end_var' },
+        { open: 'var_external', close: 'end_var' },
+        { open: 'type', close: 'end_type' },
+        { open: 'struct', close: 'end_struct' },
+        { open: 'program', close: 'end_program' },
+        { open: 'function', close: 'end_function' },
+        { open: 'function_block', close: 'end_function_block' },
+        { open: 'action', close: 'end_action' },
+        { open: 'step', close: 'end_step' },
+        { open: 'initial_step', close: 'end_step' },
+        { open: 'transaction', close: 'end_transaction' },
+        { open: 'configuration', close: 'end_configuration' },
+        { open: 'tcp', close: 'end_tcp' },
+        { open: 'recource', close: 'end_recource' },
+        { open: 'channel', close: 'end_channel' },
+        { open: 'library', close: 'end_library' },
+        { open: 'folder', close: 'end_folder' },
+        { open: 'binaries', close: 'end_binaries' },
+        { open: 'includes', close: 'end_includes' },
+        { open: 'sources', close: 'end_sources' }
     ],
     folding: {
         markers: {
@@ -44,94 +122,95 @@ var conf = {
     }
 };
 var language = {
-    tokenPostfix: '.rust',
-    defaultToken: 'invalid',
-    keywords: [
-        'as', 'box', 'break', 'const', 'continue', 'crate', 'else', 'enum',
-        'extern', 'false', 'fn', 'for', 'if', 'impl', 'in', 'let', 'loop',
-        'match', 'mod', 'move', 'mut', 'pub', 'ref', 'return', 'self',
-        'static', 'struct', 'super', 'trait', 'true', 'type', 'unsafe', 'use',
-        'where', 'while', 'catch', 'default', 'union', 'static', 'abstract',
-        'alignof', 'become', 'do', 'final', 'macro', 'offsetof', 'override',
-        'priv', 'proc', 'pure', 'sizeof', 'typeof', 'unsized', 'virtual',
-        'yield',
+    defaultToken: '',
+    tokenPostfix: '.st',
+    ignoreCase: true,
+    brackets: [
+        { token: 'delimiter.curly', open: '{', close: '}' },
+        { token: 'delimiter.parenthesis', open: '(', close: ')' },
+        { token: 'delimiter.square', open: '[', close: ']' }
     ],
-    typeKeywords: [
-        'Self', 'm32', 'm64', 'm128', 'f80', 'f16', 'f128', 'int', 'uint',
-        'float', 'char', 'bool', 'u8', 'u16', 'u32', 'u64', 'f32', 'f64', 'i8',
-        'i16', 'i32', 'i64', 'str', 'Option', 'Either', 'c_float', 'c_double',
-        'c_void', 'FILE', 'fpos_t', 'DIR', 'dirent', 'c_char', 'c_schar',
-        'c_uchar', 'c_short', 'c_ushort', 'c_int', 'c_uint', 'c_long',
-        'c_ulong', 'size_t', 'ptrdiff_t', 'clock_t', 'time_t', 'c_longlong',
-        'c_ulonglong', 'intptr_t', 'uintptr_t', 'off_t', 'dev_t', 'ino_t',
-        'pid_t', 'mode_t', 'ssize_t',
+    keywords: ['if', 'end_if', 'elsif', 'else', 'case', 'of', 'to', '__try', '__catch', '__finally',
+        'do', 'with', 'by', 'while', 'repeat', 'end_while', 'end_repeat', 'end_case',
+        'for', 'end_for', 'task', 'retain', 'non_retain', 'constant', 'with', 'at',
+        'exit', 'return', 'interval', 'priority', 'address', 'port', 'on_channel',
+        'then', 'iec', 'file', 'uses', 'version', 'packagetype', 'displayname',
+        'copyright', 'summary', 'vendor', 'common_source', 'from', 'extends'],
+    constant: ['false', 'true', 'null'],
+    defineKeywords: [
+        'var', 'var_input', 'var_output', 'var_in_out', 'var_temp', 'var_global',
+        'var_access', 'var_external', 'end_var',
+        'type', 'end_type', 'struct', 'end_struct', 'program', 'end_program',
+        'function', 'end_function', 'function_block', 'end_function_block',
+        'interface', 'end_interface', 'method', 'end_method',
+        'property', 'end_property', 'namespace', 'end_namespace',
+        'configuration', 'end_configuration', 'tcp', 'end_tcp', 'resource',
+        'end_resource', 'channel', 'end_channel', 'library', 'end_library',
+        'folder', 'end_folder', 'binaries', 'end_binaries', 'includes',
+        'end_includes', 'sources', 'end_sources',
+        'action', 'end_action', 'step', 'initial_step', 'end_step', 'transaction', 'end_transaction'
     ],
-    constants: [
-        'true', 'false', 'Some', 'None', 'Left', 'Right', 'Ok', 'Err',
-    ],
-    supportConstants: [
-        'EXIT_FAILURE', 'EXIT_SUCCESS', 'RAND_MAX', 'EOF', 'SEEK_SET',
-        'SEEK_CUR', 'SEEK_END', '_IOFBF', '_IONBF', '_IOLBF', 'BUFSIZ',
-        'FOPEN_MAX', 'FILENAME_MAX', 'L_tmpnam', 'TMP_MAX', 'O_RDONLY',
-        'O_WRONLY', 'O_RDWR', 'O_APPEND', 'O_CREAT', 'O_EXCL', 'O_TRUNC',
-        'S_IFIFO', 'S_IFCHR', 'S_IFBLK', 'S_IFDIR', 'S_IFREG', 'S_IFMT',
-        'S_IEXEC', 'S_IWRITE', 'S_IREAD', 'S_IRWXU', 'S_IXUSR', 'S_IWUSR',
-        'S_IRUSR', 'F_OK', 'R_OK', 'W_OK', 'X_OK', 'STDIN_FILENO',
-        'STDOUT_FILENO', 'STDERR_FILENO',
-    ],
-    supportMacros: [
-        'format!', 'print!', 'println!', 'panic!', 'format_args!', 'unreachable!',
-        'write!', 'writeln!'
-    ],
-    operators: [
-        '!', '!=', '%', '%=', '&', '&=', '&&', '*', '*=', '+', '+=', '-', '-=',
-        '->', '.', '..', '...', '/', '/=', ':', ';', '<<', '<<=', '<', '<=', '=',
-        '==', '=>', '>', '>=', '>>', '>>=', '@', '^', '^=', '|', '|=', '||', '_',
-        '?', '#'
-    ],
-    escapes: /\\([nrt0\"''\\]|x\h{2}|u\{\h{1,6}\})/,
-    delimiters: /[,]/,
-    symbols: /[\#\!\%\&\*\+\-\.\/\:\;\<\=\>\@\^\|_\?]+/,
-    intSuffixes: /[iu](8|16|32|64|128|size)/,
-    floatSuffixes: /f(32|64)/,
+    typeKeywords: ['int', 'sint', 'dint', 'lint', 'usint', 'uint', 'udint', 'ulint',
+        'real', 'lreal', 'time', 'date', 'time_of_day', 'date_and_time', 'string',
+        'bool', 'byte', 'word', 'dword', 'array', 'pointer', 'lword'],
+    operators: ['=', '>', '<', ':', ':=', '<=', '>=', '<>', '&', '+', '-', '*', '**',
+        'MOD', '^', 'or', 'and', 'not', 'xor', 'abs', 'acos', 'asin', 'atan', 'cos',
+        'exp', 'expt', 'ln', 'log', 'sin', 'sqrt', 'tan', 'sel', 'max', 'min', 'limit',
+        'mux', 'shl', 'shr', 'rol', 'ror', 'indexof', 'sizeof', 'adr', 'adrinst',
+        'bitadr', 'is_valid', 'ref', 'ref_to'],
+    builtinVariables: [],
+    builtinFunctions: ['sr', 'rs', 'tp', 'ton', 'tof', 'eq', 'ge', 'le', 'lt',
+        'ne', 'round', 'trunc', 'ctd', 'сtu', 'ctud', 'r_trig', 'f_trig',
+        'move', 'concat', 'delete', 'find', 'insert', 'left', 'len', 'replace',
+        'right', 'rtc'],
+    // we include these common regular expressions
+    symbols: /[=><!~?:&|+\-*\/\^%]+/,
+    // C# style strings
+    escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
+    // The main tokenizer for our languages
     tokenizer: {
         root: [
-            [/[a-zA-Z][a-zA-Z0-9_]*!?|_[a-zA-Z0-9_]+/,
-                {
+            [/(\.\.)/, 'delimiter'],
+            [/\b(16#[0-9A-Fa-f\_]*)+\b/, 'number.hex'],
+            [/\b(2#[01\_]+)+\b/, 'number.binary'],
+            [/\b(8#[0-9\_]*)+\b/, 'number.octal'],
+            [/\b\d*\.\d+([eE][\-+]?\d+)?\b/, 'number.float'],
+            [/\b(L?REAL)#[0-9\_\.e]+\b/, 'number.float'],
+            [/\b(BYTE|(?:D|L)?WORD|U?(?:S|D|L)?INT)#[0-9\_]+\b/, 'number'],
+            [/\d+/, 'number'],
+            [/\b(T|DT|TOD)#[0-9:-_shmyd]+\b/, 'tag'],
+            [/\%(I|Q|M)(X|B|W|D|L)[0-9\.]+/, 'tag'],
+            [/\%(I|Q|M)[0-9\.]*/, 'tag'],
+            [/\b[A-Za-z]{1,6}#[0-9]+\b/, 'tag'],
+            [/\b(TO_|CTU_|CTD_|CTUD_|MUX_|SEL_)[A_Za-z]+\b/, 'predefined'],
+            [/\b[A_Za-z]+(_TO_)[A_Za-z]+\b/, 'predefined'],
+            [/[;]/, 'delimiter'],
+            [/[.]/, { token: 'delimiter', next: '@params' }],
+            // identifiers and keywords
+            [/[a-zA-Z_]\w*/, {
                     cases: {
-                        '@typeKeywords': 'keyword.type',
+                        '@operators': 'operators',
                         '@keywords': 'keyword',
-                        '@supportConstants': 'keyword',
-                        '@supportMacros': 'keyword',
-                        '@constants': 'keyword',
-                        '@default': 'identifier',
-                    }
-                }
-            ],
-            // Designator
-            [/\$/, 'identifier'],
-            // Lifetime annotations
-            [/'[a-zA-Z_][a-zA-Z0-9_]*(?=[^\'])/, 'identifier'],
-            // Byte literal
-            [/'\S'/, 'string.byteliteral'],
-            // Strings
-            [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
-            { include: '@numbers' },
-            // Whitespace + comments
-            { include: '@whitespace' },
-            [/@delimiters/, {
-                    cases: {
-                        '@keywords': 'keyword',
-                        '@default': 'delimiter'
+                        '@typeKeywords': 'type',
+                        '@defineKeywords': 'variable',
+                        '@constant': 'constant',
+                        '@builtinVariables': 'predefined',
+                        '@builtinFunctions': 'predefined',
+                        '@default': 'identifier'
                     }
                 }],
-            [/[{}()\[\]<>]/, '@brackets'],
-            [/@symbols/, { cases: { '@operators': 'operator', '@default': '' } }],
+            { include: '@whitespace' },
+            [/[{}()\[\]]/, '@brackets'],
+            [/"([^"\\]|\\.)*$/, 'string.invalid'],
+            [/"/, { token: 'string.quote', bracket: '@open', next: '@string_dq' }],
+            [/'/, { token: 'string.quote', bracket: '@open', next: '@string_sq' }],
+            [/'[^\\']'/, 'string'],
+            [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
+            [/'/, 'string.invalid']
         ],
-        whitespace: [
-            [/[ \t\r\n]+/, 'white'],
-            [/\/\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
+        params: [
+            [/\b[A-Za-z0-9_]+\b(?=\()/, { token: 'identifier', next: '@pop' }],
+            [/\b[A-Za-z0-9_]+\b/, 'variable.name', '@pop']
         ],
         comment: [
             [/[^\/*]+/, 'comment'],
@@ -139,25 +218,29 @@ var language = {
             ["\\*/", 'comment', '@pop'],
             [/[\/*]/, 'comment']
         ],
-        string: [
+        comment2: [
+            [/[^\(*]+/, 'comment'],
+            [/\(\*/, 'comment', '@push'],
+            ["\\*\\)", 'comment', '@pop'],
+            [/[\(*]/, 'comment']
+        ],
+        whitespace: [
+            [/[ \t\r\n]+/, 'white'],
+            [/\/\/.*$/, 'comment'],
+            [/\/\*/, 'comment', '@comment'],
+            [/\(\*/, 'comment', '@comment2'],
+        ],
+        string_dq: [
             [/[^\\"]+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
             [/"/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
         ],
-        numbers: [
-            //Octal
-            [/(0o[0-7_]+)(@intSuffixes)?/, { token: 'number' }],
-            //Binary
-            [/(0b[0-1_]+)(@intSuffixes)?/, { token: 'number' }],
-            //Exponent
-            [/[\d][\d_]*(\.[\d][\d_]*)?[eE][+-][\d_]+(@floatSuffixes)?/, { token: 'number' }],
-            //Float
-            [/\b(\d\.?[\d_]*)(@floatSuffixes)?\b/, { token: 'number' }],
-            //Hexadecimal
-            [/(0x[\da-fA-F]+)_?(@intSuffixes)?/, { token: 'number' }],
-            //Integer
-            [/[\d][\d_]*(@intSuffixes?)?/, { token: 'number' }],
+        string_sq: [
+            [/[^\\']+/, 'string'],
+            [/@escapes/, 'string.escape'],
+            [/\\./, 'string.escape.invalid'],
+            [/'/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
         ]
     }
 };

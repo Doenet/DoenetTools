@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[35,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[28,2],{
 
-/***/ 649:
+/***/ 645:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,15 +183,15 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 683:
+/***/ 672:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Polygon; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Line; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(649);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -233,15 +233,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-var Polygon = /*#__PURE__*/function (_DoenetRenderer) {
-  _inherits(Polygon, _DoenetRenderer);
+var Line = /*#__PURE__*/function (_DoenetRenderer) {
+  _inherits(Line, _DoenetRenderer);
 
-  var _super = _createSuper(Polygon);
+  var _super = _createSuper(Line);
 
-  function Polygon(props) {
+  function Line(props) {
     var _this;
 
-    _classCallCheck(this, Polygon);
+    _classCallCheck(this, Line);
 
     _this = _super.call(this, props);
     _this.onDragHandler = _this.onDragHandler.bind(_assertThisInitialized(_this));
@@ -259,7 +259,7 @@ var Polygon = /*#__PURE__*/function (_DoenetRenderer) {
     return _this;
   }
 
-  _createClass(Polygon, [{
+  _createClass(Line, [{
     key: "createGraphicalObject",
     value: function createGraphicalObject() {
       if (!(this.doenetSvData.nVertices >= 2)) {
@@ -273,12 +273,12 @@ var Polygon = /*#__PURE__*/function (_DoenetRenderer) {
         highlightFillColor: 'lightgray',
         visible: this.doenetSvData.draggable === true,
         withLabel: false,
-        layer: 10 * this.doenetSvData.layer + 8
+        layer: 10 * this.doenetSvData.layer + 9
       };
       this.jsxBorderAttributes = {
         highlight: false,
         visible: true,
-        layer: 10 * this.doenetSvData.layer + 7,
+        layer: 10 * this.doenetSvData.layer + 8,
         strokeColor: this.doenetSvData.selectedStyle.lineColor,
         highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
         strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
@@ -491,10 +491,6 @@ var Polygon = /*#__PURE__*/function (_DoenetRenderer) {
 
       for (var _i2 = 0; _i2 < this.doenetSvData.nVertices; _i2++) {
         this.polygonJXG.vertices[_i2].coords.setCoordinates(JXG.COORDS_BY_USER, _toConsumableArray(this.doenetSvData.numericalVertices[_i2]));
-
-        this.polygonJXG.vertices[_i2].needsUpdate = true;
-
-        this.polygonJXG.vertices[_i2].update();
       }
 
       var visibleNow = !this.doenetSvData.hide;
@@ -544,10 +540,10 @@ var Polygon = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }]);
 
-  return Polygon;
+  return Line;
 }(_DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]);
 
-_defineProperty(Polygon, "initializeChildrenOnConstruction", false);
+_defineProperty(Line, "initializeChildrenOnConstruction", false);
 
 
 

@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[27,2],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[23,2],{
 
-/***/ 649:
+/***/ 645:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 675:
+/***/ 667:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,10 +191,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MathInput; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(149);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(147);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(649);
-/* harmony import */ var math_expressions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(645);
+/* harmony import */ var math_expressions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
 /* harmony import */ var math_expressions__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(math_expressions__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(38);
 /* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(34);
@@ -290,9 +290,9 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
       this.validationState = "unvalidated";
 
       if (this.doenetSvData.valueHasBeenValidated) {
-        if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
+        if (this.doenetSvData.creditAchieved === 1) {
           this.validationState = "correct";
-        } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
+        } else if (this.doenetSvData.creditAchieved === 0) {
           this.validationState = "incorrect";
         } else {
           this.validationState = "partialcorrect";
@@ -451,7 +451,7 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
               }));
             } else if (this.validationState === "partialcorrect") {
               //partial credit
-              var percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+              var percent = Math.round(this.doenetSvData.creditAchieved * 100);
               var partialCreditContents = "".concat(percent, " %");
               checkWorkStyle.width = "50px";
               checkWorkStyle.backgroundColor = "#efab34";
@@ -472,7 +472,7 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
                   _this2.target = c && react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.findDOMNode(c);
                 }
               }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_4__[/* FontAwesomeIcon */ "a"], {
-                icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_5__[/* faTimes */ "V"]
+                icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_5__[/* faTimes */ "R"]
               }));
             }
           } else {

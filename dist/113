@@ -1,6 +1,6 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[113],{
 
-/***/ 1226:
+/***/ 1227:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13,142 +13,155 @@ __webpack_require__.r(__webpack_exports__);
  *--------------------------------------------------------------------------------------------*/
 
 var conf = {
-    brackets: [
-        ['{', '}'],
-        ['[', ']'],
-        ['(', ')']
-    ],
+    comments: {
+        lineComment: '//',
+        blockComment: ['/*', '*/'],
+    },
+    brackets: [['{', '}'], ['[', ']'], ['(', ')'], ['<', '>']],
     autoClosingPairs: [
-        { open: '{', close: '}' },
-        { open: '[', close: ']' },
-        { open: '(', close: ')' },
-        { open: '<', close: '>', notIn: ['string'] }
-    ],
-    surroundingPairs: [
-        { open: '(', close: ')' },
-        { open: '[', close: ']' },
-        { open: '`', close: '`' },
-    ],
-    folding: {
-        markers: {
-            start: new RegExp("^\\s*<!--\\s*#?region\\b.*-->"),
-            end: new RegExp("^\\s*<!--\\s*#?endregion\\b.*-->")
-        }
-    }
+        { open: '"', close: '"', notIn: ['string', 'comment'] },
+        { open: '{', close: '}', notIn: ['string', 'comment'] },
+        { open: '[', close: ']', notIn: ['string', 'comment'] },
+        { open: '(', close: ')', notIn: ['string', 'comment'] },
+    ]
 };
 var language = {
     defaultToken: '',
-    tokenPostfix: '.rst',
-    control: /[\\`*_\[\]{}()#+\-\.!]/,
-    escapes: /\\(?:@control)/,
-    empty: [
-        'area', 'base', 'basefont', 'br', 'col', 'frame',
-        'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param'
+    tokenPostfix: '.aes',
+    brackets: [
+        { token: 'delimiter.curly', open: '{', close: '}' },
+        { token: 'delimiter.parenthesis', open: '(', close: ')' },
+        { token: 'delimiter.square', open: '[', close: ']' },
+        { token: 'delimiter.angle', open: '<', close: '>' }
     ],
-    alphanumerics: /[A-Za-z0-9]/,
-    alphanumericsplus: /[A-Za-z0-9-_+:.]/,
-    simpleRefNameWithoutBq: /(?:@alphanumerics@alphanumericsplus*@alphanumerics)+|(?:@alphanumerics+)/,
-    simpleRefName: /(?:`@simpleRefNameWithoutBq`|@simpleRefNameWithoutBq)/,
-    phrase: /@simpleRefName(?:\s@simpleRefName)*/,
-    citationName: /[A-Za-z][A-Za-z0-9-_.]*/,
-    blockLiteralStart: /(?:[!"#$%&'()*+,-./:;<=>?@\[\]^_`{|}~]|[\s])/,
-    precedingChars: /(?:[ -:/'"<([{])/,
-    followingChars: /(?:[ -.,:;!?/'")\]}>]|$)/,
-    punctuation: /(=|-|~|`|#|"|\^|\+|\*|:|\.|'|_|\+)/,
+    keywords: [
+        // Main keywords
+        'contract',
+        'library',
+        'entrypoint',
+        'function',
+        'stateful',
+        'state',
+        'hash',
+        'signature',
+        'tuple',
+        'list',
+        'address',
+        'string',
+        'bool',
+        'int',
+        'record',
+        'datatype',
+        'type',
+        'option',
+        'oracle',
+        'oracle_query',
+        'Call',
+        'Bits',
+        'Bytes',
+        'Oracle',
+        'String',
+        'Crypto',
+        'Address',
+        'Auth',
+        'Chain',
+        'None',
+        'Some',
+        'bits',
+        'bytes',
+        'event',
+        'let',
+        'map',
+        'private',
+        'public',
+        'true',
+        'false',
+        'var',
+        'if',
+        'else',
+        'throw'
+    ],
+    operators: [
+        '=', '>', '<', '!', '~', '?', '::', ':',
+        '==', '<=', '>=', '!=', '&&', '||', '++', '--',
+        '+', '-', '*', '/', '&', '|', '^', '%', '<<',
+        '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=',
+        '^=', '%=', '<<=', '>>=', '>>>='
+    ],
+    // we include these common regular expressions
+    symbols: /[=><!~?:&|+\-*\/\^%]+/,
+    escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
+    integersuffix: /(ll|LL|u|U|l|L)?(ll|LL|u|U|l|L)?/,
+    floatsuffix: /[fFlL]?/,
+    // The main tokenizer for our languages
     tokenizer: {
         root: [
-            //sections
-            [/^(@punctuation{3,}$){1,1}?/, 'keyword'],
-            //line-blocks
-            //No rules on it
-            //bullet-lists
-            [/^\s*([\*\-+‣•]|[a-zA-Z0-9]+\.|\([a-zA-Z0-9]+\)|[a-zA-Z0-9]+\))\s/, 'keyword'],
-            //literal-blocks
-            [/([ ]::)\s*$/, 'keyword', '@blankLineOfLiteralBlocks'],
-            [/(::)\s*$/, 'keyword', '@blankLineOfLiteralBlocks'],
-            { include: '@tables' },
-            { include: '@explicitMarkupBlocks' },
-            { include: '@inlineMarkup' },
+            // identifiers and keywords
+            [/[a-zA-Z_]\w*/, {
+                    cases: {
+                        '@keywords': { token: 'keyword.$0' },
+                        '@default': 'identifier'
+                    }
+                }],
+            // whitespace
+            { include: '@whitespace' },
+            // [[ attributes ]].
+            [/\[\[.*\]\]/, 'annotation'],
+            // Preprocessor directive
+            [/^\s*#\w+/, 'keyword'],
+            //DataTypes
+            [/int\d*/, 'keyword'],
+            // delimiters and operators
+            [/[{}()\[\]]/, '@brackets'],
+            [/[<>](?!@symbols)/, '@brackets'],
+            [/@symbols/, {
+                    cases: {
+                        '@operators': 'delimiter',
+                        '@default': ''
+                    }
+                }],
+            // numbers
+            [/\d*\d+[eE]([\-+]?\d+)?(@floatsuffix)/, 'number.float'],
+            [/\d*\.\d+([eE][\-+]?\d+)?(@floatsuffix)/, 'number.float'],
+            [/0[xX][0-9a-fA-F']*[0-9a-fA-F](@integersuffix)/, 'number.hex'],
+            [/0[0-7']*[0-7](@integersuffix)/, 'number.octal'],
+            [/0[bB][0-1']*[0-1](@integersuffix)/, 'number.binary'],
+            [/\d[\d']*\d(@integersuffix)/, 'number'],
+            [/\d(@integersuffix)/, 'number'],
+            // delimiter: after number because of .\d floats
+            [/[;,.]/, 'delimiter'],
+            // strings
+            [/"([^"\\]|\\.)*$/, 'string.invalid'],
+            [/"/, 'string', '@string'],
+            // characters
+            [/'[^\\']'/, 'string'],
+            [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
+            [/'/, 'string.invalid']
         ],
-        explicitMarkupBlocks: [
-            //citations
-            { include: '@citations' },
-            //footnotes
-            { include: '@footnotes' },
-            //directives
-            [/^(\.\.\s)(@simpleRefName)(::\s)(.*)$/, [{ token: '', next: 'subsequentLines' }, 'keyword', '', '']],
-            //hyperlink-targets
-            [/^(\.\.)(\s+)(_)(@simpleRefName)(:)(\s+)(.*)/, [{ token: '', next: 'hyperlinks' }, '', '', 'string.link', '', '', 'string.link']],
-            //anonymous-hyperlinks
-            [/^((?:(?:\.\.)(?:\s+))?)(__)(:)(\s+)(.*)/, [{ token: '', next: 'subsequentLines' }, '', '', '', 'string.link']],
-            [/^(__\s+)(.+)/, ['', 'string.link']],
-            //substitution-definitions
-            [/^(\.\.)( \|)([^| ]+[^|]*[^| ]*)(\| )(@simpleRefName)(:: .*)/, [{ token: '', next: 'subsequentLines' }, '', 'string.link', '', 'keyword', ''], '@rawBlocks'],
-            [/(\|)([^| ]+[^|]*[^| ]*)(\|_{0,2})/, ['', 'string.link', '']],
-            //comments
-            [/^(\.\.)([ ].*)$/, [{ token: '', next: '@comments' }, 'comment']],
+        whitespace: [
+            [/[ \t\r\n]+/, ''],
+            [/\/\*\*(?!\/)/, 'comment.doc', '@doccomment'],
+            [/\/\*/, 'comment', '@comment'],
+            [/\/\/.*$/, 'comment'],
         ],
-        inlineMarkup: [
-            { include: '@citationsReference' },
-            { include: '@footnotesReference' },
-            //hyperlink-references
-            [/(@simpleRefName)(_{1,2})/, ['string.link', '']],
-            //embedded-uris-and-aliases
-            [/(`)([^<`]+\s+)(<)(.*)(>)(`)(_)/, ['', 'string.link', '', 'string.link', '', '', '']],
-            //emphasis
-            [/\*\*([^\\*]|\*(?!\*))+\*\*/, 'strong'],
-            [/\*[^*]+\*/, 'emphasis'],
-            //inline-literals
-            [/(``)((?:[^`]|\`(?!`))+)(``)/, ['', 'keyword', '']],
-            [/(__\s+)(.+)/, ['', 'keyword']],
-            //interpreted-text
-            [/(:)((?:@simpleRefNameWithoutBq)?)(:`)([^`]+)(`)/, ['', 'keyword', '', '', '']],
-            [/(`)([^`]+)(`:)((?:@simpleRefNameWithoutBq)?)(:)/, ['', '', '', 'keyword', '']],
-            [/(`)([^`]+)(`)/, ''],
-            //inline-internal-targets
-            [/(_`)(@phrase)(`)/, ['', 'string.link', '']],
+        comment: [
+            [/[^\/*]+/, 'comment'],
+            [/\*\//, 'comment', '@pop'],
+            [/[\/*]/, 'comment']
         ],
-        citations: [
-            [/^(\.\.\s+\[)((?:@citationName))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
+        //Identical copy of comment above, except for the addition of .doc
+        doccomment: [
+            [/[^\/*]+/, 'comment.doc'],
+            [/\*\//, 'comment.doc', '@pop'],
+            [/[\/*]/, 'comment.doc']
         ],
-        citationsReference: [
-            [/(\[)(@citationName)(\]_)/, ['', 'string.link', '']],
+        string: [
+            [/[^\\"]+/, 'string'],
+            [/@escapes/, 'string.escape'],
+            [/\\./, 'string.escape.invalid'],
+            [/"/, 'string', '@pop']
         ],
-        footnotes: [
-            [/^(\.\.\s+\[)((?:[0-9]+))(\]\s+.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '']],
-            [/^(\.\.\s+\[)((?:#@simpleRefName?))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
-            [/^(\.\.\s+\[)((?:\*))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
-        ],
-        footnotesReference: [
-            [/(\[)([0-9]+)(\])(_)/, ['', 'string.link', '', '']],
-            [/(\[)(#@simpleRefName?)(\])(_)/, ['', 'string.link', '', '']],
-            [/(\[)(\*)(\])(_)/, ['', 'string.link', '', '']]
-        ],
-        blankLineOfLiteralBlocks: [
-            [/^$/, '', '@subsequentLinesOfLiteralBlocks'],
-            [/^.*$/, '', '@pop'],
-        ],
-        subsequentLinesOfLiteralBlocks: [
-            [/(@blockLiteralStart+)(.*)/, ['keyword', '']],
-            [/^(?!blockLiteralStart)/, '', '@popall']
-        ],
-        subsequentLines: [
-            [/^[\s]+.*/, ''],
-            [/^(?!\s)/, '', '@pop'],
-        ],
-        hyperlinks: [
-            [/^[\s]+.*/, 'string.link'],
-            [/^(?!\s)/, '', '@pop'],
-        ],
-        comments: [
-            [/^[\s]+.*/, 'comment'],
-            [/^(?!\s)/, '', '@pop'],
-        ],
-        tables: [
-            [/\+-[+-]+/, 'keyword'],
-            [/\+=[+=]+/, 'keyword'],
-        ],
-    }
+    },
 };
 
 
