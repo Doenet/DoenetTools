@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect, useRef} from 'react';
+import React, {useState, useCallback, useEffect, useRef, useMemo} from 'react';
 import {
   useQuery,
   useQueryCache,
@@ -181,11 +181,11 @@ function Tool(props){
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} />
-  <BrowserRouted drive="course" isNav={true} />
+  {/* <BrowserRouted drive="course" isNav={true} /> */}
   </div>
   <div>
-  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
-  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  {/* <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/> */}
+  {/* <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/> */}
   </div>
   </div>
   </>
@@ -543,11 +543,17 @@ function Browser(props){
   },[])
 
   const handleDeselectAll = useCallback(()=>{
-    setSelectedNodes({})
+    setSelectedNodes((old)=>{for (var member in old) delete old[member]; return old})
     if (props.setSelectedNodes){
-      props.setSelectedNodes({});
+      props.setSelectedNodes((old)=>{for (var member in old) delete old[member]; return old});
     }
-  })
+  },[])
+
+
+  const deleteItemHandler = useCallback((nodeId)=>{
+    deleteItem(nodeId);
+  },[]);
+
 
   if (browserId.current === ""){ browserId.current = nanoid();}
 
@@ -570,9 +576,7 @@ function Browser(props){
 
   // if (isFetching){ return <div>Loading...</div>}
 
-  function deleteItemHandler(nodeObj){
-    deleteItem(nodeObj);
-  }
+  
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
@@ -608,22 +612,25 @@ function Browser(props){
           }else if (selectedNodes[nodeId]){ 
             appearance = "selected";
           }
+            
+       
           nodesJSX.push(<Node 
             key={`node${nodeId}`} 
+            label={nodeObj.label}
             browserId={browserId.current}
             nodeId={nodeId}
             driveId={props.drive}
             parentId={parentId}
-            label={nodeObj.label}
             type={nodeObj.type}
             appearance={appearance}
             isOpen={isOpen} 
             numChildren={numChildren}
+            level={level}
             handleFolderToggle={handleFolderToggle} 
             deleteItemHandler={deleteItemHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
-            level={level}/>)
+            />)
           if (isOpen){
             buildNodes({driveId,parentId:nodeId,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
           }
@@ -650,6 +657,7 @@ function Browser(props){
   </>
 }
 
+
 const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
     width: "300px",
@@ -670,9 +678,13 @@ const LoadingNode =  React.memo(function Node(props){
   }} ><div className="noselect" style={{ textAlign: "center" }} >LOADING...</div></div>)
 })
 
+
 // const Node = function Node(props){
   const Node = React.memo(function Node(props){
-  console.log(`=== NODE='${props.nodeId}' parentId='${props.parentId}'`)
+  console.log(`=== 📁${props.label}`)
+  // console.log(props)
+
+  // console.log(`=== NODE='${props.nodeId}' parentId='${props.parentId}'`)
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
