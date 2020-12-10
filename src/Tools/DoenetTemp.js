@@ -181,11 +181,11 @@ function Tool(props){
   <div style={{display:"flex"}}> 
   <div>
   <BrowserRouted drive="content" isNav={true} />
-  {/* <BrowserRouted drive="course" isNav={true} /> */}
+  <BrowserRouted drive="course" isNav={true} />
   </div>
   <div>
-  {/* <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/> */}
-  {/* <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/> */}
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
   </div>
   </div>
   </>
@@ -543,12 +543,11 @@ function Browser(props){
   },[])
 
   const handleDeselectAll = useCallback(()=>{
-    setSelectedNodes((old)=>{for (var member in old) delete old[member]; return old})
+    setSelectedNodes({})
     if (props.setSelectedNodes){
-      props.setSelectedNodes((old)=>{for (var member in old) delete old[member]; return old});
+      props.setSelectedNodes({});
     }
   },[])
-
 
   const deleteItemHandler = useCallback((nodeId)=>{
     deleteItem(nodeId);
