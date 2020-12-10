@@ -60,6 +60,7 @@ const showHideOverNewOverlayOnClick = () =>{
 
 const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 // const content = play;
+const [content, setContent] = useState(init_content)
 
 const [tag, setTag] = useState({});
 const [view, setView] = useState(getInitView(init_content, setContent, setTag));
