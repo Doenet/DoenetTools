@@ -35,7 +35,7 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
           origin: { x: clientX, y: clientY },
           actionType: actionType
         }));
-        onDragStart?.({ id });
+        onDragStart?.();
         timerRef.current = null;
       }, 300);
     },

@@ -44,6 +44,9 @@ return <>
 function Tool(props){
 
   const cache = useQueryCache();
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [draggedObject, setDraggedObject] = useState({});
+  const [draggedOverDriveId, setDraggedOverDriveId] = useState(null);
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
   let clearSelectionFunctions = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
@@ -55,9 +58,6 @@ function Tool(props){
   const setSelectedNodes = useCallback((selectedNodes)=>{
     selectedNodesArr.current = selectedNodes;
   });
-
-  const [draggedId, setDraggedId] = useState(null);
-  const { dropState, dropActions } = useContext(DropTargetsContext);
 
   const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
@@ -136,43 +136,49 @@ function Tool(props){
     }
   })
 
-  const onDragStart = ({ id }) => {
-    setDraggedId(id);
+  const onDragStart = ({ nodeId, driveId }) => {
+    setDraggedObject({ nodeId, driveId });
+    setDraggedOverDriveId(driveId);
   };
 
   const onDrag = ({ clientX, clientY, translation, id }) => {
     dropActions.handleDrag(clientX, clientY, id);
   };
 
-  const onDragOverContainer = ({ id }) => {
-    // console.log("onDragOver", id);
-    // how to insert dummy object?
+  const onDragOverContainer = ({ id, driveId }) => {
+    // update driveId if changed
+    if (draggedOverDriveId !== driveId) {
+      setDraggedOverDriveId(driveId);
+    }
   };
 
   const onDragEnd = () => {
     const droppedId = dropState.activeDropTargetId;
+    const draggedId = draggedObject.nodeId;
     // valid drop
     if (droppedId) {
       // move draggedId to droppedId
       console.log(`Move ${draggedId} to ${droppedId}`);
-      // moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
-      // .then((props)=>{
-      //   //clear tool and browser selections
-      //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
-      //   selectedNodesArr.current = {}
-      // })
-      
+      moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
+      .then((props)=>{
+        //clear tool and browser selections
+        clearSelectionFunctions.current[props.selectedNodes.browserId]();
+        selectedNodesArr.current = {}
+      })
     } else {
 
     }
 
-    setDraggedId(null);
+    setDraggedObject({});
+    setDraggedOverDriveId(null);
     dropActions.handleDrop();
   };
 
   const DnDState = {
     DnDState: {
       activeDropTargetId: dropState.activeDropTargetId,
+      draggedObject,
+      draggedOverDriveId
     },
     DnDActions: {
       onDragStart,
@@ -184,7 +190,6 @@ function Tool(props){
 
     }
   };
-
 
   return (<>
 <AddNode type="Folder" />
@@ -664,7 +669,7 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
-          if (DnDState.draggedId == nodeId) {
+          if (DnDState.draggedObject.nodeId == nodeId) {
             appearance = "dragged";
           } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
@@ -693,7 +698,7 @@ function Browser(props){
   
           nodeJSX = <Draggable
             id={nodeId}
-            onDragStart={DnDActions.onDragStart}
+            onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
             onDrag={DnDActions.onDrag}
             onDragEnd={DnDActions.onDragEnd}
             ghostElement={renderDragGhost(nodeJSX)}
@@ -706,7 +711,7 @@ function Browser(props){
             registerDropTarget={DnDActions.registerDropTarget} 
             unregisterDropTarget={DnDActions.unregisterDropTarget}
             dropCallbacks={{
-              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId }),
+              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
               onDrop: () => {}
             }}
           >
