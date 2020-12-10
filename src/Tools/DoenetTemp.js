@@ -45,7 +45,7 @@ function Tool(props){
 
   const cache = useQueryCache();
   const { dropState, dropActions } = useContext(DropTargetsContext);
-  const [draggedObject, setDraggedObject] = useState({});
+  const [isDragging, setIsDragging] = useState(false);
   const [draggedOverDriveId, setDraggedOverDriveId] = useState(null);
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
@@ -137,7 +137,7 @@ function Tool(props){
   })
 
   const onDragStart = ({ nodeId, driveId }) => {
-    setDraggedObject({ nodeId, driveId });
+    setIsDragging(true);
     setDraggedOverDriveId(driveId);
   };
 
@@ -154,11 +154,9 @@ function Tool(props){
 
   const onDragEnd = () => {
     const droppedId = dropState.activeDropTargetId;
-    const draggedId = draggedObject.nodeId;
     // valid drop
     if (droppedId) {
-      // move draggedId to droppedId
-      console.log(`Move ${draggedId} to ${droppedId}`);
+      // move all selected nodes to droppedId
       moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
       .then((props)=>{
         //clear tool and browser selections
@@ -169,7 +167,7 @@ function Tool(props){
 
     }
 
-    setDraggedObject({});
+    setIsDragging(false);
     setDraggedOverDriveId(null);
     dropActions.handleDrop();
   };
@@ -177,7 +175,7 @@ function Tool(props){
   const DnDState = {
     DnDState: {
       activeDropTargetId: dropState.activeDropTargetId,
-      draggedObject,
+      isDragging,
       draggedOverDriveId
     },
     DnDActions: {
@@ -669,7 +667,7 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
-          if (DnDState.draggedObject.nodeId == nodeId) {
+          if (DnDState.isDragging && selectedNodes[nodeId]) {
             appearance = "dragged";
           } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
