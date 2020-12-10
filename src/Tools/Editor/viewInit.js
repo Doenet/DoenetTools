@@ -5,7 +5,7 @@ import {doenetml} from './lang-doenetml.js';
 
 import {getTagProps} from './parsing.js';
 
-export function getInitView(contentInit, tagCallback) {
+export function getInitView(contentInit, contentCallback, tagCallback) {
     let currentTag = StateField.define({
         //Sets initial value
         create() {return ""},
@@ -19,6 +19,7 @@ export function getInitView(contentInit, tagCallback) {
     
             let tag = getTagProps(tr.state.doc, tr.state.tree, position);
 
+            contentCallback(tr.state.doc);
             tagCallback(tag);
             return tr.docChanged ? tag : value;
         }

@@ -10,6 +10,8 @@ import SupportPanel from "../imports/Tool/SupportPanel";
 import MenuPanel from '../imports/Tool/MenuPanel';
 import HeaderMenuPanelButton from '../imports/Tool/HeaderMenuPanelButton';
 import Overlay from "../imports/Tool/Overlay";
+import DoenetViewer from './DoenetViewer';
+import ErrorBoundary from './ErrorBoundary';
 
 import Editor from './Editor/Editor.js';
 import InfoPanel from './Editor/InfoPanel.js';
@@ -56,12 +58,28 @@ const showHideOverNewOverlayOnClick = () =>{
   setShowHideNewOverLay(!showHideNewOverLay);
 }
 
-const content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
+const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 // const content = play;
 
 const [tag, setTag] = useState({});
-const [view, setView] = useState(getInitView(content, setTag));
-console.log("This is the current tag", tag);
+const [view, setView] = useState(getInitView(init_content, setContent, setTag));
+
+console.log(content);
+
+let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
+      <DoenetViewer 
+              key={"doenetviewer"} //each component has their own key, change the key will trick React to look for new component
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={content} 
+              mode={{
+              solutionType:false,
+              allowViewSolutionWithoutRoundTrip:false,
+              showHints:false,
+              showFeedback:false,
+              showCorrectness:false,
+          }}           
+          />
+          </ErrorBoundary>)
 
   return (
 
@@ -88,12 +106,7 @@ console.log("This is the current tag", tag);
       >
         <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
 
-        <h3> This is Main Panel</h3>
-        <p>click Switch button in header to see support panel</p>
-        <p>Define responsiveControls to see for standard components section which are responsive and collapses according the width available</p>
-
-        <h2>Header Menu Panels </h2>
-        <p>Click add and save to see header menu panels section </p>
+        <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
       </MainPanel>
 
       <SupportPanel
