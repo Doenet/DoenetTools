@@ -845,7 +845,7 @@ const LoadingNode =  React.memo(function Node(props){
 const DragGhost = ({ id, element, numItems }) => {
 
   const containerStyle = {
-
+    transform: "rotate(-5deg)"
   }
 
   const singleItemStyle = {
