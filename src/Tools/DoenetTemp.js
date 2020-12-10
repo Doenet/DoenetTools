@@ -56,6 +56,9 @@ function Tool(props){
     selectedNodesArr.current = selectedNodes;
   });
 
+  const [draggedId, setDraggedId] = useState(null);
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+
   const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
@@ -133,6 +136,55 @@ function Tool(props){
     }
   })
 
+  const onDragStart = ({ id }) => {
+    setDraggedId(id);
+  };
+
+  const onDrag = ({ clientX, clientY, translation, id }) => {
+    dropActions.handleDrag(clientX, clientY, id);
+  };
+
+  const onDragOverContainer = ({ id }) => {
+    // console.log("onDragOver", id);
+    // how to insert dummy object?
+  };
+
+  const onDragEnd = () => {
+    const droppedId = dropState.activeDropTargetId;
+    // valid drop
+    if (droppedId) {
+      // move draggedId to droppedId
+      console.log(`Move ${draggedId} to ${droppedId}`);
+      // moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+      // .then((props)=>{
+      //   //clear tool and browser selections
+      //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      //   selectedNodesArr.current = {}
+      // })
+      
+    } else {
+
+    }
+
+    setDraggedId(null);
+    dropActions.handleDrop();
+  };
+
+  const DnDState = {
+    DnDState: {
+      activeDropTargetId: dropState.activeDropTargetId,
+    },
+    DnDActions: {
+      onDragStart,
+      onDrag,
+      onDragEnd,
+      onDragOverContainer,
+      registerDropTarget: dropActions.registerDropTarget,
+      unregisterDropTarget: dropActions.unregisterDropTarget
+
+    }
+  };
+
 
   return (<>
 <AddNode type="Folder" />
@@ -189,12 +241,12 @@ function Tool(props){
 
   <div style={{display:"flex"}}> 
   <div>
-  <BrowserRouted drive="content" isNav={true} />
-  <BrowserRouted drive="course" isNav={true} />
+  <BrowserRouted drive="content" isNav={true} DnDState={DnDState}/>
+  <BrowserRouted drive="course" isNav={true} DnDState={DnDState}/>
   </div>
   <div>
-  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
-  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
   </div>
   </div>
   </>
@@ -330,8 +382,7 @@ function Browser(props){
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
   const [refreshNumber,setRefresh] = useState(0)
-  const [draggedId, setDraggedId] = useState(null);
-  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const { DnDState, DnDActions } = props.DnDState;
 
   const {
     data,
@@ -547,24 +598,6 @@ function Browser(props){
     }
   })
 
-  const onDragStart = ({ id }) => {
-    setDraggedId(id);
-  };
-
-  const onDrag = ({ clientX, clientY, translation, id }) => {
-    dropActions.handleDrag(clientX, clientY, id);
-  };
-
-  const onDragOverContainer = ({ id }) => {
-    // console.log("onDragOver", id);
-    // how to insert dummy object?
-  };
-
-  const onDragEnd = () => {
-    dropActions.handleDrop();
-    setDraggedId(null);
-  };
-
   if (browserId.current === ""){ browserId.current = nanoid();}
 
   useEffect(()=>{
@@ -631,14 +664,14 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
-          if (draggedId == nodeId) {
+          if (DnDState.draggedId == nodeId) {
             appearance = "dragged";
           } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
             appearance = "selected";
           } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
-          } else if (dropState.activeDropTargetId === nodeId) {
+          } else if (DnDState.activeDropTargetId === nodeId) {
             appearance = "dropperview";
           }
 
@@ -660,9 +693,9 @@ function Browser(props){
   
           nodeJSX = <Draggable
             id={nodeId}
-            onDragStart={onDragStart}
-            onDrag={onDrag}
-            onDragEnd={onDragEnd}
+            onDragStart={DnDActions.onDragStart}
+            onDrag={DnDActions.onDrag}
+            onDragEnd={DnDActions.onDragEnd}
             ghostElement={renderDragGhost(nodeJSX)}
           >
             { nodeJSX } 
@@ -670,9 +703,10 @@ function Browser(props){
   
           nodeJSX = <WithDropTarget
             id={nodeId}
-            dropProps={{dropState: dropState, dropActions: dropActions}}
+            registerDropTarget={DnDActions.registerDropTarget} 
+            unregisterDropTarget={DnDActions.unregisterDropTarget}
             dropCallbacks={{
-              onDragOver: () => onDragOverContainer({ id: nodeId }),
+              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId }),
               onDrop: () => {}
             }}
           >
@@ -810,63 +844,76 @@ const LoadingNode =  React.memo(function Node(props){
 
 const DragGhost = ({ id, element, numItems }) => {
 
+  const containerStyle = {
+
+  }
+
+  const singleItemStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
+    borderRadius: '4px',
+    animation: 'dragAnimation 2s',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    background: "#fff"
+  }
+
+  const multipleItemsNumCircleContainerStyle = {
+    position: 'absolute',
+    zIndex: "5",
+    top: "-10px",
+    right: "-15px",
+    borderRadius: '25px',
+    background: '#bc0101',
+    fontSize: '12px',
+    color: 'white',
+    width: '25px',
+    height: '25px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+
+  const multipleItemsRearStackStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
+    borderRadius: '4px',
+    padding: "0 5px 5px 0px",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    zIndex: "1",
+    background: "#fff"
+  }
+
+  const multipleItemsFrontStackStyle = {
+    borderRadius: '4px',
+    boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
+    border: '1px solid rgba(0, 0, 0, 0.70)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: "2"
+  }
+
+
   return (
-    <div id={id}>
+    <div id={id} style={containerStyle}>
     {
       numItems < 2 ? 
         <div
-          style={{
-            boxShadow: 'rgba(0, 0, 0, 0.20) 3px 3px 3px 3px',
-            borderRadius: '4px',
-            animation: 'dragAnimation 2s',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: "#fff"
-          }}>
+          style={singleItemStyle}>
           { element }
         </div>
       :
       <div style={{minWidth: "300px"}}>
         <div
-          style={{
-            position: 'absolute',
-            zIndex: "5",
-            top: "-10px",
-            right: "-15px",
-            borderRadius: '25px',
-            background: '#bc0101',
-            fontSize: '12px',
-            color: 'white',
-            width: '25px',
-            height: '25px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          style={multipleItemsNumCircleContainerStyle}>
           {numItems}
         </div>
         <div
-          style={{
-            boxShadow: 'rgba(0, 0, 0, 0.30) 4px 4px 2px 0px',
-            borderRadius: '4px',
-            padding: "0 5px 5px 0",
-            display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'flex-start',
-            zIndex: "1",
-            background: "#fff"
-          }}>
+          style={multipleItemsRearStackStyle}>
           <div
-            style={{
-              borderRadius: '4px',
-              boxShadow: 'rgba(0, 0, 0, 0.20) 3px 3px 2px 2px',
-              border: '1px solid rgba(0, 0, 0, 0.20)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: "2"
-            }}>
+            style={multipleItemsFrontStackStyle}>
             { element }
           </div>
         </div>
