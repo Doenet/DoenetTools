@@ -12,7 +12,7 @@ $userId = $jwtArray['userId'];
 
 $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
+$init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
 //If files table doesn't exist for user then create it 
 $sql = "SHOW TABLES LIKE 'item_$userId';";
@@ -42,20 +42,43 @@ if ($result->num_rows == 0){
   //TODO: Add demos to newly created table
 
 }
-
-
-
-
 $success = TRUE;
 $results_arr = array();
 
+if ($init == 'true'){
+  $sql="
+  SELECT 
+    i.itemId as itemId,
+    i.label as label,
+    i.parentId as parentId,
+    i.creationDate as creationDate,
+    i.itemType as itemType
+  FROM items_$userId AS i
+  WHERE driveId = '$driveId'
+  AND isDeleted = 0
+  ";
 
+  $result = $conn->query($sql); 
+  //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
+  while($row = $result->fetch_assoc()){ 
 
+  $item = array(
+    "id"=>$row['itemId'],
+    "label"=>$row['label'],
+    "parentId"=>$row['parentId'],
+    "creationDate"=>$row['creationDate'],
+    "type"=>$row['itemType']
+  );
+  array_push($results_arr,$item);
+  }
+}else{
 
-$results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
-$children_arr = array_keys($results_arr[$parentId]);
-foreach ($children_arr as &$childId){
-  $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
+  $children_arr = array_keys($results_arr[$parentId]);
+  foreach ($children_arr as &$childId){
+    $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  }
+
 }
 
 
@@ -80,7 +103,6 @@ function selectChildren($parentId,$userId,$driveId,$conn){
     i.label as label,
     i.parentId as parentId,
     i.creationDate as creationDate,
-    i.isDeleted as isDeleted,
     i.itemType as itemType
   FROM items_$userId AS i
   WHERE parentId = '$parentId'
@@ -95,6 +117,7 @@ function selectChildren($parentId,$userId,$driveId,$conn){
     "id"=>$row['itemId'],
     "label"=>$row['label'],
     "parentId"=>$parentId,
+    "creationDate"=>$row['creationDate'],
     "type"=>$row['itemType']
   );
   $return_arr[$row['itemId']] = $item;

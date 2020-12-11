@@ -286,7 +286,12 @@ function AddItem(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
-  if (!parentId){return {init:true}} //First Query returns no data
+  if (!parentId){
+    const { data } = await axios.get(
+      `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
+    );
+    return {init:true,data:data.results}
+  } //First Query returns no data
 
   const { data } = await axios.get(
     `/api/loadFolderContent.php?parentId=${parentId}&driveId=${driveId}`
@@ -337,7 +342,23 @@ function Browser(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
-          data[0] = {folderChildrenIds:{},nodeObjs:{}}
+          let folderChildrenIds = {};
+          let nodeObjs = {};
+          for (let row of data[0].data){
+            if (!folderChildrenIds[row.parentId]){folderChildrenIds[row.parentId] = {defaultOrder:[]}}
+            if (row.type === "Folder" && !folderChildrenIds[row.id]){folderChildrenIds[row.id] = {defaultOrder:[]}}
+            folderChildrenIds[row.parentId].defaultOrder.push(row.id);
+            nodeObjs[row.id] = {
+              id:row.id,
+              label:row.label,
+              parentId:row.parentId,
+              creationDate:row.creationDate,
+              type:row.type,
+            }
+          }
+          console.log(JSON.parse(JSON.stringify(folderChildrenIds)));
+
+          data[0] = {folderChildrenIds,nodeObjs}
         }else if (data[1]){
           let actionOrId = Object.keys(data[1])[0];
           if (actionOrId === "add"){
@@ -584,18 +605,24 @@ function Browser(props){
     if (childrenIdsArr === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
+      console.log(" 🐕 fetchMore",parentId)
       fetchMore(parentId);
-
     }else{
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
       for(let nodeId of childrenIdsArr){
         //If folder we need to know how many child nodes it has
         let grandChildrenIdsArr = data[0]?.folderChildrenIds?.[nodeId]?.defaultOrder;
+        let grandChildObjType = data[0]?.nodeObjs?.[nodeId]?.type;
         let numChildren = "?";
-        if (grandChildrenIdsArr === undefined){
-          //Need data
-          fetchMore(nodeId);
+        if (grandChildrenIdsArr === undefined ){
+          //Only need numChildren if it's a folder
+          if (grandChildObjType === "Folder"){
+            //Need data
+            console.log(" 🐕 fetchMore grandChild",nodeId)
+            fetchMore(nodeId);
+          }
+          
         }else{
           numChildren = grandChildrenIdsArr.length;
         }
