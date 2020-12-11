@@ -24,21 +24,31 @@ export default function DropTargetsProvider({ children }) {
   const getDropTargetFromCursor = useCallback(
     (x, y, ignoreId = null) => {
       const underCursor = document.elementsFromPoint(x, y);
-      return (
-        sortedDropTargetIds.find(
-          (id) => underCursor.includes(dropTargets[id]?.ref) && id !== ignoreId
-        ) || null
-      );
+
+      for (let dropTargetId of sortedDropTargetIds) {
+        if (dropTargetId === ignoreId) continue;
+        const refs = dropTargets[dropTargetId]?.refs;
+        for (let ref of refs) {
+          if (underCursor.includes(ref)) return dropTargetId;
+        } 
+      }
+      return null;
     },
     [sortedDropTargetIds, dropTargets]
   );
 
   const registerDropTarget = useCallback(({ id, ref, onDragOver, onDrop }) => {
-    const dropTargetObj = {
-      ref: ref,
-      onDragOver: onDragOver,
-      onDrop: onDrop
-    };
+    let dropTargetObj = dropTargets[id];    // dropTargets not updated!!
+    if (!dropTargetObj) {
+      dropTargetObj = {
+        refs: [],
+        onDragOver: onDragOver,
+        onDrop: onDrop
+      };
+    }
+    if (dropTargetObj.refs.length > 0) console.log("Here", id, dropTargetObj)
+    dropTargetObj.refs.push(ref);
+    
     setDropTargets((prev) => ({ ...prev, [id]: dropTargetObj }));
   }, []);
 
@@ -63,6 +73,7 @@ export default function DropTargetsProvider({ children }) {
   );
 
   const handleDrop = (selfId = null) => {
+    console.log("Here");
     setActiveDropTargetId(null);
   };
 

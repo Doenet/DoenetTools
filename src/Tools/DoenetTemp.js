@@ -624,13 +624,7 @@ function Browser(props){
 
   function renderDragGhost(element) {
     const dragGhostId = `drag-ghost-${props.driveId}`;
-    // const numItems = state.mode == "DRAGGING" ? state.draggedItemData.draggedItemIds.size : 0;
-    // const innerNode = state.mode == "DRAGGING" && state.draggedItemData.draggedNodeElement ?
-    //   state.draggedItemData.draggedNodeElement :
-    //   <div>Test</div>;    
-
-    const numItems = 4;
-    const innerNode = <div>Test</div>;    
+    const numItems = Object.keys(selectedNodes).length;
     
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
