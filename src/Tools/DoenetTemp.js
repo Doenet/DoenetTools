@@ -194,19 +194,21 @@ function Tool(props){
 
 
 
-const addItemMutation = ({label, driveId, parentId,type}) =>{
+const addItemMutation = async ({label, driveId, parentId,type}) =>{
+  console.log(">>>add item mutation")
   const itemId = nanoid();
 
-  const data = {driveId,parentId,itemId,label,type}
+  const pdata = {driveId,parentId,itemId,label,type}
     const payload = {
-      params: data
+      params: pdata
     }
 
-    axios.get("/api/addItem.php", payload)
-    .then((resp)=>{
-    })
+   const { data } = await axios.get("/api/addItem.php", payload);
+    // .then((resp)=>{
+    //   console.log(">>>resp",resp.data)
+    // })
 
-  return {driveId,parentId,itemId,label,type}
+  return {driveId,parentId,itemId,label,type,results:data.results}
 } 
 
 const deleteItemMutation = ({driveId, parentId, itemId}) =>{
@@ -229,8 +231,8 @@ function AddItem(props){
     const cache = useQueryCache();
     const [label,setLabel] = useState('')
     const [addItem] = useMutation(addItemMutation,{
-      onSuccess:(obj)=>{
-      cache.setQueryData(["nodes",obj.driveId],
+      onMutate:(obj)=>{
+        cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
       //Provide infinitequery with what we know of the new addition
       old.push({
@@ -246,9 +248,26 @@ function AddItem(props){
       })
       return old
       })
-     
+      },
+      onSuccess:(obj)=>{
+        // console.log(">>>SUCCESS!!!",obj)
       
-    }});
+    },
+    onError:(errMsg,obj)=>{
+      console.warn(errMsg);
+      cache.setQueryData(["nodes",obj.driveId],
+      (old)=>{
+      old.push({
+          delete:{
+            driveId:obj.driveId,
+            itemId:obj.itemId,
+            parentId:obj.parentId
+          }
+      })
+      return old
+      })
+    }
+  });
 
     let routePathDriveId = "";
     let routePathFolderId = "";
@@ -356,7 +375,6 @@ function Browser(props){
               type:row.type,
             }
           }
-          console.log(JSON.parse(JSON.stringify(folderChildrenIds)));
 
           data[0] = {folderChildrenIds,nodeObjs}
         }else if (data[1]){
@@ -448,6 +466,7 @@ function Browser(props){
 
     const [deleteItem] = useMutation(deleteItemMutation,{
       onSuccess:(obj)=>{
+        console.log(">>> delete obj",obj)
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
         old.push({delete:obj}); //Flag information about delete
