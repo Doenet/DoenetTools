@@ -12,6 +12,7 @@ export default function DropTargetsProvider({ children }) {
   const [dropTargets, setDropTargets] = useState({});
   const [activeDropTargetId, setActiveDropTargetId] = useState(null);
   const activeRefId = useRef(null);
+  const dropTargetsCacheRef = useRef({});
 
   const sortedDropTargetIds = useMemo(
     () =>
@@ -38,7 +39,7 @@ export default function DropTargetsProvider({ children }) {
   );
 
   const registerDropTarget = useCallback(({ id, ref, onDragOver, onDrop }) => {
-    let dropTargetObj = dropTargets[id];    // dropTargets not updated!!
+    let dropTargetObj = dropTargetsCacheRef.current[id];
     if (!dropTargetObj) {
       dropTargetObj = {
         refs: [],
@@ -46,13 +47,15 @@ export default function DropTargetsProvider({ children }) {
         onDrop: onDrop
       };
     }
-    if (dropTargetObj.refs.length > 0) console.log("Here", id, dropTargetObj)
     dropTargetObj.refs.push(ref);
+    if (dropTargetObj.refs.length > 0) console.log("Here", id, dropTargetObj)
     
+    dropTargetsCacheRef.current[id] = dropTargetObj;
     setDropTargets((prev) => ({ ...prev, [id]: dropTargetObj }));
   }, []);
 
   const unregisterDropTarget = useCallback((id) => {
+    delete dropTargetsCacheRef.current[id];
     setDropTargets((prev) => {
       const { [id]: _, ...without } = prev;
       return without;
@@ -73,7 +76,6 @@ export default function DropTargetsProvider({ children }) {
   );
 
   const handleDrop = (selfId = null) => {
-    console.log("Here");
     setActiveDropTargetId(null);
   };
 
