@@ -194,9 +194,7 @@ function Tool(props){
 
 
 
-const addItemMutation = async ({label, driveId, parentId,type}) =>{
-  console.log(">>>add item mutation")
-  const itemId = nanoid();
+const addItemMutation = async ({itemId,label, driveId, parentId,type}) =>{
 
   const pdata = {driveId,parentId,itemId,label,type}
     const payload = {
@@ -204,25 +202,20 @@ const addItemMutation = async ({label, driveId, parentId,type}) =>{
     }
 
    const { data } = await axios.get("/api/addItem.php", payload);
-    // .then((resp)=>{
-    //   console.log(">>>resp",resp.data)
-    // })
 
-  return {driveId,parentId,itemId,label,type,results:data.results}
+  return {driveId,parentId,itemId,label,type,results:data?.results}
 } 
 
-const deleteItemMutation = ({driveId, parentId, itemId}) =>{
+const deleteItemMutation = async ({driveId, parentId, itemId}) =>{
 
-  const data = {driveId,parentId,itemId}
+  const pdata = {driveId,parentId,itemId}
     const payload = {
-      params: data
+      params: pdata
     }
 
-    axios.get("/api/deleteItem.php", payload)
-    .then((resp)=>{
-    })
+  const { data } = await axios.get("/api/deleteItem.php", payload)
 
-  return {driveId,parentId,itemId}
+  return {driveId,parentId,itemId,results:data?.results}
 } 
 
 function AddItem(props){
@@ -232,29 +225,38 @@ function AddItem(props){
     const [label,setLabel] = useState('')
     const [addItem] = useMutation(addItemMutation,{
       onMutate:(obj)=>{
+        //NOTE: this will not be the same as the database time
+        const dt = new Date();
+        const creationDate = `${
+          dt.getFullYear().toString().padStart(2, '0')}-${
+            (dt.getMonth()+1).toString().padStart(2, '0')}-${
+            dt.getDate().toString().padStart(2, '0')} ${
+          dt.getHours().toString().padStart(2, '0')}:${
+          dt.getMinutes().toString().padStart(2, '0')}:${
+          dt.getSeconds().toString().padStart(2, '0')}`
+
         cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
       //Provide infinitequery with what we know of the new addition
       old.push({
           add:{
             driveId:obj.driveId,
-            nodeObj:{
             id:obj.itemId,
-            label,
+            label:obj.label,
             parentId:obj.parentId,
-            type:obj.type
-            }
+            type:obj.type,
+            creationDate:creationDate,
           }
       })
       return old
       })
       },
       onSuccess:(obj)=>{
-        // console.log(">>>SUCCESS!!!",obj)
+        // console.log("onSuccess add obj",obj)
       
     },
     onError:(errMsg,obj)=>{
-      console.warn(errMsg);
+        console.warn(errMsg);
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
       old.push({
@@ -291,7 +293,8 @@ function AddItem(props){
         data-doenet-browser-stayselected = {true}
         disabled={routePathFolderId === ""} 
       onClick={()=>{
-        addItem({driveId:routePathDriveId,parentId:routePathFolderId,label,type:props.type})
+        const itemId = nanoid();
+        addItem({itemId,driveId:routePathDriveId,parentId:routePathFolderId,label,type:props.type})
         setLabel('');  //reset input field
       }}>Add {props.type}</button></span>)
     }
@@ -380,13 +383,19 @@ function Browser(props){
         }else if (data[1]){
           let actionOrId = Object.keys(data[1])[0];
           if (actionOrId === "add"){
-            let parentId = data[1].add.nodeObj.parentId;
-            let nodeId = data[1].add.nodeObj.id;
+            let parentId = data[1].add.parentId;
+            let nodeId = data[1].add.id;
             if (data[0].folderChildrenIds[parentId]){
               //Append children and don't add if we haven't loaded the other items
-              //TODO: test if this exists first????
+              //TODO: handle if data[0].folderChildrenIds[parentId].defaultOrder exists first
               data[0].folderChildrenIds[parentId].defaultOrder.push(nodeId);
-              data[0].nodeObjs[nodeId] = data[1].add.nodeObj;
+              data[0].nodeObjs[nodeId] = {
+                id:data[1].add.id,
+                parentId:data[1].add.parentId,
+                label:data[1].add.label,
+                creationDate:data[1].add.creationDate,
+                type:data[1].add.type,
+              }
             }
             data.pop();   
           }else if (actionOrId === "addArr"){
@@ -465,14 +474,40 @@ function Browser(props){
     }})
 
     const [deleteItem] = useMutation(deleteItemMutation,{
+      onMutate:(obj)=>{
+        cache.setQueryData(["nodes",obj.driveId],
+        (old)=>{
+          old.push({delete:{
+            parentId:obj.parentId,
+            itemId:obj.itemId
+          }}); //Flag information about delete
+          return old
+        })
+      },
       onSuccess:(obj)=>{
-        console.log(">>> delete obj",obj)
+      
+    },onError:(errMsg,obj)=>{
+      
+
+      console.warn(errMsg);
       cache.setQueryData(["nodes",obj.driveId],
       (old)=>{
-        old.push({delete:obj}); //Flag information about delete
-        return old
+      console.log(JSON.parse(JSON.stringify(old)));
+
+        let creationDate = old[0].nodeObjs[obj.itemId].creationDate;
+      //Provide infinitequery with what we know of the new addition
+      old.push({
+        add:{
+          driveId:obj.driveId,
+          id:obj.itemId,
+          label:obj.label,
+          parentId:obj.parentId,
+          type:obj.type,
+          creationDate:creationDate,
+        }
       })
-      
+      return old
+      })
     }});
 
  
@@ -758,7 +793,7 @@ const LoadingNode =  React.memo(function Node(props){
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
-    props.deleteItemHandler({driveId:props.driveId,parentId:props.parentId,itemId:props.nodeId})
+    props.deleteItemHandler({driveId:props.driveId,parentId:props.parentId,label:props.label,itemId:props.nodeId,type:props.type})
   }}
   onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
