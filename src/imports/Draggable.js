@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 
 const POSITION = { x: 0, y: 0 };
 
-const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=null }) => {
+const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd, ghostElement=null }) => {
   const [state, setState] = useState({
     isDragging: false,
     origin: POSITION,
@@ -139,6 +139,7 @@ const Draggable = ({ children, id, onDragStart, onDrag, onDragEnd, ghostElement=
   return (
     <div
       key={`draggable${id}`}
+      className={className}
       style={styles}
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}

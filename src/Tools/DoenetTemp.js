@@ -1,4 +1,5 @@
 import React, {useState, useCallback, useEffect, useRef, useContext} from 'react';
+import './temp.css';
 import {
   useQuery,
   useQueryCache,
@@ -661,8 +662,10 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
+          let draggableClassName = "hvr-shutter-in-horizontal";
           if (DnDState.isDragging && selectedNodes[nodeId]) {
             appearance = "dragged";
+            draggableClassName = "";
           } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
             appearance = "selected";
@@ -692,6 +695,7 @@ function Browser(props){
           if (!props.isNav) {
             nodeJSX = <Draggable
               id={nodeId}
+              className={draggableClassName}
               onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
               onDrag={DnDActions.onDrag}
               onDragEnd={DnDActions.onDragEnd}
