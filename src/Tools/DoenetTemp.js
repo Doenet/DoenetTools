@@ -687,17 +687,20 @@ function Browser(props){
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
             level={level}/>;
-  
-          nodeJSX = <Draggable
-            id={nodeId}
-            onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
-            onDrag={DnDActions.onDrag}
-            onDragEnd={DnDActions.onDragEnd}
-            ghostElement={renderDragGhost(nodeJSX)}
-          >
-            { nodeJSX } 
-          </Draggable>
-  
+          
+          // navigation items not draggable
+          if (!props.isNav) {
+            nodeJSX = <Draggable
+              id={nodeId}
+              onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
+              onDrag={DnDActions.onDrag}
+              onDragEnd={DnDActions.onDragEnd}
+              ghostElement={renderDragGhost(nodeJSX)}
+            >
+             { nodeJSX } 
+            </Draggable>
+          }
+
           nodeJSX = <WithDropTarget
             id={nodeId}
             registerDropTarget={DnDActions.registerDropTarget} 
