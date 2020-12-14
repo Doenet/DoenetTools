@@ -47,55 +47,33 @@ function Tool(props){
     selectedNodesArr.current = selectedNodes;
   });
 
-  const mutationMoveNodes = ({selectedNodes,destinationObj}) => {
+  const mutationMoveNodes = async ({selectedNodes,destinationObj}) => {
+    let rdata = {};
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
-       axios.post("/api/moveItems.php", payload)
-       .then((resp)=>{
-         console.log(">>>MOVE resp")
-         console.log(resp.data)
-       })
+       let {data} = await axios.post("/api/moveItems.php", payload)
+       rdata = data?.response;
       }
-     return {selectedNodes, destinationObj}
+     return {selectedNodes, destinationObj, response:rdata}
    } 
 
   const [moveNodes] = useMutation(mutationMoveNodes, {
-    onSuccess:(params)=>{
+    onMutate:(params)=>{
+      console.log(JSON.parse(JSON.stringify(params)));
       if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
         const sourceDriveId = params.selectedNodes.driveId;
         const destinationDriveId = params.destinationObj.driveId;
         const destinationParentId = params.destinationObj.parentId;
-        //Convert to new types
-        //TODO: convert data from content to assignments 
-        //and assignments to content
-        console.log(`>>>move from drive ${sourceDriveId} to ${destinationDriveId}`)
-        console.log(">>>selectedNodes",params.selectedNodes)
-        console.log(">>>selectedNodes selectedArr",params.selectedNodes.selectedArr)
-        if (sourceDriveId === destinationDriveId){
-          console.log(">>>DRIVES MATCH")
-          //move nodes in a drive
-          cache.setQueryData(["nodes",sourceDriveId],
-        (old)=>{
-        old.push({
-            move:{
-              destinationParentId,
-              nodeIds:params.selectedNodes.selectedArr,
-            }
-        })
-        return old
-        })
-        }else{
-          //move nodes to a new drive
-          console.log(">>>DRIVES DONT MATCH")
-  
+        //TODO: convert data when it moves from one drive type to another (i.e. content <-> assignment)
+
           //copy node information
           let sourceData = cache.getQueryData(["nodes",sourceDriveId]);
-          let selectedFullArr = [];
+          let fullInfoAddArr = [];
           
           for (let nodeObj of params.selectedNodes.selectedArr){
             const nodeId = nodeObj.nodeId;
             const nodeFullObj = sourceData[0].nodeObjs[nodeId];
-            selectedFullArr.push({...nodeFullObj})
+            fullInfoAddArr.push({...nodeFullObj,destinationParentId})
           }
   
           //delete from source drive
@@ -107,19 +85,64 @@ function Tool(props){
         return old
         })
   
+          //and add to desination drive
+          cache.setQueryData(["nodes",destinationDriveId],
+        (old)=>{
+        old.push({ addArr:fullInfoAddArr })
+        return old
+        })
+      }
+    },
+    onSuccess:(params)=>{
+    //      
+    },
+    onError:(errObj,params)=>{
+      if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
+        const destinationDriveId = params.selectedNodes.driveId;
+        const sourceDriveId = params.destinationObj.driveId;
+        //TODO: convert data when it moves from one drive type to another (i.e. content <-> assignment)
+
+          //copy node information
+          let sourceData = cache.getQueryData(["nodes",sourceDriveId]);
+          let fullInfoAddArr = [];
+          
+          for (let nodeObj of params.selectedNodes.selectedArr){
+            const nodeId = nodeObj.nodeId;
+            const nodeFullObj = sourceData[0].nodeObjs[nodeId];
+
+            let destinationParentId;
+            for (let originalObj of params.selectedNodes.selectedArr){
+              if (originalObj.nodeId === nodeId){
+                destinationParentId = originalObj.parentId; //put it back
+                break;
+              }
+            }
+            fullInfoAddArr.push({...nodeFullObj,destinationParentId})
+          }
+
+          let deleteArr = [];
+          for (let originalObj of params.selectedNodes.selectedArr){
+            deleteArr.push({originalObj,parentId:params.destinationObj.parentId})
+          }
+          //delete from source drive
+        cache.setQueryData(["nodes",sourceDriveId],
+        (old)=>{
+        old.push({
+            deleteArr
+        })
+        return old
+        })
+  
+        // console.log(">>>fullInfoAddArr")
+        // console.log(JSON.parse(JSON.stringify(fullInfoAddArr)));
+        
   
           //and add to desination drive
           cache.setQueryData(["nodes",destinationDriveId],
         (old)=>{
-        old.push({
-            addArr:{
-              destinationParentId,
-              nodeArr:selectedFullArr
-            }
-        })
+        old.push({ addArr:fullInfoAddArr })
         return old
         })
-        }
       }
     }
   })
@@ -399,8 +422,10 @@ function Browser(props){
             }
             data.pop();   
           }else if (actionOrId === "addArr"){
-            let dParentId = data[1].addArr.destinationParentId;
-            for (let nodeObj of data[1].addArr.nodeArr){
+            
+            for (let nodeObj of data[1].addArr){
+              let dParentId = nodeObj.destinationParentId;
+              delete nodeObj.destinationParentId;
               let nodeId = nodeObj.id;
               let destArr = data[0].folderChildrenIds?.[dParentId]?.defaultOrder
               if (destArr){
@@ -409,7 +434,7 @@ function Browser(props){
               nodeObj.parentId = dParentId;
               data[0].nodeObjs[nodeId] = nodeObj;
             }
-              data.pop(); 
+              data.splice(1,1); 
 
           }else if (actionOrId === "delete"){
             let parentId = data[1].delete.parentId;
@@ -419,6 +444,7 @@ function Browser(props){
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
             data.pop();    
           }else if (actionOrId === "deleteArr"){
+            
             for (let nodeInfo of data[1].deleteArr){
               const nodeId = nodeInfo.nodeId;
               const parentId = nodeInfo.parentId;
@@ -426,7 +452,7 @@ function Browser(props){
               let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
               childrenIds.splice(childrenIds.indexOf(nodeId),1);
             }
-            data.pop();    
+            data.splice(1,1); 
           }else if (actionOrId === "move"){
             let dParentId = data[1].move.destinationParentId;
             for (let nodeObj of data[1].move.nodeIds){
