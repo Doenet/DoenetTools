@@ -1,4 +1,5 @@
-import React, {useState, useCallback, useEffect, useRef, useMemo} from 'react';
+import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
+import './temp.css';
 import {
   useQuery,
   useQueryCache,
@@ -18,16 +19,25 @@ import {
   Route,
   useHistory
 } from "react-router-dom";
+import {
+  DropTargetsProvider,
+  DropTargetsContext,
+  WithDropTarget  
+} from '../imports/DropTarget';
+import Draggable from '../imports/Draggable';
+
 const queryCache = new QueryCache();
 
 export default function app() {
   
 
 return <>
-<ReactQueryCacheProvider queryCache={queryCache}>
-  <Tool />
-  <ReactQueryDevtools />
-</ReactQueryCacheProvider>
+  <DropTargetsProvider>
+    <ReactQueryCacheProvider queryCache={queryCache}>
+      <Tool />
+      <ReactQueryDevtools />
+    </ReactQueryCacheProvider>
+  </DropTargetsProvider>
 </>
 };
 
@@ -35,6 +45,9 @@ return <>
 function Tool(props){
 
   const cache = useQueryCache();
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedOverDriveId, setDraggedOverDriveId] = useState(null);
 
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
   let clearSelectionFunctions = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
@@ -147,6 +160,58 @@ function Tool(props){
     }
   })
 
+  const onDragStart = ({ nodeId, driveId }) => {
+    setIsDragging(true);
+    setDraggedOverDriveId(driveId);
+  };
+
+  const onDrag = ({ clientX, clientY, translation, id }) => {
+    dropActions.handleDrag(clientX, clientY, id);
+  };
+
+  const onDragOverContainer = ({ id, driveId }) => {
+    // update driveId if changed
+    if (draggedOverDriveId !== driveId) {
+      setDraggedOverDriveId(driveId);
+    }
+  };
+
+  const onDragEnd = () => {
+    const droppedId = dropState.activeDropTargetId;
+    // valid drop
+    if (droppedId) {
+      // move all selected nodes to droppedId
+      moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
+      .then((props)=>{
+        //clear tool and browser selections
+        clearSelectionFunctions.current[props.selectedNodes.browserId]();
+        selectedNodesArr.current = {}
+      })
+    } else {
+
+    }
+
+    setIsDragging(false);
+    setDraggedOverDriveId(null);
+    dropActions.handleDrop();
+  };
+
+  const DnDState = {
+    DnDState: {
+      activeDropTargetId: dropState.activeDropTargetId,
+      isDragging,
+      draggedOverDriveId
+    },
+    DnDActions: {
+      onDragStart,
+      onDrag,
+      onDragEnd,
+      onDragOverContainer,
+      registerDropTarget: dropActions.registerDropTarget,
+      unregisterDropTarget: dropActions.unregisterDropTarget
+
+    }
+  };
 
   return (<>
  <AddItem type="Folder" />
@@ -203,12 +268,12 @@ function Tool(props){
 
   <div style={{display:"flex"}}> 
   <div>
-  <BrowserRouted drive="content" isNav={true} />
-  <BrowserRouted drive="course" isNav={true} />
+  <BrowserRouted drive="content" isNav={true} DnDState={DnDState}/>
+  <BrowserRouted drive="course" isNav={true} DnDState={DnDState}/>
   </div>
   <div>
-  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
-  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
   </div>
   </div>
   </>
@@ -377,6 +442,7 @@ function Browser(props){
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
   const [refreshNumber,setRefresh] = useState(0)
+  const { DnDState, DnDActions } = props.DnDState;
 
   const {
     data,
@@ -676,6 +742,16 @@ function Browser(props){
 
   // if (isFetching){ return <div>Loading...</div>}
 
+  function renderDragGhost(element) {
+    const dragGhostId = `drag-ghost-${props.driveId}`;
+    const numItems = Object.keys(selectedNodes).length;
+    
+    return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
+  }
+
+  function deleteFolderHandler(nodeObj){
+    deleteFolder(nodeObj);
+  }
   
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
@@ -712,15 +788,20 @@ function Browser(props){
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
-          if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
+          let draggableClassName = "hvr-shutter-in-horizontal";
+          if (DnDState.isDragging && selectedNodes[nodeId]) {
+            appearance = "dragged";
+            draggableClassName = "";
+          } else if (props.isNav && pathFolderId === nodeId && pathDriveId === props.drive){
             //Only select the current path folder if we are a navigation browser
             appearance = "selected";
-          }else if (selectedNodes[nodeId]){ 
+          } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
+          } else if (DnDState.activeDropTargetId === nodeId) {
+            appearance = "dropperview";
           }
-            
-       
-          nodesJSX.push(<Node 
+
+          let nodeJSX = <Node 
             key={`node${nodeId}`} 
             label={nodeObj.label}
             browserId={browserId.current}
@@ -736,7 +817,36 @@ function Browser(props){
             deleteItemHandler={deleteItemHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
-            />)
+            level={level}/>;
+          
+          // navigation items not draggable
+          if (!props.isNav) {
+            nodeJSX = <Draggable
+              id={nodeId}
+              className={draggableClassName}
+              onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
+              onDrag={DnDActions.onDrag}
+              onDragEnd={DnDActions.onDragEnd}
+              ghostElement={renderDragGhost(nodeJSX)}
+            >
+             { nodeJSX } 
+            </Draggable>
+          }
+
+          nodeJSX = <WithDropTarget
+            id={nodeId}
+            registerDropTarget={DnDActions.registerDropTarget} 
+            unregisterDropTarget={DnDActions.unregisterDropTarget}
+            dropCallbacks={{
+              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
+              onDrop: () => {}
+            }}
+          >
+            { nodeJSX } 
+          </WithDropTarget>
+  
+          nodesJSX.push(nodeJSX);
+
           if (isOpen){
             buildNodes({driveId,parentId:nodeId,sortingOrder,nodesJSX,nodeIdArray,level:level+1})
           }
@@ -902,3 +1012,85 @@ const LoadingNode =  React.memo(function Node(props){
   
 // }
 })
+
+const DragGhost = ({ id, element, numItems }) => {
+
+  const containerStyle = {
+    transform: "rotate(-5deg)",
+    zIndex: "10"
+  }
+
+  const singleItemStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
+    borderRadius: '4px',
+    animation: 'dragAnimation 2s',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    background: "#fff"
+  }
+
+  const multipleItemsNumCircleContainerStyle = {
+    position: 'absolute',
+    zIndex: "5",
+    top: "-10px",
+    right: "-15px",
+    borderRadius: '25px',
+    background: '#bc0101',
+    fontSize: '12px',
+    color: 'white',
+    width: '25px',
+    height: '25px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+
+  const multipleItemsRearStackStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
+    borderRadius: '4px',
+    padding: "0 5px 5px 0px",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    zIndex: "1",
+    background: "#fff"
+  }
+
+  const multipleItemsFrontStackStyle = {
+    borderRadius: '4px',
+    boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
+    border: '1px solid rgba(0, 0, 0, 0.70)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: "2"
+  }
+
+
+  return (
+    <div id={id} style={containerStyle}>
+    {
+      numItems < 2 ? 
+        <div
+          style={singleItemStyle}>
+          { element }
+        </div>
+      :
+      <div style={{minWidth: "300px"}}>
+        <div
+          style={multipleItemsNumCircleContainerStyle}>
+          {numItems}
+        </div>
+        <div
+          style={multipleItemsRearStackStyle}>
+          <div
+            style={multipleItemsFrontStackStyle}>
+            { element }
+          </div>
+        </div>
+      </div>
+    }      
+    </div>
+  )
+}
