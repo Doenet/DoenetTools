@@ -10,48 +10,28 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$folderId = mysqli_real_escape_string($conn,$_REQUEST["folderId"]);
+$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
+$itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
-$isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
+$type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
 $success = TRUE;
 $results_arr = array();
 //If not given parentId then use the user's drive
 if ($parentId == ""){
-  // $sql="
-  // SELECT
-  //  driveId 
-  // FROM user
-  // WHERE userId = '$userId'
-  // ";
-  
-  // $result = $conn->query($sql); 
-  // $row = $result->fetch_assoc();
   $parentId = "content";
-  $isRepo = FALSE;
-}
-
-if ($isRepo){
-//Is the user is a part of the group or is the repo public?
-//TODO: Set $success = FALSE if user doesn't have access
 }
 
 
+$sql="
+INSERT INTO items_$userId 
+(driveId,parentId,itemId,label,creationDate,itemType)
+VALUES
+('$driveId','$parentId','$itemId','$label',NOW(),'$type')
+";
+$result = $conn->query($sql); 
 
-if ($success){
-  $sql="
-  INSERT INTO folder 
-  (driveId,folderId,parentId,label,userId,creationDate,isRepo)
-  VALUES
-  ('$driveId','$folderId','$parentId','$label','$userId',NOW(),0)
-  ";
-  $result = $conn->query($sql); 
-
-}
-
-// var_dump($results_arr);
 
 $response_arr = array(
   "success"=>$success

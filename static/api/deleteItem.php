@@ -12,33 +12,20 @@ $userId = $jwtArray['userId'];
 
 $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$folderId = mysqli_real_escape_string($conn,$_REQUEST["folderId"]);
-// $isRepo = mysqli_real_escape_string($conn,$_REQUEST["isRepo"]);
+$itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
 $success = TRUE;
 $results_arr = array();
 
+$sql="
+UPDATE items_$userId 
+SET isDeleted='1'
+WHERE driveId = '$driveId'
+AND itemId = '$itemId'
+AND parentId = '$parentId'
+";
+$result = $conn->query($sql); 
 
-if ($success){
-  // $sql="
-  // DELETE FROM folder 
-  // WHERE driveId = '$driveId'
-  // AND folderId = '$folderId'
-  // AND parentId = '$parentId'
-  // ";
-    $sql="
-  UPDATE folder 
-  SET isDeleted='1'
-  WHERE driveId = '$driveId'
-  AND folderId = '$folderId'
-  AND parentId = '$parentId'
-  ";
-  // echo $sql;
-  $result = $conn->query($sql); 
-
-}
-
-// var_dump($results_arr);
 
 $response_arr = array(
   "success"=>$success
