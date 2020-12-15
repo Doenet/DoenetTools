@@ -788,17 +788,19 @@ function BrowserChild(props){
             </Draggable>
           }
 
-          nodeJSX = <WithDropTarget
-            id={nodeId}
-            registerDropTarget={DnDActions.registerDropTarget} 
-            unregisterDropTarget={DnDActions.unregisterDropTarget}
-            dropCallbacks={{
-              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
-              onDrop: () => {}
-            }}
-          >
-            { nodeJSX } 
-          </WithDropTarget>
+          if (nodeObj?.type === "Folder") {
+            nodeJSX = <WithDropTarget
+              id={nodeId}
+              registerDropTarget={DnDActions.registerDropTarget} 
+              unregisterDropTarget={DnDActions.unregisterDropTarget}
+              dropCallbacks={{
+                onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
+                onDrop: () => {}
+              }}
+            >
+              { nodeJSX } 
+            </WithDropTarget>
+          }
   
           nodesJSX.push(nodeJSX);
 
