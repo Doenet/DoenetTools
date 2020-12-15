@@ -1,18 +1,16 @@
 import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
 import './temp.css';
 import {
-  useQuery,
   useQueryCache,
   QueryCache,
   ReactQueryCacheProvider,
   useMutation,
   useInfiniteQuery,
 } from 'react-query'
-import axios from "axios";
-import './util.css';
-import nanoid from 'nanoid';
-// import { useHistory } from "react-router-dom";
 import { ReactQueryDevtools } from 'react-query-devtools'
+import axios from "axios";
+import '../../util.css';
+import nanoid from 'nanoid';
 import {
   HashRouter as Router,
   Switch,
@@ -23,8 +21,8 @@ import {
   DropTargetsProvider,
   DropTargetsContext,
   WithDropTarget  
-} from '../imports/DropTarget';
-import Draggable from '../imports/Draggable';
+} from '../DropTarget';
+import Draggable from '../../Draggable';
 
 const queryCache = new QueryCache();
 
@@ -213,23 +211,67 @@ function Tool(props){
     }
   };
 
-  function NavigationByType(props){
-
-    return <div>{props.type}</div>
-  }
-
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
+<div>
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+  }} >Move to content folder 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+  }} >Move to content folder 2</button>
+</div>
+<div>
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+  }} >Move to course Header 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+
+  }} >Move to course Header 2</button>
+</div>
+  
 
   <div style={{display:"flex"}}> 
   <div>
-  <Browser drive="content" isNav={true} DnDState={DnDState}/>
-  <Browser drive="course" isNav={true} DnDState={DnDState}/>
+  <BrowserRouted drive="content" isNav={true} DnDState={DnDState}/>
+  <BrowserRouted drive="course" isNav={true} DnDState={DnDState}/>
   </div>
   <div>
-  <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
-  <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
   </div>
   </div>
   </>
@@ -366,13 +408,13 @@ const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
   return data.results;
 }
 
-function Browser(props){
+function BrowserRouted(props){
   return <Router><Switch>
-           <Route path="/" render={(routeprops)=><BrowserChild route={{...routeprops}} {...props} />}></Route>
+           <Route path="/" render={(routeprops)=><Browser route={{...routeprops}} {...props} />}></Route>
          </Switch></Router>
  }
 
-function BrowserChild(props){
+function Browser(props){
   console.log(`=== BROWSER='${props.drive}' isNav='${props.isNav}'`)
   let pathFolderId = props.drive; //default 
   let pathDriveId = props.drive; //default
@@ -394,9 +436,10 @@ function BrowserChild(props){
   }
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
-  const [driveIsOpen,setDriveIsOpen] = useState(props.driveIsOpen?props.driveIsOpen:true); //default to open
+  const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
+  const [refreshNumber,setRefresh] = useState(0)
   const { DnDState, DnDActions } = props.DnDState;
 
   const {
@@ -814,35 +857,20 @@ function BrowserChild(props){
 
   let nodes = <></>
   let nodeIdArray = [];
-  if (data && driveIsOpen){
+  if (data){
     [nodes,nodeIdArray] = buildNodes({driveId:props.driveId,parentId:rootFolderId,sortingOrder});
     nodeIdRefArray.current = nodeIdArray;
   }
   
-  let buttonText = "Close"
-  if (!driveIsOpen){
-    buttonText = "Open"
-    nodes = null;
-  }
-  let driveToggleDiv = null;
-  if (props.isNav){
-    driveToggleDiv = <div style={{
-      width: "300px",
-      padding: "4px",
-      // border: "1px solid black",
-      backgroundColor: "white",
-      margin: "2px"
-    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> Drive label here</div></div>
-  }
+
   return <>
-  <div style={{marginTop:"1em",marginBottom:"1em"}}>
-  {/* <h3>{props.drive} {props.isNav?"Nav":null}</h3> */}
-  {driveToggleDiv}     
-  {nodes}
-  
+  <div>
+  <h3>{props.drive} {props.isNav?"Nav":null}</h3>
   </div>
+  {nodes}
   </>
 }
+
 
 const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
