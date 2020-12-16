@@ -449,6 +449,93 @@ LOCK TABLES `course_section_instructor` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `drive_ZLHh5s8BWM2azTVFhazI2`
+--
+
+DROP TABLE IF EXISTS `drive_ZLHh5s8BWM2azTVFhazI2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `drive_ZLHh5s8BWM2azTVFhazI2` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `creationDate` timestamp NULL DEFAULT NULL,
+  `isDeleted` int(1) NOT NULL DEFAULT '0',
+  `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `folderId` (`itemId`)
+) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `drive_ZLHh5s8BWM2azTVFhazI2`
+--
+
+LOCK TABLES `drive_ZLHh5s8BWM2azTVFhazI2` WRITE;
+/*!40000 ALTER TABLE `drive_ZLHh5s8BWM2azTVFhazI2` DISABLE KEYS */;
+INSERT INTO `drive_ZLHh5s8BWM2azTVFhazI2` VALUES (267,'fa1','ZLHh5s8BWM2azTVFhazI2','Folder a1','2020-12-16 01:07:21',0,'Folder'),(279,'pOidydwRPy2c2Gf8-Bx0I','fa1','URL a1','2020-12-16 21:04:44',0,'Url');
+/*!40000 ALTER TABLE `drive_ZLHh5s8BWM2azTVFhazI2` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `drive_ZLHh5s8BWM2azTVFhazIH`
+--
+
+DROP TABLE IF EXISTS `drive_ZLHh5s8BWM2azTVFhazIH`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `drive_ZLHh5s8BWM2azTVFhazIH` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `creationDate` timestamp NULL DEFAULT NULL,
+  `isDeleted` int(1) NOT NULL DEFAULT '0',
+  `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `folderId` (`itemId`)
+) ENGINE=InnoDB AUTO_INCREMENT=290 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `drive_ZLHh5s8BWM2azTVFhazIH`
+--
+
+LOCK TABLES `drive_ZLHh5s8BWM2azTVFhazIH` WRITE;
+/*!40000 ALTER TABLE `drive_ZLHh5s8BWM2azTVFhazIH` DISABLE KEYS */;
+INSERT INTO `drive_ZLHh5s8BWM2azTVFhazIH` VALUES (267,'f1','ZLHh5s8BWM2azTVFhazIH','Folder 1','2020-12-16 01:07:21',0,'Folder'),(269,'zcWjk8ItsyP9sNQXfbN2b','f1','URL 2','2020-12-16 18:49:01',1,'Url'),(271,'f2','ZLHh5s8BWM2azTVFhazIH','Folder 2','2020-12-16 01:07:21',0,'Folder'),(280,'2Dy5j1Df6Ll_0xdE4gI35','f1','Url 1','2020-12-16 20:55:21',0,'Url'),(281,'29hfuBErLnrwTiDpltU9q','f2','Url 2','2020-12-16 20:55:27',0,'Url');
+/*!40000 ALTER TABLE `drive_ZLHh5s8BWM2azTVFhazIH` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `drives_1NkSXq2C3VC0RvlTRPbZa`
+--
+
+DROP TABLE IF EXISTS `drives_1NkSXq2C3VC0RvlTRPbZa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `drives_1NkSXq2C3VC0RvlTRPbZa` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `isShared` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `drives_1NkSXq2C3VC0RvlTRPbZa`
+--
+
+LOCK TABLES `drives_1NkSXq2C3VC0RvlTRPbZa` WRITE;
+/*!40000 ALTER TABLE `drives_1NkSXq2C3VC0RvlTRPbZa` DISABLE KEYS */;
+INSERT INTO `drives_1NkSXq2C3VC0RvlTRPbZa` VALUES (1,'ZLHh5s8BWM2azTVFhazIH','Content 1','personal',0),(2,'ZLHh5s8BWM2azTVFhazI2','Content 2','personal',0);
+/*!40000 ALTER TABLE `drives_1NkSXq2C3VC0RvlTRPbZa` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `event`
 --
 
@@ -535,7 +622,7 @@ CREATE TABLE `folder` (
   `isDemo` int(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`folderId`)
-) ENGINE=InnoDB AUTO_INCREMENT=268 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=267 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -599,37 +686,6 @@ LOCK TABLES `header_name` WRITE;
 /*!40000 ALTER TABLE `header_name` DISABLE KEYS */;
 INSERT INTO `header_name` VALUES ('kwpKwEwW144tqROdo9dl5','header1'),('DB-pHP_VwdVnC93D5qMT4','header2'),('RS6_ZTKIZLhPpIF2f1-Mp','header3');
 /*!40000 ALTER TABLE `header_name` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `items_1NkSXq2C3VC0RvlTRPbZa`
---
-
-DROP TABLE IF EXISTS `items_1NkSXq2C3VC0RvlTRPbZa`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `items_1NkSXq2C3VC0RvlTRPbZa` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `creationDate` timestamp NULL DEFAULT NULL,
-  `isDeleted` int(1) NOT NULL DEFAULT '0',
-  `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `items_1NkSXq2C3VC0RvlTRPbZa`
---
-
-LOCK TABLES `items_1NkSXq2C3VC0RvlTRPbZa` WRITE;
-/*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` DISABLE KEYS */;
-INSERT INTO `items_1NkSXq2C3VC0RvlTRPbZa` VALUES (1,'content','content','f1','Folder 1','2020-12-08 23:05:12',0,'Folder'),(2,'content','content','f2','Folder 2','2020-12-08 23:05:12',0,'Folder'),(3,'content','f2','jDA8GzojRXGv_m3azFxBv','Folder A','2020-12-09 17:47:30',0,'Folder'),(4,'course','course','h1','Header 1','2020-12-08 23:05:12',0,'Folder'),(5,'course','h2','K-bfyQkjmEBwh3VuUTM8-','URL 1','2020-12-09 18:46:36',0,'Url'),(6,'content','f2','b5D01w2djN1SVd5-tVxPA','URL 2','2020-12-09 19:03:54',0,'Url'),(8,'content','f2','u2tAF73dYSudjTgj6I1BH','URL 3','2020-12-09 19:06:57',0,'Url'),(14,'course','course','h2','Header 2','2020-12-08 23:05:12',0,'Folder');
-/*!40000 ALTER TABLE `items_1NkSXq2C3VC0RvlTRPbZa` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1126,4 +1182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-09 19:54:12
+-- Dump completed on 2020-12-16 21:05:59

@@ -65,6 +65,7 @@ function Tool(props){
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
+       console.log(">>>data",data)
        rdata = data?.response;
       }
      return {selectedNodes, destinationObj, response:rdata}
@@ -213,32 +214,78 @@ function Tool(props){
     }
   };
 
-  function NavigationByType(props){
 
-    return <div>{props.type}</div>
+  //TODO: in the actual <Tool> replace isNav prop with is a child of <NavPanel>
+  function Browsers(props){
+    return <>{props.types.map((type,i)=>{
+      return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
+    })}
+    </>
   }
 
+  function DriveType(props){
+    const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
+      onSuccess:(obj)=>{
+        // console.log(">>>fetchDriveTypeIds obj");
+        // console.log(JSON.parse(JSON.stringify(obj)));
+        
+      },
+    })
+  if (isFetching){ return null;}
+
+  let drives = [];
+  for (let driveIdAndLabel of data){
+    console.log(">>>driveId:",driveIdAndLabel)
+    drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
+  }
+
+  return <>{drives}</>
+  }
+  
+
+
+  //TODO: remove isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}
+  //Should be <Browsers types={["personal","group","course"]} /> child of navpanel or not child of navpanel
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
 
   <div style={{display:"flex"}}> 
   <div>
-  <Browser drive="content" isNav={true} DnDState={DnDState}/>
-  <Browser drive="course" isNav={true} DnDState={DnDState}/>
+    {/* <Browsers types={["personal","group","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+  {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
+  <Browser drive="course" isNav={true} DnDState={DnDState}/> */}
+   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
   </div>
   <div>
-  <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
-  <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+
+    {/* <Browsers types={["personal","group","course"]} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+
+  {/* <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
   </div>
   </div>
   </>
   )
 }
 
+const fetchDriveTypeIds = async (queryKey,type) => {
 
+  const { data } = await axios.get(
+    `/api/loadDriveTypeIds.php?type=${type}`
+  );
+  //Always return an array
+  let driveIdsAndLabels = [];
+  if (data?.driveIdsAndLabels !== undefined){
+    driveIdsAndLabels = data.driveIdsAndLabels;
+  }
+  return driveIdsAndLabels;
+}
 
-const addItemMutation = async ({itemId,label, driveId, parentId,type}) =>{
+const addItemMutation = async ({itemId, label, driveId, parentId,type}) =>{
 
   const pdata = {driveId,parentId,itemId,label,type}
     const payload = {
@@ -352,10 +399,12 @@ function AddItem(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
+  console.log(">>>fcn driveId",driveId,parentId)
   if (!parentId){
     const { data } = await axios.get(
       `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
     );
+    console.log(">>>fetchChildrenNodes data",data)
     return {init:true,data:data.results}
   } //First Query returns no data
 
@@ -408,6 +457,9 @@ function BrowserChild(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
+          console.log(">>>init data")
+          console.log(JSON.parse(JSON.stringify(data)));
+
           let folderChildrenIds = {};
           let nodeObjs = {};
           for (let row of data[0].data){
@@ -703,10 +755,6 @@ function BrowserChild(props){
     
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
-
-  function deleteFolderHandler(nodeObj){
-    deleteFolder(nodeObj);
-  }
   
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
@@ -716,8 +764,8 @@ function BrowserChild(props){
     if (childrenIdsArr === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
-      console.log(" 🐕 fetchMore",parentId)
-      fetchMore(parentId);
+      // console.log(" 🐕 fetchMore",parentId)
+      // fetchMore(parentId);
     }else{
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
@@ -730,8 +778,8 @@ function BrowserChild(props){
           //Only need numChildren if it's a folder
           if (grandChildObjType === "Folder"){
             //Need data
-            console.log(" 🐕 fetchMore grandChild",nodeId)
-            fetchMore(nodeId);
+            // console.log(" 🐕 fetchMore grandChild",nodeId)
+            // fetchMore(nodeId);
           }
           
         }else{
@@ -832,7 +880,7 @@ function BrowserChild(props){
       // border: "1px solid black",
       backgroundColor: "white",
       margin: "2px"
-    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> Drive label here</div></div>
+    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> {props.label}</div></div>
   }
   return <>
   <div style={{marginTop:"1em",marginBottom:"1em"}}>
