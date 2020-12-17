@@ -65,7 +65,6 @@ function Tool(props){
     if (Object.keys(selectedNodes).length > 0){//Protect against no selection
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
-       console.log(">>>data",data)
        rdata = data?.response;
       }
      return {selectedNodes, destinationObj, response:rdata}
@@ -146,9 +145,6 @@ function Tool(props){
         })
         return old
         })
-  
-        // console.log(">>>fullInfoAddArr")
-        // console.log(JSON.parse(JSON.stringify(fullInfoAddArr)));
         
   
           //and add to desination drive
@@ -226,8 +222,6 @@ function Tool(props){
   function DriveType(props){
     const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
       onSuccess:(obj)=>{
-        // console.log(">>>fetchDriveTypeIds obj");
-        // console.log(JSON.parse(JSON.stringify(obj)));
         
       },
     })
@@ -235,7 +229,6 @@ function Tool(props){
 
   let drives = [];
   for (let driveIdAndLabel of data){
-    console.log(">>>driveId:",driveIdAndLabel)
     drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
   }
 
@@ -399,12 +392,11 @@ function AddItem(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
-  console.log(">>>fcn driveId",driveId,parentId)
+
   if (!parentId){
     const { data } = await axios.get(
       `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
     );
-    console.log(">>>fetchChildrenNodes data",data)
     return {init:true,data:data.results}
   } //First Query returns no data
 
@@ -441,6 +433,7 @@ function BrowserChild(props){
   if(props.isNav){
     rootFolderId = props.drive;
   }
+  
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [driveIsOpen,setDriveIsOpen] = useState(props.driveIsOpen?props.driveIsOpen:true); //default to open
@@ -457,9 +450,6 @@ function BrowserChild(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
-          console.log(">>>init data")
-          console.log(JSON.parse(JSON.stringify(data)));
-
           let folderChildrenIds = {};
           let nodeObjs = {};
           for (let row of data[0].data){
@@ -764,8 +754,8 @@ function BrowserChild(props){
     if (childrenIdsArr === undefined){
       //Need data
       nodesJSX.push(<LoadingNode key={`loading${nodeIdArray.length}`}/>);
-      // console.log(" 🐕 fetchMore",parentId)
-      // fetchMore(parentId);
+      console.log(" 🐕 fetchMore",parentId)
+      fetchMore(parentId);
     }else{
       if (childrenIdsArr.length === 0){nodesJSX.push(<EmptyNode key={`empty${nodeIdArray.length}`}/>)}
 
@@ -778,8 +768,8 @@ function BrowserChild(props){
           //Only need numChildren if it's a folder
           if (grandChildObjType === "Folder"){
             //Need data
-            // console.log(" 🐕 fetchMore grandChild",nodeId)
-            // fetchMore(nodeId);
+            console.log(" 🐕 fetchMore grandChild",nodeId)
+            fetchMore(nodeId);
           }
           
         }else{
@@ -874,17 +864,28 @@ function BrowserChild(props){
   }
   let driveToggleDiv = null;
   if (props.isNav){
-    driveToggleDiv = <div style={{
+    //***** DRIVE ICON
+    let driveColor = "white";
+    if (routePathFolderId === props.drive){ driveColor = "#6de5ff"}
+    driveToggleDiv = <div 
+      tabIndex={0}
+      className="noselect nooutline" 
+      
+      onDoubleClick={(e) => {
+        setDriveIsOpen((bool)=>!bool);
+      }} 
+      onClick={()=>{
+        history.push(`/${props.drive}:${props.drive}/`)
+      }}
+    style={{
       width: "300px",
       padding: "4px",
-      // border: "1px solid black",
-      backgroundColor: "white",
+      backgroundColor: driveColor,
       margin: "2px"
     }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> {props.label}</div></div>
   }
   return <>
   <div style={{marginTop:"1em",marginBottom:"1em"}}>
-  {/* <h3>{props.drive} {props.isNav?"Nav":null}</h3> */}
   {driveToggleDiv}     
   {nodes}
   
