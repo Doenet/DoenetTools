@@ -72,7 +72,6 @@ function Tool(props){
 
   const [moveNodes] = useMutation(mutationMoveNodes, {
     onMutate:(params)=>{
-      console.log(JSON.parse(JSON.stringify(params)));
       if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
         const sourceDriveId = params.selectedNodes.driveId;
         const destinationDriveId = params.destinationObj.driveId;
@@ -213,27 +212,31 @@ function Tool(props){
 
   //TODO: in the actual <Tool> replace isNav prop with is a child of <NavPanel>
   function Browsers(props){
-    return <>{props.types.map((type,i)=>{
-      return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
-    })}
-    </>
+    console.log("**********************")
+    console.log("=== Browsers",props)
+    console.log("**********************")
+    return <div>{props.types}</div>
+    // return <>{props.types.map((type,i)=>{
+    //   return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
+    // })}
+    // </>
   }
 
-  function DriveType(props){
-    const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
-      onSuccess:(obj)=>{
+  // function DriveType(props){
+  //   const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
+  //     onSuccess:(obj)=>{
         
-      },
-    })
-  if (isFetching){ return null;}
+  //     },
+  //   })
+  // if (isFetching){ return null;}
 
-  let drives = [];
-  for (let driveIdAndLabel of data){
-    drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
-  }
+  // let drives = [];
+  // for (let driveIdAndLabel of data){
+  //   drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
+  // }
 
-  return <>{drives}</>
-  }
+  // return <>{drives}</>
+  // }
   
 
 
@@ -717,7 +720,6 @@ function BrowserChild(props){
     deleteItem(nodeId);
   },[]);
 
-
   if (browserId.current === ""){ browserId.current = nanoid();}
 
   useEffect(()=>{
@@ -795,7 +797,7 @@ function BrowserChild(props){
           }
 
           let nodeJSX = <Node 
-            key={`node${nodeId}`} 
+            key={`node${browserId.current}${nodeId}`} 
             label={nodeObj.label}
             browserId={browserId.current}
             nodeId={nodeId}
@@ -815,6 +817,7 @@ function BrowserChild(props){
           // navigation items not draggable
           if (!props.isNav) {
             nodeJSX = <Draggable
+              key={`dnode${browserId.current}${nodeId}`} 
               id={nodeId}
               className={draggableClassName}
               onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
@@ -827,6 +830,7 @@ function BrowserChild(props){
           }
 
           nodeJSX = <WithDropTarget
+            key={`wdtnode${browserId.current}${nodeId}`} 
             id={nodeId}
             registerDropTarget={DnDActions.registerDropTarget} 
             unregisterDropTarget={DnDActions.unregisterDropTarget}
