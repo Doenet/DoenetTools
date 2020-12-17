@@ -451,6 +451,9 @@ function Browser(props){
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
+          console.log(">>>init data")
+          console.log(JSON.parse(JSON.stringify(data)));
+          
           let folderChildrenIds = {};
           let nodeObjs = {};
           for (let row of data[0].data){

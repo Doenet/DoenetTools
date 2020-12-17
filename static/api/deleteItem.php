@@ -18,10 +18,9 @@ $success = TRUE;
 $results_arr = array();
 
 $sql="
-UPDATE items_$userId 
+UPDATE drive_$driveId 
 SET isDeleted='1'
-WHERE driveId = '$driveId'
-AND itemId = '$itemId'
+WHERE itemId = '$itemId'
 AND parentId = '$parentId'
 ";
 $result = $conn->query($sql); 

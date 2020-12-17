@@ -72,7 +72,6 @@ function Tool(props){
 
   const [moveNodes] = useMutation(mutationMoveNodes, {
     onMutate:(params)=>{
-      console.log(JSON.parse(JSON.stringify(params)));
       if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
         const sourceDriveId = params.selectedNodes.driveId;
         const destinationDriveId = params.destinationObj.driveId;
@@ -145,9 +144,6 @@ function Tool(props){
         })
         return old
         })
-  
-        // console.log(">>>fullInfoAddArr")
-        // console.log(JSON.parse(JSON.stringify(fullInfoAddArr)));
         
   
           //and add to desination drive
@@ -213,32 +209,79 @@ function Tool(props){
     }
   };
 
-  function NavigationByType(props){
 
-    return <div>{props.type}</div>
+  //TODO: in the actual <Tool> replace isNav prop with is a child of <NavPanel>
+  function Browsers(props){
+    console.log("**********************")
+    console.log("=== Browsers",props)
+    console.log("**********************")
+    return <div>{props.types}</div>
+    // return <>{props.types.map((type,i)=>{
+    //   return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
+    // })}
+    // </>
   }
 
+  // function DriveType(props){
+  //   const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
+  //     onSuccess:(obj)=>{
+        
+  //     },
+  //   })
+  // if (isFetching){ return null;}
+
+  // let drives = [];
+  // for (let driveIdAndLabel of data){
+  //   drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
+  // }
+
+  // return <>{drives}</>
+  // }
+  
+
+
+  //TODO: remove isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}
+  //Should be <Browsers types={["personal","group","course"]} /> child of navpanel or not child of navpanel
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
 
   <div style={{display:"flex"}}> 
   <div>
-  <Browser drive="content" isNav={true} DnDState={DnDState}/>
-  <Browser drive="course" isNav={true} DnDState={DnDState}/>
+    {/* <Browsers types={["personal","group","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+  {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
+  <Browser drive="course" isNav={true} DnDState={DnDState}/> */}
+   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
   </div>
   <div>
-  <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
-  <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+
+    {/* <Browsers types={["personal","group","course"]} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+
+  {/* <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
   </div>
   </div>
   </>
   )
 }
 
+const fetchDriveTypeIds = async (queryKey,type) => {
 
+  const { data } = await axios.get(
+    `/api/loadDriveTypeIds.php?type=${type}`
+  );
+  //Always return an array
+  let driveIdsAndLabels = [];
+  if (data?.driveIdsAndLabels !== undefined){
+    driveIdsAndLabels = data.driveIdsAndLabels;
+  }
+  return driveIdsAndLabels;
+}
 
-const addItemMutation = async ({itemId,label, driveId, parentId,type}) =>{
+const addItemMutation = async ({itemId, label, driveId, parentId,type}) =>{
 
   const pdata = {driveId,parentId,itemId,label,type}
     const payload = {
@@ -352,6 +395,7 @@ function AddItem(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
+
   if (!parentId){
     const { data } = await axios.get(
       `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
@@ -392,6 +436,7 @@ function BrowserChild(props){
   if(props.isNav){
     rootFolderId = props.drive;
   }
+  
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [driveIsOpen,setDriveIsOpen] = useState(props.driveIsOpen?props.driveIsOpen:true); //default to open
@@ -675,7 +720,6 @@ function BrowserChild(props){
     deleteItem(nodeId);
   },[]);
 
-
   if (browserId.current === ""){ browserId.current = nanoid();}
 
   useEffect(()=>{
@@ -702,10 +746,6 @@ function BrowserChild(props){
     const numItems = Object.keys(selectedNodes).length;
     
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
-  }
-
-  function deleteFolderHandler(nodeObj){
-    deleteFolder(nodeObj);
   }
   
 
@@ -757,7 +797,7 @@ function BrowserChild(props){
           }
 
           let nodeJSX = <Node 
-            key={`node${nodeId}`} 
+            key={`node${browserId.current}${nodeId}`} 
             label={nodeObj.label}
             browserId={browserId.current}
             nodeId={nodeId}
@@ -777,6 +817,7 @@ function BrowserChild(props){
           // navigation items not draggable
           if (!props.isNav) {
             nodeJSX = <Draggable
+              key={`dnode${browserId.current}${nodeId}`} 
               id={nodeId}
               className={draggableClassName}
               onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
@@ -787,9 +828,10 @@ function BrowserChild(props){
              { nodeJSX } 
             </Draggable>
           }
-
+                    
           if (nodeObj?.type === "Folder") {
             nodeJSX = <WithDropTarget
+              key={`wdtnode${browserId.current}${nodeId}`} 
               id={nodeId}
               registerDropTarget={DnDActions.registerDropTarget} 
               unregisterDropTarget={DnDActions.unregisterDropTarget}
@@ -828,17 +870,28 @@ function BrowserChild(props){
   }
   let driveToggleDiv = null;
   if (props.isNav){
-    driveToggleDiv = <div style={{
+    //***** DRIVE ICON
+    let driveColor = "white";
+    if (routePathFolderId === props.drive){ driveColor = "#6de5ff"}
+    driveToggleDiv = <div 
+      tabIndex={0}
+      className="noselect nooutline" 
+      
+      onDoubleClick={(e) => {
+        setDriveIsOpen((bool)=>!bool);
+      }} 
+      onClick={()=>{
+        history.push(`/${props.drive}:${props.drive}/`)
+      }}
+    style={{
       width: "300px",
       padding: "4px",
-      // border: "1px solid black",
-      backgroundColor: "white",
+      backgroundColor: driveColor,
       margin: "2px"
-    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> Drive label here</div></div>
+    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> {props.label}</div></div>
   }
   return <>
   <div style={{marginTop:"1em",marginBottom:"1em"}}>
-  {/* <h3>{props.drive} {props.isNav?"Nav":null}</h3> */}
   {driveToggleDiv}     
   {nodes}
   

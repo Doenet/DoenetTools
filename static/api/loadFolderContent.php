@@ -14,48 +14,27 @@ $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
-//If files table doesn't exist for user then create it 
-$sql = "SHOW TABLES LIKE 'item_$userId';";
+//TODO: make sure the user is supposed to have drive read access
+
+
+$sql = "SHOW TABLES LIKE 'drive_$driveId';";
 $result = $conn->query($sql); 
-$table_existed = TRUE;
-if ($result->num_rows == 0){
-  $table_existed = FALSE;
-  $sql = "
-  CREATE TABLE `items_$userId` (
-    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `creationDate` timestamp NULL DEFAULT NULL,
-    `isDeleted` int(1) NOT NULL DEFAULT '0',
-    `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `folderId` (`itemId`)
-  ) ENGINE=InnoDB AUTO_INCREMENT=267 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-  ";
-
-  $result = $conn->query($sql); 
-
-  //TODO: If table still not created create a random named table and rename it to items_userid
-
-  //TODO: Add demos to newly created table
-
-}
 $success = TRUE;
+if ($result->num_rows == 0){
+  $success = FALSE;
+}
 $results_arr = array();
 
 if ($init == 'true'){
   $sql="
   SELECT 
-    i.itemId as itemId,
-    i.label as label,
-    i.parentId as parentId,
-    i.creationDate as creationDate,
-    i.itemType as itemType
-  FROM items_$userId AS i
-  WHERE driveId = '$driveId'
-  AND isDeleted = 0
+    d.itemId as itemId,
+    d.label as label,
+    d.parentId as parentId,
+    d.creationDate as creationDate,
+    d.itemType as itemType
+  FROM drive_$driveId AS d
+  WHERE isDeleted = 0
   ";
 
   $result = $conn->query($sql); 
@@ -99,14 +78,13 @@ function selectChildren($parentId,$userId,$driveId,$conn){
   //ADD FOLDERS AND REPOS
   $sql="
   SELECT 
-    i.itemId as itemId,
-    i.label as label,
-    i.parentId as parentId,
-    i.creationDate as creationDate,
-    i.itemType as itemType
-  FROM items_$userId AS i
+    d.itemId as itemId,
+    d.label as label,
+    d.parentId as parentId,
+    d.creationDate as creationDate,
+    d.itemType as itemType
+  FROM drive_$driveId AS d
   WHERE parentId = '$parentId'
-  AND driveId = '$driveId'
   AND isDeleted = 0
   ";
 
