@@ -78,7 +78,7 @@ export default function DoenetExampleTool(props) {
     <>
       {!showHideNewOverLay ? (
         <Tool
-          initSupportPanelOpen={true}
+          initSupportPanelOpen
           onUndo={() => {
             console.log(">>>undo clicked");
           }}
