@@ -14,9 +14,46 @@ $parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
-//TODO: make sure the user is supposed to have drive read access
 $success = TRUE;
+$results_arr = array();
+//make sure the user is supposed to have drive read access
+$sql = "
+SELECT 
+isShared, 
+canViewDrive, 
+canDeleteDrive, 
+canShareDrive,
+canAddItemsAndFolders,
+canDeleteItemsAndFolders,
+canMoveItemsAndFolders,
+canRenameItemsAndFolders
+FROM drives
+WHERE userId = '$userId'
+AND driveId = '$driveId'
+";
 
+$result = $conn->query($sql); 
+
+if ($result->num_rows > 0){
+$row = $result->fetch_assoc();
+$canViewDrive = $row["canViewDrive"];
+$perms = array(
+    "isShared"=>$row["isShared"],
+    "canViewDrive"=>$row["canViewDrive"],
+    "canDeleteDrive"=>$row["canDeleteDrive"],
+    "canShareDrive"=>$row["canShareDrive"],
+    "canAddItemsAndFolders"=>$row["canAddItemsAndFolders"],
+    "canDeleteItemsAndFolders"=>$row["canDeleteItemsAndFolders"],
+    "canMoveItemsAndFolders"=>$row["canMoveItemsAndFolders"],
+    "canRenameItemsAndFolders"=>$row["canRenameItemsAndFolders"]
+  );
+}else{
+  $perms = array();
+  $success = FALSE;
+}
+
+
+if ($success && $canViewDrive){
 
 $sql = "SELECT driveId
 FROM drive
@@ -26,7 +63,6 @@ $result = $conn->query($sql);
 if ($result->num_rows == 0){
   $success = FALSE;
 }
-$results_arr = array();
 
 if ($init == 'true'){
   $sql="
@@ -63,10 +99,11 @@ if ($init == 'true'){
   }
 
 }
-
+}
 
 $response_arr = array(
   "results"=>$results_arr,
+  "perms"=>$perms,
   "success"=>$success
   );
 

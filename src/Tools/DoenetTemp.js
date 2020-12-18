@@ -274,7 +274,7 @@ function Tool(props){
 
 
   //TODO: remove isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}
-  //Should be <Browsers types={["personal","group","course"]} /> child of navpanel or not child of navpanel
+  //Should be <Browsers types={["content","course"]} /> child of navpanel or not child of navpanel
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
@@ -284,7 +284,7 @@ function Tool(props){
       <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
    <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
  
-    {/* <Browsers types={["personal","group","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+    {/* <Browsers types={["content","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
   {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
   <Browser drive="course" isNav={true} DnDState={DnDState}/> */}
  
@@ -435,7 +435,7 @@ const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
     const { data } = await axios.get(
       `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
     );
-    return {init:true,data:data.results}
+    return {init:true,data}
   } //First Query returns no data
 
   const { data } = await axios.get(
@@ -490,7 +490,10 @@ function BrowserChild(props){
         if (Object.keys(data[0])[0] === "init"){
           let folderChildrenIds = {};
           let nodeObjs = {};
-          for (let row of data[0].data){
+          console.log(">>>init data",data)
+          console.log(JSON.parse(JSON.stringify(data)));
+          
+          for (let row of data[0].data.results){
             if (!folderChildrenIds[row.parentId]){folderChildrenIds[row.parentId] = {defaultOrder:[]}}
             if (row.type === "Folder" && !folderChildrenIds[row.id]){folderChildrenIds[row.id] = {defaultOrder:[]}}
             folderChildrenIds[row.parentId].defaultOrder.push(row.id);
@@ -503,7 +506,7 @@ function BrowserChild(props){
             }
           }
 
-          data[0] = {folderChildrenIds,nodeObjs}
+          data[0] = {folderChildrenIds,nodeObjs,perms:data[0].data.perms}
         }else if (data[1]){
           let actionOrId = Object.keys(data[1])[0];
           if (actionOrId === "add"){
