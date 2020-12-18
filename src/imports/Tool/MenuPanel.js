@@ -3,12 +3,14 @@ import styled from "styled-components";
 
 const HeaderDiv = styled.div`
   grid-area: menuPanelHeader;
+  width: 240px;
   display: flex;
   border-left: 1px solid black;
 `;
 
 const SectionDiv = styled.div`
   grid-area: menuPanel;
+  width: 240px;
   overflow: scroll;
   border-left: 1px solid black;
 `;

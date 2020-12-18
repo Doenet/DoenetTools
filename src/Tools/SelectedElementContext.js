@@ -3,7 +3,7 @@ import React, { createContext } from 'react';
 const SelectedElementContext = createContext({});
 
 export const SelectedElementStore = ({children}) => {
-  const [selectedElement, setSelectedElement] = useState({}); //TODO: call to database for previous selection
+  const [selectedElement, setSelectedElement] = useState(null); //TODO: call to database for previous selection
 
   const value = { //TODO: define data structure
     selectedElement: selectedElement,

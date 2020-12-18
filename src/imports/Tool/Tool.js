@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const ToolContainer = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr 240px;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: 60px 1fr auto;
   grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel" "navPanel mainPanel menuPanelSecondary";
 `;
@@ -79,6 +79,7 @@ export default function Tool(props) {
                 navPanelObj: navPanelObj,
                 supportPanelObj: supportPanelObj,
                 headerMenuPanels: props.headerMenuPanels,
+                initSupportPanelOpen: props.initSupportPanelOpen,
                 key: index,
               });
             case "NavPanel":

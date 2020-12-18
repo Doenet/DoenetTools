@@ -74,9 +74,11 @@ export default function DoenetExampleTool(props) {
   };
 
   return (
-    <SelectedElementStore>
+    // <SelectedElementStore>
+    <>
       {!showHideNewOverLay ? (
         <Tool
+          initSupportPanelOpen={true}
           onUndo={() => {
             console.log(">>>undo clicked");
           }}
@@ -208,6 +210,7 @@ export default function DoenetExampleTool(props) {
           </MenuPanel>
         </Overlay>
       )}
-    </SelectedElementStore>
+      </>
+    // </SelectedElementStore>
   );
 }
