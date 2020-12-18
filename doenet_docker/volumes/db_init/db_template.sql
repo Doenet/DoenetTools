@@ -466,7 +466,7 @@ CREATE TABLE `drive` (
   `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=318 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=319 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -475,7 +475,7 @@ CREATE TABLE `drive` (
 
 LOCK TABLES `drive` WRITE;
 /*!40000 ALTER TABLE `drive` DISABLE KEYS */;
-INSERT INTO `drive` VALUES (267,'ZLHh5s8BWM2azTVFhazIH','f1','ZLHh5s8BWM2azTVFhazIH','Folder 1','2020-12-16 01:07:21',0,'Folder'),(269,'ZLHh5s8BWM2azTVFhazIH','zcWjk8ItsyP9sNQXfbN2b','f1','URL 2','2020-12-16 18:49:01',1,'Url'),(271,'ZLHh5s8BWM2azTVFhazIH','f2','ZLHh5s8BWM2azTVFhazIH','Folder 2','2020-12-16 01:07:21',0,'Folder'),(296,'ZLHh5s8BWM2azTVFhazIH','Avpb8FRnwKLvQwgqR6oU0','f2','Folder 3','2020-12-16 21:55:36',1,'Folder'),(299,'ZLHh5s8BWM2azTVFhazI2','2Dy5j1Df6Ll_0xdE4gI35','fb1','Url 1','2020-12-16 20:55:21',0,'Url'),(302,'ZLHh5s8BWM2azTVFhazIH','f5q1IkRE6pSNggfbC2qgH','ZLHh5s8BWM2azTVFhazIH','Folder 3','2020-12-17 18:24:42',1,'Folder'),(303,'ZLHh5s8BWM2azTVFhazIH','29hfuBErLnrwTiDpltU9q','f2','Url 2','2020-12-16 20:55:27',0,'Url'),(304,'ZLHh5s8BWM2azTVFhazI2','fb1','ZLHh5s8BWM2azTVFhazI2','Folder 1b','2020-12-16 01:07:21',0,'Folder'),(305,'ZLHh5s8BWM2azTVFhazI2','WnqbtOP5B0vmqrtu1--Ze','ZLHh5s8BWM2azTVFhazI2','Folder 2b','2020-12-16 21:55:28',0,'Folder'),(306,'ZLHh5s8BWM2azTVFhazI2','11lUJQk5yZtaoUEmlnOzJ','ZLHh5s8BWM2azTVFhazI2','Folder 3b','2020-12-17 02:56:56',0,'Folder'),(307,'ZLHh5s8BWM2azTVFhazI2','k2yqtUi1-rZYetbO2m43K','11lUJQk5yZtaoUEmlnOzJ','test','2020-12-17 02:57:34',1,'Url'),(308,'ZLHh5s8BWM2azTVFhazI2','pOidydwRPy2c2Gf8-Bx0I','WnqbtOP5B0vmqrtu1--Ze','URL 1b','2020-12-16 21:04:44',0,'Url'),(309,'ZLHh5s8BWM2azTVFhazI2','hU3mTB816ZltBLDaSqO7Z','WnqbtOP5B0vmqrtu1--Ze','another url','2020-12-17 18:26:23',0,'Url');
+INSERT INTO `drive` VALUES (267,'ZLHh5s8BWM2azTVFhazIH','f1','ZLHh5s8BWM2azTVFhazIH','Folder 1','2020-12-16 01:07:21',0,'Folder'),(269,'ZLHh5s8BWM2azTVFhazIH','zcWjk8ItsyP9sNQXfbN2b','f1','URL 2','2020-12-16 18:49:01',1,'Url'),(271,'ZLHh5s8BWM2azTVFhazIH','f2','ZLHh5s8BWM2azTVFhazIH','Folder 2','2020-12-16 01:07:21',0,'Folder'),(296,'ZLHh5s8BWM2azTVFhazIH','Avpb8FRnwKLvQwgqR6oU0','f2','Folder 3','2020-12-16 21:55:36',1,'Folder'),(299,'ZLHh5s8BWM2azTVFhazI2','2Dy5j1Df6Ll_0xdE4gI35','fb1','Url 1','2020-12-16 20:55:21',0,'Url'),(302,'ZLHh5s8BWM2azTVFhazIH','f5q1IkRE6pSNggfbC2qgH','ZLHh5s8BWM2azTVFhazIH','Folder 3','2020-12-17 18:24:42',1,'Folder'),(303,'ZLHh5s8BWM2azTVFhazIH','29hfuBErLnrwTiDpltU9q','f2','Url 2','2020-12-16 20:55:27',0,'Url'),(304,'ZLHh5s8BWM2azTVFhazI2','fb1','ZLHh5s8BWM2azTVFhazI2','Folder 1b','2020-12-16 01:07:21',0,'Folder'),(305,'ZLHh5s8BWM2azTVFhazI2','WnqbtOP5B0vmqrtu1--Ze','ZLHh5s8BWM2azTVFhazI2','Folder 2b','2020-12-16 21:55:28',0,'Folder'),(306,'ZLHh5s8BWM2azTVFhazI2','11lUJQk5yZtaoUEmlnOzJ','ZLHh5s8BWM2azTVFhazI2','Folder 3b','2020-12-17 02:56:56',0,'Folder'),(307,'ZLHh5s8BWM2azTVFhazI2','k2yqtUi1-rZYetbO2m43K','11lUJQk5yZtaoUEmlnOzJ','test','2020-12-17 02:57:34',1,'Url'),(308,'ZLHh5s8BWM2azTVFhazI2','pOidydwRPy2c2Gf8-Bx0I','WnqbtOP5B0vmqrtu1--Ze','URL 1b','2020-12-16 21:04:44',0,'Url'),(309,'ZLHh5s8BWM2azTVFhazI2','hU3mTB816ZltBLDaSqO7Z','WnqbtOP5B0vmqrtu1--Ze','another url','2020-12-17 18:26:23',0,'Url'),(318,'ZLHh5s8BWM2azTVFhazI3','h1','ZLHh5s8BWM2azTVFhazI3','Heading 1','2020-12-16 01:07:21',0,'Folder');
 /*!40000 ALTER TABLE `drive` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -502,7 +502,7 @@ CREATE TABLE `drives` (
   `canRenameItemsAndFolders` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userIdKey` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -511,7 +511,7 @@ CREATE TABLE `drives` (
 
 LOCK TABLES `drives` WRITE;
 /*!40000 ALTER TABLE `drives` DISABLE KEYS */;
-INSERT INTO `drives` VALUES (1,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,1,1,1,1,1,1),(2,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI2','Content 2','content',0,1,1,1,1,1,1,1),(3,'devuserid','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,0,0,1,1,1,1);
+INSERT INTO `drives` VALUES (1,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,1,1,1,1,1,1),(2,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI2','Content 2','content',0,1,1,1,1,1,1,1),(3,'devuserid','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,0,0,1,1,1,1),(4,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI3','Course 1','course',0,1,1,1,1,1,1,1);
 /*!40000 ALTER TABLE `drives` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1161,4 +1161,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-18  4:20:26
+-- Dump completed on 2020-12-18 13:59:27

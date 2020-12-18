@@ -243,29 +243,29 @@ function Tool(props){
   }
 
   function DriveType(props){
-    console.log("=== DriveType",props)
+    // console.log("=== DriveType",props)
     const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
       refetchOnMount:false,
       refetchOnWindowFocus:false,
       staleTime:60000,
       onMutate:(obj)=>{
-        console.log("**********************")
-    console.log(">>>DriveType onMutate",props.type,obj)
-    console.log("**********************")
+    //     console.log("**********************")
+    // console.log(">>>DriveType onMutate",props.type,obj)
+    // console.log("**********************")
       },
       onSuccess:(obj)=>{
-    console.log("**********************")
-    console.log(">>>DriveType success",props.type,obj)
-    console.log("**********************")
+    // console.log("**********************")
+    // console.log(">>>DriveType success",props.type,obj)
+    // console.log("**********************")
   },
     })
-    console.log(">>>isFetching",props.type,isFetching)
+    // console.log(">>>isFetching",props.type,isFetching)
   if (isFetching){ return null;}
 
   let drives = [];
   for (let driveIdAndLabel of data){
-    // drives.push(<Browser key={`browser${driveIdAndLabel.driveId}${props.isNav}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
-    drives.push(<div key={`browser${driveIdAndLabel.driveId}${props.isNav}`}>{`browser${driveIdAndLabel.driveId}${props.isNav}`}</div>);
+    drives.push(<Browser key={`browser${driveIdAndLabel.driveId}${props.isNav}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
+    // drives.push(<div key={`browser${driveIdAndLabel.driveId}${props.isNav}`}>{`browser${driveIdAndLabel.driveId}${props.isNav}`}</div>);
   }
 
   return <>{drives}</>
@@ -281,19 +281,19 @@ function Tool(props){
 
   <div style={{display:"flex"}}> 
   <div>
-      <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
-   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
+      {/* <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/> */}
  
-    {/* <Browsers types={["content","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+    <Browsers types={["content","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
   {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
   <Browser drive="course" isNav={true} DnDState={DnDState}/> */}
  
   </div>
   <div>
-   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
-   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   {/* <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
 
-    {/* <Browsers types={["personal","group","course"]} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+    <Browsers types={["content","course"]} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
 
   {/* <Browser drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
   <Browser drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
@@ -490,8 +490,6 @@ function BrowserChild(props){
         if (Object.keys(data[0])[0] === "init"){
           let folderChildrenIds = {};
           let nodeObjs = {};
-          console.log(">>>init data",data)
-          console.log(JSON.parse(JSON.stringify(data)));
           
           for (let row of data[0].data.results){
             if (!folderChildrenIds[row.parentId]){folderChildrenIds[row.parentId] = {defaultOrder:[]}}
