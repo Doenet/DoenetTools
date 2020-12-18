@@ -26,7 +26,8 @@ canShareDrive,
 canAddItemsAndFolders,
 canDeleteItemsAndFolders,
 canMoveItemsAndFolders,
-canRenameItemsAndFolders
+canRenameItemsAndFolders,
+canChangeAllDriveSettings
 FROM drives
 WHERE userId = '$userId'
 AND driveId = '$driveId'
@@ -45,7 +46,9 @@ $perms = array(
     "canAddItemsAndFolders"=>$row["canAddItemsAndFolders"],
     "canDeleteItemsAndFolders"=>$row["canDeleteItemsAndFolders"],
     "canMoveItemsAndFolders"=>$row["canMoveItemsAndFolders"],
-    "canRenameItemsAndFolders"=>$row["canRenameItemsAndFolders"]
+    "canRenameItemsAndFolders"=>$row["canRenameItemsAndFolders"],
+    "canChangeAllDriveSettings"=>$row["canChangeAllDriveSettings"]
+    
   );
 }else{
   $perms = array();

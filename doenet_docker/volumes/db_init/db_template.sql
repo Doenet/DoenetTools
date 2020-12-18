@@ -500,6 +500,7 @@ CREATE TABLE `drives` (
   `canDeleteItemsAndFolders` tinyint(1) DEFAULT '0',
   `canMoveItemsAndFolders` tinyint(1) DEFAULT '0',
   `canRenameItemsAndFolders` tinyint(1) DEFAULT '0',
+  `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userIdKey` (`userId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -511,7 +512,7 @@ CREATE TABLE `drives` (
 
 LOCK TABLES `drives` WRITE;
 /*!40000 ALTER TABLE `drives` DISABLE KEYS */;
-INSERT INTO `drives` VALUES (1,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,1,1,1,1,1,1),(2,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI2','Content 2','content',0,1,1,1,1,1,1,1),(3,'devuserid','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,0,0,1,1,1,1),(4,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI3','Course 1','course',0,1,1,1,1,1,1,1);
+INSERT INTO `drives` VALUES (1,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,1,1,1,1,1,1,0),(2,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI2','Content 2','content',0,1,1,1,1,1,1,1,0),(3,'devuserid','ZLHh5s8BWM2azTVFhazIH','Content 1','content',1,1,0,0,1,1,1,1,0),(4,'1NkSXq2C3VC0RvlTRPbZa','ZLHh5s8BWM2azTVFhazI3','Course 1','course',0,1,1,1,1,1,1,1,0);
 /*!40000 ALTER TABLE `drives` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1161,4 +1162,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-18 13:59:27
+-- Dump completed on 2020-12-18 14:20:56
