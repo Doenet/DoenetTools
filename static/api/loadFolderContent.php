@@ -15,11 +15,14 @@ $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
 //TODO: make sure the user is supposed to have drive read access
-
-
-$sql = "SHOW TABLES LIKE 'drive_$driveId';";
-$result = $conn->query($sql); 
 $success = TRUE;
+
+
+$sql = "SELECT driveId
+FROM drive
+WHERE driveId = '$driveId'";
+$result = $conn->query($sql); 
+
 if ($result->num_rows == 0){
   $success = FALSE;
 }
@@ -33,8 +36,9 @@ if ($init == 'true'){
     d.parentId as parentId,
     d.creationDate as creationDate,
     d.itemType as itemType
-  FROM drive_$driveId AS d
-  WHERE isDeleted = 0
+  FROM drive AS d
+  WHERE driveId = '$driveId'
+  AND isDeleted = 0
   ";
 
   $result = $conn->query($sql); 
@@ -83,8 +87,9 @@ function selectChildren($parentId,$userId,$driveId,$conn){
     d.parentId as parentId,
     d.creationDate as creationDate,
     d.itemType as itemType
-  FROM drive_$driveId AS d
-  WHERE parentId = '$parentId'
+  FROM drive AS d
+  WHERE driveId = '$driveId'
+  AND parentId = '$parentId'
   AND isDeleted = 0
   ";
 

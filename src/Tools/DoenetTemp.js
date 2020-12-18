@@ -43,6 +43,9 @@ return <>
 
 //TODO: Replace with the real <Tool /> component
 function Tool(props){
+  console.log("**********************")
+  console.log("=== Tool")
+  console.log("**********************")
 
   const cache = useQueryCache();
   const { dropState, dropActions } = useContext(DropTargetsContext);
@@ -66,6 +69,7 @@ function Tool(props){
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
        rdata = data?.response;
+       console.log(">>>move data",data)
       }
      return {selectedNodes, destinationObj, response:rdata}
    } 
@@ -192,19 +196,37 @@ function Tool(props){
     dropActions.handleDrop();
   };
 
+  // const DnDState = {
+  //   DnDState: {
+  //     activeDropTargetId: dropState.activeDropTargetId,
+  //     isDragging,
+  //     draggedOverDriveId
+  //   },
+  //   DnDActions: {
+  //     onDragStart,
+  //     onDrag,
+  //     onDragEnd,
+  //     onDragOverContainer,
+  //     registerDropTarget: dropActions.registerDropTarget,
+  //     unregisterDropTarget: dropActions.unregisterDropTarget
+
+  //   }
+  // };
+
   const DnDState = {
     DnDState: {
-      activeDropTargetId: dropState.activeDropTargetId,
+      activeDropTargetId:dropState.activeDropTargetId,
       isDragging,
-      draggedOverDriveId
+      draggedOverDriveId,
     },
     DnDActions: {
       onDragStart,
       onDrag,
       onDragEnd,
       onDragOverContainer,
-      registerDropTarget: dropActions.registerDropTarget,
-      unregisterDropTarget: dropActions.unregisterDropTarget
+      // registerDropTarget:()=>{},  
+      registerDropTarget: dropActions.registerDropTarget, //Causes refresh
+      unregisterDropTarget: dropActions.unregisterDropTarget,
 
     }
   };
@@ -212,31 +234,42 @@ function Tool(props){
 
   //TODO: in the actual <Tool> replace isNav prop with is a child of <NavPanel>
   function Browsers(props){
-    console.log("**********************")
-    console.log("=== Browsers",props)
-    console.log("**********************")
-    return <div>{props.types}</div>
-    // return <>{props.types.map((type,i)=>{
-    //   return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
-    // })}
-    // </>
+
+
+    return <>{props.types.map((type,i)=>{
+      return <DriveType key={`drivetype${i}`} type={type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>
+    })}
+    </>
   }
 
-  // function DriveType(props){
-  //   const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
-  //     onSuccess:(obj)=>{
-        
-  //     },
-  //   })
-  // if (isFetching){ return null;}
+  function DriveType(props){
+    console.log("=== DriveType",props)
+    const { data, isFetching } = useQuery(['drivetype',props.type],fetchDriveTypeIds,{
+      refetchOnMount:false,
+      refetchOnWindowFocus:false,
+      staleTime:60000,
+      onMutate:(obj)=>{
+        console.log("**********************")
+    console.log(">>>DriveType onMutate",props.type,obj)
+    console.log("**********************")
+      },
+      onSuccess:(obj)=>{
+    console.log("**********************")
+    console.log(">>>DriveType success",props.type,obj)
+    console.log("**********************")
+  },
+    })
+    console.log(">>>isFetching",props.type,isFetching)
+  if (isFetching){ return null;}
 
-  // let drives = [];
-  // for (let driveIdAndLabel of data){
-  //   drives.push(<Browser key={`browser${driveIdAndLabel.driveId}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
-  // }
+  let drives = [];
+  for (let driveIdAndLabel of data){
+    // drives.push(<Browser key={`browser${driveIdAndLabel.driveId}${props.isNav}`} label={driveIdAndLabel.label} drive={driveIdAndLabel.driveId} type={props.type} isNav={props.isNav} setSelectedNodes={props.setSelectedNodes} regClearSelection={props.regClearSelection} DnDState={props.DnDState}/>)
+    drives.push(<div key={`browser${driveIdAndLabel.driveId}${props.isNav}`}>{`browser${driveIdAndLabel.driveId}${props.isNav}`}</div>);
+  }
 
-  // return <>{drives}</>
-  // }
+  return <>{drives}</>
+  }
   
 
 
@@ -248,11 +281,13 @@ function Tool(props){
 
   <div style={{display:"flex"}}> 
   <div>
+      <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
+ 
     {/* <Browsers types={["personal","group","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
   {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
   <Browser drive="course" isNav={true} DnDState={DnDState}/> */}
-   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
-   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
+ 
   </div>
   <div>
    <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>

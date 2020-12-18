@@ -24,46 +24,18 @@ for ($i = 0; $i < $number_items; $i++) {
   $parentId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["parentId"]);
   $itemId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
   $type =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["type"]);
-  $new_values = $new_values . "('$destinationParentId','$itemId'),";
+  $new_values = $new_values . "('$destinationDriveId','$destinationParentId','$itemId'),";
 }
 $new_values = rtrim($new_values,",");
 
-//If moving between drives 1st move source drive rows to destination drive
-if ($sourceDriveId != $destinationDriveId ){
-  $itemIds = "";
-
-  for ($i = 0; $i < $number_items; $i++) {
-    $itemId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
-    $itemIds = $itemIds . "'$itemId',";
-  }
-  $itemIds = rtrim($itemIds,",");
-
-  $sql = "
-  INSERT INTO drive_$destinationDriveId (itemId,parentId,label,creationDate,isDeleted,itemType)
-          SELECT itemId,parentId,label,creationDate,isDeleted,itemType
-          FROM drive_$sourceDriveId
-          WHERE itemId IN ($itemIds);
-  ";
-$result = $conn->query($sql); 
-
-$sql = "
-DELETE FROM drive_$sourceDriveId
-WHERE itemId IN ($itemIds);
-";
-$result = $conn->query($sql); 
-
-}
-
-
-
-
-$sql = "INSERT INTO drive_$destinationDriveId (parentId, itemId)
+$sql = "INSERT INTO drive (driveId,parentId,itemId)
         VALUES ";
 $sql = $sql . $new_values;
 $sql = $sql . " ON DUPLICATE KEY UPDATE 
+driveId = VALUES(driveId),
 parentId = VALUES(parentId) ";
+echo $sql;
 $result = $conn->query($sql); 
-
 
 $response_arr = array( 
     "success" => TRUE,

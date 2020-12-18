@@ -25,10 +25,10 @@ if ($parentId == ""){
 
 
 $sql="
-INSERT INTO drive_$driveId 
-(parentId,itemId,label,creationDate,isDeleted,itemType)
+INSERT INTO drive
+(driveId,parentId,itemId,label,creationDate,isDeleted,itemType)
 VALUES
-('$parentId','$itemId','$label',NOW(),'0','$type')
+('$driveId','$parentId','$itemId','$label',NOW(),'0','$type')
 ";
 $result = $conn->query($sql); 
 
