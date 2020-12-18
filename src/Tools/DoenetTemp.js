@@ -602,6 +602,22 @@ function BrowserChild(props){
       })
     }});
 
+  const sortOptions = Object.freeze({
+    "LABEL_ASC": "label ascending",
+    "LABEL_DESC": "label descending",
+    "CREATION_DATE_ASC": "creation date ascending",
+    "CREATION_DATE_DESC": "creation date descending"
+  });
+  
+  const sortItems = ({ sortBy }) => {
+    // validate input
+    if (!sortOptions[sortBy]) return;
+
+    // insert sort action object into data[1]
+    
+
+  };
+
  
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")

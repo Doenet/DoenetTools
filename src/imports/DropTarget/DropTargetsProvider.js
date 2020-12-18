@@ -48,7 +48,6 @@ export default function DropTargetsProvider({ children }) {
       };
     }
     dropTargetObj.refs.push(ref);
-    if (dropTargetObj.refs.length > 0) console.log("Here", id, dropTargetObj)
     
     dropTargetsCacheRef.current[id] = dropTargetObj;
     setDropTargets((prev) => ({ ...prev, [id]: dropTargetObj }));
