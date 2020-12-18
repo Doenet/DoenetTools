@@ -640,6 +640,22 @@ function BrowserChild(props){
       })
     }});
 
+  const sortOptions = Object.freeze({
+    "LABEL_ASC": "label ascending",
+    "LABEL_DESC": "label descending",
+    "CREATION_DATE_ASC": "creation date ascending",
+    "CREATION_DATE_DESC": "creation date descending"
+  });
+  
+  const sortItems = ({ sortBy }) => {
+    // validate input
+    if (!sortOptions[sortBy]) return;
+
+    // insert sort action object into data[1]
+    
+
+  };
+
  
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
@@ -866,19 +882,21 @@ function BrowserChild(props){
              { nodeJSX } 
             </Draggable>
           }
-
-          nodeJSX = <WithDropTarget
-            key={`wdtnode${browserId.current}${nodeId}`} 
-            id={nodeId}
-            registerDropTarget={DnDActions.registerDropTarget} 
-            unregisterDropTarget={DnDActions.unregisterDropTarget}
-            dropCallbacks={{
-              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
-              onDrop: () => {}
-            }}
-          >
-            { nodeJSX } 
-          </WithDropTarget>
+                    
+          if (nodeObj?.type === "Folder") {
+            nodeJSX = <WithDropTarget
+              key={`wdtnode${browserId.current}${nodeId}`} 
+              id={nodeId}
+              registerDropTarget={DnDActions.registerDropTarget} 
+              unregisterDropTarget={DnDActions.unregisterDropTarget}
+              dropCallbacks={{
+                onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
+                onDrop: () => {}
+              }}
+            >
+              { nodeJSX } 
+            </WithDropTarget>
+          }
   
           nodesJSX.push(nodeJSX);
 

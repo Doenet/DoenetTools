@@ -9,37 +9,27 @@ import { DropTargetsContext } from "./context";
 
 export default function DropTargetsProvider({ children }) {
   const [draggedObject, setDraggedObject] = useState(null);
-  const [dropTargets, setDropTargets] = useState({});
   const [activeDropTargetId, setActiveDropTargetId] = useState(null);
-  const activeRefId = useRef(null);
-  const dropTargetsCacheRef = useRef({});
-
-  const sortedDropTargetIds = useMemo(
-    () =>
-      Object.keys(dropTargets)
-        .map((id) => id)
-        .reverse(),
-    [dropTargets]
-  );
+  const dropTargetsRef = useRef({});
 
   const getDropTargetFromCursor = useCallback(
     (x, y, ignoreId = null) => {
       const underCursor = document.elementsFromPoint(x, y);
-
-      for (let dropTargetId of sortedDropTargetIds) {
+      const dropTargetIds = Object.keys(dropTargetsRef.current);
+      for (let dropTargetId of dropTargetIds) {
         if (dropTargetId === ignoreId) continue;
-        const refs = dropTargets[dropTargetId]?.refs;
+        const refs = dropTargetsRef.current[dropTargetId]?.refs;
         for (let ref of refs) {
           if (underCursor.includes(ref)) return dropTargetId;
         } 
       }
       return null;
     },
-    [sortedDropTargetIds, dropTargets]
+    []
   );
 
   const registerDropTarget = useCallback(({ id, ref, onDragOver, onDrop }) => {
-    let dropTargetObj = dropTargetsCacheRef.current[id];
+    let dropTargetObj = dropTargetsRef.current[id];
     if (!dropTargetObj) {
       dropTargetObj = {
         refs: [],
@@ -48,18 +38,11 @@ export default function DropTargetsProvider({ children }) {
       };
     }
     dropTargetObj.refs.push(ref);
-    if (dropTargetObj.refs.length > 0) console.log("Here", id, dropTargetObj)
-    
-    dropTargetsCacheRef.current[id] = dropTargetObj;
-    setDropTargets((prev) => ({ ...prev, [id]: dropTargetObj }));
+    dropTargetsRef.current[id] = dropTargetObj;
   }, []);
 
   const unregisterDropTarget = useCallback((id) => {
-    delete dropTargetsCacheRef.current[id];
-    setDropTargets((prev) => {
-      const { [id]: _, ...without } = prev;
-      return without;
-    });
+    delete dropTargetsRef.current[id];
   }, []);
 
   const handleDrag = useCallback(
@@ -69,10 +52,10 @@ export default function DropTargetsProvider({ children }) {
       // trigger onDrag once
       if (activeDropTargetId !== dropTargetId) {
         setActiveDropTargetId(dropTargetId);
-        dropTargets[dropTargetId]?.onDragOver();
+        dropTargetsRef.current[dropTargetId]?.onDragOver();
       }
     },
-    [activeDropTargetId, getDropTargetFromCursor, dropTargets]
+    [activeDropTargetId, getDropTargetFromCursor]
   );
 
   const handleDrop = (selfId = null) => {
@@ -81,7 +64,6 @@ export default function DropTargetsProvider({ children }) {
 
   const state = {
     dropState: {
-      dropTargets,
       activeDropTargetId,
       draggedObject
     },
