@@ -69,6 +69,7 @@ function Tool(props){
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
        rdata = data?.response;
+       console.log(">>>move data",data)
       }
      return {selectedNodes, destinationObj, response:rdata}
    } 
@@ -223,8 +224,8 @@ function Tool(props){
       onDrag,
       onDragEnd,
       onDragOverContainer,
-      registerDropTarget:()=>{},  
-  //     registerDropTarget: dropActions.registerDropTarget, //Causes refresh
+      // registerDropTarget:()=>{},  
+      registerDropTarget: dropActions.registerDropTarget, //Causes refresh
       unregisterDropTarget: dropActions.unregisterDropTarget,
 
     }
@@ -281,7 +282,7 @@ function Tool(props){
   <div style={{display:"flex"}}> 
   <div>
       <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1" isNav={true} DnDState={DnDState}/>
-   {/* <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/> */}
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2" isNav={true} DnDState={DnDState}/>
  
     {/* <Browsers types={["personal","group","course"]} isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
   {/* <Browser drive="content" isNav={true} DnDState={DnDState}/>
@@ -289,8 +290,8 @@ function Tool(props){
  
   </div>
   <div>
-   {/* <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
-   {/* <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
+   <Browser drive="ZLHh5s8BWM2azTVFhazIH" label="test 1"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+   <Browser drive="ZLHh5s8BWM2azTVFhazI2" label="test 2"  setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
 
     {/* <Browsers types={["personal","group","course"]} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/> */}
 
