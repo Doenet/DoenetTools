@@ -51,7 +51,7 @@ const OverlayContent = styled.div`
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: auto 1fr 240px;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: 60px 1fr;
   grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel";
   overflow: scroll;
@@ -301,7 +301,9 @@ export default function Overlay(props) {
                     onRedo: props.onRedo,
                     title: props.title,
                     supportPanelObj: supportPanelObj,
+                    initSupportPanelOpen: props.initSupportPanelOpen,
                     headerMenuPanels: props.headerMenuPanels,
+                    key: index,
                   });
                 case "SupportPanel":
                   return null;
