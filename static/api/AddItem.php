@@ -18,6 +18,27 @@ $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
 $success = TRUE;
 $results_arr = array();
+
+$sql = "
+SELECT canAddItemsAndFolders
+FROM drives
+WHERE userId = '$userId'
+AND driveId = '$driveId'
+";
+$result = $conn->query($sql); 
+if ($result->num_rows > 0){
+$row = $result->fetch_assoc();
+$canAdd = $row["canAddItemsAndFolders"];
+if (!$canAdd){
+  $success = FALSE;
+}
+}else{
+  //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+  $success = FALSE;
+}
+
+if ($success){
+
 //If not given parentId then use the user's drive
 if ($parentId == ""){
   $parentId = "content";
@@ -32,6 +53,7 @@ VALUES
 ";
 $result = $conn->query($sql); 
 
+}
 
 $response_arr = array(
   "success"=>$success

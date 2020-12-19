@@ -77,6 +77,9 @@ function Tool(props){
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
        rdata = data?.response;
+       if (!data.success){ 
+         throw Error("Can't Move Items!");
+        }
       }
      return {selectedNodes, destinationObj, response:rdata}
    } 
@@ -272,7 +275,9 @@ const addItemMutation = async ({itemId, label, driveId, parentId,type}) =>{
     }
 
    const { data } = await axios.get("/api/addItem.php", payload);
-
+   if (!data.success){ 
+    throw Error("Can't Add Items!");
+   }
   return {driveId,parentId,itemId,label,type,results:data?.results}
 } 
 
@@ -284,7 +289,9 @@ const deleteItemMutation = async ({driveId, parentId, itemId}) =>{
     }
 
   const { data } = await axios.get("/api/deleteItem.php", payload)
-
+  if (!data.success){ 
+    throw Error("Can't Delete Items!");
+   }
   return {driveId,parentId,itemId,results:data?.results}
 } 
 
@@ -350,6 +357,17 @@ function AddItem(props){
       if (routePathDriveId !== "" && routePathFolderId === ""){routePathFolderId = routePathDriveId;}
     }
 
+    let disabled = false;
+    if (routePathFolderId === ""){
+      disabled = true;
+    }
+    if (routePathDriveId !== ""){
+      //Find if user has permission to add
+      //TODO: have it work on first load
+      let data = cache.getQueryData(["nodes",routePathDriveId]);
+      const addPerms = data?.[0]?.perms?.canAddItemsAndFolders;
+      if (addPerms == 0){disabled = true;}
+    }
     if (props.type === "Folder" || props.type === "Url"){ //List of types accepted
       return (<span>
         <input 
@@ -357,11 +375,12 @@ function AddItem(props){
         data-doenet-browser-stayselected = {true} 
         type="text" 
         value={label} 
+        disabled={disabled} 
         onChange={(e)=>setLabel(e.target.value)} />
         <button 
         className="noselect nooutline" 
         data-doenet-browser-stayselected = {true}
-        disabled={routePathFolderId === ""} 
+        disabled={disabled} 
       onClick={()=>{
         const itemId = nanoid();
         addItem({itemId,driveId:routePathDriveId,parentId:routePathFolderId,label,type:props.type})

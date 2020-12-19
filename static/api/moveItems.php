@@ -30,19 +30,24 @@ $row = $result->fetch_assoc();
 $canMoveSource = $row["canMoveItemsAndFolders"];
 }
 
-$sql = "
-SELECT canMoveItemsAndFolders
-FROM drives
-WHERE userId = '$userId'
-AND driveId = '$destinationDriveId'
-";
-$result = $conn->query($sql); 
-$canMoveDesination = FALSE;
-if ($result->num_rows > 0){
-$row = $result->fetch_assoc();
-$canMoveDesination = $row["canMoveItemsAndFolders"];
+if ($destinationDriveId == $sourceDriveId){
+  $canAddDesination = TRUE;
+}else{
+  $sql = "
+  SELECT canAddItemsAndFolders
+  FROM drives
+  WHERE userId = '$userId'
+  AND driveId = '$destinationDriveId'
+  ";
+  $result = $conn->query($sql); 
+  $canAddDesination = FALSE;
+  if ($result->num_rows > 0){
+  $row = $result->fetch_assoc();
+  $canAddDesination = $row["canAddItemsAndFolders"];
+  }
 }
-if ($canMoveDesination && $canMoveSource){
+
+if ($canAddDesination && $canMoveSource){
   $success = TRUE;
 $number_items = count($_POST["selectedNodes"]["selectedArr"]);
 $new_values = "";
@@ -62,6 +67,8 @@ driveId = VALUES(driveId),
 parentId = VALUES(parentId) ";
 
 $result = $conn->query($sql); 
+}else{
+  $success = FALSE;
 }
 $response_arr = array( 
     "success" => $success,

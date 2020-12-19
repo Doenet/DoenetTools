@@ -17,14 +17,30 @@ $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $success = TRUE;
 $results_arr = array();
 
-$sql="
-UPDATE drive 
-SET isDeleted='1'
-WHERE driveId = '$driveId'
-AND itemId = '$itemId'
-AND parentId = '$parentId'
+$sql = "
+SELECT canDeleteItemsAndFolders
+FROM drives
+WHERE userId = '$userId'
+AND driveId = '$driveId'
 ";
 $result = $conn->query($sql); 
+if ($result->num_rows > 0){
+$row = $result->fetch_assoc();
+$canDelete = $row["canDeleteItemsAndFolders"];
+if (!$canDelete){
+  $success = FALSE;
+}
+
+if ($success){
+  $sql="
+  UPDATE drive 
+  SET isDeleted='1'
+  WHERE driveId = '$driveId'
+  AND itemId = '$itemId'
+  AND parentId = '$parentId'
+  ";
+  $result = $conn->query($sql); 
+}
 
 
 $response_arr = array(
