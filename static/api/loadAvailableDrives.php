@@ -19,15 +19,14 @@ $results_arr = array();
 //Gather matching drive ids
 $driveIdsAndLabels = array();
 $sql = "
-SELECT driveId,label
+SELECT driveId,label,driveType
 FROM drives
 WHERE userId='$userId'
-AND driveType='$type'
 ";
 
 $result = $conn->query($sql); 
 while($row = $result->fetch_assoc()){ 
-  $driveAndLabel = array("driveId"=>$row['driveId'],"label"=>$row['label']);
+  $driveAndLabel = array("driveId"=>$row['driveId'],"label"=>$row['label'],"type"=>$row['driveType']);
   array_push($driveIdsAndLabels,$driveAndLabel);
 }
 $response_arr = array(
