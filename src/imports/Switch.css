@@ -1,7 +1,5 @@
 /* SECTION: BASIC STYLES */
 .switch {
-  margin: 0.5em;
-  padding: 0;
   font-size: 18px;
   font-family: sans-serif;
 }
@@ -9,7 +7,7 @@
 .switch label {
   position: relative;
   display: inline-flex;
-  width: 19em;
+  width: 2.5em;
   min-height: 1em;
   vertical-align: top;
   isolation: isolate;
@@ -43,7 +41,6 @@
   border-radius: 1em;
   border-width: .5em;
   order: 0;
-  margin-right: .5em;
 }
 
 .switch-visual::before{

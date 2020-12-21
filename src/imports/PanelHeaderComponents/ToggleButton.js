@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { doenetComponentForegroundActive } from "./theme.js";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes, faCode, faFish } from '@fortawesome/free-solid-svg-icons';
+import { doenetMainBlue } from "./theme.js";
 
 export default function ToggleButton(props) {
     const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
@@ -10,10 +8,9 @@ export default function ToggleButton(props) {
     var toggleButton = {
         margin: '0px',
         height: '24px',
-        border: `2px solid ${doenetComponentForegroundActive}`,
-        color: `${doenetComponentForegroundActive}`,
+        border: `2px solid ${doenetMainBlue}`,
+        color: `${doenetMainBlue}`,
         backgroundColor: '#FFF',
-        fontFamily: 'Arial',
         borderRadius: '5px',
         text: 'Toggle Button',
         padding: '0px 10px 0px 10px',
@@ -22,7 +19,6 @@ export default function ToggleButton(props) {
         textAlign: 'center'
       }
     var label ={
-        fontFamily: 'Arial',
         text: 'Label:',
         fontSize: '12px',
         display: `${labelVisible}`
@@ -47,7 +43,7 @@ export default function ToggleButton(props) {
         }
     }
     if (isSelected === true) {
-        toggleButton.backgroundColor = `${doenetComponentForegroundActive}`;
+        toggleButton.backgroundColor = `${doenetMainBlue}`;
         toggleButton.color = '#FFF';
         toggleButton.border = '2px solid #FFF';
         if (props.switch_text) toggleButton.text = props.switch_text
