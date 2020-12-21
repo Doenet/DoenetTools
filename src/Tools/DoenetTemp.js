@@ -52,7 +52,11 @@ function Tool(props){
     return data.driveIdsAndLabels;
   }
 
-  const { data:driveData , isFetching } = useQuery("availableDrives",fetchDrives,{});
+  const { data:driveData , isFetching } = useQuery("availableDrives",fetchDrives,{
+    refetchOnWindowFocus: false,
+      refetchOnMount:false,
+      staleTime:600000,
+  });
 
   const cache = useQueryCache();
   const { dropState, dropActions } = useContext(DropTargetsContext);
@@ -453,6 +457,8 @@ function BrowserChild(props){
     fetchMore, 
     error} = useInfiniteQuery(['nodes',props.drive], fetchChildrenNodes, {
       refetchOnWindowFocus: false,
+      refetchOnMount:false,
+      staleTime:600000,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
           let folderChildrenIds = {};

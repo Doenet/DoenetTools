@@ -30,6 +30,8 @@ $canDelete = $row["canDeleteItemsAndFolders"];
 if (!$canDelete){
   $success = FALSE;
 }
+}
+
 
 if ($success){
   $sql="
