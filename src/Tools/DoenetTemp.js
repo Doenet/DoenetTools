@@ -661,21 +661,21 @@ function BrowserChild(props){
       return old
       })
     }});
-  
-  const sortHandler = ({ sortKey, driveId, itemId }) => {
-    // insert sort action object
-    cache.setQueryData(["nodes", driveId],
-      (old)=>{
-        old.push({
-          sort: {
-            sortKey: sortKey,
-            itemId: itemId
-        }});
-        return old
-      }
-    );
-  };
 
+    const sortHandler = ({ sortKey, driveId, itemId }) => {
+      // insert sort action object
+      cache.setQueryData(["nodes", driveId],
+        (old)=>{
+          old.push({
+            sort: {
+              sortKey: sortKey,
+              itemId: itemId
+          }});
+          return old
+        }
+      );
+    };
+    
   const sortItems = useCallback(({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
     let tempArr = [...defaultFolderChildrenIds];
     switch (sortKey) {
@@ -694,13 +694,13 @@ function BrowserChild(props){
       case sortOptions.CREATION_DATE_ASC:
         tempArr.sort(
           (a,b) => { 
-            return (nodeObjs[a].creationDate - (nodeObjs[b].creationDate))}
+            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
         );
         break;
       case sortOptions.CREATION_DATE_DESC:
         tempArr.sort(
           (b,a) => { 
-            return (nodeObjs[a].creationDate - (nodeObjs[b].creationDate))}
+            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
         );
         break;
     }
@@ -855,7 +855,8 @@ function BrowserChild(props){
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.defaultOrder;
+    const childrenIdsOrder = data[0]?.nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
+    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.[childrenIdsOrder];
 
     if (childrenIdsArr === undefined){
       //Need data
@@ -1065,31 +1066,19 @@ const LoadingNode =  React.memo(function Node(props){
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
   >X</button>
 
-  // Sort
-  const sortAscNode = <button
-  data-doenet-browserid={props.browserId}
-  tabIndex={-1}
-  onClick={(e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    props.sortHandler({driveId: props.driveId, sortKey: sortOptions.LABEL_ASC, itemId: props.nodeId});
-  }}
-  onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
-  onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
-  >Sort ASC</button>
-
-  // Sort
-  const sortDescNode = <button
-  data-doenet-browserid={props.browserId}
-  tabIndex={-1}
-  onClick={(e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    props.sortHandler({driveId: props.driveId, sortKey: sortOptions.LABEL_DESC, itemId: props.nodeId});
-  }}
-  onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
-  onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
-  >Sort DESC</button>
+  const sortNodeButtonFactory = ({ buttonLabel, sortKey }) => {
+    return <button
+    data-doenet-browserid={props.browserId}
+    tabIndex={-1}
+    onClick={(e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      props.sortHandler({driveId: props.driveId, sortKey: sortKey, itemId: props.nodeId});
+    }}
+    onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    >{ buttonLabel }</button>;
+  }
 
   if (props.type === "Folder"){
     return <>
@@ -1125,7 +1114,12 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect" 
       style={{
         marginLeft: `${props.level * indentPx}px`
-      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode} {sortAscNode} {sortDescNode} </div></div>
+      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC})} 
+      </div></div>
     
     </>
   }else if (props.type === "Url"){
