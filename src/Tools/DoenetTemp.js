@@ -41,6 +41,13 @@ return <>
 </>
 };
 
+const sortOptions = Object.freeze({
+  "LABEL_ASC": "label ascending",
+  "LABEL_DESC": "label descending",
+  "CREATION_DATE_ASC": "creation date ascending",
+  "CREATION_DATE_DESC": "creation date descending"
+});
+
 //TODO: Replace with the real <Tool /> component
 function Tool(props){
   console.log("=== Tool")
@@ -547,8 +554,25 @@ function BrowserChild(props){
                 sParentArr.splice(sParentArr.indexOf(nodeId),1);
               }
             }
-            data.pop();       
+            data.pop();    
+          } else if (actionOrId === "sort") {
+            const { itemId, sortKey } = data[1].sort;
             
+            const itemObj = { ...data[0].nodeObjs[itemId] };
+            const defaultFolderChildrenIds = [...data[0].folderChildrenIds?.[itemId]?.defaultOrder];
+            
+            // sort itemId child array
+            const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: data[0].nodeObjs, defaultFolderChildrenIds});
+
+            // modify itemId sortBy            
+            itemObj.sortBy = sortKey;
+
+            // update itemId data
+            data[0].nodeObjs[itemId] = itemObj;
+            data[0].folderChildrenIds[itemId][sortKey] = sortedFolderChildrenIds;
+            console.log(">>>", data[0])
+
+            data.pop();
           }else{
             //handle fetchMore
             for (let cNodeId of Object.keys(data[1])){
@@ -611,22 +635,50 @@ function BrowserChild(props){
       })
     }});
 
-  const sortOptions = Object.freeze({
-    "LABEL_ASC": "label ascending",
-    "LABEL_DESC": "label descending",
-    "CREATION_DATE_ASC": "creation date ascending",
-    "CREATION_DATE_DESC": "creation date descending"
-  });
-  
-  const sortItems = ({ sortBy }) => {
-    // validate input
-    if (!sortOptions[sortBy]) return;
-
-    // insert sort action object into data[1]
+    const sortHandler = ({ sortKey, driveId, itemId }) => {
+      // insert sort action object
+      cache.setQueryData(["nodes", driveId],
+        (old)=>{
+          old.push({
+            sort: {
+              sortKey: sortKey,
+              itemId: itemId
+          }});
+          return old
+        }
+      );
+    };
     
-
-  };
-
+  const sortItems = useCallback(({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
+    let tempArr = [...defaultFolderChildrenIds];
+    switch (sortKey) {
+      case sortOptions.LABEL_ASC:
+        tempArr.sort(
+          (a,b) => { 
+            return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
+        );
+        break;
+      case sortOptions.LABEL_DESC:
+        tempArr.sort(
+          (b,a) => { 
+            return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
+        );
+        break;
+      case sortOptions.CREATION_DATE_ASC:
+        tempArr.sort(
+          (a,b) => { 
+            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
+        );
+        break;
+      case sortOptions.CREATION_DATE_DESC:
+        tempArr.sort(
+          (b,a) => { 
+            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
+        );
+        break;
+    }
+    return tempArr;
+  }, []);
  
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
@@ -776,7 +828,8 @@ function BrowserChild(props){
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.defaultOrder;
+    const childrenIdsOrder = data[0]?.nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
+    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.[childrenIdsOrder];
 
     if (childrenIdsArr === undefined){
       //Need data
@@ -835,6 +888,7 @@ function BrowserChild(props){
             level={level}
             handleFolderToggle={handleFolderToggle} 
             deleteItemHandler={deleteItemHandler}
+            sortHandler={sortHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
             level={level}/>;
@@ -985,6 +1039,20 @@ const LoadingNode =  React.memo(function Node(props){
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
   >X</button>
 
+  const sortNodeButtonFactory = ({ buttonLabel, sortKey }) => {
+    return <button
+    data-doenet-browserid={props.browserId}
+    tabIndex={-1}
+    onClick={(e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      props.sortHandler({driveId: props.driveId, sortKey: sortKey, itemId: props.nodeId});
+    }}
+    onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    >{ buttonLabel }</button>;
+  }
+
   if (props.type === "Folder"){
     return <>
     <div
@@ -1019,7 +1087,12 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect" 
       style={{
         marginLeft: `${props.level * indentPx}px`
-      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode}</div></div>
+      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC})} 
+      </div></div>
     
     </>
   }else if (props.type === "Url"){
