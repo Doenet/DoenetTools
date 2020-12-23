@@ -1,6 +1,12 @@
 import React from "react";
 import Tool from "../imports/Tool/Tool";
 
+import {
+  atom,
+  useSetRecoilState,
+  useRecoilValue
+} from 'recoil';
+
 // import styled from "styled-components";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import {
@@ -22,10 +28,21 @@ import Tool from "../imports/Tool/Tool";
 // import Menu from "../imports/PanelHeaderComponents/Menu";
 // import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
 // import { SelectedElementStore } from "./SelectedElementContext";
-
+let numAtom = atom({
+  key:"numAtom",
+  default:0
+})
+function Inc(){
+  let setNum = useSetRecoilState(numAtom);
+  return <button onClick={()=>setNum((old)=>old+1)}>+</button>
+}
+function NumIndicator(){
+  let num = useRecoilValue(numAtom);
+  return <div>{num}</div>
+}
 
 export default function DoenetExampleTool(props) {
-
+  console.log("=== DoenetExampleTool")
   return <Tool>
      <navPanel>
         {/* <drive id="abc123" /> */}
@@ -35,6 +52,7 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do important stuff</p>
+        <NumIndicator />
         {/* <drive id="abc123" /> */}
         {/* <drive types={['content','courses']} /> */}
       </mainPanel>
@@ -43,7 +61,8 @@ export default function DoenetExampleTool(props) {
         <p>I'm here for support</p>
       </supportPanel>
 
-      <menuPanel>
+      <menuPanel> 
+        <Inc />
         <p>control important stuff</p>
       </menuPanel>
 
