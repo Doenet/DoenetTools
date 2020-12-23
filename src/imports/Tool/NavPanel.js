@@ -6,54 +6,31 @@ import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 
 const NavPanelDiv = styled.div`
   grid-area: navPanel;
-  width: 240px;
-  display: flex;
-  height: 100vh;
-  color: black;
+  width: ${({ visible }) => (visible ? "240px" : "0px")};
   background-color: #8fb8de;
   overflow: scroll;
 `;
 
 export default function NavPanel({ children }) {
-  const [hidden, setHidden] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   return (
-    <>
-      {hidden ? (
-        <button
-          onClick={() => {
-            setHidden(false);
+    <NavPanelDiv visible={visible}>
+      <button
+        onClick={() => {
+          setVisible(!visible);
+        }}
+        className="leftCloseButton circle" //className="middleLeftButton circle"
+      >
+        <FontAwesomeIcon
+          icon={visible ? faBars : faTimes}
+          style={{
+            alignSelf: "center",
+            fontSize: "16px",
           }}
-          className="middleLeftButton circle"
-        >
-          <FontAwesomeIcon
-            icon={faBars}
-            style={{
-              display: "block",
-              alignSelf: "center",
-              fontSize: "16px",
-            }}
-          />
-        </button>
-      ) : (
-        <NavPanelDiv>
-          <button
-            onClick={() => {
-              setHidden(true);
-            }}
-            className="leftCloseButton circle"
-          >
-            <FontAwesomeIcon
-              icon={faTimes}
-              style={{
-                alignSelf: "center",
-                fontSize: "16px",
-              }}
-            />
-          </button>
-          {children}
-        </NavPanelDiv>
-      )}
-    </>
+        />
+      </button>
+      {children} {/* render when closed? */}
+    </NavPanelDiv>
   );
 }
