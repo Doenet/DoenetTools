@@ -11,14 +11,6 @@ const ToolContainer = styled.div`
 export default function Tool(props) {
   //console.log(props.responsiveControls, "props.responsiveControls in tool");
   const [supportPanelObj, setSupportPanelObj] = React.useState({});
-  const [navPanelObj, setNavPanelObj] = React.useState(null);
-  const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
-
-  const hideNavPanel = (showHideNavPanelFlag) => {
-    if (showHideNavPanelFlag !== undefined) {
-      setShowHideNavPanel(showHideNavPanelFlag);
-    }
-  };
 
   React.useEffect(() => {
     if (props.children && Array.isArray(props.children)) {
@@ -35,17 +27,6 @@ export default function Tool(props) {
               responsiveControls: obj.props.responsiveControls,
               key: index,
             })
-          );
-        }
-        if (
-          obj &&
-          obj.type &&
-          typeof obj.type === "function" &&
-          obj.type.name === "NavPanel"
-        ) {
-          console.log(obj.props.children, "obj.props nav panel");
-          setNavPanelObj(
-            React.cloneElement(obj, { hideNavPanel: hideNavPanel, key: index })
           );
         }
       });
