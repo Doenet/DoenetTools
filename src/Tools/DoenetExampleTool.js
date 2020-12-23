@@ -1,6 +1,6 @@
 import React from "react";
 import Tool from "../imports/Tool/Tool";
-
+import Drive from "../imports/Drive";
 import {
   atom,
   useSetRecoilState,
@@ -41,20 +41,22 @@ function NumIndicator(){
   return <div>{num}</div>
 }
 
+
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool")
   return <Tool>
      <navPanel>
-        {/* <drive id="abc123" /> */}
-        {/* <drive types={['content','courses']} /> */}
-        <p>navigate to important stuff</p>
+        {/* <p>navigate to important stuff</p> */}
+        <Drive id="abc123" />
+        {/* <Drive types={['content','courses']} /> */}
       </navPanel>
 
       <mainPanel>
         <p>do important stuff</p>
+
         <NumIndicator />
-        {/* <drive id="abc123" /> */}
-        {/* <drive types={['content','courses']} /> */}
+        <Drive id="abc123" />
+        <Drive types={['content','courses']} />
       </mainPanel>
 
       <supportPanel width="40%">
