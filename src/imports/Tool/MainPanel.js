@@ -99,10 +99,6 @@ export default function MainPanel(props) {
     setshowHideSupportPanel(!showHideSupportPanel);
   };
 
-  const showNavPanel = () => {
-    props.hideNavPanel(false);
-  };
-
   const showHideOverLayFunc = (obj) => {
     // console.log(obj, "Clciked object ");
     // setClickedButtonObj(obj);
@@ -144,25 +140,6 @@ export default function MainPanel(props) {
   return (
     <>
       <MainPanelDiv>
-        {props.showHideNavPanel !== undefined && props.showHideNavPanel ? (
-          <button
-            onClick={() => {
-              showNavPanel();
-            }}
-            className="middleLeftButton circle"
-          >
-            <FontAwesomeIcon
-              icon={faBars}
-              style={{
-                display: "block",
-                alignSelf: "center",
-                fontSize: "16px",
-              }}
-            />
-          </button>
-        ) : (
-          ""
-        )}
         <div>
           <div
             style={{
