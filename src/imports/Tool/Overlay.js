@@ -115,18 +115,10 @@ const Container = styled.div`
 export default function Overlay(props) {
   //console.log(props.responsiveControls, "props.responsiveControls in tool");
   const [supportPanelObj, setSupportPanelObj] = React.useState({});
-  const [navPanelObj, setNavPanelObj] = React.useState(null);
-  const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
   const [headerCtrlGrpWidth, setHeaderCtrlGrpWidth] = useState(0);
   const [headerCtrlGroupEl, setHeaderCtrlGroupEl] = useState(null);
   const [activeHeaderPanelContent, setActiveHeaderPanelContent] = useState();
   const [showHideSupportPanel, setshowHideSupportPanel] = useState(false);
-
-  const hideNavPanel = (showHideNavPanelFlag) => {
-    if (showHideNavPanelFlag !== undefined) {
-      setShowHideNavPanel(showHideNavPanelFlag);
-    }
-  };
 
   const onSwitchClick = () => {
     setshowHideSupportPanel(!showHideSupportPanel);
@@ -154,16 +146,6 @@ export default function Overlay(props) {
             React.cloneElement(obj, {
               responsiveControls: obj.props.responsiveControls,
             })
-          );
-        }
-        if (
-          obj &&
-          obj.type &&
-          typeof obj.type === "function" &&
-          obj.type.name === "NavPanel"
-        ) {
-          setNavPanelObj(
-            React.cloneElement(obj, { hideNavPanel: hideNavPanel })
           );
         }
       });
@@ -295,8 +277,6 @@ export default function Overlay(props) {
                     showHideOverlayFromOverlayNew: showHideSupportPanel,
                     responsiveControlsFromTools: props.responsiveControls,
                     responsiveControls: obj.props.responsiveControls,
-                    hideNavPanel: hideNavPanel,
-                    showHideNavPanel: showHideNavPanel,
                     onUndo: props.onUndo,
                     onRedo: props.onRedo,
                     title: props.title,
@@ -318,8 +298,6 @@ export default function Overlay(props) {
                   fromOverlayNew: true,
                   responsiveControlsFromTools: props.responsiveControls,
                   responsiveControls: props.children.props.responsiveControls,
-                  hideNavPanel: hideNavPanel,
-                  showHideNavPanel: showHideNavPanel,
                   onUndo: props.onUndo,
                   onRedo: props.onRedo,
                   title: props.title,
