@@ -71,21 +71,17 @@ export default function Tool(props) {
                 },
                 responsiveControlsFromTools: props.responsiveControls,
                 responsiveControls: obj.props.responsiveControls,
-                hideNavPanel: hideNavPanel,
-                showHideNavPanel: showHideNavPanel,
                 onUndo: props.onUndo,
                 onRedo: props.onRedo,
                 title: props.title,
-                navPanelObj: navPanelObj,
                 supportPanelObj: supportPanelObj,
                 headerMenuPanels: props.headerMenuPanels,
                 initSupportPanelOpen: props.initSupportPanelOpen,
                 key: index,
               });
-            case "NavPanel":
-              return navPanelObj ? (!showHideNavPanel ? navPanelObj : "") : "";
             case "SupportPanel":
               return (null);
+            case "NavPanel":
             case "MenuPanel":
             default:
               return React.cloneElement(obj, { key: index });

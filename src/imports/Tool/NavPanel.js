@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import "../../../src/Tools/ToolLayout/toollayout.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,31 +10,50 @@ const NavPanelDiv = styled.div`
   display: flex;
   height: 100vh;
   color: black;
-  background-color: #8FB8DE;
+  background-color: #8fb8de;
   overflow: scroll;
 `;
 
-export default function NavPanel(props) {
-  const hideNavPanel = () => {
-    props.hideNavPanel(true);
-  };
+export default function NavPanel({ children }) {
+  const [hidden, setHidden] = useState(false);
+
   return (
-    <NavPanelDiv>
-      <button
-        onClick={() => {
-          hideNavPanel();
-        }}
-        className="leftCloseButton circle"
-      >
-        <FontAwesomeIcon
-          style={{
-            alignSelf: "center",
-            fontSize: "16px",
+    <>
+      {hidden ? (
+        <button
+          onClick={() => {
+            setHidden(false);
           }}
-          icon={faTimes}
-        />
-      </button>
-      {props.children}
-    </NavPanelDiv>
+          className="middleLeftButton circle"
+        >
+          <FontAwesomeIcon
+            icon={faBars}
+            style={{
+              display: "block",
+              alignSelf: "center",
+              fontSize: "16px",
+            }}
+          />
+        </button>
+      ) : (
+        <NavPanelDiv>
+          <button
+            onClick={() => {
+              setHidden(true);
+            }}
+            className="leftCloseButton circle"
+          >
+            <FontAwesomeIcon
+              icon={faTimes}
+              style={{
+                alignSelf: "center",
+                fontSize: "16px",
+              }}
+            />
+          </button>
+          {children}
+        </NavPanelDiv>
+      )}
+    </>
   );
 }

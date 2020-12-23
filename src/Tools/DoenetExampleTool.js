@@ -96,7 +96,9 @@ export default function DoenetExampleTool(props) {
             </HeaderMenuPanelButton>,
           ]}
         >
-          <NavPanel>Nav Panel</NavPanel>
+          <NavPanel>
+            Nav Panel
+          </NavPanel>
 
           <MainPanel
             setShowHideNewOverLay={setShowHideNewOverLay}
