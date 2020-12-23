@@ -11,25 +11,35 @@ const NavPanelDiv = styled.div`
   overflow: scroll;
 `;
 
+const VisibilityButton = styled.button`
+  width: 40px;
+  height: 40px;
+  color: #8fb8de;
+  background-color: white;
+  border-radius: 50%;
+  border: 1px solid #e3e2e2;
+  font-size: 16px;
+  cursor: pointer;
+  position: fixed;
+  top: 92%;
+  left: 1%;
+  z-index: 10000;
+`;
+
 export default function NavPanel({ children }) {
   const [visible, setVisible] = useState(true);
 
   return (
     <NavPanelDiv visible={visible}>
-      <button
+      <VisibilityButton
         onClick={() => {
           setVisible(!visible);
         }}
-        className="leftCloseButton circle" //className="middleLeftButton circle"
       >
         <FontAwesomeIcon
-          icon={visible ? faBars : faTimes}
-          style={{
-            alignSelf: "center",
-            fontSize: "16px",
-          }}
+          icon={visible ? faTimes : faBars}
         />
-      </button>
+      </VisibilityButton>
       {children} {/* render when closed? */}
     </NavPanelDiv>
   );
