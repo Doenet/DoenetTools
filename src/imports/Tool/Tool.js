@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-
+import {
+  RecoilRoot
+} from 'recoil';
 const ToolContainer = styled.div`
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -78,12 +80,14 @@ export default function Tool(props) {
   }
 
   return (
-    <ToolContainer>
-      <h1>Tool</h1>
-      {navPanel}
-      {mainPanel}
-      {menuPanel}
+    <RecoilRoot>
+      <ToolContainer>
+        <h1>Tool</h1>
+        {navPanel}
+        {mainPanel}
+        {menuPanel}
       </ToolContainer>
+     </RecoilRoot>
   );
 
 }

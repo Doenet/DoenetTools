@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Tool from "../imports/Tool/Tool";
 
 // import styled from "styled-components";
@@ -28,6 +28,7 @@ export default function DoenetExampleTool(props) {
 
   return <Tool>
      <navPanel>
+        {/* <drive id="abc123" /> */}
         {/* <drive types={['content','courses']} /> */}
         <p>navigate to important stuff</p>
       </navPanel>
@@ -35,15 +36,20 @@ export default function DoenetExampleTool(props) {
       <mainPanel>
         <p>do important stuff</p>
         {/* <drive id="abc123" /> */}
+        {/* <drive types={['content','courses']} /> */}
       </mainPanel>
 
-      {/* <menuPanel>
+      <supportPanel width="40%">
+        <p>I'm here for support</p>
+      </supportPanel>
+
+      <menuPanel>
         <p>control important stuff</p>
       </menuPanel>
 
       <menuPanel>
         <p>control more important stuff</p>
-      </menuPanel> */}
+      </menuPanel>
   </Tool>
 }
 
