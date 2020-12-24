@@ -5,41 +5,51 @@ import NavPanel from "./NavPanel";
 
 const ToolContainer = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: 60px 1fr auto;
-  grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel" "navPanel mainPanel menuPanelSecondary";
+  grid-template:
+    "navPanel headerPanel menuPanel" 60px
+    "navPanel contentPanel menuPanel" 1fr
+    / auto 1fr auto;
+  width: 100vw;
+  height: 100vh;
 `;
 
 export default function Tool(props) {
   console.log("=== Tool (only once)");
 
   var toolParts = {};
-  
-  const implementedToolParts = ["navPanel", "mainPanel", "menuPanel"];
+
+  const implementedToolParts = [
+    "navPanel",
+    "headerPanel",
+    "mainPanel",
+    "supportPanel",
+    "menuPanel",
+  ];
+
   if (props.children) {
     if (Array.isArray(props.children)) {
+      //populate toolParts dictionary from the lowercase Tool children
       for (let child of props.children) {
         if (implementedToolParts.includes(child.type)) {
           if (child.type === "menuPanel") {
-            if (!toolParts.menuPanel){
-              toolParts['menuPanel'] = [];
+            if (!toolParts.menuPanel) {
+              toolParts["menuPanel"] = [];
             }
             toolParts.menuPanel.push({
-              children: child.props.children
+              children: child.props.children,
             });
-          }else{
+          } else {
             toolParts[child.type] = {
-              children: child.props.children
+              children: child.props.children,
             };
           }
-          
         }
       }
     } else {
       //Only one child
       if (implementedToolParts.includes(props.children.type)) {
         toolParts[props.children.type] = {
-          children: props.children.props.children
+          children: props.children.props.children,
         };
       }
     }
@@ -59,42 +69,59 @@ export default function Tool(props) {
   if (toolParts.headerPanel) {
     headerPanel = (
       <div style={{ gridArea: "headerPanel", display: "flex" }}>
+        <h2>Tool</h2>
+        {toolParts.headerPanel.children}
+      </div>
     );
   }
 
   if (toolParts.mainPanel) {
     mainPanel = (
-      <>
+      <div>
         <h2>Main Panel</h2>
-        <div>{toolParts.mainPanel.children}</div>
-      </>
+        {toolParts.mainPanel.children}
+      </div>
+    );
+  }
+
+  if (toolParts.supportPanel) {
+    supportPanel = (
+      <div>
+        <h2>Support Panel</h2>
+        {toolParts.supportPanel.children}
+      </div>
     );
   }
 
   if (toolParts.menuPanel) {
-    menuPanel = [];
-    for (let [i,menuPanelToolPart] of Object.entries(toolParts.menuPanel)){
-      menuPanel.push(<React.Fragment key={`menuPanel${i}`}>
-        <h2>Menu Panel</h2>
-        <div>{menuPanelToolPart.children}</div>
-      </React.Fragment>)
+    const panels = [];
+    for (let [i, menuPanelToolPart] of Object.entries(toolParts.menuPanel)) {
+      panels.push(
+        <React.Fragment key={`menuPanel${i}`}>
+          <div>
+            <h2>Menu Panel</h2>
+            {menuPanelToolPart.children}
+          </div>
+        </React.Fragment>
+      );
+      menuPanel = <div style={{ gridArea: "menuPanel" }}>{panels}</div>;
     }
-
   }
 
   return (
     <RecoilRoot>
       <ToolContainer>
-        <h1>Tool</h1>
         {navPanel}
+        {headerPanel}
+        <div style={{ gridArea: "contentPanel" }}> {/* TODO: solve the resizing controller */}
         {mainPanel}
+        {supportPanel}
+        </div>
         {menuPanel}
       </ToolContainer>
-     </RecoilRoot>
+    </RecoilRoot>
   );
-
 }
-
 
 // {props.children &&
 //   Array.isArray(props.children) &&

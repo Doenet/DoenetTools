@@ -50,6 +50,10 @@ export default function DoenetExampleTool(props) {
         <p>navigate to important stuff</p>
       </navPanel>
 
+      <headerPanel>
+        <p>header for important stuff</p>
+      </headerPanel>
+
       <mainPanel>
         <p>do important stuff</p>
         <NumIndicator />
