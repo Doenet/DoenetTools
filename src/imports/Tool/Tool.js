@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  RecoilRoot
-} from 'recoil';
+import { RecoilRoot } from "recoil";
+import NavPanel from "./NavPanel";
+
 const ToolContainer = styled.div`
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -45,17 +45,20 @@ export default function Tool(props) {
     }
   }
 
-  console.log(">>>toolParts:",toolParts);
-  let mainPanel = null;
-  let menuPanel = null;
+  console.log(">>>toolParts:", toolParts);
   let navPanel = null;
+  let headerPanel = null;
+  let mainPanel = null;
+  let supportPanel = null;
+  let menuPanel = null;
 
   if (toolParts.navPanel) {
-    navPanel = (
-      <>
-        <h2>Nav Panel</h2>
-        <div>{toolParts.navPanel.children}</div>
-      </>
+    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
+  }
+
+  if (toolParts.headerPanel) {
+    headerPanel = (
+      <div style={{ gridArea: "headerPanel", display: "flex" }}>
     );
   }
 
