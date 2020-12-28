@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { IsNavContext } from './Tool/NavPanel'
 
-export default function Drive(props){
+export default function Drive(){
+  const isNav = useContext(IsNavContext);
   console.log("=== Drive")
-  console.log(">>>Drive Props",props)
-  return <div>I'm drive isNav = {props.isNav}</div>
+  console.log(isNav);
+  return <div>I'm drive isNav = {isNav ? "true" : "false"}</div>
 }
