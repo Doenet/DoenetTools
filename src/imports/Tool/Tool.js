@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { RecoilRoot } from "recoil";
 import NavPanel from "./NavPanel";
+import ContentPanel from "./Contentpanel";
 import Drive from "../Drive";
 
 const ToolContainer = styled.div`
@@ -32,7 +33,7 @@ export default function Tool(props) {
       //populate toolParts dictionary from the lowercase Tool children
       for (let child of props.children) {
         if (implementedToolParts.includes(child.type)) {
-          let newProps = {...child.props}
+          let newProps = { ...child.props };
           delete newProps.children;
           if (child.type === "menuPanel") {
             if (!toolParts.menuPanel) {
@@ -40,12 +41,12 @@ export default function Tool(props) {
             }
             toolParts.menuPanel.push({
               children: child.props.children,
-              props:newProps
+              props: newProps,
             });
           } else {
             toolParts[child.type] = {
               children: child.props.children,
-              props:newProps
+              props: newProps,
             };
           }
         }
@@ -53,11 +54,11 @@ export default function Tool(props) {
     } else {
       //Only one child
       if (implementedToolParts.includes(props.children.type)) {
-        let newProps = {...child.props}
-          delete newProps.children;
+        let newProps = { ...child.props };
+        delete newProps.children;
         toolParts[props.children.type] = {
           children: props.children.props.children,
-          props:newProps
+          props: newProps,
         };
       }
     }
@@ -71,27 +72,11 @@ export default function Tool(props) {
   let menuPanel = null;
 
   if (toolParts.navPanel) {
-    //Add isNav={true} to <Drive>
-    let newChildren = [];
-    if (Array.isArray(toolParts.navPanel.children)){
-      for (let [i,child] of Object.entries(toolParts.navPanel.children)){
-        if (child.type === Drive){
-          newChildren.push(<Drive key={`navPanel${i}`} isNav={true} {...child.props} />)
-        }else{
-          newChildren.push(<React.Fragment key={`navPanel${i}`}>{child}</React.Fragment>)
-        }
-      }
-    }else{
-      if (toolParts.navPanel.children.type === Drive){
-        newChildren.push(<Drive key={`navPanel0`} isNav={true} {...toolParts.navPanel.children.props} />)
-      }else{
-        newChildren.push(<React.Fragment key={`navPanel0`}>{toolParts.navPanel.children}</React.Fragment>)
-      }
-    }
-    navPanel = <NavPanel>
-      {newChildren}
-      {/*toolParts.navPanel.children*/}
-    </NavPanel>;
+    navPanel = (
+      <NavPanel>
+        {toolParts.navPanel.children}
+      </NavPanel>
+    );
   }
 
   if (toolParts.headerPanel) {
@@ -105,7 +90,7 @@ export default function Tool(props) {
 
   if (toolParts.mainPanel) {
     mainPanel = (
-      <div>
+      <div style={{ boxSizing: "border-box", overflow: "clip" }}>
         <h2>Main Panel</h2>
         {toolParts.mainPanel.children}
       </div>
@@ -114,7 +99,7 @@ export default function Tool(props) {
 
   if (toolParts.supportPanel) {
     supportPanel = (
-      <div>
+      <div style={{ boxSizing: "border-box", overflow: "clip" }}>
         <h2>Support Panel</h2>
         {toolParts.supportPanel.children}
       </div>
@@ -141,10 +126,8 @@ export default function Tool(props) {
       <ToolContainer>
         {navPanel}
         {headerPanel}
-        <div style={{ gridArea: "contentPanel" }}> {/* TODO: solve the resizing controller */}
-        {mainPanel}
-        {supportPanel}
-        </div>
+        <ContentPanel main={mainPanel} support={supportPanel} />{" "}
+        {/* TODO: solve the resizing controller */}
         {menuPanel}
       </ToolContainer>
     </RecoilRoot>
