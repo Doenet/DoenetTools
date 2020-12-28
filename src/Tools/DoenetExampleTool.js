@@ -7,27 +7,7 @@ import {
   useRecoilValue
 } from 'recoil';
 
-// import styled from "styled-components";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import {
-//   faWaveSquare,
-//   faDatabase,
-//   faServer,
-// } from "@fortawesome/free-solid-svg-icons";
-// import NavPanel from "../imports/Tool/NavPanel";
-// import MainPanel from "../imports/Tool/MainPanel";
-// import SupportPanel from "../imports/Tool/SupportPanel";
-// import MenuPanel from "../imports/Tool/MenuPanel";
-// import HeaderMenuPanelButton from "../imports/Tool/HeaderMenuPanelButton";
-// import ResponsiveControls from "../imports/Tool/ResponsiveControls";
-// import Overlay from "../imports/Tool/Overlay";
-// import CollapseSection from "../imports/CollapseSection";
-// import MenuPanelSection from "../imports/Tool/MenuPanelSection";
-// import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
-// import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
-// import Menu from "../imports/PanelHeaderComponents/Menu";
-// import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
-// import { SelectedElementStore } from "./SelectedElementContext";
+
 let numAtom = atom({
   key:"numAtom",
   default:0
@@ -50,8 +30,8 @@ export default function DoenetExampleTool(props) {
   
      <navPanel>
         {/* <p>navigate to important stuff</p> */}
-        <Drive id="abc123" />
-        {/* <Drive types={['content','courses']} /> */}
+        {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+        <Drive types={['content','course']} />
       </navPanel>
 
       <headerPanel>
@@ -62,8 +42,8 @@ export default function DoenetExampleTool(props) {
         <p>do the main important stuff</p>
 
         <NumIndicator />
-        <Drive id="abc123" />
-        <Drive types={['content','courses']} />
+        {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+        <Drive types={['content','course']} />
       </mainPanel>
 
       <supportPanel width="40%">
@@ -78,6 +58,7 @@ export default function DoenetExampleTool(props) {
       <menuPanel>
         <p>control more important stuff</p>
       </menuPanel>
+
   </Tool>
 }
 
