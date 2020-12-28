@@ -12,6 +12,7 @@ import HeaderMenuPanelButton from '../imports/Tool/HeaderMenuPanelButton';
 import Overlay from "../imports/Tool/Overlay";
 import DoenetViewer from './DoenetViewer';
 import ErrorBoundary from './ErrorBoundary';
+import Button from "../imports/PanelHeaderComponents/Button"
 
 import Editor from './Editor/Editor.js';
 import InfoPanel from './Editor/InfoPanel.js';
@@ -58,20 +59,27 @@ const showHideOverNewOverlayOnClick = () =>{
   setShowHideNewOverLay(!showHideNewOverLay);
 }
 
-const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
+// const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 // const content = play;
-const [content, setContent] = useState(init_content)
+const [content, setContent] = useState("");
+const [updateNum, setUpdateNum] = useState(0);
 
 const [tag, setTag] = useState({});
-const [view, setView] = useState(getInitView(init_content, setContent, setTag));
+const [view, setView] = useState(getInitView("", setContent, setTag));
 
-console.log(content);
+// if (typeof content !== 'string') {
+//   console.log("This is content ", content);
+//   // let flat_list = [];
+//   // content.flatten(flat_list);
+//   // console.log("Flatten", flat_list);
+//   console.log("Sliced", content.sliceString(0));
+// }
 
 let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
       <DoenetViewer 
-              key={"doenetviewer"} //each component has their own key, change the key will trick React to look for new component
+              key={"doenetviewer"+updateNum} //each component has their own key, change the key will trick React to look for new component
               // free={{doenetCode: this.state.viewerDoenetML}} 
-              doenetML={content} 
+              doenetML={typeof content === 'string' ? content : content.sliceString(0)} 
               mode={{
               solutionType:false,
               allowViewSolutionWithoutRoundTrip:false,
@@ -81,6 +89,7 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
           }}           
           />
           </ErrorBoundary>)
+let updateButton = <button onClick={() => setUpdateNum(updateNum+1)}>Update</button>;
 
   return (
 
@@ -91,6 +100,7 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
       onUndo={() => { console.log(">>>undo clicked") }}
       onRedo={() => { console.log(">>>redo clicked") }}
       title={"My Doc"}
+      initSupportPanelOpen={true}
       // responsiveControls={[]}
       headerMenuPanels={[
         <HeaderMenuPanelButton buttonText="Add">{"content 1"}</HeaderMenuPanelButton>, <HeaderMenuPanelButton buttonText="Save">{"content 2"}</HeaderMenuPanelButton>
@@ -99,11 +109,13 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
 
 
    <NavPanel>
+    <>
      Nav Panel
+    </>
    </NavPanel>
 
       <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
-        // responsiveControls={[]}
+        responsiveControls={[updateButton]}
       >
         <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
 
