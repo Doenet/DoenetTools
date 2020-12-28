@@ -1,18 +1,16 @@
 import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
 import './temp.css';
 import {
-  useQuery,
   useQueryCache,
   QueryCache,
   ReactQueryCacheProvider,
   useMutation,
   useInfiniteQuery,
 } from 'react-query'
-import axios from "axios";
-import './util.css';
-import nanoid from 'nanoid';
-// import { useHistory } from "react-router-dom";
 import { ReactQueryDevtools } from 'react-query-devtools'
+import axios from "axios";
+import '../../util.css';
+import nanoid from 'nanoid';
 import {
   HashRouter as Router,
   Switch,
@@ -23,8 +21,8 @@ import {
   DropTargetsProvider,
   DropTargetsContext,
   WithDropTarget  
-} from '../imports/DropTarget';
-import Draggable from '../imports/Draggable';
+} from '../DropTarget';
+import Draggable from '../../Draggable';
 
 const queryCache = new QueryCache();
 
@@ -41,29 +39,8 @@ return <>
 </>
 };
 
-const sortOptions = Object.freeze({
-  "LABEL_ASC": "label ascending",
-  "LABEL_DESC": "label descending",
-  "CREATION_DATE_ASC": "creation date ascending",
-  "CREATION_DATE_DESC": "creation date descending"
-});
-
 //TODO: Replace with the real <Tool /> component
 function Tool(props){
-  console.log("=== Tool")
-
-  const fetchDrives = async ()=>{
-    const { data } = await axios.get(
-      `/api/loadAvailableDrives.php`
-    );
-    return data.driveIdsAndLabels;
-  }
-
-  const { data:driveData , isFetching } = useQuery("availableDrives",fetchDrives,{
-    refetchOnWindowFocus: false,
-      refetchOnMount:false,
-      staleTime:600000,
-  });
 
   const cache = useQueryCache();
   const { dropState, dropActions } = useContext(DropTargetsContext);
@@ -73,7 +50,6 @@ function Tool(props){
   let selectedNodesArr = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
   let clearSelectionFunctions = useRef({}); //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id"}]}
 
-  
   function regClearSelection(browserId,clearFunc){
     clearSelectionFunctions.current[browserId] = clearFunc;
   }
@@ -88,15 +64,13 @@ function Tool(props){
        const payload = {selectedNodes, destinationObj}
        let {data} = await axios.post("/api/moveItems.php", payload)
        rdata = data?.response;
-       if (!data.success){ 
-         throw Error("Can't Move Items!");
-        }
       }
      return {selectedNodes, destinationObj, response:rdata}
    } 
 
   const [moveNodes] = useMutation(mutationMoveNodes, {
     onMutate:(params)=>{
+      console.log(JSON.parse(JSON.stringify(params)));
       if (params.selectedNodes.selectedArr !== undefined){ //Only run if something is selected
         const sourceDriveId = params.selectedNodes.driveId;
         const destinationDriveId = params.destinationObj.driveId;
@@ -169,6 +143,9 @@ function Tool(props){
         })
         return old
         })
+  
+        // console.log(">>>fullInfoAddArr")
+        // console.log(JSON.parse(JSON.stringify(fullInfoAddArr)));
         
   
           //and add to desination drive
@@ -180,8 +157,6 @@ function Tool(props){
       }
     }
   })
-
-  if (isFetching){ return null;}
 
   const onDragStart = ({ nodeId, driveId }) => {
     setIsDragging(true);
@@ -221,64 +196,91 @@ function Tool(props){
 
   const DnDState = {
     DnDState: {
-      activeDropTargetId:dropState.activeDropTargetId,
+      activeDropTargetId: dropState.activeDropTargetId,
       isDragging,
-      draggedOverDriveId,
+      draggedOverDriveId
     },
     DnDActions: {
       onDragStart,
       onDrag,
       onDragEnd,
       onDragOverContainer,
-      registerDropTarget: dropActions.registerDropTarget, 
-      unregisterDropTarget: dropActions.unregisterDropTarget,
+      registerDropTarget: dropActions.registerDropTarget,
+      unregisterDropTarget: dropActions.unregisterDropTarget
 
     }
   };
 
-  //TODO: get this array from NavPanel
-  let navPanelBrowserTypes = ['content','course'];
-  let navBrowsers = [];
-  for (let type of navPanelBrowserTypes){
-    for (let driveObj of driveData){
-      if (driveObj.type === type){
-        navBrowsers.push(<Browser key={`browser${driveObj.driveId}nav`} drive={driveObj.driveId} label={driveObj.label} isNav={true} DnDState={DnDState}/>)
-      }
-    }
-  }
-  //TODO: get this array from MainPanel or SupportPanel
-  let nonNavPanelBrowserTypes = ['content','course'];
-  let nonNavBrowsers = [];
-  for (let type of nonNavPanelBrowserTypes){
-    for (let driveObj of driveData){
-      if (driveObj.type === type){
-        nonNavBrowsers.push(<Browser key={`browser${driveObj.driveId}`} drive={driveObj.driveId} label={driveObj.label} isNav={false} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection}  DnDState={DnDState}/>)
-      }
-    }
-  }
-
-
-  //TODO: in the actual <Tool> replace isNav prop with is a child of <NavPanel>
-  //TODO: remove isNav={true} setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}
-  //Should be <Browsers types={["content","course"]} /> child of navpanel or not child of navpanel
   return (<>
  <AddItem type="Folder" />
  <AddItem type="Url" />
+<div>
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+  }} >Move to content folder 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"content",parentId:"f2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+  }} >Move to content folder 2</button>
+</div>
+<div>
+<button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h1"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+  }} >Move to course Header 1</button>
+  <button 
+      data-doenet-browser-stayselected = {true}
+  onClick={()=>{
+    moveNodes({selectedNodes:selectedNodesArr.current,destinationObj:{driveId:"course",parentId:"h2"}})
+    .then((props)=>{
+      //clear tool and browser selections
+      clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      selectedNodesArr.current = {}
+    })
+
+
+  }} >Move to course Header 2</button>
+</div>
+  
 
   <div style={{display:"flex"}}> 
-    <div>
-      {navBrowsers}
-    </div>
-    <div>
-      {nonNavBrowsers}
-    </div>
+  <div>
+  <BrowserRouted drive="content" isNav={true} DnDState={DnDState}/>
+  <BrowserRouted drive="course" isNav={true} DnDState={DnDState}/>
+  </div>
+  <div>
+  <BrowserRouted drive="content" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  <BrowserRouted drive="course" setSelectedNodes={setSelectedNodes} regClearSelection={regClearSelection} DnDState={DnDState}/>
+  </div>
   </div>
   </>
   )
 }
 
 
-const addItemMutation = async ({itemId, label, driveId, parentId,type}) =>{
+
+const addItemMutation = async ({itemId,label, driveId, parentId,type}) =>{
 
   const pdata = {driveId,parentId,itemId,label,type}
     const payload = {
@@ -286,9 +288,7 @@ const addItemMutation = async ({itemId, label, driveId, parentId,type}) =>{
     }
 
    const { data } = await axios.get("/api/addItem.php", payload);
-   if (!data.success){ 
-    throw Error("Can't Add Items!");
-   }
+
   return {driveId,parentId,itemId,label,type,results:data?.results}
 } 
 
@@ -300,9 +300,7 @@ const deleteItemMutation = async ({driveId, parentId, itemId}) =>{
     }
 
   const { data } = await axios.get("/api/deleteItem.php", payload)
-  if (!data.success){ 
-    throw Error("Can't Delete Items!");
-   }
+
   return {driveId,parentId,itemId,results:data?.results}
 } 
 
@@ -368,17 +366,6 @@ function AddItem(props){
       if (routePathDriveId !== "" && routePathFolderId === ""){routePathFolderId = routePathDriveId;}
     }
 
-    let disabled = false;
-    if (routePathFolderId === ""){
-      disabled = true;
-    }
-    if (routePathDriveId !== ""){
-      //Find if user has permission to add
-      //TODO: have it work on first load
-      let data = cache.getQueryData(["nodes",routePathDriveId]);
-      const addPerms = data?.[0]?.perms?.canAddItemsAndFolders;
-      if (addPerms == 0){disabled = true;}
-    }
     if (props.type === "Folder" || props.type === "Url"){ //List of types accepted
       return (<span>
         <input 
@@ -386,12 +373,11 @@ function AddItem(props){
         data-doenet-browser-stayselected = {true} 
         type="text" 
         value={label} 
-        disabled={disabled} 
         onChange={(e)=>setLabel(e.target.value)} />
         <button 
         className="noselect nooutline" 
         data-doenet-browser-stayselected = {true}
-        disabled={disabled} 
+        disabled={routePathFolderId === ""} 
       onClick={()=>{
         const itemId = nanoid();
         addItem({itemId,driveId:routePathDriveId,parentId:routePathFolderId,label,type:props.type})
@@ -408,12 +394,11 @@ function AddItem(props){
  }
 
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
-
   if (!parentId){
     const { data } = await axios.get(
       `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
     );
-    return {init:true,data}
+    return {init:true,data:data.results}
   } //First Query returns no data
 
   const { data } = await axios.get(
@@ -423,13 +408,13 @@ const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
   return data.results;
 }
 
-function Browser(props){
+function BrowserRouted(props){
   return <Router><Switch>
-           <Route path="/" render={(routeprops)=><BrowserChild route={{...routeprops}} {...props} />}></Route>
+           <Route path="/" render={(routeprops)=><Browser route={{...routeprops}} {...props} />}></Route>
          </Switch></Router>
  }
 
-function BrowserChild(props){
+function Browser(props){
   console.log(`=== BROWSER='${props.drive}' isNav='${props.isNav}'`)
   let pathFolderId = props.drive; //default 
   let pathDriveId = props.drive; //default
@@ -449,12 +434,12 @@ function BrowserChild(props){
   if(props.isNav){
     rootFolderId = props.drive;
   }
-  
 
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
-  const [driveIsOpen,setDriveIsOpen] = useState(props.driveIsOpen?props.driveIsOpen:true); //default to open
+  const [toggleNodeId,setToggleNode] = useState([]);
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
+  const [refreshNumber,setRefresh] = useState(0)
   const { DnDState, DnDActions } = props.DnDState;
 
   const {
@@ -464,14 +449,14 @@ function BrowserChild(props){
     fetchMore, 
     error} = useInfiniteQuery(['nodes',props.drive], fetchChildrenNodes, {
       refetchOnWindowFocus: false,
-      refetchOnMount:false,
-      staleTime:600000,
       onSuccess: (data) => {
         if (Object.keys(data[0])[0] === "init"){
+          console.log(">>>init data")
+          console.log(JSON.parse(JSON.stringify(data)));
+          
           let folderChildrenIds = {};
           let nodeObjs = {};
-          
-          for (let row of data[0].data.results){
+          for (let row of data[0].data){
             if (!folderChildrenIds[row.parentId]){folderChildrenIds[row.parentId] = {defaultOrder:[]}}
             if (row.type === "Folder" && !folderChildrenIds[row.id]){folderChildrenIds[row.id] = {defaultOrder:[]}}
             folderChildrenIds[row.parentId].defaultOrder.push(row.id);
@@ -484,7 +469,7 @@ function BrowserChild(props){
             }
           }
 
-          data[0] = {folderChildrenIds,nodeObjs,perms:data[0].data.perms}
+          data[0] = {folderChildrenIds,nodeObjs}
         }else if (data[1]){
           let actionOrId = Object.keys(data[1])[0];
           if (actionOrId === "add"){
@@ -554,25 +539,8 @@ function BrowserChild(props){
                 sParentArr.splice(sParentArr.indexOf(nodeId),1);
               }
             }
-            data.pop();    
-          } else if (actionOrId === "sort") {
-            const { itemId, sortKey } = data[1].sort;
+            data.pop();       
             
-            const itemObj = { ...data[0].nodeObjs[itemId] };
-            const defaultFolderChildrenIds = [...data[0].folderChildrenIds?.[itemId]?.defaultOrder];
-            
-            // sort itemId child array
-            const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: data[0].nodeObjs, defaultFolderChildrenIds});
-
-            // modify itemId sortBy            
-            itemObj.sortBy = sortKey;
-
-            // update itemId data
-            data[0].nodeObjs[itemId] = itemObj;
-            data[0].folderChildrenIds[itemId][sortKey] = sortedFolderChildrenIds;
-            console.log(">>>", data[0])
-
-            data.pop();
           }else{
             //handle fetchMore
             for (let cNodeId of Object.keys(data[1])){
@@ -635,50 +603,6 @@ function BrowserChild(props){
       })
     }});
 
-    const sortHandler = ({ sortKey, driveId, itemId }) => {
-      // insert sort action object
-      cache.setQueryData(["nodes", driveId],
-        (old)=>{
-          old.push({
-            sort: {
-              sortKey: sortKey,
-              itemId: itemId
-          }});
-          return old
-        }
-      );
-    };
-    
-  const sortItems = useCallback(({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
-    let tempArr = [...defaultFolderChildrenIds];
-    switch (sortKey) {
-      case sortOptions.LABEL_ASC:
-        tempArr.sort(
-          (a,b) => { 
-            return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
-        );
-        break;
-      case sortOptions.LABEL_DESC:
-        tempArr.sort(
-          (b,a) => { 
-            return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
-        );
-        break;
-      case sortOptions.CREATION_DATE_ASC:
-        tempArr.sort(
-          (a,b) => { 
-            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
-        );
-        break;
-      case sortOptions.CREATION_DATE_DESC:
-        tempArr.sort(
-          (b,a) => { 
-            return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
-        );
-        break;
-    }
-    return tempArr;
-  }, []);
  
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
@@ -797,6 +721,7 @@ function BrowserChild(props){
     deleteItem(nodeId);
   },[]);
 
+
   if (browserId.current === ""){ browserId.current = nanoid();}
 
   useEffect(()=>{
@@ -824,12 +749,15 @@ function BrowserChild(props){
     
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
+
+  function deleteFolderHandler(nodeObj){
+    deleteFolder(nodeObj);
+  }
   
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    const childrenIdsOrder = data[0]?.nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.[childrenIdsOrder];
+    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.defaultOrder;
 
     if (childrenIdsArr === undefined){
       //Need data
@@ -875,7 +803,7 @@ function BrowserChild(props){
           }
 
           let nodeJSX = <Node 
-            key={`node${browserId.current}${nodeId}`} 
+            key={`node${nodeId}`} 
             label={nodeObj.label}
             browserId={browserId.current}
             nodeId={nodeId}
@@ -888,7 +816,6 @@ function BrowserChild(props){
             level={level}
             handleFolderToggle={handleFolderToggle} 
             deleteItemHandler={deleteItemHandler}
-            sortHandler={sortHandler}
             handleClickNode={handleClickNode}
             handleDeselectAll={handleDeselectAll}
             level={level}/>;
@@ -896,7 +823,6 @@ function BrowserChild(props){
           // navigation items not draggable
           if (!props.isNav) {
             nodeJSX = <Draggable
-              key={`dnode${browserId.current}${nodeId}`} 
               id={nodeId}
               className={draggableClassName}
               onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.drive })}
@@ -907,21 +833,18 @@ function BrowserChild(props){
              { nodeJSX } 
             </Draggable>
           }
-                    
-          if (nodeObj?.type === "Folder") {
-            nodeJSX = <WithDropTarget
-              key={`wdtnode${browserId.current}${nodeId}`} 
-              id={nodeId}
-              registerDropTarget={DnDActions.registerDropTarget} 
-              unregisterDropTarget={DnDActions.unregisterDropTarget}
-              dropCallbacks={{
-                onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
-                onDrop: () => {}
-              }}
-            >
-              { nodeJSX } 
-            </WithDropTarget>
-          }
+
+          nodeJSX = <WithDropTarget
+            id={nodeId}
+            registerDropTarget={DnDActions.registerDropTarget} 
+            unregisterDropTarget={DnDActions.unregisterDropTarget}
+            dropCallbacks={{
+              onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.drive }),
+              onDrop: () => {}
+            }}
+          >
+            { nodeJSX } 
+          </WithDropTarget>
   
           nodesJSX.push(nodeJSX);
 
@@ -937,46 +860,20 @@ function BrowserChild(props){
 
   let nodes = <></>
   let nodeIdArray = [];
-  if (data && driveIsOpen){
+  if (data){
     [nodes,nodeIdArray] = buildNodes({driveId:props.driveId,parentId:rootFolderId,sortingOrder});
     nodeIdRefArray.current = nodeIdArray;
   }
   
-  let buttonText = "Close"
-  if (!driveIsOpen){
-    buttonText = "Open"
-    nodes = null;
-  }
-  let driveToggleDiv = null;
-  if (props.isNav){
-    //***** DRIVE ICON
-    let driveColor = "white";
-    if (routePathFolderId === props.drive){ driveColor = "#6de5ff"}
-    driveToggleDiv = <div 
-      tabIndex={0}
-      className="noselect nooutline" 
-      
-      onDoubleClick={(e) => {
-        setDriveIsOpen((bool)=>!bool);
-      }} 
-      onClick={()=>{
-        history.push(`/${props.drive}:${props.drive}/`)
-      }}
-    style={{
-      width: "300px",
-      padding: "4px",
-      backgroundColor: driveColor,
-      margin: "2px"
-    }} ><div className="noselect"  ><button onClick={()=>setDriveIsOpen(old=>!old)}>{buttonText}</button> {props.label}</div></div>
-  }
+
   return <>
-  <div style={{marginTop:"1em",marginBottom:"1em"}}>
-  {driveToggleDiv}     
-  {nodes}
-  
+  <div>
+  <h3>{props.drive} {props.isNav?"Nav":null}</h3>
   </div>
+  {nodes}
   </>
 }
+
 
 const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
@@ -1039,20 +936,6 @@ const LoadingNode =  React.memo(function Node(props){
   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
   >X</button>
 
-  const sortNodeButtonFactory = ({ buttonLabel, sortKey }) => {
-    return <button
-    data-doenet-browserid={props.browserId}
-    tabIndex={-1}
-    onClick={(e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      props.sortHandler({driveId: props.driveId, sortKey: sortKey, itemId: props.nodeId});
-    }}
-    onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
-    onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
-    >{ buttonLabel }</button>;
-  }
-
   if (props.type === "Folder"){
     return <>
     <div
@@ -1087,12 +970,7 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect" 
       style={{
         marginLeft: `${props.level * indentPx}px`
-      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC})} 
-      </div></div>
+      }}>{toggle} [F] {props.label} ({props.numChildren}) {deleteNode}</div></div>
     
     </>
   }else if (props.type === "Url"){
