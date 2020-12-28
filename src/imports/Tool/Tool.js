@@ -4,6 +4,18 @@ import { RecoilRoot } from "recoil";
 import NavPanel from "./NavPanel";
 import ContentPanel from "./Contentpanel";
 import Drive from "../Drive";
+import {
+  QueryCache,
+  ReactQueryCacheProvider,
+} from 'react-query'
+import {
+  DropTargetsProvider,
+} from '../DropTarget';
+
+import { ReactQueryDevtools } from 'react-query-devtools'
+
+
+const queryCache = new QueryCache();
 
 const ToolContainer = styled.div`
   display: grid;
@@ -122,15 +134,20 @@ export default function Tool(props) {
   }
 
   return (
-    <RecoilRoot>
-      <ToolContainer>
-        {navPanel}
-        {headerPanel}
-        <ContentPanel main={mainPanel} support={supportPanel} />{" "}
-        {/* TODO: solve the resizing controller */}
-        {menuPanel}
-      </ToolContainer>
-    </RecoilRoot>
+    <DropTargetsProvider>
+      <ReactQueryCacheProvider queryCache={queryCache}>
+        <RecoilRoot>
+          <ToolContainer>
+            {navPanel}
+            {headerPanel}
+            <ContentPanel main={mainPanel} support={supportPanel} />{" "}
+            {/* TODO: solve the resizing controller */}
+            {menuPanel}
+{/* <ReactQueryDevtools /> */}
+          </ToolContainer>
+        </RecoilRoot>
+      </ReactQueryCacheProvider>
+    </DropTargetsProvider>
   );
 }
 
