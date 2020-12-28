@@ -48,7 +48,7 @@ if ($result->num_rows > 0){
     $course = array(
           "courseId" => $row["courseId"],
           "courseCode" => $row["courseCode"],
-          "shortName" => $row["courseCode"],
+          "shortname" => $row["courseCode"],
           "longname" => $row["longName"],
           "term" => $row["term"],
           "description" => $row["description"],
@@ -109,7 +109,7 @@ if ($result->num_rows > 0){
     $course = array(
           "courseId" => $row["courseId"],
           "courseCode" => $row["courseCode"],
-          "shortName" => $row["courseCode"],
+          "shortname" => $row["courseCode"],
           "longname" => $row["longName"],
           "term" => $row["term"],
           "description" => $row["description"],

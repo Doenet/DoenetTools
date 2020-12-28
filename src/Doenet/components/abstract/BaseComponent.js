@@ -156,7 +156,7 @@ export default class BaseComponent {
   static createPropertiesObject({ flags = {} } = {}) {
 
     return {
-      hide: { default: false, forRenderer: true },
+      hide: { default: false },
       disabled: { default: flags.readOnly ? true : false, forRenderer: true, propagateToDescendants: true },
       modifyIndirectly: { default: true, propagateToProps: true },
       fixed: { default: false },
@@ -186,6 +186,34 @@ export default class BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { childrenToRender: [] } })
+    }
+
+    stateVariableDefinitions.hidden = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({
+        hide: {
+          dependencyType: "stateVariable",
+          variableName: "hide",
+          variableOptional: true,
+        },
+        parentHidden: {
+          dependencyType: "parentStateVariable",
+          variableName: "hidden"
+        },
+        parentOverrideChildHide: {
+          dependencyType: "parentStateVariable",
+          variableName: "overrideChildHide"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          hidden:
+            dependencyValues.parentHidden === true // check === true so null gives false
+            || (dependencyValues.hide && !dependencyValues.parentOverrideChildHide)
+        }
+      })
     }
 
     return stateVariableDefinitions;

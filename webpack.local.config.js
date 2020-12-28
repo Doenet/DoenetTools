@@ -16,13 +16,15 @@ module.exports = {
   // devtool: 'source-map',
   entry: {
     "index.js": "./src/index.js",
-    "admin/index.js": "./src/admin/index.js",
+    // "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
+    "controls/index.js": "./src/controls/index.js",
     "course/index.js": "./src/course/index.js",
     "dashboard/index.js": "./src/dashboard/index.js",
     "docs/index.js": "./src/docs/index.js",
     "dragdrop/index.js": "./src/dragdrop/index.js",
     "editor/index.js": "./src/editor/index.js",
+    "editor-mirror/index.js": "./src/editor-mirror/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "guesteditor/index.js": "./src/guesteditor/index.js",
@@ -33,8 +35,8 @@ module.exports = {
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
-    "temp/index.js": "./src/temp/index.js",
-
+    "temp/index.js": "./src/temp/index.js"
+    
   },
 
   output: {
@@ -82,6 +84,12 @@ module.exports = {
       {
         test: /\.ttf$/,
         use: ["file-loader"]
+      },
+      {
+        test: /\.(woff|woff2)$/,
+        use: {
+          loader: 'url-loader',
+        }
       }
     ]
   },
@@ -103,6 +111,12 @@ module.exports = {
       chunks: ["chooser/index.js"],
       template: "./src/chooser/index.html",
       filename: "./chooser/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["controls/index.js"],
+      template: "./src/controls/index.html",
+      filename: "./controls/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
@@ -139,6 +153,12 @@ module.exports = {
       chunks: ["editor/index.js"],
       template: "./src/editor/index.html",
       filename: "./editor/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["editor-mirror/index.js"],
+      template: "./src/editor-mirror/index.html",
+      filename: "./editor-mirror/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
 
@@ -241,5 +261,8 @@ module.exports = {
     port: 3000,
     // openPage: "protected",
   },
+  // optimization: {//Uncomment to debug bundled files
+  //   minimize: false
+  // }
   // devtool: 'source-map'
 };

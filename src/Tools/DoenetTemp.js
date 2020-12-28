@@ -1,18 +1,27 @@
-// import React, { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import {
-//   faWaveSquare, faDatabase, faServer
-// } from "@fortawesome/free-solid-svg-icons";
-// import Tool from "./ToolLayout/Tool";
-// import NavPanel from "./ToolLayout/NavPanel";
-// import MainPanel from "./ToolLayout/MainPanel";
-// import SupportPanel from "./ToolLayout/SupportPanel";
-// import MenuPanel from './ToolLayout/MenuPanel';
-// import HeaderMenuPanelButton from '../Tools/ToolLayout/HeaderMenuPanelButton';
-// import ResponsiveControls from './ToolLayout/ResonsiveControls/ResponsiveControls';
-// import Overlay from './ToolLayout/Overlay';
-// const alphabet =
-//   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
+import React from 'react';
+import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
+import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
+import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
+import Button from "../imports/PanelHeaderComponents/Button.js";
+import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
+// import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
+import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
+import ProgressBar from "../imports/PanelHeaderComponents/ProgressBar.js";
+import styled, { ThemeProvider } from 'styled-components';
+import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
+import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
+
+export default function attempt() {
+return (
+<>
+<ActionButtonGroup>
+  <ActionButton text='X'></ActionButton>
+  <ActionButton text='Y'></ActionButton>
+  <ActionButton text='Z'></ActionButton>
+</ActionButtonGroup>
+</>
+);
+};
 
 // const finalIcon1 = <FontAwesomeIcon
 //   icon={faServer}

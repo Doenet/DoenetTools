@@ -16,6 +16,7 @@ import {
   useHistory
 } from "react-router-dom";
 import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/courseInfo";
+import { min } from "moment";
 
 
 const Button = styled.button`
@@ -32,11 +33,11 @@ const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
   function compare (x, y) {
-    //console.log("XY: ", x, y);
+    // console.log("XY: ", x, y);
     // console.log("yoooooooooooo");
     
     if(x.position != null && y.position != null){
-      console.log("not nullll");
+      // console.log("not nullll");
       return x.position - y.position
     }else if(x.position != null){
       return -1
@@ -47,14 +48,26 @@ const alphabet =
       return x.shortname.localeCompare(y.shortname)
     }
   }
+
+  function ignorantcompare (x, y) {
+    return x.shortname.localeCompare(y.shortname)
+  }
   
   export default function DoenetDashboard(props){
 
-    const [items, setItems] = useState(null);
+    const [items, setItems] = useState(null);////////////////make changes
+
+    const [dragIndex, setDragIndex] = useState(null);
   
     const [isLoaded, setIsLoaded] = useState(false)
 
     const [hasClasses, setHasClasses] = useState(false)
+
+    const [drag, setDrag] = useState(0)
+
+    // const [dragItem, setDragItem] = useState({index: null, items});
+
+    // const [dragIndex, setDragIndex] = useState(null);
 
     useEffect(() => {
       getCourses_CI(updateCourseInfo);
@@ -66,11 +79,25 @@ const alphabet =
       //console.log("selected",selectedCourseObj);
       //setSelected_CI("NfzKqYtTgYRyPnmaxc7XB");
       // console.log("hereeeeeee");////////////////////////////
-      
-      setItems(courseListArray.sort(compare))
+
+      courseListArray = courseListArray.sort(compare);
+
+      // console.log("input", courseListArray)
+
+      for(let index in courseListArray){
+        // console.log("position not defined for", courseListArray[index], "at", index);
+        courseListArray[index].position = parseInt(index);
+        // if(courseListArray[index].position === null || courseListArray[index].position === undefined){
+        //   console.log("position not defined for", courseListArray[index], "at", index);
+        //   courseListArray[index].position = parseInt(index);
+        // }
+        // courseListArray[index].ogposition = parseInt(index);
+      }
+      setItems(courseListArray)
       if(courseListArray.length > 0){
         setHasClasses(true)
       }
+
     }
 
     // useEffect(() => {
@@ -100,7 +127,7 @@ const alphabet =
     //console.log(bind);
     
     const [width, setWidth] = useState(window.innerWidth < 767 ? window.innerWidth : window.innerWidth - 206)
-    
+    const [height, setHeight] = useState(230);
 
     function updateCourseColor(color, courseId){
       let mod = [...items]
@@ -115,17 +142,91 @@ const alphabet =
       updateCourses_CI(mod);
       
     }
-    // const updateWidth = () => {
-    //   setWidth(window.innerWidth - 209);
-    // };
-    // console.log("width", width)
-    
-    // useEffect(() => {
-    //     window.addEventListener("resize", updateWidth);
-    //     return () => window.removeEventListener("resize", updateWidth);
-    // });
+  
+    function handleDragEnter(index, e){
+      if(drag === 0){
+        // console.log("drag/click start at index", index);
+        setDragIndex(index);
+        setDrag(1);
+      }
+    }
 
-    
+    function handleDragThrough(e){
+      if(drag === 1){
+        setDrag(2);
+        // console.log("drag confirmed at index", dragIndex)
+        let moditems = [...items];
+        moditems[dragIndex].isDummy = true;
+        setItems(moditems);
+      }else if(drag === 2){
+        // console.log("drag 2:", (width/columns), height);
+        
+        let xp = parseInt(e.clientX/(width/columns))
+        let yp = parseInt((e.clientY - 50)/height)
+        let fp = Math.min(yp*columns + xp, items.length - 1);
+        // console.log("position", fp);
+        if(fp !== dragIndex){
+          let moditems = [...items];
+          if(fp > dragIndex){
+            for(let i = dragIndex + 1; i <= fp; i++){
+              // console.log("i loop 1", i);
+              moditems[i].position -= 1;
+            }
+          }else{
+            for(let i = dragIndex - 1; i >= fp; i--){
+              moditems[i].position += 1;
+            }
+          }
+          moditems[dragIndex].position = fp;
+          // console.log("new pos", moditems[dragIndex].position, "dragItem", moditems[dragIndex]);
+          setDragIndex(fp);
+          setItems(moditems.sort(compare));
+        }
+
+      }
+    }
+
+    function handleDragExit(e){
+      if(drag == 1){
+        // console.log("click end");
+        setDrag(0);
+        // setDragIndex(null);
+        setDragIndex(null);
+      }else if(drag === 2){
+        // console.log("drag end");
+        let moditems = [...items];
+        moditems[dragIndex].isDummy = false;
+        setItems(moditems);
+        setDrag(0);
+        setDragIndex(null);
+        updateCourses_CI(moditems);
+
+        // let itemsinshortnameorder = [...moditems].sort(ignorantcompare)
+        // let backtosquareoneflag = true;
+        
+        // for (let index in itemsinshortnameorder){
+        //   if(itemsinshortnameorder[index].shortname !== moditems[index].shortname){
+        //     console.log("pos matching failed at", index);
+        //     backtosquareoneflag = false;
+        //     break;
+        //   }
+        // }
+
+        // if(backtosquareoneflag){
+        //   for(let index in itemsinshortnameorder){
+        //     let item = {...itemsinshortnameorder[index]};
+        //     item.position = null;
+        //     itemsinshortnameorder[index] = item;
+        //   }
+
+        //   updateCourses_CI(itemsinshortnameorder);
+
+        // }else{
+        //   updateCourses_CI(moditems);
+        // }
+
+      }
+    }
     
 
     let gridItems = []
@@ -142,6 +243,7 @@ const alphabet =
         return { ...child, xy, width: width / columns, height: 230}
       })
 
+      // console.log("griditems", gridItems);
     }
     
 
@@ -169,7 +271,7 @@ const alphabet =
             panelName="context"
           >
           <div>
-            {x}
+            {x}gi
             <button onClick={()=>setX(x + 1)}>Count</button>
             <p>test</p>
           </div>
@@ -182,11 +284,14 @@ const alphabet =
             <div className = "dashboardcontainer">
 
             {hasClasses ? 
-            <div {...bind} className="list" style={{ height: Math.max(...heights) }}>
+            <div {...bind} className="list" style={{ height: Math.max(...heights), position: "relative"}} onMouseMove = {handleDragThrough} onMouseUp = {handleDragExit} onMouseLeave = {handleDragExit}>
+              {/* {console.log("items", items)} */}
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
-                <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
+                <a.div className = "adiv" key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
                   {/* {console.log(item)} */}
-                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} onClick = {() => setSelected_CI(item.courseId)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>
+              {drag === 2 ? <div onMouseDown = {(e) => handleDragEnter(index, e)} style = {{height: "100%"}}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></div> : 
+                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} 
+                  onClick = {() => setSelected_CI(item.courseId)} onMouseDown = {(e) => handleDragEnter(index, e)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>}
                   {/* <CourseCard data = {item} /> */}
                 </a.div>
               ))}
@@ -209,4 +314,5 @@ const alphabet =
       </Router>
     );
   }
+
 
