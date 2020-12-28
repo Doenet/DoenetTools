@@ -32,10 +32,12 @@ let numAtom = atom({
   key:"numAtom",
   default:0
 })
+
 function Inc(){
   let setNum = useSetRecoilState(numAtom);
   return <button onClick={()=>setNum((old)=>old+1)}>+</button>
 }
+
 function NumIndicator(){
   let num = useRecoilValue(numAtom);
   return <div>{num}</div>
@@ -45,6 +47,7 @@ function NumIndicator(){
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool")
   return <Tool>
+  
      <navPanel>
         {/* <p>navigate to important stuff</p> */}
         <Drive id="abc123" />
@@ -56,7 +59,7 @@ export default function DoenetExampleTool(props) {
       </headerPanel>
 
       <mainPanel>
-        <p>do important stuff</p>
+        <p>do the main important stuff</p>
 
         <NumIndicator />
         <Drive id="abc123" />
