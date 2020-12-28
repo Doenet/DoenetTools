@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, createContext } from "react";
 import styled from "styled-components";
 import "../../../src/Tools/ToolLayout/toollayout.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
+
+export const IsNavContext = createContext(false);
 
 const NavPanelDiv = styled.div`
   grid-area: navPanel;
@@ -32,15 +34,17 @@ export default function NavPanel({ children }) {
   const icon = visible ? faTimes : faBars;
 
   return (
-    <NavPanelDiv visible={visible}>
-      <VisibilityButton
-        onClick={() => {
-          setVisible(!visible);
-        }}
-      >
-        <FontAwesomeIcon icon={icon} />
-      </VisibilityButton>
-      {children} {/* render when closed? */}
-    </NavPanelDiv>
+    <IsNavContext.Provider value={true}>
+      <NavPanelDiv visible={visible}>
+        <VisibilityButton
+          onClick={() => {
+            setVisible(!visible);
+          }}
+        >
+          <FontAwesomeIcon icon={icon} />
+        </VisibilityButton>
+        {children} {/* render when closed? */}
+      </NavPanelDiv>
+    </IsNavContext.Provider>
   );
 }
