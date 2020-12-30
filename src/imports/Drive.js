@@ -18,6 +18,11 @@ import {
 } from '../imports/DropTarget';
 import Draggable from '../imports/Draggable';
 
+import {
+  atom,
+  useSetRecoilState
+} from 'recoil';
+
 const sortOptions = Object.freeze({
   "LABEL_ASC": "label ascending",
   "LABEL_DESC": "label descending",
@@ -31,7 +36,10 @@ import {
   useHistory
 } from "react-router-dom";
 
-
+export const globalSelectedNodesAtom = atom({
+  key:'globalSelectedNodesAtom',
+  default:[]
+})
 
 export default function Drive(props){
   const isNav = useContext(IsNavContext);
@@ -59,7 +67,7 @@ export default function Drive(props){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-           <OneDrive route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
+           <Browser route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
            }></Route>
          </Switch></Router></React.Fragment>)
           // drives.push(<Browser key={`browser${driveObj.driveId}nav`} drive={driveObj.driveId} label={driveObj.label} isNav={true} DnDState={DnDState}/>)
@@ -72,7 +80,7 @@ export default function Drive(props){
         if (driveObj.driveId === props.id){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
-           <OneDrive route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
+           <Browser route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
            }></Route>
          </Switch></Router>
         }
@@ -114,15 +122,14 @@ const deleteItemMutation = async ({driveId, parentId, itemId}) =>{
   return {driveId,parentId,itemId,results:data?.results}
 } 
 
-function OneDrive(props){
-  console.log(`=== OneDrive '${props.driveId}' isNav='${props.isNav}'`)
+function Browser(props){
+  console.log(`=== Browser '${props.driveId}' isNav='${props.isNav}'`)
   let pathFolderId = props.driveId; //default 
   let pathDriveId = props.driveId; //default
   let routePathDriveId = "";
   let routePathFolderId = "";  
   let itemId = "";  
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-  console.log(">>>urlParamsObj.path",urlParamsObj.path)
   //use defaults if not defined
   if (urlParamsObj?.path !== undefined){
     [routePathDriveId,routePathFolderId,itemId] = urlParamsObj.path.split(":");
@@ -141,6 +148,8 @@ function OneDrive(props){
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
   // const { DnDState, DnDActions } = props.DnDState;
+
+  let setGlobalSelectedNodes = useSetRecoilState(globalSelectedNodesAtom);
 
   const {
     data,
@@ -388,22 +397,15 @@ function OneDrive(props){
 
   const updateToolWithSelection = useCallback((nodeIdObj)=>{
       //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id",type:"folder"}]}
-      console.log(">>>updateToolWithSelection nodeIdObj",nodeIdObj)
-    // let data = cache.getQueryData(["nodes",props.driveId]);
-    // let selectedArr = [];
-    //   for (let nodeId of Object.keys(nodeIdObj)){
-    //     let obj = data[0].nodeObjs[nodeId];
-    //     let parentId = obj.parentId;
-    //     selectedArr.push({parentId,nodeId,type:obj.type})
-    //   }
-    //   if (props.setSelectedNodes){
-    //     props.setSelectedNodes({
-    //       browserId:browserId.current,
-    //       driveId:props.driveId,
-    //       selectedArr
-    //     });
-    //   }
-  },[])
+    let data = cache.getQueryData(["nodes",props.driveId]);
+    let selectedArr = [];
+      for (let nodeId of Object.keys(nodeIdObj)){
+        let obj = data[0].nodeObjs[nodeId];
+        let parentId = obj.parentId;
+        selectedArr.push({parentId,nodeId,type:obj.type})
+      }
+      setGlobalSelectedNodes(selectedArr);
+},[])
 
   let encodeParams = p => 
   Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
@@ -491,9 +493,8 @@ function OneDrive(props){
 
   const handleDeselectAll = useCallback(()=>{
     setSelectedNodes({})
-    if (props.setSelectedNodes){
-      props.setSelectedNodes({});
-    }
+    setGlobalSelectedNodes([])
+
   },[])
 
   const deleteItemHandler = useCallback((nodeId)=>{

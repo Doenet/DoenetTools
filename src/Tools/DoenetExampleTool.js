@@ -1,6 +1,6 @@
 import React from "react";
 import Tool from "../imports/Tool/Tool";
-import Drive from "../imports/Drive";
+import Drive, {globalSelectedNodesAtom} from "../imports/Drive";
 import {
   atom,
   useSetRecoilState,
@@ -9,6 +9,8 @@ import {
   selector,
   atomFamily
 } from 'recoil';
+import { node } from "prop-types";
+
 
 
 let numAtom = atom({
@@ -31,9 +33,17 @@ let molecule = selector({
   }
 })
 
-let myFam = atomFamily({
-
-})
+function GlobalSelectIndicator(){
+  let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
+  let nodes = [];
+  for (let nodeObj of selectedNodes){
+    nodes.push(<div key={`gsi${nodeObj.nodeId}`}>{nodeObj.type} {nodeObj.nodeId}</div>)
+  }
+  return <div style={{backgroundColor:"#fcd2a7",border:"1px solid black",margin:"20px",padding:"10px"}}>
+  <h3>Global Select Indicator</h3>
+  {nodes}
+  </div>
+}
 
 function Inc(){
   let setNum = useSetRecoilState(numAtom);
@@ -70,6 +80,7 @@ export default function DoenetExampleTool(props) {
 
       <supportPanel width="40%">
         <p>I'm here for support</p>
+        <GlobalSelectIndicator />
       </supportPanel>
 
       <menuPanel> 
