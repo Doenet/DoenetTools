@@ -120,15 +120,15 @@ function OneDrive(props){
   let pathDriveId = props.driveId; //default
   let routePathDriveId = "";
   let routePathFolderId = "";  
-  if (props.route){
-    let driveFolderPath = props.route.location.pathname.split("/").filter(i=>i)[0] //filter out ""
-      //use defaults if not defined
-      if (driveFolderPath !== undefined){
-       [routePathDriveId,routePathFolderId] = driveFolderPath.split(":");
-        if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
-        if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
-      }
-    }
+  let itemId = "";  
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+  console.log(">>>urlParamsObj.path",urlParamsObj.path)
+  //use defaults if not defined
+  if (urlParamsObj?.path !== undefined){
+    [routePathDriveId,routePathFolderId,itemId] = urlParamsObj.path.split(":");
+    if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
+    if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
+  }
   //If navigation then build from root else build from path
   let rootFolderId = pathFolderId;
   if(props.isNav){
@@ -388,29 +388,45 @@ function OneDrive(props){
 
   const updateToolWithSelection = useCallback((nodeIdObj)=>{
       //{driveId:"id",selectedArr:[{parentId:"id",nodeId:"id",type:"folder"}]}
-    let data = cache.getQueryData(["nodes",props.driveId]);
-    let selectedArr = [];
-      for (let nodeId of Object.keys(nodeIdObj)){
-        let obj = data[0].nodeObjs[nodeId];
-        let parentId = obj.parentId;
-        selectedArr.push({parentId,nodeId,type:obj.type})
-      }
-      if (props.setSelectedNodes){
-        props.setSelectedNodes({
-          browserId:browserId.current,
-          driveId:props.driveId,
-          selectedArr
-        });
-      }
+      console.log(">>>updateToolWithSelection nodeIdObj",nodeIdObj)
+    // let data = cache.getQueryData(["nodes",props.driveId]);
+    // let selectedArr = [];
+    //   for (let nodeId of Object.keys(nodeIdObj)){
+    //     let obj = data[0].nodeObjs[nodeId];
+    //     let parentId = obj.parentId;
+    //     selectedArr.push({parentId,nodeId,type:obj.type})
+    //   }
+    //   if (props.setSelectedNodes){
+    //     props.setSelectedNodes({
+    //       browserId:browserId.current,
+    //       driveId:props.driveId,
+    //       selectedArr
+    //     });
+    //   }
   },[])
+
+  let encodeParams = p => 
+  Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
   const handleClickNode = useCallback(({ nodeId, parentId, type, shiftKey, metaKey})=>{
     if (props.isNav){
       if (type === 'Folder'){
-        history.push(`/${props.driveId}:${nodeId}/`)
+        let newParams = {...urlParamsObj} 
+        newParams['path'] = `${props.driveId}:${nodeId}:${nodeId}:Folder`
+        history.push('?'+encodeParams(newParams))
+        // history.push(`?path=${props.driveId}:${nodeId}:${nodeId}:Folder`)
+      }else if(type === 'Url'){
+        console.log('>>>url nodeId',nodeId)
+        //TODO: meta data contains url info
+        location.href = 'http://doenet.org'; //TODO: Replace with actual URL
+        // history.push('doenet.org') 
       }else{
-        //TODO: handle not a folder actions here
-        history.push(`/${props.driveId}:${parentId}/`)
+        //TODO: handle other types
+        //TODO: maintain other parameters
+        let newParams = {...urlParamsObj} 
+        newParams['path'] = `${props.driveId}:${parentId}:${nodeId}:${type}`
+        history.push('?'+encodeParams(newParams))
+        // history.push(`?path=${props.driveId}:${parentId}:${nodeId}:${type}`)
 
       }
       
@@ -553,8 +569,12 @@ function OneDrive(props){
           //   appearance = "dragged";
           //   draggableClassName = "";
           // } else 
-          if (props.isNav && pathFolderId === nodeId && pathDriveId === props.driveId){
-            //Only select the current path folder if we are a navigation browser
+
+          //if we are a navigation browser
+          //Only select the current path folder or the item
+          if (props.isNav && itemId === nodeId && pathDriveId === props.driveId){
+            appearance = "selected";
+          }else if (props.isNav && itemId === "" && pathFolderId === nodeId && pathDriveId === props.driveId){
             appearance = "selected";
           } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
@@ -640,7 +660,7 @@ function OneDrive(props){
   if (props.isNav){
     //***** DRIVE ICON
     let driveColor = "white";
-    if (routePathFolderId === props.driveId){ driveColor = "#6de5ff"}
+    if (routePathFolderId === props.driveId && itemId === ""){ driveColor = "#6de5ff"} //If drive selected
     driveToggleDiv = <div 
       tabIndex={0}
       className="noselect nooutline" 
@@ -649,7 +669,10 @@ function OneDrive(props){
         setDriveIsOpen((bool)=>!bool);
       }} 
       onClick={()=>{
-        history.push(`/${props.driveId}:${props.driveId}/`)
+        let newParams = {...urlParamsObj} 
+        newParams['path'] = `${props.driveId}:${props.driveId}::`
+        history.push('?'+encodeParams(newParams))
+        // history.push(`?path=${props.driveId}:${props.driveId}::`)
       }}
     style={{
       width: "300px",
@@ -787,7 +810,7 @@ const LoadingNode =  React.memo(function Node(props){
       </div></div>
     
     </>
-  }else if (props.type === "Url"){
+  }else if (props.type === "DoenetML"){
     return <>
     <div
       data-doenet-browserid={props.browserId}
@@ -821,6 +844,40 @@ const LoadingNode =  React.memo(function Node(props){
       }}>[U] {props.label} {deleteNode}</div></div>
     
     </>
+    }else if (props.type === "Url"){
+      return <>
+      <div
+        data-doenet-browserid={props.browserId}
+        tabIndex={0}
+        className="noselect nooutline" 
+        onMouseDown={(e) => {
+          // onClick={(e) => {
+          props.handleClickNode({ nodeId:props.nodeId, parentId:props.parentId, type:props.type, shiftKey: e.shiftKey, metaKey: e.metaKey })
+        }} 
+        onBlur={(e) => {
+          //Only clear if focus goes outside of this node group
+           if (e.relatedTarget === null ||
+            (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            ){
+          props.handleDeselectAll();
+          }
+        }}
+    
+      style={{
+          cursor: "pointer",
+          width: "300px",
+          padding: "4px",
+          border: "1px solid black",
+          backgroundColor: bgcolor,
+          margin: "2px"
+        }} ><div 
+        className="noselect" 
+        style={{
+          marginLeft: `${props.level * indentPx}px`
+        }}>[D] {props.label} {deleteNode}</div></div>
+      
+      </>
   }else{
     return <div>{props.type} not available </div>
   }
