@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { RecoilRoot } from "recoil";
 import NavPanel from "./NavPanel";
 import ContentPanel from "./Contentpanel";
+import MenuPanel from "./MenuPanel";
 import Drive from "../Drive";
 import {
   QueryCache,
@@ -76,7 +77,6 @@ export default function Tool(props) {
     }
   }
 
-  console.log(">>>toolParts:", toolParts);
   let navPanel = null;
   let headerPanel = null;
   let mainPanel = null;
@@ -141,7 +141,6 @@ export default function Tool(props) {
             {navPanel}
             {headerPanel}
             <ContentPanel main={mainPanel} support={supportPanel} />{" "}
-            {/* TODO: solve the resizing controller */}
             {menuPanel}
 {/* <ReactQueryDevtools /> */}
           </ToolContainer>

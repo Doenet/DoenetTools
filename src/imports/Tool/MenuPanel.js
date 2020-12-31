@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 const HeaderDiv = styled.div`
-  grid-area: menuPanelHeader;
   width: 240px;
   display: flex;
   border-left: 1px solid black;
@@ -10,6 +9,8 @@ const HeaderDiv = styled.div`
 
 const SectionDiv = styled.div`
   grid-area: menuPanel;
+  display: flex;
+  flex-direction: column;
   width: 240px;
   overflow: scroll;
   border-left: 1px solid black;
@@ -29,10 +30,6 @@ const HeaderButton = styled.button`
 
 export default function MenuPanel(props) {
   const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
-
-  const showHideMenuPanelContent = (index) => {
-    setPanelDataIndex(index);
-  };
 
   React.useEffect(() => {
     if (props.children && Array.isArray(props.children)) {
@@ -72,7 +69,7 @@ export default function MenuPanel(props) {
                   <ButtonDiv key={index}>
                     <HeaderButton
                       onClick={() => {
-                        showHideMenuPanelContent(index);
+                        setPanelDataIndex(index);
                       }}
                       style={{backgroundColor: bg}}
                     >

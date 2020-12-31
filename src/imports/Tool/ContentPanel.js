@@ -22,24 +22,24 @@ export default function ContentPanel({ main, support }) {
   let isDragging = false;
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleDown, false);
-    document.addEventListener("mousemove", handleDrag, false);
-    document.addEventListener("mouseup", handleUp, false);
+    document.addEventListener("mousedown", handleMouseDown, false);
+    document.addEventListener("mousemove", handleMouseMove, false);
+    document.addEventListener("mouseup", handleMouseUp, false);
     return () => {
-      document.removeEventListener("mousedown", handleDown, false);
-      document.addEventListener("mousemove", handleDrag, false);
-      document.addEventListener("mouseup", handleUp, false);
+      document.removeEventListener("mousedown", handleMouseDown, false);
+      document.addEventListener("mousemove", handleMouseMove, false);
+      document.addEventListener("mouseup", handleMouseUp, false);
     };
   });
 
-  const handleDown = (event) => {
+  const handleMouseDown = (event) => {
     console.log(wrapperRef);
     if (handleRef.current.contains(event.target)) {
       isDragging = true;
     }
   };
 
-  const handleDrag = (event) => {
+  const handleMouseMove = (event) => {
     // Don't do anything if dragging flag is false
     if (isDragging) {
       let mainWidth = ((event.clientX - wrapperRef.current.offsetLeft)/(wrapperRef.current.clientWidth/2)); //TODO: this math needs work
@@ -50,7 +50,7 @@ export default function ContentPanel({ main, support }) {
     }
   };
 
-  const handleUp = (event) => {
+  const handleMouseUp = (event) => {
     if (isDragging) {
       isDragging = false;
     }
