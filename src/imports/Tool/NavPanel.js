@@ -1,39 +1,46 @@
-import React from 'react';
-import styled from 'styled-components';
-import '../../../src/Tools/ToolLayout/toollayout.css';
+import React, { useState } from "react";
+import styled from "styled-components";
+import "../../../src/Tools/ToolLayout/toollayout.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
- 
-  faTimes, faBars
-} from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 
 const NavPanelDiv = styled.div`
-width:240px;
-display:flex;
-height:100vh;
-color:white;
-background-color: #288ae9;
-overflow:scroll;
-
+  grid-area: navPanel;
+  width: ${({ visible }) => (visible ? "240px" : "0px")};
+  background-color: #8fb8de;
+  overflow: scroll;
 `;
 
-export default function NavPanel(props) {
+const VisibilityButton = styled.button`
+  width: 40px;
+  height: 40px;
+  color: #8fb8de;
+  background-color: white;
+  border-radius: 50%;
+  border: 1px solid #e3e2e2;
+  font-size: 16px;
+  cursor: pointer;
+  position: fixed;
+  top: 92%;
+  left: 1%;
+  z-index: 10000;
+`;
 
-  const hideNavPanel = () => {
-      props.hideNavPanel(true)
-  }
-  return ( 
-    <NavPanelDiv>
-      <button  onClick={()=>{hideNavPanel()}} className="leftCloseButton circle">
-              <FontAwesomeIcon
-                style={{
-                  alignSelf: "center",
-                  fontSize: '16px'
-                }}
-                icon={faTimes}
-              />
-            </button>
-      {props.children}
+export default function NavPanel({ children }) {
+  const [visible, setVisible] = useState(true);
+
+  return (
+    <NavPanelDiv visible={visible}>
+      <VisibilityButton
+        onClick={() => {
+          setVisible(!visible);
+        }}
+      >
+        <FontAwesomeIcon
+          icon={visible ? faTimes : faBars}
+        />
+      </VisibilityButton>
+      {children} {/* render when closed? */}
     </NavPanelDiv>
-  )
+  );
 }
