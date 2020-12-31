@@ -1,4 +1,4 @@
-// import DoenetViewer from '../Tools/DoenetViewer';
+  // import DoenetViewer from '../Tools/DoenetViewer';
 // import axios from 'axios';
 // import './course.css';
 // import nanoid from 'nanoid';
@@ -11,6 +11,7 @@ import {
   Switch,
   Route,
   Link,
+  useParams
 } from "react-router-dom";
 import React, { useState, useEffect, useCallback } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
@@ -30,10 +31,10 @@ import LearnerAssignment from './LearnerAssignment';
 
 
 import Tool from "../imports/Tool/Tool";
-import NavPanel from "../imports/Tool/NavPanel";
-import MainPanel from "../imports/Tool/MainPanel";
-import SupportPanel from "../imports/Tool/SupportPanel";
-import MenuPanel from "../imports/Tool/MenuPanel";
+// import NavPanel from "../imports/Tool/NavPanel";
+// import MainPanel from "../imports/Tool/MainPanel";
+// import SupportPanel from "../imports/Tool/SupportPanel";
+// import MenuPanel from "../imports/Tool/MenuPanel";
 import HeaderMenuPanelButton from "../imports/Tool/HeaderMenuPanelButton";
 import ResponsiveControls from "../imports/Tool/ResponsiveControls";
 import Overlay from "../imports/Tool/Overlay";
@@ -60,8 +61,17 @@ import {
   useMutation,
 } from 'react-query'
 import axios from "axios";
+import Drive from "../imports/Drive";
+  import DoenetViewer from '../Tools/DoenetViewer';
+  import {
+    atom,
+    useSetRecoilState,
+    useRecoilValue
+  } from 'recoil';
+  
 
-const loadOverViewContent = async (_,payload) => {
+  
+const loadOverViewContent = async (payload) => {
   const { data } = await axios.get('/api/getDoenetML.php', payload)
                   .then(resp => {
                     return resp;
@@ -70,7 +80,9 @@ const loadOverViewContent = async (_,payload) => {
     return data;
 }
 
-const Overview = (props) => {
+
+const Overview = React.memo((props) => {
+  console.log(">>> overview props", props.overview_branchId)
   const [doenetML, setDoenetML] = useState('');
   const data = {
     branchId: props.overview_branchId,
@@ -82,28 +94,42 @@ const Overview = (props) => {
     params: data
   }
 
-  const overviewItemsData = useQuery(["overviewItems",payload],loadOverViewContent,{staleTime:30000})
-  // console.log(" >>> Overview" , overviewItemsData.data.doenetML);
+//   useEffect(async () => {
+//   const overviewItemsData = await loadOverViewContent(payload);
+//   setDoenetML(overviewItemsData.data.doenetML);
+// }, [])
+
+useEffect(() => {
+  axios.get('/api/getDoenetML.php', payload)
+  .then(resp => {
+    setDoenetML(resp.data.doenetML) 
+   })
+
+}, [payload]);
+  // const overviewItemsData = useQuery(["overviewItems",payload],loadOverViewContent,{staleTime:30000})
+  // console.log(" >>> Overview" , overviewItemsData);
   return (
     <div data-cy="overviewNavItem">
       <span className="Section-Text">new_Overview6</span>
       {doenetML != "" ?
-      <h1>doenet viewer</h1>
-    //    <DoenetViewer
-    //    key={"doenetviewer"}
-    //    // free={{doenetCode: doenetML}}
-    //    doenetML={doenetML}
-    //    course={true}
-    //    attemptNumber={latestAttemptNumber}
-    //    mode={{
-    //      solutionType: "displayed",
-    //      allowViewSolutionWithoutRoundTrip: false,
-    //      showHints: false,
-    //      showFeedback: true,
-    //      showCorrectness: true,
-    //      interactive: false,
-    //    }}
-    //  /> 
+       <DoenetViewer
+       key={"doenetviewer"}
+      //  free={{doenetCode: doenetML}}
+       doenetML={doenetML}
+       course={true}
+       attemptNumber={'2'}
+      //  attemptNumber={latestAttemptNumber}
+
+       
+       mode={{
+         solutionType: "displayed",
+         allowViewSolutionWithoutRoundTrip: false,
+         showHints: false,
+         showFeedback: true,
+         showCorrectness: true,
+         interactive: false,
+       }}
+     /> 
       : null} 
          {/* build doenetViewer component if we get doenetML , doenetML is not getting, need to check from db
          // Do we need doenet viewer rebuild to functional component or use doenetviewer component and render in main panel/overlay
@@ -111,58 +137,35 @@ const Overview = (props) => {
 
     </div>)
 }
+)
 
-const Syllabus = () =>{
-
-}
-
-const Grades = () =>{
-
-}
-
-const Assignment = () =>{
-
-}
 
 const ViewComponent = (props) => {
   let routeParams = "";
-  let pathDriveId ="";
-  let type = "";
   let id = "";
-  if (props.route){
-    let drivePath = props.route.location.pathname.split("/").filter(i=>i)[0] 
-      // console.log(">>>folder path",drivePath)
-      if (drivePath !== undefined){
-        routeParams = drivePath.split("&");        
-        for(let i=0; i < routeParams.length; i++)
-        {
-            let routevalues = routeParams[i].split('=');
-            if(routevalues[0] === 'overviewId' )
-            {
-              id = routevalues[1];
-            }
-            else if(routevalues[0] === 'syllabusId' )
-            {
-              id = routevalues[1];
-            }
-            else if(routevalues[0] === 'type' )
-            {
-              type = routevalues[1]
-            }
-        }
+  let type = '';
+  let itemId = ''; 
+  if (props.route){  
+    let paramsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));  
+    if(Object.entries(paramsObj).length > 0)
+    {
+      // console.log("paramsObj",paramsObj); 
+      const path = paramsObj?.path;
+      if(path)
+      {
+        routeParams = path.split(":");  
+        if(routeParams[0])
+            id = routeParams[0]; 
+        type = paramsObj.type;
+        itemId = paramsObj.itemId;
+        console.log(">>> path ", id , type , itemId)
       }
     }
-return (
-  <MainPanel> 
-  { type === 'overview' ? 
-      <Overview overview_branchId={id}/>
-      : (type === 'syllabus' 
-     ? 
-      <h1>Test syllabus Component</h1> 
-     :  <h1>Test Overview</h1> ) 
   }
-  </MainPanel>
-) 
+return (
+  
+      <Overview overview_branchId={id}/>
+  )
 }
 
 export default function DoenetCourse(props) {
@@ -178,9 +181,22 @@ export default function DoenetCourse(props) {
   const [modalOpen, setModalOpen] = useState(false)
   const [assignmentObj,setAssignmentObj] = useState({title:"test title"})
   const [assignmentId,setAssignmentId] = useState("");
+ 
+  let roleAtom = atom({
+    key:"roleAtom",
+    default:'Student'
+  })
+
+  // function roleChange(){
+  // let setRole = useSetRecoilState(roleAtom);
+  //   // let setNum = useSetRecoilState(numAtom);
+  //   // return <button onClick={()=>setNum((old)=>old+1)}>+</button>
+  // }
+  
   
   useEffect(() => {
-    getCourses_CI((courseListArray, selectedCourseObj) => { setSelectedCourse(selectedCourseObj) })
+    getCourses_CI((courseListArray, selectedCourseObj) => { 
+      setSelectedCourse(selectedCourseObj) })    
   }, [])
 
   // useEffect(()=> {
@@ -202,10 +218,11 @@ export default function DoenetCourse(props) {
   }
   function overlayOnClose() {
     setModalOpen(false)
-    // const { location: { pathname = '' } } = this.history
-    // this.history.push(`${pathname}`)
+    // const { location: { pathname = '' } } = history
+    // history.push(`${pathname}`)
   }
   let leftNavDrives = ['overview','syllabus','grades','assignments']
+
   if (studentInstructor === "Instructor"){ leftNavDrives.push('enrollment'); }
 
   //Assume student assignment in overlay
@@ -242,8 +259,25 @@ export default function DoenetCourse(props) {
             console.log(">>>redo clicked");
           }}
           title={"My Doc"}
-          responsiveControls={
-            <Menu label="Role">
+        //   responsiveControls={
+        //     <Menu label="Role">
+        //             <MenuItem
+        //               value="Student"
+        //               onSelect={() => {
+        //                 console.log(">>>Selected student")
+        //               }}
+        //             />
+        //             <MenuItem
+        //               value="Instructor"
+        //               onSelect={() => {
+        //                 console.log(">>>Selected Instructor")
+        //               }}
+        //             />
+        //           </Menu>
+        // } 
+        >
+          <navPanel>
+          {/* <Menu label="Role">
                     <MenuItem
                       value="Student"
                       onSelect={() => {
@@ -256,131 +290,94 @@ export default function DoenetCourse(props) {
                         console.log(">>>Selected Instructor")
                       }}
                     />
-                  </Menu>
-        } 
-        >
-          <NavPanel>
-          <React.Fragment>
-            <CourseTreeView leftNavDrives={leftNavDrives} />
-            {/* <Browser history={path}/> */}
-          </React.Fragment>
-          </NavPanel>
+                  </Menu> */}
 
-          {/* <MainPanel
-            setShowHideNewOverLay={setShowHideNewOverLay}
-            // responsiveControls={[]MainPanel
-          > */}
+          {/* Create React Router Links in NavPanel for Overview and Syllabus (temp) doenet.org/course/#?path=abc123:abc123&type=doenetML&itemId=overviewId  */}
+            {/* <CourseTreeView leftNavDrives={leftNavDrives} /> */}
 
-          <MainPanel />
-            <Switch>
-            <Route path="/" render={(routeprops) => <ViewComponent route={{ ...routeprops }} {...props} />}></Route>
-          
-          {/* <Route sensitive exact path={"/overviewId=".concat(selectedCourse["overviewId"])} render={() => <MainPanel><h1>Overview</h1></MainPanel>} /> */}
-          {/* <Route sensitive exact path={"/syllabusId=".concat(selectedCourse["syllabusId"])} render={() => <MainPanel><h1>Syllabus</h1></MainPanel>} />
-          <Route sensitive exact path="/grades" render={(props) => (<LearnerGrades selectedCourse={selectedCourse} studentInstructor={studentInstructor}/>)} />
-          <Route sensitive exact path="/grades/attempt" render={(props) => (<LearnerGradesAttempts selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignments  selectedCourse={selectedCourse} studentInstructor={studentInstructor} setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={(props) => (<Enrollment selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} /> */}
-        </Switch>
+            {leftNavDrives.map((item)=>{
+              return(
+               <>
+               
+                { item === 'overview' ?
+                  (<Link to={item === "overview" ? `?path=${selectedCourse.courseId}:${selectedCourse.overviewId}&type=doenetML&itemId=${selectedCourse.overviewId}` : item}
+                  style={{
+                    color: 'white',
+                    display:'flex',
+                    flexDirection:'column',
+                    textDecoration: 'none',
+                    fontWeight: "700",
+                    paddingLeft: "5px",
+                    fontSize: "20px",
+                    textTransform: 'capitalize',
+                  }}>{item}</Link>)
+                : item === 'syllabus' ?
+                    (<Link to={item === "syllabus" ? `?path=${selectedCourse.courseId}:${selectedCourse.syllabusId}&type=doenetML&itemId=${selectedCourse.syllabusId}` : item}
+                    style={{
+                      color: 'white',
+                      display:'flex',
+                      flexDirection:'column',
+                      textDecoration: 'none',
+                      fontWeight: "700",
+                      paddingLeft: "5px",
+                      fontSize: "20px",
+                      textTransform: 'capitalize',
+                    }}>{item}</Link>) : item === 'assignments' ? (<Link to={`?path=&type=${item}&itemId=`}
+                    style={{
+                      color: 'white',
+                      display:'flex',
+                      flexDirection:'column',
+                      textDecoration: 'none',
+                      fontWeight: "700",
+                      paddingLeft: "5px",
+                      fontSize: "20px",
+                      textTransform: 'capitalize',
+                    }}>{item}</Link>): (<Link to={`/${item}`}
+                    style={{
+                      color: 'white',
+                      display:'flex',
+                      flexDirection:'column',
+                      textDecoration: 'none',
+                      fontWeight: "700",
+                      paddingLeft: "5px",
+                      fontSize: "20px",
+                      textTransform: 'capitalize',
+                    }}>{item}</Link>)}
+                </>
+              )
+            })}
+          </navPanel>
 
-        
-    {/* localhost/course/#/?path=abc123:abc123&type=assignment&itemId=aaa111 */}
-    {/* Php  */}
-       
-        {/* <Router>
-          <Switch>
-            <Route path=“/” render={(routeprops) => <MainPanel><Overview route={{ ...routeprops }} {...props} /></MainPanel>}></Route>
-          <MainPanel>
-            Overview
-         </MainPanel>
-          </Route>
-        </Switch>
-    </Router>
-         */}
+          <mainPanel >
 
-        <Switch>
-          <Route sensitive exact path="/overview" render={() => <MainPanel />} />
-          <Route sensitive exact path="/syllabus" render={() => <MainPanel />} />
-          <Route sensitive exact path="/grades" render={() => <MainPanel />} />
-          <Route sensitive exact path="/grades/attempt" render={() => <MainPanel />} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls setAssignmentObj={setAssignmentObj} selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} modalOpen={modalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={() => <MainPanel />} />
-        </Switch>
+          {/* <Drive types={['content','course']} /> */}
+          {/* <Drive id="_jO08ui8XmzjAt8GSwLNE" /> */}
 
-        
-            {/* <div
-              onClick={() => {
-                showHideOverNewOverlayOnClick();
-              }}
-            >
-              Click for Overlay
-            </div> */}
 
-            {/* <h3> This is Main Panel</h3>
-            <p>click Switch button in header to see support panel</p>
-            <p>
-              Define responsiveControls to see for standard components section
-              which are responsive and collapses according the width available
-            </p>
-
-            <h2>Header Menu Panels </h2>
-            <p>Click add and save to see header menu panels section </p> */}
-          {/* </MainPanel> */}
-
-          <SupportPanel
-          // responsiveControls={[]}
-          >
-            <h3>Support Panel Content</h3>
-
-            <p>
-              Define responsiveControls to see for standard components section
-              which are responsive and collapses according the width available
-            </p>
-          </SupportPanel>
-          <MenuPanel>
-            <MenuPanelSection title="Assignment">
+              <Switch>
+                <Route path="/" render={(routeprops) => <ViewComponent route={{ ...routeprops }} {...props} />}></Route>
+              </Switch>
               
-            </MenuPanelSection>
-            {/* <MenuPanelSection title="style">
-              Menu Panel Style Content
-            </MenuPanelSection> */}
-          </MenuPanel>
+          </mainPanel>
+           
+           {/* <Route path="/" render={(routeprops) => <ViewComponent route={{ ...routeprops }} {...props} />}></Route>*/}
+  
+
+       
+
+        
+   
+          <supportPanel>
+            <h3>Support Panel Content</h3>
+          </supportPanel>
+          <menuPanel>
+            Menu Panel
+          </menuPanel>
         </Tool>
         </Router>
-    {/* <Router>
-      <ToolLayout toolName="Course" headingTitle={selectedCourse.longname} extraMenus={[menuStudentInstructor]}>
-        <ToolLayoutPanel
-          panelName="Left Nav"
-        >
-          <React.Fragment>
-            <CourseTreeView leftNavDrives={leftNavDrives}/>
-          </React.Fragment>
-        </ToolLayoutPanel>
-        <Switch>
-          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel><h1>Overview</h1></ToolLayoutPanel>} />
-          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel><h1>Syllabus</h1></ToolLayoutPanel>} />
-          <Route sensitive exact path="/grades" render={(props) => (<LearnerGrades selectedCourse={selectedCourse} studentInstructor={studentInstructor}/>)} />
-          <Route sensitive exact path="/grades/attempt" render={(props) => (<LearnerGradesAttempts selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignments  selectedCourse={selectedCourse} studentInstructor={studentInstructor} setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={(props) => (<Enrollment selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
-        </Switch>
+  
 
-        <Switch>
-          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/grades" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/grades/attempt" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls setAssignmentObj={setAssignmentObj} selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} modalOpen={modalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={() => <ToolLayoutPanel />} />
-        </Switch>
 
-        {/* <ToolLayoutPanel
-          panelName="Rt. Nav">
-          <p>Assignment Control Panel</p>
-        </ToolLayoutPanel> 
-       </ToolLayout> 
-
-     </Router>  */}
     </>
   );
 }
@@ -397,7 +394,6 @@ const treeNodeItem = (nodeItem) => {
   // }
   return <div>
     {icon}
-        {/* localhost/course/#/?path=abc123:abc123&type=assignment&itemId=aaa111 */}
 
     <Link
       to={title === "overview" || title === "syllabus" ? `/type=${title}&${title.concat('Id=').concat(viewId)}` : title}//course/?viewId=w35234
@@ -413,6 +409,7 @@ const treeNodeItem = (nodeItem) => {
     </Link>
   </div>
 };
+
 
 const CourseTreeView = (props) => {
   console.log("inside tree view", props);
@@ -431,7 +428,7 @@ const CourseTreeView = (props) => {
       viewId: ""
     }
   };
-
+  // localhost/course/#?path=abc123:abc123&type=assignment&itemId=aaa111
   props.leftNavDrives.forEach(title => {
     parentsInfo[title] = {
       childContent: [],
