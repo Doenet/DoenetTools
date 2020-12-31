@@ -68,28 +68,28 @@ export default class CompositeComponent extends BaseComponent {
     return [];
   }
 
-  serialize(parameters = {}) {
+  // serialize(parameters = {}) {
 
-    let serializedState = super.serialize(parameters);
+  //   let serializedState = super.serialize(parameters);
 
-    if (this.replacements === undefined) {
-      return serializedState;
-    }
+  //   if (this.replacements === undefined) {
+  //     return serializedState;
+  //   }
 
-    // also serialize replacements
-    let serializedReplacements = [];
-    for (let ind = 0; ind < this.replacements.length; ind++) {
-      serializedReplacements.push(this.replacements[ind].serialize(parameters));
-    }
-    serializedState.replacements = serializedReplacements;
+  //   // also serialize replacements
+  //   let serializedReplacements = [];
+  //   for (let ind = 0; ind < this.replacements.length; ind++) {
+  //     serializedReplacements.push(this.replacements[ind].serialize(parameters));
+  //   }
+  //   serializedState.replacements = serializedReplacements;
 
-    if (this.replacementsToWithhold !== undefined) {
-      serializedState.replacementsToWithhold = this.replacementsToWithhold;
-    }
+  //   if (this.replacementsToWithhold !== undefined) {
+  //     serializedState.replacementsToWithhold = this.replacementsToWithhold;
+  //   }
 
-    return serializedState;
+  //   return serializedState;
 
-  }
+  // }
 
   get allPotentialRendererTypes() {
 

@@ -4,7 +4,7 @@ import ParameterStack from './ParameterStack';
 import Numerics from './Numerics';
 import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
-import { createUniqueName } from './utils/naming';
+import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { gatherDescendants } from './utils/descendants';
 import crypto from 'crypto';
@@ -160,8 +160,7 @@ export default class Core {
 
       serializeFunctions.createComponentNames({
         serializedState,
-        componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-        allComponentClasses: this.allComponentClasses,
+        componentInfoObjects: this.componentInfoObjects,
       });
     } else {
       if (serializedState[0].doenetAttributes === undefined) {
@@ -686,11 +685,24 @@ export default class Core {
 
     let previousUnsatisfiedChildLogic = Object.assign({}, this.unsatisfiedChildLogic);
 
+    let namespaceForUnamed = "/";
+
+    if (ancestors.length > 0) {
+      let parentName = ancestors[0].componentName;
+      let parent = this.components[parentName];
+      if (parent.doenetAttributes.newNamespace) {
+        namespaceForUnamed = parent.componentName + "/";
+      } else {
+        namespaceForUnamed = getNamespaceFromName(parent.componentName);
+      }
+    }
+
     let createResult = this.createIsolatedComponentsSub({
       serializedState: serializedState,
       ancestors,
       applySugar, applyAdapters,
-      shadow, updatesNeeded, compositesBeingExpanded
+      shadow, updatesNeeded, compositesBeingExpanded,
+      namespaceForUnamed
     });
 
     // console.log("createResult")
@@ -743,7 +755,7 @@ export default class Core {
 
   createIsolatedComponentsSub({ serializedState, ancestors, applySugar = false,
     applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
-    createNameContext = ""
+    createNameContext = "", namespaceForUnamed = "/",
   }
   ) {
 
@@ -788,7 +800,8 @@ export default class Core {
       if (componentName === undefined) {
         // Note: assuming that document always has a name
         // so we never get here without an ancestor
-        let longNameId = ancestors[0].componentName + "|" + createNameContext + "|";
+        let parentName = ancestors[0].componentName;
+        let longNameId = parentName + "|" + createNameContext + "|";
 
         if (serializedComponent.uniqueIdentifier) {
           longNameId += serializedComponent.uniqueIdentifier;
@@ -797,6 +810,9 @@ export default class Core {
         }
 
         componentName = createUniqueName(serializedComponent.componentType, longNameId);
+
+        // add namespace
+        componentName = namespaceForUnamed + componentName;
       }
 
       let createResult = this.createChildrenThenComponent({
@@ -804,7 +820,8 @@ export default class Core {
         componentName,
         ancestors,
         componentClass, applySugar,
-        applyAdapters, shadow, updatesNeeded, compositesBeingExpanded
+        applyAdapters, shadow, updatesNeeded, compositesBeingExpanded,
+        namespaceForUnamed,
       });
 
       let newComponent = createResult.newComponent;
@@ -826,6 +843,7 @@ export default class Core {
     ancestors, componentClass,
     applySugar = false, applyAdapters = true, shadow = false,
     updatesNeeded, compositesBeingExpanded,
+    namespaceForUnamed = "/",
   }) {
 
     // first recursively create children
@@ -897,7 +915,8 @@ export default class Core {
             ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
             updatesNeeded, compositesBeingExpanded,
-            createNameContext: "variantControl"
+            createNameContext: "variantControl",
+            namespaceForUnamed,
           });
 
           definingChildren[variantControlInd] = childrenResult.components[0];
@@ -918,7 +937,8 @@ export default class Core {
           serializedState: childrenToCreate,
           ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
-          updatesNeeded, compositesBeingExpanded
+          updatesNeeded, compositesBeingExpanded,
+          namespaceForUnamed,
         });
 
         for (let [createInd, locationInd] of indicesToCreate.entries()) {
@@ -957,7 +977,8 @@ export default class Core {
             serializedState: childrenToCreate,
             ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
-            updatesNeeded, compositesBeingExpanded
+            updatesNeeded, compositesBeingExpanded,
+            namespaceForUnamed,
           });
 
           for (let [createInd, locationInd] of indicesToCreate.entries()) {
@@ -973,7 +994,8 @@ export default class Core {
           serializedState: serializedChildren,
           ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
-          updatesNeeded, compositesBeingExpanded
+          updatesNeeded, compositesBeingExpanded,
+          namespaceForUnamed,
         });
 
         definingChildren = childrenResult.components;
@@ -1073,13 +1095,13 @@ export default class Core {
       }
     }
 
-    if (this.allComponentClasses._composite.isPrototypeOf(componentClass)) {
-      // if composite was serialized with replacements
-      // then save those serializedReplacements to be used when component is expanded
-      if (serializedComponent.replacements !== undefined) {
-        newComponent.serializedReplacements = serializedComponent.replacements;
-      }
-    }
+    // if (this.allComponentClasses._composite.isPrototypeOf(componentClass)) {
+    //   // if composite was serialized with replacements
+    //   // then save those serializedReplacements to be used when component is expanded
+    //   if (serializedComponent.replacements !== undefined) {
+    //     newComponent.serializedReplacements = serializedComponent.replacements;
+    //   }
+    // }
 
 
     this.deriveChildResultsFromDefiningChildren(newComponent, updatesNeeded, compositesBeingExpanded);
@@ -1379,6 +1401,24 @@ export default class Core {
 
       // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
 
+      let assignNames;
+      if (component.doenetAttributes) {
+        assignNames = component.doenetAttributes.assignNames;
+      }
+
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames,
+        serializedComponents: serializedReplacements,
+        assignDirectlyToComposite: component.componentType === "copy",
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        propVariableObjs: component.stateValues.propVariableObjs,
+        componentTypeByTarget: component.stateValues.componentTypeByTarget,
+        componentInfoObjects: this.componentInfoObjects,
+      });
+
+      serializedReplacements = processResult.serializedComponents;
+
       this.createAndSetReplacements({
         component,
         serializedReplacements,
@@ -1408,21 +1448,22 @@ export default class Core {
       component,
       components: this.components,
       workspace: component.replacementsWorkspace,
+      componentInfoObjects: this.componentInfoObjects,
     });
 
     // console.log(`expand result for ${component.componentName}`)
-    // console.log(result);
+    // console.log(JSON.parse(JSON.stringify(result)));
 
     if (result.replacements) {
       let serializedReplacements = result.replacements;
 
-      if (component.serializedReplacements) {
+      // if (component.serializedReplacements) {
 
-        // if component came with serialized replacements, use those instead
-        // as they may have particular state variables values saved
-        serializedReplacements = component.serializedReplacements;
-        delete component.serializedReplacements;
-      }
+      //   // if component came with serialized replacements, use those instead
+      //   // as they may have particular state variables values saved
+      //   serializedReplacements = component.serializedReplacements;
+      //   delete component.serializedReplacements;
+      // }
 
       this.createAndSetReplacements({
         component,
@@ -1432,14 +1473,16 @@ export default class Core {
       });
     } else if (result.replacementsWithInstructions) {
 
+      throw Error("removing replacementsWithInstructions");
+
       let serializedReplacementsFromComponent;
-      if (component.serializedReplacements) {
-        // if component came with serialized replacements, use those instead
-        // however, we will push any sharedparameters from instructions
-        // before creating
-        serializedReplacementsFromComponent = component.serializedReplacements;
-        delete component.serializedReplacements;
-      }
+      // if (component.serializedReplacements) {
+      //   // if component came with serialized replacements, use those instead
+      //   // however, we will push any sharedparameters from instructions
+      //   // before creating
+      //   serializedReplacementsFromComponent = component.serializedReplacements;
+      //   delete component.serializedReplacements;
+      // }
 
 
       this.createAndSetReplacementsWithInstructions({
@@ -1503,6 +1546,13 @@ export default class Core {
 
     this.parameterStack.push(component.parentSharedParameters, false);
 
+    let namespaceForUnamed;
+    if (component.doenetAttributes.newNamespace) {
+      namespaceForUnamed = component.componentName + "/";
+    } else {
+      namespaceForUnamed = getNamespaceFromName(component.componentName);
+    }
+
     let replacementResult = this.createIsolatedComponentsSub({
       serializedState: serializedReplacements,
       ancestors: component.ancestors,
@@ -1510,7 +1560,8 @@ export default class Core {
       shadow: true,
       updatesNeeded,
       compositesBeingExpanded,
-      createNameContext: component.componentName + "|replacements"
+      createNameContext: component.componentName + "|replacements",
+      namespaceForUnamed,
     });
 
     this.parameterStack.pop();
@@ -1553,9 +1604,10 @@ export default class Core {
     updatesNeeded, compositesBeingExpanded
   }) {
 
+    throw Error("Let's try to do this differently!")
     let replacements = [];
 
-    for (let replacementInstruction of replacementsWithInstructions) {
+    for (let [ind, replacementInstruction] of replacementsWithInstructions.entries()) {
       let replacementsToAdd = replacementInstruction.replacements;
       let nReplacementsInChunk = replacementsToAdd.length;
 
@@ -1578,6 +1630,7 @@ export default class Core {
           this.parameterStack.parameters[pName].push(instruction.value);
         }
         else if (instruction.operation === "assignNamespace") {
+          throw Error('removed assignNamespace instruction')
           // if (serializedReplacementsFromComponent) {
           //   // skip assigning namespace if already have serialized replacements from component
           //   continue;
@@ -1624,12 +1677,13 @@ export default class Core {
           serializeFunctions.createComponentNames({
             serializedState: replacementsToAdd,
             namespaceStack,
-            componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-            allComponentClasses: this.allComponentClasses,
+            componentInfoObjects: this.componentInfoObjects,
             parentDoenetAttributes: { componentName: component.ancestors[0].componentName }
           });
         }
         else if (instruction.operation === "assignName") {
+          throw Error('removed assignName instruction')
+
           // if (serializedReplacementsFromComponent) {
           //   // skip assigning namespace if already have serialized replacements from component
           //   continue;
@@ -1638,6 +1692,8 @@ export default class Core {
           if (replacementsToAdd.length !== 1) {
             throw Error(`Cannot assign name to replacements when not exactly one replacement`)
           }
+
+          let theReplacement = replacementsToAdd[0];
 
           let name = instruction.name;
 
@@ -1650,13 +1706,13 @@ export default class Core {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
 
-            name = createUniqueName(component.componentType,
+            name = createUniqueName(theReplacement.componentType,
               longNameId);
           }
 
-          let theReplacement = replacementsToAdd[0];
-
           if (Array.isArray(name)) {
+
+            throw Error(`Are we creating arrays of names here now?`)
             // if name is an array, then it refers to names of the grandchildren
             // must create unique name for child
 
@@ -1702,7 +1758,7 @@ export default class Core {
                   } else {
                     longNameId += ind;
                   }
-                  nameForGrandchild = createUniqueName(component.componentType,
+                  nameForGrandchild = createUniqueName(grandchild.componentType,
                     longNameId);
                 }
                 if (!grandchild.doenetAttributes) {
@@ -1746,13 +1802,13 @@ export default class Core {
           serializeFunctions.createComponentNames({
             serializedState: replacementsToAdd,
             namespaceStack,
-            componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-            allComponentClasses: this.allComponentClasses,
-            parentDoenetAttributes: { componentName: component.ancestors[0].componentName }
+            componentInfoObjects: this.componentInfoObjects,
+            parentDoenetAttributes: { componentName: component.ancestors[0].componentName },
+            usePreserializedNames: true,
           });
         }
         else {
-          throw Error(`Unimplement replacement instruction operation ${instruction.operation}`);
+          throw Error(`Unimplemented replacement instruction operation ${instruction.operation}`);
         }
       }
 
@@ -1763,7 +1819,7 @@ export default class Core {
         shadow: true,
         updatesNeeded,
         compositesBeingExpanded,
-        createNameContext: component.componentName + "|replacements"
+        createNameContext: component.componentName + "|replacements" + ind
       });
       replacements.push(...replacementResult.components);
 
@@ -1911,13 +1967,20 @@ export default class Core {
         let adapter = originalChild.adapterUsed;
 
         if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
+          let namespaceForUnamed;
+          if (component.doenetAttributes.newNamespace) {
+            namespaceForUnamed = component.componentName + "/";
+          } else {
+            namespaceForUnamed = getNamespaceFromName(component.componentName);
+          }
           let newChildrenResult = this.createIsolatedComponentsSub({
             serializedState: [newSerializedChild],
             applySugar: false,
             shadow: true,
             ancestors: originalChild.ancestors,
             updatesNeeded,
-            createNameContext: originalChild.componentName + "|adapter"
+            createNameContext: originalChild.componentName + "|adapter",
+            namespaceForUnamed,
           });
 
           adapter = newChildrenResult.components[0];
@@ -2195,12 +2258,20 @@ export default class Core {
       ...component.ancestors
     ];
 
+    let namespaceForUnamed;
+    if (component.doenetAttributes.newNamespace) {
+      namespaceForUnamed = component.componentName + "/";
+    } else {
+      namespaceForUnamed = getNamespaceFromName(component.componentName);
+    }
+
     let childrenResult = this.createIsolatedComponentsSub({
       serializedState: sugarResults.newChildren,
       applySugar: true,
       ancestors: ancestorsForChildren,
       shadow, updatesNeeded, compositesBeingExpanded,
-      createNameContext: component.componentName + "|sugar"
+      createNameContext: component.componentName + "|sugar",
+      namespaceForUnamed,
     });
 
     this.parameterStack.pop();
@@ -11227,6 +11298,7 @@ export default class Core {
       componentChanges,
       components: this.components,
       workspace: component.replacementsWorkspace,
+      componentInfoObjects: this.componentInfoObjects,
     });
 
     // console.log("replacement changes for " + component.componentName);
@@ -11321,19 +11393,28 @@ export default class Core {
 
           let serializedReplacements = change.serializedReplacements;
 
+          let namespaceForUnamed;
+          if (component.doenetAttributes.newNamespace) {
+            namespaceForUnamed = component.componentName + "/";
+          } else {
+            namespaceForUnamed = getNamespaceFromName(component.componentName);
+          }
+
           let createResult = this.createIsolatedComponentsSub({
             serializedState: serializedReplacements,
             applySugar: true,
             ancestors: component.ancestors,
             updatesNeeded,
             compositesBeingExpanded,
-            createNameContext: component.componentName + "|replacements"
+            createNameContext: component.componentName + "|replacements",
+            namespaceForUnamed,
           });
 
           newComponents = createResult.components;
 
 
         } else if (change.replacementsWithInstructions) {
+          throw Error("no more replacementsWithInstructions")
 
           let serializedReplacementsFromComponent;
 
@@ -11778,13 +11859,21 @@ export default class Core {
 
         let newComponents;
 
+        let namespaceForUnamed;
+        if (shadowingComponent.doenetAttributes.newNamespace) {
+          namespaceForUnamed = shadowingComponent.componentName + "/";
+        } else {
+          namespaceForUnamed = getNamespaceFromName(shadowingComponent.componentName);
+        }
+
         let createResult = this.createIsolatedComponentsSub({
           serializedState: newSerializedReplacements,
           applySugar: true,
           ancestors: shadowingComponent.ancestors,
           updatesNeeded,
           compositesBeingExpanded,
-          createNameContext: shadowingComponent.componentName + "|replacements"
+          createNameContext: shadowingComponent.componentName + "|replacements",
+          namespaceForUnamed,
         });
 
         newComponents = createResult.components;

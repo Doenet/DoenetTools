@@ -1,0 +1,1507 @@
+import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
+describe('Basic copy assignName Tests', function () {
+
+  beforeEach(() => {
+    cy.visit('/test')
+  })
+
+  it('recursively copying and assigning names to text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <text name="a">hello</text>
+  <copy name="cp1" assignNames="b" tname="a" />
+  <copy name="cp2" assignNames="c" tname="b" />
+  <copy name="cp3" assignNames="d" tname="cp1" />
+  <copy name="cp4" assignNames="e" tname="c" />
+  <copy name="cp5" assignNames="f" tname="cp2" />
+  <copy name="cp6" assignNames="g" tname="d" />
+  <copy name="cp7" assignNames="h" tname="cp3" />
+  <copy name="cp8" assignNames="i" tname="e" />
+  <copy name="cp9" assignNames="j" tname="cp4" />
+  <copy name="cp10" assignNames="k" tname="f" />
+  <copy name="cp11" assignNames="l" tname="cp5" />
+  <copy name="cp12" assignNames="m" tname="g" />
+  <copy name="cp13" assignNames="n" tname="cp6" />
+  <copy name="cp14" assignNames="o" tname="h" />
+  <copy name="cp15" assignNames="p" tname="cp7" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/a').should('have.text', 'hello');
+    cy.get('#\\/b').should('have.text', 'hello');
+    cy.get('#\\/c').should('have.text', 'hello');
+    cy.get('#\\/d').should('have.text', 'hello');
+    cy.get('#\\/e').should('have.text', 'hello');
+    cy.get('#\\/f').should('have.text', 'hello');
+    cy.get('#\\/g').should('have.text', 'hello');
+    cy.get('#\\/h').should('have.text', 'hello');
+    cy.get('#\\/i').should('have.text', 'hello');
+    cy.get('#\\/j').should('have.text', 'hello');
+    cy.get('#\\/k').should('have.text', 'hello');
+    cy.get('#\\/l').should('have.text', 'hello');
+    cy.get('#\\/m').should('have.text', 'hello');
+    cy.get('#\\/n').should('have.text', 'hello');
+    cy.get('#\\/o').should('have.text', 'hello');
+    cy.get('#\\/p').should('have.text', 'hello');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/a'].stateValues.value).eq('hello');
+      expect(components['/b'].stateValues.value).eq('hello');
+      expect(components['/c'].stateValues.value).eq('hello');
+      expect(components['/d'].stateValues.value).eq('hello');
+      expect(components['/e'].stateValues.value).eq('hello');
+      expect(components['/f'].stateValues.value).eq('hello');
+      expect(components['/g'].stateValues.value).eq('hello');
+      expect(components['/h'].stateValues.value).eq('hello');
+      expect(components['/i'].stateValues.value).eq('hello');
+      expect(components['/j'].stateValues.value).eq('hello');
+      expect(components['/k'].stateValues.value).eq('hello');
+      expect(components['/l'].stateValues.value).eq('hello');
+      expect(components['/m'].stateValues.value).eq('hello');
+      expect(components['/n'].stateValues.value).eq('hello');
+      expect(components['/o'].stateValues.value).eq('hello');
+      expect(components['/p'].stateValues.value).eq('hello');
+
+      expect(components['/cp1'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp2'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp3'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp4'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp5'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp6'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp7'].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp8'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp9'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp10'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp11'].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp12'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp13'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp14'].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp15'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+
+
+
+    })
+
+  })
+
+  it('assign name to prop', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <math>x+x</math>
+  <copy name="cp1" prop="simplify" assignNames="s1" tname="_math1" />
+  <copy name="cp2" tname="s1" assignNames="s2" />
+  <copy name="cp3" tname="cp1" assignNames="s3" />
+
+  <copy name="cp4" assignNames="m1" tname="_math1" simplify="full" />
+  <copy name="cp5" prop="simplify" assignNames="s4" tname="m1" />
+  <copy name="cp6" prop="simplify" assignNames="s5" tname="cp4" />
+  <copy name="cp7" tname="s4" assignNames="s6" />
+  <copy name="cp8" tname="cp5" assignNames="s7" />
+  <copy name="cp9" tname="s5" assignNames="s8" />
+  <copy name="cp10" tname="cp6" assignNames="s9" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/s1').should('have.text', 'none');
+    cy.get('#\\/s2').should('have.text', 'none');
+    cy.get('#\\/s3').should('have.text', 'none');
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/s4').should('have.text', 'full');
+    cy.get('#\\/s5').should('have.text', 'full');
+    cy.get('#\\/s6').should('have.text', 'full');
+    cy.get('#\\/s7').should('have.text', 'full');
+    cy.get('#\\/s8').should('have.text', 'full');
+    cy.get('#\\/s9').should('have.text', 'full');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/_math1'].stateValues.value.tree).eqls(["+", "x", "x"]);
+      expect(components['/s1'].stateValues.value).eq('none');
+      expect(components['/s2'].stateValues.value).eq('none');
+      expect(components['/s3'].stateValues.value).eq('none');
+
+      expect(components['/m1'].stateValues.value.tree).eqls(["*", 2, "x"]);
+
+      expect(components['/s4'].stateValues.value).eq('full');
+      expect(components['/s5'].stateValues.value).eq('full');
+      expect(components['/s6'].stateValues.value).eq('full');
+      expect(components['/s7'].stateValues.value).eq('full');
+      expect(components['/s8'].stateValues.value).eq('full');
+      expect(components['/s9'].stateValues.value).eq('full');
+
+      expect(components['/cp1'].replacements[0].stateValues.value).eq('none');
+      expect(components['/cp2'].replacements[0].stateValues.value).eq('none');
+      expect(components['/cp3'].replacements[0].replacements[0].stateValues.value).eq('none');
+      expect(components['/cp4'].replacements[0].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(components['/cp5'].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp6'].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp7'].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp8'].replacements[0].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp9'].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp10'].replacements[0].replacements[0].stateValues.value).eq('full');
+
+    })
+
+  })
+
+  it('assign names to array prop', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <line>(0,0),(1,1)</line>
+  </graph>
+
+  <copy name="cp1" prop="points" assignNames="b,c" tname="_line1" />
+
+  <graph>
+    <copy tname="b" assignNames="b1" />
+    <copy tname="c" assignNames="c1" />
+  </graph>
+
+  <graph>
+    <copy assignNames="d,e" tname="cp1" />
+  </graph>
+
+  <copy tname="d" assignNames="f" />
+  <copy tname="e" assignNames="g" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    })
+    cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,1)')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    })
+    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,1)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+      expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
+
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+
+    })
+
+    cy.log('move point b')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/b'].movePoint({ x: 5, y: -5 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+    })
+
+    cy.log('move point c')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/c'].movePoint({ x: 3, y: 4 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+    })
+
+    cy.log('move point b1')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/b1'].movePoint({ x: -9, y: -8 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+    })
+
+
+    cy.log('move point c1')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/c1'].movePoint({ x: -1, y: -3 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−1,−3)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−1,−3)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+    })
+
+
+    cy.log('move point d')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/d'].movePoint({ x: 0, y: 2 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−1,−3)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−1,−3)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+    })
+
+
+    cy.log('move point e')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/e'].movePoint({ x: 5, y: 4 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,4)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,4)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+    })
+
+    cy.log('move point f')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/f'].movePoint({ x: 6, y: 7 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,4)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,4)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+    })
+
+
+    cy.log('move point g')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/g'].movePoint({ x: 9, y: 3 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      cy.get('#\\/c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(9,3)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(9,3)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/c1'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/g'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+    })
+
+  })
+
+  it('assign names to length-1 array prop', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <line>(0,0),(1,1)</line>
+  </graph>
+
+  <copy name="cp1" prop="point1" assignNames="b" tname="_line1" />
+
+  <graph>
+    <copy tname="b" assignNames="b1" />
+  </graph>
+
+  <graph>
+    <copy assignNames="d" tname="cp1" />
+  </graph>
+
+  <copy tname="d" assignNames="f" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,0)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+      expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
+
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+
+    })
+
+    cy.log('move point b')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/b'].movePoint({ x: 5, y: -5 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,−5)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+    })
+
+    cy.log('move point b1')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/b1'].movePoint({ x: -9, y: -8 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(−9,−8)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+    })
+
+
+    cy.log('move point d')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/d'].movePoint({ x: 0, y: 2 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,2)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+    })
+
+
+    cy.log('move point f')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/f'].movePoint({ x: 6, y: 7 });
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(6,7)')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+    })
+
+
+  })
+
+  it('assign names to prop of array prop', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <line>(0,0),(1,1)</line>
+  </graph>
+
+  <graph>
+     <copy name="cp1" prop="points" assignNames="b,c" tname="_line1" />
+  </graph>
+
+  <p>xs of points: <copy prop="x" tname="cp1" assignNames="d,e" /></p>
+
+  <p>
+    xs again: <copy tname="d" assignNames="f" />
+    <copy tname="e" assignNames="g" />
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+      expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
+
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/d'].stateValues.value.tree).eq(0);
+      expect(components['/e'].stateValues.value.tree).eq(1);
+      expect(components['/f'].stateValues.value.tree).eq(0);
+      expect(components['/g'].stateValues.value.tree).eq(1);
+
+    })
+
+    cy.log('move point b')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/b'].movePoint({ x: 5, y: -5 });
+      cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(components['/d'].stateValues.value.tree).eq(5);
+      expect(components['/e'].stateValues.value.tree).eq(1);
+      expect(components['/f'].stateValues.value.tree).eq(5);
+      expect(components['/g'].stateValues.value.tree).eq(1);
+
+    })
+
+    cy.log('move point c')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/c'].movePoint({ x: 3, y: 4 });
+      cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/d'].stateValues.value.tree).eq(5);
+      expect(components['/e'].stateValues.value.tree).eq(3);
+      expect(components['/f'].stateValues.value.tree).eq(5);
+      expect(components['/g'].stateValues.value.tree).eq(3);
+
+    })
+
+  })
+
+  it('cannot assign subnames to array prop', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <graph>
+    <line>(0,0),(1,1)</line>
+  </graph>
+
+  <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />
+  
+  <p name="n1">nothing 1: <copy tname="a1" /></p>
+  <p name="n2">nothing 2: <copy tname="a2" /></p>
+  <p name="n3">nothing 3: <copy tname="b1" /></p>
+  <p name="n4">nothing 4: <copy tname="b2" /></p>
+
+  <graph>
+    <copy name="cp2" assignNames="c,d" tname="cp1" />
+  </graph>
+
+  <copy tname="c" assignNames="e" />
+  <copy tname="d" assignNames="f" />
+
+  <copy name="cp3" assignNames="(g1,g2),(h1,h2)" tname="cp1" />
+  
+  <p name="n5">nothing 5: <copy tname="g1" /></p>
+  <p name="n6">nothing 6: <copy tname="g2" /></p>
+  <p name="n7">nothing 7: <copy tname="h1" /></p>
+  <p name="n8">nothing 8: <copy tname="h2" /></p>
+
+  <copy name="cp4" assignNames="(i1,i2),(j1,j2)" tname="cp2" />
+  
+  <p name="n9">nothing 9: <copy tname="i1" /></p>
+  <p name="n10">nothing 10: <copy tname="i2" /></p>
+  <p name="n11">nothing 11: <copy tname="j1" /></p>
+  <p name="n12">nothing 12: <copy tname="j2" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let point1Anchor = cesc('#' + components["/cp1"].replacements[0].componentName);
+      let point2Anchor = cesc('#' + components["/cp1"].replacements[1].componentName);
+      let point1aAnchor = cesc('#' + components["/cp3"].replacements[0].replacements[0].componentName);
+      let point2aAnchor = cesc('#' + components["/cp3"].replacements[0].replacements[1].componentName);
+      let point1bAnchor = cesc('#' + components["/cp4"].replacements[0].replacements[0].replacements[0].componentName);
+      let point2bAnchor = cesc('#' + components["/cp4"].replacements[0].replacements[0].replacements[1].componentName);
+
+      cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get('#\\/n1').should('have.text', 'nothing 1: ')
+      cy.get('#\\/n2').should('have.text', 'nothing 2: ')
+      cy.get('#\\/n3').should('have.text', 'nothing 3: ')
+      cy.get('#\\/n4').should('have.text', 'nothing 4: ')
+
+      cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get('#\\/n5').should('have.text', 'nothing 5: ')
+      cy.get('#\\/n6').should('have.text', 'nothing 6: ')
+      cy.get('#\\/n7').should('have.text', 'nothing 7: ')
+      cy.get('#\\/n8').should('have.text', 'nothing 8: ')
+
+      cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get('#\\/n9').should('have.text', 'nothing 9: ')
+      cy.get('#\\/n10').should('have.text', 'nothing 10: ')
+      cy.get('#\\/n11').should('have.text', 'nothing 11: ')
+      cy.get('#\\/n12').should('have.text', 'nothing 12: ')
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+        expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
+
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+
+      })
+
+      cy.log('move point c')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/c'].movePoint({ x: 5, y: -5 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get('#\\/n1').should('have.text', 'nothing 1: ')
+        cy.get('#\\/n2').should('have.text', 'nothing 2: ')
+        cy.get('#\\/n3').should('have.text', 'nothing 3: ')
+        cy.get('#\\/n4').should('have.text', 'nothing 4: ')
+        cy.get('#\\/n5').should('have.text', 'nothing 5: ')
+        cy.get('#\\/n6').should('have.text', 'nothing 6: ')
+        cy.get('#\\/n7').should('have.text', 'nothing 7: ')
+        cy.get('#\\/n8').should('have.text', 'nothing 8: ')
+        cy.get('#\\/n9').should('have.text', 'nothing 9: ')
+        cy.get('#\\/n10').should('have.text', 'nothing 10: ')
+        cy.get('#\\/n11').should('have.text', 'nothing 11: ')
+        cy.get('#\\/n12').should('have.text', 'nothing 12: ')
+
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      })
+
+      cy.log('move point d')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/d'].movePoint({ x: 3, y: 4 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get('#\\/n1').should('have.text', 'nothing 1: ')
+        cy.get('#\\/n2').should('have.text', 'nothing 2: ')
+        cy.get('#\\/n3').should('have.text', 'nothing 3: ')
+        cy.get('#\\/n4').should('have.text', 'nothing 4: ')
+        cy.get('#\\/n5').should('have.text', 'nothing 5: ')
+        cy.get('#\\/n6').should('have.text', 'nothing 6: ')
+        cy.get('#\\/n7').should('have.text', 'nothing 7: ')
+        cy.get('#\\/n8').should('have.text', 'nothing 8: ')
+        cy.get('#\\/n9').should('have.text', 'nothing 9: ')
+        cy.get('#\\/n10').should('have.text', 'nothing 10: ')
+        cy.get('#\\/n11').should('have.text', 'nothing 11: ')
+        cy.get('#\\/n12').should('have.text', 'nothing 12: ')
+
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      })
+
+      cy.log('move point e')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/e'].movePoint({ x: -9, y: -8 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get('#\\/n1').should('have.text', 'nothing 1: ')
+        cy.get('#\\/n2').should('have.text', 'nothing 2: ')
+        cy.get('#\\/n3').should('have.text', 'nothing 3: ')
+        cy.get('#\\/n4').should('have.text', 'nothing 4: ')
+        cy.get('#\\/n5').should('have.text', 'nothing 5: ')
+        cy.get('#\\/n6').should('have.text', 'nothing 6: ')
+        cy.get('#\\/n7').should('have.text', 'nothing 7: ')
+        cy.get('#\\/n8').should('have.text', 'nothing 8: ')
+        cy.get('#\\/n9').should('have.text', 'nothing 9: ')
+        cy.get('#\\/n10').should('have.text', 'nothing 10: ')
+        cy.get('#\\/n11').should('have.text', 'nothing 11: ')
+        cy.get('#\\/n12').should('have.text', 'nothing 12: ')
+
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      })
+
+
+      cy.log('move point f')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/f'].movePoint({ x: -1, y: -3 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get('#\\/e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get('#\\/n1').should('have.text', 'nothing 1: ')
+        cy.get('#\\/n2').should('have.text', 'nothing 2: ')
+        cy.get('#\\/n3').should('have.text', 'nothing 3: ')
+        cy.get('#\\/n4').should('have.text', 'nothing 4: ')
+        cy.get('#\\/n5').should('have.text', 'nothing 5: ')
+        cy.get('#\\/n6').should('have.text', 'nothing 6: ')
+        cy.get('#\\/n7').should('have.text', 'nothing 7: ')
+        cy.get('#\\/n8').should('have.text', 'nothing 8: ')
+        cy.get('#\\/n9').should('have.text', 'nothing 9: ')
+        cy.get('#\\/n10').should('have.text', 'nothing 10: ')
+        cy.get('#\\/n11').should('have.text', 'nothing 11: ')
+        cy.get('#\\/n12').should('have.text', 'nothing 12: ')
+
+        expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+      })
+
+
+    })
+  })
+
+  it('cannot assign subnames to array prop, inside namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <section name="hello" title="Hello" newNamespace >
+  <graph>
+    <line>(0,0),(1,1)</line>
+  </graph>
+
+  <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />
+  
+  <p name="n1">nothing 1: <copy tname="a1" /></p>
+  <p name="n2">nothing 2: <copy tname="a2" /></p>
+  <p name="n3">nothing 3: <copy tname="b1" /></p>
+  <p name="n4">nothing 4: <copy tname="b2" /></p>
+
+  <graph>
+    <copy name="cp2" assignNames="c,d" tname="cp1" />
+  </graph>
+
+  <copy tname="c" assignNames="e" />
+  <copy tname="d" assignNames="f" />
+
+  <copy name="cp3" assignNames="(g1,g2),(h1,h2)" tname="cp1" />
+  
+  <p name="n5">nothing 5: <copy tname="g1" /></p>
+  <p name="n6">nothing 6: <copy tname="g2" /></p>
+  <p name="n7">nothing 7: <copy tname="h1" /></p>
+  <p name="n8">nothing 8: <copy tname="h2" /></p>
+
+  <copy name="cp4" assignNames="(i1,i2),(j1,j2)" tname="cp2" />
+  
+  <p name="n9">nothing 9: <copy tname="i1" /></p>
+  <p name="n10">nothing 10: <copy tname="i2" /></p>
+  <p name="n11">nothing 11: <copy tname="j1" /></p>
+  <p name="n12">nothing 12: <copy tname="j2" /></p>
+  
+  </section>
+
+  <copy tname="hello/e" assignNames="e" />
+  <copy tname="hello/f" assignNames="f" />
+
+  <p name="n13">nothing 13: <copy tname="hello/i1" /></p>
+  <p name="n14">nothing 14: <copy tname="hello/i2" /></p>
+  <p name="n15">nothing 15: <copy tname="hello/j1" /></p>
+  <p name="n16">nothing 16: <copy tname="hello/j2" /></p>
+  
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let point1Anchor = cesc('#' + components["/hello/cp1"].replacements[0].componentName);
+      let point2Anchor = cesc('#' + components["/hello/cp1"].replacements[1].componentName);
+      let point1aAnchor = cesc('#' + components["/hello/cp3"].replacements[0].replacements[0].componentName);
+      let point2aAnchor = cesc('#' + components["/hello/cp3"].replacements[0].replacements[1].componentName);
+      let point1bAnchor = cesc('#' + components["/hello/cp4"].replacements[0].replacements[0].replacements[0].componentName);
+      let point2bAnchor = cesc('#' + components["/hello/cp4"].replacements[0].replacements[0].replacements[1].componentName);
+
+      cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(cesc('#/hello/n1')).should('have.text', 'nothing 1: ')
+      cy.get(cesc('#/hello/n2')).should('have.text', 'nothing 2: ')
+      cy.get(cesc('#/hello/n3')).should('have.text', 'nothing 3: ')
+      cy.get(cesc('#/hello/n4')).should('have.text', 'nothing 4: ')
+
+      cy.get(cesc('#/hello/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(cesc('#/hello/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(cesc('#/hello/n5')).should('have.text', 'nothing 5: ')
+      cy.get(cesc('#/hello/n6')).should('have.text', 'nothing 6: ')
+      cy.get(cesc('#/hello/n7')).should('have.text', 'nothing 7: ')
+      cy.get(cesc('#/hello/n8')).should('have.text', 'nothing 8: ')
+
+      cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(cesc('#/hello/n9')).should('have.text', 'nothing 9: ')
+      cy.get(cesc('#/hello/n10')).should('have.text', 'nothing 10: ')
+      cy.get(cesc('#/hello/n11')).should('have.text', 'nothing 11: ')
+      cy.get(cesc('#/hello/n12')).should('have.text', 'nothing 12: ')
+
+      cy.get(cesc('#/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(0,0)')
+      })
+      cy.get(cesc('#/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,1)')
+      })
+
+      cy.get(cesc('#/n13')).should('have.text', 'nothing 13: ')
+      cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
+      cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
+      cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(components['/hello/_line1'].stateValues.equation.tree);
+        expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
+
+        expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+
+      })
+
+      cy.log('move point c')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/hello/c'].movePoint({ x: 5, y: -5 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(cesc('#/hello/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(cesc('#/hello/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(cesc('#/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(cesc('#/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(1,1)')
+        })
+        cy.get(cesc('#/hello/n1')).should('have.text', 'nothing 1: ')
+        cy.get(cesc('#/hello/n2')).should('have.text', 'nothing 2: ')
+        cy.get(cesc('#/hello/n3')).should('have.text', 'nothing 3: ')
+        cy.get(cesc('#/hello/n4')).should('have.text', 'nothing 4: ')
+        cy.get(cesc('#/hello/n5')).should('have.text', 'nothing 5: ')
+        cy.get(cesc('#/hello/n6')).should('have.text', 'nothing 6: ')
+        cy.get(cesc('#/hello/n7')).should('have.text', 'nothing 7: ')
+        cy.get(cesc('#/hello/n8')).should('have.text', 'nothing 8: ')
+        cy.get(cesc('#/hello/n9')).should('have.text', 'nothing 9: ')
+        cy.get(cesc('#/hello/n10')).should('have.text', 'nothing 10: ')
+        cy.get(cesc('#/hello/n11')).should('have.text', 'nothing 11: ')
+        cy.get(cesc('#/hello/n12')).should('have.text', 'nothing 12: ')
+        cy.get(cesc('#/n13')).should('have.text', 'nothing 13: ')
+        cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
+        cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
+        cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
+  
+        expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+     })
+
+      cy.log('move point d')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/hello/d'].movePoint({ x: 3, y: 4 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/hello/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(cesc('#/hello/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,−5)')
+        })
+        cy.get(cesc('#/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/hello/n1')).should('have.text', 'nothing 1: ')
+        cy.get(cesc('#/hello/n2')).should('have.text', 'nothing 2: ')
+        cy.get(cesc('#/hello/n3')).should('have.text', 'nothing 3: ')
+        cy.get(cesc('#/hello/n4')).should('have.text', 'nothing 4: ')
+        cy.get(cesc('#/hello/n5')).should('have.text', 'nothing 5: ')
+        cy.get(cesc('#/hello/n6')).should('have.text', 'nothing 6: ')
+        cy.get(cesc('#/hello/n7')).should('have.text', 'nothing 7: ')
+        cy.get(cesc('#/hello/n8')).should('have.text', 'nothing 8: ')
+        cy.get(cesc('#/hello/n9')).should('have.text', 'nothing 9: ')
+        cy.get(cesc('#/hello/n10')).should('have.text', 'nothing 10: ')
+        cy.get(cesc('#/hello/n11')).should('have.text', 'nothing 11: ')
+        cy.get(cesc('#/hello/n12')).should('have.text', 'nothing 12: ')
+        cy.get(cesc('#/n13')).should('have.text', 'nothing 13: ')
+        cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
+        cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
+        cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
+  
+        expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+     })
+
+      cy.log('move point e')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/hello/e'].movePoint({ x: -9, y: -8 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/hello/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(cesc('#/hello/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(cesc('#/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)')
+        })
+        cy.get(cesc('#/hello/n1')).should('have.text', 'nothing 1: ')
+        cy.get(cesc('#/hello/n2')).should('have.text', 'nothing 2: ')
+        cy.get(cesc('#/hello/n3')).should('have.text', 'nothing 3: ')
+        cy.get(cesc('#/hello/n4')).should('have.text', 'nothing 4: ')
+        cy.get(cesc('#/hello/n5')).should('have.text', 'nothing 5: ')
+        cy.get(cesc('#/hello/n6')).should('have.text', 'nothing 6: ')
+        cy.get(cesc('#/hello/n7')).should('have.text', 'nothing 7: ')
+        cy.get(cesc('#/hello/n8')).should('have.text', 'nothing 8: ')
+        cy.get(cesc('#/hello/n9')).should('have.text', 'nothing 9: ')
+        cy.get(cesc('#/hello/n10')).should('have.text', 'nothing 10: ')
+        cy.get(cesc('#/hello/n11')).should('have.text', 'nothing 11: ')
+        cy.get(cesc('#/hello/n12')).should('have.text', 'nothing 12: ')
+        cy.get(cesc('#/n13')).should('have.text', 'nothing 13: ')
+        cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
+        cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
+        cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
+  
+        expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      })
+
+
+      cy.log('move point f')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/hello/f'].movePoint({ x: -1, y: -3 });
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(point1aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2aAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(point1bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(point2bAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(cesc('#/hello/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(cesc('#/hello/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(cesc('#/e')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−9,−8)')
+        })
+        cy.get(cesc('#/f')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,−3)')
+        })
+        cy.get(cesc('#/hello/n1')).should('have.text', 'nothing 1: ')
+        cy.get(cesc('#/hello/n2')).should('have.text', 'nothing 2: ')
+        cy.get(cesc('#/hello/n3')).should('have.text', 'nothing 3: ')
+        cy.get(cesc('#/hello/n4')).should('have.text', 'nothing 4: ')
+        cy.get(cesc('#/hello/n5')).should('have.text', 'nothing 5: ')
+        cy.get(cesc('#/hello/n6')).should('have.text', 'nothing 6: ')
+        cy.get(cesc('#/hello/n7')).should('have.text', 'nothing 7: ')
+        cy.get(cesc('#/hello/n8')).should('have.text', 'nothing 8: ')
+        cy.get(cesc('#/hello/n9')).should('have.text', 'nothing 9: ')
+        cy.get(cesc('#/hello/n10')).should('have.text', 'nothing 10: ')
+        cy.get(cesc('#/hello/n11')).should('have.text', 'nothing 11: ')
+        cy.get(cesc('#/hello/n12')).should('have.text', 'nothing 12: ')
+        cy.get(cesc('#/n13')).should('have.text', 'nothing 13: ')
+        cy.get(cesc('#/n14')).should('have.text', 'nothing 14: ')
+        cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
+        cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
+  
+        expect(components['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(components['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+        expect(components['/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+     })
+
+
+    })
+  })
+
+
+  it('assign names creates namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Hello, <text name="person">Jesse</text>!</p>
+
+  <copy assignNames="a" tname="_p1"/>
+
+  <copy assignNames="b" tname="a" />
+
+  <p><copy tname="person"/> <copy tname="a/person" /> <copy tname="b/person" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/a').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/b').should('have.text', 'Hello, Jesse!');
+
+    cy.get('#\\/_p2').should('have.text', 'Jesse Jesse Jesse');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/person'].stateValues.value).eq("Jesse");
+      expect(components['/a/person'].stateValues.value).eq("Jesse");
+      expect(components['/b/person'].stateValues.value).eq("Jesse");
+
+    })
+
+  });
+
+
+  it('assign names creates namespace 2', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <section name="hello" newNamespace title="Hello">
+    <p>Hello, <text name="person">Jesse</text>!</p>
+    <copy assignNames="a" tname="_p1"/>
+    <p><copy tname="person"/> <copy tname="a/person" /> <copy tname="../bye/a/person" /></p>
+  </section>
+
+  <section name="bye" newNamespace title="Bye">
+    <copy assignNames="a" tname="../hello/_p1"/>
+    <p><copy tname="../hello/person"/> <copy tname="../hello/a/person" /> <copy tname="a/person" /></p>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/hello\\/_p1').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/hello\\/a').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/hello\\/_p2').should('have.text', 'Jesse Jesse Jesse');
+
+    cy.get('#\\/bye\\/a').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/bye\\/_p1').should('have.text', 'Jesse Jesse Jesse');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/hello/person'].stateValues.value).eq("Jesse");
+      expect(components['/hello/a/person'].stateValues.value).eq("Jesse");
+      expect(components['/bye/a/person'].stateValues.value).eq("Jesse");
+
+    })
+
+  })
+
+
+  it('extra assignNames create empties', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <text name="h">Hello</text>
+
+  <p><copy name="cp1" tname="h" assignNames="a,b" /></p>
+  <p><copy name="cp2" tname="cp1" assignNames="c,d" /></p>
+  <p><copy name="cp3" tname="h" assignNames="(e,f)" /></p>
+  
+  <p><copy tname="a"/></p>
+  <p>Nothing 1: <copy tname="b" /></p>
+  <p><copy tname="c"/></p>
+  <p>Nothing 2: <copy tname="d" /></p>
+  <p>Nothing 3: <copy tname="e" /></p>
+  <p>Nothing 4: <copy tname="f" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', 'Hello');
+    cy.get('#\\/_p2').should('have.text', 'Hello');
+    cy.get('#\\/_p3').should('have.text', 'Hello');
+    cy.get('#\\/_p4').should('have.text', 'Hello');
+    cy.get('#\\/_p5').should('have.text', 'Nothing 1: ');
+    cy.get('#\\/_p6').should('have.text', 'Hello');
+    cy.get('#\\/_p7').should('have.text', 'Nothing 2: ');
+    cy.get('#\\/_p8').should('have.text', 'Nothing 3: ');
+    cy.get('#\\/_p9').should('have.text', 'Nothing 4: ');
+
+
+  })
+
+  it('extra assignNames create empties, inside namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <section name="hello" title="Hello" newNamespace >
+  <text name="h">Hello</text>
+
+  <p><copy name="cp1" tname="h" assignNames="a,b" /></p>
+  <p><copy name="cp2" tname="cp1" assignNames="c,d" /></p>
+  <p><copy name="cp3" tname="h" assignNames="(e,f)" /></p>
+  
+  <p><copy tname="a"/></p>
+  <p>Nothing 1: <copy tname="b" /></p>
+  <p><copy tname="c"/></p>
+  <p>Nothing 2: <copy tname="d" /></p>
+  <p>Nothing 3: <copy tname="e" /></p>
+  <p>Nothing 4: <copy tname="f" /></p>
+  </section>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get(cesc('#/hello/_p1')).should('have.text', 'Hello');
+    cy.get(cesc('#/hello/_p2')).should('have.text', 'Hello');
+    cy.get(cesc('#/hello/_p3')).should('have.text', 'Hello');
+    cy.get(cesc('#/hello/_p4')).should('have.text', 'Hello');
+    cy.get(cesc('#/hello/_p5')).should('have.text', 'Nothing 1: ');
+    cy.get(cesc('#/hello/_p6')).should('have.text', 'Hello');
+    cy.get(cesc('#/hello/_p7')).should('have.text', 'Nothing 2: ');
+    cy.get(cesc('#/hello/_p8')).should('have.text', 'Nothing 3: ');
+    cy.get(cesc('#/hello/_p9')).should('have.text', 'Nothing 4: ');
+
+
+  })
+
+
+});

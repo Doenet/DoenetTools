@@ -6,7 +6,7 @@ import { deepClone } from '../utils/deepFunctions';
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  static assignNamesToAllChildrenExcept = Object.keys(Select.createPropertiesObject({})).map(x => x.toLowerCase());
+  static assignNamesToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
 
   static createsVariants = true;
 

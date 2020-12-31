@@ -12,6 +12,10 @@ export default class Copy extends CompositeComponent {
   }
   static componentType = "copy";
 
+  static childrenSkippingNewNamespace = ["tname"];
+
+  static assignNamesToReplacements = true;
+
   static useReplacementsWhenCopyProp = true;
 
   static createPropertiesObject({ allPossibleProperties }) {
@@ -1122,14 +1126,17 @@ export default class Copy extends CompositeComponent {
     serializeFunctions.createComponentsFromProps(serializedState, this.componentInfoObjects.standardComponentClasses);
 
     // need to redo to include parentDoenetAttributes
-    serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentInfoObjects.componentTypesTakingComponentNames, allComponentClasses: this.componentInfoObjects.allComponentClasses });
+    serializeFunctions.createComponentNames({
+      serializedState,
+      componentInfoObjects: this.componentInfoObjects
+    });
 
     this.componentNameToPreserializedName(serializedState, this.componentInfoObjects.componentTypesTakingComponentNames);
 
     serializeFunctions.gatherVariantComponents({
       serializedState,
       componentTypesCreatingVariants: this.componentInfoObjects.componentTypesCreatingVariants,
-      allComponentClasses: this.componentInfoObjects.allComponentClasses,
+      componentInfoObjects: this.componentInfoObjects,
     });
 
     this.coreFunctions.requestUpdate({
@@ -1246,7 +1253,9 @@ export default class Copy extends CompositeComponent {
     }
   }
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
+
+    // console.log(`create serialized replacements of ${component.componentName}`)
 
     // if (component.state.contentIDChild !== undefined) {
     //   if (!component.state.serializedStateForContentId) {
@@ -1258,6 +1267,8 @@ export default class Copy extends CompositeComponent {
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
     let serializedCopy;
+
+    let assignNames = component.doenetAttributes.assignNames;
 
     // if (component.state.serializedContent !== undefined) {
     //   if (component.state.serializedContent.length === 0) {
@@ -1277,7 +1288,11 @@ export default class Copy extends CompositeComponent {
 
 
     if (!component.stateValues.targetComponent) {
-      return { replacements: [] };
+      let replacements = [];
+      if (assignNames) {
+        replacements = [{ componentType: "empty", doenetAttributes: { assignNames } }]
+      }
+      return { replacements };
     }
 
     // if creating copy from a prop
@@ -1293,9 +1308,26 @@ export default class Copy extends CompositeComponent {
 
       workspace.propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
-      return {
-        replacements: results.serializedReplacements
-      };
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames,
+        serializedComponents: results.serializedReplacements,
+        // assignDirectlyToComposite: true, 
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        propVariableObjs: component.stateValues.propVariableObjs,
+        componentTypeByTarget: component.stateValues.componentTypeByTarget,
+        componentInfoObjects,
+      });
+
+      // if added empty replacements, add prop variables copied
+      if (processResult.nEmptiesAdded > 0) {
+        workspace.propVariablesCopiedByReplacement.push(
+          ...Array(processResult.nEmptiesAdded).fill([])
+        )
+      }
+
+      return { replacements: processResult.serializedComponents };
+
     }
 
     // TODO: check if inactive?
@@ -1322,7 +1354,7 @@ export default class Copy extends CompositeComponent {
     // console.log("targetComponent");
     // console.log(component.state.targetComponent);
     // console.log("serializedCopy");
-    // console.log(serializedCopy);
+    // console.log(JSON.parse(JSON.stringify(serializedCopy)));
 
 
     if (!workspace.uniqueIdentifiersUsed) {
@@ -1335,9 +1367,16 @@ export default class Copy extends CompositeComponent {
       uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
     })
 
-    return {
-      replacements: serializedReplacements,
-    };
+    let processResult = serializeFunctions.processAssignNames({
+      assignNames,
+      serializedComponents: serializedReplacements,
+      assignDirectlyToComposite: true,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    return { replacements: processResult.serializedComponents };
 
   }
 
@@ -1365,7 +1404,10 @@ export default class Copy extends CompositeComponent {
   // }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
+  static calculateReplacementChanges({ component, componentChanges, components,
+    workspace,
+    componentInfoObjects
+  }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
@@ -1377,6 +1419,9 @@ export default class Copy extends CompositeComponent {
     }
 
     let replacementChanges = [];
+
+    let assignNames = component.doenetAttributes.assignNames;
+
 
     // TODO: determine how to calculate replacement changes with new conventions
 
@@ -1487,7 +1532,26 @@ export default class Copy extends CompositeComponent {
         component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames,
+        serializedComponents: results.serializedReplacements,
+        // assignDirectlyToComposite: true, 
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        propVariableObjs: component.stateValues.propVariableObjs,
+        componentTypeByTarget: component.stateValues.componentTypeByTarget,
+        componentInfoObjects,
+      });
+
+      results.serializedReplacements = processResult.serializedComponents;
+
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
+      // if added empty replacements, add prop variables copied
+      if (processResult.nEmptiesAdded > 0) {
+        propVariablesCopiedByReplacement.push(
+          ...Array(processResult.nEmptiesAdded).fill([])
+        )
+      }
 
       let newSerializedReplacements = results.serializedReplacements;
 

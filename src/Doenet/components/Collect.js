@@ -7,6 +7,8 @@ import { getUniqueIdentifierFromBase } from '../utils/naming';
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
+  static childrenSkippingNewNamespace = ["tname"];
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.maximumNumber = { default: undefined };

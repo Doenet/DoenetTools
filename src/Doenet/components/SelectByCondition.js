@@ -4,6 +4,7 @@ import { deepClone } from '../utils/deepFunctions';
 export default class SelectByCondition extends CompositeComponent {
   static componentType = "selectByCondition";
 
+  // assign name to else child
   static assignNamesToAllChildrenExcept = ["case", ...Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase())];
 
   // used when referencing this component without prop

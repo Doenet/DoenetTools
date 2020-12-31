@@ -132,6 +132,7 @@ import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import Else from './components/Else';
 import SelectByCondition from './components/SelectByCondition';
+import Empty from './components/Empty';
 
 
 //Extended
@@ -264,6 +265,7 @@ const componentTypeArray = [
   Case,
   Else,
   SelectByCondition,
+  Empty,
 ];
 
 const componentTypeArrayExtended = [

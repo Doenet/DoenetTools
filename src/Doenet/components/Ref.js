@@ -3,6 +3,8 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Ref extends InlineComponent {
   static componentType = "ref";
 
+  static childrenSkippingNewNamespace = ["tname"];
+
   static includeBlankStringChildren = true;
 
   // static previewSerializedComponent({ serializedComponent, sharedParameters, components }) {
