@@ -10,6 +10,7 @@ import {
   atomFamily
 } from 'recoil';
 import { node } from "prop-types";
+import { DropTargetsProvider } from '../imports/DropTarget';
 
 
 
@@ -58,8 +59,8 @@ function NumIndicator(){
 
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool")
-  return <Tool >
-  
+  return <DropTargetsProvider>
+  <Tool >
      <navPanel>
         {/* <p>navigate to important stuff</p> */}
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
@@ -91,8 +92,8 @@ export default function DoenetExampleTool(props) {
       <menuPanel>
         <p>control more important stuff</p>
       </menuPanel>
-
   </Tool>
+  </DropTargetsProvider>
 }
 
 

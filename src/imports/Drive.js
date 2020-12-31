@@ -12,7 +12,6 @@ import './util.css';
 
 
 import {
-  DropTargetsProvider,
   DropTargetsContext,
   WithDropTarget  
 } from '../imports/DropTarget';
@@ -20,6 +19,7 @@ import Draggable from '../imports/Draggable';
 
 import {
   atom,
+  useRecoilState,
   useSetRecoilState
 } from 'recoil';
 
@@ -40,6 +40,16 @@ export const globalSelectedNodesAtom = atom({
   key:'globalSelectedNodesAtom',
   default:[]
 })
+
+const dragStateAtom = atom({
+  key: 'dragStateAtom',
+  default: {
+    isDragging: false,
+    draggedOverDriveId: null,
+    isDraggedOverBreadcrumb: false
+  }
+})
+
 
 export default function Drive(props){
   const isNav = useContext(IsNavContext);
@@ -147,7 +157,8 @@ function Browser(props){
   const [driveIsOpen,setDriveIsOpen] = useState(props.driveIdIsOpen?props.driveIdIsOpen:true); //default to open
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
-  // const { DnDState, DnDActions } = props.DnDState;
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
 
   let setGlobalSelectedNodes = useSetRecoilState(globalSelectedNodesAtom);
 
@@ -330,6 +341,56 @@ function Browser(props){
       return old
       })
     }});
+
+    const onDragStart = ({ nodeId, driveId }) => {
+      setDragState((dragState) => ({
+        ...dragState,
+        isDragging: true,
+        draggedOverDriveId: driveId
+      }));
+    };
+  
+    const onDrag = ({ clientX, clientY, translation, id }) => {
+      dropActions.handleDrag(clientX, clientY, id);
+    };
+  
+    const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
+      // update driveId if changed
+      if (dragState.draggedOverDriveId !== driveId) {
+        setDragState((dragState) => ({
+          ...dragState,
+          draggedOverDriveId: driveId
+        }));
+      }
+      setDragState((dragState) => ({
+        ...dragState,
+        isDraggedOverBreadcrumb: isBreadcrumb
+      }));
+    };
+  
+    const onDragEnd = () => {
+      const droppedId = dropState.activeDropTargetId;
+      // valid drop
+      if (droppedId) {
+        // move all selected nodes to droppedId
+        // moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
+        // .then((props)=>{
+        //   //clear tool and browser selections
+        //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
+        //   selectedNodesArr.current = {}
+        // })
+        
+        console.log(">>> moveNodes");
+      } else {
+  
+      }
+      setDragState((dragState) => ({
+        ...dragState,
+        isDragging: false,
+        draggedOverDriveId: null
+      }));
+      dropActions.handleDrop();
+    };
 
     const sortHandler = ({ sortKey, driveId, itemId }) => {
       // insert sort action object
@@ -566,23 +627,20 @@ function Browser(props){
           
           let appearance = "default";
           let draggableClassName = "hvr-shutter-in-horizontal";
-          // if (DnDState.isDragging && selectedNodes[nodeId]) {
-          //   appearance = "dragged";
-          //   draggableClassName = "";
-          // } else 
-
-          //if we are a navigation browser
-          //Only select the current path folder or the item
-          if (props.isNav && itemId === nodeId && pathDriveId === props.driveId){
+          if (dragState.isDragging && selectedNodes[nodeId]) {
+            appearance = "dragged";
+            draggableClassName = "";
+          } else if (props.isNav && itemId === nodeId && pathDriveId === props.driveId){
+            //if we are a navigation browser
+            //Only select the current path folder or the item
             appearance = "selected";
           }else if (props.isNav && itemId === "" && pathFolderId === nodeId && pathDriveId === props.driveId){
             appearance = "selected";
           } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
-          } 
-          // else if (DnDState.activeDropTargetId === nodeId) {
-          //   appearance = "dropperview";
-          // }
+          } else if (dropState.activeDropTargetId === nodeId) {
+            appearance = "dropperview";
+          }
 
           let nodeJSX = <Node 
             key={`node${browserId.current}${nodeId}`} 
@@ -604,34 +662,34 @@ function Browser(props){
             level={level}/>;
           
           // navigation items not draggable
-          // if (!props.isNav) {
-          //   nodeJSX = <Draggable
-          //     key={`dnode${browserId.current}${nodeId}`} 
-          //     id={nodeId}
-          //     className={draggableClassName}
-          //     onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.driveId })}
-          //     onDrag={DnDActions.onDrag}
-          //     onDragEnd={DnDActions.onDragEnd}
-          //     ghostElement={renderDragGhost(nodeJSX)}
-          //   >
-          //    { nodeJSX } 
-          //   </Draggable>
-          // }
+          if (!props.isNav) {
+            nodeJSX = <Draggable
+              key={`dnode${browserId.current}${nodeId}`} 
+              id={nodeId}
+              className={draggableClassName}
+              onDragStart={() => onDragStart({ nodeId, driveId:props.driveId })}
+              onDrag={onDrag}
+              onDragEnd={onDragEnd}
+              ghostElement={renderDragGhost(nodeJSX)}
+            >
+             { nodeJSX } 
+            </Draggable>
+          }
                     
-          // if (nodeObj?.type === "Folder") {
-          //   nodeJSX = <WithDropTarget
-          //     key={`wdtnode${browserId.current}${nodeId}`} 
-          //     id={nodeId}
-          //     registerDropTarget={DnDActions.registerDropTarget} 
-          //     unregisterDropTarget={DnDActions.unregisterDropTarget}
-          //     dropCallbacks={{
-          //       onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.driveId }),
-          //       onDrop: () => {}
-          //     }}
-          //   >
-          //     { nodeJSX } 
-          //   </WithDropTarget>
-          // }
+          if (nodeObj?.type === "Folder") {
+            nodeJSX = <WithDropTarget
+              key={`wdtnode${browserId.current}${nodeId}`} 
+              id={nodeId}
+              registerDropTarget={dropActions.registerDropTarget} 
+              unregisterDropTarget={dropActions.unregisterDropTarget}
+              dropCallbacks={{
+                onDragOver: () => onDragOverContainer({ id: nodeId, driveId: props.driveId }),
+                onDrop: () => {}
+              }}
+            >
+              { nodeJSX } 
+            </WithDropTarget>
+          }
   
           nodesJSX.push(nodeJSX);
 
