@@ -77,7 +77,6 @@ export default function Tool(props) {
     }
   }
 
-  console.log(">>>toolParts:", toolParts);
   let navPanel = null;
   let headerPanel = null;
   let mainPanel = null;
