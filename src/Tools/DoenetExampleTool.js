@@ -11,6 +11,11 @@ import {
 } from 'recoil';
 import { node } from "prop-types";
 import { DropTargetsProvider } from '../imports/DropTarget';
+import { 
+  BreadcrumbProvider, 
+  BreadcrumbContainer 
+} from '../imports/Breadcrumb';
+import { HashRouter as Router } from "react-router-dom";
 
 
 
@@ -60,39 +65,44 @@ function NumIndicator(){
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool")
   return <DropTargetsProvider>
-  <Tool >
-     <navPanel>
-        {/* <p>navigate to important stuff</p> */}
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
-        {/* <Drive types={['content','course']} /> */}
-      </navPanel>
+    <BreadcrumbProvider>
+      <Tool >
+        <navPanel>
+            {/* <p>navigate to important stuff</p> */}
+            <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+            {/* <Drive types={['content','course']} /> */}
+          </navPanel>
 
-      <headerPanel title="my title">
-        <p>header for important stuff</p>
-      </headerPanel>
+          <headerPanel title="my title">
+            <p>header for important stuff</p>
+          </headerPanel>
 
-      <mainPanel>
-        <p>do the main important stuff</p>
+          <mainPanel>
+            <p>do the main important stuff</p>
+            <Router>
+              <BreadcrumbContainer />
+            </Router>
 
-        <NumIndicator />
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
-        {/* <Drive types={['content','course']} /> */}
-      </mainPanel>
+            <NumIndicator />
+            <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+            {/* <Drive types={['content','course']} /> */}
+          </mainPanel>
 
-      <supportPanel width="40%">
-        <p>I'm here for support</p>
-        <GlobalSelectIndicator />
-      </supportPanel>
+          <supportPanel width="40%">
+            <p>I'm here for support</p>
+            <GlobalSelectIndicator />
+          </supportPanel>
 
-      <menuPanel> 
-        <Inc />
-        <p>control important stuff</p>
-      </menuPanel>
+          <menuPanel> 
+            <Inc />
+            <p>control important stuff</p>
+          </menuPanel>
 
-      <menuPanel>
-        <p>control more important stuff</p>
-      </menuPanel>
-  </Tool>
+          <menuPanel>
+            <p>control more important stuff</p>
+          </menuPanel>
+      </Tool>
+    </BreadcrumbProvider>
   </DropTargetsProvider>
 }
 
