@@ -159,6 +159,7 @@ function Browser(props){
   const [selectedNodes,setSelectedNodes] = useState({});
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const [filter, setFilter] = useState(null);
 
   let setGlobalSelectedNodes = useSetRecoilState(globalSelectedNodesAtom);
 
@@ -205,6 +206,7 @@ function Browser(props){
                 label:data[1].add.label,
                 creationDate:data[1].add.creationDate,
                 type:data[1].add.type,
+                sortBy: "defaultOrder"
               }
             }
             data.pop();   
@@ -228,6 +230,7 @@ function Browser(props){
             let parentId = data[1].delete.parentId;
             let nodeId = data[1].delete.itemId;
             let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
+            data[0].nodeObjs[nodeId].sortBy = "defaultOrder";
             childrenIds.splice(childrenIds.indexOf(nodeId),1);
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
             data.pop();    
@@ -343,6 +346,7 @@ function Browser(props){
     }});
 
     const onDragStart = ({ nodeId, driveId }) => {
+      console.log(">>>", "Here");
       setDragState((dragState) => ({
         ...dragState,
         isDragging: true,
@@ -437,6 +441,30 @@ function Browser(props){
     return tempArr;
   }, []);
  
+  const searchHandler = (value) => {
+    setFilter(value);
+  };
+
+  const applyFilter = ({data, filter}) => {
+    // filter
+    const filteredNodeObjs = Object.keys(data)
+      ?.filter(key => {
+        const { label } = data[key];
+        return label?.indexOf(filter) > -1;
+      })
+      ?.reduce((acc, key) => {
+        return {
+          ...acc,
+          [key]: {
+            ...data[key] 
+          }
+        }
+      }, {});
+    
+    const filteredIds = Object.keys(filteredNodeObjs);
+    return [filteredIds, filteredNodeObjs];
+  }
+
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
   let browserId = useRef("");
@@ -593,8 +621,28 @@ function Browser(props){
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    const childrenIdsOrder = data[0]?.nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.[childrenIdsOrder];
+    let nodeObjs = { ...data[0]?.nodeObjs};
+    let folderChildrenIds = { ...data[0]?.folderChildrenIds};
+    const childrenIdsOrder = nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
+
+    // apply filter
+    if (filter && filter !== "") {
+      const [filteredIds, filteredNodeObjs] = applyFilter({data: nodeObjs, filter: filter});
+      // filter data
+      nodeObjs = filteredNodeObjs;
+      folderChildrenIds = {[parentId]: {[childrenIdsOrder]: filteredIds}};
+
+      // prevent infinite loading
+      for (let nodeId in nodeObjs) {
+        if (nodeObjs[nodeId].type === "Folder") {
+          const sortKey = nodeObjs[nodeId]?.sortBy ?? "defaultOrder";
+          folderChildrenIds[nodeId] = {[sortKey]: []};
+        }
+      }
+      console.log(">>>", folderChildrenIds)
+    }
+
+    let childrenIdsArr = folderChildrenIds?.[parentId]?.[childrenIdsOrder];
 
     if (childrenIdsArr === undefined){
       //Need data
@@ -606,8 +654,8 @@ function Browser(props){
 
       for(let nodeId of childrenIdsArr){
         //If folder we need to know how many child nodes it has
-        let grandChildrenIdsArr = data[0]?.folderChildrenIds?.[nodeId]?.defaultOrder;
-        let grandChildObjType = data[0]?.nodeObjs?.[nodeId]?.type;
+        let grandChildrenIdsArr = folderChildrenIds?.[nodeId]?.defaultOrder;
+        let grandChildObjType = nodeObjs?.[nodeId]?.type;
         let numChildren = "?";
         if (grandChildrenIdsArr === undefined ){
           //Only need numChildren if it's a folder
@@ -621,7 +669,7 @@ function Browser(props){
           numChildren = grandChildrenIdsArr.length;
         }
           nodeIdArray.push(nodeId); //needed to calculate shift click selections
-          let nodeObj = data[0].nodeObjs[nodeId];
+          let nodeObj = nodeObjs[nodeId];
           let isOpen = false;
           if (openNodesObj[nodeId]){ isOpen = true;}
           
@@ -743,6 +791,7 @@ function Browser(props){
 
   return <>
   <div style={{marginTop:"1em",marginBottom:"1em"}}>
+  {props.isNav && <SearchBar handleSearchChange={searchHandler}/>}
   {driveToggleDiv}     
   {nodes}
   
@@ -750,7 +799,24 @@ function Browser(props){
   </>
 }
 
+const SearchBar = ({ show=true, handleSearchChange }) => {
 
+  const onChange = (ev) => {
+    handleSearchChange?.(ev.target.value);    
+  }
+
+  return(<>
+    {show && 
+    <div style={{}}>
+      <input
+        onChange={onChange}
+        placeholder="Search..."
+        style={{ minHeight: "5px", padding: "3px" , minWidth: "30px"}}
+      />
+    </div>}
+  </>
+  );
+}
 
 const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
