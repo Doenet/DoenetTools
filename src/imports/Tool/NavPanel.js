@@ -6,12 +6,13 @@ import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 
 export const IsNavContext = createContext(false);
 
-const NavPanelDiv = styled.div`
+const NavPanelWrapper = styled.div`
   grid-area: navPanel;
   width: ${({ visible }) => (visible ? "240px" : "0px")};
   background-color: #8fb8de;
   overflow: auto;
 `;
+
 
 const VisibilityButton = styled.button`
   width: 40px;
@@ -35,7 +36,7 @@ export default function NavPanel({ children }) {
 
   return (
     <IsNavContext.Provider value={true}>
-      <NavPanelDiv visible={visible}>
+      <NavPanelWrapper visible={visible}>
         <VisibilityButton
           onClick={() => {
             setVisible(!visible);
@@ -44,7 +45,7 @@ export default function NavPanel({ children }) {
           <FontAwesomeIcon icon={icon} />
         </VisibilityButton>
         {children} {/* render when closed? */}
-      </NavPanelDiv>
+      </NavPanelWrapper>
     </IsNavContext.Provider>
   );
 }

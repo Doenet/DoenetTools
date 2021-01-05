@@ -69,7 +69,7 @@ export default function Drive(props){
       refetchOnMount:false,
       staleTime:600000,
   });
-  if (isFetching){ return null;}
+  if (isFetching || !driveData){ return null;}
 
   if (props.types){
     let drives = [];
