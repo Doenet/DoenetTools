@@ -10,13 +10,9 @@ import {
   atomFamily,
   selectorFamily
 } from 'recoil';
-import { node } from "prop-types";
-import { DropTargetsProvider } from '../imports/DropTarget';
 import { 
-  BreadcrumbProvider, 
   BreadcrumbContainer 
 } from '../imports/Breadcrumb';
-import { HashRouter as Router } from "react-router-dom";
 
 
 

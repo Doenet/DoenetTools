@@ -8,6 +8,9 @@ import {
 import {
   DropTargetsProvider,
 } from '../imports/DropTarget';
+import { 
+  BreadcrumbProvider 
+} from '../imports/Breadcrumb';
 import {
   RecoilRoot,
 } from 'recoil';
