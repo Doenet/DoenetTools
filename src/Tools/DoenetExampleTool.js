@@ -89,7 +89,7 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-
+     
         <NumIndicator />
         <BreadcrumbContainer />
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
@@ -107,9 +107,9 @@ export default function DoenetExampleTool(props) {
         <p>control important stuff</p>
       </menuPanel>
 
-      <menuPanel>
+      {/* <menuPanel>
         <p>control more important stuff</p>
-      </menuPanel>
+      </menuPanel> */}
 
   </Tool>
 }

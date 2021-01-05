@@ -1048,7 +1048,7 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect" 
       style={{
         marginLeft: `${props.level * indentPx}px`
-      }}>[U] {props.label} {deleteNode}</div></div>
+      }}>[D] {props.label} {deleteNode}</div></div>
     
     </>
     }else if (props.type === "Url"){
@@ -1082,7 +1082,7 @@ const LoadingNode =  React.memo(function Node(props){
         className="noselect" 
         style={{
           marginLeft: `${props.level * indentPx}px`
-        }}>[D] {props.label} {deleteNode}</div></div>
+        }}>[U] {props.label} {deleteNode}</div></div>
       
       </>
   }else{

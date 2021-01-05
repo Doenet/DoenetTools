@@ -140,7 +140,7 @@ export default function Tool(props) {
             {headerPanel}
             <ContentPanel main={mainPanel} support={supportPanel} />{" "}
             {menuPanel}
-<ReactQueryDevtools />
+{/* <ReactQueryDevtools /> */}
           </ToolContainer>
           </ReactQueryCacheProvider>
   );
