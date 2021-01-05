@@ -3,7 +3,7 @@ import { doenetComponentForegroundInactive, doenetComponentForegroundActive } fr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-export default function Searchbar() {
+export default function Searchbar(props) {
     const [searchTerm, setSearchTerm] = useState('')
     const [cancelShown, setCancelShown] = useState('hidden')
     var searchBar = {
@@ -59,6 +59,10 @@ export default function Searchbar() {
     //         window.alert("You hit Submit!")
     //     }
     // }
+
+    if (props.width) {
+        searchBar.width = props.width
+    }
     function clearInput() {
         document.getElementById('search').value = '';
         setCancelShown('hidden')
