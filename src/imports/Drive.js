@@ -12,14 +12,16 @@ import './util.css';
 
 
 import {
-  DropTargetsProvider,
   DropTargetsContext,
   WithDropTarget  
 } from '../imports/DropTarget';
 import Draggable from '../imports/Draggable';
 
+import { BreadcrumbContext } from '../imports/Breadcrumb';
+
 import {
   atom,
+  useRecoilState,
   useSetRecoilState
 } from 'recoil';
 
@@ -40,6 +42,16 @@ export const globalSelectedNodesAtom = atom({
   key:'globalSelectedNodesAtom',
   default:[]
 })
+
+const dragStateAtom = atom({
+  key: 'dragStateAtom',
+  default: {
+    isDragging: false,
+    draggedOverDriveId: null,
+    isDraggedOverBreadcrumb: false
+  }
+})
+
 
 export default function Drive(props){
   const isNav = useContext(IsNavContext);
@@ -147,7 +159,10 @@ function Browser(props){
   const [driveIsOpen,setDriveIsOpen] = useState(props.driveIdIsOpen?props.driveIdIsOpen:true); //default to open
   const [openNodesObj,setOpenNodesObj] = useState({});
   const [selectedNodes,setSelectedNodes] = useState({});
-  // const { DnDState, DnDActions } = props.DnDState;
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const [filter, setFilter] = useState(null);
+  const { addItem: addBreadcrumbItem , removeItem: removeBreadcrumbItem, clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
 
   let setGlobalSelectedNodes = useSetRecoilState(globalSelectedNodesAtom);
 
@@ -194,6 +209,7 @@ function Browser(props){
                 label:data[1].add.label,
                 creationDate:data[1].add.creationDate,
                 type:data[1].add.type,
+                sortBy: "defaultOrder"
               }
             }
             data.pop();   
@@ -217,6 +233,7 @@ function Browser(props){
             let parentId = data[1].delete.parentId;
             let nodeId = data[1].delete.itemId;
             let childrenIds = data[0].folderChildrenIds[parentId].defaultOrder;
+            data[0].nodeObjs[nodeId].sortBy = "defaultOrder";
             childrenIds.splice(childrenIds.indexOf(nodeId),1);
             // delete data[0].nodeObjs[nodeId]; //Keep for undo?
             data.pop();    
@@ -331,6 +348,57 @@ function Browser(props){
       })
     }});
 
+    const onDragStart = ({ nodeId, driveId }) => {
+      console.log(">>>", "Here");
+      setDragState((dragState) => ({
+        ...dragState,
+        isDragging: true,
+        draggedOverDriveId: driveId
+      }));
+    };
+  
+    const onDrag = ({ clientX, clientY, translation, id }) => {
+      dropActions.handleDrag(clientX, clientY, id);
+    };
+  
+    const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
+      // update driveId if changed
+      if (dragState.draggedOverDriveId !== driveId) {
+        setDragState((dragState) => ({
+          ...dragState,
+          draggedOverDriveId: driveId
+        }));
+      }
+      setDragState((dragState) => ({
+        ...dragState,
+        isDraggedOverBreadcrumb: isBreadcrumb
+      }));
+    };
+  
+    const onDragEnd = () => {
+      const droppedId = dropState.activeDropTargetId;
+      // valid drop
+      if (droppedId) {
+        // move all selected nodes to droppedId
+        // moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
+        // .then((props)=>{
+        //   //clear tool and browser selections
+        //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
+        //   selectedNodesArr.current = {}
+        // })
+        
+        console.log(">>> moveNodes");
+      } else {
+  
+      }
+      setDragState((dragState) => ({
+        ...dragState,
+        isDragging: false,
+        draggedOverDriveId: null
+      }));
+      dropActions.handleDrop();
+    };
+
     const sortHandler = ({ sortKey, driveId, itemId }) => {
       // insert sort action object
       cache.setQueryData(["nodes", driveId],
@@ -376,6 +444,30 @@ function Browser(props){
     return tempArr;
   }, []);
  
+  const searchHandler = (value) => {
+    setFilter(value);
+  };
+
+  const applyFilter = ({data, filter}) => {
+    // filter
+    const filteredNodeObjs = Object.keys(data)
+      ?.filter(key => {
+        const { label } = data[key];
+        return label?.indexOf(filter) > -1;
+      })
+      ?.reduce((acc, key) => {
+        return {
+          ...acc,
+          [key]: {
+            ...data[key] 
+          }
+        }
+      }, {});
+    
+    const filteredIds = Object.keys(filteredNodeObjs);
+    return [filteredIds, filteredNodeObjs];
+  }
+
   let nodeIdRefArray = useRef([])
   let lastSelectedNodeIdRef = useRef("")
   let browserId = useRef("");
@@ -502,12 +594,91 @@ function Browser(props){
   },[]);
 
   if (browserId.current === ""){ browserId.current = nanoid();}
-
-  useEffect(()=>{
-    if (props.regClearSelection){
-      props.regClearSelection(browserId.current,handleDeselectAll);
+  
+  const updateBreadcrumb = () => {
+    clearBreadcrumb();
+    let breadcrumbStack = [];
+    
+    // generate folder stack
+    const breadcrumbItemStyle = {
+      fontSize: "18px",
+      color: "#8a8a8a",
+      textDecoration: "none",
     }
-  },[])
+    let data = cache.getQueryData(["nodes", props.drive]);
+    let currentNodeId = routePathFolderId;
+    while (currentNodeId && currentNodeId !== routePathDriveId) {
+      const nodeObj = data?.[0].nodeObjs?.[currentNodeId];
+      const destinationLink = `../${routePathDriveId}:${currentNodeId}/`;
+      // const draggedOver = DnDState.activeDropTargetId === currentNodeId && DnDState.isDraggedOverBreadcrumb;  
+      const breadcrumbElement = <Link 
+        style={breadcrumbItemStyle} 
+        to={destinationLink}>
+        {nodeObj?.label}
+      </Link>
+
+      breadcrumbElement = <WithDropTarget
+        key={`wdtbreadcrumb${props.drive}${currentNodeId}`} 
+        id={currentNodeId}
+        registerDropTarget={dropActions.registerDropTarget} 
+        unregisterDropTarget={dropActions.unregisterDropTarget}
+        dropCallbacks={{
+          onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.drive, isBreadcrumb: true }),
+          onDrop: () => {}
+        }}
+        >
+        { breadcrumbElement } 
+      </WithDropTarget>
+
+      const breadcrumbObj = {
+        to: destinationLink,
+        element: breadcrumbElement
+      }
+
+      breadcrumbStack.unshift(breadcrumbObj);
+      currentNodeId = nodeObj?.parentId;
+    }
+    
+    // add current drive to head of stack
+    const driveDestinationLink = `../${routePathDriveId}:${routePathDriveId}/`;
+    const driveBreadcrumbElement = <WithDropTarget
+      key={`wdtbreadcrumb${props.drive}`} 
+      id={routePathDriveId}
+      registerDropTarget={dropActions.registerDropTarget} 
+      unregisterDropTarget={dropActions.unregisterDropTarget}
+      dropCallbacks={{
+        onDragOver: () => onDragOverContainer({ id: routePathDriveId, driveId: props.drive, isBreadcrumb: true }),
+        onDrop: () => {}
+      }}
+      >
+      <Link 
+        style={breadcrumbItemStyle} 
+        to={driveDestinationLink}>
+        {props.label}
+      </Link>
+    </WithDropTarget>
+    breadcrumbStack.unshift({
+      to: driveDestinationLink,
+      element: driveBreadcrumbElement
+    });
+
+    // add items in stack to breadcrumb
+    for (let item of breadcrumbStack) {
+      addBreadcrumbItem(item);      
+    }
+  }
+
+  useEffect(() => {
+    if (isFetching) return;
+
+    if (routePathDriveId === "") {
+      clearBreadcrumb();
+      addBreadcrumbItem({to: "/", element: <div>/</div>})
+    }
+    if (props.drive === routePathDriveId) {
+      updateBreadcrumb?.();
+    }
+  }, [routePathDriveId, routePathFolderId, isFetching, dragState.isDraggedOverBreadcrumb])  
  
   // //------------------------------------------
   // //****** End of use functions  ***********
@@ -532,8 +703,28 @@ function Browser(props){
 
   function buildNodes({driveId,parentId,sortingOrder,nodesJSX=[],nodeIdArray=[],level=0}){
 
-    const childrenIdsOrder = data[0]?.nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
-    let childrenIdsArr = data[0]?.folderChildrenIds?.[parentId]?.[childrenIdsOrder];
+    let nodeObjs = { ...data[0]?.nodeObjs};
+    let folderChildrenIds = { ...data[0]?.folderChildrenIds};
+    const childrenIdsOrder = nodeObjs?.[parentId]?.sortBy ?? "defaultOrder";
+
+    // apply filter
+    if (filter && filter !== "") {
+      const [filteredIds, filteredNodeObjs] = applyFilter({data: nodeObjs, filter: filter});
+      // filter data
+      nodeObjs = filteredNodeObjs;
+      folderChildrenIds = {[parentId]: {[childrenIdsOrder]: filteredIds}};
+
+      // prevent infinite loading
+      for (let nodeId in nodeObjs) {
+        if (nodeObjs[nodeId].type === "Folder") {
+          const sortKey = nodeObjs[nodeId]?.sortBy ?? "defaultOrder";
+          folderChildrenIds[nodeId] = {[sortKey]: []};
+        }
+      }
+      console.log(">>>", folderChildrenIds)
+    }
+
+    let childrenIdsArr = folderChildrenIds?.[parentId]?.[childrenIdsOrder];
 
     if (childrenIdsArr === undefined){
       //Need data
@@ -545,8 +736,8 @@ function Browser(props){
 
       for(let nodeId of childrenIdsArr){
         //If folder we need to know how many child nodes it has
-        let grandChildrenIdsArr = data[0]?.folderChildrenIds?.[nodeId]?.defaultOrder;
-        let grandChildObjType = data[0]?.nodeObjs?.[nodeId]?.type;
+        let grandChildrenIdsArr = folderChildrenIds?.[nodeId]?.defaultOrder;
+        let grandChildObjType = nodeObjs?.[nodeId]?.type;
         let numChildren = "?";
         if (grandChildrenIdsArr === undefined ){
           //Only need numChildren if it's a folder
@@ -560,29 +751,26 @@ function Browser(props){
           numChildren = grandChildrenIdsArr.length;
         }
           nodeIdArray.push(nodeId); //needed to calculate shift click selections
-          let nodeObj = data[0].nodeObjs[nodeId];
+          let nodeObj = nodeObjs[nodeId];
           let isOpen = false;
           if (openNodesObj[nodeId]){ isOpen = true;}
           
           let appearance = "default";
           let draggableClassName = "hvr-shutter-in-horizontal";
-          // if (DnDState.isDragging && selectedNodes[nodeId]) {
-          //   appearance = "dragged";
-          //   draggableClassName = "";
-          // } else 
-
-          //if we are a navigation browser
-          //Only select the current path folder or the item
-          if (props.isNav && itemId === nodeId && pathDriveId === props.driveId){
+          if (dragState.isDragging && selectedNodes[nodeId]) {
+            appearance = "dragged";
+            draggableClassName = "";
+          } else if (props.isNav && itemId === nodeId && pathDriveId === props.driveId){
+            //if we are a navigation browser
+            //Only select the current path folder or the item
             appearance = "selected";
           }else if (props.isNav && itemId === "" && pathFolderId === nodeId && pathDriveId === props.driveId){
             appearance = "selected";
           } else if (selectedNodes[nodeId]){ 
             appearance = "selected";
-          } 
-          // else if (DnDState.activeDropTargetId === nodeId) {
-          //   appearance = "dropperview";
-          // }
+          } else if (dropState.activeDropTargetId === nodeId) {
+            appearance = "dropperview";
+          }
 
           let nodeJSX = <Node 
             key={`node${browserId.current}${nodeId}`} 
@@ -604,34 +792,34 @@ function Browser(props){
             level={level}/>;
           
           // navigation items not draggable
-          // if (!props.isNav) {
-          //   nodeJSX = <Draggable
-          //     key={`dnode${browserId.current}${nodeId}`} 
-          //     id={nodeId}
-          //     className={draggableClassName}
-          //     onDragStart={() => DnDActions.onDragStart({ nodeId, driveId:props.driveId })}
-          //     onDrag={DnDActions.onDrag}
-          //     onDragEnd={DnDActions.onDragEnd}
-          //     ghostElement={renderDragGhost(nodeJSX)}
-          //   >
-          //    { nodeJSX } 
-          //   </Draggable>
-          // }
+          if (!props.isNav) {
+            nodeJSX = <Draggable
+              key={`dnode${browserId.current}${nodeId}`} 
+              id={nodeId}
+              className={draggableClassName}
+              onDragStart={() => onDragStart({ nodeId, driveId:props.driveId })}
+              onDrag={onDrag}
+              onDragEnd={onDragEnd}
+              ghostElement={renderDragGhost(nodeJSX)}
+            >
+             { nodeJSX } 
+            </Draggable>
+          }
                     
-          // if (nodeObj?.type === "Folder") {
-          //   nodeJSX = <WithDropTarget
-          //     key={`wdtnode${browserId.current}${nodeId}`} 
-          //     id={nodeId}
-          //     registerDropTarget={DnDActions.registerDropTarget} 
-          //     unregisterDropTarget={DnDActions.unregisterDropTarget}
-          //     dropCallbacks={{
-          //       onDragOver: () => DnDActions.onDragOverContainer({ id: nodeId, driveId: props.driveId }),
-          //       onDrop: () => {}
-          //     }}
-          //   >
-          //     { nodeJSX } 
-          //   </WithDropTarget>
-          // }
+          if (nodeObj?.type === "Folder") {
+            nodeJSX = <WithDropTarget
+              key={`wdtnode${browserId.current}${nodeId}`} 
+              id={nodeId}
+              registerDropTarget={dropActions.registerDropTarget} 
+              unregisterDropTarget={dropActions.unregisterDropTarget}
+              dropCallbacks={{
+                onDragOver: () => onDragOverContainer({ id: nodeId, driveId: props.driveId }),
+                onDrop: () => {}
+              }}
+            >
+              { nodeJSX } 
+            </WithDropTarget>
+          }
   
           nodesJSX.push(nodeJSX);
 
@@ -685,6 +873,7 @@ function Browser(props){
 
   return <>
   <div style={{marginTop:"1em",marginBottom:"1em"}}>
+  {props.isNav && <SearchBar handleSearchChange={searchHandler}/>}
   {driveToggleDiv}     
   {nodes}
   
@@ -692,7 +881,24 @@ function Browser(props){
   </>
 }
 
+const SearchBar = ({ show=true, handleSearchChange }) => {
 
+  const onChange = (ev) => {
+    handleSearchChange?.(ev.target.value);    
+  }
+
+  return(<>
+    {show && 
+    <div style={{}}>
+      <input
+        onChange={onChange}
+        placeholder="Search..."
+        style={{ minHeight: "5px", padding: "3px" , minWidth: "30px"}}
+      />
+    </div>}
+  </>
+  );
+}
 
 const EmptyNode =  React.memo(function Node(props){
   return (<div style={{

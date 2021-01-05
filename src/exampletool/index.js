@@ -16,6 +16,7 @@ import DoenetExampleTool from '../Tools/DoenetExampleTool';
 
     ReactDOM.render(
       <DropTargetsProvider>
+        <BreadcrumbProvider>
         <RecoilRoot>
           <Router >
             <Switch>
@@ -24,5 +25,6 @@ import DoenetExampleTool from '../Tools/DoenetExampleTool';
             </Switch>
           </Router>
         </RecoilRoot>
+        </BreadcrumbProvider>
       </DropTargetsProvider>
   ,document.getElementById('root'));

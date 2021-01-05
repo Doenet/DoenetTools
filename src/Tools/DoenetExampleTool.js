@@ -11,6 +11,12 @@ import {
   selectorFamily
 } from 'recoil';
 import { node } from "prop-types";
+import { DropTargetsProvider } from '../imports/DropTarget';
+import { 
+  BreadcrumbProvider, 
+  BreadcrumbContainer 
+} from '../imports/Breadcrumb';
+import { HashRouter as Router } from "react-router-dom";
 
 
 
@@ -89,6 +95,7 @@ export default function DoenetExampleTool(props) {
         <p>do the main important stuff</p>
 
         <NumIndicator />
+        <BreadcrumbContainer />
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
         {/* <Drive types={['content','course']} /> */}
       </mainPanel>
