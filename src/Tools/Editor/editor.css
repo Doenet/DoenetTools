@@ -1,0 +1,6 @@
+/* Bounds the height of the editor. i.e. spamming enter won't cause the editor to expand endlessly large.
+  cm-wrap is an internal component inside 'view'
+  TO-DO: Move this up into the css files for each specific webpage*/
+.cm-wrap{
+    max-height: 65vh;
+}

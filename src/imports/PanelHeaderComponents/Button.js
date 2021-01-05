@@ -14,7 +14,7 @@ export default function Button(props) {
         text: 'Button',
         padding: '0px 10px 0px 10px',
         cursor: 'pointer',
-        fontSize: '12px'
+        fontSize: '12px',
       };
   if (props.size === "medium") {
     button.height = '36px',
@@ -26,9 +26,12 @@ export default function Button(props) {
   if (props.text) {
       button.text = props.text;
   };
+  function handleClick() {
+    if (props.callback) props.callback()
+  }
     return (
         <>
-            <button style={button}>{button.text}</button>
+            <button style={button} onClick={() => { handleClick() }}>{button.text}</button>
         </>
     )
 }

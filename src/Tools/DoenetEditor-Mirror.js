@@ -1,137 +1,176 @@
-import React, { useEffect } from 'react';
+import React, { useState, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faWaveSquare, faDatabase, faServer
+} from "@fortawesome/free-solid-svg-icons";
+import Tool from "../imports/Tool/Tool";
+import NavPanel from "../imports/Tool/NavPanel";
+import MainPanel from "../imports/Tool/MainPanel";
+import SupportPanel from "../imports/Tool/SupportPanel";
+import MenuPanel from '../imports/Tool/MenuPanel';
+import HeaderMenuPanelButton from '../imports/Tool/HeaderMenuPanelButton';
+import Overlay from "../imports/Tool/Overlay";
+import DoenetViewer from './DoenetViewer';
+import ErrorBoundary from './ErrorBoundary';
+import Button from "../imports/PanelHeaderComponents/Button"
 
-import ToolLayout from './ToolLayout/ToolLayout';
-import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
+import {
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 
-//CodeMirror 6 Imports
-import {EditorState, StateField} from '@codemirror/next/state';
-import {EditorView, ViewPlugin} from '@codemirror/next/view';
-import {basicSetup} from '@codemirror/next/basic-setup';
-import {htmlSyntax, html} from '@codemirror/next/lang-html';
+import Editor from './Editor/Editor.js';
+import InfoPanel from './Editor/InfoPanel.js';
+import play from './Editor/macbeth.js'
+import {getInitView} from './Editor/viewInit.js'
 
-//This is a mirror of DoenetEditor that uses 
-//CodeMirror 6 instead of Monaco Editor
 
-function getTag(tree, position) {//Function to get tag name from position
-    let buffer = tree.children[0].buffer;
-    let types = tree.children[0].group.types;
-    let sym_tagname = -1;
+const finalIcon1 = <FontAwesomeIcon
+  icon={faServer}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
+const finalIcon2 = <FontAwesomeIcon
+  icon={faDatabase}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
+const finalIcon3 = <FontAwesomeIcon
+  icon={faWaveSquare}
+  style={{
+    width: "10px",
+    padding: "2px",
+    backgroundColor: "#e2e2e2",
+    alignSelf: "center",
+    fontSize: '16px',
+    color: 'grey'
+  }} />;
 
-    //Find the int corresponding to node type "TagName"
-    for (let i=0; i < types.length; i++) {
-        if (types[i].name == "TagName") {
-            sym_tagname = i;
-        }
-    }
+const contentState = atom({
+  key: 'DoenetEditor_content',
+  default: '',
+});
 
-    let tag_range = [0, 0];
-    if (sym_tagname > -1) {
-        //Search for a TagName containing the position
-        for (let i=0; i < buffer.length; i+=4) {
-            if (position < buffer[i+1]) {
-                break; //No more nodes will contain position in its range
-            } else {
-                if (position <= buffer[i+2] && buffer[i] == sym_tagname) {
-                    tag_range[0] = buffer[i+1];
-                    tag_range[1] = buffer[i+2];
-                    break;
-                }
-            }
-        }
-    }
-    return tag_range;
+const updateNumState = atom({
+  key: 'DoenetEditor_updateNum',
+  default: 0,
+});
+
+const tagState = atom({
+  key: 'DoenetEditor_tag',
+  default: {},
+});
+ 
+function DoenetEditor(props) {
+const [showHideNewOverLay, setShowHideNewOverLay]=useState(false);
+
+const showHideOverNewOverlayOnClick = () =>{
+  setShowHideNewOverLay(!showHideNewOverLay);
 }
 
-let countDocChanges = StateField.define({
-    //Sets initial value
-    create() {return ""},
-    //Updates value based on transaction
-    update(value, tr) {
-        console.log(tr.state.tree);
-        // console.log(tr.state.doc);
-        // console.log(tr.state.selection);
+// const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
+// const content = play;
+const [content, setContent] = useRecoilState(contentState);
+const [updateNum, setUpdateNum] = useRecoilState(updateNumState);
 
-        let position = tr.state.selection.ranges[0].to;
+const [tag, setTag] = useRecoilState(tagState);
+const [view, setView] = useState(getInitView(content, setContent, setTag));
 
-        let word = "";
-        let tag_range = getTag(tr.state.tree, position);
+let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
+      <DoenetViewer 
+              key={"doenetviewer"+updateNum} //each component has their own key, change the key will trick React to look for new component
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={typeof content === 'string' ? content : content.sliceString(0)} 
+              mode={{
+              solutionType:false,
+              allowViewSolutionWithoutRoundTrip:false,
+              showHints:false,
+              showFeedback:false,
+              showCorrectness:false,
+          }}           
+          />
+          </ErrorBoundary>)
 
-        // if (istag) {
-        //     const text = tr.state.doc.text;
+let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNum+1)}/>
+// let updateButton = <Button text={"Update"}/>
 
-        //     let line_count = 0;
-        //     for (let i=0; i < text.length; i++) {
-        //         line_count = text[i].length;
+  return (
 
-        //         if (position > line_count) {
-        //             position -= line_count+1; //+1 for the linebreak
-        //         } else {
-        //             let line = text[i];
-        //             let line1 = line.slice(0, position).split(/\s|<|>|\//);
-        //             let line2 = line.slice(position, line.length).split(/\s|<|>|\/|\n/);
-        //             word = line1[line1.length-1].concat(line2[0]);
-        //             break;
-        //         }
+<>
 
-        //     }
-        //     console.log(word);
-        // }
+{!showHideNewOverLay ? 
+    <Tool
+      onUndo={() => { console.log(">>>undo clicked") }}
+      onRedo={() => { console.log(">>>redo clicked") }}
+      title={"My Doc"}
+      initSupportPanelOpen={true}
+      // responsiveControls={[]}
+      headerMenuPanels={[
+        <HeaderMenuPanelButton buttonText="Add">{"content 1"}</HeaderMenuPanelButton>, <HeaderMenuPanelButton buttonText="Save">{"content 2"}</HeaderMenuPanelButton>
+      ]}
+    >
 
-        // word = text.sliceString(tag_range[0], tag_range[1], "\n");
-        word = tr.state.sliceDoc(tag_range[0], tag_range[1]);
-        if (word != "") console.log(word);
 
-        return tr.docChanged ? word : value
+   <NavPanel>
+    <>
+     Nav Panel
+    </>
+   </NavPanel>
+
+      <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
+        // responsiveControls={[]}
+      >
+        <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
+
+      </MainPanel>
+
+      <SupportPanel
+        // responsiveControls={[]}
+      >
+        <Editor view={view} mountKey="mountkey-1"/>
+      
+      </SupportPanel>
+      <MenuPanel title="edit">
+      </MenuPanel>
+      <MenuPanel title="style">
+        <InfoPanel curr_tag={tag} view={view} setView={setView}/>
+      </MenuPanel>
+    </Tool>
+    :
+
+    <Overlay
+          isOpen={showHideNewOverLay}
+          onUndo={()=>{}}
+          onRedo={()=>{}}
+          title={"my doc"}
+          onClose={() => { setShowHideNewOverLay(false) }}
+
+          // responsiveControls={[<ResponsiveControls/>]}  
+          headerMenuPanels={[]}
+        >
+        <MainPanel responsiveControls={[updateButton]}>
+          <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
+        </MainPanel>
+        <SupportPanel responsiveControls={[]}>
+          <Editor view={view} mountKey="mountkey-overlay"/>
+        </SupportPanel>
+    </Overlay> 
     }
-})
-
-//This should probably go in the useEffect
-const wordGetterPlugin = ViewPlugin.fromClass(class {
-    constructor(view) {
-        this.dom = view.dom.appendChild(document.createElement('div'));
-        this.dom.style.cssText = 
-            "position: absolute; inset-block-start: 2px; inset-inline-end: 5px";
-        // this.dom.textContent = view.state.field(countDocChanges);
-    }
-
-    update(update) {
-        if (update.docChanged) {
-            // this.dom.textContent = update.state.field(countDocChanges);
-        }
-    }
-
-    destroy() {this.dom.remove}
-})
-
-function Editor(props) {
-    let startState = EditorState.create({
-        doc: props.content,
-        extensions: [basicSetup, html(), countDocChanges, wordGetterPlugin]
-    })
-
-    let { mountKey } = props;
-
-    let view = new EditorView({
-        state: startState,
-    })
-
-    useEffect(() => {
-        const containerRoot = document.getElementById(mountKey);
-        containerRoot.appendChild(view.dom);
-
-        console.log(view);
-    });
-
-    return(<div id={mountKey}/>)
-}
-
-function DoenetEditor() {
-
-    const content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
-
-    return(
-        <Editor content={content} mountKey="mountkey-1"/>
-    )
+</>
+  );
 }
 
 export default DoenetEditor;
