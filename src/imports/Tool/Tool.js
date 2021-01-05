@@ -134,19 +134,15 @@ export default function Tool(props) {
   }
 
   return (
-    <DropTargetsProvider>
       <ReactQueryCacheProvider queryCache={queryCache}>
-        <RecoilRoot>
           <ToolContainer>
             {navPanel}
             {headerPanel}
             <ContentPanel main={mainPanel} support={supportPanel} />{" "}
             {menuPanel}
-{/* <ReactQueryDevtools /> */}
+<ReactQueryDevtools />
           </ToolContainer>
-        </RecoilRoot>
-      </ReactQueryCacheProvider>
-    </DropTargetsProvider>
+          </ReactQueryCacheProvider>
   );
 }
 

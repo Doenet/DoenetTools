@@ -17,6 +17,7 @@ const DragHandle = styled.div`
 `
 
 export default function ContentPanel({ main, support }) {
+  console.log("=== Content Panel")
   const handleRef = useRef();
   const wrapperRef = useRef();
   let isDragging = false;
@@ -33,7 +34,7 @@ export default function ContentPanel({ main, support }) {
   });
 
   const handleMouseDown = (event) => {
-    console.log(wrapperRef);
+    // console.log(wrapperRef);
     if (handleRef.current.contains(event.target)) {
       isDragging = true;
     }

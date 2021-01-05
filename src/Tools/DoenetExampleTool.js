@@ -7,7 +7,8 @@ import {
   useRecoilState,
   useRecoilValue,
   selector,
-  atomFamily
+  atomFamily,
+  selectorFamily
 } from 'recoil';
 import { node } from "prop-types";
 
@@ -17,6 +18,7 @@ let numAtom = atom({
   key:"numAtom",
   default:0
 })
+
 
 let unitAtom = atom({
   key:"unitAtom",
@@ -33,6 +35,15 @@ let molecule = selector({
   }
 })
 
+let mytest = selector({
+  key:"mytest",
+  get:({get})=>{
+    let mole = get(molecule);
+    console.log("MOLE!!!")
+    return `this is mole ${mole}`
+  }
+})
+
 function GlobalSelectIndicator(){
   let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
   let nodes = [];
@@ -45,7 +56,7 @@ function GlobalSelectIndicator(){
   </div>
 }
 
-function Inc(){
+function Inc(props){
   let setNum = useSetRecoilState(numAtom);
   return <button onClick={()=>setNum((old)=>old+1)}>+</button>
 }
@@ -56,15 +67,19 @@ function NumIndicator(){
 }
 
 
+
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool")
+  console.log("PROPS!!!",props)
   return <Tool >
   
      <navPanel>
         {/* <p>navigate to important stuff</p> */}
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+        <div><button onClick={()=>{}}>Prefetch</button></div>
+        <div><button onClick={()=>{}}>Display Info</button></div>
         {/* <Drive types={['content','course']} /> */}
-      </navPanel>
+      </navPanel> 
 
       <headerPanel title="my title">
         <p>header for important stuff</p>
@@ -84,7 +99,8 @@ export default function DoenetExampleTool(props) {
       </supportPanel>
 
       <menuPanel> 
-        <Inc />
+        <Inc name="A"/>
+        <Inc name="B"/>
         <p>control important stuff</p>
       </menuPanel>
 
