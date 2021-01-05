@@ -14,6 +14,14 @@ import DoenetViewer from './DoenetViewer';
 import ErrorBoundary from './ErrorBoundary';
 import Button from "../imports/PanelHeaderComponents/Button"
 
+import {
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
+
 import Editor from './Editor/Editor.js';
 import InfoPanel from './Editor/InfoPanel.js';
 import play from './Editor/macbeth.js'
@@ -51,6 +59,20 @@ const finalIcon3 = <FontAwesomeIcon
     color: 'grey'
   }} />;
 
+const contentState = atom({
+  key: 'DoenetEditor_content',
+  default: '',
+});
+
+const updateNumState = atom({
+  key: 'DoenetEditor_updateNum',
+  default: 0,
+});
+
+const tagState = atom({
+  key: 'DoenetEditor_tag',
+  default: {},
+});
  
 function DoenetEditor(props) {
 const [showHideNewOverLay, setShowHideNewOverLay]=useState(false);
@@ -61,11 +83,11 @@ const showHideOverNewOverlayOnClick = () =>{
 
 // const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 // const content = play;
-const [content, setContent] = useState("");
-const [updateNum, setUpdateNum] = useState(0);
+const [content, setContent] = useRecoilState(contentState);
+const [updateNum, setUpdateNum] = useRecoilState(updateNumState);
 
-const [tag, setTag] = useState({});
-const [view, setView] = useState(getInitView("", setContent, setTag));
+const [tag, setTag] = useRecoilState(tagState);
+const [view, setView] = useState(getInitView(content, setContent, setTag));
 
 let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
       <DoenetViewer 
@@ -82,7 +104,7 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
           />
           </ErrorBoundary>)
 
-let updateButton = <Button text={"Update"} onClick={() => setUpdateNum(updateNum+1)}/>
+let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNum+1)}/>
 // let updateButton = <Button text={"Update"}/>
 
   return (
