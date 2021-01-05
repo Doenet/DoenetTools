@@ -67,14 +67,6 @@ const [updateNum, setUpdateNum] = useState(0);
 const [tag, setTag] = useState({});
 const [view, setView] = useState(getInitView("", setContent, setTag));
 
-// if (typeof content !== 'string') {
-//   console.log("This is content ", content);
-//   // let flat_list = [];
-//   // content.flatten(flat_list);
-//   // console.log("Flatten", flat_list);
-//   console.log("Sliced", content.sliceString(0));
-// }
-
 let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
       <DoenetViewer 
               key={"doenetviewer"+updateNum} //each component has their own key, change the key will trick React to look for new component
@@ -89,7 +81,9 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
           }}           
           />
           </ErrorBoundary>)
-let updateButton = <button onClick={() => setUpdateNum(updateNum+1)}>Update</button>;
+
+let updateButton = <Button text={"Update"} onClick={() => setUpdateNum(updateNum+1)}/>
+// let updateButton = <Button text={"Update"}/>
 
   return (
 
@@ -115,11 +109,10 @@ let updateButton = <button onClick={() => setUpdateNum(updateNum+1)}>Update</but
    </NavPanel>
 
       <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
-        responsiveControls={[updateButton]}
+        // responsiveControls={[]}
       >
         <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
 
-        <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
       </MainPanel>
 
       <SupportPanel
@@ -136,7 +129,7 @@ let updateButton = <button onClick={() => setUpdateNum(updateNum+1)}>Update</but
     </Tool>
     :
 
-        <Overlay
+    <Overlay
           isOpen={showHideNewOverLay}
           onUndo={()=>{}}
           onRedo={()=>{}}
@@ -146,13 +139,13 @@ let updateButton = <button onClick={() => setUpdateNum(updateNum+1)}>Update</but
           // responsiveControls={[<ResponsiveControls/>]}  
           headerMenuPanels={[]}
         >
-          <MainPanel responsiveControls={[]}>
-            Overlay Main panel
-    </MainPanel>
-          <SupportPanel responsiveControls={[]}>
-            Overlay Support
-     </SupportPanel>
-        </Overlay> 
+        <MainPanel responsiveControls={[updateButton]}>
+          <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
+        </MainPanel>
+        <SupportPanel responsiveControls={[]}>
+          <Editor view={view} mountKey="mountkey-overlay"/>
+        </SupportPanel>
+    </Overlay> 
     }
 </>
   );
