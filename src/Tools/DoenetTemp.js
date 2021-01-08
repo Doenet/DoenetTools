@@ -21,8 +21,6 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValue,
-  useRecoilCallback,
-  useGotoRecoilSnapshot
 } from 'recoil';
 
 
@@ -33,49 +31,131 @@ return <RecoilRoot>
 </RecoilRoot>
 };
 
-let textAtom = atom({
-  key:"textAtom",
-  default:""
-})
-let historyAtom = atom({
-  key:"historyAtom",
-  default:[]
+let refreshAtom = atom({
+  key:"refreshAtom",
+  default:0
 })
 
-function EnterText(props){
-  let [text,setText] = useState("")
-  let setRecoilText = useSetRecoilState(textAtom);
+let loadDriveInfoQuery = selectorFamily({
+  key:"loadDriveInfoQuery",
+  get: (driveId) => async ({get,set})=>{
+    get(refreshAtom);
+    console.log("load drive query!!!",driveId)
+    const { data } = await axios.get(
+      `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
+    );
+    console.log("GOT DATA ",data)
+    return {init:false,data}
+  },
+  set: (driveId) => ({get,set})=>{
+    // const driveInfo = get(loadDriveInfoQuery(driveId));
+    // console.log("driveInfo ",driveInfo)
 
-  return <div><input type="text" value={text} onChange={(e)=>{setText(e.target.value)}}/>
-  <button onClick={()=>{setRecoilText(text)}}>Set Recoil Text</button></div>
+    // if (!driveInfo.init){
+      console.log("RUN ONLY ONCE!!!!!!!!!!!!!!!!!")
+      set(refreshAtom,10);
+      // set(loadDriveInfoQuery,(old)=>{console.log(old); return old})
+    // }
+  }
+  //   get: (driveId) => async ({get})=>{
+  //   get(refreshAtom);
+  //   console.log("load drive query!!!",driveId)
+  //   const { data } = await axios.get(
+  //     `/api/loadFolderContent.php?parentId=${driveId}&driveId=${driveId}&init=true`
+  //   );
+    
+  //   return {init:true,data}
+  // }
+})
 
+
+
+let availableDrivesQuery = selector({
+  key:"availableDrivesQuery",
+  get: async ({get})=>{
+    get(refreshAtom);
+    console.log("available drives query!!!")
+    const { data } = await axios.get(
+      `/api/loadAvailableDrives.php`
+    );
+    return data.driveIdsAndLabels;
+  }
+})
+
+function Drive(props){
+  console.log("=== Drive")
+  let itemList = null;
+
+  // const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveId))
+  const [driveInfo,setDriveInfo] = useRecoilStateLoadable(loadDriveInfoQuery(props.driveId))
+  useEffect(()=>{
+    if (driveInfo.state === "hasValue"){
+      setDriveInfo({driveId:props.driveId,type:"init"});
+  }
+  },[driveInfo.state])
+  
+  if (driveInfo.state === "loading"){itemList = <div>Loading...</div>}
+  if (driveInfo.state === "hasValue"){
+  
+    itemList = [];
+    for (let item of driveInfo.contents.data.results){
+      itemList.push(<div key={`item${item.id}`}>{item.label}</div>)
+    }
+  }
+  return  <div>
+    <h1>{props.driveId}</h1>
+    {itemList}
+    </div>
 }
 
 function Demo(){
-  let temp = useRecoilValue(textAtom)
-  const recordSnapshot = useRecoilCallback(({ snapshot, set })=>()=>{
-    console.log("here!",snapshot)
-    let tAtom = snapshot.getLoadable(textAtom);
-    console.log(" textAtom loadable",tAtom.getValue())
-    //Edit so snapshot doesn't have historyAtom
-    set(historyAtom,(old)=>[...old,snapshot])
-  })
-
-  const gotoSnapshot = useGotoRecoilSnapshot();
-  const sHistory = useRecoilValue(historyAtom);
-  let buttons = sHistory.map((snapshot)=>{
-   let newSnapshot = snapshot.map(({set}) => {
-      // console.log("snapshot info",info.getLoadable(historyAtom))
-      set(historyAtom,sHistory);
-    });
-  return <div><button onClick={()=>gotoSnapshot(newSnapshot)} >return to {snapshot.getID()}</button></div>})
-
+  console.log("=== Demo")
+const setRefresh = useSetRecoilState(refreshAtom);
+ const [num,setNum] = useState(0);
+  // const availableDrives = useRecoilValueLoadable(availableDrivesQuery)
+  // console.log(availableDrives);
+ 
 
   return <>
-  <EnterText />
-  <button onClick={recordSnapshot}>Record Snapshot</button>
-  {buttons}
-  {temp}
-
+  <button onClick={()=>setRefresh(old=>old+1)}>Refresh Recoil Queries (<RefreshIndicator />)</button>
+  <button onClick={()=>{setNum(old=>old+2)}} >Refresh Demo Component</button>
+  <Drive driveId='ZLHh5s8BWM2azTVFhazI2' />
+  <Drive driveId='ZLHh5s8BWM2azTVFhazI2' />
+ 
+  <AddFolder folderId="ZLHh5s8BWM2azTVFhazI2" />
   </>
 }
+
+function RefreshIndicator(){
+  const refreshNum = useRecoilValue(refreshAtom)
+  return <>{refreshNum}</>
+}
+
+let folderItemsFamily = atomFamily({
+  key:"folderItemsFamily",
+  default:[]
+})
+
+function AddFolder(props){
+  const [label,setLabel] = useState("");
+  const [folderItems,setFolderItems] = useRecoilState(folderItemsFamily(props.folderId));
+  let items = [];
+  for(let [i,item] of Object.entries(folderItems)){
+    items.push(<div key={`item${i}${props.folderId}`}>{item}</div>)
+  }
+  return <div>
+    <input type="text" value={label} onChange={(e)=>setLabel(e.target.value)} />
+    <button
+    onClick={()=>{
+      setFolderItems((old)=>{
+        let newItems = [...old];
+        newItems.push(label)
+        return newItems;
+      });
+      setLabel("")
+    }}
+    >Add Folder</button>
+    {items}
+  </div>
+}
+

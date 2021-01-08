@@ -37,8 +37,8 @@ while($row = $result->fetch_assoc()){
     "driveId"=>$row['driveId'],
     "label"=>$row['label'],
     "type"=>$row['driveType'],
-    "type"=>$row['isShared'],
-    "type"=>$row['courseId'],
+    "isShared"=>$row['isShared'],
+    "courseId"=>$row['courseId'],
   );
   array_push($driveIdsAndLabels,$driveAndLabel);
 }
