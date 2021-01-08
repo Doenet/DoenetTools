@@ -19,7 +19,6 @@ $results_arr = array();
 //make sure the user is supposed to have drive read access
 $sql = "
 SELECT 
-isShared, 
 canViewDrive, 
 canDeleteDrive, 
 canShareDrive,
@@ -28,7 +27,7 @@ canDeleteItemsAndFolders,
 canMoveItemsAndFolders,
 canRenameItemsAndFolders,
 canChangeAllDriveSettings
-FROM drives
+FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
@@ -70,36 +69,49 @@ if ($result->num_rows == 0){
 if ($init == 'true'){
   $sql="
   SELECT 
-    d.itemId as itemId,
-    d.label as label,
-    d.parentId as parentId,
-    d.creationDate as creationDate,
-    d.itemType as itemType
-  FROM drive AS d
+  dc.itemId as itemId,
+  dc.parentFolderId as parentFolderId,
+  dc.label as label,
+  dc.creationDate as creationDate,
+  dc.itemType as itemType,
+  dc.branchId as branchId,
+  dc.contentId as contentId,
+  dc.assignmentId as assignmentId,
+  dc.urlId as urlId,
+  u.url as url,
+  u.description as urlDescription
+FROM drive_content AS dc
+LEFT JOIN url AS u
+ON u.urlId = dc.urlId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
-
   $result = $conn->query($sql); 
   //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
   while($row = $result->fetch_assoc()){ 
-
+echo "item ".$row['itemId'].'\n<br>';
   $item = array(
-    "id"=>$row['itemId'],
+    "itemId"=>$row['itemId'],
+    "parentFolderId"=>$row['parentFolderId'],
     "label"=>$row['label'],
-    "parentId"=>$row['parentId'],
     "creationDate"=>$row['creationDate'],
-    "type"=>$row['itemType']
+    "itemType"=>$row['itemType'],
+    "branchId"=>$row['branchId'],
+    "contentId"=>$row['contentId'],
+    "assignmentId"=>$row['assignmentId'],
+    "urlId"=>$row['urlId'],
+    "url"=>$row['url'],
+    "urlDescription"=>$row['urlDescription']
   );
   array_push($results_arr,$item);
   }
 }else{
 
-  $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
-  $children_arr = array_keys($results_arr[$parentId]);
-  foreach ($children_arr as &$childId){
-    $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
-  }
+  // $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
+  // $children_arr = array_keys($results_arr[$parentId]);
+  // foreach ($children_arr as &$childId){
+  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  // }
 
 }
 }
@@ -117,37 +129,37 @@ http_response_code(200);
 echo json_encode($response_arr);
 $conn->close();
 
-function selectChildren($parentId,$userId,$driveId,$conn){
-  $return_arr = array();
-  //ADD FOLDERS AND REPOS
-  $sql="
-  SELECT 
-    d.itemId as itemId,
-    d.label as label,
-    d.parentId as parentId,
-    d.creationDate as creationDate,
-    d.itemType as itemType
-  FROM drive AS d
-  WHERE driveId = '$driveId'
-  AND parentId = '$parentId'
-  AND isDeleted = 0
-  ";
+// function selectChildren($parentId,$userId,$driveId,$conn){
+//   $return_arr = array();
+//   //ADD FOLDERS AND REPOS
+//   $sql="
+//   SELECT 
+//     d.itemId as itemId,
+//     d.label as label,
+//     d.parentId as parentId,
+//     d.creationDate as creationDate,
+//     d.itemType as itemType
+//   FROM drive AS d
+//   WHERE driveId = '$driveId'
+//   AND parentId = '$parentId'
+//   AND isDeleted = 0
+//   ";
 
-  $result = $conn->query($sql); 
-  while($row = $result->fetch_assoc()){ 
+//   $result = $conn->query($sql); 
+//   while($row = $result->fetch_assoc()){ 
 
-  $item = array(
-    "id"=>$row['itemId'],
-    "label"=>$row['label'],
-    "parentId"=>$parentId,
-    "creationDate"=>$row['creationDate'],
-    "type"=>$row['itemType']
-  );
-  $return_arr[$row['itemId']] = $item;
-  // array_push($return_arr, $item);
-  }
-  return $return_arr;
-}
+//   $item = array(
+//     "id"=>$row['itemId'],
+//     "label"=>$row['label'],
+//     "parentId"=>$parentId,
+//     "creationDate"=>$row['creationDate'],
+//     "type"=>$row['itemType']
+//   );
+//   $return_arr[$row['itemId']] = $item;
+//   // array_push($return_arr, $item);
+//   }
+//   return $return_arr;
+// }
 
 
 ?>

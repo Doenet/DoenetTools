@@ -11,7 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
+$parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
@@ -21,10 +21,11 @@ $results_arr = array();
 
 $sql = "
 SELECT canAddItemsAndFolders
-FROM drives
+FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
+
 $result = $conn->query($sql); 
 if ($result->num_rows > 0){
 $row = $result->fetch_assoc();
@@ -39,19 +40,39 @@ if (!$canAdd){
 
 if ($success){
 
-//If not given parentId then use the user's drive
-if ($parentId == ""){
-  $parentId = "content";
-}
 
+  if ($type == 'Folder'){
+    $sql="
+  INSERT INTO drive_content
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+  VALUES
+  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+  ";
 
-$sql="
-INSERT INTO drive
-(driveId,parentId,itemId,label,creationDate,isDeleted,itemType)
-VALUES
-('$driveId','$parentId','$itemId','$label',NOW(),'0','$type')
-";
-$result = $conn->query($sql); 
+  $result = $conn->query($sql); 
+
+  }else if ($type == 'Url'){
+    $sql="
+  INSERT INTO drive_content
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+  VALUES
+  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+  ";
+
+  $result = $conn->query($sql); 
+
+  }else if ($type == 'DoenetML'){
+    $sql="
+    INSERT INTO drive_content
+    (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+    VALUES
+    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+    ";
+    
+    $result = $conn->query($sql); 
+  }else{
+    $success = FALSE;
+  }
 
 }
 
