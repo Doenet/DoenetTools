@@ -6,7 +6,7 @@ const ContentPanelContainer = styled.div`
   display: grid;
   grid-template-areas: "mainPanel handle supportPanel";
   grid-template-columns: 1fr 3px 1fr;
-  overflow: clip;
+  border-left: 1px solid black;
 `;
 
 const DragHandle = styled.div`
@@ -14,9 +14,10 @@ const DragHandle = styled.div`
   padding: 0;
   cursor: ew-resize;
   background-color: black;
-`
+`;
 
 export default function ContentPanel({ main, support }) {
+  console.log("=== Content Panel")
   const handleRef = useRef();
   const wrapperRef = useRef();
   let isDragging = false;
@@ -33,7 +34,6 @@ export default function ContentPanel({ main, support }) {
   });
 
   const handleMouseDown = (event) => {
-    console.log(wrapperRef);
     if (handleRef.current.contains(event.target)) {
       isDragging = true;
     }
@@ -42,9 +42,14 @@ export default function ContentPanel({ main, support }) {
   const handleMouseMove = (event) => {
     // Don't do anything if dragging flag is false
     if (isDragging) {
-      let mainWidth = ((event.clientX - wrapperRef.current.offsetLeft)/(wrapperRef.current.clientWidth/2)); //TODO: this math needs work
+      let mainWidth =
+        (event.clientX - wrapperRef.current.offsetLeft) /
+        (wrapperRef.current.clientWidth / 2); //TODO: this math needs work
 
-      let newColDefn = mainWidth <= 1 ? mainWidth + "fr 3px 1fr" : "1fr 3px " + 1/mainWidth + "fr";
+      let newColDefn =
+        mainWidth <= 1
+          ? mainWidth + "fr 3px 1fr"
+          : "1fr 3px " + 1 / mainWidth + "fr";
       wrapperRef.current.style.gridTemplateColumns = newColDefn;
       event.preventDefault();
     }

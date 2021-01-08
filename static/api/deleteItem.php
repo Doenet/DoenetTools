@@ -10,7 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
+$parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
@@ -35,11 +35,11 @@ if (!$canDelete){
 
 if ($success){
   $sql="
-  UPDATE drive_content
+  UPDATE drive_content 
   SET isDeleted='1'
   WHERE driveId = '$driveId'
-  AND contentId = '$itemId'
-  AND parentFolderId = '$parentId'
+  AND itemId = '$itemId'
+  AND parentFolderId = '$parentFolderId'
   ";
   $result = $conn->query($sql); 
 }

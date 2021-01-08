@@ -8,27 +8,29 @@ include "db_connection.php";
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
+
+// $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
+
 $success = TRUE;
 $results_arr = array();
 
 $driveIdsAndLabels = array();
 $sql = "
-SELECT
-d.driveId as driveId,
-d.label as label,
-d.driveType as driveType,
-d.isShared as isShared,
-d.courseId as courseId
+SELECT 
+d.driveId AS driveId,
+d.label AS label,
+d.driveType AS driveType,
+d.isShared AS isShared,
+d.courseId AS courseId
 FROM drive AS d
 LEFT JOIN drive_user AS du
 ON d.driveId = du.driveId
-WHERE du.userId = '3oN5gDY3392zexHopijG6'
+WHERE du.userId='$userId'
 ";
 
 
 $result = $conn->query($sql); 
-
-while($row = $result->fetch_assoc()){
+while($row = $result->fetch_assoc()){ 
   $driveAndLabel = array(
     "driveId"=>$row['driveId'],
     "label"=>$row['label'],

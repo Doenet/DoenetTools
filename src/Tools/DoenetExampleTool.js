@@ -1,79 +1,107 @@
 import React from "react";
 import Tool from "../imports/Tool/Tool";
-import Drive, {globalSelectedNodesAtom} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import Switch from "../imports/Switch"
 import {
   atom,
   useSetRecoilState,
   useRecoilState,
   useRecoilValue,
   selector,
-  atomFamily
+  atomFamily,
+  selectorFamily
 } from 'recoil';
-import { node } from "prop-types";
-
-
+import { 
+  BreadcrumbContainer 
+} from '../imports/Breadcrumb';
 
 let numAtom = atom({
-  key:"numAtom",
-  default:0
-})
+  key: "numAtom",
+  default: 0,
+});
+
 
 let unitAtom = atom({
-  key:"unitAtom",
-  default:"px"
-})
+  key: "unitAtom",
+  default: "px",
+});
 
 let molecule = selector({
-  key:"mymolecule",
-  get:({get})=>{
+  key: "mymolecule",
+  get: ({ get }) => {
     let aNum = get(numAtom);
     let unit = get(unitAtom);
 
-    return (aNum * 3)+unit;
+    return aNum * 3 + unit;
+  },
+});
+
+let mytest = selector({
+  key:"mytest",
+  get:({get})=>{
+    let mole = get(molecule);
+    console.log("MOLE!!!")
+    return `this is mole ${mole}`
   }
 })
 
 function GlobalSelectIndicator(){
   let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
   let nodes = [];
-  for (let nodeObj of selectedNodes){
-    nodes.push(<div key={`gsi${nodeObj.nodeId}`}>{nodeObj.type} {nodeObj.nodeId}</div>)
+  for (let nodeObj of selectedNodes) {
+    nodes.push(
+      <div key={`gsi${nodeObj.nodeId}`}>
+        {nodeObj.type} {nodeObj.nodeId}
+      </div>
+    );
   }
-  return <div style={{backgroundColor:"#fcd2a7",border:"1px solid black",margin:"20px",padding:"10px"}}>
-  <h3>Global Select Indicator</h3>
-  {nodes}
-  </div>
+  return (
+    <div
+      style={{
+        backgroundColor: "#fcd2a7",
+        border: "1px solid black",
+        margin: "20px",
+        padding: "10px",
+      }}
+    >
+      <h3>Global Select Indicator</h3>
+      {nodes}
+    </div>
+  );
 }
 
-function Inc(){
+function Inc(props){
   let setNum = useSetRecoilState(numAtom);
-  return <button onClick={()=>setNum((old)=>old+1)}>+</button>
+  return <button onClick={() => setNum((old) => old + 1)}>+</button>;
 }
 
-function NumIndicator(){
+function NumIndicator() {
   let num = useRecoilValue(molecule);
-  return <div>{num}</div>
+  return <div>{num}</div>;
 }
-
 
 export default function DoenetExampleTool(props) {
-  console.log("=== DoenetExampleTool")
-  return <Tool >
-  
-     <navPanel>
+  console.log("=== DoenetExampleTool");
+  return (
+    <Tool>
+      <navPanel>
         {/* <p>navigate to important stuff</p> */}
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+        <div><button onClick={()=>{}}>Prefetch</button></div>
+        <div><button onClick={()=>{}}>Display Info</button></div>
         {/* <Drive types={['content','course']} /> */}
-      </navPanel>
+      </navPanel> 
 
       <headerPanel title="my title">
+        <Switch onChange={() => {}}/>
         <p>header for important stuff</p>
       </headerPanel>
 
       <mainPanel>
         <p>do the main important stuff</p>
-
+     
         <NumIndicator />
+        <BreadcrumbContainer />
         <Drive id="ZLHh5s8BWM2azTVFhazIH" />
         {/* <Drive types={['content','course']} /> */}
       </mainPanel>
@@ -83,26 +111,17 @@ export default function DoenetExampleTool(props) {
         <GlobalSelectIndicator />
       </supportPanel>
 
-      <menuPanel> 
+      <menuPanel title="edit">
         <Inc />
         <p>control important stuff</p>
       </menuPanel>
 
-      <menuPanel>
+      <menuPanel title="other">
         <p>control more important stuff</p>
       </menuPanel>
-
-  </Tool>
+    </Tool>
+  );
 }
-
-
-
-
-
-
-
-
-
 
 // const [showHideNewOverLay, setShowHideNewOverLay] = useState(false);
 

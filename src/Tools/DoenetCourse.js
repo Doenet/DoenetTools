@@ -40,6 +40,8 @@ import Overlay from "../imports/Tool/Overlay";
 import CollapseSection from "../imports/CollapseSection";
 import MenuPanelSection from "../imports/Tool/MenuPanelSection";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
+import Button from "../imports/PanelHeaderComponents/Button";
+
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu,{ useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
@@ -327,7 +329,7 @@ function MakeAssignment(){
     else
       return null;
   }
-  return role === 'Instructor' && contentId != ''  ? <ActionButton  text="makeassignment" onClick={makeAssignmentValueUpdate}></ActionButton> : null;
+  return role === 'Instructor' && contentId != ''  ? <Button  text="makeassignment" callback={makeAssignmentValueUpdate}></Button> : null;
 }
 export default function DoenetCourse(props) {
 

@@ -44,7 +44,7 @@ export default function ActionButton(props) {
     actionButton.borderRadius = '0px 5px 5px 0px'
   }
   function handleClick() {
-    if (props.onClick) props.onClick()
+    if (props.callback) props.callback()
   }
   //TODO handleClick() is not defined
     return (
