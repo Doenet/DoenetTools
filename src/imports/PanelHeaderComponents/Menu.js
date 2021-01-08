@@ -1,11 +1,16 @@
 import React from "react";
-
+import {
+  atom,
+  useRecoilValue,
+} from 'recoil';
+import {roleAtom} from '../../Tools/DoenetCourse';
 const MenuContext = React.createContext(null);
 
 export default function Menu(props) {
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const [selection, setSelection] = React.useState([]);
-
+  const role = useRecoilValue(roleAtom);
+  console.log('>>> roleatom set', role);
+  const [selection, setSelection] = React.useState([{value:role}]);
   const toggle = React.useCallback(
     () => setMenuOpen((oldOpen) => !oldOpen),
     []
@@ -17,8 +22,11 @@ export default function Menu(props) {
         setSelection([]);
       } else {
         setSelection([item]);
-        item.action(item.value);
-        console.log(">>>", item.e)
+        try{
+          item.action(item.value);
+          item.role(item.value)
+        }
+        catch(err){console.log(err)}
       }
       toggle();
     },

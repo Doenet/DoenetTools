@@ -12,6 +12,7 @@ $userId = $jwtArray['userId'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
 //Test if didn't request with a branchId
 if ($branchId == ""){
@@ -27,7 +28,7 @@ if ($branchId == ""){
 	//Find all the published contentIds
 	$sql = "SELECT contentId
 	FROM content
-	WHERE branchId = '$branchId'
+	WHERE branchId = '$branchId' and itemId = '$itemId'
 	AND draft = 0
 	ORDER BY timestamp ASC
 	";
@@ -41,6 +42,7 @@ if ($branchId == ""){
 	);
 	}else{
 		while ($row = $result->fetch_assoc()){
+			$contentId =$row["contentId"];
 			
 			array_push($content_id_array,$row["contentId"]);
 		}
@@ -78,7 +80,7 @@ if ($branchId == ""){
 			LEFT JOIN repo_access AS ra
 			ON fc.rootId = ra.repoId
 			WHERE fc.childId = '$branchId' 
-			AND ra.userId = '$userId'
+			AND ra.userId = '3oN5gDY3392zexHopijG6'
 			";
 
 			$result = $conn->query($sql);
@@ -90,7 +92,7 @@ if ($branchId == ""){
 				$sql = "
 				SELECT userId 
 			FROM user_content
-			WHERE userId = '$userId'
+			WHERE userId = '3oN5gDY3392zexHopijG6'
 			AND branchId = '$branchId'
 			";
 				$result = $conn->query($sql);
@@ -107,7 +109,7 @@ if ($branchId == ""){
 		//load draft version because contentid was not specified
 		$sql = "SELECT doenetML,title, timestamp
 		FROM content
-		WHERE branchId = '$branchId'
+		WHERE branchId = '$branchId' and itemId='$itemId'
 		AND draft = 1
 		";
 		$result = $conn->query($sql);
@@ -125,7 +127,7 @@ if ($branchId == ""){
 		//load contentId match version
 		$sql = "SELECT doenetML,title, timestamp
 		FROM content
-		WHERE contentId = '$contentId'
+		WHERE contentId = '$contentId' and itemId='$itemId'
 		AND draft = 0
 		";
 		$result = $conn->query($sql);

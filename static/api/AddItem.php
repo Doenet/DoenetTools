@@ -21,7 +21,7 @@ $results_arr = array();
 
 $sql = "
 SELECT canAddItemsAndFolders
-FROM drives
+FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
@@ -46,8 +46,8 @@ if ($parentId == ""){
 
 
 $sql="
-INSERT INTO drive
-(driveId,parentId,itemId,label,creationDate,isDeleted,itemType)
+INSERT INTO drive_content
+(driveId,parentFolderId,contentId,label,creationDate,isDeleted,itemType)
 VALUES
 ('$driveId','$parentId','$itemId','$label',NOW(),'0','$type')
 ";

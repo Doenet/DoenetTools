@@ -19,7 +19,7 @@ $results_arr = array();
 
 $sql = "
 SELECT canDeleteItemsAndFolders
-FROM drives
+FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
@@ -35,11 +35,11 @@ if (!$canDelete){
 
 if ($success){
   $sql="
-  UPDATE drive 
+  UPDATE drive_content
   SET isDeleted='1'
   WHERE driveId = '$driveId'
-  AND itemId = '$itemId'
-  AND parentId = '$parentId'
+  AND contentId = '$itemId'
+  AND parentFolderId = '$parentId'
   ";
   $result = $conn->query($sql); 
 }

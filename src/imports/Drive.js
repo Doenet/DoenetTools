@@ -10,7 +10,7 @@ import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
 
-
+import {assignmentAtom} from '../Tools/DoenetCourse';
 import {
   DropTargetsProvider,
   DropTargetsContext,
@@ -410,6 +410,7 @@ function Browser(props){
   let encodeParams = p => 
   Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
+    const setAssignment = useSetRecoilState(assignmentAtom);
   const handleClickNode = useCallback(({ nodeId, parentId, type, shiftKey, metaKey})=>{
     if (props.isNav){
       if (type === 'Folder'){
@@ -425,6 +426,7 @@ function Browser(props){
       }else{
         //TODO: handle other types
         //TODO: maintain other parameters
+        setAssignment(nodeId);
         let newParams = {...urlParamsObj} 
         newParams['path'] = `${props.driveId}:${parentId}:${nodeId}:${type}`
         history.push('?'+encodeParams(newParams))

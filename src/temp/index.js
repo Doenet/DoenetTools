@@ -4,8 +4,11 @@ import ReactDOM from 'react-dom';
 import DoenetTemp from '../Tools/DoenetTemp';
 
 import { initialize } from '../imports/courseInfo';
+import { RecoilRoot } from 'recoil';
 initialize();
 
     ReactDOM.render(
-      <DoenetTemp/>
+      <RecoilRoot>     
+         <DoenetTemp/>
+      </RecoilRoot>
   ,document.getElementById('root'));

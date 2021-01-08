@@ -19,7 +19,7 @@ $destinationParentId = mysqli_real_escape_string($conn,$_POST["destinationObj"][
 $success = FALSE;
 $sql = "
 SELECT canMoveItemsAndFolders
-FROM drives
+FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$sourceDriveId'
 ";
@@ -35,7 +35,7 @@ if ($destinationDriveId == $sourceDriveId){
 }else{
   $sql = "
   SELECT canAddItemsAndFolders
-  FROM drives
+  FROM drive_user
   WHERE userId = '$userId'
   AND driveId = '$destinationDriveId'
   ";
