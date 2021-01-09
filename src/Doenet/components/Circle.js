@@ -2030,30 +2030,9 @@ export default class Circle extends Curve {
       }
     }
 
-
-
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        },
-        centerChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneCenter"
-
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let childrenToRender = []
-        if (dependencyValues.throughChild.length === 1) {
-          childrenToRender.push(dependencyValues.throughChild[0].componentName);
-        }
-        if (dependencyValues.centerChild.length === 1) {
-          childrenToRender.push(dependencyValues.centerChild[0].componentName);
-        }
-        return { newValues: { childrenToRender } };
-      }
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     stateVariableDefinitions.nearestPoint = {

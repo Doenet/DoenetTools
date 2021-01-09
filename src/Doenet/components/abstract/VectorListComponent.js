@@ -5,12 +5,6 @@ export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
   static rendererType = "container";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
-  }
-
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

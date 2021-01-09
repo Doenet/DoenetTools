@@ -1055,17 +1055,8 @@ export default class Parabola extends Curve {
     }
 
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneThrough"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.throughChild.map(x => x.componentName)
-        }
-      })
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     return stateVariableDefinitions;

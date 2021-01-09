@@ -1408,33 +1408,6 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        headChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneHead"
-        },
-        tailChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneTail"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let childrenToRender = [];
-        if (dependencyValues.headChild.length === 1) {
-          childrenToRender.push(dependencyValues.headChild[0].componentName)
-        }
-        if (dependencyValues.tailChild.length === 1) {
-          childrenToRender.push(dependencyValues.tailChild[0].componentName)
-        }
-
-        return { newValues: { childrenToRender } }
-      }
-    }
-
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {

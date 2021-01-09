@@ -384,28 +384,6 @@ export default class LineSegment extends GraphicalComponent {
     }
 
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        endpointsChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneEndpoints"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.endpointsChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.endpointsChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
-      }
-    }
-
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {

@@ -105,21 +105,11 @@ export class Vertices extends PointListComponent {
 
 export class Head extends Point {
   static componentType = "head"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide.default = true;
-    return properties;
-  }
   static rendererType = "point";
 }
 
 export class Tail extends Point {
   static componentType = "tail"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide.default = true;
-    return properties;
-  }
   static rendererType = "point";
 }
 
@@ -130,11 +120,6 @@ export class Displacement extends Vector {
 
 export class Center extends Point {
   static componentType = "center"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
-  }
   static rendererType = "point";
 }
 

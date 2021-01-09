@@ -524,26 +524,6 @@ export default class Angle extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.throughChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
-      }
-    }
-
     return stateVariableDefinitions;
 
   }

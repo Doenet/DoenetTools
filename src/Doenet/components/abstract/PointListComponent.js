@@ -5,12 +5,6 @@ export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
   static rendererType = "container";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
-  }
-
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

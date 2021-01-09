@@ -2302,17 +2302,8 @@ export default class BezierCurve extends Curve {
     }
 
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.throughChild.map(x => x.componentName)
-        }
-      })
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     return stateVariableDefinitions;

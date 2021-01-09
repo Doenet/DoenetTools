@@ -1119,27 +1119,6 @@ export default class Line extends GraphicalComponent {
       })
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.throughChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
-      }
-    }
-
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -1210,6 +1189,8 @@ export default class Line extends GraphicalComponent {
     return stateVariableDefinitions;
 
   }
+
+  adapters = ["equation"];
 
   moveLine({ point1coords, point2coords, transient }) {
 

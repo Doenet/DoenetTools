@@ -375,27 +375,6 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        verticesChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneVertices"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.verticesChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.verticesChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
-      }
-    }
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
