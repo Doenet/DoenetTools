@@ -56,7 +56,7 @@ export default class Copy extends CompositeComponent {
 
     properties.includeUndefinedArrayEntries = { default: false };
 
-    properties.targetPropertiesToIgnore = { default: [] };
+    // properties.targetPropertiesToIgnore = { default: [] };
 
     return properties;
 
@@ -851,7 +851,9 @@ export default class Copy extends CompositeComponent {
         if (dependencyValues.targetRecursiveReplacementsForProp) {
           return {
             newValues: {
-              componentIdentitiesForProp: dependencyValues.targetRecursiveReplacementsForProp
+              componentIdentitiesForProp:
+                dependencyValues.targetRecursiveReplacementsForProp
+                  .filter(x => x.componentType !== "empty")
             }
           }
         } else if (dependencyValues.targetComponent) {

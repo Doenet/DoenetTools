@@ -2,12 +2,17 @@ import CompositeComponent from './abstract/CompositeComponent';
 import { postProcessCopy } from '../utils/copy';
 import { flattenLevels, flattenDeep } from '../utils/array';
 import { getUniqueIdentifierFromBase } from '../utils/naming';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
   static childrenSkippingNewNamespace = ["tname"];
+
+  static assignNamesToReplacements = true;
+
+  static useReplacementsWhenCopyProp = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -210,8 +215,6 @@ export default class Collect extends CompositeComponent {
       }
     }
 
-
-
     stateVariableDefinitions.effectiveTargetClasses = {
       returnDependencies: () => ({
         collectedComponents: {
@@ -227,7 +230,6 @@ export default class Collect extends CompositeComponent {
         };
       },
     };
-
 
     stateVariableDefinitions.propVariableObjs = {
       returnDependencies: () => ({
@@ -483,6 +485,20 @@ export default class Collect extends CompositeComponent {
     }
 
 
+    stateVariableDefinitions.replacementClassesForProp = {
+      returnDependencies: () => ({
+        replacementClasses: {
+          dependencyType: "stateVariable",
+          variableName: "replacementClasses"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          replacementClassesForProp: dependencyValues.replacementClasses
+        }
+      })
+    }
+
 
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
@@ -559,7 +575,7 @@ export default class Collect extends CompositeComponent {
 
 
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
@@ -604,7 +620,16 @@ export default class Collect extends CompositeComponent {
     workspace.numReplacementsByCollected = numReplacementsByCollected;
     workspace.collectedNames = component.stateValues.collectedComponents.map(x => x.componentName)
 
-    return { replacements };
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      assignDirectlyToComposite: true,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    return { replacements: processResult.serializedComponents };
 
   }
 
