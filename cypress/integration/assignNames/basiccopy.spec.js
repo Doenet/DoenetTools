@@ -119,6 +119,12 @@ describe('Basic copy assignName Tests', function () {
   <copy name="cp9" tname="s5" assignNames="s8" />
   <copy name="cp10" tname="cp6" assignNames="s9" />
 
+
+  <extract name="ex1" prop="simplify" assignNames="s10"><copy tname="_math1" /></extract>
+  <copy name="cp11" tname="s10" assignNames="s11" />
+  <extract name="ex2" prop="simplify" assignNames="s12"><copy tname="m1" /></extract>
+  <copy name="cp12" tname="s12" assignNames="s13" />
+
   `}, "*");
     });
 
@@ -141,6 +147,11 @@ describe('Basic copy assignName Tests', function () {
     cy.get('#\\/s8').should('have.text', 'full');
     cy.get('#\\/s9').should('have.text', 'full');
 
+    cy.get('#\\/s10').should('have.text', 'none');
+    cy.get('#\\/s11').should('have.text', 'none');
+    cy.get('#\\/s12').should('have.text', 'full');
+    cy.get('#\\/s13').should('have.text', 'full');
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -158,6 +169,12 @@ describe('Basic copy assignName Tests', function () {
       expect(components['/s8'].stateValues.value).eq('full');
       expect(components['/s9'].stateValues.value).eq('full');
 
+      expect(components['/s10'].stateValues.value).eq('none');
+      expect(components['/s11'].stateValues.value).eq('none');
+      expect(components['/s12'].stateValues.value).eq('full');
+      expect(components['/s13'].stateValues.value).eq('full');
+
+
       expect(components['/cp1'].replacements[0].stateValues.value).eq('none');
       expect(components['/cp2'].replacements[0].stateValues.value).eq('none');
       expect(components['/cp3'].replacements[0].replacements[0].stateValues.value).eq('none');
@@ -168,6 +185,12 @@ describe('Basic copy assignName Tests', function () {
       expect(components['/cp8'].replacements[0].replacements[0].stateValues.value).eq('full');
       expect(components['/cp9'].replacements[0].stateValues.value).eq('full');
       expect(components['/cp10'].replacements[0].replacements[0].stateValues.value).eq('full');
+
+      expect(components['/cp11'].replacements[0].stateValues.value).eq('none');
+      expect(components['/cp12'].replacements[0].stateValues.value).eq('full');
+
+      expect(components['/ex1'].replacements[0].stateValues.value).eq('none');
+      expect(components['/ex2'].replacements[0].stateValues.value).eq('full');
 
     })
 

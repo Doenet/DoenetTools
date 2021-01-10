@@ -52,6 +52,17 @@ describe('Basic copy assignName Tests', function () {
   <p>u2: <copy tname="u2" assignNames="u2shadow" /></p>
   <p>v2: <copy tname="v2" assignNames="v2shadow" /></p>
 
+  <extract prop="x" assignNames="u3,v3"><copy tname="cl1"/></extract>
+
+  <p>u3: <copy tname="u3" assignNames="u3shadow" /></p>
+  <p>v3: <copy tname="v3" assignNames="v3shadow" /></p>
+
+  <extract prop="x" assignNames="u4"><copy tname="a1"/></extract>
+  <extract prop="x" assignNames="v4"><copy tname="b1"/></extract>
+
+  <p>u4: <copy tname="u4" assignNames="u4shadow" /></p>
+  <p>v4: <copy tname="v4" assignNames="v4shadow" /></p>
+
   `}, "*");
     });
 
@@ -93,6 +104,18 @@ describe('Basic copy assignName Tests', function () {
     cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
+    cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
     cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
@@ -109,6 +132,18 @@ describe('Basic copy assignName Tests', function () {
       expect(text.trim()).equal('1')
     })
     cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
 
@@ -160,6 +195,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -178,6 +225,19 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+
 
     })
 
@@ -222,6 +282,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -238,6 +310,18 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('5')
       })
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
 
@@ -285,6 +369,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
@@ -301,6 +397,18 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('7')
       })
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
 
@@ -348,6 +456,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
@@ -364,6 +484,18 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('7')
       })
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
 
@@ -413,6 +545,21 @@ describe('Basic copy assignName Tests', function () {
   <p>u2: <copy tname="u2" assignNames="u2shadow" /></p>
   <p>v2: <copy tname="v2" assignNames="v2shadow" /></p>
 
+  <extract prop="x" assignNames="u3,v3,w3,x3"><copy tname="cl1"/></extract>
+
+  <p>u3: <copy tname="u3" assignNames="u3shadow" /></p>
+  <p>v3: <copy tname="v3" assignNames="v3shadow" /></p>
+  <p name="pv3">v3: <copy tname="w3" assignNames="w3shadow" /></p>
+  <p name="px3">x3: <copy tname="x3" assignNames="x3shadow" /></p>
+
+  <extract prop="x" assignNames="u4,w4"><copy tname="a1"/></extract>
+  <extract prop="x" assignNames="v4,x4"><copy tname="b1"/></extract>
+
+  <p>u4: <copy tname="u4" assignNames="u4shadow" /></p>
+  <p>v4: <copy tname="v4" assignNames="v4shadow" /></p>
+  <p name="pv4">v4: <copy tname="w4" assignNames="w4shadow" /></p>
+  <p name="px4">x4: <copy tname="x4" assignNames="x4shadow" /></p>
+
   `}, "*");
     });
 
@@ -454,6 +601,18 @@ describe('Basic copy assignName Tests', function () {
     cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
+    cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
     cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
@@ -472,11 +631,27 @@ describe('Basic copy assignName Tests', function () {
     cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
+    cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
     cy.get('#\\/pc').should('have.text', 'c: ')
     cy.get('#\\/pw').should('have.text', 'w: ')
     cy.get('#\\/pc1').should('have.text', 'c1: ')
     cy.get('#\\/pv1').should('have.text', 'v1: ')
     cy.get('#\\/px1').should('have.text', 'x1: ')
+    cy.get('#\\/pv3').should('have.text', 'v3: ')
+    cy.get('#\\/px3').should('have.text', 'x3: ')
+    cy.get('#\\/pv4').should('have.text', 'v4: ')
+    cy.get('#\\/px4').should('have.text', 'x4: ')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -525,6 +700,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -543,12 +730,28 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
       cy.get('#\\/pc').should('have.text', 'c: ')
       cy.get('#\\/pw').should('have.text', 'w: ')
       cy.get('#\\/pc1').should('have.text', 'c1: ')
       cy.get('#\\/pv1').should('have.text', 'v1: ')
       cy.get('#\\/px1').should('have.text', 'x1: ')
-
+      cy.get('#\\/pv3').should('have.text', 'v3: ')
+      cy.get('#\\/px3').should('have.text', 'x3: ')
+      cy.get('#\\/pv4').should('have.text', 'v4: ')
+      cy.get('#\\/px4').should('have.text', 'x4: ')
+  
     })
 
     cy.log('Move point b');
@@ -592,6 +795,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -610,12 +825,28 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/pc').should('have.text', 'c: ')
       cy.get('#\\/pw').should('have.text', 'w: ')
       cy.get('#\\/pc1').should('have.text', 'c1: ')
       cy.get('#\\/pv1').should('have.text', 'v1: ')
       cy.get('#\\/px1').should('have.text', 'x1: ')
-
+      cy.get('#\\/pv3').should('have.text', 'v3: ')
+      cy.get('#\\/px3').should('have.text', 'x3: ')
+      cy.get('#\\/pv4').should('have.text', 'v4: ')
+      cy.get('#\\/px4').should('have.text', 'x4: ')
+  
     })
 
 
@@ -660,6 +891,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
@@ -678,12 +921,28 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9')
       })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
       cy.get('#\\/pc').should('have.text', 'c: ')
       cy.get('#\\/pw').should('have.text', 'w: ')
       cy.get('#\\/pc1').should('have.text', 'c1: ')
       cy.get('#\\/pv1').should('have.text', 'v1: ')
       cy.get('#\\/px1').should('have.text', 'x1: ')
-
+      cy.get('#\\/pv3').should('have.text', 'v3: ')
+      cy.get('#\\/px3').should('have.text', 'x3: ')
+      cy.get('#\\/pv4').should('have.text', 'v4: ')
+      cy.get('#\\/px4').should('have.text', 'x4: ')
+  
     })
 
 
@@ -728,6 +987,18 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
+      cy.get('#\\/u3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/u4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
       cy.get('#\\/ushadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7')
       })
@@ -746,12 +1017,28 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/v2shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
+      cy.get('#\\/u3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v3shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/u4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/v4shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
       cy.get('#\\/pc').should('have.text', 'c: ')
       cy.get('#\\/pw').should('have.text', 'w: ')
       cy.get('#\\/pc1').should('have.text', 'c1: ')
       cy.get('#\\/pv1').should('have.text', 'v1: ')
       cy.get('#\\/px1').should('have.text', 'x1: ')
-
+      cy.get('#\\/pv3').should('have.text', 'v3: ')
+      cy.get('#\\/px3').should('have.text', 'x3: ')
+      cy.get('#\\/pv4').should('have.text', 'v4: ')
+      cy.get('#\\/px4').should('have.text', 'x4: ')
+  
     })
 
   })
@@ -782,6 +1069,13 @@ describe('Basic copy assignName Tests', function () {
   <p>r: <copy tname="r" assignNames="rshadow" /></p>
   <p>s: <copy tname="s" assignNames="sshadow" /></p>
 
+  <extract prop="x" assignNames="p1,q1,r1,s1" ><copy tname="cl1" /></extract>
+
+  <p>p1: <copy tname="p1" assignNames="p1shadow" /></p>
+  <p>q1: <copy tname="q1" assignNames="q1shadow" /></p>
+  <p>r1: <copy tname="r1" assignNames="r1shadow" /></p>
+  <p>s1: <copy tname="s1" assignNames="s1shadow" /></p>
+
   <copy prop="xs" tname="cl1" assignNames="x11,x12,x21,x22,x31,x32,x41,x42" />
 
   <p>x11: <copy tname="x11" assignNames="x11shadow" /></p>
@@ -792,6 +1086,17 @@ describe('Basic copy assignName Tests', function () {
   <p>x32: <copy tname="x32" assignNames="x32shadow" /></p>
   <p>x41: <copy tname="x41" assignNames="x41shadow" /></p>
   <p>x42: <copy tname="x42" assignNames="x42shadow" /></p>
+
+  <extract prop="xs" assignNames="y11,y12,y21,y22,y31,y32,y41,y42" ><copy tname="cl1" /></extract>
+
+  <p>y11: <copy tname="y11" assignNames="y11shadow" /></p>
+  <p>y12: <copy tname="y12" assignNames="y12shadow" /></p>
+  <p>y21: <copy tname="y21" assignNames="y21shadow" /></p>
+  <p>y22: <copy tname="y22" assignNames="y22shadow" /></p>
+  <p>y31: <copy tname="y31" assignNames="y31shadow" /></p>
+  <p>y32: <copy tname="y32" assignNames="y32shadow" /></p>
+  <p>y41: <copy tname="y41" assignNames="y41shadow" /></p>
+  <p>y42: <copy tname="y42" assignNames="y42shadow" /></p>
 
   `}, "*");
     });
@@ -832,6 +1137,30 @@ describe('Basic copy assignName Tests', function () {
       expect(text.trim()).equal('4')
     })
     cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
     cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -880,6 +1209,54 @@ describe('Basic copy assignName Tests', function () {
       expect(text.trim()).equal('2')
     })
     cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1')
     })
 
@@ -932,6 +1309,30 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
+      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
       cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -978,6 +1379,54 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('2')
       })
       cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1024,6 +1473,30 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
+      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
       cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -1070,6 +1543,54 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('2')
       })
       cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1116,6 +1637,30 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2')
       })
+      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
       cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -1162,6 +1707,54 @@ describe('Basic copy assignName Tests', function () {
         expect(text.trim()).equal('2')
       })
       cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
 
@@ -1208,6 +1801,30 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/sshadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9')
       })
+      cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/s1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−9')
+      })
+      cy.get('#\\/p1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/q1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/r1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/s1shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−9')
+      })
       cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -1256,12 +1873,61 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/x42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4')
       })
+      cy.get('#\\/y11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/y32').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get('#\\/y41').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−9')
+      })
+      cy.get('#\\/y42').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get('#\\/y11shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get('#\\/y12shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−5')
+      })
+      cy.get('#\\/y21shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get('#\\/y22shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get('#\\/y31shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3')
+      })
+      cy.get('#\\/y32shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−6')
+      })
+      cy.get('#\\/y41shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−9')
+      })
+      cy.get('#\\/y42shadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
 
     })
   })
 
 
   // dynamic collections once have map working again
+  // (haven't finished code to handle this situation)
 
   // collect points and lines, once decide how should recurse
 

@@ -1293,6 +1293,7 @@ export function processAssignNames({
   parentName,
   parentCreatesNewNamespace,
   componentInfoObjects,
+  indOffset = 0
 }) {
 
   if (assignNames === undefined) {
@@ -1310,6 +1311,10 @@ export function processAssignNames({
     })
   ) {
 
+    if (indOffset > 0) {
+      console.error(`assigning name to composite directly with non-zero indOffset`)
+    }
+
     if (!serializedComponents[0].doenetAttributes) {
       serializedComponents[0].doenetAttributes = {};
     }
@@ -1325,11 +1330,11 @@ export function processAssignNames({
 
   // if assignNames is longer than original number of compoments
   // will pad components with empties so that all names have a target
-  let nComponents = Math.max(assignNames.length, serializedComponents.length)
+  let nComponents = Math.max(assignNames.length - indOffset, serializedComponents.length)
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let name = assignNames[ind];
+    let name = assignNames[ind + indOffset];
     let component = serializedComponents[ind];
     let componentIsComposite = false;
 
@@ -1390,7 +1395,9 @@ export function processAssignNames({
     } else {
 
       processAssignNamesSub({
-        name, parentName, ind, component,
+        name, parentName,
+        ind: ind + indOffset,
+        component,
         parentCreatesNewNamespace, componentInfoObjects
       });
 
@@ -1461,7 +1468,8 @@ export function processAssignNames({
 }
 
 function processAssignNamesSub({
-  name, parentName, ind, component, parentCreatesNewNamespace, componentInfoObjects
+  name, parentName, ind, component,
+  parentCreatesNewNamespace, componentInfoObjects
 }) {
 
   if (name === undefined) {

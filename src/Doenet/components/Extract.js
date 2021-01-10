@@ -1,11 +1,14 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { flattenDeep } from '../utils/array';
 import { getUniqueIdentifierFromBase } from '../utils/naming';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
   static useReplacementsWhenCopyProp = true;
+
+  static assignNamesToReplacements = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -424,7 +427,7 @@ export default class Extract extends CompositeComponent {
 
   }
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -440,6 +443,8 @@ export default class Extract extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedBySource = {};
 
+    let lastEmptiesToAdd = [];
+
     for (let sourceNum = 0; sourceNum < component.stateValues.sourceComponents.length; sourceNum++) {
       if (component.stateValues.sourceComponents[sourceNum] !== undefined) {
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
@@ -449,6 +454,7 @@ export default class Extract extends CompositeComponent {
           components,
           numReplacementsSoFar,
           uniqueIdentifiersUsed,
+          componentInfoObjects
         });
 
         workspace.propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
@@ -457,6 +463,7 @@ export default class Extract extends CompositeComponent {
         numReplacementsBySource[sourceNum] = sourceReplacements.length;
         numReplacementsSoFar += sourceReplacements.length;
         replacements.push(...sourceReplacements);
+        lastEmptiesToAdd = results.emptiesToAdd;
       } else {
         numReplacementsBySource[sourceNum] = 0;
       }
@@ -465,12 +472,20 @@ export default class Extract extends CompositeComponent {
     workspace.numReplacementsBySource = numReplacementsBySource;
     workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
 
+    // record number of empties added and add onto the end
+    workspace.nEmptiesAdded = lastEmptiesToAdd.length;
+
+    replacements.push(...lastEmptiesToAdd);
+
     return { replacements };
 
   }
 
 
-  static createReplacementForSource({ component, components, sourceNum, numReplacementsSoFar, uniqueIdentifiersUsed }) {
+  static createReplacementForSource({ component, components, sourceNum,
+    numReplacementsSoFar, uniqueIdentifiersUsed,
+    componentInfoObjects,
+  }) {
 
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar} of ${component.componentName}`)
 
@@ -872,11 +887,33 @@ export default class Extract extends CompositeComponent {
         }
       }
     }
-    return { serializedReplacements, propVariablesCopiedByReplacement };
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: serializedReplacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+      indOffset: numReplacementsSoFar
+    });
+
+    // if empties were created, put in separate array
+    // we'll need them only for the last batch
+    let emptiesToAdd = [];
+    if (processResult.nEmptiesAdded > 0) {
+      emptiesToAdd = processResult.serializedComponents.splice(
+        processResult.serializedComponents.length - processResult.nEmptiesAdded
+      )
+    }
+
+    return {
+      serializedReplacements: processResult.serializedComponents,
+      propVariablesCopiedByReplacement, emptiesToAdd
+    };
 
   }
 
-  static calculateReplacementChanges({ component, components, workspace }) {
+  static calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -895,6 +932,8 @@ export default class Extract extends CompositeComponent {
 
     let numReplacementsBySource = [];
     let propVariablesCopiedBySource = [];
+
+    let lastEmptiesToAdd = [];
 
     // // cumulative sum: https://stackoverflow.com/a/44081700
     // let replacementIndexBySource = [0, ...workspace.numReplacementsBySource];
@@ -944,7 +983,8 @@ export default class Extract extends CompositeComponent {
           prevNumReplacements,
           replacementChanges,
           components,
-          uniqueIdentifiersUsed
+          uniqueIdentifiersUsed,
+          componentInfoObjects
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -952,6 +992,8 @@ export default class Extract extends CompositeComponent {
         numReplacementsBySource[sourceNum] = results.numReplacements;
 
         propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
+
+        lastEmptiesToAdd = results.emptiesToAdd;
 
         continue;
       }
@@ -967,6 +1009,7 @@ export default class Extract extends CompositeComponent {
         components,
         numReplacementsSoFar,
         uniqueIdentifiersUsed,
+        componentInfoObjects
       });
 
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -1018,12 +1061,40 @@ export default class Extract extends CompositeComponent {
 
       propVariablesCopiedBySource[sourceNum] = propVariablesCopiedByReplacement;
 
+      lastEmptiesToAdd = results.emptiesToAdd;
+
     }
 
 
     workspace.numReplacementsBySource = numReplacementsBySource;
     workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
+
+
+    let nOldEmpties = workspace.nEmptiesAdded;
+    let nNewEmpties = lastEmptiesToAdd.length;
+
+    if (nNewEmpties > nOldEmpties) {
+      let replacementInstruction = {
+        changeType: "add",
+        changeTopLevelReplacements: true,
+        firstReplacementInd: numReplacementsSoFar + nOldEmpties,
+        numberReplacementsToReplace: 0,
+        serializedReplacements: lastEmptiesToAdd.slice(nOldEmpties),
+      };
+      replacementChanges.push(replacementInstruction);
+    } else if (nNewEmpties < nOldEmpties) {
+      let replacementInstruction = {
+        changeType: "delete",
+        changeTopLevelReplacements: true,
+        firstReplacementInd: numReplacementsSoFar + nNewEmpties,
+        numberReplacementsToDelete: nOldEmpties - nNewEmpties,
+      }
+
+      replacementChanges.push(replacementInstruction);
+    }
+
+    workspace.nEmptiesAdded = nNewEmpties;
 
     // console.log("replacementChanges");
     // console.log(replacementChanges);
@@ -1033,12 +1104,15 @@ export default class Extract extends CompositeComponent {
 
   }
 
-  static recreateReplacements({ component, sourceNum, numReplacementsSoFar, prevNumReplacements,
-    replacementChanges, uniqueIdentifiersUsed, components
+  static recreateReplacements({ component, sourceNum, numReplacementsSoFar,
+    prevNumReplacements,
+    replacementChanges, uniqueIdentifiersUsed, components,
+    componentInfoObjects
   }) {
 
     let results = this.createReplacementForSource({
-      component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed
+      component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed,
+      componentInfoObjects
     });
 
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -1054,7 +1128,11 @@ export default class Extract extends CompositeComponent {
     };
     replacementChanges.push(replacementInstruction);
 
-    return { numReplacements: newSerializedChildren.length, propVariablesCopiedByReplacement }
+    return {
+      numReplacements: newSerializedChildren.length,
+      propVariablesCopiedByReplacement,
+      emptiesToAdd: results.emptiesToAdd,
+    }
   }
 
 }

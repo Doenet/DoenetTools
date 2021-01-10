@@ -623,7 +623,6 @@ export default class Collect extends CompositeComponent {
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
-      assignDirectlyToComposite: true,
       parentName: component.componentName,
       parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
       componentInfoObjects,
