@@ -123,7 +123,6 @@ let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNu
       ]}
     >
 
-
    <NavPanel>
     <>
      Nav Panel
