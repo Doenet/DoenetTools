@@ -76,7 +76,11 @@ export const assignmentAtom = atom({
   default:''
 
 })
+export const assignmentIdAtom = atom({
+  key:"assignmentIdAtom",
+  default:''
 
+})
 const AssignmentContent = (props) => {
   return(
     <div>...</div>
@@ -314,12 +318,14 @@ function EditAssignmentSettings(){
 function MakeAssignment(){
   const role = useRecoilValue(roleAtom);
   const contentId = useRecoilValue(assignmentAtom);
+  const setAssignmentIdValue = useSetRecoilState(assignmentIdAtom);
+  const [viewForm, setViewForm] = useState(false);
   const makeAssignmentValueUpdate = () =>{
     if(role === 'Instructor')
     {
       let assignmentId = nanoid();
-      // setAssignment(assignmentId);
-
+      setAssignmentIdValue(assignmentId);
+      setViewForm(true);
       const payload = {
         assignmentId:assignmentId,contentId:contentId        
       }
@@ -329,7 +335,18 @@ function MakeAssignment(){
     else
       return null;
   }
-  return role === 'Instructor' && contentId != ''  ? <Button  text="makeassignment" callback={makeAssignmentValueUpdate}></Button> : null;
+  return role === 'Instructor' && contentId != ''  ? 
+  (
+    <>
+  <Button text="makeassignment" callback={makeAssignmentValueUpdate}></Button>
+           { viewForm ? 
+            <CollapseSection >
+               <AssignmentForm />  
+            </CollapseSection>
+            : <AssignmentsSettingsView /> }
+
+  </>
+   ): null;
 }
 export default function DoenetCourse(props) {
 
@@ -453,21 +470,114 @@ export default function DoenetCourse(props) {
           <menuPanel>
             
             Menu Panel
-            <section>
-              <MakeAssignment />
+            <MakeAssignment />
+
               {/* <AssignmentSettings /> */}
               {/* <EditAssignmentSettings /> */}
               {/* <button>Make assignment</button>
               <button>Edit assignment</button> */}
-
-            </section>
+        
           </menuPanel>
+          
         </Tool>
     </>
   );
 }
+const AssignmentsSettingsView=()=>{
+  // const itemId = useRecoilValue(assignmentAtom);
+  const assignmentId = useRecoilValue(assignmentIdAtom);
+  const getAssignmentSettings = (payload) => {
+    try {
+      return axios.post(
+        `/api/getAssignmentSettingsNew.php`,payload
+      ).then((response) => {  
+        console.log(">>> updateAssignment",response);
+  
+        return response.data;
+      });    
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  useEffect(()=>{
+    let payload = {
+      assignmentId
+    }
+    getAssignmentSettings(payload);
+  }
+  ,[])
+   
+  return(
+    <>
+     <div></div>
+    </>
+  )
+}
+const AssignmentForm = () => {
+  // const role = useRecoilValue(roleAtom);
+  const itemId = useRecoilValue(assignmentAtom);
+  const assignmentId = useRecoilValue(assignmentIdAtom);
+  const [title,setTitle ] = useState(null); 
+  const [assignedDate,setAssignedDate ] = useState(null); 
+  const [dueDate,setDueDate ] = useState(null); 
+  const [attempsAllowed,setAttemptsAllowed ] = useState(null); 
+  
+const updateAssignmentSettings = (payload) => {
+  try {
+    return axios.post(
+      `/api/updateAssignmentSettings.php`,payload
+    ).then((response) => {  
+      console.log(">>> updateAssignment",response);
 
-
+      return response.data;
+    });    
+  } catch (e) {
+    console.log(e);
+  }
+}
+ 
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('>>> form submit',title)
+    const payload = {
+      title,
+      assignedDate,
+      dueDate,
+      attempsAllowed,
+      itemId,
+      assignmentId
+    }
+    await updateAssignmentSettings(payload).then((data) => console.log('successs'));
+  }
+  return(
+    <form onSubmit={handleSubmit} method="POST">
+          <div className="formGroup-12">
+            <label className="formLabel">Title</label>
+            <input className="formInput" required type="text" name="courseName" value={title}
+              placeholder="Title goes here" onBlur={handleSubmit} onChange={(e)=>setTitle(e.currentTarget.value)} data-cy="newCourseFormNameInput" />
+          </div>
+         
+            <div className="formGroup-12" >
+              <label className="formLabel">Assignmed Date</label>
+              <input className="formInput" required type="text" name="department" value={assignedDate}
+                placeholder="0001-01-01 01:01:01" onBlur={handleSubmit} onChange={(e)=>setAssignedDate(e.currentTarget.value)} data-cy="newCourseFormDepInput" />
+            </div>
+            <div className="formGroup-12">
+              <label className="formLabel">Due date</label>
+              <input className="formInput" required type="text" name="courseCode" value={dueDate}
+                placeholder="0001-01-01 01:01:01" onBlur={handleSubmit} onChange={(e)=>setDueDate(e.currentTarget.value)} data-cy="newCourseFormCodeInput" />
+            </div>
+            <div className="formGroup-12">
+              <label className="formLabel">attempts allowed</label>
+              <input className="formInput" type="number" name="section" value={attempsAllowed}
+                placeholder="0" onBlur={handleSubmit} onChange={(e)=>setAttemptsAllowed(e.currentTarget.value)} data-cy="newCourseFormSectionInput" />
+            </div>
+          
+          <button id="formSubmitButton" type="submit" >Submit</button>
+      </form>    
+  )
+} 
 
 // const treeNodeItem = (nodeItem) => {
 //   //debugger;

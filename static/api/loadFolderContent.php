@@ -12,7 +12,7 @@ $jwtArray = include "jwtArray.php";
 $userId = '3oN5gDY3392zexHopijG6';
 
 
-$parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
+$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
@@ -88,10 +88,11 @@ ON u.urlId = dc.urlId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
+ // echo $sql;
   $result = $conn->query($sql); 
   //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
   while($row = $result->fetch_assoc()){ 
-echo "item ".$row['itemId'].'\n<br>';
+//echo "item ".$row['itemId'].'\n<br>';
   $item = array(
     "itemId"=>$row['itemId'],
     "parentFolderId"=>$row['parentFolderId'],
@@ -109,11 +110,11 @@ echo "item ".$row['itemId'].'\n<br>';
   }
 }else{
 
-  // $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
-  // $children_arr = array_keys($results_arr[$parentId]);
-  // foreach ($children_arr as &$childId){
-  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
-  // }
+  $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
+  $children_arr = array_keys($results_arr[$parentId]);
+  foreach ($children_arr as &$childId){
+    $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  }
 
 }
 }
@@ -131,37 +132,37 @@ http_response_code(200);
 echo json_encode($response_arr);
 $conn->close();
 
-// function selectChildren($parentId,$userId,$driveId,$conn){
-//   $return_arr = array();
-//   //ADD FOLDERS AND REPOS
-//   $sql="
-//   SELECT 
-//     d.itemId as itemId,
-//     d.label as label,
-//     d.parentId as parentId,
-//     d.creationDate as creationDate,
-//     d.itemType as itemType
-//   FROM drive AS d
-//   WHERE driveId = '$driveId'
-//   AND parentId = '$parentId'
-//   AND isDeleted = 0
-//   ";
+function selectChildren($parentId,$userId,$driveId,$conn){
+  $return_arr = array();
+  //ADD FOLDERS AND REPOS
+  $sql="
+  SELECT 
+    d.itemId as itemId,
+    d.label as label,
+    d.parentFolderId as parentFolderId,
+    d.creationDate as creationDate,
+    d.itemType as itemType
+  FROM drive_content AS d
+  WHERE driveId = '$driveId'
+  AND parentFolderId = '$parentId'
+  AND isDeleted = 0
+  ";
 
-//   $result = $conn->query($sql); 
-//   while($row = $result->fetch_assoc()){ 
+  $result = $conn->query($sql); 
+  while($row = $result->fetch_assoc()){ 
 
-//   $item = array(
-//     "id"=>$row['itemId'],
-//     "label"=>$row['label'],
-//     "parentId"=>$parentId,
-//     "creationDate"=>$row['creationDate'],
-//     "type"=>$row['itemType']
-//   );
-//   $return_arr[$row['itemId']] = $item;
-//   // array_push($return_arr, $item);
-//   }
-//   return $return_arr;
-// }
+  $item = array(
+    "id"=>$row['itemId'],
+    "label"=>$row['label'],
+    "parentFolderId"=>$parentId,
+    "creationDate"=>$row['creationDate'],
+    "type"=>$row['itemType']
+  );
+  $return_arr[$row['itemId']] = $item;
+  // array_push($return_arr, $item);
+  }
+  return $return_arr;
+}
 
 
 ?>

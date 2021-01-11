@@ -10,27 +10,26 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
+$title = mysqli_real_escape_string($conn,$_POST["title"]);
+$assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
+$dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
+$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
+$attempsAllowed = mysqli_real_escape_string($conn,$_POST["attempsAllowed"]);
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
-
 
 $success = TRUE;
 $results_arr = array();
 
-$sql="
-INSERT INTO assignment 
-(assignmentId,individualize,multipleAttempts,showSolution,showFeedback,showHints,showCorrectness,proctorMakesAvailable)
-VALUES
-('$assignmentId',0,0,1,1,1,1,0)
-";
+$sql="UPDATE assignment SET title='$title',assignedDate='$assignedDate',dueDate='$dueDate',numberOfAttemptsAllowed='$attempsAllowed' WHERE assignmentId='$assignmentId';";
+$result = $conn->query($sql); 
 
-  $result = $conn->query($sql); 
-  $sqlnew="UPDATE drive_content SET assignmentId='$assignmentId' WHERE itemId='$contentId';";
+  $sqlnew="UPDATE drive_content SET assignmentId='$assignmentId' WHERE itemId='$itemId';";
   $result = $conn->query($sqlnew); 
     
   if ($result === TRUE) {
       // set response code - 200 OK
       http_response_code(200);
+      //echo $sql;
   }else {
       echo "Error: " . $sql . "<br>" . $conn->error;
   }
