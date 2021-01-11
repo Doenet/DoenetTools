@@ -2,24 +2,24 @@ import React from "react";
 import styled from "styled-components";
 import { RecoilRoot } from "recoil";
 import NavPanel from "./NavPanel";
-import ContentPanel from "./Contentpanel";
+import ContentPanel from "./ContentPanel";
 import MenuPanel from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
-import { DropTargetsProvider } from "../DropTarget";
+// import { DropTargetsProvider } from "../DropTarget";
 
-import { ReactQueryDevtools } from "react-query-devtools";
-import crypto from 'crypto';
+// import { ReactQueryDevtools } from "react-query-devtools";
+// import crypto from "crypto";
 
-getContentId = ({ code }) => {
-  const hash = crypto.createHash('sha256');
-  if (code === undefined) {
-    return;
-  }
+// getContentId = ({ code }) => {
+//   const hash = crypto.createHash("sha256");
+//   if (code === undefined) {
+//     return;
+//   }
 
-  hash.update(code);
-  let contentId = hash.digest('hex');
-  return contentId;
-}
+//   hash.update(code);
+//   let contentId = hash.digest("hex");
+//   return contentId;
+// };
 
 const queryCache = new QueryCache();
 
@@ -72,7 +72,7 @@ export default function Tool(props) {
     } else {
       //Only one child
       if (implementedToolParts.includes(props.children.type)) {
-        let newProps = { ...child.props };
+        let newProps = { ...props.children.props };
         delete newProps.children;
         toolParts[props.children.type] = {
           children: props.children.props.children,
@@ -131,14 +131,16 @@ export default function Tool(props) {
   }
 
   return (
-      <ReactQueryCacheProvider queryCache={queryCache}>
-          <ToolContainer>
-            {navPanel}
-            {headerPanel}
-            <ContentPanel main={mainPanel} support={supportPanel} /> {menuPanel}
-            {/* <ReactQueryDevtools /> */}
-          </ToolContainer>
-          </ReactQueryCacheProvider>
+    <ReactQueryCacheProvider queryCache={queryCache}>
+      <RecoilRoot>
+        <ToolContainer>
+          {navPanel}
+          {headerPanel}
+          <ContentPanel main={mainPanel} support={supportPanel} /> {menuPanel}
+          {/* <ReactQueryDevtools /> */}
+        </ToolContainer>
+      </RecoilRoot>
+    </ReactQueryCacheProvider>
   );
 }
 

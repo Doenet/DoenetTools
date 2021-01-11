@@ -17,54 +17,48 @@ const DragHandle = styled.div`
 `;
 
 export default function ContentPanel({ main, support }) {
-  console.log("=== Content Panel")
-  const handleRef = useRef();
   const wrapperRef = useRef();
   let isDragging = false;
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleMouseDown, false);
-    document.addEventListener("mousemove", handleMouseMove, false);
-    document.addEventListener("mouseup", handleMouseUp, false);
+    // document.addEventListener("mousemove", handleMouseMove, false);
     return () => {
-      document.removeEventListener("mousedown", handleMouseDown, false);
-      document.addEventListener("mousemove", handleMouseMove, false);
-      document.addEventListener("mouseup", handleMouseUp, false);
+      // document.addEventListener("mousemove", handleMouseMove, false);
     };
   });
 
-  const handleMouseDown = (event) => {
-    if (handleRef.current.contains(event.target)) {
-      isDragging = true;
-    }
+  const handleMouseDown = () => {
+    isDragging = true;
   };
 
   const handleMouseMove = (event) => {
     // Don't do anything if dragging flag is false
     if (isDragging) {
-      let mainWidth =
-        (event.clientX - wrapperRef.current.offsetLeft) /
-        (wrapperRef.current.clientWidth / 2); //TODO: this math needs work
-
-      let newColDefn =
-        mainWidth <= 1
-          ? mainWidth + "fr 3px 1fr"
-          : "1fr 3px " + 1 / mainWidth + "fr";
-      wrapperRef.current.style.gridTemplateColumns = newColDefn;
       event.preventDefault();
+      let proportion =
+        (event.clientX - wrapperRef.current.offsetLeft) /
+        wrapperRef.current.clientWidth;
+      let newColDefn = `${proportion}fr 3px ${1 - proportion}fr`;
+
+      wrapperRef.current.style.gridTemplateColumns = newColDefn;
     }
   };
 
-  const handleMouseUp = (event) => {
+  const handleMouseUp = () => {
     if (isDragging) {
       isDragging = false;
     }
   };
 
   return (
-    <ContentPanelContainer ref={wrapperRef}>
+    <ContentPanelContainer
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseUp}
+      ref={wrapperRef}
+    >
       {main}
-      <DragHandle ref={handleRef} />
+      <DragHandle onMouseDown={handleMouseDown} />
       {support}
     </ContentPanelContainer>
   );
