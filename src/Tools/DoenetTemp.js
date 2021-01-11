@@ -24,6 +24,7 @@ import {
 } from 'recoil';
 
 import Drive from '../imports/Drive'
+import AddItem from '../imports/AddItem'
 
 
 
@@ -39,6 +40,7 @@ function Demo(){
 
   return <>
 
+  <AddItem />
   {/* <Drive types={['course']} /> */}
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
 

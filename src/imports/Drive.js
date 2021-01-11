@@ -54,13 +54,6 @@ const dragStateAtom = atom({
   }
 })
 
-// const fetchDrives = async ()=>{
-//   const { data } = await axios.get(
-//     `/api/loadAvailableDrives.php`
-//   );
-//   return data.driveIdsAndLabels;
-// }
-
 let fetchDrivesQuery = selector({
   key:"fetchDrivesQuery",
   get: async ({get})=>{
@@ -73,8 +66,8 @@ let fetchDrivesQuery = selector({
 })
 
 export default function Drive(props){
-  const isNav = useContext(IsNavContext);
   console.log("=== Drive")
+  const isNav = useContext(IsNavContext);
 
   const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
   if (drivesAvailable.state === "loading"){ return null;}
@@ -144,25 +137,25 @@ let folderDictionary = atomFamily({
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
       console.log(">>>driveInfo",driveInfo)
       let defaultOrder = [];
-      let folderContents = {};
+      let contentsDictionary = {};
       let folderInfo = {};
       for (let item of driveInfo.results){
         if (item.parentFolderId === driveIdFolderId.folderId){
           defaultOrder.push(item.itemId);
-          folderContents[item.itemId] = item;
+          contentsDictionary[item.itemId] = item;
         }
         if (item.itemId === driveIdFolderId.folderId){
           folderInfo = item;
         }
       }
   
-      return {folderInfo,folderContents,defaultOrder}
+      return {folderInfo,contentsDictionary,defaultOrder}
     } 
   })
 })
 
 
-let folderDictionarySelector = selectorFamily({
+export let folderDictionarySelector = selectorFamily({
   //{driveId,folderId}
   get:(driveIdFolderId)=>({get})=>{
     return get(folderDictionary(driveIdFolderId));
@@ -222,7 +215,6 @@ function DriveRouted(props){
   </>
 }
 
-
 function Folder(props){
   console.log("=== Folder")
   // console.log(props)
@@ -236,7 +228,7 @@ function Folder(props){
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
   if (isOpen){
-    let dictionary = folderInfo.contents.folderContents;
+    let dictionary = folderInfo.contents.contentsDictionary;
     let items = [];
     for (let itemId of folderInfo.contents.defaultOrder){
       let item = dictionary[itemId];
