@@ -23,15 +23,44 @@ import {
   useRecoilValue,
 } from 'recoil';
 
+import {folderDictionarySelector} from './Drive';
 
 
 export default function AddItem(props){
   console.log("=== AddItem")
-  return <div>AddItem</div>
-        //   <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
-        //    <Route path="/" render={(routeprops)=>
-        //    <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
-        //    }></Route>
-        //  </Switch></Router></React.Fragment>)
+
+    return  <Router ><Switch>
+           <Route path="/" render={(routeprops)=>
+           <AddItemRouted route={{...routeprops}} />
+           }></Route>
+         </Switch></Router>
        
+}
+
+function AddItemRouted(props){
+  console.log("=== AddItemRouted")
+  
+  // console.log(props)
+  //TODO: driveId and folderId come from route
+  const driveId = "ZLHh5s8BWM2azTVFhazIH";
+  const folderId = "ZLHh5s8BWM2azTVFhazIH";
+  const selectedItemId = "f2";
+  const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId,folderId}))
+
+
+  const [label,setLabel] = useState("")
+  return <div><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)}/>
+  <button onClick={()=>{setFolderInfo({
+    instructionType:"addItem",
+    label,
+    selectedItemId,
+    itemType:"Folder"
+    });setLabel("")}}>Add Folder</button>
+    <button onClick={()=>{setFolderInfo({
+    instructionType:"addItem",
+    label,
+    selectedItemId,
+    itemType:"Url"
+    });setLabel("")}}>Add URL</button>
+  </div>
 }

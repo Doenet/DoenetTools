@@ -102,10 +102,10 @@ export default function Drive(props){
          </Switch></Router>
         }
     }
-    console.warn("Don't have a drive with id ",props.id)
+    console.warn("Don't have a drive with driveId ",props.id)
     return null;
   }else{
-    console.warn("Drive needs types or id defined.")
+    console.warn("Drive needs types or driveId defined.")
     return null;
   }
 }
@@ -155,20 +155,72 @@ let folderDictionary = atomFamily({
 })
 
 
-export let folderDictionarySelector = selectorFamily({
+export const folderDictionarySelector = selectorFamily({
   //{driveId,folderId}
   get:(driveIdFolderId)=>({get})=>{
     return get(folderDictionary(driveIdFolderId));
   },
-  set: (driveIdFolderId) => ({set,get},instructions)=>{
-    console.log(">>>SET ",driveIdFolderId)
-    // set(itemDictionary(driveId),(old)=>{
-    //   console.log("old",old)
-    // console.log(">>>newValue",newValue)
-    // let newObj = {...old}
-    // newObj['newSTuff'] = newValue.data;
-    //   return newObj;
-    // })
+  set: (driveIdFolderId) => async ({set,get},instructions)=>{
+    switch(instructions.instructionType){
+      case "addItem":
+        const dt = new Date();
+        const creationDate = `${
+          dt.getFullYear().toString().padStart(2, '0')}-${
+            (dt.getMonth()+1).toString().padStart(2, '0')}-${
+            dt.getDate().toString().padStart(2, '0')} ${
+          dt.getHours().toString().padStart(2, '0')}:${
+          dt.getMinutes().toString().padStart(2, '0')}:${
+          dt.getSeconds().toString().padStart(2, '0')}`
+        const itemId = nanoid();
+        const newItem = {
+          assignmentId: null,
+          branchId: null,
+          contentId: null,
+          creationDate,
+          isPublished: "0",
+          itemId,
+          itemType: instructions.itemType,
+          label: instructions.label,
+          parentFolderId: driveIdFolderId.folderId,
+          url: null,
+          urlDescription: null,
+          urlId: null
+        }
+        set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = {...old}
+        newObj.contentsDictionary = {...old.contentsDictionary}
+        newObj.contentsDictionary[itemId] = newItem;
+        newObj.defaultOrder = [...old.defaultOrder];
+        let index = newObj.defaultOrder.indexOf(instructions.selectedItemId);
+        newObj.defaultOrder.splice(index+1,0,itemId);
+        return newObj;
+        })
+        if (instructions.itemType === "Folder"){
+          //If a folder set folderInfo and zero items
+          set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}),{
+            folderInfo:newItem,contentsDictionary:{},defaultOrder:[]
+          })
+        }
+        const data = { 
+          driveId:driveIdFolderId.driveId,
+          parentFolderId:driveIdFolderId.folderId,
+          itemId,
+          label:instructions.label,
+          type:instructions.itemType
+         };
+        const payload = { params: data };
+
+        axios.get('/api/AddItem.php', payload)
+        .then(resp=>{
+          console.log(">>>resp",resp)
+          //Not sure how to handle errors when saving data yet
+          // throw Error("made up error")
+        })
+      break;
+      default:
+        console.warn(`Intruction ${instructions.instructionType} not currently handled`)
+    }
+    
   }
   // set:(setObj,newValue)=>({set,get})=>{
   //   console.log("setObj",setObj,newValue);
@@ -239,9 +291,9 @@ function Folder(props){
       }
     }
   return <>
-  <div>{openCloseButton} Folder {props.folderId} (i</div>
+  <div>{openCloseButton} Folder {folderInfo.contents.folderInfo?.label} ({folderInfo.contents.defaultOrder.length})</div>
   {items}
   </>
   }
-  return <div>{openCloseButton} Folder {props.folderId}</div>
+  return <div>{openCloseButton} Folder {folderInfo.contents.folderInfo?.label} ({folderInfo.contents.defaultOrder.length})</div>
 }
