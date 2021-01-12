@@ -85,7 +85,7 @@ export default function Drive(props){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
+           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav}  driveObj={driveObj}/>
            }></Route>
          </Switch></Router></React.Fragment>)
         }
@@ -97,7 +97,7 @@ export default function Drive(props){
         if (driveObj.driveId === props.driveId){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
+           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} driveObj={driveObj}/>
            }></Route>
          </Switch></Router>
         }
@@ -262,8 +262,8 @@ function DriveRouted(props){
 
 
   return <>
-  <div>{props.label}</div>
-  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}/>
+  {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
+  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}  driveObj={props.driveObj}/>
   </>
 }
 
@@ -275,13 +275,27 @@ function Folder(props){
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   // const folderInfo = useRecoilValueLoadable(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
   // const folderInfo = useRecoilValue(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
-  // console.log(">>>folderInfo",folderInfo)
+  console.log(">>>folderInfo",folderInfo)
+
+  
 
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
-  if (isOpen){
+  let label = folderInfo.contents.folderInfo?.label;
+  console.log(">>>label",label)
+  let folder = <div>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div>
+  let items = null;
+  if (props.driveObj){
+    //Root of Drive
+    // console.log(">>>props.driveObj",props.driveObj)
+    label = props.driveObj.label;
+    folder = <div>Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+  }
+
+  if (isOpen || props.driveObj){
     let dictionary = folderInfo.contents.contentsDictionary;
-    let items = [];
+    items = [];
+    console.log(">>>folderInfo.contents.defaultOrder",folderInfo.contents.defaultOrder)
     for (let itemId of folderInfo.contents.defaultOrder){
       let item = dictionary[itemId];
       if (item.itemType === "Folder"){
@@ -290,10 +304,9 @@ function Folder(props){
         items.push(<div key={`item${itemId}`}>{item.itemType} {item.label}</div>)
       }
     }
+  }
   return <>
-  <div>{openCloseButton} Folder {folderInfo.contents.folderInfo?.label} ({folderInfo.contents.defaultOrder.length})</div>
+  {folder}
   {items}
   </>
-  }
-  return <div>{openCloseButton} Folder {folderInfo.contents.folderInfo?.label} ({folderInfo.contents.defaultOrder.length})</div>
 }
