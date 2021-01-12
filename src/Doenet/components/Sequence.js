@@ -1,9 +1,12 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import me from 'math-expressions';
 import { findFiniteNumericalValue } from '../utils/math';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
+
+  static assignNamesToReplacements = true;
 
   static modifySharedParameters({ sharedParameters }) {
     sharedParameters.defaultToPrescribedParameters = true;
@@ -191,15 +194,17 @@ export default class Sequence extends CompositeComponent {
             newValues: { typeOfFrom: null }
           }
         }
-        if(dependencyValues.fromChild[0].stateValues.value === null) {
+        if (dependencyValues.fromChild[0].stateValues.value === null) {
           // if have a from child, but its value is null,
           // it means we have an invalid from
           // Can't return null, as that indicates value wasn't specified
           // so return NaN
-          return {newValues: {
-            specifiedFrom: NaN,
-            typeOfFrom: null
-          }}
+          return {
+            newValues: {
+              specifiedFrom: NaN,
+              typeOfFrom: null
+            }
+          }
         }
         return {
           newValues: {
@@ -231,15 +236,17 @@ export default class Sequence extends CompositeComponent {
             newValues: { typeOfTo: null }
           }
         }
-        if(dependencyValues.toChild[0].stateValues.value === null) {
+        if (dependencyValues.toChild[0].stateValues.value === null) {
           // if have a to child, but its value is null,
           // it means we have an invalid to
           // Can't return null, as that indicates value wasn't specified
           // so return NaN
-          return {newValues: {
-            specifiedTo: NaN,
-            typeOfTo: null
-          }}
+          return {
+            newValues: {
+              specifiedTo: NaN,
+              typeOfTo: null
+            }
+          }
         }
         return {
           newValues: {
@@ -300,14 +307,16 @@ export default class Sequence extends CompositeComponent {
             }
           }
         }
-        if(dependencyValues.countChild[0].stateValues.value === null) {
+        if (dependencyValues.countChild[0].stateValues.value === null) {
           // if have a count child, but its value is null,
           // it means we have an invalid count
           // Can't return null, as that indicates value wasn't specified
           // so return NaN
-          return {newValues: {
-            specifiedCount: NaN,
-          }}
+          return {
+            newValues: {
+              specifiedCount: NaN,
+            }
+          }
         }
         return { newValues: { specifiedCount: dependencyValues.countChild[0].stateValues.value } }
       },
@@ -338,14 +347,16 @@ export default class Sequence extends CompositeComponent {
         }
 
         let step = dependencyValues.stepChild[0].stateValues.value;
-        if(step === null) {
+        if (step === null) {
           // if have a step child, but its value is null,
           // it means we have an invalid step
           // Can't return null, as that indicates value wasn't specified
           // so return NaN
-          return {newValues: {
-            specifiedStep: NaN,
-          }}
+          return {
+            newValues: {
+              specifiedStep: NaN,
+            }
+          }
         }
         return { newValues: { specifiedStep: step } };
       },
@@ -467,7 +478,7 @@ export default class Sequence extends CompositeComponent {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
-          } else if(Number.isNaN(dependencyValues.specifiedFrom)) {
+          } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
             console.log("Invalid from of sequence")
             validSequence = false;
           }
@@ -481,7 +492,7 @@ export default class Sequence extends CompositeComponent {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
-          } else if(Number.isNaN(dependencyValues.specifiedTo)) {
+          } else if (Number.isNaN(dependencyValues.specifiedTo)) {
             console.log("Invalid to of sequence")
             validSequence = false;
           }
@@ -782,7 +793,7 @@ export default class Sequence extends CompositeComponent {
     }
   }
 
-  static createSerializedReplacements({ component, workspace }) {
+  static createSerializedReplacements({ component, workspace, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
@@ -798,6 +809,7 @@ export default class Sequence extends CompositeComponent {
         selectedType: null,
         exclude: null,
       }
+      workspace.nEmptiesAdded = 0;
       return { replacements: [] };
     }
 
@@ -848,10 +860,20 @@ export default class Sequence extends CompositeComponent {
     // console.log(`replacements for ${component.componentName}`)
     // console.log(replacements)
 
-    return { replacements };
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    workspace.nEmptiesAdded = processResult.nEmptiesAdded;
+
+    return { replacements: processResult.serializedComponents };
   }
 
-  static calculateReplacementChanges({ component, workspace }) {
+  static calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
 
@@ -893,7 +915,9 @@ export default class Sequence extends CompositeComponent {
     ) {
 
       // calculate new serialized replacements
-      let newSerializedReplacements = this.createSerializedReplacements({ component, workspace }).replacements;
+      let newSerializedReplacements = this.createSerializedReplacements({
+        component, workspace, componentInfoObjects
+      }).replacements;
 
       let replacementInstruction = {
         changeType: "add",
@@ -931,11 +955,9 @@ export default class Sequence extends CompositeComponent {
       // if have fewer replacements than before
       // mark old replacements as hidden
       if (component.stateValues.count < prevCount) {
-        let currentWithheld = component.replacementsToWithhold;
-        if (currentWithheld === undefined) {
-          currentWithheld = 0;
-        }
-        newReplacementsToWithhold = currentWithheld + prevCount - component.stateValues.count;
+
+        // since use number of replacements directly, it accounts for empties
+        newReplacementsToWithhold = component.replacements.length - component.stateValues.count;
 
         let replacementInstruction = {
           changeType: "changeReplacementsToWithhold",
@@ -947,7 +969,12 @@ export default class Sequence extends CompositeComponent {
         numReplacementsToAdd = component.stateValues.count - prevCount;
 
         if (component.replacementsToWithhold > 0) {
-          if (component.replacementsToWithhold >= numReplacementsToAdd) {
+          let nonEmptiesWithheld = component.replacementsToWithhold;
+          if(workspace.nEmptiesAdded) {
+            nonEmptiesWithheld -= workspace.nEmptiesAdded;
+          } 
+
+          if (nonEmptiesWithheld >= numReplacementsToAdd) {
             newReplacementsToWithhold = component.replacementsToWithhold - numReplacementsToAdd;
             numToModify += numReplacementsToAdd;
             prevCount += numReplacementsToAdd;
@@ -960,9 +987,9 @@ export default class Sequence extends CompositeComponent {
             replacementChanges.push(replacementInstruction);
 
           } else {
-            numReplacementsToAdd -= component.replacementsToWithhold;
-            numToModify += component.replacementsToWithhold;
-            prevCount += component.replacementsToWithhold;
+            numReplacementsToAdd -= nonEmptiesWithheld;
+            numToModify += nonEmptiesWithheld;
+            prevCount += nonEmptiesWithheld;
             newReplacementsToWithhold = 0;
             // don't need to send changedReplacementsToWithold instructions
             // since will send add instructions,
@@ -1027,15 +1054,27 @@ export default class Sequence extends CompositeComponent {
           newSerializedReplacements.push(serializedComponent);
         }
 
+        let processResult = processAssignNames({
+          assignNames: component.doenetAttributes.assignNames,
+          serializedComponents: newSerializedReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+          componentInfoObjects,
+          indOffset: prevCount,
+        });
+
+
         let replacementInstruction = {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevCount,
-          numberReplacementsToReplace: 0,
-          serializedReplacements: newSerializedReplacements,
-          replacementsToWithhold: newReplacementsToWithhold,
+          numberReplacementsToReplace: workspace.nEmptiesAdded,
+          serializedReplacements: processResult.serializedComponents,
+          replacementsToWithhold: 0,
+          assignNamesOffset: prevCount
         }
         replacementChanges.push(replacementInstruction);
+        workspace.nEmptiesAdded = processResult.nEmptiesAdded;
       }
     }
 
@@ -1051,7 +1090,11 @@ export default class Sequence extends CompositeComponent {
   }
 
   get allPotentialRendererTypes() {
-    let allPotentialRendererTypes = [this.stateValues.selectedType];
+    let allPotentialRendererTypes = [
+      this.componentInfoObjects.allComponentClasses[
+        this.stateValues.selectedType
+      ].rendererType
+    ];
     return allPotentialRendererTypes;
   }
 

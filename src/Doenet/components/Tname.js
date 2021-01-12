@@ -67,6 +67,24 @@ export default class Tname extends BaseComponent {
       },
     };
 
+    stateVariableDefinitions.targetInactive = {
+      stateVariablesDeterminingDependencies: ["targetComponent"],
+      returnDependencies: ({ stateValues }) => ({
+        targetIsInactiveCompositeReplacement: {
+          dependencyType: "componentStateVariable",
+          componentIdentity: stateValues.targetComponent,
+          variableName: "isInactiveCompositeReplacement"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            targetInactive: dependencyValues.targetIsInactiveCompositeReplacement
+          }
+        }
+      },
+    };
+
     return stateVariableDefinitions;
 
   }

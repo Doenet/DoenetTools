@@ -194,6 +194,7 @@ export default class Core {
       replacementDependenciesByComposite: {},
       childDependenciesByParent: {},
       parentDependenciesByParent: {},
+      namedComponentDependenciesByDeletedComponent: {}
     }
 
     this.unsatisfiedChildLogic = {};
@@ -1124,6 +1125,53 @@ export default class Core {
 
     this.addUnresolvedDependencies({ varsUnresolved, component: newComponent, updatesNeeded });
 
+    if (this.componentIdentityDependencies.namedComponentDependenciesByDeletedComponent[componentName]) {
+      let upDeps = this.upstreamDependencies[componentName];
+
+      for (let dep of this.componentIdentityDependencies.namedComponentDependenciesByDeletedComponent[componentName]) {
+
+        let upComponent = this._components[dep.upstreamComponentName];
+
+        if (!upComponent) {
+          continue;
+        }
+
+        let depInUpstreamComponent = true;
+
+        for (let upVar of dep.upstreamVariableNames) {
+          if (!(upVar in upComponent.state)) {
+            depInUpstreamComponent = false;
+            break;
+          }
+        }
+
+        if (!depInUpstreamComponent) {
+          continue;
+        }
+
+        // TODO: do we need this only for identity?
+
+        let varName = dep.mappedDownstreamVariableName;
+
+        if (dep.dependencyType === "componentIdentity") {
+          varName = "__identity";
+        } else if (!varName in newComponent.state) {
+          continue;
+        }
+
+        if (!upDeps[varName]) {
+          upDeps[varName] = [];
+        }
+        if (!upDeps[varName].includes(dep)) {
+          upDeps[varName].push(dep);
+          delete dep.componentDeleted;
+        }
+
+      }
+
+      delete this.componentIdentityDependencies.namedComponentDependenciesByDeletedComponent[componentName];
+    }
+
     // remove a level from parameter stack;
     this.parameterStack.pop();
 
@@ -1406,18 +1454,23 @@ export default class Core {
         assignNames = component.doenetAttributes.assignNames;
       }
 
-      let processResult = serializeFunctions.processAssignNames({
-        assignNames,
-        serializedComponents: serializedReplacements,
-        assignDirectlyToComposite: component.componentType === "copy",
-        parentName: component.componentName,
-        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-        propVariableObjs: component.stateValues.propVariableObjs,
-        componentTypeByTarget: component.stateValues.componentTypeByTarget,
-        componentInfoObjects: this.componentInfoObjects,
-      });
+      if (assignNames) {
 
-      serializedReplacements = processResult.serializedComponents;
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: serializedReplacements,
+          assignDirectlyToComposite: component.componentType === "copy",
+          parentName: component.componentName,
+          parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+          propVariableObjs: component.stateValues.propVariableObjs,
+          componentTypeByTarget: component.stateValues.componentTypeByTarget,
+          componentInfoObjects: this.componentInfoObjects,
+        });
+
+        component.extraEmpties = processResult.nEmptiesAdded;
+
+        serializedReplacements = processResult.serializedComponents;
+      }
 
       this.createAndSetReplacements({
         component,
@@ -1445,7 +1498,7 @@ export default class Core {
     }
 
     let result = component.constructor.createSerializedReplacements({
-      component,
+      component: this.components[component.componentName],  // to create proxy
       components: this.components,
       workspace: component.replacementsWorkspace,
       componentInfoObjects: this.componentInfoObjects,
@@ -5827,28 +5880,50 @@ export default class Core {
     } else if (dependencyDefinition.dependencyType === "componentStateVariable" ||
       dependencyDefinition.dependencyType === "componentStateVariableComponentType"
     ) {
-      newDep.downstreamComponentName = dependencyDefinition.componentIdentity.componentName;
+      // Ideally one could specify these dependencies with just componentName
+      // rather than componentIdentity, which is {componentName, componentType}.
+      // However, to allow one to map variable aliases right away,
+      // we require that one specifies the componentType at the outset.
+      // The alternative would be to automatically create another level
+      // (another state variablet that determines this dependency?)
+      // that resolves to the componentType.
+      // Instead, any such logic to compute componentType has to be done
+      // in the returnDependencies function of a state variable.
+
       if (dependencyDefinition.variableName === undefined) {
         throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
       }
       newDep.originalDownstreamVariableName = dependencyDefinition.variableName;
-      newDep.mappedDownstreamVariableName = this.substituteAliases({
-        stateVariables: [newDep.originalDownstreamVariableName],
-        componentClass: this.allComponentClasses[dependencyDefinition.componentIdentity.componentType.toLowerCase()]
-      })[0];
+
       newDep.valuesChanged = { [newDep.originalDownstreamVariableName]: { changed: true } };
 
-      let depUp = this.upstreamDependencies[newDep.downstreamComponentName];
-      if (!depUp) {
-        depUp = this.upstreamDependencies[newDep.downstreamComponentName] = {};
-      }
-      if (depUp[newDep.mappedDownstreamVariableName] === undefined) {
-        depUp[newDep.mappedDownstreamVariableName] = [];
-      }
-      depUp[newDep.mappedDownstreamVariableName].push(newDep);
       if (dependencyDefinition.variableOptional) {
         newDep.variableOptional = true;
       }
+
+      if (dependencyDefinition.componentIdentity) {
+        newDep.downstreamComponentName = dependencyDefinition.componentIdentity.componentName;
+
+        newDep.mappedDownstreamVariableName = this.substituteAliases({
+          stateVariables: [newDep.originalDownstreamVariableName],
+          componentClass: this.allComponentClasses[dependencyDefinition.componentIdentity.componentType.toLowerCase()]
+        })[0];
+
+        let depUp = this.upstreamDependencies[newDep.downstreamComponentName];
+        if (!depUp) {
+          depUp = this.upstreamDependencies[newDep.downstreamComponentName] = {};
+        }
+        if (depUp[newDep.mappedDownstreamVariableName] === undefined) {
+          depUp[newDep.mappedDownstreamVariableName] = [];
+        }
+        depUp[newDep.mappedDownstreamVariableName].push(newDep);
+      } else {
+        // if component deleted, we could get no componentIdentity
+        newDep.componentDeleted = true;
+        newDep.downstreamComponentName = null;
+        newDep.mappedDownstreamVariableName = null;
+      }
+
     } else if (dependencyDefinition.dependencyType === "parentStateVariable") {
 
       // if don't have a parent, then just skip
@@ -6133,6 +6208,8 @@ export default class Core {
       // console.log(dep2);
 
     } else if (dependencyDefinition.dependencyType === "componentStateVariableArraySize") {
+      // see comment for componentStateVariable dependencyType
+      // for additional rationale for requiring componentIdentity to resolve aliases
       newDep.downstreamComponentName = dependencyDefinition.componentIdentity.componentName;
       if (dependencyDefinition.variableName === undefined) {
         throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
@@ -7170,7 +7247,9 @@ export default class Core {
 
       let value;
 
-      if (dep.dependencyType === "childStateVariables" ||
+      if (dep.componentDeleted) {
+        value = null;
+      } else if (dep.dependencyType === "childStateVariables" ||
         dep.dependencyType === "childIdentity" ||
         dep.dependencyType === "descendantStateVariables" ||
         dep.dependencyType === "descendantIdentity" ||
@@ -11181,7 +11260,81 @@ export default class Core {
 
       this.deleteAllDownstreamDependencies({ component });
 
+      // record any upstream dependencies that depend directly on componentName
+      // (componentIdentity, componentStateVariable*)
+
+      let namedDepsDeleted = [];
+
+
+      // TODO: if we only have to do this for componentIdentity
+      // then we can simplify below code
+      // and also simplify the restoration code in createChildrenThenComponent
+      // Question: is there a case where the others are needed?
+      // In current examples, componentStateVariables have their dependencies
+      // recalculated whenever the component identity changes
+      // so this code isn't needed.
+
+      for (let varName in this.upstreamDependencies[component.componentName]) {
+
+        let upDeps = this.upstreamDependencies[component.componentName][varName];
+        for (let upDep of upDeps) {
+          if ([
+            "componentIdentity",
+            // "componentStateVariable",
+            // "componentStateVariableComponentType", "componentStateVariableArraySize"
+          ].includes(upDep.dependencyType)) {
+            upDep.componentIdentityChanged = true;
+            upDep.componentDeleted = true;
+            namedDepsDeleted.push(upDep);
+          }
+        }
+      }
+      if (namedDepsDeleted.length > 0) {
+        let allNamedDepsDeleted = this.componentIdentityDependencies.namedComponentDependenciesByDeletedComponent;
+        if (!allNamedDepsDeleted[component.componentName]) {
+          allNamedDepsDeleted[component.componentName] = [];
+        }
+        allNamedDepsDeleted[component.componentName].push(...namedDepsDeleted);
+
+      }
+
+
+
       this.deleteAllUpstreamDependencies({ component, updatesNeeded });
+
+      for (let dep of namedDepsDeleted) {
+        // add back dependency as a placeholder
+        let upComponent = this._components[dep.upstreamComponentName];
+
+        let upCompDownDeps = this.downstreamDependencies[dep.upstreamComponentName]
+
+        for (let varName of dep.upstreamVariableNames) {
+
+          let varDownDeps = upCompDownDeps[varName];
+          if (!varDownDeps) {
+            varDownDeps = upCompDownDeps[varName] = {};
+          }
+
+          if (varDownDeps[dep.dependencyName]) {
+            console.warn(`shouldn't ${dep.dependencyName} be deleted?`)
+          }
+
+          varDownDeps[dep.dependencyName] = dep;
+
+          upComponent.state[varName].forceRecalculation = true;
+
+          this.markStateVariableAndUpstreamDependentsStale({
+            component: upComponent,
+            varName,
+            updatesNeeded,
+          })
+
+          this.recordActualChangeInUpstreamDependencies({
+            component: upComponent,
+            varName
+          })
+        }
+      }
 
       if (!updatesNeeded.deletedStateVariables[component.componentName]) {
         updatesNeeded.deletedStateVariables[component.componentName] = [];
@@ -11338,54 +11491,13 @@ export default class Core {
         if (numberToDelete > 0 && change.changeTopLevelReplacements) {
 
           // delete replacements before creating new replacements so that can reuse componentNames
-          let compositesToDeleteFrom = [component.componentName];
-
-          // gather the name of all shadowing composites, as we'll delete from all their replacements
-          if (component.shadowedBy) {
-            let getShadowingComponents = function (comp) {
-              let shadowingComponents = [];
-              if (comp.shadowedBy) {
-                for (let shadowingComp of comp.shadowedBy) {
-                  shadowingComponents.push(shadowingComp.componentName);
-                  shadowingComponents.push(...getShadowingComponents(shadowingComp));
-                }
-              }
-              return shadowingComponents;
-            }
-
-            compositesToDeleteFrom.push(...getShadowingComponents(component));
-
-          }
-
-          for (let compositeName of compositesToDeleteFrom) {
-
-            let composite = this._components[compositeName];
-
-            // remove the replacements from composite's replacements
-            let replacementsToDelete = composite.replacements.splice(firstIndex, numberToDelete);
-
-            let deleteResults = this.deleteComponents({
-              components: replacementsToDelete,
-              componentChanges,
-              updatesNeeded,
-              compositesBeingExpanded,
-              // sourceOfUpdate: sourceOfUpdate,
-            });
-
-
-            if (deleteResults.success === false) {
-              throw Error("Couldn't delete components on composite update");
-            }
-
-            // note: already assigned to addComponents, above
-            Object.assign(deletedComponents, deleteResults.deletedComponents);
-
-            for (let parent2 of deleteResults.parentsOfDeleted) {
-              parentsOfDeleted.add(parent2.componentName);
-            }
-
-
-          }
+          this.deleteReplacementsFromShadowsThenComposite({
+            change, composite: component,
+            componentChanges, sourceOfUpdate,
+            parentsOfDeleted, deletedComponents, addedComponents,
+            updatesNeeded,
+            compositesBeingExpanded,
+          });
 
         }
 
@@ -11411,7 +11523,6 @@ export default class Core {
           });
 
           newComponents = createResult.components;
-
 
         } else if (change.replacementsWithInstructions) {
           throw Error("no more replacementsWithInstructions")
@@ -11444,6 +11555,9 @@ export default class Core {
             updatesNeeded,
             compositesBeingExpanded,
             currentShadowedBy,
+            assignNamesOffset: change.assignNamesOffset,
+            componentChanges, sourceOfUpdate,
+            parentsOfDeleted, deletedComponents, addedComponents,
           });
 
           Object.assign(newReplacementsByComposite, newReplacementsForShadows)
@@ -11703,12 +11817,25 @@ export default class Core {
       }
     }
 
-    if (change.changeTopLevelReplacements === true) {
+    if (change.changeTopLevelReplacements) {
+
       let firstIndex = change.firstReplacementInd;
       let numberToDelete = change.numberReplacementsToDelete;
-      let replacementsToDelete = composite.replacements.slice(firstIndex, firstIndex + numberToDelete);
+      if (change.changeType === "add") {
+        numberToDelete = change.numberReplacementsToReplace;
+      }
+
+      if (composite.extraEmpties) {
+        let maxInd = Math.min(firstIndex + numberToDelete, composite.replacements.length);
+        let minInd = Math.max(firstIndex, composite.replacements.length - composite.extraEmpties);
+        if (maxInd > minInd) {
+          let nExtraEmptiesToBeDeleted = maxInd - minInd;
+          composite.extraEmpties -= nExtraEmptiesToBeDeleted;
+        }
+      }
+
       // delete from replacements
-      composite.replacements.splice(firstIndex, numberToDelete);
+      let replacementsToDelete = composite.replacements.splice(firstIndex, numberToDelete);
 
       // TODO: why does this delete delete upstream components
       // but the non toplevel delete doesn't?
@@ -11818,6 +11945,9 @@ export default class Core {
     updatesNeeded,
     compositesBeingExpanded,
     currentShadowedBy,
+    assignNamesOffset,
+    componentChanges, sourceOfUpdate,
+    parentsOfDeleted, deletedComponents, addedComponents,
   }) {
 
     let newShadowedBy = calculateAllComponentsShadowing(componentToShadow);
@@ -11848,7 +11978,6 @@ export default class Core {
         currentShadowedBy[shadowingComponent.componentName] = calculateAllComponentsShadowing(shadowingComponent);
       }
 
-
       if (shadowingComponent.isExpanded) {
 
         let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
@@ -11856,6 +11985,75 @@ export default class Core {
           serializedComponents: newSerializedReplacements,
           componentName: shadowingComponent.shadows.compositeName
         });
+
+
+        let assignNames;
+        if (shadowingComponent.doenetAttributes) {
+          assignNames = shadowingComponent.doenetAttributes.assignNames;
+        }
+
+        if (assignNames) {
+          let processResult = serializeFunctions.processAssignNames({
+            assignNames,
+            indOffset: assignNamesOffset,
+            serializedComponents: newSerializedReplacements,
+            assignDirectlyToComposite: shadowingComponent.componentType === "copy",
+            parentName: shadowingComponent.componentName,
+            parentCreatesNewNamespace: shadowingComponent.doenetAttributes.newNamespace,
+            propVariableObjs: shadowingComponent.stateValues.propVariableObjs,
+            componentTypeByTarget: shadowingComponent.stateValues.componentTypeByTarget,
+            componentInfoObjects: this.componentInfoObjects,
+          });
+
+          newSerializedReplacements = processResult.serializedComponents;
+
+          // it is possible that some of the added empties that are already
+          // on the composite have the same name as the new components
+          // If so, delete the component so that don't create component
+          // with duplicate name
+
+          let namesToBeAdded = newSerializedReplacements.map(x => x.doenetAttributes.prescribedName);
+
+          let replacementNames = shadowingComponent.replacements.map(x => x.doenetAttributes.prescribedName);
+
+          for (let i = namesToBeAdded.length - 1; i >= 0; i--) {
+            let newName = namesToBeAdded[i];
+            let repInd = replacementNames.indexOf(newName);
+
+            if (repInd !== -1) {
+              let newRep = newSerializedReplacements[i];
+              if (newRep.componentType === "empty") {
+                newSerializedReplacements.splice(i, 1);
+              } else {
+                let compToDelete = shadowingComponent.replacements.splice(repInd, 1);
+
+                replacementNames = shadowingComponent.replacements.map(x => x.doenetAttributes.prescribedName);
+
+                let deleteResults = this.deleteComponents({
+                  components: compToDelete,
+                  componentChanges,
+                  sourceOfUpdate,
+                  updatesNeeded,
+                });
+
+                if (deleteResults.success === false) {
+                  throw Error("Couldn't delete components on composite update");
+                }
+
+                for (let parent of deleteResults.parentsOfDeleted) {
+                  parentsOfDeleted.add(parent.componentName);
+                  updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
+                }
+
+                Object.assign(deletedComponents, deleteResults.deletedComponents);
+                Object.assign(addedComponents, deleteResults.addedComponents);
+
+                shadowingComponent.extraEmpties--;
+
+              }
+            }
+          }
+        }
 
         let newComponents;
 
@@ -11906,6 +12104,9 @@ export default class Core {
             updatesNeeded,
             compositesBeingExpanded,
             currentShadowedBy,
+            assignNamesOffset,
+            componentChanges, sourceOfUpdate,
+            parentsOfDeleted, deletedComponents, addedComponents,
           })
           Object.assign(newComponentsForShadows, recursionComponents);
         }
@@ -11923,18 +12124,25 @@ export default class Core {
 
   }
 
-  adjustReplacementsToWithhold(component, change, componentChanges) {
+  adjustReplacementsToWithhold(component, change, componentChanges, extraEmpties = 0) {
+
+    let replacementsToWithhold = change.replacementsToWithhold;
+
+    if (replacementsToWithhold && extraEmpties) {
+      replacementsToWithhold += extraEmpties;
+    }
+
     let changeInReplacementsToWithhold;
     if (component.replacementsToWithhold !== undefined) {
-      changeInReplacementsToWithhold = change.replacementsToWithhold - component.replacementsToWithhold;
+      changeInReplacementsToWithhold = replacementsToWithhold - component.replacementsToWithhold;
     }
     else {
-      changeInReplacementsToWithhold = change.replacementsToWithhold;
+      changeInReplacementsToWithhold = replacementsToWithhold;
     }
     if (changeInReplacementsToWithhold < 0) {
       // Note: don't subtract one of this last ind, as slice doesn't include last ind
-      let lastIndToStopWithholding = component.replacements.length - change.replacementsToWithhold;
-      let firstIndToStopWithholding = component.replacements.length - change.replacementsToWithhold + changeInReplacementsToWithhold;
+      let lastIndToStopWithholding = component.replacements.length - replacementsToWithhold;
+      let firstIndToStopWithholding = component.replacements.length - replacementsToWithhold + changeInReplacementsToWithhold;
       let newReplacements = component.replacements.slice(firstIndToStopWithholding, lastIndToStopWithholding);
       let newChange = {
         changeType: "addedReplacements",
@@ -11947,7 +12155,7 @@ export default class Core {
       componentChanges.push(newChange);
     }
     else if (changeInReplacementsToWithhold > 0) {
-      let firstIndToStartWithholding = component.replacements.length - change.replacementsToWithhold;
+      let firstIndToStartWithholding = component.replacements.length - replacementsToWithhold;
       let lastIndToStartWithholding = firstIndToStartWithholding + changeInReplacementsToWithhold;
       let withheldReplacements = component.replacements.slice(firstIndToStartWithholding, lastIndToStartWithholding);
       let withheldNamesByParent = {};
@@ -11969,11 +12177,14 @@ export default class Core {
       };
       componentChanges.push(newChange);
     }
-    component.replacementsToWithhold = change.replacementsToWithhold;
+    component.replacementsToWithhold = replacementsToWithhold;
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
-        this.adjustReplacementsToWithhold(shadowingComponent, change, componentChanges);
+        if (shadowingComponent.extraEmpties) {
+          extraEmpties += shadowingComponent.extraEmpties;
+        }
+        this.adjustReplacementsToWithhold(shadowingComponent, change, componentChanges, extraEmpties);
       }
     }
 

@@ -122,9 +122,38 @@ export default class Copy extends CompositeComponent {
             }
           }
         }
-        return { newValues: { targetComponent: dependencyValues.tnameChild[0].stateValues.targetComponent } }
+        return {
+          newValues: {
+            targetComponent: dependencyValues.tnameChild[0].stateValues.targetComponent
+          }
+        }
       },
     };
+
+    stateVariableDefinitions.targetInactive = {
+      returnDependencies: () => ({
+        tnameChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneTname",
+          variableNames: ["targetInactive"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.tnameChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              targetInactive: { variablesToCheck: "targetInactive" }
+            }
+          }
+        }
+        return {
+          newValues: {
+            targetInactive: dependencyValues.tnameChild[0].stateValues.targetInactive
+          }
+        }
+
+      }
+    }
 
     stateVariableDefinitions.contentId = {
       returnDependencies: () => ({
@@ -279,10 +308,9 @@ export default class Copy extends CompositeComponent {
         let targetClass = componentInfoObjects.allComponentClasses[stateValues.targetComponent.componentType];
 
         let dependencies = {
-          targetIsInactiveCompositeReplacement: {
-            dependencyType: "componentStateVariable",
-            componentIdentity: stateValues.targetComponent,
-            variableName: "isInactiveCompositeReplacement"
+          targetInactive: {
+            dependencyType: "stateVariable",
+            variableName: "targetInactive"
           }
         };
 
@@ -309,7 +337,7 @@ export default class Copy extends CompositeComponent {
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
         let effectiveTargetClasses;
-        if (dependencyValues.targetIsInactiveCompositeReplacement) {
+        if (dependencyValues.targetInactive) {
           effectiveTargetClasses = [];
         } else if (dependencyValues.targetComponent) {
           effectiveTargetClasses = [componentInfoObjects.allComponentClasses[dependencyValues.targetComponent.componentType]]
@@ -783,19 +811,28 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       stateVariablesDeterminingDependencies: [
-        "targetName", "propVariableObjs", "componentIdentitiesForProp"
+        "targetComponent", "propVariableObjs", "componentIdentitiesForProp"
       ],
       returnDependencies: function ({ stateValues }) {
-        if (!stateValues.targetName) {
+        if (!stateValues.targetComponent) {
           return {};
         }
 
-        let dependencies = {}
+        let dependencies = {
+          targetComponent: {
+            dependencyType: "stateVariable",
+            variableName: "targetComponent"
+          },
+          targetInactive: {
+            dependencyType: "stateVariable",
+            variableName: "targetInactive"
+          }
+        }
 
         if (stateValues.propVariableObjs === null) {
           dependencies.targetDescendantIdentity = {
             dependencyType: "componentDescendantIdentity",
-            ancestorName: stateValues.targetName,
+            ancestorName: stateValues.targetComponent.componentName,
             componentTypes: ["_base"],
             useReplacementsForComposites: false,
             includeNonActiveChildren: false,
@@ -1422,8 +1459,6 @@ export default class Copy extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
-
 
     // TODO: determine how to calculate replacement changes with new conventions
 
@@ -1519,6 +1554,31 @@ export default class Copy extends CompositeComponent {
     //   }
     // }
 
+
+    if (component.stateValues.targetInactive) {
+      let nReplacements = component.replacements.length;
+      if (nReplacements > 0) {
+        if (component.replacementsToWithhold !== nReplacements) {
+          let replacementInstruction = {
+            changeType: "changeReplacementsToWithhold",
+            replacementsToWithhold: nReplacements,
+          };
+          replacementChanges.push(replacementInstruction);
+        }
+      }
+
+      return replacementChanges;
+    }
+
+    if (component.replacementsToWithhold > 0) {
+      let replacementInstruction = {
+        changeType: "changeReplacementsToWithhold",
+        replacementsToWithhold: 0,
+      };
+      replacementChanges.push(replacementInstruction);
+    }
+
+
     // if copy determined by prop
     // don't change replacements
     // unless have an array
@@ -1535,7 +1595,7 @@ export default class Copy extends CompositeComponent {
       });
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames,
+        assignNames: component.doenetAttributes.assignNames,
         serializedComponents: results.serializedReplacements,
         // assignDirectlyToComposite: true, 
         parentName: component.componentName,
@@ -1602,6 +1662,7 @@ export default class Copy extends CompositeComponent {
 
       workspace.propVariablesCopiedByReplacement = propVariablesCopiedByReplacement;
 
+      // console.log(`replacementChanges for ${component.componentName}`)
       // console.log(replacementChanges);
       return replacementChanges;
     }
@@ -1635,6 +1696,8 @@ export default class Copy extends CompositeComponent {
     }
 
 
+    // console.log(`replacementChanges for ${component.componentName}`)
+    // console.log(replacementChanges)
     return replacementChanges;
 
 
