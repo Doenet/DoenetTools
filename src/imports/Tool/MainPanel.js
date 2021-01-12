@@ -20,7 +20,7 @@ const HeaderDiv = styled.div`
 `;
 
 export default function MainPanel(props) {
-  const [showHideSupportPanel, setshowHideSupportPanel] = useState(false);
+  const [showHideSupportPanel, setshowHideSupportPanel] = useState(props.initSupportPanelOpen ? true : false);
   const [showHideOverlay, setShowHideOverlay] = useState(false);
   const [activeHeaderPanelContent, setActiveHeaderPanelContent] = useState();
   const [headerCtrlGrpWidth, setHeaderCtrlGrpWidth] = useState(0);
@@ -99,10 +99,6 @@ export default function MainPanel(props) {
     setshowHideSupportPanel(!showHideSupportPanel);
   };
 
-  const showNavPanel = () => {
-    props.hideNavPanel(false);
-  };
-
   const showHideOverLayFunc = (obj) => {
     // console.log(obj, "Clciked object ");
     // setClickedButtonObj(obj);
@@ -144,25 +140,6 @@ export default function MainPanel(props) {
   return (
     <>
       <MainPanelDiv>
-        {props.showHideNavPanel !== undefined && props.showHideNavPanel ? (
-          <button
-            onClick={() => {
-              showNavPanel();
-            }}
-            className="middleLeftButton circle"
-          >
-            <FontAwesomeIcon
-              icon={faBars}
-              style={{
-                display: "block",
-                alignSelf: "center",
-                fontSize: "16px",
-              }}
-            />
-          </button>
-        ) : (
-          ""
-        )}
         <div>
           <div
             style={{
@@ -223,14 +200,14 @@ export default function MainPanel(props) {
           </div>
         </div>
       </MainPanelDiv>
-        {props.fromOverlayNew === undefined ? (
-          <HeaderDiv>
+      {props.fromOverlayNew === undefined ? (
+        <HeaderDiv>
           <div
             style={{
               display: "flex ",
               borderBottom: "1px solid black",
               width: "100%",
-              height: "100%"
+              height: "100%",
             }}
           >
             <div style={{ width: "135px", margin: "2px", padding: "4px" }}>
@@ -295,7 +272,7 @@ export default function MainPanel(props) {
                   ""
                 )}
                 <div style={{ marginLeft: "auto" }}>
-                  <Switch onChange={onSwitchClick} />
+                  <Switch onChange={onSwitchClick} checked={showHideSupportPanel}/>
                 </div>
               </div>
             </div>
@@ -348,10 +325,10 @@ export default function MainPanel(props) {
             }}
             body={activeHeaderPanelContent}
           />
-          </HeaderDiv>
-        ) : (
-          ""
-        )}
+        </HeaderDiv>
+      ) : (
+        ""
+      )}
     </>
   );
 }

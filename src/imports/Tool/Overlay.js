@@ -51,7 +51,7 @@ const OverlayContent = styled.div`
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: auto 1fr 240px;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: 60px 1fr;
   grid-template-areas: "navPanel header menuPanelHeader" "navPanel mainPanel menuPanel";
   overflow: scroll;
@@ -115,18 +115,10 @@ const Container = styled.div`
 export default function Overlay(props) {
   //console.log(props.responsiveControls, "props.responsiveControls in tool");
   const [supportPanelObj, setSupportPanelObj] = React.useState({});
-  const [navPanelObj, setNavPanelObj] = React.useState(null);
-  const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
   const [headerCtrlGrpWidth, setHeaderCtrlGrpWidth] = useState(0);
   const [headerCtrlGroupEl, setHeaderCtrlGroupEl] = useState(null);
   const [activeHeaderPanelContent, setActiveHeaderPanelContent] = useState();
   const [showHideSupportPanel, setshowHideSupportPanel] = useState(false);
-
-  const hideNavPanel = (showHideNavPanelFlag) => {
-    if (showHideNavPanelFlag !== undefined) {
-      setShowHideNavPanel(showHideNavPanelFlag);
-    }
-  };
 
   const onSwitchClick = () => {
     setshowHideSupportPanel(!showHideSupportPanel);
@@ -154,16 +146,6 @@ export default function Overlay(props) {
             React.cloneElement(obj, {
               responsiveControls: obj.props.responsiveControls,
             })
-          );
-        }
-        if (
-          obj &&
-          obj.type &&
-          typeof obj.type === "function" &&
-          obj.type.name === "NavPanel"
-        ) {
-          setNavPanelObj(
-            React.cloneElement(obj, { hideNavPanel: hideNavPanel })
           );
         }
       });
@@ -295,13 +277,13 @@ export default function Overlay(props) {
                     showHideOverlayFromOverlayNew: showHideSupportPanel,
                     responsiveControlsFromTools: props.responsiveControls,
                     responsiveControls: obj.props.responsiveControls,
-                    hideNavPanel: hideNavPanel,
-                    showHideNavPanel: showHideNavPanel,
                     onUndo: props.onUndo,
                     onRedo: props.onRedo,
                     title: props.title,
                     supportPanelObj: supportPanelObj,
+                    initSupportPanelOpen: props.initSupportPanelOpen,
                     headerMenuPanels: props.headerMenuPanels,
+                    key: index,
                   });
                 case "SupportPanel":
                   return null;
@@ -316,8 +298,6 @@ export default function Overlay(props) {
                   fromOverlayNew: true,
                   responsiveControlsFromTools: props.responsiveControls,
                   responsiveControls: props.children.props.responsiveControls,
-                  hideNavPanel: hideNavPanel,
-                  showHideNavPanel: showHideNavPanel,
                   onUndo: props.onUndo,
                   onRedo: props.onRedo,
                   title: props.title,
