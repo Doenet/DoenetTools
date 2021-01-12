@@ -42,7 +42,8 @@ function Demo(){
 
   <AddItem />
   {/* <Drive types={['course']} /> */}
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} />
+  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' /> */}
 
   </>
 }

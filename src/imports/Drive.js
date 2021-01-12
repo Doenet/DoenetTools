@@ -85,7 +85,7 @@ export default function Drive(props){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav}  driveObj={driveObj}/>
+           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
            }></Route>
          </Switch></Router></React.Fragment>)
         }
@@ -97,7 +97,7 @@ export default function Drive(props){
         if (driveObj.driveId === props.driveId){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} driveObj={driveObj}/>
+           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
            }></Route>
          </Switch></Router>
         }
@@ -153,7 +153,6 @@ let folderDictionary = atomFamily({
     } 
   })
 })
-
 
 export const folderDictionarySelector = selectorFamily({
   //{driveId,folderId}
@@ -228,14 +227,10 @@ export const folderDictionarySelector = selectorFamily({
   // }
 })
 
-
 function DriveRouted(props){
   console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-  // const [folderInfo,setFolderInfo] = useRecoilStateLoadable(itemDictionarySelector(props.driveId))
-  // useEffect(()=>{
 
-  // },[])
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
     console.error(driveInfo.contents)
@@ -263,39 +258,34 @@ function DriveRouted(props){
 
   return <>
   {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
-  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}  driveObj={props.driveObj}/>
+  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}  driveObj={props.driveObj} rootCollapsible={props.rootCollapsible}/>
   </>
 }
 
 function Folder(props){
   console.log("=== Folder")
-  // console.log(props)
+
   const [isOpen,setIsOpen] = useState(false);
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
-  // const folderInfo = useRecoilValueLoadable(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
-  // const folderInfo = useRecoilValue(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
-  console.log(">>>folderInfo",folderInfo)
-
-  
 
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
   let label = folderInfo.contents.folderInfo?.label;
-  console.log(">>>label",label)
   let folder = <div>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
-    // console.log(">>>props.driveObj",props.driveObj)
     label = props.driveObj.label;
     folder = <div>Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+    if (props.rootCollapsible){
+      folder = <div> {openCloseButton} Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+    }
   }
 
-  if (isOpen || props.driveObj){
+  if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = folderInfo.contents.contentsDictionary;
     items = [];
-    console.log(">>>folderInfo.contents.defaultOrder",folderInfo.contents.defaultOrder)
     for (let itemId of folderInfo.contents.defaultOrder){
       let item = dictionary[itemId];
       if (item.itemType === "Folder"){
