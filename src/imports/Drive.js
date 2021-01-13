@@ -227,6 +227,8 @@ export const folderDictionarySelector = selectorFamily({
   // }
 })
 
+
+
 function DriveRouted(props){
   console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
@@ -261,6 +263,7 @@ function DriveRouted(props){
 
 
   return <>
+  <LogVisible browserId={browserId.current} />
   {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
   <Folder 
   driveId={props.driveId} 
@@ -274,13 +277,24 @@ function DriveRouted(props){
   </>
 }
 
+const visibleDriveItems = atomFamily({
+  key:"visibleDriveItems",
+  default:[]
+})
+
+function LogVisible(props){
+  const visibleItems = useRecoilValue(visibleDriveItems(props.browserId));
+  console.log(">>>>visibleItems",visibleItems)
+  return null;
+}
+
 function Folder(props){
 
   const [isOpen,setIsOpen] = useState(false);
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
-
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
@@ -288,7 +302,33 @@ function Folder(props){
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
  
   let openCloseText = isOpen ? "Close" : "Open";
-  let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
+  let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>{
+    if (isOpen){
+      //Closing so remove items
+      setVisibleItems((old)=>{
+        let newItems = [...old]; 
+        const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
+        const numToRemove = folderInfo.contents.defaultOrder.length
+        newItems.splice(index+1,numToRemove)
+        return newItems;
+      })
+
+    }else{
+      //Opening so add items
+      let itemIds = [];
+    for (let itemId of folderInfo.contents.defaultOrder){
+      itemIds.push(itemId);
+    }
+    setVisibleItems((old)=>{
+      let newItems = [...old]; 
+      const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
+      newItems.splice(index+1,0,...itemIds)
+      return newItems;
+    })
+    
+    }
+    return !isOpen
+  })}>{openCloseText}</button>
   let label = folderInfo?.contents?.folderInfo?.label;
   let folder = <div
       data-doenet-browserid={props.browserId}
@@ -310,6 +350,7 @@ function Folder(props){
   let items = null;
   if (props.driveObj){
     //Root of Drive
+    setVisibleItems([])
     label = props.driveObj.label;
     folder = <div
       data-doenet-browserid={props.browserId}
@@ -346,7 +387,9 @@ function Folder(props){
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = folderInfo.contents.contentsDictionary;
     items = [];
+    let itemIds = [];
     for (let itemId of folderInfo.contents.defaultOrder){
+      itemIds.push(itemId);
       let item = dictionary[itemId];
       switch(item.itemType){
         case "Folder":
@@ -373,6 +416,11 @@ function Folder(props){
       }
  
     }
+    if (props.driveObj){
+      //Inital Items
+      setVisibleItems((old)=>{let newItems = [...old,...itemIds]; return newItems;})
+    }
+
     if (folderInfo.contents.defaultOrder.length === 0){
       items.push(<EmptyNode key={`emptyitem${folderInfo?.contents?.folderInfo?.itemId}`}/>)
     }
