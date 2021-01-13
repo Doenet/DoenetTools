@@ -231,10 +231,14 @@ function DriveRouted(props){
   console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
 
+  let browserId = useRef("");
+
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
     console.error(driveInfo.contents)
     return null;}
+
+  if (browserId.current === ""){ browserId.current = nanoid();}
 
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
@@ -258,28 +262,84 @@ function DriveRouted(props){
 
   return <>
   {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
-  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}  driveObj={props.driveObj} rootCollapsible={props.rootCollapsible}/>
+  <Folder 
+  driveId={props.driveId} 
+  folderId={rootFolderId} 
+  indentLevel={0}  
+  driveObj={props.driveObj} 
+  rootCollapsible={props.rootCollapsible}
+  browserId={browserId.current}
+  isNav={props.isNav}
+  />
   </>
 }
 
 function Folder(props){
-  console.log("=== Folder")
 
   const [isOpen,setIsOpen] = useState(false);
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
 
+  const indentPx = 20;
+  let bgcolor = "#e2e2e2";
+  if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
+  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
+  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+ 
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
-  let label = folderInfo.contents.folderInfo?.label;
-  let folder = <div>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div>
+  let label = folderInfo?.contents?.folderInfo?.label;
+  let folder = <div
+      data-doenet-browserid={props.browserId}
+      tabIndex={0}
+      className="noselect nooutline" 
+      style={{
+        cursor: "pointer",
+        width: "300px",
+        padding: "4px",
+        border: "1px solid black",
+        backgroundColor: bgcolor,
+        margin: "2px",
+      }}>
+        <div 
+      className="noselect" 
+      style={{
+        marginLeft: `${props.indentLevel * indentPx}px`
+      }}>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div></div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
     label = props.driveObj.label;
-    folder = <div>Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+    folder = <div
+      data-doenet-browserid={props.browserId}
+      tabIndex={0}
+      className="noselect nooutline" 
+      style={{
+        cursor: "pointer",
+        width: "300px",
+        padding: "4px",
+        border: "1px solid black",
+        backgroundColor: bgcolor,
+        margin: "2px",
+        marginLeft: `${props.indentLevel * indentPx}px`
+      }}
+    >Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
     if (props.rootCollapsible){
-      folder = <div> {openCloseButton} Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+      folder = <div
+        data-doenet-browserid={props.browserId}
+        tabIndex={0}
+        className="noselect nooutline" 
+        style={{
+          cursor: "pointer",
+          width: "300px",
+          padding: "4px",
+          border: "1px solid black",
+          backgroundColor: bgcolor,
+          margin: "2px",
+          marginLeft: `${props.indentLevel * indentPx}px`
+        }}
+      > {openCloseButton} Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
     }
   }
 
@@ -288,11 +348,33 @@ function Folder(props){
     items = [];
     for (let itemId of folderInfo.contents.defaultOrder){
       let item = dictionary[itemId];
-      if (item.itemType === "Folder"){
-        items.push(<Folder key={`item${itemId}`} driveId={props.driveId} folderId={item.itemId} indentLevel={props.indentLevel+1}/>)
-      }else{
-        items.push(<div key={`item${itemId}`}>{item.itemType} {item.label}</div>)
+      switch(item.itemType){
+        case "Folder":
+        items.push(<Folder 
+          key={`item${itemId}`} 
+          driveId={props.driveId} 
+          folderId={item.itemId} 
+          indentLevel={props.indentLevel+1}  
+          browserId={props.browserId}
+          isNav={props.isNav}
+          />)
+        break;
+        case "Url":
+          items.push(<Url 
+            key={`item${itemId}`} 
+            item={item} 
+            indentLevel={props.indentLevel+1}  
+            browserId={props.browserId}
+            isNav={props.isNav} 
+            />)
+        break;
+        default:
+        console.warn(`Item not rendered of type ${item.itemType}`)
       }
+ 
+    }
+    if (folderInfo.contents.defaultOrder.length === 0){
+      items.push(<EmptyNode key={`emptyitem${folderInfo?.contents?.folderInfo?.itemId}`}/>)
     }
   }
   return <>
@@ -300,3 +382,47 @@ function Folder(props){
   {items}
   </>
 }
+
+
+const EmptyNode =  React.memo(function Node(props){
+
+  return (<div style={{
+    width: "300px",
+    padding: "4px",
+    border: "1px solid black",
+    backgroundColor: "white",
+    margin: "2px",
+  
+  }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
+})
+
+
+const Url = React.memo((props)=>{
+  console.log(`=== 📁 Url`)
+  console.log(">>>item",props)
+  const indentPx = 20;
+  let bgcolor = "#e2e2e2";
+  if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
+  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
+  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+
+  return <div
+      data-doenet-browserid={props.browserId}
+      tabIndex={0}
+      className="noselect nooutline" 
+      style={{
+        cursor: "pointer",
+        width: "300px",
+        padding: "4px",
+        border: "1px solid black",
+        backgroundColor: bgcolor,
+        margin: "2px",
+      }}
+      ><div 
+      className="noselect" 
+      style={{
+        marginLeft: `${props.indentLevel * indentPx}px`
+      }}>
+    Url {props.item?.label}</div></div>
+
+  })
