@@ -4,17 +4,22 @@ import { RecoilRoot } from "recoil";
 import NavPanel from "./NavPanel";
 import ContentPanel from "./Contentpanel";
 import MenuPanel from "./MenuPanel";
-import Drive from "../Drive";
-import {
-  QueryCache,
-  ReactQueryCacheProvider,
-} from 'react-query'
-import {
-  DropTargetsProvider,
-} from '../DropTarget';
+import { QueryCache, ReactQueryCacheProvider } from "react-query";
+import { DropTargetsProvider } from "../DropTarget";
 
-import { ReactQueryDevtools } from 'react-query-devtools'
+import { ReactQueryDevtools } from "react-query-devtools";
+import crypto from 'crypto';
 
+getContentId = ({ code }) => {
+  const hash = crypto.createHash('sha256');
+  if (code === undefined) {
+    return;
+  }
+
+  hash.update(code);
+  let contentId = hash.digest('hex');
+  return contentId;
+}
 
 const queryCache = new QueryCache();
 
@@ -84,16 +89,19 @@ export default function Tool(props) {
   let menuPanel = null;
 
   if (toolParts.navPanel) {
-    navPanel = (
-      <NavPanel>
-        {toolParts.navPanel.children}
-      </NavPanel>
-    );
+    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
   }
 
   if (toolParts.headerPanel) {
     headerPanel = (
-      <div style={{ gridArea: "headerPanel", display: "flex" }}>
+      <div
+        style={{
+          gridArea: "headerPanel",
+          display: "flex",
+          borderLeft: "1px solid black",
+          borderBottom: "1px solid black",
+        }}
+      >
         <h2>Tool</h2>
         {toolParts.headerPanel.children}
       </div>
@@ -119,18 +127,7 @@ export default function Tool(props) {
   }
 
   if (toolParts.menuPanel) {
-    const panels = [];
-    for (let [i, menuPanelToolPart] of Object.entries(toolParts.menuPanel)) {
-      panels.push(
-        <React.Fragment key={`menuPanel${i}`}>
-          <div>
-            <h2>Menu Panel</h2>
-            {menuPanelToolPart.children}
-          </div>
-        </React.Fragment>
-      );
-      menuPanel = <div style={{ gridArea: "menuPanel" }}>{panels}</div>;
-    }
+    menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
   return (
@@ -138,9 +135,8 @@ export default function Tool(props) {
           <ToolContainer>
             {navPanel}
             {headerPanel}
-            <ContentPanel main={mainPanel} support={supportPanel} />{" "}
-            {menuPanel}
-<ReactQueryDevtools />
+            <ContentPanel main={mainPanel} support={supportPanel} /> {menuPanel}
+            {/* <ReactQueryDevtools /> */}
           </ToolContainer>
           </ReactQueryCacheProvider>
   );

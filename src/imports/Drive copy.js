@@ -1,14 +1,11 @@
 import React, {useContext, useState, useCallback, useRef, useEffect} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
-<<<<<<< HEAD
 import {
   useQuery,
   useQueryCache,
   useMutation,
   useInfiniteQuery,
 } from 'react-query'
-=======
->>>>>>> upstream/master
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
@@ -23,29 +20,9 @@ import Draggable from '../imports/Draggable';
 import { BreadcrumbContext } from '../imports/Breadcrumb';
 
 import {
-<<<<<<< HEAD
   atom,
   useRecoilState,
   useSetRecoilState
-=======
-  HashRouter as Router,
-  Switch,
-  Route,
-  useHistory
-} from "react-router-dom";
-
-import {
-  atom,
-  atomFamily,
-  selector,
-  selectorFamily,
-  RecoilRoot,
-  useSetRecoilState,
-  useRecoilValueLoadable,
-  useRecoilStateLoadable,
-  useRecoilState,
-  useRecoilValue,
->>>>>>> upstream/master
 } from 'recoil';
 
 const sortOptions = Object.freeze({
@@ -54,15 +31,12 @@ const sortOptions = Object.freeze({
   "CREATION_DATE_ASC": "creation date ascending",
   "CREATION_DATE_DESC": "creation date descending"
 });
-<<<<<<< HEAD
 import {
   HashRouter as Router,
   Switch,
   Route,
   useHistory
 } from "react-router-dom";
-=======
->>>>>>> upstream/master
 
 export const globalSelectedNodesAtom = atom({
   key:'globalSelectedNodesAtom',
@@ -78,7 +52,6 @@ const dragStateAtom = atom({
   }
 })
 
-<<<<<<< HEAD
 
 export default function Drive(props){
   const isNav = useContext(IsNavContext);
@@ -96,94 +69,42 @@ export default function Drive(props){
       refetchOnMount:false,
       staleTime:600000,
   });
-  if (isFetching){ return null;}
+  if (isFetching || !driveData){ return null;}
 
   if (props.types){
     let drives = [];
     for (let type of props.types){
       for (let driveObj of driveData){
-=======
-let fetchDrivesQuery = selector({
-  key:"fetchDrivesQuery",
-  get: async ({get})=>{
-    const { data } = await axios.get(
-      `/api/loadAvailableDrives.php`
-    );
-    return data
-  },
- 
-})
-
-export default function Drive(props){
-  console.log("=== Drive")
-  const isNav = useContext(IsNavContext);
-
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
-  if (drivesAvailable.state === "loading"){ return null;}
-  if (drivesAvailable.state === "hasError"){ 
-    console.error(drivesAvailable.contents)
-    return null;}
-
-
-  if (props.types){
-
-    let drives = [];
-    for (let type of props.types){
-      for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
->>>>>>> upstream/master
         if (driveObj.type === type){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-<<<<<<< HEAD
            <Browser route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
            }></Route>
          </Switch></Router></React.Fragment>)
           // drives.push(<Browser key={`browser${driveObj.driveId}nav`} drive={driveObj.driveId} label={driveObj.label} isNav={true} DnDState={DnDState}/>)
-=======
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav}  driveObj={driveObj}/>
-           }></Route>
-         </Switch></Router></React.Fragment>)
->>>>>>> upstream/master
         }
       }
     }
     return <>{drives}</>
-<<<<<<< HEAD
   }else if (props.id){
     for (let driveObj of driveData){
         if (driveObj.driveId === props.id){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
            <Browser route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} />
-=======
-  }else if (props.driveId){
-    for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
-        if (driveObj.driveId === props.driveId){
-         return <Router><Switch>
-           <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} driveObj={driveObj}/>
->>>>>>> upstream/master
            }></Route>
          </Switch></Router>
         }
     }
-<<<<<<< HEAD
     console.warn("Don't have a drive with id ",props.id)
     return null;
   }else{
     console.warn("Drive needs types or id defined.")
-=======
-    console.warn("Don't have a drive with driveId ",props.id)
-    return null;
-  }else{
-    console.warn("Drive needs types or driveId defined.")
->>>>>>> upstream/master
     return null;
   }
 }
 
-<<<<<<< HEAD
 const fetchChildrenNodes = async (queryKey,driveId,parentId) => {
 
   if (!parentId){
@@ -215,140 +136,6 @@ const deleteItemMutation = async ({driveId, parentId, itemId}) =>{
 
 function Browser(props){
   console.log(`=== Browser '${props.driveId}' isNav='${props.isNav}'`)
-=======
-let loadDriveInfoQuery = selectorFamily({
-  key:"loadDriveInfoQuery",
-  get: (driveId) => async ({get,set})=>{
-    const { data } = await axios.get(
-      `/api/loadFolderContent.php?driveId=${driveId}&init=true`
-    );
-    // console.log("loadDriveInfoQuery DATA ",data)
-    // let itemDictionary = {};
-    //   for (let item of data.results){
-    //     itemDictionary[item.itemId] = item;
-    //   }
-    //   data["itemDictionary"] = itemDictionary;
-    return data;
-  },
- 
-})
-
-let folderDictionary = atomFamily({
-  key:"folderDictionary",
-  default:selectorFamily({
-    key:"folderDictionary/Default",
-    get:(driveIdFolderId)=>({get})=>{
-      console.log(`=== GET folderDictionary atom ${driveIdFolderId.folderId}`)
-  
-      const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
-      console.log(">>>driveInfo",driveInfo)
-      let defaultOrder = [];
-      let contentsDictionary = {};
-      let folderInfo = {};
-      for (let item of driveInfo.results){
-        if (item.parentFolderId === driveIdFolderId.folderId){
-          defaultOrder.push(item.itemId);
-          contentsDictionary[item.itemId] = item;
-        }
-        if (item.itemId === driveIdFolderId.folderId){
-          folderInfo = item;
-        }
-      }
-  
-      return {folderInfo,contentsDictionary,defaultOrder}
-    } 
-  })
-})
-
-
-export const folderDictionarySelector = selectorFamily({
-  //{driveId,folderId}
-  get:(driveIdFolderId)=>({get})=>{
-    return get(folderDictionary(driveIdFolderId));
-  },
-  set: (driveIdFolderId) => async ({set,get},instructions)=>{
-    switch(instructions.instructionType){
-      case "addItem":
-        const dt = new Date();
-        const creationDate = `${
-          dt.getFullYear().toString().padStart(2, '0')}-${
-            (dt.getMonth()+1).toString().padStart(2, '0')}-${
-            dt.getDate().toString().padStart(2, '0')} ${
-          dt.getHours().toString().padStart(2, '0')}:${
-          dt.getMinutes().toString().padStart(2, '0')}:${
-          dt.getSeconds().toString().padStart(2, '0')}`
-        const itemId = nanoid();
-        const newItem = {
-          assignmentId: null,
-          branchId: null,
-          contentId: null,
-          creationDate,
-          isPublished: "0",
-          itemId,
-          itemType: instructions.itemType,
-          label: instructions.label,
-          parentFolderId: driveIdFolderId.folderId,
-          url: null,
-          urlDescription: null,
-          urlId: null
-        }
-        set(folderDictionary(driveIdFolderId),(old)=>{
-        let newObj = {...old}
-        newObj.contentsDictionary = {...old.contentsDictionary}
-        newObj.contentsDictionary[itemId] = newItem;
-        newObj.defaultOrder = [...old.defaultOrder];
-        let index = newObj.defaultOrder.indexOf(instructions.selectedItemId);
-        newObj.defaultOrder.splice(index+1,0,itemId);
-        return newObj;
-        })
-        if (instructions.itemType === "Folder"){
-          //If a folder set folderInfo and zero items
-          set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}),{
-            folderInfo:newItem,contentsDictionary:{},defaultOrder:[]
-          })
-        }
-        const data = { 
-          driveId:driveIdFolderId.driveId,
-          parentFolderId:driveIdFolderId.folderId,
-          itemId,
-          label:instructions.label,
-          type:instructions.itemType
-         };
-        const payload = { params: data };
-
-        axios.get('/api/AddItem.php', payload)
-        .then(resp=>{
-          console.log(">>>resp",resp)
-          //Not sure how to handle errors when saving data yet
-          // throw Error("made up error")
-        })
-      break;
-      default:
-        console.warn(`Intruction ${instructions.instructionType} not currently handled`)
-    }
-    
-  }
-  // set:(setObj,newValue)=>({set,get})=>{
-  //   console.log("setObj",setObj,newValue);
-
-  // }
-})
-
-
-function DriveRouted(props){
-  console.log("=== DriveRouted")
-  const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-  // const [folderInfo,setFolderInfo] = useRecoilStateLoadable(itemDictionarySelector(props.driveId))
-  // useEffect(()=>{
-
-  // },[])
-  if (driveInfo.state === "loading"){ return null;}
-  if (driveInfo.state === "hasError"){ 
-    console.error(driveInfo.contents)
-    return null;}
-
-  //Use Route to determine path variables
->>>>>>> upstream/master
   let pathFolderId = props.driveId; //default 
   let pathDriveId = props.driveId; //default
   let routePathDriveId = "";
@@ -367,7 +154,6 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
 
-<<<<<<< HEAD
   
   const [sortingOrder, setSortingOrder] = useState("alphabetical label ascending")
   const [driveIsOpen,setDriveIsOpen] = useState(props.driveIdIsOpen?props.driveIdIsOpen:true); //default to open
@@ -1262,7 +1048,7 @@ const LoadingNode =  React.memo(function Node(props){
       className="noselect" 
       style={{
         marginLeft: `${props.level * indentPx}px`
-      }}>[U] {props.label} {deleteNode}</div></div>
+      }}>[D] {props.label} {deleteNode}</div></div>
     
     </>
     }else if (props.type === "Url"){
@@ -1296,7 +1082,7 @@ const LoadingNode =  React.memo(function Node(props){
         className="noselect" 
         style={{
           marginLeft: `${props.level * indentPx}px`
-        }}>[D] {props.label} {deleteNode}</div></div>
+        }}>[U] {props.label} {deleteNode}</div></div>
       
       </>
   }else{
@@ -1387,55 +1173,3 @@ const DragGhost = ({ id, element, numItems }) => {
     </div>
   )
 }
-=======
-
-  return <>
-  {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
-  <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0}  driveObj={props.driveObj}/>
-  </>
-}
-
-function Folder(props){
-  console.log("=== Folder")
-  // console.log(props)
-  const [isOpen,setIsOpen] = useState(false);
-  
-  const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
-  // const folderInfo = useRecoilValueLoadable(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
-  // const folderInfo = useRecoilValue(folderDictionary({driveId:props.driveId,folderId:props.folderId}))
-  console.log(">>>folderInfo",folderInfo)
-
-  
-
-  let openCloseText = isOpen ? "Close" : "Open";
-  let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>!isOpen)}>{openCloseText}</button>
-  let label = folderInfo.contents.folderInfo?.label;
-  console.log(">>>label",label)
-  let folder = <div>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div>
-  let items = null;
-  if (props.driveObj){
-    //Root of Drive
-    // console.log(">>>props.driveObj",props.driveObj)
-    label = props.driveObj.label;
-    folder = <div>Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
-  }
-
-  if (isOpen || props.driveObj){
-    let dictionary = folderInfo.contents.contentsDictionary;
-    items = [];
-    console.log(">>>folderInfo.contents.defaultOrder",folderInfo.contents.defaultOrder)
-    for (let itemId of folderInfo.contents.defaultOrder){
-      let item = dictionary[itemId];
-      if (item.itemType === "Folder"){
-        items.push(<Folder key={`item${itemId}`} driveId={props.driveId} folderId={item.itemId} indentLevel={props.indentLevel+1}/>)
-      }else{
-        items.push(<div key={`item${itemId}`}>{item.itemType} {item.label}</div>)
-      }
-    }
-  }
-  return <>
-  {folder}
-  {items}
-  </>
-}
->>>>>>> upstream/master

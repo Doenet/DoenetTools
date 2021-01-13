@@ -19,7 +19,10 @@ $results_arr = array();
 //make sure the user is supposed to have drive read access
 $sql = "
 SELECT 
+<<<<<<< HEAD
 isShared, 
+=======
+>>>>>>> upstream/master
 canViewDrive, 
 canDeleteDrive, 
 canShareDrive,
@@ -27,12 +30,23 @@ canAddItemsAndFolders,
 canDeleteItemsAndFolders,
 canMoveItemsAndFolders,
 canRenameItemsAndFolders,
+<<<<<<< HEAD
 canChangeAllDriveSettings
 FROM drives
+=======
+canPublishItemsAndFolders,
+canViewUnpublishItemsAndFolders,
+canChangeAllDriveSettings
+FROM drive_user
+>>>>>>> upstream/master
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 $result = $conn->query($sql); 
 
 if ($result->num_rows > 0){
@@ -47,6 +61,11 @@ $perms = array(
     "canDeleteItemsAndFolders"=>$row["canDeleteItemsAndFolders"],
     "canMoveItemsAndFolders"=>$row["canMoveItemsAndFolders"],
     "canRenameItemsAndFolders"=>$row["canRenameItemsAndFolders"],
+<<<<<<< HEAD
+=======
+    "canPublishItemsAndFolders"=>$row["canPublishItemsAndFolders"],
+    "canViewUnpublishItemsAndFolders"=>$row["canViewUnpublishItemsAndFolders"],
+>>>>>>> upstream/master
     "canChangeAllDriveSettings"=>$row["canChangeAllDriveSettings"]
     
   );
@@ -70,6 +89,7 @@ if ($result->num_rows == 0){
 if ($init == 'true'){
   $sql="
   SELECT 
+<<<<<<< HEAD
     d.itemId as itemId,
     d.label as label,
     d.parentId as parentId,
@@ -90,16 +110,60 @@ if ($init == 'true'){
     "parentId"=>$row['parentId'],
     "creationDate"=>$row['creationDate'],
     "type"=>$row['itemType']
+=======
+  dc.itemId as itemId,
+  dc.parentFolderId as parentFolderId,
+  dc.label as label,
+  dc.creationDate as creationDate,
+  dc.isPublished as isPublished,
+  dc.itemType as itemType,
+  dc.branchId as branchId,
+  dc.contentId as contentId,
+  dc.assignmentId as assignmentId,
+  dc.urlId as urlId,
+  u.url as url,
+  u.description as urlDescription
+FROM drive_content AS dc
+LEFT JOIN url AS u
+ON u.urlId = dc.urlId
+  WHERE driveId = '$driveId'
+  AND isDeleted = 0
+  ";
+  $result = $conn->query($sql); 
+  //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
+  while($row = $result->fetch_assoc()){ 
+  $item = array(
+    "itemId"=>$row['itemId'],
+    "parentFolderId"=>$row['parentFolderId'],
+    "label"=>$row['label'],
+    "creationDate"=>$row['creationDate'],
+    "isPublished"=>$row['isPublished'],
+    "itemType"=>$row['itemType'],
+    "branchId"=>$row['branchId'],
+    "contentId"=>$row['contentId'],
+    "assignmentId"=>$row['assignmentId'],
+    "urlId"=>$row['urlId'],
+    "url"=>$row['url'],
+    "urlDescription"=>$row['urlDescription']
+>>>>>>> upstream/master
   );
   array_push($results_arr,$item);
   }
 }else{
 
+<<<<<<< HEAD
   $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
   $children_arr = array_keys($results_arr[$parentId]);
   foreach ($children_arr as &$childId){
     $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
   }
+=======
+  // $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
+  // $children_arr = array_keys($results_arr[$parentId]);
+  // foreach ($children_arr as &$childId){
+  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
+  // }
+>>>>>>> upstream/master
 
 }
 }
@@ -117,6 +181,7 @@ http_response_code(200);
 echo json_encode($response_arr);
 $conn->close();
 
+<<<<<<< HEAD
 function selectChildren($parentId,$userId,$driveId,$conn){
   $return_arr = array();
   //ADD FOLDERS AND REPOS
@@ -148,6 +213,39 @@ function selectChildren($parentId,$userId,$driveId,$conn){
   }
   return $return_arr;
 }
+=======
+// function selectChildren($parentId,$userId,$driveId,$conn){
+//   $return_arr = array();
+//   //ADD FOLDERS AND REPOS
+//   $sql="
+//   SELECT 
+//     d.itemId as itemId,
+//     d.label as label,
+//     d.parentId as parentId,
+//     d.creationDate as creationDate,
+//     d.itemType as itemType
+//   FROM drive AS d
+//   WHERE driveId = '$driveId'
+//   AND parentId = '$parentId'
+//   AND isDeleted = 0
+//   ";
+
+//   $result = $conn->query($sql); 
+//   while($row = $result->fetch_assoc()){ 
+
+//   $item = array(
+//     "id"=>$row['itemId'],
+//     "label"=>$row['label'],
+//     "parentId"=>$parentId,
+//     "creationDate"=>$row['creationDate'],
+//     "type"=>$row['itemType']
+//   );
+//   $return_arr[$row['itemId']] = $item;
+//   // array_push($return_arr, $item);
+//   }
+//   return $return_arr;
+// }
+>>>>>>> upstream/master
 
 
 ?>
