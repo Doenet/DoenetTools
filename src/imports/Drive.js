@@ -454,12 +454,7 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} ({contentIdsArr.length})
-      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})} 
-      </div></div>
+      }}>{openCloseButton} Folder {label} ({contentIdsArr.length})</div></div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
@@ -567,7 +562,17 @@ function Folder(props){
       items.push(<EmptyNode key={`emptyitem${folderInfo?.itemId}`}/>)
     }
   }
+
+  const sortButtons = <>
+    {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
+    {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
+    {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
+    {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
+  </>;
+
+  // TODO: show sortButtons at the top of Drive when not a nav
   return <>
+  {/* {!props.isNav && sortButtons } */}
   {folder}
   {items}
   </>
