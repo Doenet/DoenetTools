@@ -195,15 +195,14 @@ export const folderDictionarySelector = selectorFamily({
           dirty: 0
         }
         set(folderDictionary(driveIdFolderId),(old)=>{
-        let newObj = {...old};
-        newObj.contentsDictionary = {...old.contentsDictionary}
-        newObj.contentsDictionary[itemId] = newItem;
-        newObj.contentIds = {...old.contentIds};
-        let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
-        let index = newDefaultOrder.indexOf(instructions.selectedItemId);
-        newObj.contentIds["defaultOrder"] = newDefaultOrder.splice(index+1,0,itemId);
-        // newObj.folderInfo.dirty = 1;
-        return newObj;
+          let newObj = JSON.parse(JSON.stringify(old));;
+          newObj.contentsDictionary[itemId] = newItem;
+          let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
+          let index = newDefaultOrder.indexOf(instructions.selectedItemId);
+          newDefaultOrder.splice(index+1, 0, itemId);
+          newObj.contentIds["defaultOrder"] = newDefaultOrder;
+          // newObj.folderInfo.dirty = 1;
+          return newObj;
         })
         if (instructions.itemType === "Folder"){
           //If a folder set folderInfo and zero items
