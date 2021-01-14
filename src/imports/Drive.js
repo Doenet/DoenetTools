@@ -496,6 +496,20 @@ function Folder(props){
         }}
       > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
     }
+
+    if (!props.isNav) {
+      const sortButtons = <>
+        {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
+        {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
+        {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
+        {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
+      </>;
+
+      folder = <>
+        {sortButtons}
+        {folder}
+      </>;
+    }
   }
 
   // make folder draggable and droppable
@@ -573,16 +587,7 @@ function Folder(props){
     }
   }
 
-  const sortButtons = <>
-    {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
-    {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
-    {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
-    {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
-  </>;
-
-  // TODO: show sortButtons at the top of Drive when not a nav
   return <>
-  {/* {!props.isNav && sortButtons } */}
   {folder}
   {items}
   </>

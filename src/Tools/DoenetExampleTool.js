@@ -105,7 +105,7 @@ export default function DoenetExampleTool(props) {
         <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
 
         <BreadcrumbContainer />
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" />
         {/* <Drive types={['content','course']} /> */}
       </mainPanel>
 
