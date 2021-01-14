@@ -147,6 +147,10 @@ let folderDictionary = atomFamily({
         }
         if (item.itemId === driveIdFolderId.folderId){
           folderInfo = item;
+          if (folderInfo.dirty) {
+            folderInfo.sortBy = "defaultOrder";
+            folderInfo.dirty = 0;
+          }
         }
       }
 
@@ -186,21 +190,25 @@ export const folderDictionarySelector = selectorFamily({
           parentFolderId: driveIdFolderId.folderId,
           url: null,
           urlDescription: null,
-          urlId: null
+          urlId: null,
+          sortBy: "defaultOrder",
+          dirty: 0
         }
         set(folderDictionary(driveIdFolderId),(old)=>{
-        let newObj = {...old}
+        let newObj = {...old};
         newObj.contentsDictionary = {...old.contentsDictionary}
         newObj.contentsDictionary[itemId] = newItem;
-        newObj.defaultOrder = [...old.defaultOrder];
-        let index = newObj.defaultOrder.indexOf(instructions.selectedItemId);
-        newObj.defaultOrder.splice(index+1,0,itemId);
+        newObj.contentIds = {...old.contentIds};
+        let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
+        let index = newDefaultOrder.indexOf(instructions.selectedItemId);
+        newObj.contentIds["defaultOrder"] = newDefaultOrder.splice(index+1,0,itemId);
+        // newObj.folderInfo.dirty = 1;
         return newObj;
         })
         if (instructions.itemType === "Folder"){
           //If a folder set folderInfo and zero items
           set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}),{
-            folderInfo:newItem,contentsDictionary:{},defaultOrder:[]
+            folderInfo:newItem,contentsDictionary:{},contentIds:{"defaultOrder":[]}
           })
         }
         const data = { 
