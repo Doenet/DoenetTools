@@ -223,17 +223,18 @@ export const folderDictionarySelector = selectorFamily({
         const { sortKey } = instructions;
 
         set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = {...old}
-          const { folderInfo, contentsDictionary, contentIds } = newObj;
+          let newObj = JSON.parse(JSON.stringify(old));
+          let { contentsDictionary, contentIds } = newObj;
+          let newFolderInfo = { ...newObj.folderInfo }
 
           // sort folder child array
           const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds["defaultOrder"]});
 
           // modify folder sortBy            
-          folderInfo.sortBy = sortKey;
+          newFolderInfo.sortBy = sortKey;
 
           // update folder data
-          newObj.folderInfo = folderInfo;
+          newObj.folderInfo = newFolderInfo;
           newObj.contentIds[sortKey] = sortedFolderChildrenIds;
           
           return newObj;
@@ -251,7 +252,36 @@ export const folderDictionarySelector = selectorFamily({
   // }
 })
 
-
+const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
+  let tempArr = [...defaultFolderChildrenIds];
+  switch (sortKey) {
+    case sortOptions.LABEL_ASC:
+      tempArr.sort(
+        (a,b) => { 
+          return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
+      );
+      break;
+    case sortOptions.LABEL_DESC:
+      tempArr.sort(
+        (b,a) => { 
+          return (nodeObjs[a].label.localeCompare(nodeObjs[b].label))}
+      );
+      break;
+    case sortOptions.CREATION_DATE_ASC:
+      tempArr.sort(
+        (a,b) => { 
+          return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
+      );
+      break;
+    case sortOptions.CREATION_DATE_DESC:
+      tempArr.sort(
+        (b,a) => { 
+          return (new Date(nodeObjs[a].creationDate) - new Date(nodeObjs[b].creationDate))}
+      );
+      break;
+  }
+  return tempArr;
+};
 
 function DriveRouted(props){
   console.log("=== DriveRouted")
@@ -332,7 +362,6 @@ function Folder(props){
 
   const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
   const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
-  console.log(">>> Here", props.folderId, folderInfoObj, folderInfo, contentsDictionary, contentIdsOrder, contentIds)
  
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>{
@@ -362,6 +391,28 @@ function Folder(props){
     }
     return !isOpen
   })}>{openCloseText}</button>
+
+  const sortHandler = ({ sortKey }) => {
+    // dispatch sort instruction
+    setFolderInfo({
+      instructionType:"sort",
+      sortKey: sortKey
+    });
+  };
+
+  const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
+    return <button
+    tabIndex={-1}
+    onClick={(e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      sortHandler({sortKey: sortKey});
+    }}
+    onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+    >{ buttonLabel }</button>;
+  }
+
   let label = folderInfo?.label;
   let folder = <div
       data-doenet-browserid={props.browserId}
@@ -379,7 +430,12 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} ({contentIdsArr.length})</div></div>
+      }}>{openCloseButton} Folder {label} ({contentIdsArr.length})
+      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})} 
+      </div></div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
