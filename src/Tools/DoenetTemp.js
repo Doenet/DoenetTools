@@ -43,8 +43,12 @@ function Demo(){
   <AddItem />
   {/* <Drive types={['course']} /> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
+  <h2>Select</h2>
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' /> */}
+  <h2>New Window</h2>
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new window"/>
+  <h2>Default</h2>
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
 
   </>
 }

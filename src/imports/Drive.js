@@ -272,16 +272,21 @@ function DriveRouted(props){
   browserId={browserId.current}
   isNav={props.isNav}
   urlClickBehavior={props.urlClickBehavior}
-  // route={props.route}
+  route={props.route}
   />
   </>
 }
+
+let encodeParams = p => 
+Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
 function Folder(props){
 
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
   const [isOpen,setIsOpen] = useState(false);
+
+  let history = useHistory();
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
@@ -340,11 +345,12 @@ function Folder(props){
       onClick={(e)=>{
         if (props.isNav){
           //Only select one item
-          // let newParams = {...urlParamsObj} 
-          // newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
-          // alert(newParams)
-          // history.push('?'+encodeParams(newParams))
-          // setSelected("one item")
+          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+
+          let newParams = {...urlParamsObj} 
+          newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
+          history.push('?'+encodeParams(newParams))
+          setSelected("one item")
         }else{
           if (!e.shiftKey && !e.metaKey){
             setSelected("one item")
@@ -414,7 +420,10 @@ function Folder(props){
           folderId={item.itemId} 
           indentLevel={props.indentLevel+1}  
           browserId={props.browserId}
+          route={props.route}
           isNav={props.isNav}
+          urlClickBehavior={props.urlClickBehavior}
+
           />)
         break;
         case "Url":
@@ -424,6 +433,7 @@ function Folder(props){
             item={item} 
             indentLevel={props.indentLevel+1}  
             browserId={props.browserId}
+            route={props.route}
             isNav={props.isNav} 
             urlClickBehavior={props.urlClickBehavior}
             />)
@@ -523,7 +533,7 @@ const selectedDriveItems = selectorFamily({
 
 const Url = React.memo((props)=>{
   console.log(`=== 📁 Url`)
-  // console.log(">>>item",props)
+  console.log(">>>url",props)
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   // console.log(">>>>isSelected",isSelected,props.item.itemId)
@@ -548,19 +558,30 @@ const Url = React.memo((props)=>{
       }}
       onClick={(e)=>{
         if (props.urlClickBehavior === "select"){
-          if (!e.shiftKey && !e.metaKey){
+          if (props.isNav){
+            //Only select one item
+            let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+            let newParams = {...urlParamsObj} 
+            newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
+            history.push('?'+encodeParams(newParams))
             setSelected("one item")
-          }else if (e.shiftKey && !e.metaKey){
-            setSelected("range to item")
-          }else if (!e.shiftKey && e.metaKey){
-            setSelected("add item")
+          }else{
+            if (!e.shiftKey && !e.metaKey){
+              setSelected("one item")
+            }else if (e.shiftKey && !e.metaKey){
+              setSelected("range to item")
+            }else if (!e.shiftKey && e.metaKey){
+              setSelected("add item")
+            }
           }
-          
-          // alert("select"+props.isNav)
         }else if (props.urlClickBehavior === "new window"){
-          alert("new window"+props.isNav)
+          // let linkTo = props.item?.url; //Enable this when add URL is completed
+          // window.open(linkTo, "Link", "height=200,width=200");
+          window.open("http://doenet.org", "Link", "height=100%");
         }else{
-          alert("new tab"+props.isNav)
+          // let linkTo = props.item?.url; //Enable this when add URL is completed
+          // location.href = linkTo; 
+          location.href = "http://doenet.org"; 
         }
       }}
       ><div 
