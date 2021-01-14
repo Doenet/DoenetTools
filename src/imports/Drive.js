@@ -138,6 +138,7 @@ let folderDictionary = atomFamily({
       console.log(">>>driveInfo",driveInfo)
       let defaultOrder = [];
       let contentsDictionary = {};
+      let contentIds = {};
       let folderInfo = {};
       for (let item of driveInfo.results){
         if (item.parentFolderId === driveIdFolderId.folderId){
@@ -148,8 +149,10 @@ let folderDictionary = atomFamily({
           folderInfo = item;
         }
       }
+
+      contentIds["defaultOrder"] = defaultOrder;
   
-      return {folderInfo,contentsDictionary,defaultOrder}
+      return {folderInfo,contentsDictionary,contentIds}
     } 
   })
 })
@@ -216,6 +219,27 @@ export const folderDictionarySelector = selectorFamily({
           // throw Error("made up error")
         })
       break;
+      case "sort":
+        const { sortKey } = instructions;
+
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = {...old}
+          const { folderInfo, contentsDictionary, contentIds } = newObj;
+
+          // sort folder child array
+          const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds["defaultOrder"]});
+
+          // modify folder sortBy            
+          folderInfo.sortBy = sortKey;
+
+          // update folder data
+          newObj.folderInfo = folderInfo;
+          newObj.contentIds[sortKey] = sortedFolderChildrenIds;
+          
+          return newObj;
+        })
+
+        break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -292,18 +316,23 @@ function Folder(props){
 
   const [isOpen,setIsOpen] = useState(false);
   
-  const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  const {folderInfo, contentsDictionary, contentIds} = folderInfoObj.contents;
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   
-  console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
+  console.log(`=== 📁 ${folderInfo?.label}`)
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+
+  const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
+  const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
+  console.log(">>> Here", props.folderId, folderInfoObj, folderInfo, contentsDictionary, contentIdsOrder, contentIds)
  
   let openCloseText = isOpen ? "Close" : "Open";
   let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>{
@@ -311,8 +340,8 @@ function Folder(props){
       //Closing so remove items
       setVisibleItems((old)=>{
         let newItems = [...old]; 
-        const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
-        const numToRemove = folderInfo.contents.defaultOrder.length
+        const index = newItems.indexOf(folderInfo?.itemId)
+        const numToRemove = contentIdsArr.length
         newItems.splice(index+1,numToRemove)
         return newItems;
       })
@@ -320,12 +349,12 @@ function Folder(props){
     }else{
       //Opening so add items
       let itemIds = [];
-    for (let itemId of folderInfo.contents.defaultOrder){
+    for (let itemId of contentIdsArr){
       itemIds.push(itemId);
     }
     setVisibleItems((old)=>{
       let newItems = [...old]; 
-      const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
+      const index = newItems.indexOf(folderInfo?.itemId)
       newItems.splice(index+1,0,...itemIds)
       return newItems;
     })
@@ -333,7 +362,7 @@ function Folder(props){
     }
     return !isOpen
   })}>{openCloseText}</button>
-  let label = folderInfo?.contents?.folderInfo?.label;
+  let label = folderInfo?.label;
   let folder = <div
       data-doenet-browserid={props.browserId}
       tabIndex={0}
@@ -350,7 +379,7 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div></div>
+      }}>{openCloseButton} Folder {label} ({contentIdsArr.length})</div></div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
@@ -369,7 +398,7 @@ function Folder(props){
         margin: "2px",
         marginLeft: `${props.indentLevel * indentPx}px`
       }}
-    >Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+    >Drive {label} ({contentIdsArr.length})</div>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-browserid={props.browserId}
@@ -384,7 +413,7 @@ function Folder(props){
           margin: "2px",
           marginLeft: `${props.indentLevel * indentPx}px`
         }}
-      > {openCloseButton} Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+      > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
     }
   }
 
@@ -416,10 +445,10 @@ function Folder(props){
   </WithDropTarget>
 
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
-    let dictionary = folderInfo.contents.contentsDictionary;
+    let dictionary = contentsDictionary;
     items = [];
     let itemIds = [];
-    for (let itemId of folderInfo.contents.defaultOrder){
+    for (let itemId of contentIdsArr){
       itemIds.push(itemId);
       let item = dictionary[itemId];
       switch(item.itemType){
@@ -452,8 +481,8 @@ function Folder(props){
       setVisibleItems((old)=>{let newItems = [...old,...itemIds]; return newItems;})
     }
 
-    if (folderInfo.contents.defaultOrder.length === 0){
-      items.push(<EmptyNode key={`emptyitem${folderInfo?.contents?.folderInfo?.itemId}`}/>)
+    if (contentIdsArr.length === 0){
+      items.push(<EmptyNode key={`emptyitem${folderInfo?.itemId}`}/>)
     }
   }
   return <>
