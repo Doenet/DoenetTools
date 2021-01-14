@@ -227,8 +227,6 @@ export const folderDictionarySelector = selectorFamily({
   // }
 })
 
-
-
 function DriveRouted(props){
   console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
@@ -273,31 +271,27 @@ function DriveRouted(props){
   rootCollapsible={props.rootCollapsible}
   browserId={browserId.current}
   isNav={props.isNav}
+  urlClickBehavior={props.urlClickBehavior}
+  // route={props.route}
   />
   </>
 }
 
-const visibleDriveItems = atomFamily({
-  key:"visibleDriveItems",
-  default:[]
-})
-
-function LogVisible(props){
-  const visibleItems = useRecoilValue(visibleDriveItems(props.browserId));
-  console.log(">>>>visibleItems",visibleItems)
-  return null;
-}
-
 function Folder(props){
 
+  let itemId = props?.folderId;
+  if (!itemId){ itemId = props.driveId}
   const [isOpen,setIsOpen] = useState(false);
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
+  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
+  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId})); 
+
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
-  if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
+  if (isSelected) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
  
@@ -329,6 +323,7 @@ function Folder(props){
     }
     return !isOpen
   })}>{openCloseText}</button>
+
   let label = folderInfo?.contents?.folderInfo?.label;
   let folder = <div
       data-doenet-browserid={props.browserId}
@@ -341,7 +336,27 @@ function Folder(props){
         border: "1px solid black",
         backgroundColor: bgcolor,
         margin: "2px",
-      }}>
+      }}
+      onClick={(e)=>{
+        if (props.isNav){
+          //Only select one item
+          // let newParams = {...urlParamsObj} 
+          // newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
+          // alert(newParams)
+          // history.push('?'+encodeParams(newParams))
+          // setSelected("one item")
+        }else{
+          if (!e.shiftKey && !e.metaKey){
+            setSelected("one item")
+          }else if (e.shiftKey && !e.metaKey){
+            setSelected("range to item")
+          }else if (!e.shiftKey && e.metaKey){
+            setSelected("add item")
+          }
+        }
+        
+        }}
+      >
         <div 
       className="noselect" 
       style={{
@@ -405,10 +420,12 @@ function Folder(props){
         case "Url":
           items.push(<Url 
             key={`item${itemId}`} 
+            driveId={props.driveId} 
             item={item} 
             indentLevel={props.indentLevel+1}  
             browserId={props.browserId}
             isNav={props.isNav} 
+            urlClickBehavior={props.urlClickBehavior}
             />)
         break;
         default:
@@ -431,7 +448,6 @@ function Folder(props){
   </>
 }
 
-
 const EmptyNode =  React.memo(function Node(props){
 
   return (<div style={{
@@ -444,13 +460,77 @@ const EmptyNode =  React.memo(function Node(props){
   }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
 })
 
+function LogVisible(props){
+  // const visibleItems = useRecoilValue(visibleDriveItems(props.browserId));
+  // console.log(">>>>visibleItems",visibleItems)
+  const globalSelected = useRecoilValue(globalSelectedNodesAtom);
+  console.log(">>>>globalSelected",globalSelected)
+  return null;
+}
+
+const visibleDriveItems = atomFamily({
+  key:"visibleDriveItems",
+  default:[]
+})
+
+const selectedDriveItemsAtom = atomFamily({
+  key:"selectedDriveItemsAtom",
+  default:false
+})
+
+const selectedDriveItems = selectorFamily({
+  key:"selectedDriveItems",
+  // get:(driveIdBrowserIdItemId) =>({get})=>{ 
+  //   return get(selectedDriveItemsAtom(driveIdBrowserIdItemId));
+  // },
+  set:(driveIdBrowserIdItemId) => ({get,set},instruction)=>{
+    const globalSelected = get(globalSelectedNodesAtom);
+    const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
+    // const visibleItems = get()
+    switch (instruction) {
+      case "one item":
+        if (!isSelected){
+          for (let itemObj of globalSelected){
+            set(selectedDriveItemsAtom(itemObj),false)
+          }
+          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
+          set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
+        }
+        break;
+        case "add item":
+        if (isSelected){
+          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),false)
+          let newGlobalSelected = [...globalSelected];
+          const index = newGlobalSelected.indexOf(driveIdBrowserIdItemId)
+          newGlobalSelected.splice(index,1)
+          set(globalSelectedNodesAtom,newGlobalSelected);
+        }else{
+          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
+          set(globalSelectedNodesAtom,[...globalSelected,driveIdBrowserIdItemId])
+        }
+        case "range to item":
+          console.log(">>>range to item")
+
+        break;
+    
+      default:
+        console.warn(`Can't handle instruction ${instruction}`)
+        break;
+    }
+    
+  }
+})
 
 const Url = React.memo((props)=>{
   console.log(`=== 📁 Url`)
-  console.log(">>>item",props)
+  // console.log(">>>item",props)
+  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  // console.log(">>>>isSelected",isSelected,props.item.itemId)
+
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
-  if (props.appearance === "selected") { bgcolor = "#6de5ff"; }
+  if (isSelected) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
 
@@ -465,6 +545,23 @@ const Url = React.memo((props)=>{
         border: "1px solid black",
         backgroundColor: bgcolor,
         margin: "2px",
+      }}
+      onClick={(e)=>{
+        if (props.urlClickBehavior === "select"){
+          if (!e.shiftKey && !e.metaKey){
+            setSelected("one item")
+          }else if (e.shiftKey && !e.metaKey){
+            setSelected("range to item")
+          }else if (!e.shiftKey && e.metaKey){
+            setSelected("add item")
+          }
+          
+          // alert("select"+props.isNav)
+        }else if (props.urlClickBehavior === "new window"){
+          alert("new window"+props.isNav)
+        }else{
+          alert("new tab"+props.isNav)
+        }
       }}
       ><div 
       className="noselect" 
