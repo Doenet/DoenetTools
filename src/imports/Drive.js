@@ -294,6 +294,10 @@ function Folder(props){
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
+  const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
@@ -384,6 +388,33 @@ function Folder(props){
     }
   }
 
+  // make folder draggable and droppable
+  let draggableClassName = "";
+  folder = <Draggable
+    key={`dnode${props.browserId}${props.folderId}`} 
+    id={props.folderId}
+    className={draggableClassName}
+    onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId })}
+    onDrag={onDrag}
+    onDragEnd={onDragEnd}
+    ghostElement={renderDragGhost(props.folderId, folder)}
+    >
+    { folder } 
+  </Draggable>
+
+  folder = <WithDropTarget
+    key={`wdtnode${props.browserId}${props.folderId}`} 
+    id={props.folderId}
+    registerDropTarget={dropActions.registerDropTarget} 
+    unregisterDropTarget={dropActions.unregisterDropTarget}
+    dropCallbacks={{
+      onDragOver: () => onDragOverContainer({ id: props.folderId, driveId: props.driveId }),
+      onDrop: () => {}
+    }}
+    >
+    { folder } 
+  </WithDropTarget>
+
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = folderInfo.contents.contentsDictionary;
     items = [];
@@ -446,6 +477,7 @@ const EmptyNode =  React.memo(function Node(props){
 
 
 const Url = React.memo((props)=>{
+  const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   console.log(`=== 📁 Url`)
   console.log(">>>item",props)
   const indentPx = 20;
@@ -454,7 +486,7 @@ const Url = React.memo((props)=>{
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
 
-  return <div
+  let urlJSX = <div
       data-doenet-browserid={props.browserId}
       tabIndex={0}
       className="noselect nooutline" 
@@ -473,4 +505,172 @@ const Url = React.memo((props)=>{
       }}>
     Url {props.item?.label}</div></div>
 
+  // make URL draggable
+  let draggableClassName = "";
+  urlJSX = <Draggable
+    key={`dnode${props.browserId}${props.item.itemId}`} 
+    id={props.item.itemId}
+    className={draggableClassName}
+    onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId })}
+    onDrag={onDrag}
+    onDragEnd={onDragEnd}
+    ghostElement={renderDragGhost(props.item.itemId, urlJSX)}
+    >
+    { urlJSX } 
+  </Draggable>
+
+  return urlJSX;
+
   })
+
+function useDnDCallbacks() {
+
+  const { dropState, dropActions } = useContext(DropTargetsContext);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+
+  const onDragStart = ({ nodeId, driveId }) => {
+    setDragState((dragState) => ({
+      ...dragState,
+      isDragging: true,
+      draggedOverDriveId: driveId
+    }));
+  };
+
+  const onDrag = ({ clientX, clientY, translation, id }) => {
+    dropActions.handleDrag(clientX, clientY, id);
+  };
+
+  const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
+    // update driveId if changed
+    if (dragState.draggedOverDriveId !== driveId) {
+      setDragState((dragState) => ({
+        ...dragState,
+        draggedOverDriveId: driveId,
+        isDraggedOverBreadcrumb: isBreadcrumb
+      }));
+    }
+  };
+
+  const onDragEnd = () => {
+    const droppedId = dropState.activeDropTargetId;
+    // valid drop
+    if (droppedId) {
+      // move all selected nodes to droppedId
+      // moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
+      // .then((props)=>{
+      //   //clear tool and browser selections
+      //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
+      //   selectedNodesArr.current = {}
+      // })
+      
+      console.log(">>> moveNodes");
+    } else {
+
+    }
+    setDragState((dragState) => ({
+      ...dragState,
+      isDragging: false,
+      draggedOverDriveId: null
+    }));
+    dropActions.handleDrop();
+  };
+
+  function renderDragGhost(id, element) {
+    const dragGhostId = `drag-ghost-${id}`;
+    // const numItems = Object.keys(selectedNodes).length;
+    const numItems = 1;
+    
+    return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
+  }
+
+  return {
+    onDragStart,
+    onDrag,
+    onDragOverContainer,
+    onDragEnd,
+    renderDragGhost
+  }
+
+}
+
+const DragGhost = ({ id, element, numItems }) => {
+
+  const containerStyle = {
+    transform: "rotate(-5deg)",
+    zIndex: "10"
+  }
+
+  const singleItemStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
+    borderRadius: '4px',
+    animation: 'dragAnimation 2s',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    background: "#fff"
+  }
+
+  const multipleItemsNumCircleContainerStyle = {
+    position: 'absolute',
+    zIndex: "5",
+    top: "-10px",
+    right: "-15px",
+    borderRadius: '25px',
+    background: '#bc0101',
+    fontSize: '12px',
+    color: 'white',
+    width: '25px',
+    height: '25px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+
+  const multipleItemsRearStackStyle = {
+    boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
+    borderRadius: '4px',
+    padding: "0 5px 5px 0px",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    zIndex: "1",
+    background: "#fff"
+  }
+
+  const multipleItemsFrontStackStyle = {
+    borderRadius: '4px',
+    boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
+    border: '1px solid rgba(0, 0, 0, 0.70)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: "2"
+  }
+
+
+  return (
+    <div id={id} style={containerStyle}>
+    {
+      numItems < 2 ? 
+        <div
+          style={singleItemStyle}>
+          { element }
+        </div>
+      :
+      <div style={{minWidth: "300px"}}>
+        <div
+          style={multipleItemsNumCircleContainerStyle}>
+          {numItems}
+        </div>
+        <div
+          style={multipleItemsRearStackStyle}>
+          <div
+            style={multipleItemsFrontStackStyle}>
+            { element }
+          </div>
+        </div>
+      </div>
+    }      
+    </div>
+  )
+}

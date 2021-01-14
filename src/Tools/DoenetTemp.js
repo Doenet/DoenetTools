@@ -23,6 +23,13 @@ import {
   useRecoilValue,
 } from 'recoil';
 
+import {
+  DropTargetsProvider,
+} from '../imports/DropTarget';
+import { 
+  BreadcrumbProvider 
+} from '../imports/Breadcrumb';
+
 import Drive from '../imports/Drive'
 import AddItem from '../imports/AddItem'
 
@@ -30,7 +37,11 @@ import AddItem from '../imports/AddItem'
 
 export default function app() {
 return <RecoilRoot>
-    <Demo />
+        <DropTargetsProvider>
+          <BreadcrumbProvider>
+           <Demo />        
+          </BreadcrumbProvider>
+        </DropTargetsProvider>
 </RecoilRoot>
 };
 
