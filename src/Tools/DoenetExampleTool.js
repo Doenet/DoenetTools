@@ -89,7 +89,8 @@ export default function DoenetExampleTool(props) {
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
-        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" />
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
+        <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
         {/* <Drive types={['content','course']} /> */}
       </navPanel> 
 
@@ -100,12 +101,13 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-        <ShowFam mykey="one" />
+        {/* <ShowFam mykey="one" />
         <ShowFam mykey="two" />
         <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
 
-        <BreadcrumbContainer />
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+        <BreadcrumbContainer /> */}
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+
         {/* <Drive types={['content','course']} /> */}
       </mainPanel>
 
