@@ -304,33 +304,39 @@ function Folder(props){
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
  
   let openCloseText = isOpen ? "Close" : "Open";
-  let openCloseButton = <button onClick={()=>setIsOpen(isOpen=>{
-    if (isOpen){
-      //Closing so remove items
+  let openCloseButton = <button 
+  data-doenet-browserid={props.browserId}
+  onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(isOpen=>{
+      if (isOpen){
+        //Closing so remove items
+        setVisibleItems((old)=>{
+          let newItems = [...old]; 
+          const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
+          const numToRemove = folderInfo.contents.defaultOrder.length
+          newItems.splice(index+1,numToRemove)
+          return newItems;
+        })
+  
+      }else{
+        //Opening so add items
+        let itemIds = [];
+      for (let itemId of folderInfo.contents.defaultOrder){
+        itemIds.push(itemId);
+      }
       setVisibleItems((old)=>{
         let newItems = [...old]; 
         const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
-        const numToRemove = folderInfo.contents.defaultOrder.length
-        newItems.splice(index+1,numToRemove)
+        newItems.splice(index+1,0,...itemIds)
         return newItems;
       })
-
-    }else{
-      //Opening so add items
-      let itemIds = [];
-    for (let itemId of folderInfo.contents.defaultOrder){
-      itemIds.push(itemId);
-    }
-    setVisibleItems((old)=>{
-      let newItems = [...old]; 
-      const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
-      newItems.splice(index+1,0,...itemIds)
-      return newItems;
+      
+      }
+      return !isOpen
     })
-    
-    }
-    return !isOpen
-  })}>{openCloseText}</button>
+  }}>{openCloseText}</button>
 
   let label = folderInfo?.contents?.folderInfo?.label;
   let folder = <div
@@ -549,7 +555,7 @@ const selectedDriveItems = selectorFamily({
           set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
         }
         break;
-        case "add item":
+      case "add item":
         if (isSelected){
           set(selectedDriveItemsAtom(driveIdBrowserIdItemId),false)
           let newGlobalSelected = [...globalSelected];
@@ -560,38 +566,38 @@ const selectedDriveItems = selectorFamily({
           set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
           set(globalSelectedNodesAtom,[...globalSelected,driveIdBrowserIdItemId])
         }
-        case "range to item":
-          console.log(">>>range to item",visibleItems,globalSelected)
+      case "range to item":
+        console.log(">>>range to item",visibleItems,globalSelected)
+        if (globalSelected.length === 0){
           //No previous items selected so just select this one
-          if (globalSelected.length === 0){
-            set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-            set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
-          }else{
-            //Set select on all items in range
-            let lastSelectedItem = globalSelected[globalSelected.length-1];
-            const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
-            const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
-            let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
-            let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
-            let componentsToSelect = []
-            for (let i = minIndex; i <= maxIndex; i++){
-              let itemId = visibleItems[i];
-              let item = {...driveIdBrowserIdItemId}
-              item.itemId = itemId;
-              if (!get(selectedDriveItemsAtom(item))){
-                set(selectedDriveItemsAtom(item),true)
-                componentsToSelect.push(item);
-              }
+          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
+          set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
+        }else{
+          //Set select on all items in range
+          let lastSelectedItem = globalSelected[globalSelected.length-1];
+          const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
+          const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
+          let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
+          let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
+          let componentsToSelect = []
+          for (let i = minIndex; i <= maxIndex; i++){
+            let itemId = visibleItems[i];
+            let item = {...driveIdBrowserIdItemId}
+            item.itemId = itemId;
+            if (!get(selectedDriveItemsAtom(item))){
+              set(selectedDriveItemsAtom(item),true)
+              componentsToSelect.push(item);
             }
-            //Sort componentsToSelect if needed so current item is last
-            if (indexOfLastSelected > indexOfCurrentItem){
-              componentsToSelect.reverse();
-            }
-            set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
-            
           }
-        break;
-        case "clear all":
+          //Sort componentsToSelect if needed so current item is last
+          if (indexOfLastSelected > indexOfCurrentItem){
+            componentsToSelect.reverse();
+          }
+          set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
+          
+        }
+      break;
+      case "clear all":
           //TODO: Only clear this browser?
           for (let itemObj of globalSelected){
             set(selectedDriveItemsAtom(itemObj),false)
