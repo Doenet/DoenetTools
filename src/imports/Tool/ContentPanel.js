@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { supportVisible } from "./SupportPanel";
 
 const ContentPanelContainer = styled.div`
-  grid-area: "contentPanel";
+  grid-area: contentPanel;
   display: grid;
   grid-template: "mainPanel handle supportPanel" / ${({ supportInUse }) =>
       supportInUse ? `1fr 3px 1fr` : " 1fr 0px 0fr"};
@@ -22,6 +22,12 @@ export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   const supportInUse = useRecoilValue(supportVisible);
   let isDragging = false;
+
+  useEffect(() => {
+    wrapperRef.current.style.gridTemplateColumns = supportInUse
+      ? `1fr 3px 1fr`
+      : " 1fr 0px 0fr";
+  }, [supportInUse]);
 
   const handleMouseDown = () => {
     isDragging = true;

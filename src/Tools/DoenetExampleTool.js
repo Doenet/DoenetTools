@@ -70,22 +70,25 @@ function GlobalSelectIndicator() {
 }
 
 let myAtomFam = atomFamily({
-  key:"myAtomFam",
-  default:"default"
-})
+  key: "myAtomFam",
+  default: "default",
+});
 
-function ShowFam(props){
+function ShowFam(props) {
   const famVal = useRecoilValue(myAtomFam(props.mykey));
-  return <div>mykey{props.mykey} = {famVal}</div>
+  return (
+    <div>
+      mykey{props.mykey} = {famVal}
+    </div>
+  );
 }
-
 
 export default function DoenetExampleTool(props) {
   const setSupportVisiblity = useSetRecoilState(supportVisible);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   console.log("=== DoenetExampleTool");
-  const setmyAtomFamOne = useSetRecoilState(myAtomFam('one'))
-  const setmyAtomFamTwo = useSetRecoilState(myAtomFam('two'))
+  const setmyAtomFamOne = useSetRecoilState(myAtomFam("one"));
+  const setmyAtomFamTwo = useSetRecoilState(myAtomFam("two"));
   return (
     <Tool>
       <navPanel>
@@ -151,7 +154,6 @@ export default function DoenetExampleTool(props) {
         <mainPanel>
           <p>do the main important stuff</p>
 
-          <NumIndicator />
           <BreadcrumbContainer />
           {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
           {/* <Drive types={['content','course']} /> */}
@@ -163,7 +165,6 @@ export default function DoenetExampleTool(props) {
         </supportPanel>
 
         <menuPanel title="edit">
-          <Inc />
           <p>control important stuff</p>
         </menuPanel>
 
