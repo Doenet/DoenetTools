@@ -73,7 +73,15 @@ let myAtomFam = atomFamily({
   key: "myAtomFam",
   default: "default",
 });
+function Inc(props){
+  let setNum = useSetRecoilState(numAtom);
+  return <button onClick={() => setNum((old) => old + 1)}>+</button>;
+}
 
+function NumIndicator() {
+  let num = useRecoilValue(molecule);
+  return <div>{num}</div>;
+}
 function ShowFam(props) {
   const famVal = useRecoilValue(myAtomFam(props.mykey));
   return (
