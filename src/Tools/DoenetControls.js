@@ -1,172 +1,294 @@
 import React from 'react';
-import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
-import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
-import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
-import Button from "../imports/PanelHeaderComponents/Button.js";
+import { 
+  BrowserRouter as Router, 
+  Link, 
+  Route 
+} from 'react-router-dom';
+import styled from 'styled-components';
+import GlobalFont from "../fonts/GlobalFont.js";
+
+//=== COMPONENT IMPORTS ===
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
 import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
-import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
+import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
+import ToggleButton from '../imports/PanelHeaderComponents/ToggleButton.js';
+import Button from "../imports/PanelHeaderComponents/Button.js";
+import Textfield from '../imports/PanelHeaderComponents/Textfield.js';
+import UnitMenu from '../imports/PanelHeaderComponents/UnitMenu.js';
+import VerticalDivider from '../imports/PanelHeaderComponents/VerticalDivider.js';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
-import GlobalFont from "../fonts/GlobalFont.js";
-import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
+
+// === HOW TO ADD TO CONTROLS ===
+// 1. Import the component in the COMPONENT IMPORTS SECTION above
+// 2. Copy and paste this into the DATA STRUCTURE section below in alphabetical order
+// {
+//   name: 'Title of the component', EXAMPLE: 'UnitMenu'
+//   id: 'Url addition, all lowercase', EXAMPLE: 'unitmenu'
+//   code: component tag used to create it, same as import, no quotation marks, EXAMPLE: UnitMenu
+//   codePreview: example of how the code looks for most basic form of the component, EXAMPLE: <UnitMenu {units: ['EM', 'PX', 'PT']}
+//   req_props: {props needed for component to exist, null for most cases, written in this form: name: 'option}, EXAMPLE: {units: ['EM', 'PX', 'PT']}
+//   req_children: children needed to show how the component works, null for most cases, EXAMPLE: null,
+//   use: 'talk about why this thing exists', EXAMPLE: 'Adds added changable units for a textfield.'
+//   props: [
+//       {name: 'Title of prop', EXAMPLE: 'Label'
+//       propPreview: 'example of the component code with the prop', EXAMPLE: '<UnitMenu units={['EM', 'PX', 'PT']} label='Label: '>'
+//       propCode: {prop code written in this form: name: 'option'}, EXAMPLE: {units: ['EM', 'PT', 'PX'], label: 'Label: '}
+//       description: 'talk about why this prop exists'}, EXAMPLE: 'Adds label in front of the component.'
+//   ]
+// },
+
+const NavBar = styled.div`
+  width: 240px;
+  height: 100vh;
+  position: fixed;
+  background-color: #8FB8DE;
+  color: #000;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  z-index: 1
+`
+const Content = styled.div`
+  margin-left: 240px
+`
+
+const List = styled.ul`
+  color: black
+`
 
 export default function attempt() {
-return (
-<div>
-  <GlobalFont/>
-  <h1>DoenetControls</h1>
-  <p>This is how all of the Panel Header Components look. It also has all of the props you can give them and how they work!</p>
 
-  <h2>Calling Components</h2>
-  <p style={{display: "inline"}}>You will need </p>
-  <p style={{color: "blue", display: "inline"}}>import ComponentName from "../imports/PanelHeaderComponents/ComponentName.js"</p>
-  <p style={{display: "inline"}}> to add the component to a new file.</p>
-  <br></br>
-  <p style={{display: "inline"}}>To call the component, use </p>
-  <p style={{color: "blue", display: "inline"}}>ComponentName</p>
-  <p style={{display: "inline"}}> within standard html tags. Using a self-closing tag is the easiest!! The ComponentName is the underlined header at the start of each section.</p>
-  <br/>
+//=== DATA STRUCTURE SECTION ===
+  let dataStructure = [
+    {
+      name: 'ActionButton',
+      id: 'actionbutton',
+      code: ActionButton,
+      codePreview: '<ActionButton/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is the simpler button styling. Can be used in ActionButtonGroup to place related buttons together.',
+      props: [
+          {name: 'Size',
+          propPreview: '<ActionButton size="medium"/>',
+          propCode: {size: 'medium'},
+          description: 'The default is small, as shown above.'},
+          {name: 'Text',
+          propPreview: '<ActionButton text="Edit"/>',
+          propCode: {text: 'Edit'},
+          description: 'Changes the text'}
+      ]
+    },
+    {
+      name: 'ActionButtonGroup',
+      id: 'actionbuttongroup',
+      code: ActionButtonGroup,
+      codePreview: '<ActionButtonGroup> <ActionButton/> <ActionButton/> <ActionButton/> </ActionButtonGroup>',
+      req_props: null,
+      req_children: [React.createElement(ActionButton), React.createElement(ActionButton), React.createElement(ActionButton)],
+      use: 'This groups related action buttons together.'
+    },
+    {
+      name: 'Button',
+      id: 'button',
+      code: Button,
+      codePreview: '<Button/>',
+      req_props: null,
+      req_children: null,
+      use: 'This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!',
+      props: [
+          {name: 'Size',
+          propPreview: '<Button size="medium"/>',
+          propCode: {size: 'medium'},
+          description: 'The default is small, as shown above.'},
+          {name: 'Text',
+          propPreview: '<Button text="This button is amazing!"/>',
+          propCode: {text: 'This button is amazing!'},
+          description: 'Changes the text'}
+      ]
+    },
+    {
+      name: 'SearchBar',
+      id: 'searchbar',
+      code: SearchBar,
+      codePreview: '<SearchBar/>',
+      req_props: null,
+      req_children: null,
+      use: 'Used for finding things.'
+    },
+    {
+    name: 'Textfield',
+    id: 'textfield',
+    code: Textfield,
+    codePreview: '<Textfield/>',
+    req_props: null,
+    req_children: null,
+    use: 'This is where you can enter text.',
+    props: [
+      {name: 'Size',
+      propPreview: '<Textfield size="medium"/>',
+      propCode: {size: 'medium'},
+      description: 'The default is small, as shown above.'},
+      {name: 'Text',
+      propPreview: '<Textfield text="Enter cat names"/>',
+      propCode: {text: 'Enter cat names'},
+      description: 'Changes the text'},
+      ]
+    },
+    {
+      name: 'ToggleButton',
+      id: 'togglebutton',
+      use: 'This is button toggles back and forth',
+      code: ToggleButton,
+      codePreview: '<ToggleButton/>',
+      req_props: null,
+      req_children: null,
+      props: [
+        {name: 'Size',
+        propPreview: '<ToggleButton size="medium"/>',
+        propCode: {size: 'medium'},
+        description: 'The default is small, as shown above.'},
+        {name: 'Text',
+        propPreview: '<ToggleButton text="Select me"/>',
+        propCode: {text: 'Select me'},
+        description: 'Changes the text'},
+        // {name: 'isSelected',
+        // propPreview: '<ToggleButton isSelected/>',
+        // propCode: {'isSelected'},
+        // description: 'If added, starts the button in selected state.'},
+        {name: 'Switch Text',
+        propPreview: '<ToggleButton switch_text="frog"/>',
+        propCode: {switch_text: 'frog'},
+        description: 'Sets different text value for when the button is selected'},
+        {name: 'Label',
+        propPreview: '<ToggleButton label="What: "/>',
+        propCode: {label: 'What: '},
+        description: 'Adds label to button'},
+        {name: 'Icon',
+        propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}}/>',
+        propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
+        description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'}
+      ]
+    },
+    {
+      name: 'UnitMenu',
+      id: 'unitmenu',
+      code: UnitMenu,
+      codePreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',
+      req_props: {units: ['EM', 'PT', 'PX']},
+      req_children: null,
+      use: 'Textfield with attached menu. Current application is displaying and changing units of values',
+      props: [
+        {name: 'Units',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',
+        propCode: {units: ['EM', 'PT', 'PX']},
+        description: 'Adds the units to the menu. Required for the component to work.'},
+        {name: 'Defaults',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]}/>',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto']},
+        description: 'Defaults are unitless values defined by us somewhere else. The word in the array will appear in the textfield and a - will appear on the main button.'},
+        {name: 'Label',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: ">',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: '},
+        description: 'Adds label in front of the component. Dragging on the label will increment the value.'
+        }
+        ]
+      },
+    {
+      name: 'VerticalDivider',
+      id: 'verticaldivider',
+      code: VerticalDivider,
+      codePreview: '<VerticalDivider/>',
+      req_props: null,
+      req_children: null,
+      use: 'Creates visual separation.'
+    }
+  ];
+  // === END OF DATA STRUCTURE SECTION ===
 
-  <h2><u>ActionButton</u></h2>
-  <p>This is the simpler button styling. See Button below for another option.</p>
-  <ActionButton/>
+//HOME PAGE
+  function Home() {
+    return (
+    <div>
+      <h1>Hi!</h1>
+      <p>This is the Component Library. Use it wisely.</p>
+      <p style={{display: "inline"}}>You will need </p>
+      <p style={{color: "blue", display: "inline"}}>import ComponentName from "../imports/PanelHeaderComponents/ComponentName.js"</p>
+      <p style={{display: "inline"}}> to add the component to a new file.</p>
+    </div>
+    );
+  }
 
-  <h3>Size</h3>
-  <p style={{color: "blue"}}>size="medium"</p>
-  <p>The default is small, as shown above.</p>
-  <ActionButton size="medium"/>
+//COMPONENT PAGES
+  function Components({ match }) {
 
-  <h3>Text</h3>
-  <p style={{color: "blue"}}>text="Edit"</p>
-  <ActionButton text="Edit" />
+    const component = dataStructure.find(({ id }) => id === match.params.componentId)
+    var display = component.code
 
-  <h3>Placement</h3>
-  <p>These buttons look good next to each other.</p>
-  <ActionButton text="Edit"/>
-  <ActionButton text="Add"/>
-  <ActionButton text="Delete"/>
+    //PROPS SECTION
+    function Props(component) {
+      if (component.props) {
+        return (component.props.map(({ name,propPreview,propCode,description }) => (
+          <div key={name}>
+            <h3 key={name}>{name}</h3>
+            <p key={name + 'code'} style={{color: "blue"}}>{propPreview}</p>
+            <p key={description}>{description}</p>
+            {React.createElement(display, propCode)}
+          </div>)))
+      }
+      else {
+        return (<p>Nothing to see here</p>)
+      }
 
-  <h2><u>ActionButtonGroup</u></h2>
-  <p>This is a way to put Action Buttons together. Use for 2 or more Action Buttons.</p>
-  <p style={{color: "blue"}}>Place the normal ActionButtons within component ActionButtonGroup after importing as normal</p>
-  <ActionButtonGroup>
-    <ActionButton/> 
-    <ActionButton/> 
-    <ActionButton/> 
-  </ActionButtonGroup>
-  
-  <h2><u>Button</u></h2>
-  <p>This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!</p>
-  <Button/>
-  
-  <h3>Size</h3>
-  <p style={{color: "blue"}}>size="medium"</p>
-  <p>The default is small, as shown above.</p>
-  <Button size="medium"/> 
 
-  <h3>Text</h3>
-  <p style={{color: "blue"}}>text="This button is amazing!!!"</p>
-  <p>This prop changes the text on the button.</p>
-  <Button text="This button is amazing!!!"/>
+    }
+    return (
+      <div>
+        <h1>{component.name}</h1>
+        <p style={{color: "blue"}}>{component.codePreview}</p>
+        {React.createElement(display, component.req_props, component.req_children)}
 
-  {/* <h2><u>ProgressBar</u></h2>
-  <p>Shows current progress</p>
-  <p>Donut is on infinite loop</p>
-  <ProgressBar percent='5'/> */}
+        <hr/>
 
-  <h2><u>SearchBar</u></h2>
-  <p>Used for finding things.</p>
-  <p>The x works for clearing the bar.</p>
-  <SearchBar/>
+        <h2>Why would I use this?</h2>
+        <p>{component.use}</p>
 
-  <h2><u>Textfield</u></h2>
-  <p>This is where you can enter text.</p>
-  <Textfield/>
+        <hr/>
 
-  <h3>Size</h3>
-  <p style={{color: "blue"}}>size="medium"</p>
-  <p>The default is small, as shown above.</p>
-  <Textfield size="medium"/>
+        <h2>Props</h2>
+        {Props(component)}
 
-  <h3>Text</h3>
-  <p style={{color: "blue"}}>text="Enter cat names"</p>
-  <Textfield text="Enter cat names" />
+      </div>
+    )
+  };
 
-  <h2><u>ToggleButton</u></h2>
-  <p>This button is used to show if something is on/selected. It could show the user what mode they are in.</p>
-  <ToggleButton/>
+  //ROUTER SECTION
+  return (
+    <Router>
+      <div>
+        <GlobalFont/>
 
-  <h3>Size</h3>
-  <p style={{color: "blue"}}>size="medium"</p>
-  <p>The default is always small, as shown above.</p>
-  <ToggleButton size="medium"/> 
+        <NavBar>
+          <div style={{marginLeft: '10px'}}>
+            <h1>Components</h1>
+            {/* <SearchBar width='110px'/> */}
+          </div>
+          <List>
+            {dataStructure.map(({ name, id}) => (
+              <li key={id}><Link to={`/controls/${id}`} style={{color: "black"}}>{name}</Link></li>
+            ))}
+          </List>
+        </NavBar>
 
-  <h3>Text</h3>
-  <p style={{color: "blue"}}>text="Select me"</p>
-  <ToggleButton text="Select me" />
+        <Content>
+          <Route exact path='/controls' component={Home}></Route>
+          <Route path={`/controls/:componentId`} component={Components}></Route>
+        </Content>
 
-  <h3>isSelected</h3>
-  <p style={{color: "blue"}}>isSelected</p>
-  <p>If added, starts the button in selected state.</p>
-  <ToggleButton isSelected/>
+      </div>
+    </Router>
+   
 
-  <h3>Switch Text</h3>
-  <p style={{color: "blue"}}>switch_text="frog"</p>
-  <p>Text changes to this value when selected.</p>
-  <ToggleButton switch_text="frog"/>
-
-  <h3>Label</h3>
-  <p style={{color: "blue"}}>label="What: "</p>
-  <p>Adds label to button</p>
-  <ToggleButton label="What: "/>
-
-  <h3>Icon</h3>
-  <p style={{color: "blue"}}>Import ( faCode ) from '@fortawesome/free-solid-svg-icons'</p>
-  <p style={{color: "blue"}}>icon=(*FontAwesomeIcon icon=(faCode)/*)</p>
-  <p style={{color: "blue"}}>* is less than and greater than for HTML tags and ( is the curly bracket. If I wrote it in that notation, it appears like this: {<FontAwesomeIcon icon={faCode}/>}</p>
-  <p>See <a target="_blank" href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit">Style Guide</a> for more info on how to use FontAwesomeIcons</p>
-  <p>Adds icon in button</p>
-  <ToggleButton icon={<FontAwesomeIcon icon={faCode}/>}/>
-
-  <h3>Icon and Text</h3>
-  <p style={{color: "blue"}}>icon=(*FontAwesomeIcon icon=(faFish)/*) text="Fish"</p>
-  <p style={{color: "blue"}}>See Icon above for proper formatting.</p>
-  <p>Adds icon with text to button</p>
-  <ToggleButton icon={<FontAwesomeIcon icon={faFish}/>} text="Fish"/>
-
-  <h2><u>UnitMenu</u></h2>
-  <p>Textfield with attached menu. Current application is displaying and changing units of values</p>
-  <UnitMenu units={["EM", "PT", "PX"]}/>
-
-  <h3>Units</h3>
-  <p style={{color: "blue"}}>units=["EM", "PT", "PX"] but put the array in the curly brackets.</p>
-  <p>Adds the units to the menu. Required for the commponent to work.</p>
-  <UnitMenu units={["EM", "PT", "PX"]}/>
-  <UnitMenu units={["EM", "PT", "PX"]}/>
-  <UnitMenu units={["EM", "PT", "PX"]}/>
-
-  <h3>Defaults</h3>
-  <p style={{color: "blue"}}>defaults=["None", "Auto"] but put the array in the curly brackets.</p>
-  <p>Defaults are unitless values defined by us somewhere else. The word in the array will appear in the textfield and a - will appear on the main button.</p>
-  <UnitMenu
-        units={["EM", "PT", "PX"]}
-        defaults={["None", "Auto"]}
-      />
-
-  <h3>Label</h3>
-  <p style={{color: "blue"}}>label="Label: "</p>
-  <p>Adds label in front of the component. Dragging on the label will increment the value.</p>
-  <UnitMenu
-        units={["EM", "PT", "PX"]}
-        defaults={["None", "Auto"]}
-        label="Label: "
-      />
-
-  <h2><u>VerticalDivider</u></h2>
-  <p>Creates visual separation. It is only avaliable vertical and at this size currently.</p>
-  <VerticalDivider/>
-  
-</div>
-);
-};
+  );
+}
