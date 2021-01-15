@@ -13,7 +13,6 @@ const NavPanelWrapper = styled.div`
   overflow: auto;
 `;
 
-
 const VisibilityButton = styled.button`
   width: 40px;
   height: 40px;

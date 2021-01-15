@@ -1,7 +1,7 @@
-import React from "react";
-import Tool from "../imports/Tool/Tool";
+import React, { useState } from "react";
+import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
-import Switch from "../imports/Switch"
+import Switch from "../imports/Switch";
 import {
   atom,
   useSetRecoilState,
@@ -9,17 +9,16 @@ import {
   useRecoilValue,
   selector,
   atomFamily,
-  selectorFamily
-} from 'recoil';
-import { 
-  BreadcrumbContainer 
-} from '../imports/Breadcrumb';
+  selectorFamily,
+  RecoilRoot,
+} from "recoil";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
+import { supportVisible } from "../imports/Tool/SupportPanel";
 
 let numAtom = atom({
   key: "numAtom",
   default: 0,
 });
-
 
 let unitAtom = atom({
   key: "unitAtom",
@@ -37,15 +36,15 @@ let molecule = selector({
 });
 
 let mytest = selector({
-  key:"mytest",
-  get:({get})=>{
+  key: "mytest",
+  get: ({ get }) => {
     let mole = get(molecule);
-    console.log("MOLE!!!")
-    return `this is mole ${mole}`
-  }
-})
+    console.log("MOLE!!!");
+    return `this is mole ${mole}`;
+  },
+});
 
-function GlobalSelectIndicator(){
+function GlobalSelectIndicator() {
   let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
   let nodes = [];
   for (let nodeObj of selectedNodes) {
@@ -70,7 +69,7 @@ function GlobalSelectIndicator(){
   );
 }
 
-function Inc(props){
+function Inc(props) {
   let setNum = useSetRecoilState(numAtom);
   return <button onClick={() => setNum((old) => old + 1)}>+</button>;
 }
@@ -81,34 +80,54 @@ function NumIndicator() {
 }
 
 export default function DoenetExampleTool(props) {
+  const setSupportVisiblity = useSetRecoilState(supportVisible);
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
   console.log("=== DoenetExampleTool");
+
   return (
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
-        <div><button onClick={()=>{}}>Prefetch</button></div>
-        <div><button onClick={()=>{}}>Display Info</button></div>
+        {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+        <div>
+          <button onClick={() => {}}>Prefetch</button>
+        </div>
+        <div>
+          <button onClick={() => {}}>Display Info</button>
+        </div>
         {/* <Drive types={['content','course']} /> */}
-      </navPanel> 
+        <div>
+          <button
+            onClick={() => {
+              setOverlayOpen("George");
+            }}
+          >
+            Go to Overlay
+          </button>
+        </div>
+      </navPanel>
 
       <headerPanel title="my title">
-        <Switch onChange={() => {}}/>
+        <Switch
+          onChange={(value) => {
+            setSupportVisiblity(value);
+          }}
+        />
         <p>header for important stuff</p>
       </headerPanel>
 
       <mainPanel>
         <p>do the main important stuff</p>
-     
+
         <NumIndicator />
         <BreadcrumbContainer />
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+        {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
         {/* <Drive types={['content','course']} /> */}
       </mainPanel>
 
       <supportPanel width="40%">
         <p>I'm here for support</p>
-        <GlobalSelectIndicator />
+        {/* <GlobalSelectIndicator /> */}
       </supportPanel>
 
       <menuPanel title="edit">
@@ -119,6 +138,48 @@ export default function DoenetExampleTool(props) {
       <menuPanel title="other">
         <p>control more important stuff</p>
       </menuPanel>
+
+      <overlay>
+        <headerPanel title="my title">
+          <Switch
+            onChange={(value) => {
+              setSupportVisiblity(value);
+            }}
+          />
+          <p>header for important stuff</p>
+        </headerPanel>
+
+        <mainPanel>
+          <p>do the main important stuff</p>
+
+          <NumIndicator />
+          <BreadcrumbContainer />
+          {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+          {/* <Drive types={['content','course']} /> */}
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>I'm here for support</p>
+          {/* <GlobalSelectIndicator /> */}
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <Inc />
+          <p>control important stuff</p>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+
+          <button
+            onClick={() => {
+              setOverlayOpen("");
+            }}
+          >
+            Go Back
+          </button>
+        </menuPanel>
+      </overlay>
     </Tool>
   );
 }

@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { RecoilRoot } from "recoil";
+import { atom, selector, useRecoilValue } from "recoil";
 import NavPanel from "./NavPanel";
 import ContentPanel from "./ContentPanel";
+import SupportPanel from "./SupportPanel";
 import MenuPanel from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
 // import { DropTargetsProvider } from "../DropTarget";
@@ -31,9 +32,27 @@ const ToolContainer = styled.div`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
+  z-index: ${({ isOverlay }) => (isOverlay ? "10" : "auto")};
 `;
 
+export const activeOverlayName = atom({
+  key: "activeOverlayNameAtom",
+  default: "",
+});
+
+export const openOverlayByName = selector({
+  key: "openOverlayByNameSelector",
+  get: ({ get }) => {
+    return get(activeOverlayName);
+  },
+
+  set: ({ set }, newValue) => {
+    set(activeOverlayName, newValue);
+  },
+});
+
 export default function Tool(props) {
+  const openOverlayName = useRecoilValue(openOverlayByName);
   console.log("=== Tool (only once)");
 
   var toolParts = {};
@@ -44,6 +63,7 @@ export default function Tool(props) {
     "mainPanel",
     "supportPanel",
     "menuPanel",
+    "overlay",
   ];
 
   if (props.children) {
@@ -87,6 +107,7 @@ export default function Tool(props) {
   let mainPanel = null;
   let supportPanel = null;
   let menuPanel = null;
+  let overlay = null;
 
   if (toolParts.navPanel) {
     navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
@@ -119,10 +140,10 @@ export default function Tool(props) {
 
   if (toolParts.supportPanel) {
     supportPanel = (
-      <div style={{ boxSizing: "border-box", overflow: "clip" }}>
+      <SupportPanel>
         <h2>Support Panel</h2>
         {toolParts.supportPanel.children}
-      </div>
+      </SupportPanel>
     );
   }
 
@@ -130,16 +151,26 @@ export default function Tool(props) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
+  if (toolParts.overlay) {
+    overlay = toolParts.overlay.children;
+  }
+
+  let toolContent = null;
+
+  if (!props.isOverlay && openOverlayName !== "") {
+    toolContent = <Tool isOverlay>{overlay}</Tool>;
+  }
+
   return (
     <ReactQueryCacheProvider queryCache={queryCache}>
-      <RecoilRoot>
-        <ToolContainer>
-          {navPanel}
-          {headerPanel}
-          <ContentPanel main={mainPanel} support={supportPanel} /> {menuPanel}
-          {/* <ReactQueryDevtools /> */}
-        </ToolContainer>
-      </RecoilRoot>
+      {toolContent}
+      <ToolContainer style={props.style} isOverlay={props.isOverlay}>
+        {navPanel}
+        {headerPanel}
+        <ContentPanel main={mainPanel} support={supportPanel} />
+        {menuPanel}
+        {/* <ReactQueryDevtools /> */}
+      </ToolContainer>
     </ReactQueryCacheProvider>
   );
 }
