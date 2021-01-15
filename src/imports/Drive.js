@@ -442,7 +442,7 @@ function Folder(props){
       switch(item.itemType){
         case "Folder":
         items.push(<Folder 
-          key={`item${itemId}`} 
+          key={`item${itemId}${props.browserId}`} 
           driveId={props.driveId} 
           folderId={item.itemId} 
           indentLevel={props.indentLevel+1}  
@@ -456,7 +456,7 @@ function Folder(props){
         break;
         case "Url":
           items.push(<Url 
-            key={`item${itemId}`} 
+            key={`item${itemId}${props.browserId}`} 
             driveId={props.driveId} 
             item={item} 
             indentLevel={props.indentLevel+1}  
@@ -469,7 +469,7 @@ function Folder(props){
         break;
         case "DoenetML":
           items.push(<DoenetML 
-            key={`item${itemId}`} 
+            key={`item${itemId}${props.browserId}`} 
             driveId={props.driveId} 
             item={item} 
             indentLevel={props.indentLevel+1}  
@@ -537,7 +537,8 @@ const selectedDriveItems = selectorFamily({
   set:(driveIdBrowserIdItemId) => ({get,set},instruction)=>{
     const globalSelected = get(globalSelectedNodesAtom);
     const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
-    // const visibleItems = get()
+    const visibleItems = get(visibleDriveItems(driveIdBrowserIdItemId.browserId))
+    
     switch (instruction) {
       case "one item":
         if (!isSelected){
@@ -560,8 +561,35 @@ const selectedDriveItems = selectorFamily({
           set(globalSelectedNodesAtom,[...globalSelected,driveIdBrowserIdItemId])
         }
         case "range to item":
-          console.log(">>>range to item")
-
+          console.log(">>>range to item",visibleItems,globalSelected)
+          //No previous items selected so just select this one
+          if (globalSelected.length === 0){
+            set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
+            set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
+          }else{
+            //Set select on all items in range
+            let lastSelectedItem = globalSelected[globalSelected.length-1];
+            const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
+            const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
+            let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
+            let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
+            let componentsToSelect = []
+            for (let i = minIndex; i <= maxIndex; i++){
+              let itemId = visibleItems[i];
+              let item = {...driveIdBrowserIdItemId}
+              item.itemId = itemId;
+              if (!get(selectedDriveItemsAtom(item))){
+                set(selectedDriveItemsAtom(item),true)
+                componentsToSelect.push(item);
+              }
+            }
+            //Sort componentsToSelect if needed so current item is last
+            if (indexOfLastSelected > indexOfCurrentItem){
+              componentsToSelect.reverse();
+            }
+            set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
+            
+          }
         break;
         case "clear all":
           //TODO: Only clear this browser?
