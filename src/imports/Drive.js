@@ -127,6 +127,12 @@ let loadDriveInfoQuery = selectorFamily({
  
 })
 
+//Find BrowserId's given driveId
+let browserIdDictionary = atomFamily({
+  key:"browserIdDictionary",
+  default:[]
+})
+
 let folderDictionary = atomFamily({
   key:"folderDictionary",
   default:selectorFamily({
@@ -160,6 +166,7 @@ export const folderDictionarySelector = selectorFamily({
     return get(folderDictionary(driveIdFolderId));
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
+    const fInfo = get(folderDictionary(driveIdFolderId))
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -185,6 +192,7 @@ export const folderDictionarySelector = selectorFamily({
           urlDescription: null,
           urlId: null
         }
+        //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = {...old}
         newObj.contentsDictionary = {...old.contentsDictionary}
@@ -216,6 +224,47 @@ export const folderDictionarySelector = selectorFamily({
           // throw Error("made up error")
         })
       break;
+      case "delete item":
+        //Remove from folder
+        let item = {driveId:driveIdFolderId.driveId,browserId:instructions.browserId,itemId:instructions.itemId}
+        let newFInfo = {...fInfo}
+        newFInfo["defaultOrder"] = [...fInfo.defaultOrder];
+        newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
+        let index = newFInfo["defaultOrder"].indexOf(instructions.itemId);
+        newFInfo["defaultOrder"].splice(index,1)
+        delete newFInfo["contentsDictionary"][instructions.itemId];
+        set(folderDictionary(driveIdFolderId),newFInfo);
+        //Remove from selection
+        if (get(selectedDriveItemsAtom(item))){
+          console.log(">>>was selected",item)
+          set(selectedDriveItemsAtom(item),false)
+          let newGlobalItems = [];
+          for(let gItem of get(globalSelectedNodesAtom)){
+            if (gItem.itemId !== instructions.itemId){
+              newGlobalItems.push(gItem)
+            }
+          }
+          set(globalSelectedNodesAtom,newGlobalItems)
+        }
+        //Remove from all drive's visible items
+        for (let browserId of get(browserIdDictionary(driveIdFolderId.driveId))){
+          set(visibleDriveItems(browserId),(old)=>{
+          let newArr = [...old]
+          const index = newArr.indexOf(instructions.itemId);
+          if (index > -1){
+            newArr.splice(index,1)
+          }
+          return newArr;
+        })
+        }
+        //Remove from database
+        const pdata = {driveId:driveIdFolderId.driveId,itemId:instructions.itemId}
+        const deletepayload = {
+          params: pdata
+        }
+        const { deletedata } = await axios.get("/api/deleteItem.php", deletepayload)
+
+      break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -230,7 +279,7 @@ export const folderDictionarySelector = selectorFamily({
 function DriveRouted(props){
   console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-
+  const setBrowserId = useSetRecoilState(browserIdDictionary(props.driveId))
   let browserId = useRef("");
 
   if (driveInfo.state === "loading"){ return null;}
@@ -238,7 +287,10 @@ function DriveRouted(props){
     console.error(driveInfo.contents)
     return null;}
 
-  if (browserId.current === ""){ browserId.current = nanoid();}
+  if (browserId.current === ""){ 
+    browserId.current = nanoid();
+    setBrowserId((old)=>{let newArr = [...old]; newArr.push(browserId.current); return newArr;});
+  }
 
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
@@ -296,6 +348,7 @@ function Folder(props){
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId})); 
+  const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",browserId:props.browserId,itemId})}
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
@@ -304,6 +357,15 @@ function Folder(props){
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
  
   let openCloseText = isOpen ? "Close" : "Open";
+  let deleteButton = <button
+  data-doenet-browserid={props.browserId}
+  onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    deleteItem(itemId)
+  }}
+  >Delete</button>
+
   let openCloseButton = <button 
   data-doenet-browserid={props.browserId}
   onClick={(e)=>{
@@ -388,7 +450,7 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} ({folderInfo.contents.defaultOrder.length})</div></div>
+      }}>{openCloseButton} Folder {label} {deleteButton} ({folderInfo.contents.defaultOrder.length})</div></div>
   let items = null;
   if (props.driveObj){
     //Root of Drive
@@ -457,6 +519,7 @@ function Folder(props){
           isNav={props.isNav}
           urlClickBehavior={props.urlClickBehavior}
           pathItemId={props.pathItemId}
+          deleteItem={deleteItem}
 
           />)
         break;
@@ -471,6 +534,7 @@ function Folder(props){
             isNav={props.isNav} 
             urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
+            deleteItem={deleteItem}
           />)
         break;
         case "DoenetML":
@@ -483,6 +547,7 @@ function Folder(props){
             route={props.route}
             isNav={props.isNav} 
             pathItemId={props.pathItemId}
+            deleteItem={deleteItem}
             />)
         break;
         default:
@@ -612,7 +677,6 @@ const selectedDriveItems = selectorFamily({
   }
 })
 
-
 const DoenetML = React.memo((props)=>{
   console.log(`=== 📜 DoenetML`)
   // console.log(">>>DoenetML",props)
@@ -627,6 +691,15 @@ const DoenetML = React.memo((props)=>{
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+
+  let deleteButton = <button
+  data-doenet-browserid={props.browserId}
+  onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    props.deleteItem(props.item.itemId)
+  }}
+  >Delete</button>
 
   return <div
       data-doenet-browserid={props.browserId}
@@ -677,7 +750,7 @@ const DoenetML = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    DoenetML {props.item?.label}</div></div>
+    DoenetML {props.item?.label} {deleteButton} </div></div>
 
   })
 
@@ -695,6 +768,14 @@ const Url = React.memo((props)=>{
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+  let deleteButton = <button
+  data-doenet-browserid={props.browserId}
+  onClick={(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    props.deleteItem(props.item.itemId)
+  }}
+  >Delete</button>
 
   return <div
       data-doenet-browserid={props.browserId}
@@ -748,6 +829,6 @@ const Url = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    Url {props.item?.label}</div></div>
+    Url {props.item?.label} {deleteButton}</div></div>
 
   })
