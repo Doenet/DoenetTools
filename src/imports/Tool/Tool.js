@@ -10,7 +10,7 @@ import { DropTargetsProvider } from "../DropTarget";
 import { ReactQueryDevtools } from "react-query-devtools";
 import crypto from 'crypto';
 
-getContentId = ({ code }) => {
+let getContentId = ({ code }) => {
   const hash = crypto.createHash('sha256');
   if (code === undefined) {
     return;
@@ -34,35 +34,34 @@ const ToolContainer = styled.div`
 `;
 
 export default function Tool(props) {
-  console.log("=== Tool (only once)");
 
   var toolParts = {};
 
   const implementedToolParts = [
-    "navPanel",
-    "headerPanel",
-    "mainPanel",
-    "supportPanel",
-    "menuPanel",
+    "NavPanel",
+    "HeaderPanel",
+    "MainPanel",
+    "SupportPanel",
+    "MenuPanel",
   ];
 
   if (props.children) {
     if (Array.isArray(props.children)) {
       //populate toolParts dictionary from the lowercase Tool children
       for (let child of props.children) {
-        if (implementedToolParts.includes(child.type)) {
+        if (implementedToolParts.includes(child.type.name)) {
           let newProps = { ...child.props };
           delete newProps.children;
-          if (child.type === "menuPanel") {
-            if (!toolParts.menuPanel) {
-              toolParts["menuPanel"] = [];
+          if (child.type.name === "MenuPanel") {
+            if (!toolParts.MenuPanel) {
+              toolParts["MenuPanel"] = [];
             }
-            toolParts.menuPanel.push({
+            toolParts.MenuPanel.push({
               children: child.props.children,
               props: newProps,
             });
           } else {
-            toolParts[child.type] = {
+            toolParts[child.type.name] = {
               children: child.props.children,
               props: newProps,
             };
@@ -71,10 +70,10 @@ export default function Tool(props) {
       }
     } else {
       //Only one child
-      if (implementedToolParts.includes(props.children.type)) {
+      if (implementedToolParts.includes(props.children.type.name)) {
         let newProps = { ...child.props };
         delete newProps.children;
-        toolParts[props.children.type] = {
+        toolParts[props.children.type.name] = {
           children: props.children.props.children,
           props: newProps,
         };
@@ -88,11 +87,11 @@ export default function Tool(props) {
   let supportPanel = null;
   let menuPanel = null;
 
-  if (toolParts.navPanel) {
-    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
+  if (toolParts.NavPanel) {
+    navPanel = <NavPanel>{toolParts.NavPanel.children}</NavPanel>;
   }
 
-  if (toolParts.headerPanel) {
+  if (toolParts.HeaderPanel) {
     headerPanel = (
       <div
         style={{
@@ -103,31 +102,31 @@ export default function Tool(props) {
         }}
       >
         <h2>Tool</h2>
-        {toolParts.headerPanel.children}
+        {toolParts.HeaderPanel.children}
       </div>
     );
   }
 
-  if (toolParts.mainPanel) {
+  if (toolParts.MainPanel) {
     mainPanel = (
       <div style={{ boxSizing: "border-box", overflow: "clip" }}>
         <h2>Main Panel</h2>
-        {toolParts.mainPanel.children}
+        {toolParts.MainPanel.children}
       </div>
     );
   }
 
-  if (toolParts.supportPanel) {
+  if (toolParts.SupportPanel) {
     supportPanel = (
       <div style={{ boxSizing: "border-box", overflow: "clip" }}>
         <h2>Support Panel</h2>
-        {toolParts.supportPanel.children}
+        {toolParts.SupportPanel.children}
       </div>
     );
   }
 
-  if (toolParts.menuPanel) {
-    menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
+  if (toolParts.MenuPanel) {
+    menuPanel = <MenuPanel>{toolParts.MenuPanel}</MenuPanel>;
   }
 
   return (

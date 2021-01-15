@@ -83,6 +83,8 @@ function NumIndicator() {
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool");
   return (
+    <>
+    <p>I am above Tool</p>
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
@@ -120,6 +122,8 @@ export default function DoenetExampleTool(props) {
         <p>control more important stuff</p>
       </menuPanel>
     </Tool>
+    <p>I am below Tool</p>
+    </>
   );
 }
 
