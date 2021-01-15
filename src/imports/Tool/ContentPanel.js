@@ -1,11 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
+import { useRecoilValue } from "recoil";
+import { supportVisible } from "./SupportPanel";
 
 const ContentPanelContainer = styled.div`
-  grid-area: "contentPanel";
+  grid-area: contentPanel;
   display: grid;
-  grid-template-areas: "mainPanel handle supportPanel";
-  grid-template-columns: 1fr 3px 1fr;
+  grid-template: "mainPanel handle supportPanel" / ${({ supportInUse }) =>
+      supportInUse ? `1fr 3px 1fr` : " 1fr 0px 0fr"};
   border-left: 1px solid black;
 `;
 
@@ -17,54 +19,49 @@ const DragHandle = styled.div`
 `;
 
 export default function ContentPanel({ main, support }) {
-  console.log("=== Content Panel")
-  const handleRef = useRef();
   const wrapperRef = useRef();
+  const supportInUse = useRecoilValue(supportVisible);
   let isDragging = false;
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleMouseDown, false);
-    document.addEventListener("mousemove", handleMouseMove, false);
-    document.addEventListener("mouseup", handleMouseUp, false);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown, false);
-      document.addEventListener("mousemove", handleMouseMove, false);
-      document.addEventListener("mouseup", handleMouseUp, false);
-    };
-  });
+    wrapperRef.current.style.gridTemplateColumns = supportInUse
+      ? `1fr 3px 1fr`
+      : " 1fr 0px 0fr";
+  }, [supportInUse]);
 
-  const handleMouseDown = (event) => {
-    if (handleRef.current.contains(event.target)) {
-      isDragging = true;
-    }
+  const handleMouseDown = () => {
+    isDragging = true;
   };
 
   const handleMouseMove = (event) => {
     // Don't do anything if dragging flag is false
     if (isDragging) {
-      let mainWidth =
-        (event.clientX - wrapperRef.current.offsetLeft) /
-        (wrapperRef.current.clientWidth / 2); //TODO: this math needs work
-
-      let newColDefn =
-        mainWidth <= 1
-          ? mainWidth + "fr 3px 1fr"
-          : "1fr 3px " + 1 / mainWidth + "fr";
-      wrapperRef.current.style.gridTemplateColumns = newColDefn;
       event.preventDefault();
+      let proportion =
+        (event.clientX - wrapperRef.current.offsetLeft) /
+        wrapperRef.current.clientWidth;
+      let newColDefn = `${proportion}fr 3px ${1 - proportion}fr`;
+      // setProportion((oldprop) => proportion);
+      wrapperRef.current.style.gridTemplateColumns = newColDefn;
     }
   };
 
-  const handleMouseUp = (event) => {
+  const handleMouseUp = () => {
     if (isDragging) {
       isDragging = false;
     }
   };
 
   return (
-    <ContentPanelContainer ref={wrapperRef}>
+    <ContentPanelContainer
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseUp}
+      ref={wrapperRef}
+      supportInUse={supportInUse}
+    >
       {main}
-      <DragHandle ref={handleRef} />
+      <DragHandle onMouseDown={handleMouseDown} />
       {support}
     </ContentPanelContainer>
   );
