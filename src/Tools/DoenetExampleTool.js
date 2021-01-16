@@ -98,8 +98,6 @@ export default function DoenetExampleTool(props) {
   const setmyAtomFamOne = useSetRecoilState(myAtomFam("one"));
   const setmyAtomFamTwo = useSetRecoilState(myAtomFam("two"));
   return (
-    <>
-    <p>I am above Tool</p>
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
@@ -191,7 +189,5 @@ export default function DoenetExampleTool(props) {
         </menuPanel>
       </overlay>
     </Tool>
-    <p>I am below Tool</p>
-    </>
   );
 }

@@ -53,7 +53,6 @@ export const openOverlayByName = selector({
 
 export default function Tool(props) {
   const openOverlayName = useRecoilValue(openOverlayByName);
-  console.log("=== Tool (only once)");
 
   var toolParts = {};
 
@@ -70,12 +69,13 @@ export default function Tool(props) {
     if (Array.isArray(props.children)) {
       //populate toolParts dictionary from the lowercase Tool children
       for (let child of props.children) {
+        console.log("Child Name", child.type);
         if (implementedToolParts.includes(child.type.name)) {
           let newProps = { ...child.props };
           delete newProps.children;
-          if (child.type.name === "MenuPanel") {
+          if (child.type.name === "menuPanel") {
             if (!toolParts.MenuPanel) {
-              toolParts["MenuPanel"] = [];
+              toolParts["menuPanel"] = [];
             }
             toolParts.MenuPanel.push({
               children: child.props.children,
@@ -91,7 +91,7 @@ export default function Tool(props) {
       }
     } else {
       //Only one child
-      if (implementedToolParts.includes(props.children.type)) {
+      if (implementedToolParts.includes(props.children.type.name)) {
         let newProps = { ...props.children.props };
         delete newProps.children;
         toolParts[props.children.type.name] = {
@@ -108,6 +108,8 @@ export default function Tool(props) {
   let supportPanel = null;
   let menuPanel = null;
   let overlay = null;
+
+  console.log(toolParts);
 
   if (toolParts.NavPanel) {
     navPanel = <NavPanel>{toolParts.NavPanel.children}</NavPanel>;
