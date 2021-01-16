@@ -1,4 +1,4 @@
-import React, {useContext, useState, useCallback, useRef, useEffect} from 'react';
+import React, {useContext, useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
@@ -17,7 +17,8 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-  useHistory
+  useHistory,
+  Link
 } from "react-router-dom";
 
 import {
@@ -344,8 +345,9 @@ function DriveRouted(props){
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setBrowserId = useSetRecoilState(browserIdDictionary(props.driveId))
   let browserId = useRef("");
+  const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId}); 
 
-  if (driveInfo.state === "loading"){ return null;}
+  // if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
     console.error(driveInfo.contents)
     return null;}
@@ -373,6 +375,13 @@ function DriveRouted(props){
   if(props.isNav){
     rootFolderId = props.driveId;
   }
+
+  useEffect(() => {
+    if (driveInfo.state === "loading") return;
+
+    updateBreadcrumb({routePathDriveId, routePathFolderId});
+    
+  }, [driveInfo.state, routePathDriveId, routePathFolderId])
 
 
   return <>
@@ -1053,6 +1062,126 @@ function useDnDCallbacks() {
     renderDragGhost
   }
 
+}
+
+function useUpdateBreadcrumb(props) {
+  const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
+  const { onDragOverContainer } = useDnDCallbacks();
+  const { dropActions } = useContext(DropTargetsContext);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const { isDraggedOverBreadcrumb } = dragState;
+  const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
+  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  
+  const contentsDictionary = useMemo(() => {
+    let contentsDictionary = {};
+    for (let index in driveInfo?.contents?.results) {
+      let result = driveInfo?.contents?.results[index];
+      contentsDictionary[result?.itemId] = result;
+    }
+    return contentsDictionary;
+  }, [driveInfo])
+  
+  const getNodesOnPath = ({currentNodeId, end}) => {
+    let list = [];
+    while (currentNodeId && currentNodeId !== end) {
+      const nodeObj = contentsDictionary?.[currentNodeId];
+      list.push(currentNodeId);
+      currentNodeId = nodeObj?.parentFolderId;
+    }
+    return list;
+  }
+
+  const updateBreadcrumb = ({ routePathDriveId, routePathFolderId }) => {
+
+    if (routePathDriveId === "") {
+      clearBreadcrumb();
+      addBreadcrumbItem({to: "/", element: <div>/</div>});
+      return;
+    }
+
+    if (props.driveId !== routePathDriveId) {
+      return;
+    }
+
+    clearBreadcrumb();
+    let breadcrumbStack = [];
+    
+    // generate folder stack
+    const breadcrumbItemStyle = {
+      fontSize: "18px",
+      color: "#8a8a8a",
+      textDecoration: "none",
+    }
+    let nodesOnPath = getNodesOnPath({ currentNodeId: routePathFolderId, end: routePathDriveId});
+    
+    for (let currentNodeId of nodesOnPath ) {
+      const nodeObj = contentsDictionary?.[currentNodeId];
+
+      let newParams = Object.fromEntries(new URLSearchParams());
+      newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
+      const destinationLink = `../?${encodeParams(newParams)}`
+      // const draggedOver = DnDState.activeDropTargetId === currentNodeId && isDraggedOverBreadcrumb;  
+      const breadcrumbElement = <Link 
+        style={breadcrumbItemStyle} 
+        to={destinationLink}>
+        {nodeObj?.label}
+      </Link>
+
+      breadcrumbElement = <WithDropTarget
+        key={`wdtbreadcrumb${props.driveId}${currentNodeId}`} 
+        id={currentNodeId}
+        registerDropTarget={dropActions.registerDropTarget} 
+        unregisterDropTarget={dropActions.unregisterDropTarget}
+        dropCallbacks={{
+          onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.driveId, isBreadcrumb: true }),
+          onDrop: () => {}
+        }}
+        >
+        { breadcrumbElement } 
+      </WithDropTarget>
+
+      const breadcrumbObj = {
+        to: destinationLink,
+        element: breadcrumbElement
+      }
+
+      breadcrumbStack.unshift(breadcrumbObj);
+    }
+    
+    // add current drive to head of stack
+    let newParams = Object.fromEntries(new URLSearchParams());
+    newParams['path'] = `${routePathDriveId}:${routePathDriveId}::/`;
+    const driveDestinationLink = `../?${encodeParams(newParams)}`
+    
+    const driveBreadcrumbElement = <WithDropTarget
+      key={`wdtbreadcrumb${props.driveId}`} 
+      id={routePathDriveId}
+      registerDropTarget={dropActions.registerDropTarget} 
+      unregisterDropTarget={dropActions.unregisterDropTarget}
+      dropCallbacks={{
+        onDragOver: () => onDragOverContainer({ id: routePathDriveId, driveId: props.driveId, isBreadcrumb: true }),
+        onDrop: () => {}
+      }}
+      >
+      <Link 
+        style={breadcrumbItemStyle} 
+        to={driveDestinationLink}>
+        {props.label}
+      </Link>
+    </WithDropTarget>
+    breadcrumbStack.unshift({
+      to: driveDestinationLink,
+      element: driveBreadcrumbElement
+    });
+
+    // add items in stack to breadcrumb
+    for (let item of breadcrumbStack) {
+      addBreadcrumbItem(item);      
+    }
+  }
+
+  return updateBreadcrumb;
 }
 
 const DragGhost = ({ id, element, numItems }) => {
