@@ -798,8 +798,10 @@ export default class Point extends GraphicalComponent {
         }
         if (coordsAst.length > 1) {
           coordsAst = ["vector", ...coordsAst];
-        } else {
+        } else if (coordsAst.length === 1) {
           coordsAst = coordsAst[0];
+        } else {
+          coordsAst = '\uff3f';
         }
 
         return { newValues: { coords: me.fromAst(coordsAst) } }

@@ -943,3 +943,8 @@ export class SelectIndices extends NumberList {
   static componentType = "selectIndices";
   static rendererType = "numberlist";
 }
+
+export class Rendered extends BooleanComponent {
+  static componentType = "rendered";
+  static rendererType = "boolean";
+}

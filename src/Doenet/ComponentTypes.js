@@ -152,7 +152,6 @@ import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import ComponentSize from './components/abstract/ComponentSize';
-import ComponentWithSerializedChildren from './components/abstract/ComponentWithSerializedChildren';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
 import MathWithVariable from './components/abstract/MathWithVariable';
@@ -288,7 +287,6 @@ const componentTypeArrayExtended = [
   MathBaseOperator, MathBaseOperatorOneInput,
   FunctionBaseOperator,
   ComponentSize,
-  ComponentWithSerializedChildren,
   SectioningComponent,
   TextFromSingleStringChild,
   MathWithVariable,

@@ -1030,6 +1030,7 @@ export default class Extract extends CompositeComponent {
             firstReplacementInd: numReplacementsSoFar + ind,
             numberReplacementsToReplace: 1,
             serializedReplacements: [newSerializedReplacements[ind]],
+            assignNamesOffset: numReplacementsSoFar + ind,
           };
           replacementChanges.push(replacementInstruction);
         }
@@ -1042,6 +1043,7 @@ export default class Extract extends CompositeComponent {
           firstReplacementInd: numReplacementsSoFar + nOldReplacements,
           numberReplacementsToReplace: 0,
           serializedReplacements: newSerializedReplacements.slice(nOldReplacements),
+          assignNamesOffset: numReplacementsSoFar + nOldReplacements,
         };
         replacementChanges.push(replacementInstruction);
       } else if (nNewReplacements < nOldReplacements) {
@@ -1081,6 +1083,7 @@ export default class Extract extends CompositeComponent {
         firstReplacementInd: numReplacementsSoFar + nOldEmpties,
         numberReplacementsToReplace: 0,
         serializedReplacements: lastEmptiesToAdd.slice(nOldEmpties),
+        assignNamesOffset: numReplacementsSoFar + nOldEmpties,
       };
       replacementChanges.push(replacementInstruction);
     } else if (nNewEmpties < nOldEmpties) {
@@ -1125,6 +1128,7 @@ export default class Extract extends CompositeComponent {
       firstReplacementInd: numReplacementsSoFar,
       numberReplacementsToReplace: prevNumReplacements,
       serializedReplacements: newSerializedChildren,
+      assignNamesOffset: numReplacementsSoFar,
     };
     replacementChanges.push(replacementInstruction);
 

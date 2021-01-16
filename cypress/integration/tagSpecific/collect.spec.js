@@ -315,12 +315,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<3; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect2'].replacements[i+3].stateValues.xs[0].tree).eq(x+1);
@@ -344,12 +344,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
@@ -374,12 +374,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
@@ -404,12 +404,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<1; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+1].stateValues.xs[0].tree).eq(x+1);
@@ -434,12 +434,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+4].stateValues.xs[0].tree).eq(x+1);
@@ -463,12 +463,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<6; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+6].stateValues.xs[0].tree).eq(x+1);
@@ -805,15 +805,15 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2*x);
       }
       for(let i=0; i<2; i++) {
         let x=i+1;
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3*x);
       }
       for(let i=0; i<4; i++) {
         let x=i+1;
@@ -841,12 +841,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
@@ -872,12 +872,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(2*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(3*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(2*x);
         expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
@@ -903,12 +903,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<5; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+5].stateValues.xs[0].tree).eq(x+1);
@@ -933,12 +933,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<1; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+1].stateValues.xs[0].tree).eq(x+1);
@@ -963,12 +963,12 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i+4].stateValues.xs[0].tree).eq(x+1);
@@ -993,20 +993,20 @@ describe('Collect Tag Tests',function() {
 
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
       }
       for(let i=0; i<3; i++) {
         let x=i+1;
         expect(components['/_collect1'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
-        expect(components['/_map2'].replacements[i].stateValues.xs[0].tree).eq(x+1);
-        expect(components['/_map2'].replacements[i].stateValues.xs[1].tree).eq(0.75*x);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x+1);
+        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75*x);
       }
       for(let i=0; i<4; i++) {
         let x=i+1;
-        expect(components['/_map1'].replacements[i].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5*x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[0].tree).eq(x);
         expect(components['/_collect2'].replacements[i].stateValues.xs[1].tree).eq(0.5*x);
       }

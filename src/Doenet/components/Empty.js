@@ -4,11 +4,27 @@ import CompositeComponent from './abstract/CompositeComponent';
 export default class Empty extends CompositeComponent {
   static componentType = "empty";
 
-  static assignNamesToAllChildrenExcept = [];
+  static assignNamesToReplacements = true;
 
   static createPropertiesObject() {
     return {};
   }
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "anything",
+      componentType: '_base',
+      comparison: "atLeast",
+      number: 0,
+      setAsBase: true,
+    });
+
+    return childLogic;
+
+  }
+
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
 

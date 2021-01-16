@@ -379,7 +379,7 @@ export function createComponentsFromProps(serializedState, standardComponentClas
           }
           newChildren.push(newComponent);
           delete component.props[prop];
-        } else if (!(propLower === "name" || propLower === "assignnames" || propLower === "assignnamespaces" || propLower === "newnamespace")) {
+        } else if (!(propLower === "name" || propLower === "assignnames" || propLower === "newnamespace")) {
           throw Error("Invalid property: " + prop);
         }
       }
@@ -487,7 +487,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
     let prescribedName = doenetAttributes.prescribedName;
     let assignNames = doenetAttributes.assignNames;
-    let assignNamespaces = doenetAttributes.assignNamespaces;
     let newNamespace = doenetAttributes.newNamespace;
 
     let mustCreateUniqueName =
@@ -497,12 +496,13 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
 
     let prescribedNameFromDoenetAttributes = prescribedName !== undefined;
+    let newNamespaceFromDoenetAttributes = newNamespace !== undefined;
 
     let props = serializedComponent.props;
     if (props === undefined) {
       props = serializedComponent.props = {};
     } else {
-      // look for a property that matches name, assignNames, assignNamespaces, or newNamespace
+      // look for a property that matches name, assignNames, or newNamespace
       // but case insensitive
       for (let key in props) {
         let lowercaseKey = key.toLowerCase();
@@ -524,13 +524,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
             delete props[key];
           } else {
             throw Error("Cannot define assignNames twice for a component");
-          }
-        } else if (lowercaseKey === "assignnamespaces") {
-          if (assignNamespaces === undefined) {
-            assignNamespaces = props[key].split(",").map(x => x.trim());
-            delete props[key];
-          } else {
-            throw Error("Cannot define assignNamespaces twice for a component");
           }
         } else if (lowercaseKey === "newnamespace") {
           if (newNamespace === undefined) {
@@ -577,9 +570,6 @@ export function createComponentNames({ serializedState, namespaceStack = [],
       prescribedName = createUniqueName(componentType, longNameId);
     }
     if (assignNames !== undefined) {
-      if (assignNamespaces !== undefined) {
-        throw Error("Cannot both include assignNames and assignNamespaces")
-      }
 
       // assignNames was specified
       // put in doenetAttributes as assignNames array
@@ -599,29 +589,11 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         throw Error("Duplicate assigned names");
       }
     }
-    if (assignNamespaces !== undefined) {
-      // assignNamespaces was specified
-      // put in doenetAttributes as assignNamespaces array
-      doenetAttributes.assignNamespaces = assignNamespaces;
-
-      for (let name of assignNamespaces) {
-        if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-          throw Error("All assigned namespaces must begin with a letter");
-        }
-        if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
-          throw Error("Assigned namespaces can contain only letters, numbers, hypens, and underscores");
-        }
-      }
-      // check if unique namespaces
-      if (assignNamespaces.length !== new Set(assignNamespaces).size) {
-        throw Error("Duplicate assigned namespaces");
-      }
-    }
     if (newNamespace) {
       // newNamespace was specified
       // put in doenetAttributes as boolean
       doenetAttributes.newNamespace = newNamespace;
-      if (prescribedName === undefined) {
+      if (prescribedName === undefined && !newNamespaceFromDoenetAttributes) {
         throw Error("Cannot create new namespace without defining a name");
       }
     }
@@ -683,19 +655,12 @@ export function createComponentNames({ serializedState, namespaceStack = [],
       currentNamespace.namesUsed[prescribedName] = true;
     }
     // if newNamespace is false,
-    // then register assignNames or assignNamespaces as belonging to current namespace
+    // then register assignNames as belonging to current namespace
     if (newNamespace !== true) {
       if (assignNames !== undefined) {
         for (let name of flattenDeep(assignNames)) {
           if (name in currentNamespace.namesUsed) {
             throw Error("Duplicate component name (from assignNames) " + componentName)
-          }
-          currentNamespace.namesUsed[name] = true;
-        }
-      } else if (assignNamespaces !== undefined) {
-        for (let name of assignNamespaces) {
-          if (name in currentNamespace.namesUsed) {
-            throw Error("Duplicate component name (from assignNamespaces) " + componentName)
           }
           currentNamespace.namesUsed[name] = true;
         }
@@ -705,6 +670,18 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
     if (serializedComponent.children !== undefined) {
       let componentClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
+
+      if (componentClass.createNewNamespacesForChildren) {
+        for (let child of serializedComponent.children) {
+          if (componentClass.createNewNamespacesForChildren.includes(child.componentType)) {
+            if (!child.doenetAttributes) {
+              child.doenetAttributes = {};
+            }
+            child.doenetAttributes.newNamespace = true;
+          }
+        }
+
+      }
 
       if (nameSpaceForChildren) {
         namespaceStack.push({ namespace: nameSpaceForChildren, componentCounts: {}, namesUsed: {} });
@@ -717,10 +694,21 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         });
         namespaceStack.pop();
 
-      } else if (assignNamespaces === undefined && componentClass.assignNamespacesToChildrenOf === undefined) {
-        if (assignNames === undefined && componentClass.assignNamesToAllChildrenExcept === undefined) {
-          // recurse on child, creating new namespace if specified
-          if (newNamespace !== true) {
+      } else if (assignNames === undefined && componentClass.assignNamesToAllChildrenExcept === undefined) {
+        // recurse on child, creating new namespace if specified
+
+        if (newNamespace !== true) {
+          createComponentNames({
+            serializedState: serializedComponent.children,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            usePreserializedNames,
+          });
+        } else {
+
+          if (componentClass.childrenSkippingNewNamespace === undefined) {
+            namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: {} });
             createComponentNames({
               serializedState: serializedComponent.children,
               namespaceStack,
@@ -728,59 +716,48 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               parentDoenetAttributes: doenetAttributes,
               usePreserializedNames,
             });
+            namespaceStack.pop();
           } else {
 
-            if (componentClass.childrenSkippingNewNamespace === undefined) {
-              namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: {} });
-              createComponentNames({
-                serializedState: serializedComponent.children,
-                namespaceStack,
-                componentInfoObjects,
-                parentDoenetAttributes: doenetAttributes,
-                usePreserializedNames,
-              });
-              namespaceStack.pop();
-            } else {
+            let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed: {} };
 
-              let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed: {} };
+            for (let child of serializedComponent.children) {
 
-              for (let child of serializedComponent.children) {
-
-                if (componentClass.childrenSkippingNewNamespace.includes(child.componentType)) {
-                  createComponentNames({
-                    serializedState: [child],
-                    namespaceStack,
-                    componentInfoObjects,
-                    parentDoenetAttributes: doenetAttributes,
-                    usePreserializedNames,
-                  });
-                } else {
-                  namespaceStack.push(newNamespaceInfo);
-                  createComponentNames({
-                    serializedState: [child],
-                    namespaceStack,
-                    componentInfoObjects,
-                    parentDoenetAttributes: doenetAttributes,
-                    usePreserializedNames,
-                  });
-                  namespaceStack.pop();
-                }
+              if (componentClass.childrenSkippingNewNamespace.includes(child.componentType)) {
+                createComponentNames({
+                  serializedState: [child],
+                  namespaceStack,
+                  componentInfoObjects,
+                  parentDoenetAttributes: doenetAttributes,
+                  usePreserializedNames,
+                });
+              } else {
+                namespaceStack.push(newNamespaceInfo);
+                createComponentNames({
+                  serializedState: [child],
+                  namespaceStack,
+                  componentInfoObjects,
+                  parentDoenetAttributes: doenetAttributes,
+                  usePreserializedNames,
+                });
+                namespaceStack.pop();
               }
             }
           }
-        } else {
-          // assignNames or componentClass.assignNamesToAllChildrenExcept is defined
-          // look up class to see what children are assigned names
-          let assignNamesToAllChildrenExcept = componentClass.assignNamesToAllChildrenExcept;
-          let assignNamesToReplacements = componentClass.assignNamesToReplacements;
-          if (!assignNamesToReplacements && assignNamesToAllChildrenExcept === undefined) {
-            throw Error("Cannot assign names for component type " + serializedComponent.componentType);
-          }
+        }
+      } else {
+        // assignNames or componentClass.assignNamesToAllChildrenExcept is defined
+        // look up class to see what children are assigned names
+        let assignNamesToAllChildrenExcept = componentClass.assignNamesToAllChildrenExcept;
+        let assignNamesToReplacements = componentClass.assignNamesToReplacements;
+        if (!assignNamesToReplacements && assignNamesToAllChildrenExcept === undefined) {
+          throw Error("Cannot assign names for component type " + serializedComponent.componentType);
+        }
 
-          for (let [ind, child] of serializedComponent.children.entries()) {
-            let assignChild = !assignNamesToReplacements && !assignNamesToAllChildrenExcept.includes(child.componentType);
+        if (assignNamesToAllChildrenExcept) {
+          for (let child of serializedComponent.children) {
+            if (!assignNamesToAllChildrenExcept.includes(child.componentType)) {
 
-            if (assignChild) {
               // for each child
               // 1. mark as giving a new namespace for its children
               // 2. if name exists, save it and then delete it
@@ -796,6 +773,8 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               let childAlreadyHasNewNamespace = child.doenetAttributes.childAlreadyHasNewNamespace;
               let childName = child.doenetAttributes.prescribedName;
               let prescribedChildNameFromDoenetAttributes = childName !== undefined;
+
+              let childAlreadyHasNewNamespaceFromDoenetAttributes = childAlreadyHasNewNamespace !== undefined;
 
               for (let key in child.props) {
                 let lowercaseKey = key.toLowerCase();
@@ -829,7 +808,7 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
               }
               if (childAlreadyHasNewNamespace) {
-                if (childName === undefined) {
+                if (childName === undefined && !childAlreadyHasNewNamespaceFromDoenetAttributes) {
                   throw Error("Cannot create new namespace without defining a name");
                 }
                 child.doenetAttributes.alreadyHadNewNamespace = true;
@@ -839,129 +818,41 @@ export function createComponentNames({ serializedState, namespaceStack = [],
               child.doenetAttributes.newNamespace = true;
             }
           }
-
-
-          // recurse on children
-          if (newNamespace !== true) {
-            createComponentNames({
-              serializedState: serializedComponent.children,
-              namespaceStack,
-              componentInfoObjects,
-              parentDoenetAttributes: doenetAttributes,
-              usePreserializedNames,
-            });
-          } else {
-
-            // if newNamespace, then need to make sure that assigned names
-            // don't conflict with new names added,
-            // so include in namesused
-            let namesUsed = {};
-            if (assignNames !== undefined) {
-              flattenDeep(assignNames).forEach(x => namesUsed[x] = true);
-            }
-
-            namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: namesUsed });
-            createComponentNames({
-              serializedState: serializedComponent.children,
-              namespaceStack,
-              componentInfoObjects,
-              parentDoenetAttributes: doenetAttributes,
-              usePreserializedNames,
-            });
-
-            namespaceStack.pop();
-
-          }
-
-        }
-      } else {
-        // assignNamespaces or assignNamespacesToChildrenOf is defined
-        // look up class to see what children are assigned namespaces
-        let assignNamespacesToChildrenOf = componentClass.assignNamespacesToChildrenOf;
-        if (assignNamespacesToChildrenOf === undefined) {
-          throw Error("Cannot assign namespaces for component type " + serializedComponent.componentType);
-        }
-        let childrenAssigned = [];
-        let childrenNotAssigned = [];
-        for (let child of serializedComponent.children) {
-          if (assignNamespacesToChildrenOf.includes(child.componentType)) {
-            childrenAssigned.push(child);
-          } else {
-            childrenNotAssigned.push(child);
-          }
         }
 
-        let standinNamespace;
 
-        if (assignNamespaces !== undefined) {
-          standinNamespace = assignNamespaces[0]
-        } else if (newNamespace) {
-          // if new namespace, then we don't have to worry about colliding with
-          // another _unique name
-          standinNamespace = '__temp_unique_1';
-        } else {
-          // create a unique name from the component name
-          let nameBase = prescribedName;
-          if (nameBase === undefined) {
-            nameBase = '_' + componentType + count;
-          }
-          standinNamespace = `__temp_${nameBase}_1`;
-        }
-
-        // recurse on children assign and not assigned namespace
+        // recurse on children
         if (newNamespace !== true) {
           createComponentNames({
-            serializedState: childrenNotAssigned,
+            serializedState: serializedComponent.children,
             namespaceStack,
             componentInfoObjects,
             parentDoenetAttributes: doenetAttributes,
             usePreserializedNames,
           });
-
-          // just use first assignedNamespace for the aliases
-          // namespaceStack.push({ namespace: standinNamespace, componentCounts: {}, namesUsed: {} });
-          createComponentNames({
-            serializedState: childrenAssigned,
-            namespaceStack,
-            componentInfoObjects,
-            nameSpaceForChildren: standinNamespace,
-            parentDoenetAttributes: doenetAttributes,
-            usePreserializedNames,
-          });
-          // namespaceStack.pop();
-
         } else {
 
-          // if newNamespace, then need to make sure that assigned namespaces
+          // if newNamespace, then need to make sure that assigned names
           // don't conflict with new names added,
           // so include in namesused
           let namesUsed = {};
-          if (assignNamespaces) {
-            assignNamespaces.forEach(x => namesUsed[x] = true);
+          if (assignNames !== undefined) {
+            flattenDeep(assignNames).forEach(x => namesUsed[x] = true);
           }
 
           namespaceStack.push({ namespace: prescribedName, componentCounts: {}, namesUsed: namesUsed });
           createComponentNames({
-            serializedState: childrenNotAssigned,
+            serializedState: serializedComponent.children,
             namespaceStack,
             componentInfoObjects,
             parentDoenetAttributes: doenetAttributes,
             usePreserializedNames,
           });
 
-          // namespaceStack.push({ namespace: standinNamespace, componentCounts: {}, namesUsed: {} });
-          createComponentNames({
-            serializedState: childrenAssigned,
-            namespaceStack,
-            componentInfoObjects,
-            nameSpaceForChildren: standinNamespace,
-            parentDoenetAttributes: doenetAttributes,
-            usePreserializedNames,
-          });
-          // namespaceStack.pop();
           namespaceStack.pop();
 
         }
+
       }
     }
 
@@ -1286,19 +1177,20 @@ export function removeNamespace(serializedState, namespace) {
 }
 
 export function processAssignNames({
-  assignNames, serializedComponents,
+  assignNames = [],
+  serializedComponents,
   assignDirectlyToComposite,
   // componentTypeByTarget,
   // propVariableObjs,
   parentName,
   parentCreatesNewNamespace,
   componentInfoObjects,
-  indOffset = 0
+  indOffset = 0,
+  addEmpties = true,
+  createEmptiesFunction,
+  additionalArgsForEmptiesFunction,
 }) {
 
-  if (assignNames === undefined) {
-    return { serializedComponents };
-  }
 
   // if assignDirectlyToComposite and serializedComponents is a single composite,
   // just give assignNames as attribute of the composite
@@ -1308,7 +1200,8 @@ export function processAssignNames({
     componentInfoObjects.isInheritedComponentType({
       inheritedComponentType: serializedComponents[0].componentType,
       baseComponentType: "_composite"
-    })
+    }) &&
+    componentInfoObjects.allComponentClasses[serializedComponents[0].componentType].assignNamesToReplacements
   ) {
 
     if (indOffset > 0) {
@@ -1330,7 +1223,10 @@ export function processAssignNames({
 
   // if assignNames is longer than original number of compoments
   // will pad components with empties so that all names have a target
-  let nComponents = Math.max(assignNames.length - indOffset, serializedComponents.length)
+  let nComponents = serializedComponents.length;
+  if (addEmpties) {
+    nComponents = Math.max(assignNames.length - indOffset, nComponents)
+  }
 
   for (let ind = 0; ind < nComponents; ind++) {
 
@@ -1341,8 +1237,20 @@ export function processAssignNames({
     let addingEmpty = false;
 
     if (component === undefined) {
-      component = {
-        componentType: "empty"
+      if (createEmptiesFunction) {
+        let empties = createEmptiesFunction({
+          nEmptiesToAdd: 1,
+          firstInd: ind + indOffset,
+          assignNames, parentName, parentCreatesNewNamespace,
+          componentInfoObjects,
+          additionalArgs: additionalArgsForEmptiesFunction
+        });
+        component = empties[0];
+
+      } else {
+        component = {
+          componentType: "empty"
+        }
       }
 
       addingEmpty = true;
@@ -1394,16 +1302,37 @@ export function processAssignNames({
 
     } else {
 
-      processAssignNamesSub({
-        name, parentName,
-        ind: ind + indOffset,
-        component,
-        parentCreatesNewNamespace, componentInfoObjects
-      });
+      if (name === undefined) {
+        let longNameId = parentName + "|assignName|" + (ind + indOffset).toString();
+        name = createUniqueName(component.componentType,
+          longNameId);
+      }
+
+      if (!component.doenetAttributes) {
+        component.doenetAttributes = {};
+      }
+
+      component.doenetAttributes.prescribedName = name;
+      delete component.preserializedName;
+      component.doenetAttributes.newNamespace = true;
 
       if (addingEmpty) {
+        if (!createEmptiesFunction) {
+          createComponentNamesFromParentName({
+            name, parentName,
+            ind: ind + indOffset,
+            component,
+            parentCreatesNewNamespace, componentInfoObjects
+          });
+        }
         emptiesToAdd.push(component);
       } else {
+        createComponentNamesFromParentName({
+          name, parentName,
+          ind: ind + indOffset,
+          component,
+          parentCreatesNewNamespace, componentInfoObjects
+        });
         processedComponents.push(component);
       }
 
@@ -1467,23 +1396,11 @@ export function processAssignNames({
 
 }
 
-function processAssignNamesSub({
-  name, parentName, ind, component,
+export function createComponentNamesFromParentName({
+  parentName, component,
   parentCreatesNewNamespace, componentInfoObjects
 }) {
 
-  if (name === undefined) {
-    let longNameId = parentName + "|assignName|" + ind.toString();
-    name = createUniqueName(component.componentType,
-      longNameId);
-  }
-
-  if (!component.doenetAttributes) {
-    component.doenetAttributes = {};
-  }
-  component.doenetAttributes.prescribedName = name;
-  delete component.preserializedName;
-  component.doenetAttributes.newNamespace = true;
 
   let namespacePieces = parentName.split('/');
 

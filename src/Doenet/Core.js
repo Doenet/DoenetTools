@@ -869,6 +869,22 @@ export default class Core {
       componentClass.modifySharedParameters({ sharedParameters, serializedComponent });
     }
 
+    if (serializedComponent.doenetAttributes &&
+      serializedComponent.doenetAttributes.pushSharedParameters
+    ) {
+      for (let parInstruction of serializedComponent.doenetAttributes.pushSharedParameters) {
+        let pName = parInstruction.parameterName;
+        if (pName in sharedParameters) {
+          sharedParameters[pName] = [...sharedParameters[pName]];
+        }
+        else {
+          sharedParameters[pName] = [];
+        }
+        sharedParameters[pName].push(parInstruction.value);
+      }
+    }
+
+
     if (serializedChildren !== undefined) {
 
       let setUpVariant = false;
@@ -1449,12 +1465,22 @@ export default class Core {
 
       // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
 
-      let assignNames;
-      if (component.doenetAttributes) {
-        assignNames = component.doenetAttributes.assignNames;
-      }
 
-      if (assignNames) {
+      if (component.constructor.assignNamesToReplacements) {
+
+        let assignNames;
+        if (component.doenetAttributes) {
+          assignNames = component.doenetAttributes.assignNames;
+        }
+        let createEmptiesFunction, additionalArgsForEmptiesFunction;
+
+        if (shadowedComposite.constructor.returnEmptiesFunctionAndAdditionalArgs) {
+          let result = shadowedComposite.constructor.returnEmptiesFunctionAndAdditionalArgs(
+            shadowedComposite
+          );
+          createEmptiesFunction = result.createEmptiesFunction;
+          additionalArgsForEmptiesFunction = result.additionalArgs;
+        }
 
         let processResult = serializeFunctions.processAssignNames({
           assignNames,
@@ -1462,14 +1488,25 @@ export default class Core {
           assignDirectlyToComposite: component.componentType === "copy",
           parentName: component.componentName,
           parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-          propVariableObjs: component.stateValues.propVariableObjs,
-          componentTypeByTarget: component.stateValues.componentTypeByTarget,
+          // propVariableObjs: component.stateValues.propVariableObjs,
+          // componentTypeByTarget: component.stateValues.componentTypeByTarget,
           componentInfoObjects: this.componentInfoObjects,
+          createEmptiesFunction,
+          additionalArgsForEmptiesFunction,
         });
 
         component.extraEmpties = processResult.nEmptiesAdded;
 
         serializedReplacements = processResult.serializedComponents;
+      } else {
+        for (let replacement of serializedReplacements) {
+          serializeFunctions.createComponentNamesFromParentName({
+            component: replacement,
+            parentName: component.componentName,
+            parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+            componentInfoObjects: this.componentInfoObjects,
+          });
+        }
       }
 
       this.createAndSetReplacements({
@@ -1524,27 +1561,6 @@ export default class Core {
         updatesNeeded,
         compositesBeingExpanded,
       });
-    } else if (result.replacementsWithInstructions) {
-
-      throw Error("removing replacementsWithInstructions");
-
-      let serializedReplacementsFromComponent;
-      // if (component.serializedReplacements) {
-      //   // if component came with serialized replacements, use those instead
-      //   // however, we will push any sharedparameters from instructions
-      //   // before creating
-      //   serializedReplacementsFromComponent = component.serializedReplacements;
-      //   delete component.serializedReplacements;
-      // }
-
-
-      this.createAndSetReplacementsWithInstructions({
-        component,
-        replacementsWithInstructions: result.replacementsWithInstructions,
-        serializedReplacementsFromComponent,
-        updatesNeeded,
-        compositesBeingExpanded
-      })
     } else {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
@@ -1597,7 +1613,7 @@ export default class Core {
 
   createAndSetReplacements({ component, serializedReplacements, updatesNeeded, compositesBeingExpanded }) {
 
-    this.parameterStack.push(component.parentSharedParameters, false);
+    this.parameterStack.push(component.sharedParameters, false);
 
     let namespaceForUnamed;
     if (component.doenetAttributes.newNamespace) {
@@ -1627,259 +1643,6 @@ export default class Core {
       comp.replacementOf = component;
     }
 
-  }
-
-  createAndSetReplacementsWithInstructions({ component, replacementsWithInstructions,
-    serializedReplacementsFromComponent, updatesNeeded, compositesBeingExpanded
-  }) {
-
-    this.parameterStack.push(component.parentSharedParameters, false);
-
-    let replacements = this.processReplacementsWithInstructions({
-      replacementsWithInstructions, serializedReplacementsFromComponent, component,
-      updatesNeeded, compositesBeingExpanded
-    });
-
-    this.parameterStack.pop();
-
-    component.replacements = replacements;
-    component.isExpanded = true;
-
-    // record for top level replacement that they are a replacement of composite
-    for (let comp of component.replacements) {
-      comp.replacementOf = component;
-    }
-
-  }
-
-  processReplacementsWithInstructions({ replacementsWithInstructions,
-    serializedReplacementsFromComponent, component,
-    updatesNeeded, compositesBeingExpanded
-  }) {
-
-    throw Error("Let's try to do this differently!")
-    let replacements = [];
-
-    for (let [ind, replacementInstruction] of replacementsWithInstructions.entries()) {
-      let replacementsToAdd = replacementInstruction.replacements;
-      let nReplacementsInChunk = replacementsToAdd.length;
-
-      if (serializedReplacementsFromComponent) {
-        replacementsToAdd = serializedReplacementsFromComponent.slice(0, nReplacementsInChunk);
-        serializedReplacementsFromComponent = serializedReplacementsFromComponent.slice(nReplacementsInChunk);
-      }
-
-      this.parameterStack.push();
-
-      for (let instruction of replacementInstruction.instructions) {
-        if (instruction.operation === "pushSharedParameter") {
-          let pName = instruction.parameterName;
-          if (pName in this.parameterStack.parameters) {
-            this.parameterStack.parameters[pName] = [...this.parameterStack.parameters[pName]];
-          }
-          else {
-            this.parameterStack.parameters[pName] = [];
-          }
-          this.parameterStack.parameters[pName].push(instruction.value);
-        }
-        else if (instruction.operation === "assignNamespace") {
-          throw Error('removed assignNamespace instruction')
-          // if (serializedReplacementsFromComponent) {
-          //   // skip assigning namespace if already have serialized replacements from component
-          //   continue;
-          // }
-
-          let namespace = instruction.namespace;
-
-          if (namespace === undefined) {
-            let longNameId = component.ancestors[0].componentName + "|"
-              + component.componentName + "|assignNamespace|";
-            if (instruction.uniqueIdentifier) {
-              longNameId += instruction.uniqueIdentifier;
-            } else {
-              longNameId += JSON.stringify(replacementInstruction.instructions)
-            }
-
-            namespace = createUniqueName(component.componentType,
-              longNameId);
-          }
-
-          let namespacePieces = component.componentName.split('/');
-
-          if (!component.doenetAttributes.newNamespace) {
-            namespacePieces.pop();
-          }
-
-          let namespaceStack = namespacePieces.map(x => ({
-            namespace: x,
-            componentCounts: {},
-            namesUsed: {}
-          }));
-
-          if (!(component.componentName[0] === '/')) {
-            // if componentName doesn't begin with a /
-            // still add a namespace for the root namespace at the beginning
-            namespaceStack.splice(0, 0, {
-              componentCounts: {},
-              namesUsed: {},
-              namespace: ""
-            })
-          }
-          namespaceStack.push({ namespace: namespace, componentCounts: {}, namesUsed: {} });
-
-          serializeFunctions.createComponentNames({
-            serializedState: replacementsToAdd,
-            namespaceStack,
-            componentInfoObjects: this.componentInfoObjects,
-            parentDoenetAttributes: { componentName: component.ancestors[0].componentName }
-          });
-        }
-        else if (instruction.operation === "assignName") {
-          throw Error('removed assignName instruction')
-
-          // if (serializedReplacementsFromComponent) {
-          //   // skip assigning namespace if already have serialized replacements from component
-          //   continue;
-          // }
-
-          if (replacementsToAdd.length !== 1) {
-            throw Error(`Cannot assign name to replacements when not exactly one replacement`)
-          }
-
-          let theReplacement = replacementsToAdd[0];
-
-          let name = instruction.name;
-
-          if (name === undefined) {
-            let longNameId = component.ancestors[0].componentName + "|"
-              + component.componentName + "|assignName|";
-            if (instruction.uniqueIdentifier) {
-              longNameId += instruction.uniqueIdentifier;
-            } else {
-              longNameId += JSON.stringify(replacementInstruction.instructions)
-            }
-
-            name = createUniqueName(theReplacement.componentType,
-              longNameId);
-          }
-
-          if (Array.isArray(name)) {
-
-            throw Error(`Are we creating arrays of names here now?`)
-            // if name is an array, then it refers to names of the grandchildren
-            // must create unique name for child
-
-            let longNameId = component.ancestors[0].componentName + "|"
-              + component.componentName + "|nameForChild|";
-            if (instruction.uniqueIdentifier) {
-              longNameId += instruction.uniqueIdentifier;
-            } else {
-              longNameId += JSON.stringify(replacementInstruction.instructions)
-            }
-
-            // Note: nameForChild will only be used
-            // to prepend identifier for unique names of grandchildren
-            // whose names aren't specified
-            let nameForChild = createUniqueName(component.componentType,
-              longNameId);
-
-            if (!theReplacement.doenetAttributes) {
-              theReplacement.doenetAttributes = {}
-            }
-            theReplacement.doenetAttributes.prescribedName = nameForChild;
-            delete theReplacement.doenetAttributes.newNamespace;
-
-            if (theReplacement.children !== undefined) {
-              let ind = -1;
-              for (let grandchild of theReplacement.children) {
-
-                // skip string and property grandchildren
-                if (grandchild.componentType === "string"
-                  || grandchild.doenetAttributes
-                  && grandchild.doenetAttributes.createdFromProperty
-                ) {
-                  continue;
-                }
-
-                ind++;
-                let nameForGrandchild = name[ind];
-                if (nameForGrandchild === undefined) {
-                  let longNameId = nameForChild + "|"
-                    + component.componentName + "|nameForGrandchild|";
-                  if (grandchild.uniqueIdentifier) {
-                    longNameId += grandchild.uniqueIdentifier;
-                  } else {
-                    longNameId += ind;
-                  }
-                  nameForGrandchild = createUniqueName(grandchild.componentType,
-                    longNameId);
-                }
-                if (!grandchild.doenetAttributes) {
-                  grandchild.doenetAttributes = {}
-                }
-                grandchild.doenetAttributes.prescribedName = nameForGrandchild;
-                grandchild.doenetAttributes.newNamespace = true;
-              }
-            }
-
-          } else {
-            if (!theReplacement.doenetAttributes) {
-              theReplacement.doenetAttributes = {}
-            }
-            theReplacement.doenetAttributes.prescribedName = name;
-            theReplacement.doenetAttributes.newNamespace = true;
-          }
-
-          let namespacePieces = component.componentName.split('/');
-
-          if (!component.doenetAttributes.newNamespace) {
-            namespacePieces.pop();
-          }
-
-          let namespaceStack = namespacePieces.map(x => ({
-            namespace: x,
-            componentCounts: {},
-            namesUsed: {}
-          }));
-
-          if (!(component.componentName[0] === '/')) {
-            // if componentName doesn't begin with a /
-            // still add a namespace for the root namespace at the beginning
-            namespaceStack.splice(0, 0, {
-              componentCounts: {},
-              namesUsed: {},
-              namespace: ""
-            })
-          }
-
-          serializeFunctions.createComponentNames({
-            serializedState: replacementsToAdd,
-            namespaceStack,
-            componentInfoObjects: this.componentInfoObjects,
-            parentDoenetAttributes: { componentName: component.ancestors[0].componentName },
-            usePreserializedNames: true,
-          });
-        }
-        else {
-          throw Error(`Unimplemented replacement instruction operation ${instruction.operation}`);
-        }
-      }
-
-      let replacementResult = this.createIsolatedComponentsSub({
-        serializedState: replacementsToAdd,
-        ancestors: component.ancestors,
-        applySugar: true,
-        shadow: true,
-        updatesNeeded,
-        compositesBeingExpanded,
-        createNameContext: component.componentName + "|replacements" + ind
-      });
-      replacements.push(...replacementResult.components);
-
-      this.parameterStack.pop();
-    }
-
-    return replacements;
   }
 
   replaceCompositeChildren(component, updatesNeeded, compositesBeingExpanded) {
@@ -1922,24 +1685,14 @@ export default class Core {
 
         }
 
-        let replacements = child.replacements;
 
         // don't use any replacements that are marked as being withheld
+        this.markWithheldReplacementInactive(child, updatesNeeded);
+
+        let replacements = child.replacements;
         if (child.replacementsToWithhold > 0) {
           replacements = replacements.slice(0, -child.replacementsToWithhold);
-          for (let ind = replacements.length; ind < child.replacements.length; ind++) {
-            this.changeInactiveComponentAndDescendants(
-              child.replacements[ind], true, updatesNeeded
-            );
-          }
         }
-
-        for (let ind = 0; ind < replacements.length; ind++) {
-          this.changeInactiveComponentAndDescendants(
-            child.replacements[ind], false, updatesNeeded
-          );
-        }
-
 
         component.activeChildren.splice(ind, 1, ...replacements);
 
@@ -1982,6 +1735,29 @@ export default class Core {
     return { compositeChildNotReadyToExpand };
   }
 
+  markWithheldReplacementInactive(composite, updatesNeeded) {
+
+    let numActive = composite.replacements.length;
+
+    if (composite.stateValues.isInactiveCompositeReplacement) {
+      numActive = 0;
+    } else if (composite.replacementsToWithhold > 0) {
+      numActive -= composite.replacementsToWithhold;
+    }
+
+    for (let repl of composite.replacements.slice(0, numActive)) {
+      this.changeInactiveComponentAndDescendants(
+        repl, false, updatesNeeded
+      );
+    }
+
+    for (let repl of composite.replacements.slice(numActive)) {
+      this.changeInactiveComponentAndDescendants(
+        repl, true, updatesNeeded
+      );
+    }
+  }
+
   changeInactiveComponentAndDescendants(component, inactive, updatesNeeded) {
     if (component.stateValues.isInactiveCompositeReplacement !== inactive) {
       component.state.isInactiveCompositeReplacement.value = inactive;
@@ -1996,6 +1772,10 @@ export default class Core {
       });
       for (let childName in component.allChildren) {
         this.changeInactiveComponentAndDescendants(this._components[childName], inactive, updatesNeeded)
+      }
+
+      if (component.replacements) {
+        this.markWithheldReplacementInactive(component, updatesNeeded);
       }
     }
   }
@@ -5342,8 +5122,8 @@ export default class Core {
   deleteDownstreamDependency({ downDeps, downDepName, downstreamComponentName = null }) {
 
     // console.log('delete downstream dependency')
-    // console.log(JSON.parse(JSON.stringify(downDeps)))
     // console.log(downDepName);
+    // console.log(deepClone(downDeps))
     // console.log(downDeps[downDepName].upstreamComponentName)
     // console.log(downstreamComponentName);
 
@@ -5451,7 +5231,62 @@ export default class Core {
     }
 
     if (!partialDeletion) {
-      delete downDeps[downDepName];
+
+      // delete entries from componentIdentityDependencies
+      if (depToDelete.childDep) {
+        let parentName = depToDelete.upstreamComponentName;
+        let childDeps = this.componentIdentityDependencies.childDependenciesByParent[parentName];
+        if (childDeps) {
+          let ind = childDeps.indexOf(depToDelete.childDep);
+          if (ind !== -1) {
+            childDeps.splice(ind, 1);
+          }
+        }
+      }
+      if (depToDelete.descendantDep) {
+        let ancestorName = depToDelete.upstreamComponentName;
+        let descendantDeps = this.componentIdentityDependencies.descendantDependenciesByAncestor[ancestorName];
+        if (descendantDeps) {
+          let ind = descendantDeps.indexOf(depToDelete.descendantDep);
+          if (ind !== -1) {
+            descendantDeps.splice(ind, 1);
+          }
+        }
+      }
+      if (depToDelete.parentDep) {
+        let parentName = depToDelete.downstreamComponentName;
+        let parentDeps = this.componentIdentityDependencies.parentDependenciesByParent[parentName];
+        if (parentDeps) {
+          let ind = parentDeps.indexOf(depToDelete.parentDep);
+          if (ind !== -1) {
+            parentDeps.splice(ind, 1);
+          }
+        }
+      }
+      if (depToDelete.ancestorDep) {
+        for (let ancestorName of depToDelete.ancestorDep.ancestorsExamined) {
+          let ancestorDeps = this.componentIdentityDependencies.ancestorDependenciesByPotentialAncestor[ancestorName];
+          if (ancestorDeps) {
+            let ind = ancestorDeps.indexOf(depToDelete.ancestorDep);
+            if (ind !== -1) {
+              ancestorDeps.splice(ind, 1);
+            }
+          }
+        }
+      }
+      if (depToDelete.replacementDep) {
+        for (let compositeName of depToDelete.compositesFound) {
+          let replacementDeps = this.componentIdentityDependencies.replacementDependenciesByComposite[compositeName];
+          if (replacementDeps) {
+            let ind = replacementDeps.indexOf(depToDelete.replacementDep);
+            if (ind !== -1) {
+              replacementDeps.splice(ind, 1);
+            }
+          }
+        }
+      }
+
+      delete downDeps[downDepName];[]
     }
   }
 
@@ -5576,10 +5411,12 @@ export default class Core {
       if (!childDependencies) {
         childDependencies = this.componentIdentityDependencies.childDependenciesByParent[component.componentName] = [];
       }
-      childDependencies.push({
+      let childDep = {
         stateVariables: allStateVariablesAffected,
         dependencyName,
-      });
+      };
+      childDependencies.push(childDep);
+      newDep.childDep = childDep;
 
 
       let activeChildrenIndices = component.childLogic.returnMatches(dependencyDefinition.childLogicName);
@@ -5738,11 +5575,13 @@ export default class Core {
       if (!descendantDependencies) {
         descendantDependencies = this.componentIdentityDependencies.descendantDependenciesByAncestor[ancestor.componentName] = [];
       }
-      descendantDependencies.push({
+      let descendantDep = {
         componentName: component.componentName,
         stateVariables: allStateVariablesAffected,
         dependencyName,
-      });
+      };
+      descendantDependencies.push(descendantDep);
+      newDep.descendantDep = descendantDep;
 
       let descendants = gatherDescendants({
         ancestor,
@@ -5780,6 +5619,11 @@ export default class Core {
 
       newDep.componentIdentitiesChanged = true;
       newDep.downstreamComponentNames = descendants;
+
+      // since deleting dependencies could delete names from downstreamComponentNames
+      // also save a shallow copy in a variable that won't be touched anywhere else
+      newDep.descendantsAtLastUpdate = [...descendants];
+
       let valuesChanged = [];
       let mappedDownstreamVariableNamesByComponent = []
       if (requestStateVariables) {
@@ -5938,11 +5782,13 @@ export default class Core {
         if (!parentDependencies) {
           parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[component.parentName] = [];
         }
-        parentDependencies.push({
+        let parentDep = {
           componentName: component.componentName,
           stateVariables: allStateVariablesAffected,
           dependencyName,
-        });
+        };
+        parentDependencies.push(parentDep);
+        newDep.parentDep = parentDep;
 
         newDep.originalDownstreamVariableName = dependencyDefinition.variableName;
         newDep.mappedDownstreamVariableName = this.substituteAliases({
@@ -6008,7 +5854,7 @@ export default class Core {
         }
 
         ancestorDependencies.push(ancestorResults);
-
+        newDep.ancestorDep = ancestorResults;
       }
 
       if (ancestorResults.ancestorFound) {
@@ -6094,7 +5940,7 @@ export default class Core {
         }
         this.componentIdentityDependencies.replacementDependenciesByComposite[compositeName].push(depDescription);
       }
-
+      newDep.replacementDep = depDescription;
 
       let requestStateVariables = false;
       if (dependencyDefinition.dependencyType === "replacementStateVariables") {
@@ -8796,19 +8642,19 @@ export default class Core {
             currentDep.mappedDownstreamVariableNamesByComponent = newMappedDownstreamVariableNamesByComponent;
             currentDep.valuesChanged = valuesChanged;
           }
-        }
 
-        for (let varName of depDescription.stateVariables) {
-          this.checkForCircularDependency({ componentName: parent.componentName, varName });
-        }
+          for (let varName of depDescription.stateVariables) {
+            this.checkForCircularDependency({ componentName: parent.componentName, varName });
+          }
 
-        // note: markStateVariableAndUpstreamDependentsStale includes
-        // any additionalStateVariablesDefined with stateVariable
-        this.markStateVariableAndUpstreamDependentsStale({
-          component: parent,
-          varName: depDescription.stateVariables[0],
-          updatesNeeded
-        });
+          // note: markStateVariableAndUpstreamDependentsStale includes
+          // any additionalStateVariablesDefined with stateVariable
+          this.markStateVariableAndUpstreamDependentsStale({
+            component: parent,
+            varName: depDescription.stateVariables[0],
+            updatesNeeded
+          });
+        }
 
       }
 
@@ -8867,12 +8713,12 @@ export default class Core {
         });
 
         let descendantsChanged = false;
-        if (descendants.length !== currentDep.downstreamComponentNames.length) {
+        if (descendants.length !== currentDep.descendantsAtLastUpdate.length) {
           descendantsChanged = true;
         }
         else {
           for (let [ind, descendantName] of descendants.entries()) {
-            if (descendantName !== currentDep.downstreamComponentNames[ind]) {
+            if (descendantName !== currentDep.descendantsAtLastUpdate[ind]) {
               descendantsChanged = true;
               break;
             }
@@ -9052,6 +8898,11 @@ export default class Core {
           }
 
           currentDep.downstreamComponentNames = descendants;
+
+          // since deleting dependencies could delete names from downstreamComponentNames
+          // also save a shallow copy in a variable that won't be touched anywhere else
+          currentDep.descendantsAtLastUpdate = [...descendants];
+
           if (currentDep.originalDownstreamVariableNames) {
             currentDep.mappedDownstreamVariableNamesByComponent = newMappedDownstreamVariableNamesByComponent;
             currentDep.valuesChanged = valuesChanged;
@@ -9478,6 +9329,15 @@ export default class Core {
     // and check for changes in the components
 
     // console.log(`update replacement dependencies for composite ${composite.componentName}`)
+    // console.log({
+    //   downstreamDependencies: deepClone(this.downstreamDependencies),
+    //   upstreamDependencies: deepClone(this.upstreamDependencies),
+    //   replacementDependenciesByComposite: deepClone(this.componentIdentityDependencies.replacementDependenciesByComposite),
+    //   replacementsNames: composite.replacements.map(x => ({
+    //     componentName: x.componentName,
+    //     componentType: x.componentType
+    //   }))
+    // })
 
 
     if (this.componentIdentityDependencies.replacementDependenciesByComposite[composite.componentName]) {
@@ -9800,7 +9660,7 @@ export default class Core {
 
 
             currentDep.compositesFound = compositesFound;
-            compositeDep.downstreamComponentNames = compositesFound;
+            compositeDep.downstreamComponentNames = [...compositesFound];
 
           }
 
@@ -11524,19 +11384,6 @@ export default class Core {
 
           newComponents = createResult.components;
 
-        } else if (change.replacementsWithInstructions) {
-          throw Error("no more replacementsWithInstructions")
-
-          let serializedReplacementsFromComponent;
-
-          newComponents = this.processReplacementsWithInstructions({
-            replacementsWithInstructions: change.replacementsWithInstructions,
-            serializedReplacementsFromComponent,
-            component,
-            updatesNeeded,
-            compositesBeingExpanded,
-          })
-
         } else {
           throw Error(`Invalid replacement change.`)
         }
@@ -11987,12 +11834,23 @@ export default class Core {
         });
 
 
-        let assignNames;
-        if (shadowingComponent.doenetAttributes) {
-          assignNames = shadowingComponent.doenetAttributes.assignNames;
-        }
+        if (shadowingComponent.constructor.assignNamesToReplacements) {
 
-        if (assignNames) {
+          let assignNames;
+          if (shadowingComponent.doenetAttributes) {
+            assignNames = shadowingComponent.doenetAttributes.assignNames;
+          }
+
+          let createEmptiesFunction, additionalArgsForEmptiesFunction;
+
+          if (componentToShadow.constructor.returnEmptiesFunctionAndAdditionalArgs) {
+            let result = componentToShadow.constructor.returnEmptiesFunctionAndAdditionalArgs(
+              componentToShadow
+            );
+            createEmptiesFunction = result.createEmptiesFunction;
+            additionalArgsForEmptiesFunction = result.additionalArgs;
+          }
+
           let processResult = serializeFunctions.processAssignNames({
             assignNames,
             indOffset: assignNamesOffset,
@@ -12000,9 +11858,11 @@ export default class Core {
             assignDirectlyToComposite: shadowingComponent.componentType === "copy",
             parentName: shadowingComponent.componentName,
             parentCreatesNewNamespace: shadowingComponent.doenetAttributes.newNamespace,
-            propVariableObjs: shadowingComponent.stateValues.propVariableObjs,
-            componentTypeByTarget: shadowingComponent.stateValues.componentTypeByTarget,
+            // propVariableObjs: shadowingComponent.stateValues.propVariableObjs,
+            // componentTypeByTarget: shadowingComponent.stateValues.componentTypeByTarget,
             componentInfoObjects: this.componentInfoObjects,
+            createEmptiesFunction,
+            additionalArgsForEmptiesFunction,
           });
 
           newSerializedReplacements = processResult.serializedComponents;
@@ -12052,6 +11912,15 @@ export default class Core {
 
               }
             }
+          }
+        } else {
+          for (let replacement of newSerializedReplacements) {
+            serializeFunctions.createComponentNamesFromParentName({
+              component: replacement,
+              parentName: shadowingComponent.componentName,
+              parentCreatesNewNamespace: shadowingComponent.doenetAttributes.newNamespace,
+              componentInfoObjects: this.componentInfoObjects,
+            });
           }
         }
 
@@ -12627,6 +12496,8 @@ export default class Core {
 
     let compositesNotReady = [];
 
+    let nPasses = 0;
+
     let componentChanges = []; // TODO: what to do with componentChanges?
     while (compositesToUpdateReplacements.length > 0) {
       for (let cName of compositesToUpdateReplacements) {
@@ -12670,6 +12541,12 @@ export default class Core {
       // prevent futher changes from being triggered
       compositesToUpdateReplacements = [...new Set(updatesNeeded.compositesToUpdateReplacements)];
       updatesNeeded.compositesToUpdateReplacements = [];
+
+      // just in case have infinite loop, throw error after 100 passes
+      nPasses++;
+      if (nPasses > 100) {
+        throw Error(`Seem to have an infinite loop while calculating replacement changes`)
+      }
 
     }
 

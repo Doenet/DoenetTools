@@ -1400,11 +1400,24 @@ export default class Vector extends GraphicalComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return {
-          newValues: {
-            displacementCoords: me.fromAst(["vector", ...dependencyValues.displacement.map(x => x.tree)])
+        let coordsAst = [];
+        for (let v of dependencyValues.displacement) {
+          if (v) {
+            coordsAst.push(v.tree);
+          } else {
+            coordsAst.push('\uff3f');
           }
         }
+        if (coordsAst.length > 1) {
+          coordsAst = ["vector", ...coordsAst];
+        } else if (coordsAst.length === 1) {
+          coordsAst = coordsAst[0];
+        } else {
+          coordsAst = '\uff3f';
+        }
+
+        return { newValues: { displacementCoords: me.fromAst(coordsAst) } }
+
       }
     }
 

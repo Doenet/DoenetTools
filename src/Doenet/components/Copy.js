@@ -1621,8 +1621,6 @@ export default class Copy extends CompositeComponent {
       let nOldReplacements = component.replacements.length;
 
 
-      let replacementChanges = [];
-
       for (let ind = 0; ind < Math.min(nNewReplacements, nOldReplacements); ind++) {
         if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByReplacement[ind].length ||
           workspace.propVariablesCopiedByReplacement[ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i]) ||
@@ -1677,7 +1675,7 @@ export default class Copy extends CompositeComponent {
 
 
       let result = this.createSerializedReplacements({
-        component, components, workspace
+        component, components, workspace, componentInfoObjects
       });
 
       if (result.replacements.length > 0) {

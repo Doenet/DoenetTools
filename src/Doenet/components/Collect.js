@@ -42,7 +42,7 @@ export default class Collect extends CompositeComponent {
       number: 1,
     });
 
-    let tnameWithOptionalProp = childLogic.newOperator({
+    childLogic.newOperator({
       name: "tnameWithOptionalProp",
       operator: "and",
       propositions: [
@@ -1181,6 +1181,7 @@ export default class Collect extends CompositeComponent {
             firstReplacementInd: numReplacementsSoFar + ind,
             numberReplacementsToReplace: 1,
             serializedReplacements: [newSerializedReplacements[ind]],
+            assignNamesOffset: numReplacementsSoFar + ind,
           };
           replacementChanges.push(replacementInstruction);
         }
@@ -1193,6 +1194,7 @@ export default class Collect extends CompositeComponent {
           firstReplacementInd: numReplacementsSoFar + nOldReplacements,
           numberReplacementsToReplace: 0,
           serializedReplacements: newSerializedReplacements.slice(nOldReplacements),
+          assignNamesOffset: numReplacementsSoFar + nOldReplacements
         };
         replacementChanges.push(replacementInstruction);
       } else if (nNewReplacements < nOldReplacements) {
@@ -1260,6 +1262,7 @@ export default class Collect extends CompositeComponent {
       firstReplacementInd: numReplacementsSoFar,
       numberReplacementsToReplace: prevNumReplacements,
       serializedReplacements: newSerializedChildren,
+      assignNamesOffset: numReplacementsSoFar,
     };
     replacementChanges.push(replacementInstruction);
 
