@@ -345,7 +345,7 @@ function DriveRouted(props){
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setBrowserId = useSetRecoilState(browserIdDictionary(props.driveId))
   let browserId = useRef("");
-  const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId}); 
+  const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
 
   // if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
@@ -1071,7 +1071,7 @@ function useUpdateBreadcrumb(props) {
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const { isDraggedOverBreadcrumb } = dragState;
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const driveLabel = props.driveLabel ?? "/";
   
   const contentsDictionary = useMemo(() => {
     let contentsDictionary = {};
@@ -1096,7 +1096,7 @@ function useUpdateBreadcrumb(props) {
 
     if (routePathDriveId === "") {
       clearBreadcrumb();
-      addBreadcrumbItem({to: "/", element: <div>/</div>});
+      addBreadcrumbItem({to: "/", element: <div>{driveLabel}</div>});
       return;
     }
 
@@ -1167,7 +1167,7 @@ function useUpdateBreadcrumb(props) {
       <Link 
         style={breadcrumbItemStyle} 
         to={driveDestinationLink}>
-        {props.label}
+        {props.driveLabel}
       </Link>
     </WithDropTarget>
     breadcrumbStack.unshift({
