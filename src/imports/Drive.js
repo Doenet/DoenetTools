@@ -138,10 +138,8 @@ let folderDictionary = atomFamily({
   default:selectorFamily({
     key:"folderDictionary/Default",
     get:(driveIdFolderId)=>({get})=>{
-      console.log(`=== GET folderDictionary atom ${driveIdFolderId.folderId}`)
-  
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
-      console.log(">>>driveInfo",driveInfo)
+      // console.log(">>>driveInfo",driveInfo)
       let defaultOrder = [];
       let contentsDictionary = {};
       let folderInfo = {};
@@ -236,7 +234,6 @@ export const folderDictionarySelector = selectorFamily({
         set(folderDictionary(driveIdFolderId),newFInfo);
         //Remove from selection
         if (get(selectedDriveItemsAtom(item))){
-          console.log(">>>was selected",item)
           set(selectedDriveItemsAtom(item),false)
           let newGlobalItems = [];
           for(let gItem of get(globalSelectedNodesAtom)){
@@ -264,6 +261,62 @@ export const folderDictionarySelector = selectorFamily({
         }
         const { deletedata } = await axios.get("/api/deleteItem.php", deletepayload)
 
+      break;
+      case "move items":
+        //Don't move if nothing selected or draging folder to itself
+        let canMove = true;
+        if (get(globalSelectedNodesAtom).length === 0){ canMove = false;}
+        //TODO: Does this catch every case of folder into itself?
+        for(let gItem of get(globalSelectedNodesAtom)){
+          if (gItem.itemId === instructions.itemId){
+            console.log("Can't move folder into itself") //TODO: Toast
+            canMove = false;
+          }
+        }
+        if (canMove){
+          //Add to destination at end
+          let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
+          let newDestinationFolderObj = {...destinationFolderObj};
+          newDestinationFolderObj["defaultOrder"] = [...destinationFolderObj.defaultOrder];
+          newDestinationFolderObj["contentsDictionary"] = {...destinationFolderObj.contentsDictionary}
+          let globalSelectedItems = get(globalSelectedNodesAtom)
+
+          let sourcesByParentFolderId = {};
+
+          for(let gItem of globalSelectedItems){
+            //Deselect Item
+            let selecteditem = {driveId:gItem.driveId,browserId:gItem.browserId,itemId:gItem.itemId}
+            set(selectedDriveItemsAtom(selecteditem),false)
+
+            //Prepare to Add to destination
+            const oldSourceFInfo = get(folderDictionary({driveId:instructions.driveId,folderId:gItem.parentFolderId}));
+            newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...oldSourceFInfo["contentsDictionary"][gItem.itemId]}
+            newDestinationFolderObj["defaultOrder"].push(gItem.itemId)
+
+            //Prepare to Remove from source
+            let newSourceFInfo = sourcesByParentFolderId[gItem.parentFolderId];
+            if (!newSourceFInfo){
+              newSourceFInfo = {...oldSourceFInfo}
+              newSourceFInfo["defaultOrder"] = [...oldSourceFInfo.defaultOrder];
+              newSourceFInfo["contentsDictionary"] = {...oldSourceFInfo.contentsDictionary}
+              
+              sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
+            }
+            let index = newSourceFInfo["defaultOrder"].indexOf(gItem.itemId);
+              newSourceFInfo["defaultOrder"].splice(index,1)
+              delete newSourceFInfo["contentsDictionary"][gItem.itemId];
+            
+          }
+          //Add all to destination
+          set(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}),newDestinationFolderObj);
+          //Clear global selection
+          set(globalSelectedNodesAtom,[])
+          //Remove from sources
+          for (let parentFolderId of Object.keys(sourcesByParentFolderId)){
+            set(folderDictionary({driveId:instructions.driveId,folderId:parentFolderId}),sourcesByParentFolderId[parentFolderId])
+          }
+          
+        }
       break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
@@ -421,14 +474,13 @@ function Folder(props){
           let newParams = {...urlParamsObj} 
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
           history.push('?'+encodeParams(newParams))
-          // setSelected("one item")
         }else{
           if (!e.shiftKey && !e.metaKey){
-            setSelected("one item")
+            setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
-            setSelected("range to item")
+            setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
           }else if (!e.shiftKey && e.metaKey){
-            setSelected("add item")
+            setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
           }
         }
         
@@ -441,7 +493,7 @@ function Folder(props){
               (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
               !e.relatedTarget.dataset.doenetBrowserStayselected)
               ){
-                setSelected("clear all")
+                setSelected({instructionType:"clear all"})
             }
           }
         }}
@@ -456,7 +508,13 @@ function Folder(props){
     //Root of Drive
     setVisibleItems([])
     label = props.driveObj.label;
-    folder = <div
+    folder = <>
+    <button 
+      data-doenet-browserid={props.browserId}
+    onClick={()=>{
+    setFolderInfo({instructionType:"move items",driveId:props.driveId,itemId:"f1"})
+    }}>Move Demo</button>
+    <div
       data-doenet-browserid={props.browserId}
       tabIndex={0}
       className="noselect nooutline" 
@@ -480,7 +538,7 @@ function Folder(props){
         }
       }
     }
-    >Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
+    >Drive {label} ({folderInfo.contents.defaultOrder.length})</div></>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-browserid={props.browserId}
@@ -520,6 +578,7 @@ function Folder(props){
           urlClickBehavior={props.urlClickBehavior}
           pathItemId={props.pathItemId}
           deleteItem={deleteItem}
+          parentFolderId={props.folderId}
 
           />)
         break;
@@ -609,15 +668,17 @@ const selectedDriveItems = selectorFamily({
     const globalSelected = get(globalSelectedNodesAtom);
     const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
     const visibleItems = get(visibleDriveItems(driveIdBrowserIdItemId.browserId))
-    
-    switch (instruction) {
+    // console.log(">>>selectedDriveItems",driveIdBrowserIdItemId,instruction)
+    switch (instruction.instructionType) {
       case "one item":
         if (!isSelected){
           for (let itemObj of globalSelected){
             set(selectedDriveItemsAtom(itemObj),false)
           }
           set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
+          let itemInfo = {...driveIdBrowserIdItemId}
+          itemInfo["parentFolderId"] = instruction.parentFolderId;
+          set(globalSelectedNodesAtom,[itemInfo])
         }
         break;
       case "add item":
@@ -629,43 +690,48 @@ const selectedDriveItems = selectorFamily({
           set(globalSelectedNodesAtom,newGlobalSelected);
         }else{
           set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          set(globalSelectedNodesAtom,[...globalSelected,driveIdBrowserIdItemId])
+          let itemInfo = {...driveIdBrowserIdItemId}
+          itemInfo["parentFolderId"] = instruction.parentFolderId;
+          set(globalSelectedNodesAtom,[...globalSelected,itemInfo])
         }
+        break;
       case "range to item":
-        console.log(">>>range to item",visibleItems,globalSelected)
         if (globalSelected.length === 0){
           //No previous items selected so just select this one
           set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          set(globalSelectedNodesAtom,[driveIdBrowserIdItemId])
-        }else{
-          //Set select on all items in range
-          let lastSelectedItem = globalSelected[globalSelected.length-1];
-          const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
-          const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
-          let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
-          let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
-          let componentsToSelect = []
-          for (let i = minIndex; i <= maxIndex; i++){
-            let itemId = visibleItems[i];
-            let item = {...driveIdBrowserIdItemId}
-            item.itemId = itemId;
-            if (!get(selectedDriveItemsAtom(item))){
-              set(selectedDriveItemsAtom(item),true)
-              componentsToSelect.push(item);
-            }
-          }
-          //Sort componentsToSelect if needed so current item is last
-          if (indexOfLastSelected > indexOfCurrentItem){
-            componentsToSelect.reverse();
-          }
-          set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
+          let itemInfo = {...driveIdBrowserIdItemId}
+          itemInfo["parentFolderId"] = instruction.parentFolderId;
+          set(globalSelectedNodesAtom,[itemInfo])
+        // }else{
+        //   //Set select on all items in range
+        //   let lastSelectedItem = globalSelected[globalSelected.length-1];
+        //   const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
+        //   const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
+        //   let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
+        //   let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
+        //   let componentsToSelect = []
+        //   for (let i = minIndex; i <= maxIndex; i++){
+        //     let itemId = visibleItems[i];
+        //     let item = {...driveIdBrowserIdItemId}
+        //     item.itemId = itemId;
+        //     if (!get(selectedDriveItemsAtom(item))){
+        //       set(selectedDriveItemsAtom(item),true)
+        //       componentsToSelect.push(item);
+        //     }
+        //   }
+        //   //Sort componentsToSelect if needed so current item is last
+        //   if (indexOfLastSelected > indexOfCurrentItem){
+        //     componentsToSelect.reverse();
+        //   }
+        //   set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
           
         }
       break;
       case "clear all":
           //TODO: Only clear this browser?
           for (let itemObj of globalSelected){
-            set(selectedDriveItemsAtom(itemObj),false)
+            const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
+            set(selectedDriveItemsAtom(atomFormat),false)
           }
           set(globalSelectedNodesAtom,[]);
         break;
@@ -679,7 +745,6 @@ const selectedDriveItems = selectorFamily({
 
 const DoenetML = React.memo((props)=>{
   console.log(`=== 📜 DoenetML`)
-  // console.log(">>>DoenetML",props)
 
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
@@ -721,14 +786,13 @@ const DoenetML = React.memo((props)=>{
           let newParams = {...urlParamsObj} 
           newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
           history.push('?'+encodeParams(newParams))
-          // setSelected("one item")
         }else{
           if (!e.shiftKey && !e.metaKey){
-            setSelected("one item")
+            setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
-            setSelected("range to item")
+            setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
           }else if (!e.shiftKey && e.metaKey){
-            setSelected("add item")
+            setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
           }
         }
        
@@ -741,7 +805,7 @@ const DoenetML = React.memo((props)=>{
             (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
-              setSelected("clear all")
+              setSelected({instructionType:"clear all"})
           }
         }
       }}
@@ -799,11 +863,11 @@ const Url = React.memo((props)=>{
             history.push('?'+encodeParams(newParams))
           }else{
             if (!e.shiftKey && !e.metaKey){
-              setSelected("one item")
+              setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
             }else if (e.shiftKey && !e.metaKey){
-              setSelected("range to item")
+              setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
             }else if (!e.shiftKey && e.metaKey){
-              setSelected("add item")
+              setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
             }
           }
         }else{
@@ -820,7 +884,7 @@ const Url = React.memo((props)=>{
             (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
-              setSelected("clear all")
+              setSelected({instructionType:"clear all"})
           }
         }
       }}
