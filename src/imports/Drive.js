@@ -243,17 +243,6 @@ export const folderDictionarySelector = selectorFamily({
           }
           set(globalSelectedNodesAtom,newGlobalItems)
         }
-        //Remove from all drive's visible items
-        for (let browserId of get(browserIdDictionary(driveIdFolderId.driveId))){
-          set(visibleDriveItems(browserId),(old)=>{
-          let newArr = [...old]
-          const index = newArr.indexOf(instructions.itemId);
-          if (index > -1){
-            newArr.splice(index,1)
-          }
-          return newArr;
-        })
-        }
         //Remove from database
         const pdata = {driveId:driveIdFolderId.driveId,itemId:instructions.itemId}
         const deletepayload = {
@@ -402,6 +391,19 @@ function DriveRouted(props){
   </>
 }
 
+const folderOpenAtom = atomFamily({
+  key:"folderOpenAtom",
+  default:false
+})
+
+const folderOpenSelector = selectorFamily({
+  key:"folderOpenSelector",
+  set:(browserIdItemId) => ({get,set})=>{
+    const isOpen = get(folderOpenAtom(browserIdItemId))
+    set(folderOpenAtom(browserIdItemId),!isOpen); 
+  }
+})
+
 let encodeParams = p => 
 Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
@@ -409,14 +411,14 @@ function Folder(props){
 
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
-  const [isOpen,setIsOpen] = useState(false);
+  //Used to determine range of items in Shift Click
+  const isOpen = useRecoilValue(folderOpenAtom({browserId:props.browserId,itemId:props.folderId}))
+  const toggleOpen = useSetRecoilState(folderOpenSelector({browserId:props.browserId,itemId:props.folderId}))
 
   let history = useHistory();
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
- 
-  
-  const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
+
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId})); 
@@ -443,33 +445,7 @@ function Folder(props){
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
-    setIsOpen(isOpen=>{
-      if (isOpen){
-        //Closing so remove items
-        setVisibleItems((old)=>{
-          let newItems = [...old]; 
-          const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
-          const numToRemove = folderInfo.contents.defaultOrder.length
-          newItems.splice(index+1,numToRemove)
-          return newItems;
-        })
-  
-      }else{
-        //Opening so add items
-        let itemIds = [];
-      for (let itemId of folderInfo.contents.defaultOrder){
-        itemIds.push(itemId);
-      }
-      setVisibleItems((old)=>{
-        let newItems = [...old]; 
-        const index = newItems.indexOf(folderInfo?.contents?.folderInfo?.itemId)
-        newItems.splice(index+1,0,...itemIds)
-        return newItems;
-      })
-      
-      }
-      return !isOpen
-    })
+    toggleOpen();
   }}>{openCloseText}</button>
 
   let label = folderInfo?.contents?.folderInfo?.label;
@@ -525,7 +501,6 @@ function Folder(props){
   let items = null;
   if (props.driveObj){
     //Root of Drive
-    setVisibleItems([])
     label = props.driveObj.label;
     folder = <>
     <button 
@@ -579,10 +554,7 @@ function Folder(props){
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = folderInfo.contents.contentsDictionary;
     items = [];
-    let itemIds = [];
     for (let itemId of folderInfo.contents.defaultOrder){
-
-      itemIds.push(itemId);
       let item = dictionary[itemId];
       switch(item.itemType){
         case "Folder":
@@ -633,10 +605,6 @@ function Folder(props){
       }
  
     }
-    if (props.driveObj){
-      //Inital Items
-      setVisibleItems((old)=>{let newItems = [...old,...itemIds]; return newItems;})
-    }
 
     if (folderInfo.contents.defaultOrder.length === 0){
       items.push(<EmptyNode key={`emptyitem${folderInfo?.contents?.folderInfo?.itemId}`}/>)
@@ -661,17 +629,10 @@ const EmptyNode =  React.memo(function Node(props){
 })
 
 function LogVisible(props){
-  // const visibleItems = useRecoilValue(visibleDriveItems(props.browserId));
-  // console.log(">>>>visibleItems",visibleItems)
   const globalSelected = useRecoilValue(globalSelectedNodesAtom);
   console.log(">>>>globalSelected",globalSelected)
   return null;
 }
-
-const visibleDriveItems = atomFamily({
-  key:"visibleDriveItems",
-  default:[]
-})
 
 const selectedDriveItemsAtom = atomFamily({
   key:"selectedDriveItemsAtom",
@@ -686,8 +647,41 @@ const selectedDriveItems = selectorFamily({
   set:(driveIdBrowserIdItemId) => ({get,set},instruction)=>{
     const globalSelected = get(globalSelectedNodesAtom);
     const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
-    const visibleItems = get(visibleDriveItems(driveIdBrowserIdItemId.browserId))
-    // console.log(">>>selectedDriveItems",driveIdBrowserIdItemId,instruction)
+    const {driveId,browserId,itemId} = driveIdBrowserIdItemId;
+    function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
+      let itemIdsInRange = [];
+      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
+      // console.log(">>>folder",folder)
+      for (let itemId of folder.defaultOrder){
+        if (foundClickNeedle && foundLastNeedle){
+          break;
+        }
+        if (clickNeedle === itemId){ foundClickNeedle = true;}
+        if (lastNeedle === itemId){ foundLastNeedle = true;}
+        //Add itemId if inside the range or an end point then add to itemIds
+        if (foundClickNeedle || foundLastNeedle){
+          itemIdsInRange.push(itemId);
+        }
+        
+        
+        if (folder.contentsDictionary[itemId].itemType === "Folder"){
+          const isOpen = get(folderOpenAtom({browserId,itemId}))
+          //Recurse if open
+          if (isOpen){
+            let [subFolderItemIds,subFoundClickNeedle,subFoundLastNeedle] = 
+            findRange({clickNeedle,lastNeedle,foundClickNeedle,foundLastNeedle,currentFolderId:itemId});
+            itemIdsInRange.push(...subFolderItemIds);
+            if (subFoundClickNeedle){foundClickNeedle = true;}
+            if (subFoundLastNeedle){foundLastNeedle = true;}
+          }
+          
+        }
+        if (foundClickNeedle && foundLastNeedle){
+          break;
+        }
+      }
+      return [itemIdsInRange,foundClickNeedle,foundLastNeedle];
+    }
     switch (instruction.instructionType) {
       case "one item":
         if (!isSelected){
@@ -721,29 +715,32 @@ const selectedDriveItems = selectorFamily({
           let itemInfo = {...driveIdBrowserIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
-        // }else{
-        //   //Set select on all items in range
-        //   let lastSelectedItem = globalSelected[globalSelected.length-1];
-        //   const indexOfLastSelected = visibleItems.indexOf(lastSelectedItem.itemId)
-        //   const indexOfCurrentItem = visibleItems.indexOf(driveIdBrowserIdItemId.itemId)
-        //   let minIndex = Math.min(indexOfLastSelected,indexOfCurrentItem);
-        //   let maxIndex = Math.max(indexOfLastSelected,indexOfCurrentItem);
-        //   let componentsToSelect = []
-        //   for (let i = minIndex; i <= maxIndex; i++){
-        //     let itemId = visibleItems[i];
-        //     let item = {...driveIdBrowserIdItemId}
-        //     item.itemId = itemId;
-        //     if (!get(selectedDriveItemsAtom(item))){
-        //       set(selectedDriveItemsAtom(item),true)
-        //       componentsToSelect.push(item);
-        //     }
-        //   }
-        //   //Sort componentsToSelect if needed so current item is last
-        //   if (indexOfLastSelected > indexOfCurrentItem){
-        //     componentsToSelect.reverse();
-        //   }
-        //   set(globalSelectedNodesAtom,[...globalSelected,...componentsToSelect])
-          
+        }else{
+          let lastSelectedItem = globalSelected[globalSelected.length-1];
+          console.log(">>>lastSelectedItem",lastSelectedItem)
+          console.log(">>>currentSelectedItem",driveIdBrowserIdItemId)
+
+          //TODO: Just select one if browserId doesn't match
+          //Starting at root build array of visible items in order
+          let [selectTheseItemIds] = findRange({
+            currentFolderId:driveId,
+            lastNeedle:lastSelectedItem.itemId,
+            clickNeedle:driveIdBrowserIdItemId.itemId});
+
+          let addToGlobalSelected = []
+          for (let itemIdToSelect of selectTheseItemIds){
+            let itemKey = {...driveIdBrowserIdItemId}
+            itemKey.itemId = itemIdToSelect;
+            if (!get(selectedDriveItemsAtom(itemKey))){
+              set(selectedDriveItemsAtom(itemKey),true)
+              addToGlobalSelected.push(itemKey);
+            }
+          }
+          //TODO: Does this have the parentFolderId?
+          console.log(">>>globalSelected",globalSelected)
+          console.log(">>>addToGlobalSelected",addToGlobalSelected)
+          set(globalSelectedNodesAtom,[...globalSelected,...addToGlobalSelected])
+
         }
       break;
       case "clear all":
