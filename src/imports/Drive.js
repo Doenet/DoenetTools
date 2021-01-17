@@ -298,6 +298,7 @@ export const folderDictionarySelector = selectorFamily({
       case "move items":
         //Don't move if nothing selected or draging folder to itself
         let canMove = true;
+        console.log(">>>Here1", get(globalSelectedNodesAtom), instructions.itemId)
         if (get(globalSelectedNodesAtom).length === 0){ canMove = false;}
         //TODO: Does this catch every case of folder into itself?
         for(let gItem of get(globalSelectedNodesAtom)){
@@ -310,12 +311,10 @@ export const folderDictionarySelector = selectorFamily({
           
           // //Add to destination at end
           let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
-          let newDestinationFolderObj = {...destinationFolderObj};
-          newDestinationFolderObj["defaultOrder"] = [...destinationFolderObj.defaultOrder];
-          newDestinationFolderObj["contentsDictionary"] = {...destinationFolderObj.contentsDictionary}
+          let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
-
           let sourcesByParentFolderId = {};
+          console.log(">>>Here", globalSelectedItems, instructions.itemId)
 
           for(let gItem of globalSelectedItems){
             //Deselect Item
@@ -325,19 +324,16 @@ export const folderDictionarySelector = selectorFamily({
             //Prepare to Add to destination
             const oldSourceFInfo = get(folderDictionary({driveId:instructions.driveId,folderId:gItem.parentFolderId}));
             newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...oldSourceFInfo["contentsDictionary"][gItem.itemId]}
-            newDestinationFolderObj["defaultOrder"].push(gItem.itemId)
+            newDestinationFolderObj["contentIds"]["defaultOrder"].push(gItem.itemId)
 
             //Prepare to Remove from source
             let newSourceFInfo = sourcesByParentFolderId[gItem.parentFolderId];
             if (!newSourceFInfo){
-              newSourceFInfo = {...oldSourceFInfo}
-              newSourceFInfo["defaultOrder"] = [...oldSourceFInfo.defaultOrder];
-              newSourceFInfo["contentsDictionary"] = {...oldSourceFInfo.contentsDictionary}
-              
+              newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
               sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
             }
-            let index = newSourceFInfo["defaultOrder"].indexOf(gItem.itemId);
-              newSourceFInfo["defaultOrder"].splice(index,1)
+            let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
+              newSourceFInfo["contentIds"]["defaultOrder"].splice(index,1)
               delete newSourceFInfo["contentsDictionary"][gItem.itemId];
             
           }
@@ -498,6 +494,7 @@ function Folder(props){
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId})); 
   const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",browserId:props.browserId,itemId})}
+  const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
@@ -693,17 +690,26 @@ function Folder(props){
 
   // make folder draggable and droppable
   let draggableClassName = "";
-  folder = <Draggable
-    key={`dnode${props.browserId}${props.folderId}`} 
-    id={props.folderId}
-    className={draggableClassName}
-    onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId })}
-    onDrag={onDrag}
-    onDragEnd={onDragEnd}
-    ghostElement={renderDragGhost(props.folderId, folder)}
-    >
-    { folder } 
-  </Draggable>
+  if (!props.isNav) {
+    const onDragStartCallback = () => {
+      if (globalSelectedNodes.length === 0) {
+        setSelected({instructionType:"one item", parentFolderId: props.parentFolderId})
+      } else if (!isSelected) {
+        setSelected({instructionType: "add item", parentFolderId: props.parentFolderId})
+      }      
+    }
+    folder = <Draggable
+      key={`dnode${props.browserId}${props.folderId}`} 
+      id={props.folderId}
+      className={draggableClassName}
+      onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId, onDragStartCallback })}
+      onDrag={onDrag}
+      onDragEnd={onDragEnd}
+      ghostElement={renderDragGhost(props.folderId, folder)}
+      >
+      { folder } 
+    </Draggable>;
+  }
 
   folder = <WithDropTarget
     key={`wdtnode${props.browserId}${props.folderId}`} 
@@ -712,8 +718,7 @@ function Folder(props){
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
       onDragOver: () => onDragOverContainer({ id: props.folderId, driveId: props.driveId }),
-      // onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: props.folderId});}
-      onDrop: () => {console.log(">>>Here move to ", props.folderId);}
+      onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: props.folderId});}
     }}
     >
     { folder } 
@@ -912,6 +917,8 @@ const DoenetML = React.memo((props)=>{
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const [dragState] = useRecoilState(dragStateAtom);
+  const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
+  const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   // console.log(">>>>isSelected",isSelected,props.item.itemId)
 
   const indentPx = 20;
@@ -928,7 +935,7 @@ const DoenetML = React.memo((props)=>{
   }}
   >Delete</button>
 
-  return <div
+  let doenetMLJSX = <div
       data-doenet-browserid={props.browserId}
       tabIndex={0}
       className="noselect nooutline" 
@@ -978,6 +985,29 @@ const DoenetML = React.memo((props)=>{
       }}>
     DoenetML {props.item?.label} {deleteButton} </div></div>
 
+    if (!props.isNav) {
+      const onDragStartCallback = () => {
+        if (globalSelectedNodes.length === 0) {
+          setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId})
+        } else if (!isSelected) {
+          setSelected({instructionType: "add item", parentFolderId: props.item.parentFolderId})
+        }      
+      }
+      // make DoenetML draggable
+      let draggableClassName = "";
+      doenetMLJSX = <Draggable
+        key={`dnode${props.browserId}${props.item.itemId}`} 
+        id={props.item.itemId}
+        className={draggableClassName}
+        onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
+        onDrag={onDrag}
+        onDragEnd={onDragEnd}
+        ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
+        >
+        { doenetMLJSX } 
+      </Draggable>
+    }
+    return doenetMLJSX;
   })
 
 const Url = React.memo((props)=>{
@@ -991,6 +1021,7 @@ const Url = React.memo((props)=>{
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   // console.log(">>>>isSelected",isSelected,props.item.itemId)
 
   const indentPx = 20;
@@ -1061,19 +1092,28 @@ const Url = React.memo((props)=>{
       }}>
     Url {props.item?.label} {deleteButton}</div></div>
 
-  // make URL draggable
-  let draggableClassName = "";
-  urlJSX = <Draggable
-    key={`dnode${props.browserId}${props.item.itemId}`} 
-    id={props.item.itemId}
-    className={draggableClassName}
-    onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId })}
-    onDrag={onDrag}
-    onDragEnd={onDragEnd}
-    ghostElement={renderDragGhost(props.item.itemId, urlJSX)}
-    >
-    { urlJSX } 
-  </Draggable>
+  if (!props.isNav) {
+    // make URL draggable
+    const onDragStartCallback = () => {
+      if (globalSelectedNodes.length === 0) {
+        setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId})
+      } else if (!isSelected) {
+        setSelected({instructionType: "add item", parentFolderId: props.item.parentFolderId})
+      }      
+    }
+    let draggableClassName = "";
+    urlJSX = <Draggable
+      key={`dnode${props.browserId}${props.item.itemId}`} 
+      id={props.item.itemId}
+      className={draggableClassName}
+      onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
+      onDrag={onDrag}
+      onDragEnd={onDragEnd}
+      ghostElement={renderDragGhost(props.item.itemId, urlJSX)}
+      >
+      { urlJSX } 
+    </Draggable>
+  }
 
   return urlJSX;
 
@@ -1083,7 +1123,8 @@ function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
 
-  const onDragStart = ({ nodeId, driveId }) => {
+  const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
+    onDragStartCallback?.();
     setDragState((dragState) => ({
       ...dragState,
       isDragging: true,
