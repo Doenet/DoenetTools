@@ -884,9 +884,13 @@ const Url = React.memo((props)=>{
             }
           }
         }else{
-          // let linkTo = props.item?.url; //Enable this when add URL is completed
+          //Default url behavior is new tab
+          let linkTo = props.item?.url; //Enable this when add URL is completed
+          window.open(linkTo)
+          // window.open("http://doenet.org")
+
           // location.href = linkTo; 
-          location.href = "http://doenet.org"; 
+          // location.href = "http://doenet.org"; 
         }
       }}
       onBlur={(e) => {
