@@ -472,7 +472,7 @@ function Folder(props){
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const { dropState, dropActions } = useContext(DropTargetsContext);
-  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const [dragState] = useRecoilState(dragStateAtom);
   
   console.log(`=== 📁 ${folderInfo?.label}`)
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
@@ -483,8 +483,8 @@ function Folder(props){
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
-  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+  if (dropState.activeDropTargetId === itemId) { bgcolor = "#53ff47"; }
+  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
   const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
@@ -693,7 +693,8 @@ function Folder(props){
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
       onDragOver: () => onDragOverContainer({ id: props.folderId, driveId: props.driveId }),
-      onDrop: () => {}
+      // onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: props.folderId});}
+      onDrop: () => {console.log(">>>Here move to ", props.folderId);}
     }}
     >
     { folder } 
@@ -891,13 +892,13 @@ const DoenetML = React.memo((props)=>{
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  const [dragState] = useRecoilState(dragStateAtom);
   // console.log(">>>>isSelected",isSelected,props.item.itemId)
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
-  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   let deleteButton = <button
   data-doenet-browserid={props.browserId}
@@ -962,6 +963,7 @@ const DoenetML = React.memo((props)=>{
 
 const Url = React.memo((props)=>{
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
+  const [dragState] = useRecoilState(dragStateAtom);
   console.log(`=== 📁 Url`)
   console.log(">>>url",props)
   console.log(`=== 🔗 Url`)
@@ -975,8 +977,8 @@ const Url = React.memo((props)=>{
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
-  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
+  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+
   let deleteButton = <button
   data-doenet-browserid={props.browserId}
   onClick={(e)=>{
@@ -1059,7 +1061,6 @@ const Url = React.memo((props)=>{
   })
 
 function useDnDCallbacks() {
-
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
 
@@ -1087,21 +1088,6 @@ function useDnDCallbacks() {
   };
 
   const onDragEnd = () => {
-    const droppedId = dropState.activeDropTargetId;
-    // valid drop
-    if (droppedId) {
-      // move all selected nodes to droppedId
-      // moveNodes({selectedNodes:selectedNodesArr.current, destinationObj:{driveId:draggedOverDriveId, parentId:droppedId}})
-      // .then((props)=>{
-      //   //clear tool and browser selections
-      //   clearSelectionFunctions.current[props.selectedNodes.browserId]();
-      //   selectedNodesArr.current = {}
-      // })
-      
-      console.log(">>> moveNodes");
-    } else {
-
-    }
     setDragState((dragState) => ({
       ...dragState,
       isDragging: false,
@@ -1125,14 +1111,13 @@ function useDnDCallbacks() {
     onDragEnd,
     renderDragGhost
   }
-
 }
 
 function useUpdateBreadcrumb(props) {
   const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   const { onDragOverContainer } = useDnDCallbacks();
   const { dropActions } = useContext(DropTargetsContext);
-  const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const [dragState] = useRecoilState(dragStateAtom);
   const { isDraggedOverBreadcrumb } = dragState;
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const driveLabel = props.driveLabel ?? "/";
@@ -1199,7 +1184,7 @@ function useUpdateBreadcrumb(props) {
         unregisterDropTarget={dropActions.unregisterDropTarget}
         dropCallbacks={{
           onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.driveId, isBreadcrumb: true }),
-          onDrop: () => {}
+          onDrop: () => { }
         }}
         >
         { breadcrumbElement } 
