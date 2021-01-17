@@ -4,7 +4,7 @@ export default class Substitutions extends BaseComponent {
   static componentType = "substitutions";
   static rendererType = "container";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -24,7 +24,7 @@ export default class Substitutions extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.numberOfChildren = {
-      additionalStateVariablesDefined: ["childComponentNames"],
+      additionalStateVariablesDefined: ["childComponentNames", "childIdentities"],
       returnDependencies: () => ({
         children: {
           dependencyType: "childIdentity",
@@ -34,7 +34,13 @@ export default class Substitutions extends BaseComponent {
       definition: function ({ dependencyValues }) {
         let numberOfChildren = dependencyValues.children.length;
         let childComponentNames = dependencyValues.children.map(x => x.componentName);
-        return { newValues: { numberOfChildren, childComponentNames } };
+        return {
+          newValues: {
+            numberOfChildren,
+            childComponentNames,
+            childIdentities: dependencyValues.children,
+          }
+        };
       },
     }
 
@@ -52,7 +58,7 @@ export default class Substitutions extends BaseComponent {
         };
       }
     }
-    
+
 
     return stateVariableDefinitions;
 

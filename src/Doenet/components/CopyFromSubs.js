@@ -1,10 +1,11 @@
-import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessCopy } from '../utils/copy';
+import Copy from './Copy';
 
-export default class CopyFromSubs extends CompositeComponent {
+export default class CopyFromSubs extends Copy {
   static componentType = "copyfromsubs";
 
   static useReplacementsWhenCopyProp = true;
+
+  static assignNamesToReplacements = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -14,9 +15,34 @@ export default class CopyFromSubs extends CompositeComponent {
     return properties;
   }
 
-  static returnStateVariableDefinitions() {
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    childLogic.deleteAllLogic()
+
+    childLogic.newLeaf({
+      name: "atMostOneProp",
+      componentType: 'prop',
+      comparison: 'atMost',
+      number: 1,
+      setAsBase: true
+    });
+
+    return childLogic;
+  }
+
+
+  static returnStateVariableDefinitions(args) {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions(args);
+
+    stateVariableDefinitions.targetInactive = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { targetInactive: false } })
+    }
+
+    delete stateVariableDefinitions.contentId;
+    delete stateVariableDefinitions.serializedStateForContentId;
 
 
     stateVariableDefinitions.targetSubsName = {
@@ -75,140 +101,40 @@ export default class CopyFromSubs extends CompositeComponent {
       },
     };
 
-
-    stateVariableDefinitions.replacementClassesForProp = {
-      returnDependencies: () => ({
-        targetSubs: {
+    stateVariableDefinitions.targetComponent = {
+      stateVariablesDeterminingDependencies: ["targetSubs"],
+      returnDependencies: ({ stateValues }) => ({
+        targetSubsChildren: {
+          dependencyType: "componentStateVariable",
+          componentIdentity: stateValues.targetSubs,
+          variableName: "childIdentities"
+        },
+        childNumber: {
           dependencyType: "stateVariable",
-          variableName: "targetSubs"
+          variableName: "childNumber"
         }
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        return {
-          newValues: {
-            replacementClassesForProp: [componentInfoObjects.allComponentClasses[dependencyValues.targetSubs.componentType]],
-          }
-        };
-      },
-    };
+      definition({ dependencyValues }) {
 
-
-    stateVariableDefinitions.readyToExpand = {
-      stateVariablesDeterminingDependencies: [
-        "targetSubs"
-      ],
-      returnDependencies: function ({ stateValues, componentInfoObjects }) {
-
-        let dependencies = {}
-
-        let compositeClass = componentInfoObjects.allComponentClasses._composite;
-        let targetSubsClass = componentInfoObjects.allComponentClasses[stateValues.targetSubs.componentType];
-
-        if (compositeClass.isPrototypeOf(targetSubsClass)) {
-          dependencies.targetSubsReady = {
-            dependencyType: "componentStateVariable",
-            componentIdentity: stateValues.targetSubs,
-            variableName: "readyToExpand"
+        let targetComponent = null;
+        if (dependencyValues.targetSubsChildren) {
+          targetComponent = dependencyValues.targetSubsChildren[dependencyValues.childNumber]
+          if (!targetComponent) {
+            targetComponent = null;
           }
         }
+        return { newValues: { targetComponent } }
+      }
+    }
 
-        return dependencies;
-
-      },
-      definition: function () {
-        return { newValues: { readyToExpand: true } };
-      },
+    stateVariableDefinitions.readyToExpand.definition = function ({ dependencyValues }) {
+      if (dependencyValues.targetComponent && !dependencyValues.propDependenciesSetUp) {
+        return { newValues: { readyToExpand: false } }
+      }
+      return { newValues: { readyToExpand: true } };
     };
-
-
 
     return stateVariableDefinitions;
   }
-
-
-
-  static createSerializedReplacements({ component, components, workspace }) {
-
-    // console.log(`createSerializedReplacements for ${component.componentName}`);
-
-    let serializedCopy;
-
-    let targetSubsComponent = components[component.stateValues.targetSubs.componentName];
-    let targetChild = targetSubsComponent.activeChildren[component.stateValues.childNumber];
-    if (targetChild === undefined) {
-      workspace.targetChildName = undefined;
-      return [];
-    }
-    workspace.targetChildName = targetChild.componentName;
-    serializedCopy = targetChild.serialize({ forCopy: true });
-    serializedCopy = [serializedCopy];
-
-    if (!workspace.uniqueIdentifiersUsed) {
-      workspace.uniqueIdentifiersUsed = []
-    }
-
-    return {
-      replacements: postProcessCopy({
-        serializedComponents: serializedCopy,
-        componentName: component.componentName,
-        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
-      })
-    };
-
-  }
-
-  static calculateReplacementChanges({ component, components, workspace }) {
-    let targetSubsComponent = components[component.stateValues.targetSubs.componentName];
-    let targetChild = targetSubsComponent.activeChildren[component.stateValues.childNumber];
-    if (targetChild === undefined) {
-      workspace.targetChildName = undefined;
-      if (component.replacements.length > 0) {
-        let replacementInstruction = {
-          changeType: "delete",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
-        }
-
-        replacementChanges.push(replacementInstruction);
-      }
-      return replacementChanges;
-    }
-
-    if (targetChild.componentName !== workspace.targetChildName) {
-      // have different child than last time
-      // create new replacements and delete old ones
-      workspace.targetChildName = targetChild.componentName;
-      serializedCopy = targetChild.serialize({ forCopy: true });
-      serializedCopy = [serializedCopy];
-
-      if (!workspace.uniqueIdentifiersUsed) {
-        workspace.uniqueIdentifiersUsed = []
-      }
-
-      let newSerializedReplacements = postProcessCopy({
-        serializedComponents: serializedCopy,
-        componentName: component.componentName,
-        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
-      });
-
-      let replacementInstruction = {
-        changeType: "add",
-        changeTopLevelReplacements: true,
-        firstReplacementInd: 0,
-        numberReplacementsToReplace: component.replacements.length,
-        serializedReplacements: newSerializedReplacements,
-        replacementsToWithhold: 0,
-      };
-
-      replacementChanges.push(replacementInstruction);
-
-    }
-
-    return replacementChanges;
-
-
-  }
-
 
 }

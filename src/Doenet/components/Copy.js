@@ -726,7 +726,8 @@ export default class Copy extends CompositeComponent {
           });
 
           for (let property in dependencyValues) {
-            if (!["replacementClasses", "useProp", "validProp", "includeUndefinedArrayEntries"].includes(property)
+            if (!["replacementClasses", "useProp", "validProp",
+              "includeUndefinedArrayEntries", "fromSubstitutions", "fromMapAncestor"].includes(property)
               && (!(property in propertiesObject) || propertiesObject[property].disallowOverwriteOnCopy)
             ) {
               let prescribedValue = dependencyValues[property];
@@ -758,6 +759,10 @@ export default class Copy extends CompositeComponent {
             targetComponent: {
               dependencyType: "stateVariable",
               variableName: "targetComponent"
+            },
+            needsReplacementsUpdatedWhenStale: {
+              dependencyType: "stateVariable",
+              variableName: "needsReplacementsUpdatedWhenStale",
             }
           }
         }
@@ -839,6 +844,9 @@ export default class Copy extends CompositeComponent {
             recurseToMatchedChildren: true,
           }
         } else {
+          if(stateValues.componentIdentitiesForProp === null) {
+            return {};
+          }
           for (let [ind, cIdentity] of stateValues.componentIdentitiesForProp.entries()) {
             dependencies["targetWithProp" + ind] = {
               dependencyType: "componentStateVariable",
@@ -1554,6 +1562,20 @@ export default class Copy extends CompositeComponent {
     //   }
     // }
 
+    if (!component.stateValues.targetComponent) {
+      if (component.replacements.length > 0) {
+        let replacementInstruction = {
+          changeType: "delete",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          numberReplacementsToDelete: component.replacements.length,
+          replacementsToWithhold: 0,
+        }
+        replacementChanges.push(replacementInstruction);
+      }
+      return replacementChanges;
+
+    }
 
     if (component.stateValues.targetInactive) {
       let nReplacements = component.replacements.length;

@@ -1125,7 +1125,7 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x=>x.replacements[0]);
+      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => x.replacements.map(y => '#' + y.replacements[0].componentName))
 
       cy.log('Test values displayed in browser')
@@ -2106,6 +2106,293 @@ describe('Map Tag Tests', function () {
         expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
+
+  });
+
+  it('map inside substitutions of map', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number of points: <mathinput name="number"/></p>
+    
+    <map name="m1" assignNames="p1,p2,p3">
+      <template><point name="pt">(<copyFromSubs/>, 2<copyFromSubs/>)</point></template>
+      <substitutions>
+        <sequence>
+          <count><copy prop="value" tname="number" /></count>
+        </sequence>
+      </substitutions>
+    </map>
+
+    <map name="m2" assignNames="q1,q2,q3">
+      <template>
+        <point name="pt">(<copyFromSubs prop="x" />^2, <copyFromSubs prop="y" />^2)</point>
+      </template>
+      <substitutions>
+        <copy tname="m1" />
+      </substitutions>
+    </map>
+
+    <copy tname="p1" assignNames="p1a" />
+    <copy tname="p1/pt" assignNames="p1b" />
+    <copy tname="p2" assignNames="p2a" />
+    <copy tname="p2/pt" assignNames="p2b" />
+    <copy tname="p3" assignNames="p3a" />
+    <copy tname="p3/pt" assignNames="p3b" />
+
+    <copy tname="q1" assignNames="q1a" />
+    <copy tname="q1/pt" assignNames="q1b" />
+    <copy tname="q2" assignNames="q2a" />
+    <copy tname="q2/pt" assignNames="q2b" />
+    <copy tname="q3" assignNames="q3a" />
+    <copy tname="q3/pt" assignNames="q3b" />
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+
+    cy.get(cesc('#/p1/pt')).should('not.exist');
+    cy.get(cesc('#/p1a/pt')).should('not.exist');
+    cy.get(cesc('#/p1b')).should('not.exist');
+    cy.get(cesc('#/p2/pt')).should('not.exist');
+    cy.get(cesc('#/p2a/pt')).should('not.exist');
+    cy.get(cesc('#/p2b')).should('not.exist');
+    cy.get(cesc('#/p3/pt')).should('not.exist');
+    cy.get(cesc('#/p3a/pt')).should('not.exist');
+    cy.get(cesc('#/p3b')).should('not.exist');
+
+    cy.get(cesc('#/q1/pt')).should('not.exist');
+    cy.get(cesc('#/q1a/pt')).should('not.exist');
+    cy.get(cesc('#/q1b')).should('not.exist');
+    cy.get(cesc('#/q2/pt')).should('not.exist');
+    cy.get(cesc('#/q2a/pt')).should('not.exist');
+    cy.get(cesc('#/q2b')).should('not.exist');
+    cy.get(cesc('#/q3/pt')).should('not.exist');
+    cy.get(cesc('#/q3a/pt')).should('not.exist');
+    cy.get(cesc('#/q3b')).should('not.exist');
+
+
+
+    cy.log('set number to be 2');
+    cy.get(cesc("#/number_input")).clear().type("2{enter}");
+
+    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+
+    cy.get(cesc('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+    cy.get(cesc('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+    cy.get(cesc('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+
+    cy.get(cesc('#/p3/pt')).should('not.exist');
+    cy.get(cesc('#/p3a/pt')).should('not.exist');
+    cy.get(cesc('#/p3b')).should('not.exist');
+
+    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+
+    cy.get(cesc('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+    cy.get(cesc('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+    cy.get(cesc('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+
+    cy.get(cesc('#/q3/pt')).should('not.exist');
+    cy.get(cesc('#/q3a/pt')).should('not.exist');
+    cy.get(cesc('#/q3b')).should('not.exist');
+
+
+
+    cy.log('set number to be 1');
+    cy.get(cesc("#/number_input")).clear().type("1{enter}");
+
+    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+
+    cy.get(cesc('#/p2/pt')).should('not.exist');
+    cy.get(cesc('#/p2a/pt')).should('not.exist');
+    cy.get(cesc('#/p2b')).should('not.exist');
+    cy.get(cesc('#/p3/pt')).should('not.exist');
+    cy.get(cesc('#/p3a/pt')).should('not.exist');
+    cy.get(cesc('#/p3b')).should('not.exist');
+
+    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+
+    cy.get(cesc('#/q2/pt')).should('not.exist');
+    cy.get(cesc('#/q2a/pt')).should('not.exist');
+    cy.get(cesc('#/q2b')).should('not.exist');
+    cy.get(cesc('#/q3/pt')).should('not.exist');
+    cy.get(cesc('#/q3a/pt')).should('not.exist');
+    cy.get(cesc('#/q3b')).should('not.exist');
+
+
+
+    cy.log('set number to be 3');
+    cy.get(cesc("#/number_input")).clear().type("3{enter}");
+
+    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+
+    cy.get(cesc('#/p2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+    cy.get(cesc('#/p2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+    cy.get(cesc('#/p2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)')
+    })
+
+    cy.get(cesc('#/p3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,6)')
+    })
+    cy.get(cesc('#/p3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,6)')
+    })
+    cy.get(cesc('#/p3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,6)')
+    })
+
+
+    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+
+    cy.get(cesc('#/q2/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+    cy.get(cesc('#/q2a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+    cy.get(cesc('#/q2b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)')
+    })
+
+    cy.get(cesc('#/q3/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9,36)')
+    })
+    cy.get(cesc('#/q3a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9,36)')
+    })
+    cy.get(cesc('#/q3b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9,36)')
+    })
+
+
+    cy.log('set number back to zero');
+    cy.get(cesc("#/number_input")).clear().type("0{enter}");
+
+    cy.get(cesc('#/p1/pt')).should('not.exist');
+    cy.get(cesc('#/p1a/pt')).should('not.exist');
+    cy.get(cesc('#/p1b')).should('not.exist');
+    cy.get(cesc('#/p2/pt')).should('not.exist');
+    cy.get(cesc('#/p2a/pt')).should('not.exist');
+    cy.get(cesc('#/p2b')).should('not.exist');
+    cy.get(cesc('#/p3/pt')).should('not.exist');
+    cy.get(cesc('#/p3a/pt')).should('not.exist');
+    cy.get(cesc('#/p3b')).should('not.exist');
+
+    cy.get(cesc('#/q1/pt')).should('not.exist');
+    cy.get(cesc('#/q1a/pt')).should('not.exist');
+    cy.get(cesc('#/q1b')).should('not.exist');
+    cy.get(cesc('#/q2/pt')).should('not.exist');
+    cy.get(cesc('#/q2a/pt')).should('not.exist');
+    cy.get(cesc('#/q2b')).should('not.exist');
+    cy.get(cesc('#/q3/pt')).should('not.exist');
+    cy.get(cesc('#/q3a/pt')).should('not.exist');
+    cy.get(cesc('#/q3b')).should('not.exist');
+
+
+    cy.log('set number back to 1');
+    cy.get(cesc("#/number_input")).clear().type("1{enter}");
+
+    cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+    cy.get(cesc('#/p1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2)')
+    })
+
+    cy.get(cesc('#/p2/pt')).should('not.exist');
+    cy.get(cesc('#/p2a/pt')).should('not.exist');
+    cy.get(cesc('#/p2b')).should('not.exist');
+    cy.get(cesc('#/p3/pt')).should('not.exist');
+    cy.get(cesc('#/p3a/pt')).should('not.exist');
+    cy.get(cesc('#/p3b')).should('not.exist');
+
+    cy.get(cesc('#/q1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1a/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+    cy.get(cesc('#/q1b')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    })
+
+    cy.get(cesc('#/q2/pt')).should('not.exist');
+    cy.get(cesc('#/q2a/pt')).should('not.exist');
+    cy.get(cesc('#/q2b')).should('not.exist');
+    cy.get(cesc('#/q3/pt')).should('not.exist');
+    cy.get(cesc('#/q3a/pt')).should('not.exist');
+    cy.get(cesc('#/q3b')).should('not.exist');
+
 
   });
 

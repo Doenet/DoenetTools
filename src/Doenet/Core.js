@@ -5729,7 +5729,7 @@ export default class Core {
       // However, to allow one to map variable aliases right away,
       // we require that one specifies the componentType at the outset.
       // The alternative would be to automatically create another level
-      // (another state variablet that determines this dependency?)
+      // (another state variable that determines this dependency?)
       // that resolves to the componentType.
       // Instead, any such logic to compute componentType has to be done
       // in the returnDependencies function of a state variable.

@@ -490,6 +490,9 @@ export default class BaseComponent {
 
     if (parameters.forCopy) {
       serializedState.preserializedName = this.componentName;
+      if(this.doenetAttributes.assignNames) {
+        serializedState.preserializedAssignNames = this.doenetAttributes.assignNames;
+      }
     } else {
       console.warn('serializing a component without forCopy set is not yet converted!!!!')
       let additionalState = {};

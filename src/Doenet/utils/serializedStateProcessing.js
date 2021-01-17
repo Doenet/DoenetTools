@@ -569,7 +569,12 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
       prescribedName = createUniqueName(componentType, longNameId);
     }
-    if (assignNames !== undefined) {
+
+    if (!assignNames && usePreserializedNames && serializedComponent.preserializedAssignNames) {
+      assignNames = serializedComponent.preserializedAssignNames;
+    }
+
+    if (assignNames) {
 
       // assignNames was specified
       // put in doenetAttributes as assignNames array
@@ -1192,15 +1197,12 @@ export function processAssignNames({
 }) {
 
 
-  // if assignDirectlyToComposite and serializedComponents is a single composite,
+  // if assignDirectlyToComposite and serializedComponents is a single composite
+  // that asssigns names to replacements,
   // just give assignNames as attribute of the composite
   if (
     assignDirectlyToComposite &&
     serializedComponents.length === 1 &&
-    componentInfoObjects.isInheritedComponentType({
-      inheritedComponentType: serializedComponents[0].componentType,
-      baseComponentType: "_composite"
-    }) &&
     componentInfoObjects.allComponentClasses[serializedComponents[0].componentType].assignNamesToReplacements
   ) {
 
@@ -1232,7 +1234,7 @@ export function processAssignNames({
 
     let name = assignNames[ind + indOffset];
     let component = serializedComponents[ind];
-    let componentIsComposite = false;
+    let componentTakesAssignNames = false;
 
     let addingEmpty = false;
 
@@ -1254,18 +1256,16 @@ export function processAssignNames({
       }
 
       addingEmpty = true;
-      componentIsComposite = true;
+      componentTakesAssignNames = true;
     } else {
-      componentIsComposite = componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: component.componentType,
-        baseComponentType: "_composite"
-      });
+      componentTakesAssignNames = componentInfoObjects.allComponentClasses[
+        serializedComponents[0].componentType].assignNamesToReplacements;
 
     }
 
 
     if (Array.isArray(name)) {
-      if (componentIsComposite) {
+      if (componentTakesAssignNames) {
         if (!component.doenetAttributes) {
           component.doenetAttributes = {};
         }

@@ -1513,5 +1513,269 @@ describe('sequence and map assignName Tests', function () {
 
   })
 
+  it.only('copyFromSubs and indexFromSubs assign names', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" prefill="1" />
+  <p name="m1"><map assignNames="a,b">
+    <template>Letter <indexFromSubs assignNames="n1,n2" /> is <copyFromSubs assignnames="v1, v2" />. </template>
+    <substitutions>
+      <sequence type="letters">
+        <count><copy prop="value" tname="n" /></count>
+      </sequence>
+   </substitutions>
+  </map></p>
+
+
+  <p name="pa">a: <copy name="cpa" tname="a" /></p>
+  <p name="pb">b: <copy name="cpb" tname="b" /></p>
+
+  <p name="pan1">a/n1: <copy name="cpan1" tname="a/n1" /></p>
+  <p name="pbn1">b/n1: <copy name="cpbn1" tname="b/n1" /></p>
+  <p name="pan2">a/n2: <copy name="cpan2" tname="a/n2" /></p>
+  <p name="pbn2">b/n2: <copy name="cpbn2" tname="b/n2" /></p>
+
+  <p name="pav1">a/v1: <copy name="cpav1" tname="a/v1" /></p>
+  <p name="pbv1">b/v1: <copy name="cpbv1" tname="b/v1" /></p>
+  <p name="pav2">a/v2: <copy name="cpav2" tname="a/v2" /></p>
+  <p name="pbv2">b/v2: <copy name="cpbv2" tname="b/v2" /></p>
+
+
+  <p name="m2"><copy name="cpall" tname="_map1" assignNames="a1,b1,c1" /></p>
+  <p name="pa1">a1: <copy name="cpa1" tname="a1" /></p>
+  <p name="pb1">b1: <copy name="cpb1" tname="b1" /></p>
+  <p name="pc1">c1: <copy name="cpc1" tname="c1" /></p>
+
+  <p name="pan11">a1/n1: <copy name="cpan11" tname="a1/n1" /></p>
+  <p name="pbn11">b1/n1: <copy name="cpbn11" tname="b1/n1" /></p>
+  <p name="pcn11">c1/n1: <copy name="cpcn11" tname="c1/n1" /></p>
+
+  <p name="pan21">a1/n2: <copy name="cpan21" tname="a1/n2" /></p>
+  <p name="pbn21">b1/n2: <copy name="cpbn21" tname="b1/n2" /></p>
+  <p name="pcn21">c1/n2: <copy name="cpcn21" tname="c1/n2" /></p>
+
+  <p name="pav11">a1/v1: <copy name="cpav11" tname="a1/v1" /></p>
+  <p name="pbv11">b1/v1: <copy name="cpbv11" tname="b1/v1" /></p>
+  <p name="pcv11">c1/v1: <copy name="cpcv11" tname="c1/v1" /></p>
+
+  <p name="pav21">a1/v2: <copy name="cpav21" tname="a1/v2" /></p>
+  <p name="pbv21">b1/v2: <copy name="cpbv21" tname="b1/v2" /></p>
+  <p name="pcv21">c1/v2: <copy name="cpcv21" tname="c1/v2" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. ');
+
+    cy.get('#\\/pa').should('have.text', 'a: Letter 1 is a. ');
+    cy.get('#\\/pa1').should('have.text', 'a1: Letter 1 is a. ');
+
+    cy.get('#\\/pan1').should('have.text', 'a/n1: 1');
+    cy.get('#\\/pan11').should('have.text', 'a1/n1: 1');
+    cy.get('#\\/pan2').should('have.text', 'a/n2: ');
+    cy.get('#\\/pan21').should('have.text', 'a1/n2: ');
+
+    cy.get('#\\/pav1').should('have.text', 'a/v1: a');
+    cy.get('#\\/pav11').should('have.text', 'a1/v1: a');
+    cy.get('#\\/pav2').should('have.text', 'a/v2: ');
+    cy.get('#\\/pav21').should('have.text', 'a1/v2: ');
+
+    cy.get('#\\/pb').should('have.text', 'b: ');
+    cy.get('#\\/pb1').should('have.text', 'b1: ');
+
+    cy.get('#\\/pbn1').should('have.text', 'b/n1: ');
+    cy.get('#\\/pbn11').should('have.text', 'b1/n1: ');
+    cy.get('#\\/pbn2').should('have.text', 'b/n2: ');
+    cy.get('#\\/pbn21').should('have.text', 'b1/n2: ');
+
+    cy.get('#\\/pbv1').should('have.text', 'b/v1: ');
+    cy.get('#\\/pbv11').should('have.text', 'b1/v1: ');
+    cy.get('#\\/pbv2').should('have.text', 'b/v2: ');
+    cy.get('#\\/pbv21').should('have.text', 'b1/v2: ');
+
+    cy.get('#\\/pc1').should('have.text', 'c1: ');
+
+    cy.get('#\\/pcn11').should('have.text', 'c1/n1: ');
+    cy.get('#\\/pcn21').should('have.text', 'c1/n2: ');
+
+    cy.get('#\\/pcv11').should('have.text', 'c1/v1: ');
+    cy.get('#\\/pcv21').should('have.text', 'c1/v2: ');
+
+
+
+    cy.log('change n to 2')
+    cy.get('#\\/n_input').clear().type('2{enter}')
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
+
+    cy.get('#\\/pa').should('have.text', 'a: Letter 1 is a. ');
+    cy.get('#\\/pa1').should('have.text', 'a1: Letter 1 is a. ');
+
+    cy.get('#\\/pan1').should('have.text', 'a/n1: 1');
+    cy.get('#\\/pan11').should('have.text', 'a1/n1: 1');
+    cy.get('#\\/pan2').should('have.text', 'a/n2: ');
+    cy.get('#\\/pan21').should('have.text', 'a1/n2: ');
+
+    cy.get('#\\/pav1').should('have.text', 'a/v1: a');
+    cy.get('#\\/pav11').should('have.text', 'a1/v1: a');
+    cy.get('#\\/pav2').should('have.text', 'a/v2: ');
+    cy.get('#\\/pav21').should('have.text', 'a1/v2: ');
+
+    cy.get('#\\/pb').should('have.text', 'b: Letter 2 is b. ');
+    cy.get('#\\/pb1').should('have.text', 'b1: Letter 2 is b. ');
+
+    cy.get('#\\/pbn1').should('have.text', 'b/n1: 2');
+    cy.get('#\\/pbn11').should('have.text', 'b1/n1: 2');
+    cy.get('#\\/pbn2').should('have.text', 'b/n2: ');
+    cy.get('#\\/pbn21').should('have.text', 'b1/n2: ');
+
+    cy.get('#\\/pbv1').should('have.text', 'b/v1: b');
+    cy.get('#\\/pbv11').should('have.text', 'b1/v1: b');
+    cy.get('#\\/pbv2').should('have.text', 'b/v2: ');
+    cy.get('#\\/pbv21').should('have.text', 'b1/v2: ');
+
+    cy.get('#\\/pc1').should('have.text', 'c1: ');
+
+    cy.get('#\\/pcn11').should('have.text', 'c1/n1: ');
+    cy.get('#\\/pcn21').should('have.text', 'c1/n2: ');
+
+    cy.get('#\\/pcv11').should('have.text', 'c1/v1: ');
+    cy.get('#\\/pcv21').should('have.text', 'c1/v2: ');
+
+
+    cy.log('change n to 0')
+    cy.get('#\\/n_input').clear().type('0{enter}')
+
+
+    cy.get('#\\/m1').should('have.text', '');
+    cy.get('#\\/m2').should('have.text', '');
+
+    cy.get('#\\/pa').should('have.text', 'a: ');
+    cy.get('#\\/pa1').should('have.text', 'a1: ');
+
+    cy.get('#\\/pan1').should('have.text', 'a/n1: ');
+    cy.get('#\\/pan11').should('have.text', 'a1/n1: ');
+    cy.get('#\\/pan2').should('have.text', 'a/n2: ');
+    cy.get('#\\/pan21').should('have.text', 'a1/n2: ');
+
+    cy.get('#\\/pav1').should('have.text', 'a/v1: ');
+    cy.get('#\\/pav11').should('have.text', 'a1/v1: ');
+    cy.get('#\\/pav2').should('have.text', 'a/v2: ');
+    cy.get('#\\/pav21').should('have.text', 'a1/v2: ');
+
+    cy.get('#\\/pb').should('have.text', 'b: ');
+    cy.get('#\\/pb1').should('have.text', 'b1: ');
+
+    cy.get('#\\/pbn1').should('have.text', 'b/n1: ');
+    cy.get('#\\/pbn11').should('have.text', 'b1/n1: ');
+    cy.get('#\\/pbn2').should('have.text', 'b/n2: ');
+    cy.get('#\\/pbn21').should('have.text', 'b1/n2: ');
+
+    cy.get('#\\/pbv1').should('have.text', 'b/v1: ');
+    cy.get('#\\/pbv11').should('have.text', 'b1/v1: ');
+    cy.get('#\\/pbv2').should('have.text', 'b/v2: ');
+    cy.get('#\\/pbv21').should('have.text', 'b1/v2: ');
+
+    cy.get('#\\/pc1').should('have.text', 'c1: ');
+
+    cy.get('#\\/pcn11').should('have.text', 'c1/n1: ');
+    cy.get('#\\/pcn21').should('have.text', 'c1/n2: ');
+
+    cy.get('#\\/pcv11').should('have.text', 'c1/v1: ');
+    cy.get('#\\/pcv21').should('have.text', 'c1/v2: ');
+
+
+
+    cy.log('change n to 3')
+    cy.get('#\\/n_input').clear().type('3{enter}')
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. ');
+
+    cy.get('#\\/pa').should('have.text', 'a: Letter 1 is a. ');
+    cy.get('#\\/pa1').should('have.text', 'a1: Letter 1 is a. ');
+
+    cy.get('#\\/pan1').should('have.text', 'a/n1: 1');
+    cy.get('#\\/pan11').should('have.text', 'a1/n1: 1');
+    cy.get('#\\/pan2').should('have.text', 'a/n2: ');
+    cy.get('#\\/pan21').should('have.text', 'a1/n2: ');
+
+    cy.get('#\\/pav1').should('have.text', 'a/v1: a');
+    cy.get('#\\/pav11').should('have.text', 'a1/v1: a');
+    cy.get('#\\/pav2').should('have.text', 'a/v2: ');
+    cy.get('#\\/pav21').should('have.text', 'a1/v2: ');
+
+    cy.get('#\\/pb').should('have.text', 'b: Letter 2 is b. ');
+    cy.get('#\\/pb1').should('have.text', 'b1: Letter 2 is b. ');
+
+    cy.get('#\\/pbn1').should('have.text', 'b/n1: 2');
+    cy.get('#\\/pbn11').should('have.text', 'b1/n1: 2');
+    cy.get('#\\/pbn2').should('have.text', 'b/n2: ');
+    cy.get('#\\/pbn21').should('have.text', 'b1/n2: ');
+
+    cy.get('#\\/pbv1').should('have.text', 'b/v1: b');
+    cy.get('#\\/pbv11').should('have.text', 'b1/v1: b');
+    cy.get('#\\/pbv2').should('have.text', 'b/v2: ');
+    cy.get('#\\/pbv21').should('have.text', 'b1/v2: ');
+
+    cy.get('#\\/pc1').should('have.text', 'c1: Letter 3 is c. ');
+
+    cy.get('#\\/pcn11').should('have.text', 'c1/n1: 3');
+    cy.get('#\\/pcn21').should('have.text', 'c1/n2: ');
+
+    cy.get('#\\/pcv11').should('have.text', 'c1/v1: c');
+    cy.get('#\\/pcv21').should('have.text', 'c1/v2: ');
+
+
+
+    cy.log('change n to 5')
+    cy.get('#\\/n_input').clear().type('5{enter}')
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. ');
+
+    cy.get('#\\/pa').should('have.text', 'a: Letter 1 is a. ');
+    cy.get('#\\/pa1').should('have.text', 'a1: Letter 1 is a. ');
+
+    cy.get('#\\/pan1').should('have.text', 'a/n1: 1');
+    cy.get('#\\/pan11').should('have.text', 'a1/n1: 1');
+    cy.get('#\\/pan2').should('have.text', 'a/n2: ');
+    cy.get('#\\/pan21').should('have.text', 'a1/n2: ');
+
+    cy.get('#\\/pav1').should('have.text', 'a/v1: a');
+    cy.get('#\\/pav11').should('have.text', 'a1/v1: a');
+    cy.get('#\\/pav2').should('have.text', 'a/v2: ');
+    cy.get('#\\/pav21').should('have.text', 'a1/v2: ');
+
+    cy.get('#\\/pb').should('have.text', 'b: Letter 2 is b. ');
+    cy.get('#\\/pb1').should('have.text', 'b1: Letter 2 is b. ');
+
+    cy.get('#\\/pbn1').should('have.text', 'b/n1: 2');
+    cy.get('#\\/pbn11').should('have.text', 'b1/n1: 2');
+    cy.get('#\\/pbn2').should('have.text', 'b/n2: ');
+    cy.get('#\\/pbn21').should('have.text', 'b1/n2: ');
+
+    cy.get('#\\/pbv1').should('have.text', 'b/v1: b');
+    cy.get('#\\/pbv11').should('have.text', 'b1/v1: b');
+    cy.get('#\\/pbv2').should('have.text', 'b/v2: ');
+    cy.get('#\\/pbv21').should('have.text', 'b1/v2: ');
+
+    cy.get('#\\/pc1').should('have.text', 'c1: Letter 3 is c. ');
+
+    cy.get('#\\/pcn11').should('have.text', 'c1/n1: 3');
+    cy.get('#\\/pcn21').should('have.text', 'c1/n2: ');
+
+    cy.get('#\\/pcv11').should('have.text', 'c1/v1: c');
+    cy.get('#\\/pcv21').should('have.text', 'c1/v2: ');
+
+
+  })
+
 
 });

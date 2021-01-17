@@ -1,9 +1,12 @@
 import CompositeComponent from './abstract/CompositeComponent';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class IndexFromSubs extends CompositeComponent {
   static componentType = "indexfromsubs";
 
   static useReplacementsWhenCopyProp = true;
+
+  static assignNamesToReplacements = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -82,14 +85,23 @@ export default class IndexFromSubs extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component }) {
-    return {
-      replacements: [{
-        componentType: "number",
-        state: { value: component.stateValues.index, fixed: true },
-        uniqueIdentifier: ""
-      }]
-    }
+  static createSerializedReplacements({ component, componentInfoObjects }) {
+
+    let replacements = [{
+      componentType: "number",
+      state: { value: component.stateValues.index, fixed: true },
+    }];
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    return { replacements: processResult.serializedComponents };
+
   }
 
   static calculateReplacementChanges() {
