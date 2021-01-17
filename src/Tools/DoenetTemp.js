@@ -54,7 +54,7 @@ function Demo(){
   <AddItem />
   {/* <Drive types={['course']} urlClickBehavior="select" /> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
-  <h2>Select</h2>
+  {/* <h2>Select</h2> */}
 
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
