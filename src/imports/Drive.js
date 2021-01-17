@@ -1233,7 +1233,6 @@ function useUpdateBreadcrumb(props) {
         to={destinationLink}>
         {nodeObj?.label}
       </Link>
-
       breadcrumbElement = <WithDropTarget
         key={`wdtbreadcrumb${props.driveId}${currentNodeId}`} 
         id={currentNodeId}
@@ -1242,7 +1241,6 @@ function useUpdateBreadcrumb(props) {
         dropCallbacks={{
           onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.driveId, isBreadcrumb: true }),
           onDrop: () => {
-            console.log(">>>Here", props.driveId, currentNodeId)
             setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: currentNodeId});
           }
         }}

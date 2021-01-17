@@ -42,13 +42,13 @@ export default function DropTargetsProvider({ children }) {
   }, []);
 
   const unregisterDropTarget = useCallback((id) => {
-    delete dropTargetsRef.current[id];
+    // delete dropTargetsRef.current[id];
   }, []);
 
   const handleDrag = useCallback(
     (x, y, selfId = null) => {
       const dropTargetId = getDropTargetFromCursor(x, y, selfId);
-      setActiveDropTargetId(dropTargetId);
+      console.log(">>>Here", dropTargetsRef.current, dropTargetId)     
       // trigger onDrag once
       if (activeDropTargetId !== dropTargetId) {
         setActiveDropTargetId(dropTargetId);
