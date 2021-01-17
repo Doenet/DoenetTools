@@ -274,7 +274,8 @@ export const folderDictionarySelector = selectorFamily({
           }
         }
         if (canMove){
-          //Add to destination at end
+          
+          // //Add to destination at end
           let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
           let newDestinationFolderObj = {...destinationFolderObj};
           newDestinationFolderObj["defaultOrder"] = [...destinationFolderObj.defaultOrder];
@@ -315,6 +316,24 @@ export const folderDictionarySelector = selectorFamily({
           for (let parentFolderId of Object.keys(sourcesByParentFolderId)){
             set(folderDictionary({driveId:instructions.driveId,folderId:parentFolderId}),sourcesByParentFolderId[parentFolderId])
           }
+
+          let selectedItemIds = [];
+          for (let item of globalSelectedItems){
+            selectedItemIds.push(item.itemId);
+          }
+
+          const payload = {
+            sourceDriveId:globalSelectedItems[0].driveId,
+            selectedItemIds, 
+            destinationItemId:destinationFolderObj.folderInfo.itemId,
+            destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
+            destinationDriveId:driveIdFolderId.driveId
+          }
+          axios.post("/api/moveItems.php", payload)
+          .then((resp)=>{
+            // console.log(resp.data)
+          }
+          )
           
         }
       break;

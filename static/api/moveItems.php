@@ -12,9 +12,9 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true); 
 
-$sourceDriveId = mysqli_real_escape_string($conn,$_POST["selectedNodes"]["driveId"]); 
-$destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["driveId"]); 
-$destinationParentFolderId = mysqli_real_escape_string($conn,$_POST["destinationObj"]["parentFolderId"]); 
+$sourceDriveId = mysqli_real_escape_string($conn,$_POST["sourceDriveId"]); 
+$destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationDriveId"]); 
+$destinationItemId = mysqli_real_escape_string($conn,$_POST["destinationItemId"]); 
 
 $success = FALSE;
 $sql = "
@@ -49,13 +49,12 @@ if ($destinationDriveId == $sourceDriveId){
 
 if ($canAddDesination && $canMoveSource){
   $success = TRUE;
-$number_items = count($_POST["selectedNodes"]["selectedArr"]);
+$number_items = count($_POST["selectedItemIds"]);
+
 $new_values = "";
 for ($i = 0; $i < $number_items; $i++) {
-  $parentFolderId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["parentFolderId"]);
-  $itemId =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["nodeId"]);
-  $type =  mysqli_real_escape_string($conn,$_POST["selectedNodes"]["selectedArr"][$i]["type"]);
-  $new_values = $new_values . "('$destinationDriveId','$destinationParentFolderId','$itemId'),";
+  $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemIds"][$i]);
+  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId'),";
 }
 $new_values = rtrim($new_values,",");
 
@@ -65,7 +64,6 @@ $sql = $sql . $new_values;
 $sql = $sql . " ON DUPLICATE KEY UPDATE 
 driveId = VALUES(driveId),
 parentFolderId = VALUES(parentFolderId) ";
-
 $result = $conn->query($sql); 
 }else{
   $success = FALSE;
@@ -76,9 +74,6 @@ $response_arr = array(
 
  // set response code - 200 OK
  http_response_code(200);
-
-
-     
 
  // make it json format
  echo json_encode($response_arr);
