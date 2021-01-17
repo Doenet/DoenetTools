@@ -298,7 +298,6 @@ export const folderDictionarySelector = selectorFamily({
       case "move items":
         //Don't move if nothing selected or draging folder to itself
         let canMove = true;
-        console.log(">>>Here1", get(globalSelectedNodesAtom), instructions.itemId)
         if (get(globalSelectedNodesAtom).length === 0){ canMove = false;}
         //TODO: Does this catch every case of folder into itself?
         for(let gItem of get(globalSelectedNodesAtom)){
@@ -314,7 +313,6 @@ export const folderDictionarySelector = selectorFamily({
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let sourcesByParentFolderId = {};
-          console.log(">>>Here", globalSelectedItems, instructions.itemId)
 
           for(let gItem of globalSelectedItems){
             //Deselect Item
@@ -692,11 +690,10 @@ function Folder(props){
   let draggableClassName = "";
   if (!props.isNav) {
     const onDragStartCallback = () => {
-      if (globalSelectedNodes.length === 0) {
-        setSelected({instructionType:"one item", parentFolderId: props.parentFolderId})
-      } else if (!isSelected) {
-        setSelected({instructionType: "add item", parentFolderId: props.parentFolderId})
-      }      
+      if (globalSelectedNodes.length === 0 || !isSelected) {
+        setSelected({instructionType:"clear all"});
+        setSelected({instructionType:"one item", parentFolderId: props.parentFolderId});
+      } 
     }
     folder = <Draggable
       key={`dnode${props.browserId}${props.folderId}`} 
@@ -987,11 +984,10 @@ const DoenetML = React.memo((props)=>{
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
-        if (globalSelectedNodes.length === 0) {
-          setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId})
-        } else if (!isSelected) {
-          setSelected({instructionType: "add item", parentFolderId: props.item.parentFolderId})
-        }      
+        if (globalSelectedNodes.length === 0 || !isSelected) {
+          setSelected({instructionType:"clear all"});
+          setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId});
+        } 
       }
       // make DoenetML draggable
       let draggableClassName = "";
@@ -1095,11 +1091,10 @@ const Url = React.memo((props)=>{
   if (!props.isNav) {
     // make URL draggable
     const onDragStartCallback = () => {
-      if (globalSelectedNodes.length === 0) {
-        setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId})
-      } else if (!isSelected) {
-        setSelected({instructionType: "add item", parentFolderId: props.item.parentFolderId})
-      }      
+      if (globalSelectedNodes.length === 0 || !isSelected) {
+        setSelected({instructionType:"clear all"});
+        setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId});
+      } 
     }
     let draggableClassName = "";
     urlJSX = <Draggable
@@ -1124,12 +1119,12 @@ function useDnDCallbacks() {
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
-    onDragStartCallback?.();
     setDragState((dragState) => ({
       ...dragState,
       isDragging: true,
       draggedOverDriveId: driveId
     }));
+    onDragStartCallback?.();
   };
 
   const onDrag = ({ clientX, clientY, translation, id }) => {
@@ -1244,7 +1239,10 @@ function useUpdateBreadcrumb(props) {
         unregisterDropTarget={dropActions.unregisterDropTarget}
         dropCallbacks={{
           onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.driveId, isBreadcrumb: true }),
-          onDrop: () => { }
+          onDrop: () => {
+            console.log(">>>Here", props.driveId, currentNodeId)
+            setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: currentNodeId});
+          }
         }}
         >
         { breadcrumbElement } 
@@ -1270,7 +1268,7 @@ function useUpdateBreadcrumb(props) {
       unregisterDropTarget={dropActions.unregisterDropTarget}
       dropCallbacks={{
         onDragOver: () => onDragOverContainer({ id: routePathDriveId, driveId: props.driveId, isBreadcrumb: true }),
-        onDrop: () => {}
+        onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: props.driveId});}
       }}
       >
       <Link 
