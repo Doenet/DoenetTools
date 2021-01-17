@@ -649,7 +649,7 @@ const selectedDriveItems = selectorFamily({
     const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
     const {driveId,browserId,itemId} = driveIdBrowserIdItemId;
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
-      let itemIdsInRange = [];
+      let itemIdsParentFolderIdsInRange = [];
       let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
       // console.log(">>>folder",folder)
       for (let itemId of folder.defaultOrder){
@@ -660,7 +660,7 @@ const selectedDriveItems = selectorFamily({
         if (lastNeedle === itemId){ foundLastNeedle = true;}
         //Add itemId if inside the range or an end point then add to itemIds
         if (foundClickNeedle || foundLastNeedle){
-          itemIdsInRange.push(itemId);
+          itemIdsParentFolderIdsInRange.push({itemId,parentFolderId:currentFolderId});
         }
         
         
@@ -668,9 +668,9 @@ const selectedDriveItems = selectorFamily({
           const isOpen = get(folderOpenAtom({browserId,itemId}))
           //Recurse if open
           if (isOpen){
-            let [subFolderItemIds,subFoundClickNeedle,subFoundLastNeedle] = 
+            let [subItemIdsParentFolderIdsInRange,subFoundClickNeedle,subFoundLastNeedle] = 
             findRange({clickNeedle,lastNeedle,foundClickNeedle,foundLastNeedle,currentFolderId:itemId});
-            itemIdsInRange.push(...subFolderItemIds);
+            itemIdsParentFolderIdsInRange.push(...subItemIdsParentFolderIdsInRange);
             if (subFoundClickNeedle){foundClickNeedle = true;}
             if (subFoundLastNeedle){foundLastNeedle = true;}
           }
@@ -680,7 +680,7 @@ const selectedDriveItems = selectorFamily({
           break;
         }
       }
-      return [itemIdsInRange,foundClickNeedle,foundLastNeedle];
+      return [itemIdsParentFolderIdsInRange,foundClickNeedle,foundLastNeedle];
     }
     switch (instruction.instructionType) {
       case "one item":
@@ -717,28 +717,25 @@ const selectedDriveItems = selectorFamily({
           set(globalSelectedNodesAtom,[itemInfo])
         }else{
           let lastSelectedItem = globalSelected[globalSelected.length-1];
-          console.log(">>>lastSelectedItem",lastSelectedItem)
-          console.log(">>>currentSelectedItem",driveIdBrowserIdItemId)
 
           //TODO: Just select one if browserId doesn't match
           //Starting at root build array of visible items in order
-          let [selectTheseItemIds] = findRange({
+          let [selectTheseItemIdParentFolderIds] = findRange({
             currentFolderId:driveId,
             lastNeedle:lastSelectedItem.itemId,
             clickNeedle:driveIdBrowserIdItemId.itemId});
-
           let addToGlobalSelected = []
-          for (let itemIdToSelect of selectTheseItemIds){
+          for (let itemIdParentFolderIdsToSelect of selectTheseItemIdParentFolderIds){
             let itemKey = {...driveIdBrowserIdItemId}
-            itemKey.itemId = itemIdToSelect;
+            itemKey.itemId = itemIdParentFolderIdsToSelect.itemId;
+            let forGlobal = {...itemKey}
+            forGlobal.parentFolderId = itemIdParentFolderIdsToSelect.parentFolderId;
             if (!get(selectedDriveItemsAtom(itemKey))){
               set(selectedDriveItemsAtom(itemKey),true)
-              addToGlobalSelected.push(itemKey);
+              addToGlobalSelected.push(forGlobal);
             }
           }
           //TODO: Does this have the parentFolderId?
-          console.log(">>>globalSelected",globalSelected)
-          console.log(">>>addToGlobalSelected",addToGlobalSelected)
           set(globalSelectedNodesAtom,[...globalSelected,...addToGlobalSelected])
 
         }
