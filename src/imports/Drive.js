@@ -618,7 +618,9 @@ function Folder(props){
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>{openCloseButton} Folder {label} {deleteButton} ({contentIdsArr.length})</div></div>
+
   let items = null;
+  
   if (props.driveObj){
     //Root of Drive
     setVisibleItems([])
@@ -670,20 +672,6 @@ function Folder(props){
         }}
       > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
     }
-
-    if (!props.isNav) {
-      const sortButtons = <>
-        {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
-        {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
-        {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
-        {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
-      </>;
-
-      folder = <>
-        {sortButtons}
-        {folder}
-      </>;
-    }
   }
 
   // make folder draggable and droppable
@@ -720,6 +708,20 @@ function Folder(props){
     >
     { folder } 
   </WithDropTarget>
+
+  if (props.driveObj && !props.isNav) {
+    const sortButtons = <>
+      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
+      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
+    </>;
+
+    folder = <>
+      {sortButtons}
+      {folder}
+    </>;
+  }
 
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = contentsDictionary;
