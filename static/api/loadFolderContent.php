@@ -28,11 +28,14 @@ canAddItemsAndFolders,
 canDeleteItemsAndFolders,
 canMoveItemsAndFolders,
 canRenameItemsAndFolders,
+canPublishItemsAndFolders,
+canViewUnpublishItemsAndFolders,
 canChangeAllDriveSettings
 FROM drive_user
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
+
 
 $result = $conn->query($sql); 
 
@@ -48,6 +51,8 @@ $perms = array(
     "canDeleteItemsAndFolders"=>$row["canDeleteItemsAndFolders"],
     "canMoveItemsAndFolders"=>$row["canMoveItemsAndFolders"],
     "canRenameItemsAndFolders"=>$row["canRenameItemsAndFolders"],
+    "canPublishItemsAndFolders"=>$row["canPublishItemsAndFolders"],
+    "canViewUnpublishItemsAndFolders"=>$row["canViewUnpublishItemsAndFolders"],
     "canChangeAllDriveSettings"=>$row["canChangeAllDriveSettings"]
     
   );
@@ -75,6 +80,7 @@ if ($init == 'true'){
   dc.parentFolderId as parentFolderId,
   dc.label as label,
   dc.creationDate as creationDate,
+  dc.isPublished as isPublished,
   dc.itemType as itemType,
   dc.branchId as branchId,
   dc.contentId as contentId,
@@ -92,12 +98,12 @@ ON u.urlId = dc.urlId
   $result = $conn->query($sql); 
   //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
   while($row = $result->fetch_assoc()){ 
-//echo "item ".$row['itemId'].'\n<br>';
   $item = array(
     "itemId"=>$row['itemId'],
     "parentFolderId"=>$row['parentFolderId'],
     "label"=>$row['label'],
     "creationDate"=>$row['creationDate'],
+    "isPublished"=>$row['isPublished'],
     "itemType"=>$row['itemType'],
     "branchId"=>$row['branchId'],
     "contentId"=>$row['contentId'],

@@ -32,7 +32,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-
+import {contentIdAtom} from '../Tools/DoenetCourse'
 const sortOptions = Object.freeze({
   "LABEL_ASC": "label ascending",
   "LABEL_DESC": "label descending",
@@ -243,14 +243,13 @@ function DriveRouted(props){
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
   let pathDriveId = props.driveId; //default
-
   let routePathDriveId = "";
   let routePathFolderId = "";  
-  let pathItemId = "";  
+  let itemId = "";  
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   //use defaults if not defined
   if (urlParamsObj?.path !== undefined){
-    [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
+    [routePathDriveId,routePathFolderId,itemId] = urlParamsObj.path.split(":");
     if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
     if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
   }
@@ -274,7 +273,6 @@ function DriveRouted(props){
   isNav={props.isNav}
   urlClickBehavior={props.urlClickBehavior}
   route={props.route}
-  pathItemId={pathItemId}
   />
   </>
 }
@@ -291,8 +289,6 @@ function Folder(props){
   let history = useHistory();
   
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
- 
-  
   const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   console.log(`=== 📁 ${folderInfo?.contents?.folderInfo?.label}`)
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
@@ -300,7 +296,7 @@ function Folder(props){
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
-  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
+  if (isSelected) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
  
@@ -354,7 +350,7 @@ function Folder(props){
           let newParams = {...urlParamsObj} 
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
           history.push('?'+encodeParams(newParams))
-          // setSelected("one item")
+          setSelected("one item")
         }else{
           if (!e.shiftKey && !e.metaKey){
             setSelected("one item")
@@ -365,18 +361,6 @@ function Folder(props){
           }
         }
         
-        }}
-        onBlur={(e) => {
-          //Don't clear on navigation changes
-          if (!props.isNav){
-          //Only clear if focus goes outside of this node group
-            if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
-              !e.relatedTarget.dataset.doenetBrowserStayselected)
-              ){
-                setSelected("clear all")
-            }
-          }
         }}
       >
         <div 
@@ -402,17 +386,6 @@ function Folder(props){
         margin: "2px",
         marginLeft: `${props.indentLevel * indentPx}px`
       }}
-      onClick={(e)=>{
-        if (props.isNav){
-          //Only select one item
-          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-
-          let newParams = {...urlParamsObj} 
-          newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Drive`
-          history.push('?'+encodeParams(newParams))
-        }
-      }
-    }
     >Drive {label} ({folderInfo.contents.defaultOrder.length})</div>
     if (props.rootCollapsible){
       folder = <div
@@ -437,7 +410,6 @@ function Folder(props){
     items = [];
     let itemIds = [];
     for (let itemId of folderInfo.contents.defaultOrder){
-
       itemIds.push(itemId);
       let item = dictionary[itemId];
       switch(item.itemType){
@@ -451,7 +423,6 @@ function Folder(props){
           route={props.route}
           isNav={props.isNav}
           urlClickBehavior={props.urlClickBehavior}
-          pathItemId={props.pathItemId}
 
           />)
         break;
@@ -465,19 +436,6 @@ function Folder(props){
             route={props.route}
             isNav={props.isNav} 
             urlClickBehavior={props.urlClickBehavior}
-            pathItemId={props.pathItemId}
-          />)
-        break;
-        case "DoenetML":
-          items.push(<DoenetML 
-            key={`item${itemId}`} 
-            driveId={props.driveId} 
-            item={item} 
-            indentLevel={props.indentLevel+1}  
-            browserId={props.browserId}
-            route={props.route}
-            isNav={props.isNav} 
-            pathItemId={props.pathItemId}
             />)
         break;
         default:
@@ -564,13 +522,7 @@ const selectedDriveItems = selectorFamily({
           console.log(">>>range to item")
 
         break;
-        case "clear all":
-          //TODO: Only clear this browser?
-          for (let itemObj of globalSelected){
-            set(selectedDriveItemsAtom(itemObj),false)
-          }
-          set(globalSelectedNodesAtom,[]);
-        break;
+    
       default:
         console.warn(`Can't handle instruction ${instruction}`)
         break;
@@ -579,87 +531,18 @@ const selectedDriveItems = selectorFamily({
   }
 })
 
-
-const DoenetML = React.memo((props)=>{
-  console.log(`=== 📜 DoenetML`)
-  // console.log(">>>DoenetML",props)
-
-  const history = useHistory();
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
-  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
-  // console.log(">>>>isSelected",isSelected,props.item.itemId)
-
-  const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
-  if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
-
-  return <div
-      data-doenet-browserid={props.browserId}
-      tabIndex={0}
-      className="noselect nooutline" 
-      style={{
-        cursor: "pointer",
-        width: "300px",
-        padding: "4px",
-        border: "1px solid black",
-        backgroundColor: bgcolor,
-        margin: "2px",
-      }}
-      onClick={(e)=>{
-        
-        if (props.isNav){
-          //Only select one item
-          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-          let newParams = {...urlParamsObj} 
-          newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
-          history.push('?'+encodeParams(newParams))
-          // setSelected("one item")
-        }else{
-          if (!e.shiftKey && !e.metaKey){
-            setSelected("one item")
-          }else if (e.shiftKey && !e.metaKey){
-            setSelected("range to item")
-          }else if (!e.shiftKey && e.metaKey){
-            setSelected("add item")
-          }
-        }
-       
-      }}
-      onBlur={(e) => {
-        //Don't clear on navigation changes
-        if (!props.isNav){
-        //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
-            ){
-              setSelected("clear all")
-          }
-        }
-      }}
-      ><div 
-      className="noselect" 
-      style={{
-        marginLeft: `${props.indentLevel * indentPx}px`
-      }}>
-    DoenetML {props.item?.label}</div></div>
-
-  })
-
 const Url = React.memo((props)=>{
-  console.log(`=== 🔗 Url`)
+  console.log(`=== 📁 Url`)
   // console.log(">>>url",props)
-
-  const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   // console.log(">>>>isSelected",isSelected,props.item.itemId)
-
+ // >>>     const setAssignment = useSetRecoilState(contentIdAtom);
+ const setAssignment = useSetRecoilState(contentIdAtom);
+ const history = useHistory();
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
+  if (isSelected) { bgcolor = "#6de5ff"; }
   if (props.appearance === "dropperview") { bgcolor = "#53ff47"; }
   if (props.appearance === "dragged") { bgcolor = "#f3ff35"; }  
 
@@ -676,13 +559,23 @@ const Url = React.memo((props)=>{
         margin: "2px",
       }}
       onClick={(e)=>{
+  
         if (props.urlClickBehavior === "select"){
           if (props.isNav){
+            console.log(">>> url click behaviour",props)
+
             //Only select one item
+            setAssignment(props.item.contentId);
+
+            // let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+            // let newParams = {...urlParamsObj} 
+            // newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Url`
+            // history.push('?'+encodeParams(newParams))
             let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
             let newParams = {...urlParamsObj} 
-            newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:Url`
+            newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.contentId}:Url`
             history.push('?'+encodeParams(newParams))
+            setSelected("one item")
           }else{
             if (!e.shiftKey && !e.metaKey){
               setSelected("one item")
@@ -692,24 +585,17 @@ const Url = React.memo((props)=>{
               setSelected("add item")
             }
           }
+        }else if (props.urlClickBehavior === "new window"){
+          // let linkTo = props.item?.url; //Enable this when add URL is completed
+          // window.open(linkTo, "Link", "height=200,width=200");
+          window.open("http://doenet.org", "Link", "height=100%");
         }else{
           // let linkTo = props.item?.url; //Enable this when add URL is completed
           // location.href = linkTo; 
           location.href = "http://doenet.org"; 
         }
       }}
-      onBlur={(e) => {
-        //Don't clear on navigation changes
-        if (!props.isNav){
-        //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
-            ){
-              setSelected("clear all")
-          }
-        }
-      }}
+    
       ><div 
       className="noselect" 
       style={{

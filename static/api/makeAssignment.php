@@ -9,10 +9,28 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+$_POST = json_decode(file_get_contents("php://input"),true);
+$assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
+$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
+$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 
-//TODO: Make sure of instructor or user
 
-$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
+
+$success = TRUE;
+$results_arr = array();
+
+$sql="
+INSERT INTO assignment 
+(assignmentId,courseId,individualize,multipleAttempts,showSolution,showFeedback,showHints,showCorrectness,proctorMakesAvailable)
+VALUES
+('$assignmentId','$courseId',0,0,1,1,1,1,0)
+";
+
+  $result = $conn->query($sql); 
+  $sqlnew="UPDATE drive_content SET assignmentId='$assignmentId',isAssignment=1 WHERE itemId='$itemId';";
+  // echo $sqlnew;
+  $result = $conn->query($sqlnew); 
+
 
 $sql = "SELECT
 a.assignmentId AS assignmentId,
@@ -38,7 +56,7 @@ JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId
 JOIN drive_user as du
 ON du.driveId = dc.driveId
-WHERE a.assignmentId = '$assignmentId' AND du.userId='$userId'
+WHERE dc.itemId = '$itemId' AND du.userId='$userId'
 ";
 $result = $conn->query($sql);
 
@@ -68,7 +86,6 @@ if ($result->num_rows > 0){
         "assignmentId" => $row['assignmentId']
 
 
-
 );
     
 }
@@ -78,4 +95,10 @@ http_response_code(200);
 // make it json format
 echo json_encode($response_arr);
 
-$conn->close();
+  
+  $conn->close();
+
+
+
+
+?>

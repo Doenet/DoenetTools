@@ -10,7 +10,7 @@ import { DropTargetsProvider } from "../DropTarget";
 import { ReactQueryDevtools } from "react-query-devtools";
 import crypto from 'crypto';
 
-getContentId = ({ code }) => {
+const getContentId = ({ code }) => {
   const hash = crypto.createHash('sha256');
   if (code === undefined) {
     return;

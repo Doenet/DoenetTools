@@ -14,6 +14,7 @@ import {
 import { 
   BreadcrumbContainer 
 } from '../imports/Breadcrumb';
+import AddItem from "../imports/AddItem";
 
 let numAtom = atom({
   key: "numAtom",
@@ -70,26 +71,31 @@ function GlobalSelectIndicator(){
   );
 }
 
-function Inc(props){
-  let setNum = useSetRecoilState(numAtom);
-  return <button onClick={() => setNum((old) => old + 1)}>+</button>;
+let myAtomFam = atomFamily({
+  key:"myAtomFam",
+  default:"default"
+})
+
+function ShowFam(props){
+  const famVal = useRecoilValue(myAtomFam(props.mykey));
+  return <div>mykey{props.mykey} = {famVal}</div>
 }
 
-function NumIndicator() {
-  let num = useRecoilValue(molecule);
-  return <div>{num}</div>;
-}
 
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool");
+  const setmyAtomFamOne = useSetRecoilState(myAtomFam('one'))
+  const setmyAtomFamTwo = useSetRecoilState(myAtomFam('two'))
   return (
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
-        <div><button onClick={()=>{}}>Prefetch</button></div>
-        <div><button onClick={()=>{}}>Display Info</button></div>
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
+        <AddItem />
+        {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
         {/* <Drive types={['content','course']} /> */}
+                <Drive types={['course']} urlClickBehavior="select"/>
+
       </navPanel> 
 
       <headerPanel title="my title">
@@ -99,11 +105,18 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-     
-        <NumIndicator />
-        <BreadcrumbContainer />
-        <Drive id="ZLHh5s8BWM2azTVFhazIH" />
+                <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
+                <ShowFam mykey="two" />
+                
+        {/* <ShowFam mykey="one" />
+        <ShowFam mykey="two" />
+        <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
+        <BreadcrumbContainer /> */}
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+
         {/* <Drive types={['content','course']} /> */}
+        <Drive types={['course']} urlClickBehavior="select"/>
+
       </mainPanel>
 
       <supportPanel width="40%">
@@ -112,7 +125,9 @@ export default function DoenetExampleTool(props) {
       </supportPanel>
 
       <menuPanel title="edit">
-        <Inc />
+      <ShowFam mykey="one" />
+      <GlobalSelectIndicator />
+
         <p>control important stuff</p>
       </menuPanel>
 
@@ -122,152 +137,3 @@ export default function DoenetExampleTool(props) {
     </Tool>
   );
 }
-
-// const [showHideNewOverLay, setShowHideNewOverLay] = useState(false);
-
-// const showHideOverNewOverlayOnClick = () => {
-//   setShowHideNewOverLay(!showHideNewOverLay);
-// };
-
-// return (
-//   // <SelectedElementStore>
-//   <>
-//     {!showHideNewOverLay ? (
-//       <Tool
-//         initSupportPanelOpen
-//         onUndo={() => {
-//           console.log(">>>undo clicked");
-//         }}
-//         onRedo={() => {
-//           console.log(">>>redo clicked");
-//         }}
-//         title={"My Doc"}
-//         // responsiveControls={[]}
-//         headerMenuPanels={[
-//           <HeaderMenuPanelButton buttonText="Add">
-//             {"content 1"}
-//           </HeaderMenuPanelButton>,
-//           <HeaderMenuPanelButton buttonText="Save">
-//             {"content 2"}
-//           </HeaderMenuPanelButton>,
-//         ]}
-//       >
-//         <NavPanel>
-//           Nav Panel
-//         </NavPanel>
-
-//         <MainPanel
-//           setShowHideNewOverLay={setShowHideNewOverLay}
-//           // responsiveControls={[]}
-//         >
-//           <div
-//             onClick={() => {
-//               showHideOverNewOverlayOnClick();
-//             }}
-//           >
-//             Click for Overlay
-//           </div>
-
-//           <h3> This is Main Panel</h3>
-//           <p>click Switch button in header to see support panel</p>
-//           <p>
-//             Define responsiveControls to see for standard components section
-//             which are responsive and collapses according the width available
-//           </p>
-
-//           <h2>Header Menu Panels </h2>
-//           <p>Click add and save to see header menu panels section </p>
-//         </MainPanel>
-
-//         <SupportPanel
-//         // responsiveControls={[]}
-//         >
-//           <h3>Support Panel Content</h3>
-
-//           <p>
-//             Define responsiveControls to see for standard components section
-//             which are responsive and collapses according the width available
-//           </p>
-//         </SupportPanel>
-//         <MenuPanel>
-//           <MenuPanelSection title="Font">
-//             <CollapseSection>
-//               <SectionDivider type="single">
-//                 <ActionButton
-//                   handleClick={() => {
-//                     alert();
-//                   }}
-//                 />
-//                 <Menu label="actions">
-//                   <MenuItem
-//                     value="Times"
-//                     onSelect={() => {
-//                       alert("Times Selected");
-//                     }}
-//                   />
-//                   <MenuItem
-//                     value="Ariel"
-//                     onSelect={() => {
-//                       alert("Ariel Selected");
-//                     }}
-//                   />
-//                 </Menu>
-//               </SectionDivider>
-//             </CollapseSection>
-//             <CollapseSection></CollapseSection>
-//           </MenuPanelSection>
-//           <MenuPanelSection title="style">
-//             Menu Panel Style Content
-//           </MenuPanelSection>
-//         </MenuPanel>
-//       </Tool>
-//     ) : (
-//       <Overlay
-//         isOpen={showHideNewOverLay}
-//         onUndo={() => {}}
-//         onRedo={() => {}}
-//         title={"my doc"}
-//         onClose={() => {
-//           setShowHideNewOverLay(false);
-//         }}
-//         // responsiveControls={[<ResponsiveControls/>]}
-//         headerMenuPanels={[]}
-//       >
-//         <MainPanel responsiveControls={[]}>Overlay Main panel</MainPanel>
-//         <SupportPanel responsiveControls={[]}>Overlay Support</SupportPanel>
-//         <MenuPanel>
-//           <MenuPanelSection title="Font">
-//             <CollapseSection>
-//               <SectionDivider type="single">
-//                 <ActionButton
-//                   handleClick={() => {
-//                     alert();
-//                   }}
-//                 />
-//                 <Menu label="actions">
-//                   <MenuItem
-//                     value="Times"
-//                     onSelect={() => {
-//                       alert("Times Selected");
-//                     }}
-//                   />
-//                   <MenuItem
-//                     value="Ariel"
-//                     onSelect={() => {
-//                       alert("Ariel Selected");
-//                     }}
-//                   />
-//                 </Menu>
-//               </SectionDivider>
-//             </CollapseSection>
-//             <CollapseSection></CollapseSection>
-//           </MenuPanelSection>
-//           <MenuPanelSection title="style">
-//             Menu Panel Style Content
-//           </MenuPanelSection>
-//         </MenuPanel>
-//       </Overlay>
-//     )}
-//     </>
-//   // </SelectedElementStore>
-// );

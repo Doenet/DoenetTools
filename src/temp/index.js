@@ -27,4 +27,3 @@ initialize();
          </Router>
       </RecoilRoot>
   ,document.getElementById('root'));
-s

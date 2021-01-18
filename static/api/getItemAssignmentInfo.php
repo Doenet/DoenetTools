@@ -12,7 +12,7 @@ $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor or user
 
-$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
+$itemId =  mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
 $sql = "SELECT
 a.assignmentId AS assignmentId,
@@ -38,7 +38,7 @@ JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId
 JOIN drive_user as du
 ON du.driveId = dc.driveId
-WHERE a.assignmentId = '$assignmentId' AND du.userId='$userId'
+WHERE dc.itemId = '$itemId' AND du.userId='$userId'
 ";
 $result = $conn->query($sql);
 
@@ -66,7 +66,6 @@ if ($result->num_rows > 0){
         "isPublished" => $row['isPublished'],
         "isAssignment" => $row['isAssignment'],
         "assignmentId" => $row['assignmentId']
-
 
 
 );
