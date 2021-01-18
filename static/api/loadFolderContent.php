@@ -107,7 +107,9 @@ ON u.urlId = dc.urlId
     "assignmentId"=>$row['assignmentId'],
     "urlId"=>$row['urlId'],
     "url"=>$row['url'],
-    "urlDescription"=>$row['urlDescription']
+    "urlDescription"=>$row['urlDescription'],
+    "sortBy"=>"defaultOrder",
+    "dirty"=>0
   );
   array_push($results_arr,$item);
   }

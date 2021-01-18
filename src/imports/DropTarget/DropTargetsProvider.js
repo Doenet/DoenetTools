@@ -42,13 +42,12 @@ export default function DropTargetsProvider({ children }) {
   }, []);
 
   const unregisterDropTarget = useCallback((id) => {
-    delete dropTargetsRef.current[id];
+    // delete dropTargetsRef.current[id];
   }, []);
 
   const handleDrag = useCallback(
     (x, y, selfId = null) => {
       const dropTargetId = getDropTargetFromCursor(x, y, selfId);
-      setActiveDropTargetId(dropTargetId);
       // trigger onDrag once
       if (activeDropTargetId !== dropTargetId) {
         setActiveDropTargetId(dropTargetId);
@@ -59,6 +58,9 @@ export default function DropTargetsProvider({ children }) {
   );
 
   const handleDrop = (selfId = null) => {
+    if (activeDropTargetId !== null) {
+      dropTargetsRef.current[activeDropTargetId]?.onDrop();
+    }    
     setActiveDropTargetId(null);
   };
 

@@ -10,7 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
+// $parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
@@ -39,10 +39,10 @@ if ($success){
   SET isDeleted='1'
   WHERE driveId = '$driveId'
   AND itemId = '$itemId'
-  AND parentFolderId = '$parentFolderId'
   ";
   $result = $conn->query($sql); 
 }
+//AND parentFolderId = '$parentFolderId'
 
 
 $response_arr = array(
