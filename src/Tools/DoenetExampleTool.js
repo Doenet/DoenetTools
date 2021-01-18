@@ -160,7 +160,7 @@ export default function DoenetExampleTool(props) {
         <mainPanel>
           <p>do the main important stuff</p>
 
-          <BreadcrumbContainer />
+          {/* <BreadcrumbContainer /> */}
           {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
           {/* <Drive types={['content','course']} /> */}
         </mainPanel>
@@ -172,11 +172,6 @@ export default function DoenetExampleTool(props) {
 
         <menuPanel title="edit">
           <p>control important stuff</p>
-        </menuPanel>
-
-        <menuPanel title="other">
-          <p>control more important stuff</p>
-
           <button
             onClick={() => {
               setOverlayOpen("");
@@ -184,6 +179,12 @@ export default function DoenetExampleTool(props) {
           >
             Go Back
           </button>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+
+          
         </menuPanel>
       </overlay>
     </Tool>
