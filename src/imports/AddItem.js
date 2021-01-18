@@ -47,8 +47,8 @@ function AddItemRouted(props){
   const selectedItemId = "f2";
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId,folderId}))
 
-
   const [label,setLabel] = useState("")
+
   return <div><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)}/>
   <button onClick={()=>{setFolderInfo({
     instructionType:"addItem",
