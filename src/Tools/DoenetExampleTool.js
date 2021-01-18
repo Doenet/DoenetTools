@@ -15,6 +15,14 @@ import {
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 
+// Editor imports
+import DoenetViewer from './DoenetViewer';
+import ErrorBoundary from './ErrorBoundary';
+import Button from "../imports/PanelHeaderComponents/Button"
+import Editor from './Editor/Editor.js';
+import InfoPanel from './Editor/InfoPanel.js';
+import {getInitView} from './Editor/viewInit.js';
+
 let numAtom = atom({
   key: "numAtom",
   default: 0,
@@ -42,6 +50,21 @@ let mytest = selector({
     console.log("MOLE!!!");
     return `this is mole ${mole}`;
   },
+});
+
+const contentState = atom({
+  key: 'DoenetExample_content',
+  default: '',
+});
+
+const updateNumState = atom({
+  key: 'DoenetExample_updateNum',
+  default: 0,
+});
+
+const tagState = atom({
+  key: 'DoenetExample_tag',
+  default: {},
 });
 
 function GlobalSelectIndicator() {
@@ -97,97 +120,124 @@ export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool");
   const setmyAtomFamOne = useSetRecoilState(myAtomFam("one"));
   const setmyAtomFamTwo = useSetRecoilState(myAtomFam("two"));
-  return (
-    <Tool>
-      <navPanel>
-        {/* <p>navigate to important stuff</p> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
-        <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
-        {/* <Drive types={['content','course']} /> */}
-        <div>
-          <button
-            onClick={() => {
-              setOverlayOpen("George");
-            }}
-          >
-            Go to Overlay
-          </button>
-        </div>
-      </navPanel>
 
-      <headerPanel title="my title">
-        <Switch
-          onChange={(value) => {
-            setSupportVisiblity(value);
-          }}
-        />
-        <p>header for important stuff</p>
-      </headerPanel>
+  const [content, setContent] = useRecoilState(contentState);
+  const [updateNum, setUpdateNum] = useRecoilState(updateNumState);
 
-      <mainPanel>
-        <p>do the main important stuff</p>
-        {/* <ShowFam mykey="one" />
-        <ShowFam mykey="two" />
-        <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
+  const [tag, setTag] = useRecoilState(tagState);
+  const [view, setView] = useState(getInitView('', setContent, setTag));
 
-        <BreadcrumbContainer /> */}
-        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
-
-        {/* <Drive types={['content','course']} /> */}
-      </mainPanel>
-
-      <supportPanel width="40%">
-        <p>I'm here for support</p>
-        {/* <GlobalSelectIndicator /> */}
-      </supportPanel>
-
-      <menuPanel title="edit">
-        <p>control important stuff</p>
-      </menuPanel>
-
-      <menuPanel title="other">
-        <p>control more important stuff</p>
-      </menuPanel>
-
-      <overlay>
-        <headerPanel title="my title">
-          <Switch
-            onChange={(value) => {
-              setSupportVisiblity(value);
-            }}
+  let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
+      <DoenetViewer 
+              key={"doenetviewer"+updateNum} //each component has their own key, change the key will trick React to look for new component
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={typeof content === 'string' ? content : content.sliceString(0)} 
+              mode={{
+              solutionType:false,
+              allowViewSolutionWithoutRoundTrip:false,
+              showHints:false,
+              showFeedback:false,
+              showCorrectness:false,
+          }}           
           />
-          <p>header for important stuff</p>
-        </headerPanel>
+          </ErrorBoundary>)
 
-        <mainPanel>
-          <p>do the main important stuff</p>
+let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNum+1)}/>
 
-          <BreadcrumbContainer />
-          {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
-          {/* <Drive types={['content','course']} /> */}
-        </mainPanel>
+  return(        <Editor view={view} mountKey="mountkey-1"/>);
 
-        <supportPanel width="40%">
-          <p>I'm here for support</p>
-          {/* <GlobalSelectIndicator /> */}
-        </supportPanel>
+  // return (
+  //   <Tool>
+  //     <navPanel>
+  //       {/* <p>navigate to important stuff</p> */}
+  //       {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
+  //       <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
+  //       {/* <Drive types={['content','course']} /> */}
+  //       <div>
+  //         <button
+  //           onClick={() => {
+  //             setOverlayOpen("George");
+  //           }}
+  //         >
+  //           Go to Overlay
+  //         </button>
+  //       </div>
+  //     </navPanel>
 
-        <menuPanel title="edit">
-          <p>control important stuff</p>
-        </menuPanel>
+  //     <headerPanel title="my title">
+  //       <Switch
+  //         onChange={(value) => {
+  //           setSupportVisiblity(value);
+  //         }}
+  //       />
+  //       <p>header for important stuff</p>
+  //     </headerPanel>
 
-        <menuPanel title="other">
-          <p>control more important stuff</p>
+  //     <mainPanel>
+  //       <p>do the main important stuff</p>
+  //       {/* <ShowFam mykey="one" />
+  //       <ShowFam mykey="two" />
+  //       <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
 
-          <button
-            onClick={() => {
-              setOverlayOpen("");
-            }}
-          >
-            Go Back
-          </button>
-        </menuPanel>
-      </overlay>
-    </Tool>
-  );
+  //       <BreadcrumbContainer /> */}
+  //       <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+
+  //       {/* <Drive types={['content','course']} /> */}
+  //     </mainPanel>
+
+  //     <supportPanel width="40%">
+  //       <button>I'm here for support</button>
+  //       <Editor view={view} mountKey="mountkey-1"/>
+  //       {/* <GlobalSelectIndicator /> */}
+  //     </supportPanel>
+
+  //     <menuPanel title="edit">
+  //       <p>control important stuff</p>
+  //     </menuPanel>
+
+  //     <menuPanel title="other">
+  //       <p>control more important stuff</p>
+  //     </menuPanel>
+
+  //     <overlay>
+  //       <headerPanel title="my title">
+  //         <Switch
+  //           onChange={(value) => {
+  //             setSupportVisiblity(value);
+  //           }}
+  //         />
+  //         <p>header for important stuff</p>
+  //       </headerPanel>
+
+  //       <mainPanel>
+  //         <p>do the main important stuff</p>
+
+  //         <BreadcrumbContainer />
+  //         {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+  //         {/* <Drive types={['content','course']} /> */}
+  //       </mainPanel>
+
+  //       <supportPanel width="40%">
+  //         <p>I'm here for support</p>
+  //         {/* <GlobalSelectIndicator /> */}
+  //       </supportPanel>
+
+  //       <menuPanel title="edit">
+  //         <p>control important stuff</p>
+  //       </menuPanel>
+
+  //       <menuPanel title="other">
+  //         <p>control more important stuff</p>
+
+  //         <button
+  //           onClick={() => {
+  //             setOverlayOpen("");
+  //           }}
+  //         >
+  //           Go Back
+  //         </button>
+  //       </menuPanel>
+  //     </overlay>
+  //   </Tool>
+  // );
 }

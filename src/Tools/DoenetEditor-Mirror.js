@@ -24,8 +24,8 @@ import {
 
 import Editor from './Editor/Editor.js';
 import InfoPanel from './Editor/InfoPanel.js';
-import play from './Editor/macbeth.js'
-import {getInitView} from './Editor/viewInit.js'
+import play from './Editor/macbeth.js';
+import {getInitView} from './Editor/viewInit.js';
 
 
 const finalIcon1 = <FontAwesomeIcon
@@ -81,6 +81,7 @@ const showHideOverNewOverlayOnClick = () =>{
   setShowHideNewOverLay(!showHideNewOverLay);
 }
 
+console.log("=== DoenetEditor");
 // const init_content = "<outer>\n <inner>\n  I am inside\n </inner>\n</outer>";
 // const content = play;
 const [content, setContent] = useRecoilState(contentState);
@@ -105,13 +106,13 @@ let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"}>
           </ErrorBoundary>)
 
 let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNum+1)}/>
-// let updateButton = <Button text={"Update"}/>
 
   return (
 
 <>
 
 {!showHideNewOverLay ? 
+    <>
     <Tool
       onUndo={() => { console.log(">>>undo clicked") }}
       onRedo={() => { console.log(">>>redo clicked") }}
@@ -123,31 +124,32 @@ let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNu
       ]}
     >
 
-   <NavPanel>
+   <navPanel>
     <>
      Nav Panel
     </>
-   </NavPanel>
+   </navPanel>
 
-      <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
+      <mainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
         // responsiveControls={[]}
       >
         <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
 
-      </MainPanel>
+      </mainPanel>
 
-      <SupportPanel
+      <supportPanel
         // responsiveControls={[]}
       >
         <Editor view={view} mountKey="mountkey-1"/>
       
-      </SupportPanel>
-      <MenuPanel title="edit">
-      </MenuPanel>
-      <MenuPanel title="style">
+      </supportPanel>
+      <menuPanel title="edit">
+      </menuPanel>
+      <menuPanel title="style">
         <InfoPanel curr_tag={tag} view={view} setView={setView}/>
-      </MenuPanel>
+      </menuPanel>
     </Tool>
+    </>
     :
 
     <Overlay
@@ -160,12 +162,12 @@ let updateButton = <Button text={"Update"} callback={() => setUpdateNum(updateNu
           // responsiveControls={[<ResponsiveControls/>]}  
           headerMenuPanels={[]}
         >
-        <MainPanel responsiveControls={[updateButton]}>
+        <mainPanel responsiveControls={[updateButton]}>
           <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
-        </MainPanel>
-        <SupportPanel responsiveControls={[]}>
+        </mainPanel>
+        <supportPanel responsiveControls={[]}>
           <Editor view={view} mountKey="mountkey-overlay"/>
-        </SupportPanel>
+        </supportPanel>
     </Overlay> 
     }
 </>

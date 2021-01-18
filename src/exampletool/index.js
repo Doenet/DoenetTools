@@ -17,17 +17,23 @@ import {
 
 import DoenetExampleTool from '../Tools/DoenetExampleTool';
 
-    ReactDOM.render(
-      <DropTargetsProvider>
-        <BreadcrumbProvider>
-          <RecoilRoot>
-            <Router >
-              <Switch>
-                <Route path="/" render={(routeprops)=>
-                  <DoenetExampleTool route={{...routeprops}} />} />
-              </Switch>
-            </Router>
-          </RecoilRoot>
-        </BreadcrumbProvider>
-      </DropTargetsProvider>
+  //   ReactDOM.render(
+  //     <DropTargetsProvider>
+  //       <BreadcrumbProvider>
+  //         <RecoilRoot>
+  //           <Router >
+  //             <Switch>
+  //               <Route path="/" render={(routeprops)=>
+  //                 <DoenetExampleTool route={{...routeprops}} />} />
+  //             </Switch>
+  //           </Router>
+  //         </RecoilRoot>
+  //       </BreadcrumbProvider>
+  //     </DropTargetsProvider>
+  // ,document.getElementById('root'));
+
+  ReactDOM.render(
+  <RecoilRoot>
+    <DoenetExampleTool />
+  </RecoilRoot>
   ,document.getElementById('root'));

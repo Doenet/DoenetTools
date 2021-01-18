@@ -10,11 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-<<<<<<< HEAD
-$type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
-=======
 // $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
->>>>>>> upstream/master
 
 $success = TRUE;
 $results_arr = array();
@@ -23,11 +19,6 @@ $results_arr = array();
 //Gather matching drive ids
 $driveIdsAndLabels = array();
 $sql = "
-<<<<<<< HEAD
-SELECT driveId,label,driveType
-FROM drives
-WHERE userId='$userId'
-=======
 SELECT 
 d.driveId AS driveId,
 d.label AS label,
@@ -38,14 +29,10 @@ FROM drive AS d
 LEFT JOIN drive_user AS du
 ON d.driveId = du.driveId
 WHERE du.userId='$userId'
->>>>>>> upstream/master
 ";
 
 $result = $conn->query($sql); 
 while($row = $result->fetch_assoc()){ 
-<<<<<<< HEAD
-  $driveAndLabel = array("driveId"=>$row['driveId'],"label"=>$row['label'],"type"=>$row['driveType']);
-=======
   $driveAndLabel = array(
     "driveId"=>$row['driveId'],
     "label"=>$row['label'],
@@ -53,7 +40,6 @@ while($row = $result->fetch_assoc()){
     "isShared"=>$row['isShared'],
     "courseId"=>$row['courseId'],
   );
->>>>>>> upstream/master
   array_push($driveIdsAndLabels,$driveAndLabel);
 }
 $response_arr = array(

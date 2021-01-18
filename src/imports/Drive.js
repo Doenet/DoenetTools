@@ -66,7 +66,6 @@ let fetchDrivesQuery = selector({
 })
 
 export default function Drive(props){
-  console.log("=== Drive")
   const isNav = useContext(IsNavContext);
 
   const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
@@ -75,9 +74,7 @@ export default function Drive(props){
     console.error(drivesAvailable.contents)
     return null;}
 
-
   if (props.types){
-
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){

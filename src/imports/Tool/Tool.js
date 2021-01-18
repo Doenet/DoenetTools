@@ -69,20 +69,19 @@ export default function Tool(props) {
     if (Array.isArray(props.children)) {
       //populate toolParts dictionary from the lowercase Tool children
       for (let child of props.children) {
-        console.log("Child Name", child.type);
-        if (implementedToolParts.includes(child.type.name)) {
+        if (implementedToolParts.includes(child.type)) {
           let newProps = { ...child.props };
           delete newProps.children;
-          if (child.type.name === "menuPanel") {
-            if (!toolParts.MenuPanel) {
+          if (child.type === "menuPanel") {
+            if (!toolParts.menuPanel) {
               toolParts["menuPanel"] = [];
             }
-            toolParts.MenuPanel.push({
+            toolParts.menuPanel.push({
               children: child.props.children,
               props: newProps,
             });
           } else {
-            toolParts[child.type.name] = {
+            toolParts[child.type] = {
               children: child.props.children,
               props: newProps,
             };
@@ -91,10 +90,10 @@ export default function Tool(props) {
       }
     } else {
       //Only one child
-      if (implementedToolParts.includes(props.children.type.name)) {
+      if (implementedToolParts.includes(props.children.type)) {
         let newProps = { ...props.children.props };
         delete newProps.children;
-        toolParts[props.children.type.name] = {
+        toolParts[props.children.type] = {
           children: props.children.props.children,
           props: newProps,
         };
@@ -109,13 +108,11 @@ export default function Tool(props) {
   let menuPanel = null;
   let overlay = null;
 
-  console.log(toolParts);
-
-  if (toolParts.NavPanel) {
-    navPanel = <NavPanel>{toolParts.NavPanel.children}</NavPanel>;
+  if (toolParts.navPanel) {
+    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
   }
 
-  if (toolParts.HeaderPanel) {
+  if (toolParts.headerPanel) {
     headerPanel = (
       <div
         style={{
@@ -126,21 +123,21 @@ export default function Tool(props) {
         }}
       >
         <h2>Tool</h2>
-        {toolParts.HeaderPanel.children}
+        {toolParts.headerPanel.children}
       </div>
     );
   }
 
-  if (toolParts.MainPanel) {
+  if (toolParts.mainPanel) {
     mainPanel = (
       <div style={{ boxSizing: "border-box", overflow: "clip" }}>
         <h2>Main Panel</h2>
-        {toolParts.MainPanel.children}
+        {toolParts.mainPanel.children}
       </div>
     );
   }
 
-  if (toolParts.SupportPanel) {
+  if (toolParts.supportPanel) {
     supportPanel = (
       <SupportPanel>
         <h2>Support Panel</h2>
@@ -149,8 +146,8 @@ export default function Tool(props) {
     );
   }
 
-  if (toolParts.MenuPanel) {
-    menuPanel = <MenuPanel>{toolParts.MenuPanel}</MenuPanel>;
+  if (toolParts.menuPanel) {
+    menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
   if (toolParts.overlay) {
