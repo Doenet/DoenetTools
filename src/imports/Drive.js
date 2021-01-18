@@ -140,7 +140,6 @@ let folderDictionary = atomFamily({
     key:"folderDictionary/Default",
     get:(driveIdFolderId)=>({get})=>{
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
-      // console.log(">>>driveInfo",driveInfo)
       let defaultOrder = [];
       let contentsDictionary = {};
       let contentIds = {};
@@ -228,7 +227,6 @@ export const folderDictionarySelector = selectorFamily({
 
         axios.get('/api/AddItem.php', payload)
         .then(resp=>{
-          console.log(">>>resp",resp)
           //Not sure how to handle errors when saving data yet
           // throw Error("made up error")
         })
@@ -402,6 +400,12 @@ function DriveRouted(props){
   let browserId = useRef("");
   const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
 
+  useEffect(() => {
+    if (driveInfo.state === "loading") return;
+
+    updateBreadcrumb({routePathDriveId, routePathFolderId});
+    
+  }, [driveInfo.state, routePathDriveId, routePathFolderId])
 
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
@@ -432,16 +436,10 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
 
-  useEffect(() => {
-    if (driveInfo.state === "loading") return;
-
-    updateBreadcrumb({routePathDriveId, routePathFolderId});
-    
-  }, [driveInfo.state, routePathDriveId, routePathFolderId])
-
+  
 
   return <>
-  <LogVisible browserId={browserId.current} />
+  {/* <LogVisible browserId={browserId.current} /> */}
   {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
   <Folder 
   driveId={props.driveId} 
@@ -602,11 +600,6 @@ function Folder(props){
     //Root of Drive
     label = props.driveObj.label;
     folder = <>
-    <button 
-      data-doenet-browserid={props.browserId}
-    onClick={()=>{
-    setFolderInfo({instructionType:"move items",driveId:props.driveId,itemId:"f1"})
-    }}>Move Demo</button>
     <div
       data-doenet-browserid={props.browserId}
       tabIndex={0}
@@ -779,7 +772,7 @@ const EmptyNode =  React.memo(function Node(props){
 
 function LogVisible(props){
   const globalSelected = useRecoilValue(globalSelectedNodesAtom);
-  console.log(">>>>globalSelected",globalSelected)
+  console.log("globalSelected",globalSelected)
   return null;
 }
 
@@ -800,7 +793,7 @@ const selectedDriveItems = selectorFamily({
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
       let itemIdsParentFolderIdsInRange = [];
       let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
-      // console.log(">>>folder",folder)
+
       for (let itemId of folder.defaultOrder){
         if (foundClickNeedle && foundLastNeedle){
           break;
@@ -914,7 +907,6 @@ const DoenetML = React.memo((props)=>{
   const [dragState] = useRecoilState(dragStateAtom);
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
-  // console.log(">>>>isSelected",isSelected,props.item.itemId)
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
@@ -1007,16 +999,13 @@ const DoenetML = React.memo((props)=>{
 const Url = React.memo((props)=>{
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const [dragState] = useRecoilState(dragStateAtom);
-  console.log(`=== 📁 Url`)
-  console.log(">>>url",props)
   console.log(`=== 🔗 Url`)
-  // console.log(">>>url",props)
+
 
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
-  // console.log(">>>>isSelected",isSelected,props.item.itemId)
 
   const indentPx = 20;
   let bgcolor = "#e2e2e2";
