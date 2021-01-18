@@ -402,7 +402,8 @@ function DriveRouted(props){
   let browserId = useRef("");
   const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
 
-  // if (driveInfo.state === "loading"){ return null;}
+
+  if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
     console.error(driveInfo.contents)
     return null;}
