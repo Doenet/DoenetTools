@@ -48,7 +48,6 @@ export default function DropTargetsProvider({ children }) {
   const handleDrag = useCallback(
     (x, y, selfId = null) => {
       const dropTargetId = getDropTargetFromCursor(x, y, selfId);
-      console.log(">>>Here", dropTargetsRef.current, dropTargetId)     
       // trigger onDrag once
       if (activeDropTargetId !== dropTargetId) {
         setActiveDropTargetId(dropTargetId);

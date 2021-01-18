@@ -486,7 +486,6 @@ function Folder(props){
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIds} = folderInfoObj.contents;
   
-  const setVisibleItems = useSetRecoilState(visibleDriveItems(props.browserId));
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
