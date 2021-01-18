@@ -1,25 +1,50 @@
-import React from 'react';
-import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
-import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
-import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
-import Button from "../imports/PanelHeaderComponents/Button.js";
-import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
-// import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
-import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
-import ProgressBar from "../imports/PanelHeaderComponents/ProgressBar.js";
-import styled, { ThemeProvider } from 'styled-components';
-import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
-import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
+import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
+import './temp.css';
+import axios from "axios";
+import './util.css';
+import nanoid from 'nanoid';
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  useHistory
+} from "react-router-dom";
 
-export default function attempt() {
-return (
-<>
-<ActionButtonGroup>
-  <ActionButton text='X'></ActionButton>
-  <ActionButton text='Y'></ActionButton>
-  <ActionButton text='Z'></ActionButton>
-</ActionButtonGroup>
-</>
-);
+import {
+  atom,
+  atomFamily,
+  selector,
+  selectorFamily,
+  RecoilRoot,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+  useRecoilStateLoadable,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
+
+import Drive from '../imports/Drive'
+import AddItem from '../imports/AddItem'
+
+
+
+export default function app() {
+return <RecoilRoot>
+    <Demo />
+</RecoilRoot>
 };
+
+
+function Demo(){
+  console.log("=== Demo")
+
+  return <>
+
+  <AddItem />
+  {/* <Drive types={['course']} /> */}
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
+
+  </>
+}
+
 
