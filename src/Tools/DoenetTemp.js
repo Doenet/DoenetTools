@@ -56,7 +56,7 @@ function Demo(){
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
   {/* <h2>Select</h2> */}
 
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
   {/* <h2>Default</h2>
