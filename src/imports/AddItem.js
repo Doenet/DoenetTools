@@ -27,7 +27,7 @@ import {folderDictionarySelector} from './Drive';
 
 
 export default function AddItem(props){
-  console.log("=== AddItem")
+  // console.log("=== AddItem")
 
     return  <Router ><Switch>
            <Route path="/" render={(routeprops)=>
@@ -38,7 +38,7 @@ export default function AddItem(props){
 }
 
 function AddItemRouted(props){
-  console.log("=== AddItemRouted")
+  // console.log("=== AddItemRouted")
   
   // console.log(props)
   //TODO: driveId and folderId come from route

@@ -67,7 +67,7 @@ let fetchDrivesQuery = selector({
 })
 
 export default function Drive(props){
-  console.log("=== Drive")
+  // console.log("=== Drive")
   const isNav = useContext(IsNavContext);
 
   const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
@@ -128,13 +128,13 @@ let loadDriveInfoQuery = selectorFamily({
  
 })
 
-//Find BrowserId's given driveId
-let browserIdDictionary = atomFamily({
-  key:"browserIdDictionary",
+//Find DriveInstanceId's given driveId
+let driveInstanceIdDictionary = atomFamily({
+  key:"driveInstanceIdDictionary",
   default:[]
 })
 
-let folderDictionary = atomFamily({
+export const folderDictionary = atomFamily({
   key:"folderDictionary",
   default:selectorFamily({
     key:"folderDictionary/Default",
@@ -255,7 +255,7 @@ export const folderDictionarySelector = selectorFamily({
         break;
       case "delete item":
         //Remove from folder
-        let item = {driveId:driveIdFolderId.driveId,browserId:instructions.browserId,itemId:instructions.itemId}
+        let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
         let newFInfo = {...fInfo}
         newFInfo["defaultOrder"] = [...fInfo.defaultOrder];
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
@@ -303,7 +303,7 @@ export const folderDictionarySelector = selectorFamily({
 
           for(let gItem of globalSelectedItems){
             //Deselect Item
-            let selecteditem = {driveId:gItem.driveId,browserId:gItem.browserId,itemId:gItem.itemId}
+            let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
             set(selectedDriveItemsAtom(selecteditem),false)
 
             //Prepare to Add to destination
@@ -394,10 +394,10 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
 };
 
 function DriveRouted(props){
-  console.log("=== DriveRouted")
+  // console.log("=== DriveRouted")
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-  const setBrowserId = useSetRecoilState(browserIdDictionary(props.driveId))
-  let browserId = useRef("");
+  const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
+  let driveInstanceId = useRef("");
   const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
 
   useEffect(() => {
@@ -412,9 +412,9 @@ function DriveRouted(props){
     console.error(driveInfo.contents)
     return null;}
 
-  if (browserId.current === ""){ 
-    browserId.current = nanoid();
-    setBrowserId((old)=>{let newArr = [...old]; newArr.push(browserId.current); return newArr;});
+  if (driveInstanceId.current === ""){ 
+    driveInstanceId.current = nanoid();
+    setDriveInstanceId((old)=>{let newArr = [...old]; newArr.push(driveInstanceId.current); return newArr;});
   }
 
   //Use Route to determine path variables
@@ -439,7 +439,7 @@ function DriveRouted(props){
   
 
   return <>
-  {/* <LogVisible browserId={browserId.current} /> */}
+  {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
   {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
   <Folder 
   driveId={props.driveId} 
@@ -447,7 +447,7 @@ function DriveRouted(props){
   indentLevel={0}  
   driveObj={props.driveObj} 
   rootCollapsible={props.rootCollapsible}
-  browserId={browserId.current}
+  driveInstanceId={driveInstanceId.current}
   isNav={props.isNav}
   urlClickBehavior={props.urlClickBehavior}
   route={props.route}
@@ -463,9 +463,9 @@ const folderOpenAtom = atomFamily({
 
 const folderOpenSelector = selectorFamily({
   key:"folderOpenSelector",
-  set:(browserIdItemId) => ({get,set})=>{
-    const isOpen = get(folderOpenAtom(browserIdItemId))
-    set(folderOpenAtom(browserIdItemId),!isOpen); 
+  set:(driveInstanceIdItemId) => ({get,set})=>{
+    const isOpen = get(folderOpenAtom(driveInstanceIdItemId))
+    set(folderOpenAtom(driveInstanceIdItemId),!isOpen); 
   }
 })
 
@@ -477,8 +477,8 @@ function Folder(props){
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
   //Used to determine range of items in Shift Click
-  const isOpen = useRecoilValue(folderOpenAtom({browserId:props.browserId,itemId:props.folderId}))
-  const toggleOpen = useSetRecoilState(folderOpenSelector({browserId:props.browserId,itemId:props.folderId}))
+  const isOpen = useRecoilValue(folderOpenAtom({driveInstanceId:props.driveInstanceId,itemId:props.folderId}))
+  const toggleOpen = useSetRecoilState(folderOpenSelector({driveInstanceId:props.driveInstanceId,itemId:props.folderId}))
 
   let history = useHistory();
   
@@ -489,10 +489,10 @@ function Folder(props){
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
   
-  console.log(`=== 📁 ${folderInfo?.label}`)
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId})); 
-  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId})); 
-  const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",browserId:props.browserId,itemId})}
+  // console.log(`=== 📁 ${folderInfo?.label}`)
+  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
+  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
+  const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",driveInstanceId:props.driveInstanceId,itemId})}
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
@@ -506,7 +506,7 @@ function Folder(props){
  
   let openCloseText = isOpen ? "Close" : "Open";
   let deleteButton = <button
-  data-doenet-browserid={props.browserId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -515,7 +515,7 @@ function Folder(props){
   >Delete</button>
 
   let openCloseButton = <button 
-  data-doenet-browserid={props.browserId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -545,7 +545,7 @@ function Folder(props){
 
   let label = folderInfo?.label;
   let folder = <div
-      data-doenet-browserid={props.browserId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -580,7 +580,7 @@ function Folder(props){
           if (!props.isNav){
           //Only clear if focus goes outside of this node group
             if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+              (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
               !e.relatedTarget.dataset.doenetBrowserStayselected)
               ){
                 setSelected({instructionType:"clear all"})
@@ -601,7 +601,7 @@ function Folder(props){
     label = props.driveObj.label;
     folder = <>
     <div
-      data-doenet-browserid={props.browserId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -627,7 +627,7 @@ function Folder(props){
     >Drive {label} ({contentIdsArr.length})</div></>
     if (props.rootCollapsible){
       folder = <div
-        data-doenet-browserid={props.browserId}
+        data-doenet-driveinstanceid={props.driveInstanceId}
         tabIndex={0}
         className="noselect nooutline" 
         style={{
@@ -653,7 +653,7 @@ function Folder(props){
       } 
     }
     folder = <Draggable
-      key={`dnode${props.browserId}${props.folderId}`} 
+      key={`dnode${props.driveInstanceId}${props.folderId}`} 
       id={props.folderId}
       className={draggableClassName}
       onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId, onDragStartCallback })}
@@ -666,7 +666,7 @@ function Folder(props){
   }
 
   folder = <WithDropTarget
-    key={`wdtnode${props.browserId}${props.folderId}`} 
+    key={`wdtnode${props.driveInstanceId}${props.folderId}`} 
     id={props.folderId}
     registerDropTarget={dropActions.registerDropTarget} 
     unregisterDropTarget={dropActions.unregisterDropTarget}
@@ -700,11 +700,11 @@ function Folder(props){
       switch(item.itemType){
         case "Folder":
         items.push(<Folder 
-          key={`item${itemId}${props.browserId}`} 
+          key={`item${itemId}${props.driveInstanceId}`} 
           driveId={props.driveId} 
           folderId={item.itemId} 
           indentLevel={props.indentLevel+1}  
-          browserId={props.browserId}
+          driveInstanceId={props.driveInstanceId}
           route={props.route}
           isNav={props.isNav}
           urlClickBehavior={props.urlClickBehavior}
@@ -716,11 +716,11 @@ function Folder(props){
         break;
         case "Url":
           items.push(<Url 
-            key={`item${itemId}${props.browserId}`} 
+            key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
             item={item} 
             indentLevel={props.indentLevel+1}  
-            browserId={props.browserId}
+            driveInstanceId={props.driveInstanceId}
             route={props.route}
             isNav={props.isNav} 
             urlClickBehavior={props.urlClickBehavior}
@@ -730,11 +730,11 @@ function Folder(props){
         break;
         case "DoenetML":
           items.push(<DoenetML 
-            key={`item${itemId}${props.browserId}`} 
+            key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
             item={item} 
             indentLevel={props.indentLevel+1}  
-            browserId={props.browserId}
+            driveInstanceId={props.driveInstanceId}
             route={props.route}
             isNav={props.isNav} 
             pathItemId={props.pathItemId}
@@ -783,13 +783,13 @@ const selectedDriveItemsAtom = atomFamily({
 
 const selectedDriveItems = selectorFamily({
   key:"selectedDriveItems",
-  // get:(driveIdBrowserIdItemId) =>({get})=>{ 
-  //   return get(selectedDriveItemsAtom(driveIdBrowserIdItemId));
+  // get:(driveIdDriveInstanceIdItemId) =>({get})=>{ 
+  //   return get(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId));
   // },
-  set:(driveIdBrowserIdItemId) => ({get,set},instruction)=>{
+  set:(driveIdDriveInstanceIdItemId) => ({get,set},instruction)=>{
     const globalSelected = get(globalSelectedNodesAtom);
-    const isSelected = get(selectedDriveItemsAtom(driveIdBrowserIdItemId))
-    const {driveId,browserId,itemId} = driveIdBrowserIdItemId;
+    const isSelected = get(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId))
+    const {driveId,driveInstanceId,itemId} = driveIdDriveInstanceIdItemId;
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
       let itemIdsParentFolderIdsInRange = [];
       let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
@@ -807,7 +807,7 @@ const selectedDriveItems = selectorFamily({
         
         
         if (folder.contentsDictionary[itemId].itemType === "Folder"){
-          const isOpen = get(folderOpenAtom({browserId,itemId}))
+          const isOpen = get(folderOpenAtom({driveInstanceId,itemId}))
           //Recurse if open
           if (isOpen){
             let [subItemIdsParentFolderIdsInRange,subFoundClickNeedle,subFoundLastNeedle] = 
@@ -830,22 +830,22 @@ const selectedDriveItems = selectorFamily({
           for (let itemObj of globalSelected){
             set(selectedDriveItemsAtom(itemObj),false)
           }
-          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          let itemInfo = {...driveIdBrowserIdItemId}
+          set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
+          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
         }
         break;
       case "add item":
         if (isSelected){
-          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),false)
+          set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),false)
           let newGlobalSelected = [...globalSelected];
-          const index = newGlobalSelected.indexOf(driveIdBrowserIdItemId)
+          const index = newGlobalSelected.indexOf(driveIdDriveInstanceIdItemId)
           newGlobalSelected.splice(index,1)
           set(globalSelectedNodesAtom,newGlobalSelected);
         }else{
-          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          let itemInfo = {...driveIdBrowserIdItemId}
+          set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
+          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[...globalSelected,itemInfo])
         }
@@ -853,22 +853,22 @@ const selectedDriveItems = selectorFamily({
       case "range to item":
         if (globalSelected.length === 0){
           //No previous items selected so just select this one
-          set(selectedDriveItemsAtom(driveIdBrowserIdItemId),true)
-          let itemInfo = {...driveIdBrowserIdItemId}
+          set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
+          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
         }else{
           let lastSelectedItem = globalSelected[globalSelected.length-1];
 
-          //TODO: Just select one if browserId doesn't match
+          //TODO: Just select one if driveInstanceId doesn't match
           //Starting at root build array of visible items in order
           let [selectTheseItemIdParentFolderIds] = findRange({
             currentFolderId:driveId,
             lastNeedle:lastSelectedItem.itemId,
-            clickNeedle:driveIdBrowserIdItemId.itemId});
+            clickNeedle:driveIdDriveInstanceIdItemId.itemId});
           let addToGlobalSelected = []
           for (let itemIdParentFolderIdsToSelect of selectTheseItemIdParentFolderIds){
-            let itemKey = {...driveIdBrowserIdItemId}
+            let itemKey = {...driveIdDriveInstanceIdItemId}
             itemKey.itemId = itemIdParentFolderIdsToSelect.itemId;
             let forGlobal = {...itemKey}
             forGlobal.parentFolderId = itemIdParentFolderIdsToSelect.parentFolderId;
@@ -899,11 +899,11 @@ const selectedDriveItems = selectorFamily({
 })
 
 const DoenetML = React.memo((props)=>{
-  console.log(`=== 📜 DoenetML`)
+  // console.log(`=== 📜 DoenetML`)
 
   const history = useHistory();
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
-  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
+  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const [dragState] = useRecoilState(dragStateAtom);
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
@@ -914,7 +914,7 @@ const DoenetML = React.memo((props)=>{
   if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   let deleteButton = <button
-  data-doenet-browserid={props.browserId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -923,7 +923,7 @@ const DoenetML = React.memo((props)=>{
   >Delete</button>
 
   let doenetMLJSX = <div
-      data-doenet-browserid={props.browserId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -958,7 +958,7 @@ const DoenetML = React.memo((props)=>{
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
               setSelected({instructionType:"clear all"})
@@ -982,7 +982,7 @@ const DoenetML = React.memo((props)=>{
       // make DoenetML draggable
       let draggableClassName = "";
       doenetMLJSX = <Draggable
-        key={`dnode${props.browserId}${props.item.itemId}`} 
+        key={`dnode${props.driveInstanceId}${props.item.itemId}`} 
         id={props.item.itemId}
         className={draggableClassName}
         onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
@@ -999,12 +999,12 @@ const DoenetML = React.memo((props)=>{
 const Url = React.memo((props)=>{
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const [dragState] = useRecoilState(dragStateAtom);
-  console.log(`=== 🔗 Url`)
+  // console.log(`=== 🔗 Url`)
 
 
   const history = useHistory();
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
-  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,browserId:props.browserId,itemId:props.item.itemId})); 
+  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
+  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
@@ -1013,7 +1013,7 @@ const Url = React.memo((props)=>{
   if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   let deleteButton = <button
-  data-doenet-browserid={props.browserId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -1022,7 +1022,7 @@ const Url = React.memo((props)=>{
   >Delete</button>
 
   let urlJSX = <div
-      data-doenet-browserid={props.browserId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -1065,7 +1065,7 @@ const Url = React.memo((props)=>{
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.browserId &&
+            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
               setSelected({instructionType:"clear all"})
@@ -1089,7 +1089,7 @@ const Url = React.memo((props)=>{
     }
     let draggableClassName = "";
     urlJSX = <Draggable
-      key={`dnode${props.browserId}${props.item.itemId}`} 
+      key={`dnode${props.driveInstanceId}${props.item.itemId}`} 
       id={props.item.itemId}
       className={draggableClassName}
       onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
