@@ -127,7 +127,7 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-        {/* <BreadcrumbContainer />  */}
+        <BreadcrumbContainer /> 
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
 
