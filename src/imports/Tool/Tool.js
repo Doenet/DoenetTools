@@ -53,7 +53,7 @@ export const openOverlayByName = selector({
 
 export default function Tool(props) {
   const openOverlayName = useRecoilValue(openOverlayByName);
-  console.log("=== Tool (only once)");
+  // console.log("=== Tool (only once)");
 
   var toolParts = {};
 

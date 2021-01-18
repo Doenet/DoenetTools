@@ -18,36 +18,67 @@ import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 
 
+const itemVersionsSelector = selectorFamily({
+  key:"itemInfoSelector",
+  get:(driveIdItemId)=>({get})=>{
+    //Load versions from database
+    return [{title:"one",contentId:"123"}]
+  }
+})
+
 const selectedInformation = selector({
   key:"selectedInformation",
   get:({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);
-    console.log(">>>globalSelected",globalSelected)
-    // folderDictionary({driveId,folderId})
-    return {names:["name 1"]}
+    if (globalSelected.length !== 1){
+      return {number:globalSelected.length}
+    }
+    //Find information if only one item selected
+    const driveId = globalSelected[0].driveId;
+    const folderId = globalSelected[0].parentFolderId;
+    let folderInfo = get(folderDictionary({driveId,folderId})); 
+    const itemId = globalSelected[0].itemId;
+    let itemInfo = folderInfo.contentsDictionary[itemId];
+    let versions = [];
+    if (itemInfo.itemType === "DoenetML"){
+      versions = get(itemVersionsSelector({driveId,itemId}))
+    }
+    return {number:globalSelected.length,itemInfo,versions}
   }
 })
 
 const ItemInfo = function (props){
-  console.log("=== 🧐 Item Info")
+  // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
-  console.log(">>>infoLoad",infoLoad)
+  // console.log(">>>infoLoad",infoLoad)
 
- const openEditor =     <div>
-          <button
+  if (infoLoad.contents?.number > 1){
+    return <>
+    <h1>{infoLoad.contents.number} Items Selected</h1>
+    </>
+  }else if (infoLoad.contents?.number < 1){
+    return null;
+  }
+
+  const itemInfo = infoLoad?.contents?.itemInfo;
+  const versions = infoLoad?.contents?.versions;
+  console.log(">>>itemInfo",itemInfo)
+  console.log(">>>versions",versions)
+ const openEditor =   <div>
+          <div
             onClick={() => {
               setOverlayOpen("Editor");
             }}
           >
-            Go to Overlay
-          </button>
+            Version 1
+          </div>
         </div>
 
   return <>
-  <h1>Info</h1>
-  {/* <p>Name: {infoLoad.names[0]}</p> */}
+  <h1>{itemInfo.label}</h1>
+  
   {openEditor}
   </>
 }

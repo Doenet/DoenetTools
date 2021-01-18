@@ -506,7 +506,7 @@ function Folder(props){
  
   let openCloseText = isOpen ? "Close" : "Open";
   let deleteButton = <button
-  data-doenet-driveInstanceId={props.driveInstanceId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -515,7 +515,7 @@ function Folder(props){
   >Delete</button>
 
   let openCloseButton = <button 
-  data-doenet-driveInstanceId={props.driveInstanceId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -545,7 +545,7 @@ function Folder(props){
 
   let label = folderInfo?.label;
   let folder = <div
-      data-doenet-driveInstanceId={props.driveInstanceId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -580,7 +580,7 @@ function Folder(props){
           if (!props.isNav){
           //Only clear if focus goes outside of this node group
             if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetBrowserid !== props.driveInstanceId &&
+              (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
               !e.relatedTarget.dataset.doenetBrowserStayselected)
               ){
                 setSelected({instructionType:"clear all"})
@@ -601,7 +601,7 @@ function Folder(props){
     label = props.driveObj.label;
     folder = <>
     <div
-      data-doenet-driveInstanceId={props.driveInstanceId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -627,7 +627,7 @@ function Folder(props){
     >Drive {label} ({contentIdsArr.length})</div></>
     if (props.rootCollapsible){
       folder = <div
-        data-doenet-driveInstanceId={props.driveInstanceId}
+        data-doenet-driveinstanceid={props.driveInstanceId}
         tabIndex={0}
         className="noselect nooutline" 
         style={{
@@ -914,7 +914,7 @@ const DoenetML = React.memo((props)=>{
   if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   let deleteButton = <button
-  data-doenet-driveInstanceId={props.driveInstanceId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -923,7 +923,7 @@ const DoenetML = React.memo((props)=>{
   >Delete</button>
 
   let doenetMLJSX = <div
-      data-doenet-driveInstanceId={props.driveInstanceId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -958,7 +958,7 @@ const DoenetML = React.memo((props)=>{
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.driveInstanceId &&
+            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
               setSelected({instructionType:"clear all"})
@@ -1013,7 +1013,7 @@ const Url = React.memo((props)=>{
   if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
 
   let deleteButton = <button
-  data-doenet-driveInstanceId={props.driveInstanceId}
+  data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -1022,7 +1022,7 @@ const Url = React.memo((props)=>{
   >Delete</button>
 
   let urlJSX = <div
-      data-doenet-driveInstanceId={props.driveInstanceId}
+      data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -1065,7 +1065,7 @@ const Url = React.memo((props)=>{
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetBrowserid !== props.driveInstanceId &&
+            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
             !e.relatedTarget.dataset.doenetBrowserStayselected)
             ){
               setSelected({instructionType:"clear all"})
