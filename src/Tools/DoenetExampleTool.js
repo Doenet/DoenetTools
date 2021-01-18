@@ -1,6 +1,8 @@
 import React from "react";
 import Tool from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import AddItem from '../imports/AddItem'
+
 import Switch from "../imports/Switch"
 import {
   atom,
@@ -47,44 +49,34 @@ let mytest = selector({
 
 function GlobalSelectIndicator(){
   let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  let nodes = [];
-  for (let nodeObj of selectedNodes) {
-    nodes.push(
-      <div key={`gsi${nodeObj.nodeId}`}>
-        {nodeObj.type} {nodeObj.nodeId}
-      </div>
-    );
-  }
-  return (
-    <div
-      style={{
-        backgroundColor: "#fcd2a7",
-        border: "1px solid black",
-        margin: "20px",
-        padding: "10px",
-      }}
-    >
-      <h3>Global Select Indicator</h3>
-      {nodes}
-    </div>
-  );
-}
-
-let myAtomFam = atomFamily({
-  key:"myAtomFam",
-  default:"default"
-})
-
-function ShowFam(props){
-  const famVal = useRecoilValue(myAtomFam(props.mykey));
-  return <div>mykey{props.mykey} = {famVal}</div>
+  console.log(">>>selectedNodes",selectedNodes)
+  return "temp"
+  // let nodes = [];
+  // for (let nodeObj of selectedNodes) {
+  //   nodes.push(
+  //     <div key={`gsi${nodeObj.nodeId}`}>
+  //       {nodeObj.type} {nodeObj.nodeId}
+  //     </div>
+  //   );
+  // }
+  // return (
+  //   <div
+  //     style={{
+  //       backgroundColor: "#fcd2a7",
+  //       border: "1px solid black",
+  //       margin: "20px",
+  //       padding: "10px",
+  //     }}
+  //   >
+  //     <h3>Global Select Indicator</h3>
+  //     {nodes}
+  //   </div>
+  // );
 }
 
 
 export default function DoenetExampleTool(props) {
   console.log("=== DoenetExampleTool");
-  const setmyAtomFamOne = useSetRecoilState(myAtomFam('one'))
-  const setmyAtomFamTwo = useSetRecoilState(myAtomFam('two'))
   return (
     <Tool>
       <navPanel>
@@ -101,11 +93,8 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-        {/* <ShowFam mykey="one" />
-        <ShowFam mykey="two" />
-        <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
-
-        <BreadcrumbContainer /> */}
+        {/* <BreadcrumbContainer />  */}
+        <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
 
         {/* <Drive types={['content','course']} /> */}
