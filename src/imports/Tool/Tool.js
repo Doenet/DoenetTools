@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { atom, selector, useRecoilValue } from "recoil";
 import NavPanel from "./NavPanel";
+import HeaderPanel from "./HeaderPanel";
 import ContentPanel from "./ContentPanel";
 import SupportPanel from "./SupportPanel";
 import MenuPanel from "./MenuPanel";
@@ -114,18 +115,7 @@ export default function Tool(props) {
   }
 
   if (toolParts.headerPanel) {
-    headerPanel = (
-      <div
-        style={{
-          gridArea: "headerPanel",
-          display: "flex",
-          borderLeft: "1px solid black",
-          borderBottom: "1px solid black",
-        }}
-      >
-        {toolParts.headerPanel.children}
-      </div>
-    );
+    headerPanel = <HeaderPanel>{toolParts.headerPanel.children}</HeaderPanel>;
   }
 
   if (toolParts.mainPanel) {
@@ -171,31 +161,3 @@ export default function Tool(props) {
     </ReactQueryCacheProvider>
   );
 }
-
-// {props.children &&
-//   Array.isArray(props.children) &&
-//   props.children.map((obj, index) => {
-//     switch (obj?.type?.name) {
-//       case "MainPanel":
-//         return React.cloneElement(obj, {
-//           onClick: () => {
-//             props.setShowHideNewOverLay(true);
-//           },
-//           responsiveControlsFromTools: props.responsiveControls,
-//           responsiveControls: obj.props.responsiveControls,
-//           onUndo: props.onUndo,
-//           onRedo: props.onRedo,
-//           title: props.title,
-//           supportPanelObj: supportPanelObj,
-//           headerMenuPanels: props.headerMenuPanels,
-//           initSupportPanelOpen: props.initSupportPanelOpen,
-//           key: index,
-//         });
-//       case "SupportPanel":
-//         return (null);
-//       case "NavPanel":
-//       case "MenuPanel":
-//       default:
-//         return React.cloneElement(obj, { key: index });
-//     }
-//   })}
