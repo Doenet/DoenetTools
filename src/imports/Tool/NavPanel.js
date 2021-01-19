@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, createContext } from "react";
 import styled from "styled-components";
 import "../../../src/Tools/ToolLayout/toollayout.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 
-const NavPanelDiv = styled.div`
+export const IsNavContext = createContext(false);
+
+const NavPanelWrapper = styled.div`
   grid-area: navPanel;
   width: ${({ visible }) => (visible ? "240px" : "0px")};
   background-color: #8fb8de;
-  overflow: scroll;
+  overflow: auto;
 `;
+
 
 const VisibilityButton = styled.button`
   width: 40px;
@@ -21,26 +24,28 @@ const VisibilityButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   position: fixed;
-  top: 92%;
+  bottom: 2%;
   left: 1%;
-  z-index: 10000;
+  z-index: 100;
 `;
 
 export default function NavPanel({ children }) {
   const [visible, setVisible] = useState(true);
 
+  const icon = visible ? faTimes : faBars;
+
   return (
-    <NavPanelDiv visible={visible}>
-      <VisibilityButton
-        onClick={() => {
-          setVisible(!visible);
-        }}
-      >
-        <FontAwesomeIcon
-          icon={visible ? faTimes : faBars}
-        />
-      </VisibilityButton>
-      {children} {/* render when closed? */}
-    </NavPanelDiv>
+    <IsNavContext.Provider value={true}>
+      <NavPanelWrapper visible={visible}>
+        <VisibilityButton
+          onClick={() => {
+            setVisible(!visible);
+          }}
+        >
+          <FontAwesomeIcon icon={icon} />
+        </VisibilityButton>
+        {children} {/* render when closed? */}
+      </NavPanelWrapper>
+    </IsNavContext.Provider>
   );
 }
