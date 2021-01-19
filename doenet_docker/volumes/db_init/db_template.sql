@@ -74,6 +74,53 @@ INSERT INTO `assignment` VALUES (1,'kXhVAtL0zDjJI7p3ZpUOq',NULL,NULL,'kXh Assign
 UNLOCK TABLES;
 
 --
+-- Table structure for table `assignment_draft`
+--
+
+DROP TABLE IF EXISTS `assignment_draft`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `assignment_draft` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `assignmentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseHeadingId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled Assignment',
+  `sourceBranchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
+  `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `private` int(1) DEFAULT '0',
+  `creationDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
+  `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
+  `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
+  `timeLimit` time DEFAULT NULL COMMENT 'NULL means it''s not timed',
+  `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
+  `sortOrder` int(11) DEFAULT NULL,
+  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `totalPointsOrPercent` float DEFAULT NULL COMMENT 'Assignment level',
+  `gradeCategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `individualize` tinyint(1) NOT NULL DEFAULT '0',
+  `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
+  `showSolution` tinyint(1) NOT NULL DEFAULT '1',
+  `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
+  `showHints` tinyint(1) NOT NULL DEFAULT '1',
+  `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
+  `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
+  `examCoverHTML` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `assignmentId` (`assignmentId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `assignment_draft`
+--
+
+LOCK TABLES `assignment_draft` WRITE;
+/*!40000 ALTER TABLE `assignment_draft` DISABLE KEYS */;
+/*!40000 ALTER TABLE `assignment_draft` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `assignment_obj`
 --
 
@@ -463,6 +510,8 @@ CREATE TABLE `drive` (
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -473,7 +522,7 @@ CREATE TABLE `drive` (
 
 LOCK TABLES `drive` WRITE;
 /*!40000 ALTER TABLE `drive` DISABLE KEYS */;
-INSERT INTO `drive` VALUES (2,'Fhg532fk9873412s','math4321','course',0,'Fhg532fk9873412s'),(3,'ZLHh5s8BWM2azTVFhazIH','main content','content',0,NULL);
+INSERT INTO `drive` VALUES (2,'Fhg532fk9873412s','math4321','course',0,'Fhg532fk9873412s',NULL,NULL),(3,'ZLHh5s8BWM2azTVFhazIH','main content','content',0,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `drive` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -502,7 +551,7 @@ CREATE TABLE `drive_content` (
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=368 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=369 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -511,7 +560,7 @@ CREATE TABLE `drive_content` (
 
 LOCK TABLES `drive_content` WRITE;
 /*!40000 ALTER TABLE `drive_content` DISABLE KEYS */;
-INSERT INTO `drive_content` VALUES (1,'branch123','OverviewId','branch123','Overview','2020-12-31 09:00:00',1,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(2,'branch123','SyllabusId','branch123','Syllabus','2020-12-31 09:00:00',1,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(3,'branch123','GradesId','branch123','Grades','2020-12-31 09:00:00',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(4,'branch123','AssignmentId','branch123','Assignments','2020-12-31 09:00:00',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(45,'ZLHh5s8BWM2azTVFhazIH','content 1','parent 1','Overview',NULL,0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(267,'ZLHh5s8BWM2azTVFhazIH','f1','ZLHh5s8BWM2azTVFhazIH','Folder 1','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(269,'ZLHh5s8BWM2azTVFhazIH','zcWjk8ItsyP9sNQXfbN2b','f1','URL 2','2020-12-16 18:49:01',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(271,'ZLHh5s8BWM2azTVFhazIH','f2','ZLHh5s8BWM2azTVFhazIH','Assignments','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(296,'ZLHh5s8BWM2azTVFhazIH','Avpb8FRnwKLvQwgqR6oU0','f2','Folder 3','2020-12-16 21:55:36',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(299,'ZLHh5s8BWM2azTVFhazI3','2Dy5j1Df6Ll_0xdE4gI35','h1','Url 1','2020-12-16 20:55:21',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(302,'ZLHh5s8BWM2azTVFhazIH','f5q1IkRE6pSNggfbC2qgH','ZLHh5s8BWM2azTVFhazIH','Folder 3','2020-12-17 18:24:42',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(303,'ZLHh5s8BWM2azTVFhazIH','29hfuBErLnrwTiDpltU9q','f2','Assignments','2020-12-16 20:55:27',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(304,'ZLHh5s8BWM2azTVFhazI2','fb1','ZLHh5s8BWM2azTVFhazI2','Folder 1b','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(305,'ZLHh5s8BWM2azTVFhazI2','WnqbtOP5B0vmqrtu1--Ze','ZLHh5s8BWM2azTVFhazI2','Folder 2b','2020-12-16 21:55:28',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(306,'ZLHh5s8BWM2azTVFhazI2','11lUJQk5yZtaoUEmlnOzJ','ZLHh5s8BWM2azTVFhazI2','Folder 3b','2020-12-17 02:56:56',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(307,'ZLHh5s8BWM2azTVFhazI2','k2yqtUi1-rZYetbO2m43K','11lUJQk5yZtaoUEmlnOzJ','test','2020-12-17 02:57:34',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(308,'ZLHh5s8BWM2azTVFhazI3','pOidydwRPy2c2Gf8-Bx0I','h1','URL 1b','2020-12-16 21:04:44',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(309,'ZLHh5s8BWM2azTVFhazI2','hU3mTB816ZltBLDaSqO7Z','WnqbtOP5B0vmqrtu1--Ze','another url','2020-12-17 18:26:23',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(318,'ZLHh5s8BWM2azTVFhazI3','h1','ZLHh5s8BWM2azTVFhazI3','Heading 1','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(343,'ZLHh5s8BWM2azTVFhazIH','UxrMd0R40_OH2eqd1Edip','f1','del','2020-12-19 22:28:42',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(344,'ZLHh5s8BWM2azTVFhazIH','eSZ7DdHM2S0VlmyK1hKSe','f2','test test','2020-12-19 22:30:34',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(345,'branch123','MyAssignmentId','AssignmentId','Assignments','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(346,'branch123','Assignmenttest1a','AssignmentId','Assignments',NULL,0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(347,'Fhg532fk9873412s','FolderId','Fhg532fk9873412s','Folder 1','2020-12-31 09:00:00',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(349,'Fhg532fk9873412s','Content1Id','FolderId','Content 1','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(350,'Fhg532fk9873412s','Content2Id','FolderId','Content 2','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(365,'ZLHh5s8BWM2azTVFhazIH','pVR_Z0t-PgMqER19qmY4v','ZLHh5s8BWM2azTVFhazIH','test url','2021-01-13 04:44:42',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(366,'ZLHh5s8BWM2azTVFhazIH','MuKPKXuLPG9Tw-e5sUp0n','ZLHh5s8BWM2azTVFhazIH','last one','2021-01-13 21:13:08',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(367,'ZLHh5s8BWM2azTVFhazIH','-T6ObBNV-IqFqnrxBFgBQ','ZLHh5s8BWM2azTVFhazIH','new last one','2021-01-13 21:45:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `drive_content` VALUES (1,'branch123','OverviewId','branch123','Overview','2020-12-31 09:00:00',1,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(2,'branch123','SyllabusId','branch123','Syllabus','2020-12-31 09:00:00',1,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(3,'branch123','GradesId','branch123','Grades','2020-12-31 09:00:00',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(4,'branch123','AssignmentId','branch123','Assignments','2020-12-31 09:00:00',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(45,'ZLHh5s8BWM2azTVFhazIH','content 1','parent 1','Overview',NULL,0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(267,'ZLHh5s8BWM2azTVFhazIH','f1','ZLHh5s8BWM2azTVFhazIH','Folder 1','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(269,'ZLHh5s8BWM2azTVFhazIH','zcWjk8ItsyP9sNQXfbN2b','f1','URL 2','2020-12-16 18:49:01',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(271,'ZLHh5s8BWM2azTVFhazIH','f2','ZLHh5s8BWM2azTVFhazIH','Assignments','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(296,'ZLHh5s8BWM2azTVFhazIH','Avpb8FRnwKLvQwgqR6oU0','f2','Folder 3','2020-12-16 21:55:36',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(299,'ZLHh5s8BWM2azTVFhazI3','2Dy5j1Df6Ll_0xdE4gI35','h1','Url 1','2020-12-16 20:55:21',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(302,'ZLHh5s8BWM2azTVFhazIH','f5q1IkRE6pSNggfbC2qgH','ZLHh5s8BWM2azTVFhazIH','Folder 3','2020-12-17 18:24:42',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(303,'ZLHh5s8BWM2azTVFhazIH','29hfuBErLnrwTiDpltU9q','f2','Assignments','2020-12-16 20:55:27',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(304,'ZLHh5s8BWM2azTVFhazI2','fb1','ZLHh5s8BWM2azTVFhazI2','Folder 1b','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(305,'ZLHh5s8BWM2azTVFhazI2','WnqbtOP5B0vmqrtu1--Ze','ZLHh5s8BWM2azTVFhazI2','Folder 2b','2020-12-16 21:55:28',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(306,'ZLHh5s8BWM2azTVFhazI2','11lUJQk5yZtaoUEmlnOzJ','ZLHh5s8BWM2azTVFhazI2','Folder 3b','2020-12-17 02:56:56',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(307,'ZLHh5s8BWM2azTVFhazI2','k2yqtUi1-rZYetbO2m43K','11lUJQk5yZtaoUEmlnOzJ','test','2020-12-17 02:57:34',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(308,'ZLHh5s8BWM2azTVFhazI3','pOidydwRPy2c2Gf8-Bx0I','h1','URL 1b','2020-12-16 21:04:44',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(309,'ZLHh5s8BWM2azTVFhazI2','hU3mTB816ZltBLDaSqO7Z','WnqbtOP5B0vmqrtu1--Ze','another url','2020-12-17 18:26:23',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(318,'ZLHh5s8BWM2azTVFhazI3','h1','ZLHh5s8BWM2azTVFhazI3','Heading 1','2020-12-16 01:07:21',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(343,'ZLHh5s8BWM2azTVFhazIH','UxrMd0R40_OH2eqd1Edip','f1','del','2020-12-19 22:28:42',1,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(344,'ZLHh5s8BWM2azTVFhazIH','eSZ7DdHM2S0VlmyK1hKSe','f2','test test','2020-12-19 22:30:34',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(345,'branch123','MyAssignmentId','AssignmentId','Assignments','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(346,'branch123','Assignmenttest1a','AssignmentId','Assignments',NULL,0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(347,'Fhg532fk9873412s','FolderId','Fhg532fk9873412s','Folder 1','2020-12-31 09:00:00',0,0,0,'Folder',NULL,NULL,NULL,NULL,NULL),(349,'Fhg532fk9873412s','Content1Id','FolderId','Content 1','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(350,'Fhg532fk9873412s','Content2Id','FolderId','Content 2','2020-12-31 09:00:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL),(365,'ZLHh5s8BWM2azTVFhazIH','pVR_Z0t-PgMqER19qmY4v','ZLHh5s8BWM2azTVFhazIH','test url','2021-01-13 04:44:42',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(366,'ZLHh5s8BWM2azTVFhazIH','MuKPKXuLPG9Tw-e5sUp0n','ZLHh5s8BWM2azTVFhazIH','last one','2021-01-13 21:13:08',0,0,0,'Url',NULL,NULL,NULL,'QbwblybNRZgY0o5dMyvVJ',NULL),(367,'Fhg532fk9873412s','-T6ObBNV-IqFqnrxBFgBQ','FolderId','new last one','2021-01-13 21:45:00',0,0,0,'DoenetML',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `drive_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1197,4 +1246,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-01-17 23:45:47
+-- Dump completed on 2021-01-18 22:56:51
