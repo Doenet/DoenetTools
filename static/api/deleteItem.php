@@ -10,11 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-<<<<<<< HEAD
-$parentId = mysqli_real_escape_string($conn,$_REQUEST["parentId"]);
-=======
-$parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
->>>>>>> upstream/master
+// $parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
@@ -23,11 +19,7 @@ $results_arr = array();
 
 $sql = "
 SELECT canDeleteItemsAndFolders
-<<<<<<< HEAD
-FROM drives
-=======
 FROM drive_user
->>>>>>> upstream/master
 WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
@@ -43,22 +35,14 @@ if (!$canDelete){
 
 if ($success){
   $sql="
-<<<<<<< HEAD
-  UPDATE drive 
-  SET isDeleted='1'
-  WHERE driveId = '$driveId'
-  AND itemId = '$itemId'
-  AND parentId = '$parentId'
-=======
   UPDATE drive_content 
   SET isDeleted='1'
   WHERE driveId = '$driveId'
   AND itemId = '$itemId'
-  AND parentFolderId = '$parentFolderId'
->>>>>>> upstream/master
   ";
   $result = $conn->query($sql); 
 }
+//AND parentFolderId = '$parentFolderId'
 
 
 $response_arr = array(

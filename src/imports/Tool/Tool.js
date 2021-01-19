@@ -53,6 +53,7 @@ export const openOverlayByName = selector({
 
 export default function Tool(props) {
   const openOverlayName = useRecoilValue(openOverlayByName);
+  // console.log("=== Tool (only once)");
 
   var toolParts = {};
 
@@ -122,7 +123,6 @@ export default function Tool(props) {
           borderBottom: "1px solid black",
         }}
       >
-        <h2>Tool</h2>
         {toolParts.headerPanel.children}
       </div>
     );
@@ -131,7 +131,6 @@ export default function Tool(props) {
   if (toolParts.mainPanel) {
     mainPanel = (
       <div style={{ boxSizing: "border-box", overflow: "clip" }}>
-        <h2>Main Panel</h2>
         {toolParts.mainPanel.children}
       </div>
     );
@@ -140,7 +139,6 @@ export default function Tool(props) {
   if (toolParts.supportPanel) {
     supportPanel = (
       <SupportPanel>
-        <h2>Support Panel</h2>
         {toolParts.supportPanel.children}
       </SupportPanel>
     );
