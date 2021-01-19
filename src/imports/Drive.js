@@ -143,7 +143,10 @@ export const folderDictionary = atomFamily({
       let defaultOrder = [];
       let contentsDictionary = {};
       let contentIds = {};
-      let folderInfo = {};
+      let folderInfo = {
+        sortBy: "defaultOrder",
+        dirty: 0  
+      };
       for (let item of driveInfo.results){
         if (item.parentFolderId === driveIdFolderId.folderId){
           defaultOrder.push(item.itemId);
@@ -151,11 +154,12 @@ export const folderDictionary = atomFamily({
         }
         if (item.itemId === driveIdFolderId.folderId){
           folderInfo = item;
-          if (folderInfo.dirty) {
-            folderInfo.sortBy = "defaultOrder";
-            folderInfo.dirty = 0;
-          }
         }
+      }
+      
+      if (folderInfo.dirty) {
+        folderInfo.sortBy = "defaultOrder";
+        folderInfo.dirty = 0;
       }
 
       contentIds["defaultOrder"] = defaultOrder;
@@ -792,9 +796,10 @@ const selectedDriveItems = selectorFamily({
     const {driveId,driveInstanceId,itemId} = driveIdDriveInstanceIdItemId;
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
       let itemIdsParentFolderIdsInRange = [];
-      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
+      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))      
+      let sortOrder = folder.folderInfo.sortBy;
 
-      for (let itemId of folder.defaultOrder){
+      for (let itemId of folder.contentIds[sortOrder]){
         if (foundClickNeedle && foundLastNeedle){
           break;
         }
