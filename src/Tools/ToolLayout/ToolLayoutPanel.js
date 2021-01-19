@@ -4,8 +4,7 @@ import SplitPanelContext from './SplitPanelContext';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
-  faChevronRight,
-  faTimes, faBars
+  faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import './toollayout.css';
 import styled from 'styled-components';
@@ -47,32 +46,13 @@ const SplitPanelContent = styled.div`
 export default class ToolLayoutPanel extends Component {
   static contextType = PlacementContext;
 
-
   render() {
-    const deviceType = this.context && this.context.panelHeadersControlVisible && this.context.panelHeadersControlVisible.deviceTypeToPanels ? this.context.panelHeadersControlVisible.deviceTypeToPanels : ""; 
-// console.log("panel device type", this.context.panelHeadersControlVisible.deviceTypeToPanels);
-let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 95 + 30) + 'px' : '175px';
-    
-    if(!this.context.panelHeadersControlVisible.phoneButtonsDisplay) {
-      let existingHeight = mainHeight.replace(/[a-z]/g , '');
-      existingHeight = Number.parseInt(existingHeight);
-      mainHeight = (existingHeight - 30) + 'px';
-    }
+    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? (this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 'px' : '50px';
 
-    if(this.props.panelHeaderControls === undefined  && this.context.panelHeadersControlVisible.purpose  && this.context.panelHeadersControlVisible.purpose.length === 1){
-      let existingHeight = mainHeight.replace(/[a-z]/g , '');
-      existingHeight = Number.parseInt(existingHeight);
-      mainHeight = (existingHeight - 95) + 'px';
-    }
-
-    if(this.props.isLeftPanel) {
-      mainHeight = "0px";
-    }
-    
     let splitLayoutPanel = null;
     let filteredChildren = [];
     let panelHeader = null;
-    // console.log("props" , this.props[1])
+
     if (Array.isArray(this.props.children)) {
       for (let component of this.props.children) {
         if (component.type == SplitLayoutPanel) {
@@ -96,24 +76,19 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
       return (
         <>
           {this.context.leftCloseBtn && (
-            <button onClick={this.context.leftPanelHideable} className="leftCloseButton circle">
+            <button onClick={this.context.leftPanelHideable} className="leftCloseButton custom">
               <FontAwesomeIcon
                 style={{
                   alignSelf: "center",
                   fontSize: '16px'
                 }}
-                icon={faTimes}
+                icon={faChevronLeft}
               />
             </button>
           )}
         </>
       );
     };
-
-    const defaultLeftClose = () => {
-        middleOpenLeftRightButton();
-    }
-
     const rightPanelCloseButton = () => {
       return (
         <>
@@ -135,15 +110,15 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
       return (
         <>
           {(this.context.leftOpenBtn) && !this.context.guestUser && (
-            <button onClick={this.context.leftPanelVisible} className="middleLeftButton circle"
+            <button onClick={this.context.leftPanelVisible} className="middleLeftButton custom"
             >
               <FontAwesomeIcon
-                icon={faBars}
+                icon={faChevronRight}
                 style={{
                   display: "block",
                   alignSelf: "center",
                   fontSize: '16px'
-                }} 
+                }}
               />
             </button>
           )}
@@ -169,9 +144,7 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
           <div className="panels-header-controls">
             {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
               this.context.position === 'middle' ? middleOpenLeftRightButton() :
-              // this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
-
-                 this.context.position === 'right' ? rightPanelCloseButton() : middleOpenLeftRightButton() : ''} 
+                this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
 
             {!this.props.splitPanel ?
              
@@ -190,8 +163,6 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
           </div>
         </div> : ''}
 
-        {this.props.isLeftPanel ? <div className="panels-header-controls">
-            { this.context.position === 'left'  && this.context.panelHeadersControlVisible.deviceTypeToPanels === "computer" ? leftPanelCloseButton() : defaultLeftClose() } </div> : null }
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
        
           {!this.props.splitPanel ?
@@ -200,7 +171,7 @@ let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? ((this.
             (<><SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[0]}>{filteredChildren}</SplitPanelContent>
               <SplitDivider></SplitDivider>
               <SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[1]}>{splitLayoutPanel}</SplitPanelContent></>)}
-          {this.context.panelHeadersControlVisible.showFooter }
+          {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
         </MainContent>
 
       </>
