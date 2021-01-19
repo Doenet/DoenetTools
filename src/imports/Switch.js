@@ -12,7 +12,6 @@ function randomAlphaString(len) {
 }
 
 export default function Switch(props) {
-  console.log("Switch props",props)
   // props
   let id = props.id;
   if (!id) {
@@ -21,23 +20,28 @@ export default function Switch(props) {
   }
 
   if (props.size === "Small") {
-
-  } 
+  }
 
   let propsChecked = false;
-  if (props.checked === true || props.checked === "true" || props.checked === "1" || props.checked === 1){propsChecked = true;}
+  if (
+    props.checked === true ||
+    props.checked === "true" ||
+    props.checked === "1" ||
+    props.checked === 1
+  ) {
+    propsChecked = true;
+  }
   // Section: states
   let [checked, setChecked] = useState(propsChecked || false); // will be undefined if not specified which will show up like an empty string.
-
 
   return (
     <div className={(props.className || "") + " switch"} key={id + "container"}>
       <label key={id + "label"} htmlFor={id}>
         <input
           type="checkbox"
-          onChange={e => {
+          onChange={(e) => {
             setChecked(e.target.checked);
-            props.onChange(e);
+            props.onChange(e.target.checked);
           }}
           id={id}
           name={props.name}

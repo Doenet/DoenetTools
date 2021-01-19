@@ -1,25 +1,26 @@
 import React from "react";
 import styled from "styled-components";
-import { RecoilRoot } from "recoil";
+import { atom, selector, useRecoilValue } from "recoil";
 import NavPanel from "./NavPanel";
-import ContentPanel from "./Contentpanel";
+import ContentPanel from "./ContentPanel";
+import SupportPanel from "./SupportPanel";
 import MenuPanel from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
-import { DropTargetsProvider } from "../DropTarget";
+// import { DropTargetsProvider } from "../DropTarget";
 
-import { ReactQueryDevtools } from "react-query-devtools";
-import crypto from 'crypto';
+// import { ReactQueryDevtools } from "react-query-devtools";
+// import crypto from "crypto";
 
-const getContentId = ({ code }) => {
-  const hash = crypto.createHash('sha256');
-  if (code === undefined) {
-    return;
-  }
+// getContentId = ({ code }) => {
+//   const hash = crypto.createHash("sha256");
+//   if (code === undefined) {
+//     return;
+//   }
 
-  hash.update(code);
-  let contentId = hash.digest('hex');
-  return contentId;
-}
+//   hash.update(code);
+//   let contentId = hash.digest("hex");
+//   return contentId;
+// };
 
 const queryCache = new QueryCache();
 
@@ -31,10 +32,28 @@ const ToolContainer = styled.div`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
+  z-index: ${({ isOverlay }) => (isOverlay ? "10" : "auto")};
 `;
 
+export const activeOverlayName = atom({
+  key: "activeOverlayNameAtom",
+  default: "",
+});
+
+export const openOverlayByName = selector({
+  key: "openOverlayByNameSelector",
+  get: ({ get }) => {
+    return get(activeOverlayName);
+  },
+
+  set: ({ set }, newValue) => {
+    set(activeOverlayName, newValue);
+  },
+});
+
 export default function Tool(props) {
-  console.log("=== Tool (only once)");
+  const openOverlayName = useRecoilValue(openOverlayByName);
+  // console.log("=== Tool (only once)");
 
   var toolParts = {};
 
@@ -44,6 +63,7 @@ export default function Tool(props) {
     "mainPanel",
     "supportPanel",
     "menuPanel",
+    "overlay",
   ];
 
   if (props.children) {
@@ -72,7 +92,7 @@ export default function Tool(props) {
     } else {
       //Only one child
       if (implementedToolParts.includes(props.children.type)) {
-        let newProps = { ...child.props };
+        let newProps = { ...props.children.props };
         delete newProps.children;
         toolParts[props.children.type] = {
           children: props.children.props.children,
@@ -87,6 +107,7 @@ export default function Tool(props) {
   let mainPanel = null;
   let supportPanel = null;
   let menuPanel = null;
+  let overlay = null;
 
   if (toolParts.navPanel) {
     navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
@@ -102,7 +123,6 @@ export default function Tool(props) {
           borderBottom: "1px solid black",
         }}
       >
-        <h2>Tool</h2>
         {toolParts.headerPanel.children}
       </div>
     );
@@ -111,7 +131,6 @@ export default function Tool(props) {
   if (toolParts.mainPanel) {
     mainPanel = (
       <div style={{ boxSizing: "border-box", overflow: "clip" }}>
-        <h2>Main Panel</h2>
         {toolParts.mainPanel.children}
       </div>
     );
@@ -119,10 +138,9 @@ export default function Tool(props) {
 
   if (toolParts.supportPanel) {
     supportPanel = (
-      <div style={{ boxSizing: "border-box", overflow: "clip" }}>
-        <h2>Support Panel</h2>
+      <SupportPanel>
         {toolParts.supportPanel.children}
-      </div>
+      </SupportPanel>
     );
   }
 
@@ -130,15 +148,27 @@ export default function Tool(props) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
+  if (toolParts.overlay) {
+    overlay = toolParts.overlay.children;
+  }
+
+  let toolContent = null;
+
+  if (!props.isOverlay && openOverlayName !== "") {
+    toolContent = <Tool isOverlay>{overlay}</Tool>;
+  }
+
   return (
-      <ReactQueryCacheProvider queryCache={queryCache}>
-          <ToolContainer>
-            {navPanel}
-            {headerPanel}
-            <ContentPanel main={mainPanel} support={supportPanel} /> {menuPanel}
-            {/* <ReactQueryDevtools /> */}
-          </ToolContainer>
-          </ReactQueryCacheProvider>
+    <ReactQueryCacheProvider queryCache={queryCache}>
+      {toolContent}
+      <ToolContainer style={props.style} isOverlay={props.isOverlay}>
+        {navPanel}
+        {headerPanel}
+        <ContentPanel main={mainPanel} support={supportPanel} />
+        {menuPanel}
+        {/* <ReactQueryDevtools /> */}
+      </ToolContainer>
+    </ReactQueryCacheProvider>
   );
 }
 

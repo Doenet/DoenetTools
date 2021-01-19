@@ -23,11 +23,11 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import {folderDictionarySelector} from './Drivenew';
+import {folderDictionarySelector} from './Drive';
 
 
 export default function AddItem(props){
-  console.log("=== AddItem")
+  // console.log("=== AddItem")
 
     return  <Router ><Switch>
            <Route path="/" render={(routeprops)=>
@@ -38,7 +38,7 @@ export default function AddItem(props){
 }
 
 function AddItemRouted(props){
-  console.log("=== AddItemRouted")
+  // console.log("=== AddItemRouted")
   
   // console.log(props)
   //TODO: driveId and folderId come from route
@@ -47,8 +47,8 @@ function AddItemRouted(props){
   const selectedItemId = "f2";
   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId,folderId}))
 
-
   const [label,setLabel] = useState("")
+
   return <div><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)}/>
   <button onClick={()=>{setFolderInfo({
     instructionType:"addItem",
