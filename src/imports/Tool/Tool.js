@@ -7,6 +7,8 @@ import ContentPanel from "./ContentPanel";
 import SupportPanel from "./SupportPanel";
 import MenuPanel from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
+import MainPanel from "./MainPanel";
+
 // import { DropTargetsProvider } from "../DropTarget";
 
 // import { ReactQueryDevtools } from "react-query-devtools";
@@ -119,11 +121,7 @@ export default function Tool(props) {
   }
 
   if (toolParts.mainPanel) {
-    mainPanel = (
-      <div style={{ boxSizing: "border-box", overflow: "clip" }}>
-        {toolParts.mainPanel.children}
-      </div>
-    );
+    mainPanel = <MainPanel>{toolParts.mainPanel.children}</MainPanel>;
   }
 
   if (toolParts.supportPanel) {
