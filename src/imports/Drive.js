@@ -828,7 +828,9 @@ const selectedDriveItems = selectorFamily({
       case "one item":
         if (!isSelected){
           for (let itemObj of globalSelected){
-            set(selectedDriveItemsAtom(itemObj),false)
+            let itemInfo = { ...itemObj };
+            delete itemInfo["parentFolderId"];
+            set(selectedDriveItemsAtom(itemInfo),false)
           }
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
           let itemInfo = {...driveIdDriveInstanceIdItemId}
