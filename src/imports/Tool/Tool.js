@@ -128,9 +128,7 @@ export default function Tool(props) {
 
   if (toolParts.supportPanel) {
     supportPanel = (
-      <SupportPanel>
-        {toolParts.supportPanel.children}
-      </SupportPanel>
+      <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
 
