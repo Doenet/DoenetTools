@@ -15,7 +15,7 @@ import {
   RecoilRoot,
 } from 'recoil';
 
-import DoenetExampleTool from '../Tools/DoenetExampleTool';
+import DoenetDrive from '../Tools/DoenetDrive';
 
     ReactDOM.render(
       <DropTargetsProvider>
@@ -24,7 +24,7 @@ import DoenetExampleTool from '../Tools/DoenetExampleTool';
             <Router >
               <Switch>
                 <Route path="/" render={(routeprops)=>
-                  <DoenetExampleTool route={{...routeprops}} />} />
+                  <DoenetDrive route={{...routeprops}} />} />
               </Switch>
             </Router>
           </RecoilRoot>
