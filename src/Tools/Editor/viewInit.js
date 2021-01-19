@@ -25,8 +25,6 @@ export function getInitView(contentInit, contentCallback, tagCallback) {
         }
     });
 
-    console.log("View Init only twice");
-
     let startState = EditorState.create({
         doc: contentInit,
         extensions: [ basicSetup, doenetml(), currentTag]

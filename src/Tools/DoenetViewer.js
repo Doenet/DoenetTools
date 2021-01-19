@@ -46,7 +46,7 @@ class DoenetViewer extends Component {
     if (props.contentId === undefined) {
       // use doenetML given via props
       let doenetML = props.doenetML;
-
+      
       // calculate contentId from doenetML
       const hash = crypto.createHash('sha256');
       hash.update(doenetML);

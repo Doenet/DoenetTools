@@ -30,7 +30,7 @@ module.exports = {
     // "guesteditor/index.js": "./src/guesteditor/index.js",
     // "page/index.js": "./src/page/index.js",
     // "accountsettings/index.js": "./src/accountsettings/index.js",
-    // "signin/index.js": "./src/signin/index.js",
+    "signin/index.js": "./src/signin/index.js",
     // "signout/index.js": "./src/signout/index.js",
     // "test/index.js": "./src/test/index.js",
     // "viewer/index.js": "./src/viewer/index.js",
