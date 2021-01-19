@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import AddItem from '../imports/AddItem'
 import Switch from "../imports/Switch";
 import {
   atom,
@@ -126,11 +127,8 @@ export default function DoenetExampleTool(props) {
 
       <mainPanel>
         <p>do the main important stuff</p>
-        {/* <ShowFam mykey="one" />
-        <ShowFam mykey="two" />
-        <button onClick={()=>{setmyAtomFamOne('new val for one')}}>Set one</button>
-
-        <BreadcrumbContainer /> */}
+        <BreadcrumbContainer /> 
+        <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
 
         {/* <Drive types={['content','course']} /> */}
@@ -162,7 +160,7 @@ export default function DoenetExampleTool(props) {
         <mainPanel>
           <p>do the main important stuff</p>
 
-          <BreadcrumbContainer />
+          {/* <BreadcrumbContainer /> */}
           {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
           {/* <Drive types={['content','course']} /> */}
         </mainPanel>
@@ -174,11 +172,6 @@ export default function DoenetExampleTool(props) {
 
         <menuPanel title="edit">
           <p>control important stuff</p>
-        </menuPanel>
-
-        <menuPanel title="other">
-          <p>control more important stuff</p>
-
           <button
             onClick={() => {
               setOverlayOpen("");
@@ -186,6 +179,12 @@ export default function DoenetExampleTool(props) {
           >
             Go Back
           </button>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+
+          
         </menuPanel>
       </overlay>
     </Tool>
