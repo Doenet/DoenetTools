@@ -59,9 +59,10 @@ WHERE assignmentId = '$assignmentId'
 ";
 
 $result = $conn->query($sql);
-$sqldc="UPDATE drive_content SET isPublished='$submitted',isAssignment=$makeContent,assignmentId='$assignmentId' WHERE itemId='$itemId';";
+$sqldc="UPDATE drive_content SET label ='$title',isPublished='$submitted',isAssignment=$makeContent,assignmentId='$assignmentId' WHERE itemId='$itemId';";
 
 $result = $conn->query($sqldc); 
+// echo $sqldc;
 $sqlResult = "SELECT
 a.assignmentId AS assignmentId,
 a.title AS title,
@@ -111,7 +112,9 @@ if ($resultData->num_rows > 0){
         "proctorMakesAvailable" => $row['proctorMakesAvailable'],
         "isPublished" => $row['isPublished'],
         "isAssignment" => $row['isAssignment'],
+        "assignmentId" => $row['assignmentId']
 
+         
 
 );
     

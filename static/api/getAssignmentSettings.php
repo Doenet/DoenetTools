@@ -45,6 +45,7 @@ WHERE a.assignmentId = '$assignmentId' AND du.userId='$userId'
 ";
 $result = $conn->query($sql);
 
+// echo $sql;
 $response_arr = array();
 
 if ($result->num_rows > 0){
