@@ -35,9 +35,11 @@ $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
 $courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
+$role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
+$type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
 
-$sql = "UPDATE assignment SET
+$sql = "UPDATE $type SET
 title = '$title',
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
@@ -60,8 +62,6 @@ $result = $conn->query($sql);
 $sqldc="UPDATE drive_content SET isPublished='$submitted',isAssignment=$makeContent,assignmentId='$assignmentId' WHERE itemId='$itemId';";
 
 $result = $conn->query($sqldc); 
-
-
 $sqlResult = "SELECT
 a.assignmentId AS assignmentId,
 a.title AS title,
@@ -81,13 +81,13 @@ a.showCorrectness AS showCorrectness,
 a.proctorMakesAvailable AS proctorMakesAvailable,
 dc.isPublished AS isPublished,
 dc.isAssignment As isAssignment
-FROM assignment AS a
+FROM $type AS a
 JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId
 WHERE a.assignmentId = '$assignmentId'
 ";
 $resultData = $conn->query($sqlResult);
-
+// echo $sqlResult;
 $response_arr = array();
 
 if ($resultData->num_rows > 0){

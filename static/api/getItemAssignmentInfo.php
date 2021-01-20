@@ -13,6 +13,10 @@ $userId = $jwtArray['userId'];
 //TODO: Make sure of instructor or user
 
 $itemId =  mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
+$role =  mysqli_real_escape_string($conn,$_REQUEST["role"]);
+
+$type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
+
 
 $sql = "SELECT
 a.assignmentId AS assignmentId,
@@ -33,7 +37,7 @@ a.showCorrectness AS showCorrectness,
 a.proctorMakesAvailable AS proctorMakesAvailable,
 dc.isPublished AS isPublished,
 dc.isAssignment As isAssignment
-FROM assignment AS a
+FROM $type AS a
 JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId
 JOIN drive_user as du
@@ -41,7 +45,6 @@ ON du.driveId = dc.driveId
 WHERE dc.itemId = '$itemId' AND du.userId='$userId'
 ";
 $result = $conn->query($sql);
-
 $response_arr = array();
 
 if ($result->num_rows > 0){
