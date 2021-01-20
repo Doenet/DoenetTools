@@ -238,7 +238,7 @@ const MakeAssignment = ({ itemId, courseId }) => {
   return role === 'Instructor' ?
     (
       <>
-        {console.log("assignid", assignid)}
+        {/* {console.log("assignid", assignid)} */}
         { (assignid === '' || typeof(assignid) === 'undefined') ? itemId != '' ?
           <Button text="makeassignment" callback={makeAssignmentValueUpdate}></Button>
           : null :
@@ -288,7 +288,7 @@ const loadAssignment = selectorFamily({
     return get(loadAssignmentDictionary(assignmentDataObj.assignmentId, assignmentDataObj.role))
   },
   set: (assignmentId) => async ({ set, get }, name) => {
-    console.log(">>>> name", name)
+    // console.log(">>>> name", name)
     if (name.type === 'update') {
       set(loadAssignmentDictionary(assignmentId, name.role), (old) => {
         return { ...old, ...name.data }
@@ -431,7 +431,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
             <input required type="datetime-local" name="dueDate" value={assignmentObjData[0].contents?.dueDate}
               placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
           </div>
-          <div>
+         
             <div>
               <label>Time Limit:</label>
               <input required type="text" name="timeLimit" value={assignmentObjData[0].contents?.timeLimit}
@@ -442,7 +442,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
               <input required type="number" name="numberOfAttemptsAllowed" value={assignmentObjData[0].contents?.numberOfAttemptsAllowed}
                 onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
             </div>
-
+            <div>
             <label >Attempt Aggregation :</label>
             <input required type="text" name="attemptAggregation" value={assignmentObjData[0]?.contents.attemptAggregation}
               onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
@@ -519,8 +519,7 @@ const AssignmentInfo = () => {
   let courseId = 'Fhg532fk9873412s65';
   const assignmentInfoLoad = useRecoilValueLoadable(loadAssignmentSelector({ courseId }))
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  console.log(" >>> assignmentInfoLoad", assignmentInfoLoad);
-
+  // console.log(" >>> assignmentInfoLoad", assignmentInfoLoad);
 
   const editDraft = <button
     onClick={() => setOverlayOpen('Edit assignment')}>Edit Assignment</button>
@@ -545,6 +544,7 @@ export default function DoenetCourse(props) {
     <DoenetCourseRouted props={props} />
   )
 }
+
 function getAssignmentData(payload) {
   // console.log("get payload",payload);
   return axios.get(
@@ -608,10 +608,10 @@ function DoenetCourseRouted(props) {
   }
   let contentId = '';
   if (assignmentInfo.state === 'hasValue') {
-    console.log(">>> assignmnt info content", assignmentInfo)
+    // console.log(">>> assignmnt info content", assignmentInfo)
     if (assignmentInfo.contents !== null) {
       let assignment = filterAssignment(assignmentInfo.contents.assignments, pathItemId);
-      console.log('>>> asignmnt >> ', assignment)
+      // console.log('>>> asignmnt >> ', assignment)
       if (assignment.length > 0) {
         setAssignmentIdValue(assignment[0].assignmentId);
         contentId = assignment[0].contentId;
