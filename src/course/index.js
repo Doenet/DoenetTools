@@ -10,11 +10,18 @@ import {
 import {
   RecoilRoot
 } from 'recoil';
-
+import {
+  DropTargetsProvider,
+} from '../imports/DropTarget';
+import { 
+  BreadcrumbProvider 
+} from '../imports/Breadcrumb';
 initialize();
 
 
     ReactDOM.render(
+      <DropTargetsProvider>
+      <BreadcrumbProvider>
       <RecoilRoot>
         <Router>
               <Switch>
@@ -24,6 +31,8 @@ initialize();
               </Switch> 
          </Router>
       </RecoilRoot>
+      </BreadcrumbProvider>
+      </DropTargetsProvider>
 
            
      
