@@ -43,7 +43,7 @@ export default function MenuPanel({ children }) {
   const [panels, setPanels] = useState([]);
 
   useEffect(() => {
-    setPanels(children.map((panel) => (panel.children)));
+    setPanels(children.map((panel) => panel.children));
   }, [children]);
 
   return (

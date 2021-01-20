@@ -1,17 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
-import AddItem from '../imports/AddItem'
+import AddItem from "../imports/AddItem";
 import Switch from "../imports/Switch";
 import {
   atom,
   useSetRecoilState,
-  useRecoilState,
   useRecoilValue,
   selector,
   atomFamily,
-  selectorFamily,
-  RecoilRoot,
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
@@ -74,7 +71,7 @@ let myAtomFam = atomFamily({
   key: "myAtomFam",
   default: "default",
 });
-function Inc(props){
+function Inc(props) {
   let setNum = useSetRecoilState(numAtom);
   return <button onClick={() => setNum((old) => old + 1)}>+</button>;
 }
@@ -95,15 +92,14 @@ function ShowFam(props) {
 export default function DoenetExampleTool(props) {
   const setSupportVisiblity = useSetRecoilState(supportVisible);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  console.log("=== DoenetExampleTool");
-  const setmyAtomFamOne = useSetRecoilState(myAtomFam("one"));
-  const setmyAtomFamTwo = useSetRecoilState(myAtomFam("two"));
+  // console.log("=== DoenetExampleTool");
+
   return (
     <Tool>
       <navPanel>
         {/* <p>navigate to important stuff</p> */}
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
-        <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
         {/* <Drive types={['content','course']} /> */}
         <div>
           <button
@@ -117,17 +113,17 @@ export default function DoenetExampleTool(props) {
       </navPanel>
 
       <headerPanel title="my title">
+        <p>header for important stuff</p>
         <Switch
           onChange={(value) => {
             setSupportVisiblity(value);
           }}
         />
-        <p>header for important stuff</p>
       </headerPanel>
 
       <mainPanel>
         <p>do the main important stuff</p>
-        <BreadcrumbContainer /> 
+        <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
 
@@ -183,8 +179,6 @@ export default function DoenetExampleTool(props) {
 
         <menuPanel title="other">
           <p>control more important stuff</p>
-
-          
         </menuPanel>
       </overlay>
     </Tool>
