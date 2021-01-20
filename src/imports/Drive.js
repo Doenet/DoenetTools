@@ -585,7 +585,7 @@ function Folder(props){
           //Only clear if focus goes outside of this node group
             if (e.relatedTarget === null ||
               (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetBrowserStayselected)
+              !e.relatedTarget.dataset.doenetDriveStayselected)
               ){
                 setSelected({instructionType:"clear all"})
             }
@@ -966,14 +966,19 @@ const DoenetML = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }
+          // if (e.relatedTarget === null){
+          //   setSelected({instructionType:"clear all"})
+          // }
+          console.log(">>>",e.relatedTarget);
+          console.log(">>>dataset",e?.relatedTarget?.dataset)
+          
         }
       }}
       ><div 
-      className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
@@ -1073,7 +1078,7 @@ const Url = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }
