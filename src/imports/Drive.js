@@ -143,7 +143,10 @@ export const folderDictionary = atomFamily({
       let defaultOrder = [];
       let contentsDictionary = {};
       let contentIds = {};
-      let folderInfo = {};
+      let folderInfo = {
+        sortBy: "defaultOrder",
+        dirty: 0  
+      };
       for (let item of driveInfo.results){
         if (item.parentFolderId === driveIdFolderId.folderId){
           defaultOrder.push(item.itemId);
@@ -151,11 +154,12 @@ export const folderDictionary = atomFamily({
         }
         if (item.itemId === driveIdFolderId.folderId){
           folderInfo = item;
-          if (folderInfo.dirty) {
-            folderInfo.sortBy = "defaultOrder";
-            folderInfo.dirty = 0;
-          }
         }
+      }
+      
+      if (folderInfo.dirty) {
+        folderInfo.sortBy = "defaultOrder";
+        folderInfo.dirty = 0;
       }
 
       contentIds["defaultOrder"] = defaultOrder;
@@ -581,7 +585,7 @@ function Folder(props){
           //Only clear if focus goes outside of this node group
             if (e.relatedTarget === null ||
               (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetBrowserStayselected)
+              !e.relatedTarget.dataset.doenetDriveStayselected)
               ){
                 setSelected({instructionType:"clear all"})
             }
@@ -792,9 +796,10 @@ const selectedDriveItems = selectorFamily({
     const {driveId,driveInstanceId,itemId} = driveIdDriveInstanceIdItemId;
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
       let itemIdsParentFolderIdsInRange = [];
-      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))
+      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))      
+      let sortOrder = folder.folderInfo.sortBy;
 
-      for (let itemId of folder.defaultOrder){
+      for (let itemId of folder.contentIds[sortOrder]){
         if (foundClickNeedle && foundLastNeedle){
           break;
         }
@@ -828,7 +833,9 @@ const selectedDriveItems = selectorFamily({
       case "one item":
         if (!isSelected){
           for (let itemObj of globalSelected){
-            set(selectedDriveItemsAtom(itemObj),false)
+            let itemInfo = { ...itemObj };
+            delete itemInfo["parentFolderId"];
+            set(selectedDriveItemsAtom(itemInfo),false)
           }
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
           let itemInfo = {...driveIdDriveInstanceIdItemId}
@@ -959,14 +966,19 @@ const DoenetML = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }
+          // if (e.relatedTarget === null){
+          //   setSelected({instructionType:"clear all"})
+          // }
+          console.log(">>>",e.relatedTarget);
+          console.log(">>>dataset",e?.relatedTarget?.dataset)
+          
         }
       }}
       ><div 
-      className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
@@ -1066,7 +1078,7 @@ const Url = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }
