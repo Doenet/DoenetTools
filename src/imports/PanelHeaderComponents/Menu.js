@@ -9,7 +9,6 @@ const MenuContext = React.createContext(null);
 export default function Menu(props) {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const role = useRecoilValue(roleAtom);
-  console.log('>>> roleatom set', role);
   const [selection, setSelection] = React.useState([{value:role}]);
   const toggle = React.useCallback(
     () => setMenuOpen((oldOpen) => !oldOpen),

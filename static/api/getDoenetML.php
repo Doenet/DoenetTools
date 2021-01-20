@@ -12,7 +12,6 @@ $userId = $jwtArray['userId'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
-$itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
 //Test if didn't request with a branchId
 if ($branchId == ""){
@@ -28,7 +27,7 @@ if ($branchId == ""){
 	//Find all the published contentIds
 	$sql = "SELECT contentId
 	FROM content
-	WHERE branchId = '$branchId' and itemId = '$itemId'
+	WHERE branchId = '$branchId'
 	AND draft = 0
 	ORDER BY timestamp ASC
 	";
@@ -42,12 +41,10 @@ if ($branchId == ""){
 	);
 	}else{
 		while ($row = $result->fetch_assoc()){
-			$contentId =$row["contentId"];
 			
 			array_push($content_id_array,$row["contentId"]);
 		}
 	} //This in the right spot?
-
 	//SECURITY
 	//1 - test if branch is public
 	$sql = "SELECT public
@@ -109,7 +106,7 @@ if ($branchId == ""){
 		//load draft version because contentid was not specified
 		$sql = "SELECT doenetML,title, timestamp
 		FROM content
-		WHERE branchId = '$branchId' and itemId='$itemId'
+		WHERE branchId = '$branchId'
 		AND draft = 1
 		";
 		$result = $conn->query($sql);
@@ -127,7 +124,7 @@ if ($branchId == ""){
 		//load contentId match version
 		$sql = "SELECT doenetML,title, timestamp
 		FROM content
-		WHERE contentId = '$contentId' and itemId='$itemId'
+		WHERE contentId = '$contentId'
 		AND draft = 0
 		";
 		$result = $conn->query($sql);

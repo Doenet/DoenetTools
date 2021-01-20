@@ -73,7 +73,6 @@ import { load } from 'math-expressions';
     const payload = {
       params: data
     }
-    const isCancelled = React.useRef(false);
     
     useEffect(() => {
       let mounted = true; 
