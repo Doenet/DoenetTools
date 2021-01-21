@@ -78,7 +78,6 @@ export default function Drive(props){
 
 
   if (props.types){
-
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
@@ -440,7 +439,7 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
 
-  
+  if (props.driveId !== routePathDriveId) return <></>;  
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
