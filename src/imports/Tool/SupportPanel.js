@@ -8,11 +8,17 @@ export const supportVisible = atom({
   default: false,
 });
 
-const SupportPanelDiv = styled.div`
+const SupportPanelContainer = styled.div`
   overflow: auto;
 `;
 
-export default function SupportPanel(props) {
+const ResponsiveControlsContainer = styled.div`
+  height: 32px;
+  border-bottom: 1px solid black;
+  display: flex;
+`;
+
+export default function SupportPanel({ children, responsiveControls }) {
   const [supportPanelHeaderGrpWidth, setSupportPanelHeaderGrpWidth] = useState(
     0
   );
@@ -35,26 +41,22 @@ export default function SupportPanel(props) {
     }
   };
 
+  let responsiveControlsContents = null;
+
+  if (responsiveControls) {
+    responsiveControlsContents = (
+      <ResponsiveControlsContainer>
+        <ResponsiveControlsWrapper mainPanelWidth={supportPanelHeaderGrpWidth}>
+          {responsiveControls}
+        </ResponsiveControlsWrapper>
+      </ResponsiveControlsContainer>
+    );
+  }
+
   return (
-    <SupportPanelDiv>
-      {props.responsiveControls ? (
-        <div
-          style={{
-            height: "32px",
-            borderBottom: "1px solid black",
-            display: "flex",
-          }}
-        >
-          <ResponsiveControlsWrapper
-            mainPanelWidth={supportPanelHeaderGrpWidth}
-          >
-            {props.responsiveControls}
-          </ResponsiveControlsWrapper>
-        </div>
-      ) : (
-        ""
-      )}
-      {props.children}
-    </SupportPanelDiv>
+    <SupportPanelContainer>
+      {responsiveControlsContents}
+      {children}
+    </SupportPanelContainer>
   );
 }
