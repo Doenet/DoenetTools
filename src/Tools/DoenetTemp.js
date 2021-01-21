@@ -30,7 +30,7 @@ import {
   BreadcrumbProvider 
 } from '../imports/Breadcrumb';
 
-import Drive from '../imports/Drive'
+import Drive, {folderDictionarySelector} from '../imports/Drive'
 import AddItem from '../imports/AddItem'
 
 
@@ -46,18 +46,44 @@ return <RecoilRoot>
 };
 
 
+
+
 function Demo(){
   console.log("=== Demo")
 
+  let [hideUnpublished,setHideUnpublished] = useState(false)
+  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
+  const publishContentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Content</button>
+  const publishAssignmentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Assignment</button>
+  
+  
+  let publishText = "Show Student View";
+  if (hideUnpublished){publishText = "Show Instructor View"}
+  
+  let publishButton = <div><button onClick={()=>setHideUnpublished((old)=>!old)}>{publishText}</button></div>
+  
+  const publishContentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Content</button>
+  const publishAssignmentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Assignment</button>
+  
   return <>
 
-  <AddItem />
   {/* <Drive types={['course']} urlClickBehavior="select" /> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
   {/* <h2>Select</h2> */}
-
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' />
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/>
+  {publishContentButton}
+  {publishAssignmentButton}
+  {publishButton}
+  {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
+  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
   {/* <h2>Default</h2>
   <Drive driveId='ZLHh5s8BWM2azTVFhazIH' /> */}
