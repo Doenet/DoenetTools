@@ -205,7 +205,7 @@ export const folderDictionarySelector = selectorFamily({
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = JSON.parse(JSON.stringify(old));;
+          let newObj = JSON.parse(JSON.stringify(old));
           newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
@@ -355,6 +355,23 @@ export const folderDictionarySelector = selectorFamily({
           
         }
       break;
+      case "assignment was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.assignment_isPublished = "1";
+          newItemObj.isAssignment = "1";
+          return newObj;
+        })
+        break;
+      case "content was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isPublished = "1";
+          return newObj;
+        })
+      break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -399,6 +416,8 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
+  let hideUnpublished = false; //Default to showing unpublished
+  if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
@@ -456,6 +475,7 @@ function DriveRouted(props){
   urlClickBehavior={props.urlClickBehavior}
   route={props.route}
   pathItemId={pathItemId}
+  hideUnpublished={hideUnpublished}
   />
   </>
 }
@@ -701,6 +721,11 @@ function Folder(props){
     items = [];
     for (let itemId of contentIdsArr){
       let item = dictionary[itemId];
+      // console.log(">>>item",item)
+      if (props.hideUnpublished && item.isPublished === "0"){
+        //hide item
+        continue;
+      }
       switch(item.itemType){
         case "Folder":
         items.push(<Folder 
@@ -715,7 +740,7 @@ function Folder(props){
           pathItemId={props.pathItemId}
           deleteItem={deleteItem}
           parentFolderId={props.folderId}
-
+          hideUnpublished={props.hideUnpublished}
           />)
         break;
         case "Url":
@@ -743,7 +768,7 @@ function Folder(props){
             isNav={props.isNav} 
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-            />)
+          />)
         break;
         default:
         console.warn(`Item not rendered of type ${item.itemType}`)
@@ -929,6 +954,11 @@ const DoenetML = React.memo((props)=>{
   }}
   >Delete</button>
 
+  let label = props.item?.label;
+  if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
+    label = props.item?.assignment_title;
+  }
+
   let doenetMLJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
@@ -973,8 +1003,8 @@ const DoenetML = React.memo((props)=>{
           // if (e.relatedTarget === null){
           //   setSelected({instructionType:"clear all"})
           // }
-          console.log(">>>",e.relatedTarget);
-          console.log(">>>dataset",e?.relatedTarget?.dataset)
+          // console.log(">>>",e.relatedTarget);
+          // console.log(">>>dataset",e?.relatedTarget?.dataset)
           
         }
       }}
@@ -982,7 +1012,7 @@ const DoenetML = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    DoenetML {props.item?.label} {deleteButton} </div></div>
+    DoenetML {label} {deleteButton} </div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1066,10 +1096,6 @@ const Url = React.memo((props)=>{
           //Default url behavior is new tab
           let linkTo = props.item?.url; //Enable this when add URL is completed
           window.open(linkTo)
-          // window.open("http://doenet.org")
-
-          // location.href = linkTo; 
-          // location.href = "http://doenet.org"; 
         }
       }}
       onBlur={(e) => {

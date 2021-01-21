@@ -34,7 +34,6 @@ WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
 
-
 $result = $conn->query($sql); 
 
 if ($result->num_rows > 0){
@@ -84,14 +83,20 @@ if ($init == 'true'){
   dc.contentId as contentId,
   dc.assignmentId as assignmentId,
   dc.urlId as urlId,
+  dc.isAssignment as isAssignment,
   u.url as url,
-  u.description as urlDescription
+  u.description as urlDescription,
+  a.title as assignment_title,
+  a.isPublished as assignment_isPublished
 FROM drive_content AS dc
 LEFT JOIN url AS u
 ON u.urlId = dc.urlId
+LEFT JOIN assignment AS a
+ON dc.assignmentId = a.assignmentId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
+  
   $result = $conn->query($sql); 
   //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
   while($row = $result->fetch_assoc()){ 
@@ -109,7 +114,11 @@ ON u.urlId = dc.urlId
     "url"=>$row['url'],
     "urlDescription"=>$row['urlDescription'],
     "sortBy"=>"defaultOrder",
-    "dirty"=>0
+    "dirty"=>0,
+    "assignment_title"=>$row['assignment_title'],
+    "assignment_isPublished"=>$row['assignment_isPublished'],
+    "isAssignment"=>$row['isAssignment']
+    
   );
   array_push($results_arr,$item);
   }
