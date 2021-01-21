@@ -147,7 +147,6 @@ console.log(">>>")
             Open Bob
           </button>
         <BreadcrumbContainer /> 
-        <AddItem />
 
         <Drive types={['content','course']}  urlClickBehavior="select" />
       </mainPanel>
