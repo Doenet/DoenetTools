@@ -110,6 +110,7 @@ const ItemInfo = function (props){
     
 
   <h1>{itemInfo.label}</h1>
+  <AddItem />
   
   {versionsJSX}
   {editDraft}
