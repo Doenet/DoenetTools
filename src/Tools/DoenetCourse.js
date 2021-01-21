@@ -171,7 +171,6 @@ const updateAssignment = (payload) => {
 
 
 // const getAllAsignmentSettings = () => {
-
 //   try {
 //     return axios.post(
 //       `/api/getAllAssignmentSettings.php`
@@ -187,7 +186,7 @@ const updateAssignment = (payload) => {
 
 
 
-const AssignmentEditForm = (props) => {
+const AssignmentViewForm = (props) => {
   const { title, assignedDate, dueDate, timeLimit, numberOfAttemptsAllowed, attemptAggregation, totalPointsOrPercent, gradeCategory, individualize, multipleAttempts, showSolution, showFeedback, showHints, showCorrectness, proctorMakesAvailable } = props.data;
   const role = props.role;
   return (
@@ -199,11 +198,12 @@ const AssignmentEditForm = (props) => {
         <div><label >Due Date: {dueDate}</label></div>
         <div><label >Time Limit: {timeLimit}</label></div>
         <div><label >Number Of Attempts: {numberOfAttemptsAllowed}</label></div>
-        {role === 'Instructor' ? <div><label >Attempt aggregation :{attemptAggregation}</label></div>: null}
+        {role === 'Instructor' ? <div><label >Attempt aggregation :{attemptAggregation}</label></div> : null}
         <div><label>Total Points Or Percent :{totalPointsOrPercent}</label></div>
-        <div><label>Grade Category: {gradeCategory}</label></div>
+        
       {role === 'Instructor' ?
         <>
+        <div><label>Grade Category: {gradeCategory}</label></div>
           <div><label>Individualize: {individualize}</label></div>
           <div><label>Multiple Attempts: {multipleAttempts}</label></div>
           <div> <label>Show solution: {showSolution}</label> </div>
@@ -212,7 +212,6 @@ const AssignmentEditForm = (props) => {
           <div><label>Show correctness: {showCorrectness}</label></div>
           <div><label>Proctor make available: {proctorMakesAvailable}</label></div>
           <br />
-          <AssignmentInfo />
         </> : null}
     </>
   )
@@ -305,8 +304,6 @@ const loadAssignment = selectorFamily({
 
 })
 
-
-
 const AssignmentForm = ({ itemId, courseId }) => {
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
@@ -396,7 +393,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
 
 
   const handleSubmit = async (e) => {
-    let submitted = '1';
+    let submitted = '0';
     const payload = {
       ...assignmentObjData[0].contents,
       itemId: itemId,
@@ -413,9 +410,10 @@ const AssignmentForm = ({ itemId, courseId }) => {
     <>
       {(assignmentObjData[0].contents?.isPublished === '1' || role === "Instructor") && assignmentObjData[0].contents?.isAssignment == '1' ?
         <>
-          <AssignmentEditForm role={role} data={assignmentObjData[0].contents} />
-
-
+        {  role === 'Student' ? 
+          <AssignmentViewForm role={role} data={assignmentObjData[0].contents} />
+           : 
+<>
           <div>
             <label>Assignment Name :</label>
             <input required type="text" name="title" value={assignmentObjData[0].contents?.title}
@@ -501,6 +499,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
             role === 'Instructor' && assignmentObjData[0].contents?.isPublished === '1' ? <Button text="Publish" id="formSubmitButton" callback={handleSubmit} type="submit" ></Button> : null
 
           }
+       </> }
 
         </>
         :
@@ -515,29 +514,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
   )
 }
 
-const AssignmentInfo = () => {
-  let courseId = 'Fhg532fk9873412s65';
-  const assignmentInfoLoad = useRecoilValueLoadable(loadAssignmentSelector({ courseId }))
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  // console.log(" >>> assignmentInfoLoad", assignmentInfoLoad);
 
-  const editDraft = <button
-    onClick={() => setOverlayOpen('Edit assignment')}>Edit Assignment</button>
-
-  if (assignmentInfoLoad.state === "loading") { return null; }
-  if (assignmentInfoLoad.state === "hasError") {
-    console.error(assignmentInfoLoad.contents)
-    return null;
-  }
-
-
-  return (
-    <div>
-      {editDraft}
-    </div>
-  )
-
-}
 export default function DoenetCourse(props) {
   console.log("=== DoenetCourse");
   return (
@@ -553,6 +530,8 @@ function getAssignmentData(payload) {
     return response.data;
   });
 }
+
+
 const loadAssignmentValue = atomFamily({
   key: 'loadAssignmentValue',
   value: ''
@@ -619,7 +598,24 @@ function DoenetCourseRouted(props) {
     }
 
   }
-
+// const editAssignment = (
+//   <overlay name="Edit assignment">
+//   <headerPanel>
+//     <button
+//       onClick={() => {
+//         setOverlayOpen("");
+//       }}
+//     >
+//       Go Back
+//     </button>
+//       Header
+//     </headerPanel>
+//   <mainPanel>
+//     Main
+//     </mainPanel>
+//   {/* <menuPanel>{editForm}</menuPanel> */}
+// </overlay>
+// )
   return (
     <Tool>
       <navPanel>
@@ -638,10 +634,6 @@ function DoenetCourseRouted(props) {
             setSupportVisiblity(value);
           }}
         />
-        {/* <Menu label="Role">
-            <MenuItem value="Student"  />
-            <MenuItem value="Instructor"  />
-          </Menu> */}
         <p>header for important stuff</p>
       </headerPanel>
       <mainPanel>
@@ -658,22 +650,7 @@ function DoenetCourseRouted(props) {
 
       </menuPanel>
 
-      <overlay name="Edit assignment">
-        <headerPanel>
-          <button
-            onClick={() => {
-              setOverlayOpen("");
-            }}
-          >
-            Go Back
-          </button>
-            Header
-          </headerPanel>
-        <mainPanel>
-          Main
-          </mainPanel>
-        <menuPanel>Menu</menuPanel>
-      </overlay>
+  {/* {editAssignment} */}
     </Tool>
   );
 }

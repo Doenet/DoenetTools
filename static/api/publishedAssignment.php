@@ -39,15 +39,52 @@ $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
 $type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
 
-$sql="
-INSERT INTO assignment
-(assignmentId,courseId,title,dueDate,assignedDate,timeLimit,numberOfAttemptsAllowed,attemptAggregation,totalPointsOrPercent,gradeCategory,individualize,multipleAttempts,showSolution,showFeedback,showHints,showCorrectness,proctorMakesAvailable)
-VALUES
-('$assignmentId','$courseId','$title','$dueDate','$assignedDate','$timeLimit',$numberOfAttemptsAllowed,'$attemptAggregation',$totalPointsOrPercent,'$gradeCategory',$individualize,$multipleAttempts,$showSolution,$showFeedback,$showHints,$showCorrectness,$proctorMakesAvailable)
+$sqlAssigmentCheck = "SELECT * FROM assignmnet where assignmnetId='$assignmentId';";
+$resultCheck = $conn->query($sqlAssigmentCheck); 
+$responseAssignment = 0;
+
+if ($resultCheck->num_rows > 0){
+  $responseAssignment = 1;
+    
+}
+// if assignment is published already update row
+if($responseAssignment === 0)
+{
+  $sql = "UPDATE assignment SET
+title = '$title',
+assignedDate = '$assignedDate',
+dueDate = '$dueDate',
+timeLimit = '$timeLimit',
+numberOfAttemptsAllowed = '$numberOfAttemptsAllowed',
+attemptAggregation = '$attemptAggregation',
+totalPointsOrPercent = '$totalPointsOrPercent',
+gradeCategory = '$gradeCategory',
+individualize = '$individualize',
+multipleAttempts = '$multipleAttempts',
+showSolution = '$showSolution',
+showFeedback = '$showFeedback',
+showHints = '$showHints',
+showCorrectness = '$showCorrectness',
+proctorMakesAvailable = '$proctorMakesAvailable',
+courseId='$courseId'
+WHERE assignmentId = '$assignmentId'
 ";
 
+$result = $conn->query($sql);
+}
+// if new assignment insert 
+
+else
+{
+  $sql="
+  INSERT INTO assignment
+  (assignmentId,courseId,title,dueDate,assignedDate,timeLimit,numberOfAttemptsAllowed,attemptAggregation,totalPointsOrPercent,gradeCategory,individualize,multipleAttempts,showSolution,showFeedback,showHints,showCorrectness,proctorMakesAvailable)
+  VALUES
+  ('$assignmentId','$courseId','$title','$dueDate','$assignedDate','$timeLimit',$numberOfAttemptsAllowed,'$attemptAggregation',$totalPointsOrPercent,'$gradeCategory',$individualize,$multipleAttempts,$showSolution,$showFeedback,$showHints,$showCorrectness,$proctorMakesAvailable)
+  ";
+  
   $result = $conn->query($sql); 
-echo $sql;
+}
 // set response code - 200 OK
 http_response_code(200);
 
