@@ -78,7 +78,6 @@ export default function Drive(props){
 
 
   if (props.types){
-
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
@@ -220,6 +219,7 @@ export const folderDictionarySelector = selectorFamily({
             folderInfo:newItem,contentsDictionary:{},contentIds:{"defaultOrder":[]}
           })
         }
+
         const data = { 
           driveId:driveIdFolderId.driveId,
           parentFolderId:driveIdFolderId.folderId,
@@ -462,8 +462,8 @@ function DriveRouted(props){
   if(props.isNav){
     rootFolderId = props.driveId;
   }
-
   
+  if (!props.isNav && routePathDriveId && props.driveId !== routePathDriveId) return <></>;  
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
