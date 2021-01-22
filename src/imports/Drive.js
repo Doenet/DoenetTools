@@ -3,6 +3,8 @@ import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
+import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 import {
@@ -91,7 +93,8 @@ export default function Drive(props){
         }
       }
     }
-    return <>{drives}</>
+    return <>
+    {drives}</>
   }else if (props.driveId){
     for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
         if (driveObj.driveId === props.driveId){
@@ -524,25 +527,32 @@ function Folder(props){
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (dropState.activeDropTargetId === itemId) { bgcolor = "#53ff47"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let marginSize = "50px";
+  let widthSize = "850px";
+  if (props.isNav) {marginSize = "0px"; widthSize = "224px"};
+  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+ 
 
   const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
   const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
  
-  let openCloseText = isOpen ? "Close" : "Open";
+  let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     deleteItem(itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let openCloseButton = <button 
+  style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
@@ -560,6 +570,7 @@ function Folder(props){
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
     return <button
+    style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
     tabIndex={-1}
     onClick={(e)=>{
       e.preventDefault();
@@ -579,10 +590,13 @@ function Folder(props){
       style={{
         cursor: "pointer",
         width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black", 
         backgroundColor: bgcolor,
-        margin: "2px",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         if (props.isNav){
@@ -620,7 +634,7 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} {deleteButton} ({contentIdsArr.length})</div></div>
+      }}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length}) {deleteButton}</div></div>
 
   let items = null;
   
@@ -634,12 +648,14 @@ function Folder(props){
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        margin: "2px",
-        marginLeft: `${props.indentLevel * indentPx}px`
+        width: widthSize,
+        // marginLeft: `${(props.indentLevel * indentPx)}px`,
+        marginLeft: marginSize,
+        fontSize: "24px"
       }}
       onClick={(e)=>{
         if (props.isNav){
@@ -660,12 +676,14 @@ function Folder(props){
         className="noselect nooutline" 
         style={{
           cursor: "pointer",
-          width: "300px",
-          padding: "4px",
-          border: "1px solid black",
+          padding: "8px",
+          border: "0px",
+          borderBottom: "2px solid black",
           backgroundColor: bgcolor,
-          margin: "2px",
-          marginLeft: `${props.indentLevel * indentPx}px`
+          width: widthSize,
+          // marginLeft: `${(props.indentLevel * indentPx)}px`,
+          marginLeft: marginSize,
+          fontSize: "24px"
         }}
       > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
     }
@@ -707,12 +725,12 @@ function Folder(props){
   </WithDropTarget>
 
   if (props.driveObj && !props.isNav) {
-    const sortButtons = <>
+    const sortButtons = <div style={{marginLeft: "50px"}}>
       {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
-    </>;
+    </div>;
 
     folder = <>
       {sortButtons}
@@ -794,13 +812,13 @@ function Folder(props){
 const EmptyNode =  React.memo(function Node(props){
 
   return (<div style={{
-    width: "300px",
-    padding: "4px",
-    border: "1px solid black",
-    backgroundColor: "white",
+    width: "840px",
+    padding: "8px",
+    // border: "1px solid black",
+    backgroundColor: "#f6f8ff",
     margin: "2px",
   
-  }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
+  }} ><div className="noselect" style={{marginLeft: "50px"}}>EMPTY</div></div>)
 })
 
 function LogVisible(props){
@@ -945,18 +963,25 @@ const DoenetML = React.memo((props)=>{
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let widthSize = "850px";
+  let marginSize = "50px";
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"}
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+  
+  
 
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     props.deleteItem(props.item.itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let label = props.item?.label;
   if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
@@ -969,11 +994,13 @@ const DoenetML = React.memo((props)=>{
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
-        padding: "4px",
-        border: "1px solid black",
-        backgroundColor: bgcolor,
-        margin: "2px",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
+        backgroundColor: "#f6f8ff",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         
@@ -1016,7 +1043,7 @@ const DoenetML = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    DoenetML {label} {deleteButton} </div></div>
+<FontAwesomeIcon icon={faCode}/> {label} {deleteButton} </div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1054,18 +1081,24 @@ const Url = React.memo((props)=>{
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let widthSize = "850px";
+  let marginSize = "50px";
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"};
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+  
 
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     props.deleteItem(props.item.itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let urlJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
@@ -1074,10 +1107,13 @@ const Url = React.memo((props)=>{
       style={{
         cursor: "pointer",
         width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        margin: "2px",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         if (props.urlClickBehavior === "select"){
@@ -1119,7 +1155,7 @@ const Url = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    Url {props.item?.label} {deleteButton}</div></div>
+    <FontAwesomeIcon icon={faLink}/> {props.item?.label} {deleteButton}</div></div>
 
   if (!props.isNav) {
     // make URL draggable
@@ -1246,7 +1282,7 @@ function useUpdateBreadcrumb(props) {
     
     // generate folder stack
     const breadcrumbItemStyle = {
-      fontSize: "18px",
+      fontSize: "24px",
       color: "#8a8a8a",
       textDecoration: "none",
     }
@@ -1331,7 +1367,7 @@ const DragGhost = ({ id, element, numItems }) => {
 
   const singleItemStyle = {
     boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
-    borderRadius: '4px',
+    borderRadius: '2px solid black',
     animation: 'dragAnimation 2s',
     display: 'flex',
     justifyContent: 'center',
