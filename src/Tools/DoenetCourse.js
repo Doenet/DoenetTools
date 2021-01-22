@@ -132,404 +132,6 @@ const DisplayCourseContent = (props) => {
   )
 }
 
-const updateAssignment = (payload) => {
-  try {
-    return axios.post(
-      `/api/makeAssignment.php`, payload
-    ).then((response) => {
-      return response.data;
-    });
-  } catch (e) {
-    console.log(e);
-  }
-}
-// let loadAllAssignment =  selectorFamily({
-//   key:"loadAllAssignment",
-//   get: (courseId) => async ({get,set})=>{
-//     if(courseId)
-//     {
-//       const {data} =  axios.post(
-//     `/api/getAllAssignmentSettings.php?courseId=${courseId}`
-//    )
-//        return data;
-//     }      
-// }})
-
-// let loadAssignmentSettings =  selectorFamily({
-//   key:"loadAssignmentSettings",
-//   get: (assignmentId) => async ({get,set})=>{
-//     if(asignmentId)
-//     {
-//       const {data} =  axios.post(
-//     `/api/getAssignmentSettings.php?assignmentId=${assignmentId}`
-//    )
-//        return data;
-//     }      
-// }})
-
-
-// const getAllAsignmentSettings = () => {
-//   try {
-//     return axios.post(
-//       `/api/getAllAssignmentSettings.php`
-//     ).then((response) => {  
-//       console.log(">>> response all assignment",response);
-//       return response.data;
-
-//     });    
-//   } catch (e) {
-//     console.log(e);
-//   }
-// }
-
-
-
-const AssignmentViewForm = (props) => {
-  const { title, assignedDate, dueDate, timeLimit, numberOfAttemptsAllowed, attemptAggregation, totalPointsOrPercent, gradeCategory, individualize, multipleAttempts, showSolution, showFeedback, showHints, showCorrectness, proctorMakesAvailable } = props.data;
-  const role = props.role;
-  return (
-    <>
-      <div>
-        <label>Assignment Name: {title}</label>
-      </div>
-      {role === 'Instructor' ? <div><label >Assigned Date: {assignedDate}</label></div>: null}
-        <div><label >Due Date: {dueDate}</label></div>
-        <div><label >Time Limit: {timeLimit}</label></div>
-        <div><label >Number Of Attempts: {numberOfAttemptsAllowed}</label></div>
-        {role === 'Instructor' ? <div><label >Attempt aggregation :{attemptAggregation}</label></div> : null}
-        <div><label>Total Points Or Percent :{totalPointsOrPercent}</label></div>
-        
-      {role === 'Instructor' ?
-        <>
-        <div><label>Grade Category: {gradeCategory}</label></div>
-          <div><label>Individualize: {individualize}</label></div>
-          <div><label>Multiple Attempts: {multipleAttempts}</label></div>
-          <div> <label>Show solution: {showSolution}</label> </div>
-          <div><label>Show feedback: {showFeedback}</label></div>
-          <div><label>Show hints: {showHints}</label></div>
-          <div><label>Show correctness: {showCorrectness}</label></div>
-          <div><label>Proctor make available: {proctorMakesAvailable}</label></div>
-          <br />
-        </> : null}
-    </>
-  )
-}
-const MakeAssignment = ({ itemId, courseId }) => {
-  const role = useRecoilValue(roleAtom);
-  const [assignid, setAssignmentIdValue] = useRecoilState(assignmentIdAtom);
-  const setAssignmentObjData = useSetRecoilState(loadAssignment({ assignid, role }));
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
-
-  const [viewForm, setViewForm] = useState(false);
-
-  const contentPublish = () => {
-    try {
-       axios.post(
-        `/api/contentPublish.php?itemId=${itemId}`
-      ).then((response) => {
-        console.log("response content", response.data);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  const makeAssignmentValueUpdate = () => {
-    if (role === 'Instructor') {
-      let assignmentId = nanoid();
-      setAssignmentIdValue(assignmentId);
-      setViewForm(true);
-      const payload = {
-        assignmentId: assignmentId, itemId: itemId, courseId: courseId
-      }
-      updateAssignment(payload).then((data) => setAssignmentObjData({ data, type: 'update', role }));
-    }
-    else
-      return null;
-  }
-  return role === 'Instructor' ?
-    (
-      <>
-        {/* {console.log("assignid", assignid)} */}
-        { (assignid === '' || typeof(assignid) === 'undefined') ? itemId != '' ?
-        <>
-          <ActionButton text="makeassignment" callback={makeAssignmentValueUpdate}></ActionButton> <br/>
-          <ActionButton text="Publish Content" callback={contentPublish}></ActionButton>
-
-          </>
-          : null :
-          <CollapseSection title="Edit Assignment Settings" >
-            <AssignmentForm itemId={itemId} courseId={courseId} />
-          </CollapseSection>}
-
-      </>
-    ) : (<CollapseSection >
-      <AssignmentForm itemId={itemId} courseId={courseId} />
-    </CollapseSection>);
-}
-const getAssignmentSettings = (payload) => {
-  try {
-    return axios.get(
-      `/api/getAssignmentSettings.php`, { params: { assignmentId: payload.assignmentId, role: payload.role } }
-    ).then((response) => {
-      return response.data;
-    });
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-const loadAssignmentDictionary = atomFamily({
-  key: 'loadAssignmentDictionary',
-  default: selectorFamily({
-    key: "loadAssignmentDictionary/Default",
-    get: (dataObj) => ({ get }) => {
-      if (dataObj.assignmentId) {
-        let payload = {
-          assignmentId: dataObj.assignmentId, role: dataObj.role
-        }
-
-        let data = getAssignmentSettings(payload);
-        return data;
-      }
-      else
-        return null;
-    }
-  })
-});
-
-const loadAssignment = selectorFamily({
-  key: "loadAssignment",
-  get: (assignmentDataObj) => ({ get }) => {
-    return get(loadAssignmentDictionary(assignmentDataObj.assignmentId, assignmentDataObj.role))
-  },
-  set: (assignmentId) => async ({ set, get }, name) => {
-    // console.log(">>>> name", name)
-    if (name.type === 'update') {
-      set(loadAssignmentDictionary(assignmentId, name.role), (old) => {
-        return { ...old, ...name.data }
-      });
-    }
-    else {
-      const key = Object.keys(name)[0];
-      const value = Object.values(name)[0];
-      set(loadAssignmentDictionary(assignmentId, name.role), (old) => {
-        return { ...old, [key]: value }
-      });
-    }
-  }
-
-})
-
-const AssignmentForm = ({ itemId, courseId }) => {
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-
-  const role = useRecoilValue(roleAtom);
-  const assignmentId = useRecoilValue(assignmentIdAtom);
-  // console.log("assignment id in form", assignmentId);
-  const assignmentObjData = useRecoilStateLoadable(loadAssignmentDictionary({ assignmentId, role }));
-  const setAssignmentObjData = useSetRecoilState(loadAssignment({ assignmentId, role }));
-  // console.log("assign obj ***", assignmentObjData);
-  if (assignmentObjData.state === "loading") { return null; }
-  if (assignmentObjData.state === "hasError") {
-    console.error(assignmentObjData.contents)
-    return null;
-  }
-  if (assignmentObjData.state === "hasValue") {
-    console.error(">>>> asssign", assignmentObjData[0].contents)
-  }
-
-  const updateAssignmentSettings = (payload) => {
-    try {
-      return axios.post(
-        `/api/saveAssignmentSettings.php`, payload
-      ).then((response) => {
-        return response.data;
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  const publishedAssignment = (payload) => {
-    try {
-      return axios.post(
-        `/api/publishedAssignment.php`, payload
-      ).then((response) => {
-        return response.data;
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const handleChange = (event) => {
-    let name = event.target.name;
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    setAssignmentObjData({ [name]: value, role: role });
-    // console.log(">>>{[name]:value}",name,value);
-  }
-  const handleOnBlur = async (e) => {
-    let submitted = '1';
-    const payload = {
-      ...assignmentObjData[0].contents,
-      itemId: itemId,
-      assignmentId,
-      isSubmitted: submitted,
-      makeContent: 1,
-      courseId: courseId,
-      role: role
-    }
-    await updateAssignmentSettings(payload).then((data) => console.log('successs'));
-  }
-  const handleMakeContent = async () => {
-    const payload = {
-      ...assignmentObjData[0].contents,
-      itemId: itemId,
-      assignmentId,
-      isSubmitted: 1,
-      makeContent: 0,
-      courseId: courseId,
-      role: role
-
-    }
-    await updateAssignmentSettings(payload).then((data) => setAssignmentObjData({ data, type: 'update', role }));
-  }
-  const handleLoadAssignment = async () => {
-    const payload = {
-      ...assignmentObjData[0].contents,
-      itemId: itemId,
-      assignmentId,
-      isSubmitted: 1,
-      makeContent: 1,
-      courseId: courseId,
-      role: role
-
-    }
-    await updateAssignmentSettings(payload).then((data) => setAssignmentObjData({ data, type: 'update', role }));
-  }
-
-
-  const handleSubmit = async (e) => {
-    let submitted = '1';
-    const payload = {
-      ...assignmentObjData[0].contents,
-      itemId: itemId,
-      assignmentId,
-      isSubmitted: submitted,
-      makeContent: 1,
-      courseId: courseId,
-      role: role
-    }
-    const response = await updateAssignmentSettings(payload).then((data) => data);
-    await publishedAssignment(payload).then((data) => data);
-  }
-  return (
-    <>
-      {role === "Instructor" ?
-        <>
-        {  role === 'Student' ? 
-          <AssignmentViewForm role={role} data={assignmentObjData[0].contents} />
-           : 
-<>
-          <div>
-            <label>Assignment Name :</label>
-            <input required type="text" name="title" value={assignmentObjData[0].contents?.title}
-              placeholder="Title goes here" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Assigned Date:</label>
-            <input required type="datetime-local" name="assignedDate" value={assignmentObjData[0].contents?.assignedDate}
-              placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Due date: </label>
-            <input required type="datetime-local" name="dueDate" value={assignmentObjData[0].contents?.dueDate}
-              placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-         
-            <div>
-              <label>Time Limit:</label>
-              <input required type="text" name="timeLimit" value={assignmentObjData[0].contents?.timeLimit}
-                placeholder="01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-            </div>
-            <div >
-              <label >Number Of Attempts:</label>
-              <input required type="number" name="numberOfAttemptsAllowed" value={assignmentObjData[0].contents?.numberOfAttemptsAllowed}
-                onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-            </div>
-            <div>
-            <label >Attempt Aggregation :</label>
-            <input required type="text" name="attemptAggregation" value={assignmentObjData[0]?.contents.attemptAggregation}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label>Total Points Or Percent: </label>
-            <input required type="number" name="totalPointsOrPercent" value={assignmentObjData[0]?.contents.totalPointsOrPercent}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label>Grade Category: </label>
-            <input required type="select" name="gradeCategory" value={assignmentObjData[0]?.contents.gradeCategory}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label>Individualize: </label>
-            <input required type="checkbox" name="individualize" value={assignmentObjData[0]?.contents.individualize}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Multiple Attempts: </label>
-            <input required type="checkbox" name="multipleAttempts" value={assignmentObjData[0]?.contents.multipleAttempts}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Show solution: </label>
-            <input required type="checkbox" name="showSolution" value={assignmentObjData[0]?.contents.showSolution}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Show feedback: </label>
-            <input required type="checkbox" name="showFeedback" value={assignmentObjData[0]?.contents.showFeedback}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Show hints: </label>
-            <input required type="checkbox" name="showHints" value={assignmentObjData[0]?.contents.showHints}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Show correctness: </label>
-            <input required type="checkbox" name="showCorrectness" value={assignmentObjData[0]?.contents.showCorrectness}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-          <div >
-            <label >Proctor make available: </label>
-            <input required type="checkbox" name="proctorMakesAvailable" value={assignmentObjData[0]?.contents.proctorMakesAvailable}
-              onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
-          </div>
-
-
-          {
-            role === 'Instructor' ? <ActionButton text="MakeContent" callback={handleMakeContent} /> : null
-          }
-          {
-            role === 'Instructor'? <ActionButton text="Publish" id="formSubmitButton" callback={handleSubmit} type="submit" ></ActionButton> : null
-
-          }
-       </> }
-
-        </>
-        :
-        <>
-          {/* {
-            assignmentId !== '' && role === 'Instructor' ? <ActionButton text="LoadAssignment" callback={handleLoadAssignment} /> : null
-          } */}
-        </>
-      }
-    </>
-
-  )
-}
-
 
 export default function DoenetCourse(props) {
   console.log("=== DoenetCourse");
@@ -548,10 +150,7 @@ function getAssignmentData(payload) {
 }
 
 
-const loadAssignmentValue = atomFamily({
-  key: 'loadAssignmentValue',
-  value: ''
-});
+
 const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignemntSlector',
   get: (dataObj) => async ({ get }) => {
@@ -562,18 +161,9 @@ const loadAssignmentSelector = selectorFamily({
   }
 })
 
-const selectedInformation = selectorFamily({
-  key:"selectedInformation",
-  get: ({driveId,folderId})=>({get})=>{  
-    console.log(">>> driveid ", driveId, folderId);  
-    let folderInfo = get(folderDictionarySelector({driveId,folderId}));
-
-    return {number:folderInfo}
-  }
-})
 
 function DoenetCourseRouted(props) {
-
+  const [isAssignment,setOpenAssignment] = useState();
 
     const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
@@ -594,10 +184,9 @@ function DoenetCourseRouted(props) {
   }
   // const infoLoad = useRecoilValueLoadable(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
   // const infoLoad = useSetRecoilState(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
+
   let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}));
-  if (setFolderInfo.state === 'hasValue') {
-    console.log(">>> infoLoad ", setFolderInfo)
-  }
+console.log(">>> setFolderInfo", setFolderInfo)
   let courseId = 'Fhg532fk9873412s65';
   if (urlParamsObj?.courseId !== undefined) {
     courseId = urlParamsObj?.courseId;
@@ -633,21 +222,134 @@ function DoenetCourseRouted(props) {
       }
     }
   }
-  const getContentId = async (pathItemId) => {
-    return await axios.get(
-      `/api/getContentId.php`, { params: { itemId:pathItemId } }
-    ).then((response) => {
-      console.log("data response", response.data);
-      return response.data;
-    });
-  } 
-  if(contentId === '')
-  {
-      let res = getContentId(pathItemId).then(data => {return data});
-      console.log("res", res);
-      contentId = res.contentId;
+
+
+  const MakeAssignmentNew = () =>{
+    const [assignmentInfo, setAssignmentInfo] = useState({});
+    const handleChange = (event) => {
+      let name = event.target.name;
+      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+      setAssignmentInfo({ ...assignmentInfo,[name]: value});
+    }
+    const handleOnBlur = async (e) => {
+      const payload = {
+        ...assignmentInfo,
+        assignmentId:isAssignment,
+       assignment_isPublished:0
+      }
+     setFolderInfo({instructionType:"assignment saved to draft",itemId:pathItemId,assignedDataSave:payload})
+    }
+    const handleSubmit = (e) =>{
+      const payload = {
+        ...assignmentInfo,
+        assignmentId:isAssignment,
+        assignment_isPublished:1
+      }
+      setFolderInfo({instructionType:"assignment was published",itemId:pathItemId,assignedData:payload})
+    }
+    return (
+        role === 'Instructor' ?
+      <>
+      <div>
+        <label>Assignment Name :</label>
+        <input required type="text" name="title" value={assignmentInfo?.title}
+          placeholder="Title goes here" onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Assigned Date:</label>
+        <input required type="datetime-local" name="assignedDate" value={assignmentInfo?.assignedDate}
+          placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Due date: </label>
+        <input required type="datetime-local" name="dueDate" value={assignmentInfo?.dueDate}
+          placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+     
+        <div>
+          <label>Time Limit:</label>
+          <input required type="time" name="timeLimit" value={assignmentInfo?.timeLimit}
+            placeholder="01:01:01" onBlur={handleOnBlur}  onChange={handleChange} />
+        </div>
+        <div >
+          <label >Number Of Attempts:</label>
+          <input required type="number" name="numberOfAttemptsAllowed" value={assignmentInfo?.numberOfAttemptsAllowed}
+            onBlur={handleOnBlur}  onChange={handleChange} />
+        </div>
+        <div>
+        <label >Attempt Aggregation :</label>
+        <input required type="text" name="attemptAggregation" value={assignmentInfo?.attemptAggregation}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label>Total Points Or Percent: </label>
+        <input required type="number" name="totalPointsOrPercent" value={assignmentInfo?.totalPointsOrPercent}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label>Grade Category: </label>
+        <input required type="select" name="gradeCategory" value={assignmentInfo?.gradeCategory}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label>Individualize: </label>
+        <input required type="checkbox" name="individualize" value={assignmentInfo?.individualize}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Multiple Attempts: </label>
+        <input required type="checkbox" name="multipleAttempts" value={assignmentInfo?.multipleAttempts}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Show solution: </label>
+        <input required type="checkbox" name="showSolution" value={assignmentInfo?.showSolution}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Show feedback: </label>
+        <input required type="checkbox" name="showFeedback" value={assignmentInfo?.showFeedback}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Show hints: </label>
+        <input required type="checkbox" name="showHints" value={assignmentInfo?.showHints}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Show correctness: </label>
+        <input required type="checkbox" name="showCorrectness" value={assignmentInfo?.showCorrectness}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div >
+        <label >Proctor make available: </label>
+        <input required type="checkbox" name="proctorMakesAvailable" value={assignmentInfo?.proctorMakesAvailable}
+          onBlur={handleOnBlur}  onChange={handleChange} />
+      </div>
+      <div>
+      <ActionButton text="Publish" id="formSubmitButton" callback={handleSubmit} type="submit" ></ActionButton>
+      </div>
+</>
+     : <div>Student view</div> 
+     )
   }
 
+const handleMakeAssignment = () =>{
+  let assignmentId = nanoid();
+  setOpenAssignment(assignmentId);
+  setFolderInfo({instructionType:"assignment was make assignment",itemId:pathItemId,assignmentId});
+  
+  let payload = {
+    assignmentId, pathItemId, courseId
+  }
+  console.log(">>>makeNewAssignment",payload);
+  axios.post(
+    `/api/makeNewAssignment.php`, payload
+  ).then((response) => {
+    console.log(response.data);
+  });
+
+}
   return (
     <Tool>
       <navPanel>
@@ -669,19 +371,30 @@ function DoenetCourseRouted(props) {
             setSupportVisiblity(value);
           }}
         />
-        <p>header for important stuff</p>
       </headerPanel>
       <mainPanel>
+
         {contentId && routePathDriveId ? <DisplayCourseContent driveId={routePathDriveId} contentId={contentId} /> : null}
         { openEnrollment ? <Enrollment selectedCourse={enrollCourseId} /> : null}
 
       </mainPanel>
       <menuPanel title="Content Info">
-        {
+        {/* {
           itemType === 'DoenetML' ?
             <MakeAssignment itemId={pathItemId} courseId={courseId} />
             : null
+        } */}
+        {itemType === 'DoenetML' ? 
+        <ActionButton text="makeassignment" callback={handleMakeAssignment}></ActionButton>
+        :null
         }
+
+ {
+   isAssignment ? <MakeAssignmentNew /> : null
+ }
+       
+
+
 
       </menuPanel>
 
