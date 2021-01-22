@@ -399,7 +399,7 @@ function buildTreeStructure({
     type={itemType}
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
-    nodeItem={parentNodeItem({viewId: parentsInfo[parentHeadingId]["viewId"], title: parentsInfo[parentHeadingId]["title"], icon: baseItemStyleAndIcon.icon})}
+    nodeItem={parentNodeItem({title: parentsInfo[parentHeadingId]["title"], icon: baseItemStyleAndIcon.icon})}
     expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcons"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}

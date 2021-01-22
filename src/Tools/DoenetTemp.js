@@ -47,15 +47,8 @@ function Demo(){
   console.log("=== Demo")
   let [hideUnpublished,setHideUnpublished] = useState(false)
 
-  let [hideUnpublished,setHideUnpublished] = useState(false)
   let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
-  const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Content</button>
-  const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Assignment</button>
-  
+ 
   
   let publishText = "Show Student View";
   if (hideUnpublished){publishText = "Show Instructor View"}

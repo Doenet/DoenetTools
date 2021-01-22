@@ -6,21 +6,16 @@
 // import DoenetBox from '../Tools/DoenetBox';
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-// import MainPanel from "./ToolLayout/MainPanel";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { save } from 'math-expressions';
-
-import Tool from '../imports/Tool/Tool';
-import MainPanel from '../imports/Tool/MainPanel';
-import MenuPanel from '../imports/Tool/MenuPanel'
-
 
 export function CourseAssignments(props) {
 
 
  
-  return (<MainPanel>
+  return (<ToolLayoutPanel>
     <div>
     <h1>Assignments</h1>
 
@@ -39,7 +34,7 @@ export function CourseAssignments(props) {
   student or Instructor = {props.studentInstructor}
     </div>
   
-  </MainPanel>)
+  </ToolLayoutPanel>)
 }
 
 export function CourseAssignmentControls(props) {
@@ -137,14 +132,14 @@ export function CourseAssignmentControls(props) {
     
     
 
-  // if (loading){
-  //   return (<MainPanel> <div> <h1>Loading Assignment Controls</h1> </div> </MainPanel>)
-  // }
-  // if (props.assignmentId === ""){
-  //   return (<MainPanel> <div> <h1>No Assignment Selected</h1> </div> </MainPanel>)
-  // }
+  if (loading){
+    return (<ToolLayoutPanel> <div> <h1>Loading Assignment Controls</h1> </div> </ToolLayoutPanel>)
+  }
+  if (props.assignmentId === ""){
+    return (<ToolLayoutPanel> <div> <h1>No Assignment Selected</h1> </div> </ToolLayoutPanel>)
+  }
   if (props.studentInstructor === "Student"){
-    return (<MenuPanel panelHeaderControls={[
+    return (<ToolLayoutPanel panelHeaderControls={[
       <button key='start'
       onClick={()=>{props.setAssignmentId('Assignment1');props.setModalOpen(true)}}
       >Start Assignment</button>]}>
@@ -157,12 +152,12 @@ export function CourseAssignmentControls(props) {
       <p>Grade Category: {gradeCategory}</p>
       </div>
     
-    </MenuPanel>)
+    </ToolLayoutPanel>)
   }
 
 
 
-  return (<MainPanel panelHeaderControls={[
+  return (<ToolLayoutPanel panelHeaderControls={[
   <button key='edit'
   onClick={()=>{props.setAssignmentId('Assignment1');props.setModalOpen(true)}}
   >Edit Assignment</button>]}>
@@ -271,6 +266,5 @@ export function CourseAssignmentControls(props) {
         
     </div>
   
-  </MainPanel>)
+  </ToolLayoutPanel>)
 }
-
