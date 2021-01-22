@@ -80,7 +80,6 @@ export default function Drive(props){
 
 
   if (props.types){
-
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
@@ -208,7 +207,7 @@ export const folderDictionarySelector = selectorFamily({
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = JSON.parse(JSON.stringify(old));;
+          let newObj = JSON.parse(JSON.stringify(old));
           newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
@@ -223,6 +222,7 @@ export const folderDictionarySelector = selectorFamily({
             folderInfo:newItem,contentsDictionary:{},contentIds:{"defaultOrder":[]}
           })
         }
+
         const data = { 
           driveId:driveIdFolderId.driveId,
           parentFolderId:driveIdFolderId.folderId,
@@ -264,11 +264,15 @@ export const folderDictionarySelector = selectorFamily({
         //Remove from folder
         let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
         let newFInfo = {...fInfo}
-        newFInfo["defaultOrder"] = [...fInfo.defaultOrder];
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
-        let index = newFInfo["defaultOrder"].indexOf(instructions.itemId);
-        newFInfo["defaultOrder"].splice(index,1)
         delete newFInfo["contentsDictionary"][instructions.itemId];
+        newFInfo.folderInfo = {...fInfo.folderInfo}
+        newFInfo.folderInfo.dirty = 1;
+        const sortBy = newFInfo.folderInfo.sortBy;
+        newFInfo.contentIds = {...fInfo.contentIds}
+        newFInfo.contentIds[sortBy] = [...fInfo.contentIds[sortBy]]
+        const index = newFInfo.contentIds[sortBy].indexOf(instructions.itemId)
+        newFInfo.contentIds[sortBy].splice(index,1)
         set(folderDictionary(driveIdFolderId),newFInfo);
         //Remove from selection
         if (get(selectedDriveItemsAtom(item))){
@@ -358,6 +362,23 @@ export const folderDictionarySelector = selectorFamily({
           
         }
       break;
+      case "assignment was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.assignment_isPublished = "1";
+          newItemObj.isAssignment = "1";
+          return newObj;
+        })
+        break;
+      case "content was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isPublished = "1";
+          return newObj;
+        })
+      break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -402,6 +423,8 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
+  let hideUnpublished = false; //Default to showing unpublished
+  if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
@@ -442,8 +465,8 @@ function DriveRouted(props){
   if(props.isNav){
     rootFolderId = props.driveId;
   }
-
   
+  if (!props.isNav && routePathDriveId && props.driveId !== routePathDriveId) return <></>;  
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
@@ -459,6 +482,7 @@ function DriveRouted(props){
   urlClickBehavior={props.urlClickBehavior}
   route={props.route}
   pathItemId={pathItemId}
+  hideUnpublished={hideUnpublished}
   />
   </>
 }
@@ -599,7 +623,7 @@ function Folder(props){
           //Only clear if focus goes outside of this node group
             if (e.relatedTarget === null ||
               (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetBrowserStayselected)
+              !e.relatedTarget.dataset.doenetDriveStayselected)
               ){
                 setSelected({instructionType:"clear all"})
             }
@@ -719,6 +743,11 @@ function Folder(props){
     items = [];
     for (let itemId of contentIdsArr){
       let item = dictionary[itemId];
+      // console.log(">>>item",item)
+      if (props.hideUnpublished && item.isPublished === "0"){
+        //hide item
+        continue;
+      }
       switch(item.itemType){
         case "Folder":
         items.push(<Folder 
@@ -733,7 +762,7 @@ function Folder(props){
           pathItemId={props.pathItemId}
           deleteItem={deleteItem}
           parentFolderId={props.folderId}
-
+          hideUnpublished={props.hideUnpublished}
           />)
         break;
         case "Url":
@@ -761,7 +790,7 @@ function Folder(props){
             isNav={props.isNav} 
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-            />)
+          />)
         break;
         default:
         console.warn(`Item not rendered of type ${item.itemType}`)
@@ -954,6 +983,11 @@ const DoenetML = React.memo((props)=>{
   }}
   ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
+  let label = props.item?.label;
+  if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
+    label = props.item?.assignment_title;
+  }
+
   let doenetMLJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
@@ -993,18 +1027,23 @@ const DoenetML = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }
+          // if (e.relatedTarget === null){
+          //   setSelected({instructionType:"clear all"})
+          // }
+          // console.log(">>>",e.relatedTarget);
+          // console.log(">>>dataset",e?.relatedTarget?.dataset)
+          
         }
       }}
       ><div 
-      className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    <FontAwesomeIcon icon={faCode}/> {props.item?.label} {deleteButton} </div></div>
+<FontAwesomeIcon icon={faCode}/> {label} {deleteButton} </div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1097,10 +1136,6 @@ const Url = React.memo((props)=>{
           //Default url behavior is new tab
           let linkTo = props.item?.url; //Enable this when add URL is completed
           window.open(linkTo)
-          // window.open("http://doenet.org")
-
-          // location.href = linkTo; 
-          // location.href = "http://doenet.org"; 
         }
       }}
       onBlur={(e) => {
@@ -1109,7 +1144,7 @@ const Url = React.memo((props)=>{
         //Only clear if focus goes outside of this node group
           if (e.relatedTarget === null ||
             (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetBrowserStayselected)
+            !e.relatedTarget.dataset.doenetDriveStayselected)
             ){
               setSelected({instructionType:"clear all"})
           }

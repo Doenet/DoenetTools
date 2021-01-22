@@ -17,19 +17,25 @@ import {
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 import GlobalFont from "../fonts/GlobalFont.js";
+import axios from "axios";
+import Button from "../imports/PanelHeaderComponents/Button.js";
+
 
 
 const itemVersionsSelector = selectorFamily({
   key:"itemInfoSelector",
-  get:(driveIdItemId)=>({get})=>{
-    //Load versions from database
-    return [{title:"one",contentId:"123"}]
+  get:(branchId)=> async ({get})=>{
+    // Load versions from database
+    const { data } = await axios.get(
+      `/api/loadVersions.php?branchId=${branchId}`
+    );
+    return data.versions
   }
 })
 
 const selectedInformation = selector({
   key:"selectedInformation",
-  get:({get})=>{
+  get: ({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);
     if (globalSelected.length !== 1){
       return {number:globalSelected.length}
@@ -42,46 +48,74 @@ const selectedInformation = selector({
     let itemInfo = folderInfo.contentsDictionary[itemId];
     let versions = [];
     if (itemInfo.itemType === "DoenetML"){
-      versions = get(itemVersionsSelector({driveId,itemId}))
+      let branchId = itemInfo.branchId;
+      versions = get(itemVersionsSelector(branchId))
     }
     return {number:globalSelected.length,itemInfo,versions}
   }
 })
 
 const ItemInfo = function (props){
+  //data-doenet-drive-stayselected
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
   // console.log(">>>infoLoad",infoLoad)
+  if (infoLoad.state === "loading"){ return null;}
+  if (infoLoad.state === "hasError"){ 
+    console.error(infoLoad.contents)
+    return null;}
+
+    const editDraft =   <button 
+    data-doenet-drive-stayselected
+     onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
 
   if (infoLoad.contents?.number > 1){
     return <>
     <h1>{infoLoad.contents.number} Items Selected</h1>
     </>
   }else if (infoLoad.contents?.number < 1){
+
+ return <>{editDraft}</>
     return null;
   }
 
   const itemInfo = infoLoad?.contents?.itemInfo;
   const versions = infoLoad?.contents?.versions;
   console.log(">>>itemInfo",itemInfo)
-  console.log(">>>versions",versions)
- const openEditor =   <div>
-          <div
-            onClick={() => {
-              setOverlayOpen("Editor");
-            }}
-          >
-            Version 1
-          </div>
-        </div>
+  const versionsJSX = [];
+  let draftObj;
+  for (let version of versions){
+    if (version.isDraft === "1"){
+      draftObj = version;
+    }else{
+      versionsJSX.push(<div
+      key={`versions${version.timestamp}`}
+    data-doenet-drive-stayselected
+        onClick={() => {
+          //set activeBranchInfo to version
+          setOverlayOpen("Editor");
+        }}
+      >
+        {version.title}
+      </div>)
+    }
+  }
 
-  return <>
+  return <div
+  data-doenet-drive-stayselected
+  tabIndex={0}
+  style={{height:"100%"}}
+  >
+    
+
   <h1>{itemInfo.label}</h1>
+  <AddItem />
   
-  {openEditor}
-  </>
+  {versionsJSX}
+  {editDraft}
+  </div>
 }
 
 
@@ -89,7 +123,7 @@ export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const setSupportVisiblity = useSetRecoilState(supportVisible);
-
+console.log(">>>")
   return (
     <Tool>
       <navPanel>
@@ -107,8 +141,14 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
+      <button
+            onClick={() => {
+              setOverlayOpen("Bob");
+            }}
+          >
+            Open Bob
+          </button>
         <BreadcrumbContainer /> 
-        <AddItem />
 
         <Drive types={['content','course']}  urlClickBehavior="select" />
       </mainPanel>

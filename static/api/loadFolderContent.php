@@ -34,12 +34,12 @@ WHERE userId = '$userId'
 AND driveId = '$driveId'
 ";
 
-
 $result = $conn->query($sql); 
 
 if ($result->num_rows > 0){
 $row = $result->fetch_assoc();
 $canViewDrive = $row["canViewDrive"];
+$canViewUnpublishItemsAndFolders = $row["canViewUnpublishItemsAndFolders"];
 $perms = array(
     "isShared"=>$row["isShared"],
     "canViewDrive"=>$row["canViewDrive"],
@@ -72,7 +72,10 @@ if ($result->num_rows == 0){
 }
 
 if ($init == 'true'){
-  $sql="
+
+  if ($canViewUnpublishItemsAndFolders == "1"){
+    //See unpublished
+    $sql="
   SELECT 
   dc.itemId as itemId,
   dc.parentFolderId as parentFolderId,
@@ -84,11 +87,16 @@ if ($init == 'true'){
   dc.contentId as contentId,
   dc.assignmentId as assignmentId,
   dc.urlId as urlId,
+  dc.isAssignment as isAssignment,
   u.url as url,
-  u.description as urlDescription
+  u.description as urlDescription,
+  a.title as assignment_title,
+  a.isPublished as assignment_isPublished
 FROM drive_content AS dc
 LEFT JOIN url AS u
 ON u.urlId = dc.urlId
+LEFT JOIN assignment AS a
+ON dc.assignmentId = a.assignmentId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
@@ -109,17 +117,84 @@ ON u.urlId = dc.urlId
     "url"=>$row['url'],
     "urlDescription"=>$row['urlDescription'],
     "sortBy"=>"defaultOrder",
-    "dirty"=>0
+    "dirty"=>0,
+    "assignment_title"=>$row['assignment_title'],
+    "assignment_isPublished"=>$row['assignment_isPublished'],
+    "isAssignment"=>$row['isAssignment']
+    
   );
   array_push($results_arr,$item);
   }
+  }else{
+    //Can't see unpublished
+    $sql="
+    SELECT 
+    dc.itemId as itemId,
+    dc.parentFolderId as parentFolderId,
+    dc.label as label,
+    dc.creationDate as creationDate,
+    dc.isPublished as isPublished,
+    dc.itemType as itemType,
+    dc.branchId as branchId,
+    dc.contentId as contentId,
+    dc.assignmentId as assignmentId,
+    dc.urlId as urlId,
+    dc.isAssignment as isAssignment,
+    u.url as url,
+    u.description as urlDescription,
+    a.title as assignment_title,
+    a.isPublished as assignment_isPublished
+  FROM drive_content AS dc
+  LEFT JOIN url AS u
+  ON u.urlId = dc.urlId
+  LEFT JOIN assignment AS a
+  ON dc.assignmentId = a.assignmentId
+    WHERE driveId = '$driveId'
+    AND isDeleted = 0
+    AND dc.isPublished = 1
+    ";
+    $result = $conn->query($sql); 
+    //TODO if number of entries is larger than 50,000 then only give the drive's root and root children 
+    while($row = $result->fetch_assoc()){ 
+      $assignmentId = "";
+      $assignment_title = "";
+      $isAssignment = "0";
+      $assignment_isPublished = "0";
+      if ($row['assignment_isPublished'] == "1"){
+        $assignmentId = $row['assignmentId'];
+        $assignment_title = $row['assignment_title'];
+        $isAssignment = $row['isAssignment'];
+        $assignment_isPublished = "1";
+      }
+    $item = array(
+      "itemId"=>$row['itemId'],
+      "parentFolderId"=>$row['parentFolderId'],
+      "label"=>$row['label'],
+      "creationDate"=>$row['creationDate'],
+      "isPublished"=>$row['isPublished'],
+      "itemType"=>$row['itemType'],
+      "branchId"=>$row['branchId'],
+      "contentId"=>$row['contentId'],
+      "urlId"=>$row['urlId'],
+      "url"=>$row['url'],
+      "urlDescription"=>$row['urlDescription'],
+      "sortBy"=>"defaultOrder",
+      "dirty"=>0,
+      "assignment_isPublished"=>$assignment_isPublished,
+      "assignmentId"=>$assignmentId,
+      "assignment_title"=>$assignment_title,
+      "isAssignment"=>$isAssignment
+    );
+    array_push($results_arr,$item);
+    }
+  }
+  
+  
+
 }else{
 
-  // $results_arr[$parentId] = selectChildren($parentId,$userId,$driveId,$conn);
-  // $children_arr = array_keys($results_arr[$parentId]);
-  // foreach ($children_arr as &$childId){
-  //   $results_arr[$childId] = selectChildren($childId,$userId,$driveId,$conn);
-  // }
+  //Get just one folder's information
+  //Haven't needed this yet
 
 }
 }
