@@ -302,7 +302,7 @@ export default class Map extends CompositeComponent {
           if (comp.doenetAttributes.assignNames) {
             deleteComp = false;
           } else {
-            let cName = comp.doenetAttributes.componentName;
+            let cName = comp.componentName;
             if (cName) {
               let lastSlash = cName.lastIndexOf("/");
               cName = cName.slice(lastSlash + 1);

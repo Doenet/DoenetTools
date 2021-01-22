@@ -1513,7 +1513,7 @@ describe('sequence and map assignName Tests', function () {
 
   })
 
-  it.only('copyFromSubs and indexFromSubs assign names', () => {
+  it('copyFromSubs and indexFromSubs assign names', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

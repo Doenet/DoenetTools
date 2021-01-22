@@ -1,1177 +1,778 @@
 import me from 'math-expressions';
 
-describe('Select Tag Tests', function () {
+describe('SelectByCondition Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
   })
 
-  it("no parameters, select doesn't do anything", () => {
+  it('select single text', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><select/></p>
-    `}, "*");
-    });
+    <mathinput name="n" />
+    <p name="pa">a: <selectByCondition assignNames="a">
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> < 0
+        </condition>
+        <text>dog</text>
+      </case>
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> <= 1
+        </condition>
+        <text>cat</text>
+      </case>
+      <else>
+        <text>mouse</text>
+      </else>
+    </selectByCondition></p>
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    <p name="pa1">a1: <copy tname="a" assignNames="a1" /></p>
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_p1'].activeChildren.length).eq(0);
-    });
-  });
+    <p name="pb" >b: <copy tname="_selectbycondition1" assignNames="b" /></p>
 
-  it('select single math', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist>
-    <select assignnames="x1">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x2">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x4">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x5">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x6">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x7">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x8">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x9">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select assignnames="x10">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
+    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
+
     `}, "*");
     });
 
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      for (let ind = 1; ind <= 10; ind++) {
-        let x = components['/x' + ind].stateValues.value.tree;
-        expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
-      }
-    })
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
+
+    cy.log('enter 1')
+    cy.get('#\\/n_input').clear().type("1{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: cat');
+    cy.get('#\\/pa1').should('have.text', 'a1: cat');
+    cy.get('#\\/pb').should('have.text', 'b: cat');
+    cy.get('#\\/pb1').should('have.text', 'b1: cat');
+
+    cy.get('#\\/a1').should('have.text', 'cat');
+    cy.get('#\\/b1').should('have.text', 'cat');
+
+    cy.log('enter 10')
+    cy.get('#\\/n_input').clear().type("10{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
+
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
+
+    cy.log('enter -11')
+    cy.get('#\\/n_input').clear().type("-1{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: dog');
+    cy.get('#\\/pa1').should('have.text', 'a1: dog');
+    cy.get('#\\/pb').should('have.text', 'b: dog');
+    cy.get('#\\/pb1').should('have.text', 'b1: dog');
+
+    cy.get('#\\/a1').should('have.text', 'dog');
+    cy.get('#\\/b1').should('have.text', 'dog');
+
+    cy.log('enter x')
+    cy.get('#\\/n_input').clear().type("x{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
+
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
+
   });
 
-  it('select multiple maths', () => {
+  it('select single text, assign sub', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
-    `}, "*");
-    });
+    <mathinput name="n" />
+    <p name="pa">a: <selectByCondition assignNames="(a)">
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> < 0
+        </condition>
+        <text>dog</text>
+      </case>
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> <= 1
+        </condition>
+        <text>cat</text>
+      </case>
+      <else>
+        <text>mouse</text>
+      </else>
+    </selectByCondition></p>
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    <p name="pa1">a1: <copy tname="a" assignNames="a1" /></p>
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].stateValues.value.tree;
-        let y = components['/y' + ind].stateValues.value.tree;
-        let z = components['/z' + ind].stateValues.value.tree;
+    <p name="pb" >b: <copy tname="_selectbycondition1" assignNames="(b)" /></p>
 
-        expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(z)).eq(true);
-        expect(x).not.eq(y);
-        expect(x).not.eq(z);
-        expect(y).not.eq(z);
-      }
-    })
-  });
+    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
 
-  it('select multiple maths, initially unresolved', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist>
-    <select name="s1" assignnames="x1, y1, z1">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s2" assignnames="x2, y2, z2">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s3" assignnames="x3, y3, z3">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s4" assignnames="x4, y4, z4">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s5" assignnames="x5, y5, z5">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
-
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
-    <math name="num2" simplify><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
-    <number name="num3">1</number>
-    `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].stateValues.value.tree;
-        let y = components['/y' + ind].stateValues.value.tree;
-        let z = components['/z' + ind].stateValues.value.tree;
-
-        expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(z)).eq(true);
-        expect(x).not.eq(y);
-        expect(x).not.eq(z);
-        expect(y).not.eq(z);
-      }
-    })
-  });
-
-  it('select multiple maths with namespace', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
     `}, "*");
     });
 
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/s' + ind + '/x' + ind].stateValues.value.tree;
-        let y = components['/s' + ind + '/y' + ind].stateValues.value.tree;
-        let z = components['/s' + ind + '/z' + ind].stateValues.value.tree;
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
 
-        expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
-        expect(["u", "v", "w", "x", "y", "z"].includes(z)).eq(true);
-        expect(x).not.eq(y);
-        expect(x).not.eq(z);
-        expect(y).not.eq(z);
-      }
-    })
+    cy.log('enter 1')
+    cy.get('#\\/n_input').clear().type("1{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: cat');
+    cy.get('#\\/pa1').should('have.text', 'a1: cat');
+    cy.get('#\\/pb').should('have.text', 'b: cat');
+    cy.get('#\\/pb1').should('have.text', 'b1: cat');
+
+    cy.get('#\\/a').should('have.text', 'cat');
+    cy.get('#\\/a1').should('have.text', 'cat');
+    cy.get('#\\/b').should('have.text', 'cat');
+    cy.get('#\\/b1').should('have.text', 'cat');
+
+    cy.log('enter 10')
+    cy.get('#\\/n_input').clear().type("10{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
+
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
+
+    cy.log('enter -11')
+    cy.get('#\\/n_input').clear().type("-1{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: dog');
+    cy.get('#\\/pa1').should('have.text', 'a1: dog');
+    cy.get('#\\/pb').should('have.text', 'b: dog');
+    cy.get('#\\/pb1').should('have.text', 'b1: dog');
+
+    cy.get('#\\/a').should('have.text', 'dog');
+    cy.get('#\\/a1').should('have.text', 'dog');
+    cy.get('#\\/b').should('have.text', 'dog');
+    cy.get('#\\/b1').should('have.text', 'dog');
+
+    cy.log('enter x')
+    cy.get('#\\/n_input').clear().type("x{enter}")
+  
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: mouse');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
+
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/b').should('have.text', 'mouse');
+    cy.get('#\\/b1').should('have.text', 'mouse');
+
   });
 
-  it('select multiple maths, with replacement', () => {
+  it('select text, math, and optional', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
+    <mathinput name="n" />
+    <p>original: <selectByCondition assignNames="(a,b,c,d)">
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> < 0
+        </condition>
+        <text>dog</text>
+        <math>x</math>
+        <text>optional text!</text>
+      </case>
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> <= 1
+        </condition>
+        <text>cat</text>
+        <math>y</math>
+      </case>
+      <else>
+        <text>mouse</text>
+        <math>z</math>
+      </else>
+    </selectByCondition></p>
+
+    <p>a1: <copy tname="a" assignNames="a1" /></p>
+    <p>b1: <copy tname="b" assignNames="b1" /></p>
+    <p>c1: <copy tname="c" assignNames="c1" /></p>
+    <p>d1: <copy tname="d" assignNames="d1" /></p>
+
+    <p>copy: <copy name="cp1" tname="_selectbycondition1" assignNames="(e,f,g,h,i)" /></p>
+
+    <p>e1: <copy tname="e" assignNames="e1" /></p>
+    <p>f1: <copy tname="f" assignNames="f1" /></p>
+    <p>g1: <copy tname="g" assignNames="g1" /></p>
+    <p>h1: <copy tname="h" assignNames="h1" /></p>
+    <p>i1: <copy tname="i" assignNames="i1" /></p>
+
+    <p>copied copy: <copy tname="cp1" assignNames="(j,k,l)" /></p>
+
+    <p>j1: <copy tname="j" assignNames="j1" /></p>
+    <p>k1: <copy tname="k" assignNames="k1" /></p>
+    <p>l1: <copy tname="l" assignNames="l1" /></p>
     `}, "*");
     });
 
+
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+  
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].stateValues.value.tree;
-        let y = components['/y' + ind].stateValues.value.tree;
-        let z = components['/z' + ind].stateValues.value.tree;
-
-        expect(["x", "y", "z"].includes(x)).eq(true);
-        expect(["x", "y", "z"].includes(y)).eq(true);
-        expect(["x", "y", "z"].includes(z)).eq(true);
-
-        let s = components['/s' + ind];
-
-        for (let i = 3; i < 5; i++) {
-          expect(["x", "y", "z"].includes(s.replacements[i].stateValues.value.tree)).eq(true);
-        }
-      }
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
     })
-  });
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
 
-  it("copies don't resample", () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <p>
-    <aslist>
-    <select name="s1">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    <select name="s2">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
-    </select>
-    </aslist>
-    </p>
+    cy.get('#\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
 
-    <p>
-    <aslist>
-    <copy name="noresample1" tname="s1" />
-    <copy name="noresample2" tname="s2" />
-    <copy name="noreresample1" tname="noresample1" />
-    <copy name="noreresample2" tname="noresample2" />
-    </aslist>
-    </p>
+    cy.get('#\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
 
-    <p>
-    <copy name="noresamplelist" tname="_aslist1" />
-    </p>
+    cy.log('enter 1')
+    cy.get('#\\/n_input').clear().type("1{enter}")
+  
+    cy.get('#\\/a').should('have.text', 'cat');
+    cy.get('#\\/a1').should('have.text', 'cat');
+    cy.get('#\\/e').should('have.text', 'cat');
+    cy.get('#\\/e1').should('have.text', 'cat');
+    cy.get('#\\/j').should('have.text', 'cat');
+    cy.get('#\\/j1').should('have.text', 'cat');
 
-    <p>
-    <copy name="noreresamplelist" tname="noresamplelist" />
-    </p>
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
 
-    <copy name="noresamplep" tname="_p1" />
-    <copy name="noreresamplep" tname="noresamplep" />
+    cy.get('#\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
+
+    cy.get('#\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
     
-    `}, "*");
-    });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.log('enter 10')
+    cy.get('#\\/n_input').clear().type("10{enter}")
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/s1'].replacements[0].stateValues.value.tree;
-      let x2 = components['/s2'].replacements[0].stateValues.value.tree;
-      expect(["u", "v", "w", "x", "y", "z"].includes(x1)).eq(true);
-      expect(["u", "v", "w", "x", "y", "z"].includes(x2)).eq(true);
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
 
-      expect(components['/noresample1'].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
-      expect(components['/noresample2'].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
-      expect(components['/noreresample1'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresample2'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
-
-      expect(components['/noresamplelist'].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noresamplelist'].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
-
-      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
-
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
     })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+
+    cy.get('#\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
+
+    cy.get('#\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
+    cy.log('enter -11')
+    cy.get('#\\/n_input').clear().type("-1{enter}")
+  
+
+    cy.get('#\\/a').should('have.text', 'dog');
+    cy.get('#\\/a1').should('have.text', 'dog');
+    cy.get('#\\/e').should('have.text', 'dog');
+    cy.get('#\\/e1').should('have.text', 'dog');
+    cy.get('#\\/j').should('have.text', 'dog');
+    cy.get('#\\/j1').should('have.text', 'dog');
+
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/c').should('have.text', 'optional text!');
+    cy.get('#\\/c1').should('have.text', 'optional text!');
+    cy.get('#\\/g').should('have.text', 'optional text!');
+    cy.get('#\\/g1').should('have.text', 'optional text!');
+    cy.get('#\\/l').should('have.text', 'optional text!');
+    cy.get('#\\/l1').should('have.text', 'optional text!');
+
+    cy.get('#\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
+
+    cy.log('enter x')
+    cy.get('#\\/n_input').clear().type("x{enter}")
+  
+    cy.get('#\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
+
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+
+    cy.get('#\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
+
+    cy.get('#\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
   });
 
-  it("select doesn't change dynamically", () => {
+  it('select text, math, and optional, new namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Number to select: <mathinput prefill="5" name="numbertoselect"/></p>
-    <p>First option: <mathinput prefill="a" name="x"/></p>
-    <p>Second option: <mathinput prefill="b" name="y"/></p>
-    <p>Third option: <mathinput prefill="c" name="z"/></p>
-    <p name="pchoices">
-    Selected choices: <aslist>
-    <select name="sample1" withReplacement>
-      <numbertoselect><copy prop="value" tname="numbertoselect" /></numbertoselect>
-      <copy prop="value" tname="x" />
-      <copy prop="value" tname="y" />
-      <copy prop="value" tname="z" />
-    </select>
-    </aslist>
-    </p>
+    <mathinput name="n" />
+    <p>original: <selectByCondition assignNames="(a,b,c,d)" name="s1" newnamespace>
+      <case>
+        <condition>
+          <copy prop="value" tname="../n" /> < 0
+        </condition>
+        <text>dog</text>
+        <math>x</math>
+        <text>optional text!</text>
+      </case>
+      <case>
+        <condition>
+          <copy prop="value" tname="../n" /> <= 1
+        </condition>
+        <text>cat</text>
+        <math>y</math>
+      </case>
+      <else>
+        <text>mouse</text>
+        <math>z</math>
+      </else>
+    </selectByCondition></p>
 
-    <p name="pchoices2">Selected choices: <aslist><copy name="noresample" tname="sample1" /></aslist></p>
+    <p>a1: <copy tname="s1/a" assignNames="a1" /></p>
+    <p>b1: <copy tname="s1/b" assignNames="b1" /></p>
+    <p>c1: <copy tname="s1/c" assignNames="c1" /></p>
+    <p>d1: <copy tname="s1/d" assignNames="d1" /></p>
 
-    <copy name="pchoices3" tname="pchoices" />
+    <p>copy: <copy name="s2" tname="s1" assignNames="(e,f,g,h,i)" /></p>
 
+    <p>e1: <copy tname="e" assignNames="e1" /></p>
+    <p>f1: <copy tname="f" assignNames="f1" /></p>
+    <p>g1: <copy tname="g" assignNames="g1" /></p>
+    <p>h1: <copy tname="h" assignNames="h1" /></p>
+    <p>i1: <copy tname="i" assignNames="i1" /></p>
+
+    <p>copied copy: <copy name="s3" tname="s2" assignNames="(j,k,l)" newNamespace /></p>
+
+    <p>j1: <copy tname="s3/j" assignNames="j1" /></p>
+    <p>k1: <copy tname="s3/k" assignNames="k1" /></p>
+    <p>l1: <copy tname="s3/l" assignNames="l1" /></p>
     `}, "*");
     });
 
+
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+  
+    cy.get('#\\/s1\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/s3\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
 
-    let samplemaths;
-    let sampleIndices;
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let samplereplacements = components['/sample1'].replacements;
-      expect(samplereplacements.length).eq(5);
-      samplemaths = samplereplacements.map(x => x.replacements[0].stateValues.value.tree);
-      for (let val of samplemaths) {
-        expect(["a", "b", "c"].includes(val)).eq(true);
-      }
-
-      let choices2 = components['/pchoices2'].activeChildren[1].activeChildren;
-      let choices3 = components['/pchoices3'].replacements[0].activeChildren[1].activeChildren;
-      expect(choices2.length).eq(5);
-      expect(choices3.length).eq(5);
-
-      for (let ind = 0; ind < 5; ind++) {
-        expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
-        expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
-      }
-
-      sampleIndices = samplemaths.map(x => ["a", "b", "c"].indexOf(x));
-      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
-    });
-
-
-    cy.log("Nothing changes when change number to select");
-    cy.get('#\\/numbertoselect_input').clear().type(`7{enter}`);
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let samplereplacements = components['/sample1'].replacements;
-      let choices2 = components['/pchoices2'].activeChildren[1].activeChildren;
-      let choices3 = components['/pchoices3'].replacements[0].activeChildren[1].activeChildren;
-
-      expect(samplereplacements.length).eq(5);
-      expect(choices2.length).eq(5);
-      expect(choices3.length).eq(5);
-      for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(samplemaths[ind]);
-        expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
-        expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
-      }
-
-      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
-
+    cy.get('#\\/s1\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/s3\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
     })
 
-    cy.log("Values change to reflect copy sources");
+    cy.get('#\\/s1\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/s3\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
 
-    let newvalues = {
-      a: "q",
-      b: "r",
-      c: "s"
-    }
-    cy.get('#\\/x_input').clear().type(newvalues.a + `{enter}`);
-    cy.get('#\\/y_input').clear().type(newvalues.b + `{enter}`);
-    cy.get('#\\/z_input').clear().type(newvalues.c + `{enter}`);
+    cy.get('#\\/s1\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let samplereplacements = components['/sample1'].replacements;
-      let choices2 = components['/pchoices2'].activeChildren[1].activeChildren;
-      let choices3 = components['/pchoices3'].replacements[0].activeChildren[1].activeChildren;
+    cy.log('enter 1')
+    cy.get('#\\/n_input').clear().type("1{enter}")
+  
+    cy.get('#\\/s1\\/a').should('have.text', 'cat');
+    cy.get('#\\/a1').should('have.text', 'cat');
+    cy.get('#\\/e').should('have.text', 'cat');
+    cy.get('#\\/e1').should('have.text', 'cat');
+    cy.get('#\\/s3\\/j').should('have.text', 'cat');
+    cy.get('#\\/j1').should('have.text', 'cat');
 
-      expect(samplereplacements.length).eq(5);
-      expect(choices2.length).eq(5);
-      expect(choices3.length).eq(5);
-      for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
-        expect(choices2[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
-        expect(choices3[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
-      }
-
-      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
-
+    cy.get('#\\/s1\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/s3\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
     })
 
+    cy.get('#\\/s1\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/s3\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
 
-  });
-
-  it("select doesn't resample in dynamic map", () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    How many variables do you want? <mathinput />
-    <p name="p1"><aslist>
-    <map assignnames="a,b,c,d,e,f">
-      <template>
-        <select assignnames="n">
-          <math>u</math>
-          <math>v</math>
-          <math>w</math>
-          <math>x</math>
-          <math>y</math>
-          <math>z</math>
-          <math>p</math>
-          <math>q</math>
-          <math>r</math>
-          <math>s</math>
-          <math>t</math>
-        </select>
-      </template>
-      <substitutions>
-      <sequence>
-        <count><copy prop="value" tname="_mathinput1" /></count>
-      </sequence>
-      </substitutions>
-    </map>
-    </aslist></p>
+    cy.get('#\\/s1\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
     
-    <p name="p2"><aslist><copy tname="_map1" /></aslist></p>
-    <p name="p3"><copy tname="_aslist1" /></p>
 
-    <copy name="p4" tname="p1" />
-    <copy name="p5" tname="p2" />
-    <copy name="p6" tname="p3" />
+    cy.log('enter 10')
+    cy.get('#\\/n_input').clear().type("10{enter}")
 
-    <copy name="p7" tname="p4" />
-    <copy name="p8" tname="p5" />
-    <copy name="p9" tname="p6" />
-    `}, "*");
-    });
+    cy.get('#\\/s1\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/s3\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    let sampledvariables = [];
-
-    cy.log("initially nothing")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-    });
-
-    cy.log("sample one variable");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      sampledvariables.push(n1);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
+    cy.get('#\\/s1\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/s3\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
     })
 
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-    });
+    cy.get('#\\/s1\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/s3\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
 
-    cy.log("get same number back");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      expect(n1).eq(sampledvariables[0]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+    cy.get('#\\/s1\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
+    cy.log('enter -11')
+    cy.get('#\\/n_input').clear().type("-1{enter}")
+  
 
-      for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
+    cy.get('#\\/s1\\/a').should('have.text', 'dog');
+    cy.get('#\\/a1').should('have.text', 'dog');
+    cy.get('#\\/e').should('have.text', 'dog');
+    cy.get('#\\/e1').should('have.text', 'dog');
+    cy.get('#\\/s3\\/j').should('have.text', 'dog');
+    cy.get('#\\/j1').should('have.text', 'dog');
+
+    cy.get('#\\/s1\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/s3\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
     })
 
-    cy.log("get two more samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`3{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      let n2 = components['/b/n'].stateValues.value.tree;
-      let n3 = components['/c/n'].stateValues.value.tree;
-      expect(n1).eq(sampledvariables[0]);
-      sampledvariables.push(n2);
-      sampledvariables.push(n3);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      for (let ind = 0; ind < 3; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
+    cy.get('#\\/s1\\/c').should('have.text', 'optional text!');
+    cy.get('#\\/c1').should('have.text', 'optional text!');
+    cy.get('#\\/g').should('have.text', 'optional text!');
+    cy.get('#\\/g1').should('have.text', 'optional text!');
+    cy.get('#\\/s3\\/l').should('have.text', 'optional text!');
+    cy.get('#\\/l1').should('have.text', 'optional text!');
+
+    cy.get('#\\/s1\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
+
+    cy.log('enter x')
+    cy.get('#\\/n_input').clear().type("x{enter}")
+  
+    cy.get('#\\/s1\\/a').should('have.text', 'mouse');
+    cy.get('#\\/a1').should('have.text', 'mouse');
+    cy.get('#\\/e').should('have.text', 'mouse');
+    cy.get('#\\/e1').should('have.text', 'mouse');
+    cy.get('#\\/s3\\/j').should('have.text', 'mouse');
+    cy.get('#\\/j1').should('have.text', 'mouse');
+
+    cy.get('#\\/s1\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/b1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/f1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/s3\\/k').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    })
+    cy.get('#\\/k1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
     })
 
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-    });
+    cy.get('#\\/s1\\/c').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
+    cy.get('#\\/g').should('not.exist');
+    cy.get('#\\/g1').should('not.exist');
+    cy.get('#\\/s3\\/l').should('not.exist');
+    cy.get('#\\/l1').should('not.exist');
 
-
-    cy.log("get first two numbers back");
-    cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      let n2 = components['/b/n'].stateValues.value.tree;
-      expect(n1).eq(sampledvariables[0]);
-      expect(n2).eq(sampledvariables[1]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-
-      for (let ind = 0; ind < 2; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
-    })
-
-    cy.log("get six total samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      let n2 = components['/b/n'].stateValues.value.tree;
-      let n3 = components['/c/n'].stateValues.value.tree;
-      let n4 = components['/d/n'].stateValues.value.tree;
-      let n5 = components['/e/n'].stateValues.value.tree;
-      let n6 = components['/f/n'].stateValues.value.tree;
-      expect(n1).eq(sampledvariables[0]);
-      expect(n2).eq(sampledvariables[1]);
-      expect(n3).eq(sampledvariables[2]);
-      sampledvariables.push(n4);
-      sampledvariables.push(n5);
-      sampledvariables.push(n6);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
-    })
-
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-    });
-
-    cy.log("get all six back");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value.tree;
-      let n2 = components['/b/n'].stateValues.value.tree;
-      let n3 = components['/c/n'].stateValues.value.tree;
-      let n4 = components['/d/n'].stateValues.value.tree;
-      let n5 = components['/e/n'].stateValues.value.tree;
-      let n6 = components['/f/n'].stateValues.value.tree;
-      expect(n1).eq(sampledvariables[0]);
-      expect(n2).eq(sampledvariables[1]);
-      expect(n3).eq(sampledvariables[2]);
-      expect(n4).eq(sampledvariables[3]);
-      expect(n5).eq(sampledvariables[4]);
-      expect(n6).eq(sampledvariables[5]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-      }
-    })
-
-
+    cy.get('#\\/s1\\/d').should('not.exist');
+    cy.get('#\\/d1').should('not.exist');
+    cy.get('#\\/h').should('not.exist');
+    cy.get('#\\/h1').should('not.exist');
+    cy.get('#\\/i').should('not.exist');
+    cy.get('#\\/i1').should('not.exist');
+ 
   });
 
-  it('select single group of maths, assign names to grandchildren', () => {
+
+  it.only('references to outside components', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
-    <p name="p1"><aslist><select assignnames="(x1,y1,z1)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="p2"><aslist><select assignnames="(x2,y2,z2)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="p3"><aslist><select assignnames="(x3,y3,z3)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="q1"><aslist><copy tname="x1" /><copy tname="y1" /><copy tname="z1" /></aslist></p>
-    <p name="q2"><aslist><copy tname="x2" /><copy tname="y2" /><copy tname="z2" /></aslist></p>
-    <p name="q3"><aslist><copy tname="x3" /><copy tname="y3" /><copy tname="z3" /></aslist></p>
-    `}, "*");
-    });
+    <text>a</text>
+    <text hide name="x1">dog</text>
+    <text hide name="x2">cat</text>
+    <text hide name="x3">house</text>
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    <mathinput name="n" />
+    <p>original: <selectByCondition assignNames="(a,b)">
+      <case>
+        <condition>
+          <copy prop="value" tname="n" /> < 0
+        </condition>
+        <copy tname="../x1" />
+        <copy tname="../y1" />
+      </case>
+      <case name="secondcase" newnamespace>
+        <condition>
+          <copy prop="value" tname="../n" /> <= 1
+        </condition>
+        <copy tname="../x" />
+        <copy tname="../y2" />
+      </case>
+      <else name="anelse">
+        <copy tname="../x3" />
+        <copy tname="../y3" />
+      </else>
+    </selectByCondition></p>
 
-    let lists = {
-      x: ["x", "y", "z"],
-      u: ["u", "v", "w"],
-      a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].stateValues.value.tree;
-      let y1 = components['/y1'].stateValues.value.tree;
-      let z1 = components['/z1'].stateValues.value.tree;
-      let x2 = components['/x2'].stateValues.value.tree;
-      let y2 = components['/y2'].stateValues.value.tree;
-      let z2 = components['/z2'].stateValues.value.tree;
-      let x3 = components['/x3'].stateValues.value.tree;
-      let y3 = components['/y3'].stateValues.value.tree;
-      let z3 = components['/z3'].stateValues.value.tree;
-
-      let list1 = lists[x1];
-      let list2 = lists[x2];
-      let list3 = lists[x3];
-
-      expect(y1).eq(list1[1]);
-      expect(z1).eq(list1[2]);
-      expect(y2).eq(list2[1]);
-      expect(z2).eq(list2[2]);
-      expect(y3).eq(list3[1]);
-      expect(z3).eq(list3[2]);
-
-      for (let name of ["/p1", "/q1"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list1[ind]);
-        }
-      }
-      for (let name of ["/p2", "/q2"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list2[ind]);
-        }
-      }
-      for (let name of ["/p3", "/q3"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list3[ind]);
-        }
-      }
-
-
-    })
-  });
-
-  it('select single group of maths, assign names with namespace to grandchildren', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <math>1</math>
-    <p name="p1"><aslist><select assignnames="(x,y,z)" name="s1" newnamespace>
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="p2"><aslist><select assignnames="(x,y,z)" name="s2" newnamespace>
-    <group><math>u</math><math>v</math><math>w</math></group>
-    <group><math>x</math><math>y</math><math>z</math></group>
-    <group><math>a</math><math>b</math><math>c</math></group>
-    <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="p3"><aslist><select assignnames="(x,y,z)" name="s3" newnamespace>
-    <group><math>u</math><math>v</math><math>w</math></group>
-    <group><math>x</math><math>y</math><math>z</math></group>
-    <group><math>a</math><math>b</math><math>c</math></group>
-    <group><math>q</math><math>r</math><math>s</math></group>
-    </select></aslist></p>
-    <p name="q1"><aslist><copy tname="s1/x" /><copy tname="s1/y" /><copy tname="s1/z" /></aslist></p>
-    <p name="q2"><aslist><copy tname="s2/x" /><copy tname="s2/y" /><copy tname="s2/z" /></aslist></p>
-    <p name="q3"><aslist><copy tname="s3/x" /><copy tname="s3/y" /><copy tname="s3/z" /></aslist></p>
-
-    `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    let lists = {
-      x: ["x", "y", "z"],
-      u: ["u", "v", "w"],
-      a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/s1/x'].stateValues.value.tree;
-      let y1 = components['/s1/y'].stateValues.value.tree;
-      let z1 = components['/s1/z'].stateValues.value.tree;
-      let x2 = components['/s2/x'].stateValues.value.tree;
-      let y2 = components['/s2/y'].stateValues.value.tree;
-      let z2 = components['/s2/z'].stateValues.value.tree;
-      let x3 = components['/s3/x'].stateValues.value.tree;
-      let y3 = components['/s3/y'].stateValues.value.tree;
-      let z3 = components['/s3/z'].stateValues.value.tree;
-
-      let list1 = lists[x1];
-      let list2 = lists[x2];
-      let list3 = lists[x3];
-
-      expect(y1).eq(list1[1]);
-      expect(z1).eq(list1[2]);
-      expect(y2).eq(list2[1]);
-      expect(z2).eq(list2[2]);
-      expect(y3).eq(list3[1]);
-      expect(z3).eq(list3[2]);
-
-      for (let name of ["/p1", "/q1"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list1[ind]);
-        }
-      }
-      for (let name of ["/p2", "/q2"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list2[ind]);
-        }
-      }
-      for (let name of ["/p3", "/q3"]) {
-        let aslistChildren = components[name].activeChildren[0].activeChildren;
-        for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].stateValues.value.tree).eq(list3[ind]);
-        }
-      }
-
-
-    })
-  });
-
-  it('select multiple group of maths, assign names to grandchildren', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <math>1</math>
-    <p name="p1"><aslist>
-      <select assignnames="(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)" numbertoselect="3">
-        <group><math>u</math><math>v</math><math>w</math></group>
-        <group><math>x</math><math>y</math><math>z</math></group>
-        <group><math>a</math><math>b</math><math>c</math></group>
-        <group><math>q</math><math>r</math><math>s</math></group>
-      </select>
-    </aslist></p>
-    <p name="q1"><aslist>
-      <copy tname="x1" /><copy tname="y1" /><copy tname="z1" />
-      <copy tname="x2" /><copy tname="y2" /><copy tname="z2" />
-      <copy tname="x3" /><copy tname="y3" /><copy tname="z3" />
-    </aslist></p>
-    `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    let lists = {
-      x: ["x", "y", "z"],
-      u: ["u", "v", "w"],
-      a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].stateValues.value.tree;
-      let y1 = components['/y1'].stateValues.value.tree;
-      let z1 = components['/z1'].stateValues.value.tree;
-      let x2 = components['/x2'].stateValues.value.tree;
-      let y2 = components['/y2'].stateValues.value.tree;
-      let z2 = components['/z2'].stateValues.value.tree;
-      let x3 = components['/x3'].stateValues.value.tree;
-      let y3 = components['/y3'].stateValues.value.tree;
-      let z3 = components['/z3'].stateValues.value.tree;
-
-      let list1 = lists[x1];
-      let list2 = lists[x2];
-      let list3 = lists[x3];
-
-      let listsByInd = [list1, list2, list3];
-
-      expect(x1).not.eq(x2);
-      expect(x1).not.eq(x3);
-      expect(x2).not.eq(x3);
-
-      expect(y1).eq(list1[1]);
-      expect(z1).eq(list1[2]);
-      expect(y2).eq(list2[1]);
-      expect(z2).eq(list2[2]);
-      expect(y3).eq(list3[1]);
-      expect(z3).eq(list3[2]);
-
-      for (let name of ["/p1", "/q1"]) {
-        let astlistChildren = components[name].activeChildren[0].activeChildren
-        for (let ind1 = 0; ind1 < 3; ind1++) {
-          for (let ind2 = 0; ind2 < 3; ind2++) {
-            expect(astlistChildren[ind1 * 3 + ind2].stateValues.value.tree).eq(listsByInd[ind1][ind2]);
-          }
-        }
-      }
-
-    })
-  });
-
-  it('references to outside components', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <math>1</math>
-    <math hide name="x1">x</math>
-    <math hide name="x2">y</math>
-    <math hide name="x3">z</math>
-
-    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
-      <p>Option 1: <math>3<copy tname="../x1" /><copy tname="../y1" /></math></p>
-      <p name="h" newnamespace>Option 2: <math>4<copy tname="../x2" /><copy tname="../y2" /></math></p>
-      <p name="l">Option 3: <math>5<copy tname="../x3" /><copy tname="../y3" /></math></p>
-    </select>
-
-    <math hide name="y1">a</math>
-    <math hide name="y2">b</math>
-    <math hide name="y3">c</math>
+    <text hide name="y1">tree</text>
+    <text hide name="y2">shrub</text>
+    <text hide name="y3">bush</text>
 
     <p>Selected options repeated</p>
     <copy name="q2" tname="q" />

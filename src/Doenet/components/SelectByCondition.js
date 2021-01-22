@@ -1,11 +1,16 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class SelectByCondition extends CompositeComponent {
   static componentType = "selectByCondition";
 
   // assign name to else child
-  static assignNamesToAllChildrenExcept = ["case", ...Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase())];
+  // static assignNewNamespaceToAllChildrenExcept = ["case", ...Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase())];
+  // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
+  // static passArrayAssignNamesToChildren = [["case", "else"]];
+
+  static assignNamesToReplacements = true;
 
   // used when referencing this component without prop
   // static useChildrenForReference = false;
@@ -128,95 +133,95 @@ export default class SelectByCondition extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    let replacementsWithInstructions = this.getReplacementsWithInstructions(component, components);
+    let replacements = this.getReplacements(component, components, componentInfoObjects);
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
     workspace.previousSelectedIndex = component.stateValues.selectedIndex;
 
-    console.log(`replacement with instructions for ${component.componentName}`)
-    console.log(JSON.parse(JSON.stringify(replacementsWithInstructions)));
-    console.log(replacementsWithInstructions);
+    // console.log(`replacements for ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(replacements)));
+    // console.log(replacements);
 
-    return { replacementsWithInstructions };
+    return { replacements };
 
   }
 
-  static getReplacementsWithInstructions(component, components) {
+  static getReplacements(component, components, componentInfoObjects) {
 
-    let replacementsWithInstructions = [];
+    let replacements = [];
 
-    if (component.stateValues.selectedIndex === null) {
-      return replacementsWithInstructions;
-    }
+    if (component.stateValues.selectedIndex !== null) {
 
-    let assignNames = component.doenetAttributes.assignNames;
+      let selectedChildName, selectedGroupIdentity = {};
+      if (component.stateValues.selectedIndex < component.stateValues.nCases) {
+        selectedChildName = component.stateValues.caseChildren[component.stateValues.selectedIndex].componentName;
+        selectedGroupIdentity.componentType = "result";
+        selectedGroupIdentity.componentName = components[selectedChildName].stateValues.resultChild.componentName;
 
-    let name;
-    if (assignNames !== undefined) {
-      name = assignNames[0];
-    }
-    let instruction = {
-      operation: "assignName",
-      name,
-      uniqueIdentifier: "0"
-    };
+      } else {
+        selectedChildName = selectedGroupIdentity.componentName = component.stateValues.elseChild.componentName;
+        selectedGroupIdentity.componentType = "else";
+      }
+      // use state, not stateValues, as read only proxy messes up internal
+      // links between descendant variant components and the components themselves
 
-
-    let selectedChildName;
-    if (component.stateValues.selectedIndex < component.stateValues.nCases) {
-      selectedChildName = component.stateValues.caseChildren[component.stateValues.selectedIndex].componentName;
-    } else {
-      selectedChildName = component.stateValues.elseChild.componentName;
-    }
-    // use state, not stateValues, as read only proxy messes up internal
-    // links between descendant variant components and the components themselves
-
-    let serializedGrandchildren = deepClone(components[selectedChildName].state.childrenWhenSelected.value);
-    let serializedChild = {
-      componentType: "group",
-      doenetAttributes: {},
-      children: serializedGrandchildren
-    }
-
-
-    if (component.stateValues.hide) {
-      // if select is hidden, then make each of its replacements hidden
-      if (!serializedChild.state) {
-        serializedChild.state = {};
+      let serializedGrandchildren = deepClone(components[selectedChildName].state.serializedChildren.value);
+      let serializedChild = {
+        componentType: selectedGroupIdentity.componentType,
+        state: { rendered: true },
+        doenetAttributes: Object.assign({}, components[selectedGroupIdentity.componentName].doenetAttributes),
+        children: serializedGrandchildren,
+        preserializedName: selectedGroupIdentity.componentName,
       }
 
-      serializedChild.state.hide = true;
 
-      // if assigning names to grandchild, then hide those as well
-      // so that refs of those will be hidden, for consistency
-      if (Array.isArray(name)) {
-        if (serializedChild.children) {
-          for (let grandchild of serializedChild.children) {
-            if (!grandchild.state) {
-              grandchild.state = {};
-            }
-            grandchild.state.hide = true;
-          }
+      if (component.stateValues.hide) {
+        // if select is hidden, then make each of its replacements hidden
+        if (!serializedChild.state) {
+          serializedChild.state = {};
         }
+
+        serializedChild.state.hide = true;
+
+        // // if assigning names to grandchild, then hide those as well
+        // // so that refs of those will be hidden, for consistency
+        // if (Array.isArray(name)) {
+        //   if (serializedChild.children) {
+        //     for (let grandchild of serializedChild.children) {
+        //       if (!grandchild.state) {
+        //         grandchild.state = {};
+        //       }
+        //       grandchild.state.hide = true;
+        //     }
+        //   }
+        // }
       }
+
+      replacements.push(serializedChild);
     }
 
-    replacementsWithInstructions.push({
-      instructions: [instruction],
-      replacements: [serializedChild]
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
     });
-    return replacementsWithInstructions;
+
+
+    return processResult.serializedComponents;
+
   }
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
+  static calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
-    console.log(`calculate replacement changes for selectByIndex`)
-    console.log(workspace.previousSelectedIndex);
-    console.log(component.stateValues.selectedIndex);
+    // console.log(`calculate replacement changes for selectByCondition`)
+    // console.log(workspace.previousSelectedIndex);
+    // console.log(component.stateValues.selectedIndex);
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -232,14 +237,14 @@ export default class SelectByCondition extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let replacementsWithInstructions = this.getReplacementsWithInstructions(component, components);
+    let replacements = this.getReplacements(component, components, componentInfoObjects);
 
     let replacementInstruction = {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: component.replacements.length,
-      replacementsWithInstructions,
+      serializedReplacements: replacements,
       replacementsToWithhold: 0,
     };
 

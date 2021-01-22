@@ -3017,40 +3017,40 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let answer1 = components['/_map1'].replacements[0].activeChildren[3];
+      let answer1 = components['/_map1'].replacements[0].replacements[0].activeChildren[3];
       let mathinput1Name = answer1.stateValues.inputChild.componentName;
       let mathinput1 = components[mathinput1Name]
       let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
-      let ca1 = components['/_map1'].replacements[1].activeChildren[1];
+      let ca1 = components['/_map1'].replacements[0].replacements[1].activeChildren[1];
       let ca1Anchor = cesc('#' + ca1.componentName);
-      let cr1 = components['/_map1'].replacements[2].activeChildren[1];
+      let cr1 = components['/_map1'].replacements[0].replacements[2].activeChildren[1];
       let cr1Anchor = cesc('#' + cr1.componentName);
-      let sr1 = components['/_map1'].replacements[3].activeChildren[1];
+      let sr1 = components['/_map1'].replacements[0].replacements[3].activeChildren[1];
       let sr1Anchor = cesc('#' + sr1.componentName);
 
-      let answer2 = components['/_map1'].replacements[4].activeChildren[3];
+      let answer2 = components['/_map1'].replacements[1].replacements[0].activeChildren[3];
       let mathinput2Name = answer2.stateValues.inputChild.componentName;
       let mathinput2 = components[mathinput2Name]
       let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let ca2 = components['/_map1'].replacements[5].activeChildren[1];
+      let ca2 = components['/_map1'].replacements[1].replacements[1].activeChildren[1];
       let ca2Anchor = cesc('#' + ca2.componentName);
-      let cr2 = components['/_map1'].replacements[6].activeChildren[1];
+      let cr2 = components['/_map1'].replacements[1].replacements[2].activeChildren[1];
       let cr2Anchor = cesc('#' + cr2.componentName);
-      let sr2 = components['/_map1'].replacements[7].activeChildren[1];
+      let sr2 = components['/_map1'].replacements[1].replacements[3].activeChildren[1];
       let sr2Anchor = cesc('#' + sr2.componentName);
 
-      let answer3 = components['/_map1'].replacements[8].activeChildren[3];
+      let answer3 = components['/_map1'].replacements[2].replacements[0].activeChildren[3];
       let mathinput3Name = answer3.stateValues.inputChild.componentName;
       let mathinput3 = components[mathinput3Name]
       let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let ca3 = components['/_map1'].replacements[9].activeChildren[1];
+      let ca3 = components['/_map1'].replacements[2].replacements[1].activeChildren[1];
       let ca3Anchor = cesc('#' + ca3.componentName);
-      let cr3 = components['/_map1'].replacements[10].activeChildren[1];
+      let cr3 = components['/_map1'].replacements[2].replacements[2].activeChildren[1];
       let cr3Anchor = cesc('#' + cr3.componentName);
-      let sr3 = components['/_map1'].replacements[11].activeChildren[1];
+      let sr3 = components['/_map1'].replacements[2].replacements[3].activeChildren[1];
       let sr3Anchor = cesc('#' + sr3.componentName);
 
 
@@ -3158,11 +3158,11 @@ describe('Answer Tag Tests', function () {
 
       // wrap to change value of sr anchors
       cy.window().then((win) => {
-        sr1 = components['/_map1'].replacements[3].activeChildren[1];
+        sr1 = components['/_map1'].replacements[0].replacements[3].activeChildren[1];
         sr1Anchor = cesc('#' + sr1.componentName);
-        sr2 = components['/_map1'].replacements[7].activeChildren[1];
+        sr2 = components['/_map1'].replacements[1].replacements[3].activeChildren[1];
         sr2Anchor = cesc('#' + sr2.componentName);
-        sr3 = components['/_map1'].replacements[11].activeChildren[1];
+        sr3 = components['/_map1'].replacements[2].replacements[3].activeChildren[1];
         sr3Anchor = cesc('#' + sr3.componentName);
 
         cy.log('Test value displayed in browser')

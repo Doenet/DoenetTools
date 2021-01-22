@@ -2,11 +2,13 @@ import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  static assignNamesToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  static assignNamesToReplacements = true;
 
   static createsVariants = true;
 
@@ -485,26 +487,13 @@ export default class Select extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component }) {
+  static createSerializedReplacements({ component, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`);
 
-    let replacementsWithInstructions = [];
+    let replacements = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
-
-    for (let [replacementNumber, childIndex] of component.stateValues.selectedIndices.entries()) {
-
-      let name;
-      if (assignNames !== undefined) {
-        name = assignNames[replacementNumber];
-      }
-      let instruction = {
-        operation: "assignName",
-        name,
-        uniqueIdentifier: replacementNumber.toString()
-      }
-
+    for (let childIndex of component.stateValues.selectedIndices) {
 
       // use state, not stateValues, as read only proxy messes up internal
       // links between descendant variant components and the components themselves
@@ -519,28 +508,22 @@ export default class Select extends CompositeComponent {
 
         serializedChild.state.hide = true;
 
-        // if assigning names to grandchild, then hide those as well
-        // so that refs of those will be hidden, for consistency
-        if (Array.isArray(name)) {
-          if (serializedChild.children) {
-            for (let grandchild of serializedChild.children) {
-              if (!grandchild.state) {
-                grandchild.state = {};
-              }
-              grandchild.state.hide = true;
-            }
-          }
-        }
+        // // if assigning names to grandchild, then hide those as well
+        // // so that refs of those will be hidden, for consistency
+        // if (Array.isArray(name)) {
+        //   if (serializedChild.children) {
+        //     for (let grandchild of serializedChild.children) {
+        //       if (!grandchild.state) {
+        //         grandchild.state = {};
+        //       }
+        //       grandchild.state.hide = true;
+        //     }
+        //   }
+        // }
       }
 
-      replacementsWithInstructions.push({
-        instructions: [instruction],
-        replacements: [serializedChild]
-      })
+      replacements.push(serializedChild)
     }
-
-    // console.log("replacementsWithInstructions")
-    // console.log(replacementsWithInstructions)
 
 
     // if subvariants were specified, add those the corresponding descendants
@@ -553,8 +536,7 @@ export default class Select extends CompositeComponent {
         // collect descendantVariantComponents that would be in select
         // if it just had the selected indicies
         let descendantVariantComponents = [];
-        for (let r_and_inst of replacementsWithInstructions) {
-          let r = r_and_inst.replacements[0];
+        for (let r of replacements) {
           if (r.variants !== undefined) {
             if (r.variants.isVariantComponent) {
               descendantVariantComponents.push(r)
@@ -574,7 +556,19 @@ export default class Select extends CompositeComponent {
       }
     }
 
-    return { replacementsWithInstructions };
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    // console.log(`replacements for select`)
+    // console.log(deepClone(processResult.serializedComponents));
+
+    return { replacements: processResult.serializedComponents };
+
   }
 
   static calculateReplacementChanges() {

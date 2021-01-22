@@ -636,7 +636,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <text>a</text>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
-    <map assignnamespaces="a,b,c,d,e,f">
+    <map assignnames="a,b,c,d,e,f">
       <template>
         <selectfromsequence assignnames="n">100</selectfromsequence>
       </template>

@@ -12,8 +12,6 @@ export default class Copy extends CompositeComponent {
   }
   static componentType = "copy";
 
-  static childrenSkippingNewNamespace = ["tname"];
-
   static assignNamesToReplacements = true;
 
   static useReplacementsWhenCopyProp = true;
@@ -844,7 +842,7 @@ export default class Copy extends CompositeComponent {
             recurseToMatchedChildren: true,
           }
         } else {
-          if(stateValues.componentIdentitiesForProp === null) {
+          if (stateValues.componentIdentitiesForProp === null) {
             return {};
           }
           for (let [ind, cIdentity] of stateValues.componentIdentitiesForProp.entries()) {
@@ -1002,8 +1000,8 @@ export default class Copy extends CompositeComponent {
 
     if (targetComponent.componentName === this.componentName) {
       let message = "Circular reference from " + this.componentName
-      // if(this.doenetAttributes.componentName) {
-      //   message += " (" + this.doenetAttributes.componentName + ")";
+      // if(this.componentName) {
+      //   message += " (" + this.componentName + ")";
       // }
       message += " to itself."
       throw Error(message);
@@ -1027,8 +1025,8 @@ export default class Copy extends CompositeComponent {
             message += " (" + propChildState.authorProp + ")"
           }
           message += " from " + targetComponent.componentName;
-          // if(targetComponent.doenetAttributes.componentName !== undefined) {
-          //   message += " (" + targetComponent.doenetAttributes.componentName + ")";
+          // if(targetComponent.componentName !== undefined) {
+          //   message += " (" + targetComponent.componentName + ")";
           // }
           this.unresolvedState.propData = true;
           this.unresolvedMessage = message;
@@ -1203,11 +1201,9 @@ export default class Copy extends CompositeComponent {
   componentNameToPreserializedName(serializedState, componentTypesTakingComponentNames) {
 
     for (let serializedComponent of serializedState) {
-      if (serializedComponent.doenetAttributes) {
-        let componentName = serializedComponent.doenetAttributes.componentName;
-        if (componentName !== undefined) {
-          serializedComponent.doenetAttributes.componentName = this.componentName + componentName;
-        }
+      let componentName = serializedComponent.componentName;
+      if (componentName !== undefined) {
+        serializedComponent.componentName = this.componentName + componentName;
       }
 
       if (serializedComponent.componentType in componentTypesTakingComponentNames) {
@@ -1335,11 +1331,20 @@ export default class Copy extends CompositeComponent {
 
 
     if (!component.stateValues.targetComponent) {
-      let replacements = [];
-      if (assignNames) {
-        replacements = [{ componentType: "empty", doenetAttributes: { assignNames } }]
-      }
-      return { replacements };
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames,
+        serializedComponents: [],
+        // assignDirectlyToComposite: true, 
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        propVariableObjs: component.stateValues.propVariableObjs,
+        componentTypeByTarget: component.stateValues.componentTypeByTarget,
+        componentInfoObjects,
+      });
+
+      workspace.allEmpties = true;
+
+      return { replacements: processResult.serializedComponents };
     }
 
     // if creating copy from a prop
@@ -1563,15 +1568,29 @@ export default class Copy extends CompositeComponent {
     // }
 
     if (!component.stateValues.targetComponent) {
-      if (component.replacements.length > 0) {
+      if (component.replacements.length > 0 && !workspace.allEmpties) {
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames: component.doenetAttributes.assignNames,
+          serializedComponents: [],
+          // assignDirectlyToComposite: true, 
+          parentName: component.componentName,
+          parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+          propVariableObjs: component.stateValues.propVariableObjs,
+          componentTypeByTarget: component.stateValues.componentTypeByTarget,
+          componentInfoObjects,
+        });
+
         let replacementInstruction = {
-          changeType: "delete",
+          changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
+          numberReplacementsToReplace: component.replacements.length,
           replacementsToWithhold: 0,
+          serializedReplacements: processResult.serializedComponents,
         }
         replacementChanges.push(replacementInstruction);
+        workspace.allEmpties = true;
       }
       return replacementChanges;
 
@@ -1682,6 +1701,8 @@ export default class Copy extends CompositeComponent {
 
       workspace.propVariablesCopiedByReplacement = propVariablesCopiedByReplacement;
 
+      delete workspace.allEmpties;
+
       // console.log(`replacementChanges for ${component.componentName}`)
       // console.log(replacementChanges);
       return replacementChanges;
@@ -1692,7 +1713,7 @@ export default class Copy extends CompositeComponent {
 
     // if have no replacements, try creating new replacements
 
-    if (component.replacements.length === 0) {
+    if (component.replacements.length === 0 || workspace.allEmpties) {
       console.log(`let's create new ones!`);
 
 
@@ -1705,11 +1726,12 @@ export default class Copy extends CompositeComponent {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: 0,
-          numberReplacementsToReplace: 0,
+          numberReplacementsToReplace: component.replacements.length,
           serializedReplacements: result.replacements
         };
 
         replacementChanges.push(replacementInstruction);
+        delete workspace.allEmpties;
 
       }
 

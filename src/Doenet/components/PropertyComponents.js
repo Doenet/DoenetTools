@@ -20,6 +20,7 @@ import NumberList from './NumberList';
 import MathList from './MathList';
 import When from './When';
 import TextOrInline from './abstract/TextOrInline';
+import Result from './Result';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -36,7 +37,7 @@ export class Draggable extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class modifyIndirectly extends BooleanComponent {
+export class ModifyIndirectly extends BooleanComponent {
   static componentType = "modifyIndirectly";
   static rendererType = "boolean";
 }
@@ -948,3 +949,8 @@ export class Rendered extends BooleanComponent {
   static componentType = "rendered";
   static rendererType = "boolean";
 }
+
+export class Else extends Result {
+  static componentType = "else";
+}
+

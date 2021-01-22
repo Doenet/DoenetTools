@@ -8,8 +8,6 @@ import { processAssignNames } from '../utils/serializedStateProcessing';
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
-  static childrenSkippingNewNamespace = ["tname"];
-
   static assignNamesToReplacements = true;
 
   static useReplacementsWhenCopyProp = true;

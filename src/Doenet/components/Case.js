@@ -5,53 +5,41 @@ export default class Case extends BaseComponent {
   static componentType = "case";
   static rendererType = undefined;
 
-  static assignNamesToAllChildrenExcept = ["condition"];
+  // static assignNewNamespaceToAllChildrenExcept = ["condition"];
+  // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
 
+  // static passThroughParentArrayAssignNames = true;
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["conditionSatisfied"] };
+  // // used when referencing this component without prop
+  // static useChildrenForReference = false;
+  // static get stateVariablesShadowedForReference() { return ["conditionSatisfied"] };
 
-  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
-    if (serializedComponent.children === undefined) {
-      return [];
-    }
-
-    let nonConditionChildInds = [];
-
-    // only condition children will be created
-    // any other component will stay serialized
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (!componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: child.componentType,
-        baseComponentType: "condition"
-      })) {
-        nonConditionChildInds.push(ind);
-      }
-    }
-
-    return nonConditionChildInds;
-
-  }
 
   static createPropertiesObject(args) {
     return {};
   }
 
-  // only child logic is condition
-  // as all other children will remain serialized
-
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atMostOneCondition",
+    let exactlyOneCondition = childLogic.newLeaf({
+      name: "exactlyOneCondition",
       componentType: 'condition',
-      comparison: 'atMost',
       number: 1,
-      allowSpillover: false,
-      setAsBase: true
     });
+
+    let exactlyOneResult = childLogic.newLeaf({
+      name: "exactlyOneResult",
+      componentType: 'result',
+      number: 1,
+    });
+
+    childLogic.newOperator({
+      name: "conditionAndResult",
+      operator: "and",
+      propositions: [exactlyOneCondition, exactlyOneResult],
+      setAsBase: true
+    })
 
     return childLogic;
   }
@@ -60,20 +48,29 @@ export default class Case extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.childrenWhenSelected = {
+    stateVariableDefinitions.serializedChildren = {
+      additionalStateVariablesDefined: ["resultChild"],
       returnDependencies: () => ({
-        serializedChildren: {
-          dependencyType: "serializedChildren",
+        resultChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneResult",
+          variableNames: ["serializedChildren"],
           doNotProxy: true
         },
       }),
       definition: function ({ dependencyValues }) {
 
-        return {
-          newValues: {
-            childrenWhenSelected: deepClone(dependencyValues.serializedChildren),
-          }
+        let serializedChildren, resultChild;
+        if (dependencyValues.resultChild.length === 0) {
+          serializedChildren = null;
+          resultChild = null;
+        } else {
+          serializedChildren = dependencyValues.resultChild[0].stateValues.serializedChildren;
+          resultChild = Object.assign({}, dependencyValues.resultChild[0]);
+          delete resultChild.stateValues;
+          
         }
+        return { newValues: { serializedChildren, resultChild } }
       }
     }
 
@@ -81,7 +78,7 @@ export default class Case extends BaseComponent {
       returnDependencies: () => ({
         conditionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneCondition",
+          childLogicName: "exactlyOneCondition",
           variableNames: ["conditionSatisfied"],
         },
       }),
@@ -93,6 +90,7 @@ export default class Case extends BaseComponent {
         } else {
           conditionSatisfied = dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
         }
+
 
         return { newValues: { conditionSatisfied } }
       }

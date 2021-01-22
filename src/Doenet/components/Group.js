@@ -1,11 +1,14 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
-import { removeNamespace } from '../utils/serializedStateProcessing';
+import { processAssignNames, removeNamespace } from '../utils/serializedStateProcessing';
 
 export default class Group extends CompositeComponent {
   static componentType = "group";
 
-  static assignNamesToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
+
+  static assignNamesToReplacements = true;
 
   static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
@@ -44,6 +47,12 @@ export default class Group extends CompositeComponent {
 
     return nonPropertyChildInds;
 
+  }
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.rendered = { default: true };
+    return properties;
   }
 
   // don't need additional child logic
@@ -96,107 +105,27 @@ export default class Group extends CompositeComponent {
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
 
-    let replacementsWithInstructions = [];
+    let replacements = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
-    let nChildren = component.state.serializedChildren.value.length
+    if (component.stateValues.rendered) {
 
-    let nReplacements = nChildren;
-    if (assignNames !== undefined) {
-      nReplacements = Math.max(nReplacements, assignNames.length)
+      let processResult = processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: deepClone(component.state.serializedChildren.value),
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        componentInfoObjects,
+        useSerializedNames: true,
+      });
+
+      replacements = processResult.serializedComponents
+
     }
 
-    for (let ind = 0; ind < nReplacements; ind++) {
+    // console.log(`serialized replacements for ${component.componentName}`)
+    // console.log(deepClone(replacements));
 
-      let name;
-      if (assignNames !== undefined) {
-        name = assignNames[ind];
-      }
-
-
-      let serializedChild;
-      let childIsComposite = false;
-
-      if (ind >= nChildren) {
-        serializedChild = {
-          componentType: "empty"
-        }
-        if (Array.isArray(name)) {
-          serializedChild.doenetAttributes = { assignNames: name };
-        }
-        childIsComposite = true;
-      } else {
-        // use state, not stateValues, for child
-        // (might be able to use stateValues proxy since don't have variant components)
-        serializedChild = deepClone(component.state.serializedChildren.value[ind]);
-
-        childIsComposite = componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: serializedChild.componentType,
-          baseComponentType: "_composite"
-        });
-
-        if (component.stateValues.hide) {
-          // if group is hidden, then make each of its replacements hidden
-
-          if (!serializedChild.state) {
-            serializedChild.state = {};
-          }
-
-          serializedChild.state.hide = true;
-
-        }
-      }
-
-      let instructions = [];
-
-      if (Array.isArray(name)) {
-        if (childIsComposite) {
-          if (!serializedChild.doenetAttributes) {
-            serializedChild.doenetAttributes = {};
-          }
-          serializedChild.doenetAttributes.assignNames = name;
-
-          // since we don't want to add an extra layer of namespaces
-          // we need to undo that fact, since createComponentNames added it
-          delete serializedChild.doenetAttributes.newNamespace;
-          if (serializedChild.children) {
-            removeNamespace(serializedChild.children, serializedChild.doenetAttributes.componentName);
-          }
-
-        } else {
-          // TODO: what to do when try to assign names recursively to non-composite?
-          console.warn(`Group cannot assign names recursively to non-composites`)
-
-          // for now, at least add empties so that names are created
-          replacementsWithInstructions.push({
-            instructions: [],
-            replacements: [{
-              componentType: "empty",
-              doenetAttributes: { assignNames: name }
-            }]
-          })
-        }
-
-      } else {
-        instructions.push({
-          operation: "assignName",
-          name,
-          uniqueIdentifier: ind.toString()
-        })
-      }
-
-      replacementsWithInstructions.push({
-        instructions,
-        replacements: [serializedChild]
-      })
-    }
-
-
-    console.log("replacementsWithInstructions")
-    console.log(JSON.parse(JSON.stringify(replacementsWithInstructions)))
-    console.log(replacementsWithInstructions)
-
-    return { replacementsWithInstructions };
+    return { replacements };
 
   }
 

@@ -1,6 +1,6 @@
 import { flattenDeep } from "./utils/array";
 
-export default class childLogic {
+export default class ChildLogic {
   constructor({ properties, parentComponentType,
     allComponentClasses, standardComponentClasses, components }) {
     this.logicComponents = {};
@@ -23,7 +23,7 @@ export default class childLogic {
     let propertyPropositions = [];
 
     for (let property of propertyKeys) {
-      let propertySpecification = properties[property];
+      // let propertySpecification = properties[property];
       let name = '_property_' + property;
 
       let leaf;

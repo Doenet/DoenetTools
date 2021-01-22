@@ -143,10 +143,6 @@ export default class Answer extends InlineComponent {
         children: []
       };
 
-      if (dependencyValues.size) {
-        inputChild.state = { size: dependencyValues.size }
-      }
-
       return {
         success: true,
         newChildren: [
@@ -176,10 +172,6 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "splitIntoOptions"
         },
-        size: {
-          dependencyType: "stateVariable",
-          variableName: "size"
-        },
         stringChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
@@ -205,10 +197,6 @@ export default class Answer extends InlineComponent {
         doenetAttributes: { componentName: componentName },
         children: []
       };
-
-      if (dependencyValues.size) {
-        inputChild.state = { size: dependencyValues.size }
-      }
 
       return {
         success: true,
@@ -244,12 +232,6 @@ export default class Answer extends InlineComponent {
       componentType: 'math',
       number: 1,
       isSugar: true,
-      returnSugarDependencies: () => ({
-        size: {
-          dependencyType: "stateVariable",
-          variableName: "size"
-        }
-      }),
       logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
       replacementFunction: replaceFromOneMath,
     });
@@ -269,10 +251,6 @@ export default class Answer extends InlineComponent {
         doenetAttributes: { componentName: componentName },
         children: []
       };
-
-      if (dependencyValues.size) {
-        inputChild.state = { size: dependencyValues.size }
-      }
 
       return {
         success: true,
@@ -308,12 +286,6 @@ export default class Answer extends InlineComponent {
       componentType: 'text',
       number: 1,
       isSugar: true,
-      returnSugarDependencies: () => ({
-        size: {
-          dependencyType: "stateVariable",
-          variableName: "size"
-        }
-      }),
       logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
 
       replacementFunction: replaceFromOneText,
@@ -423,10 +395,6 @@ export default class Answer extends InlineComponent {
         doenetAttributes: { componentName: componentName },
         children: []
       };
-
-      if (dependencyValues.size) {
-        inputChild.state = { size: dependencyValues.size }
-      }
 
       let newChildren = [inputChild];
       let childChanges = {};
@@ -538,10 +506,6 @@ export default class Answer extends InlineComponent {
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
-        },
-        size: {
-          dependencyType: "stateVariable",
-          variableName: "size"
         },
         incompleteAwards: {
           dependencyType: "childStateVariables",

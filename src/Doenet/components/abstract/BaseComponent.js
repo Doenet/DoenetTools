@@ -2,6 +2,7 @@ import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { mapDeep } from '../../utils/array';
+import { deepClone } from '../../utils/deepFunctions';
 
 export default class BaseComponent {
   constructor({
@@ -75,7 +76,7 @@ export default class BaseComponent {
   }
 
   get componentType() {
-    return this.constructor.componentType;
+    return this.constructor.componentType.toLowerCase();
   }
 
   get rendererType() {
@@ -490,9 +491,7 @@ export default class BaseComponent {
 
     if (parameters.forCopy) {
       serializedState.preserializedName = this.componentName;
-      if(this.doenetAttributes.assignNames) {
-        serializedState.preserializedAssignNames = this.doenetAttributes.assignNames;
-      }
+      serializedState.preserializedDoenetAttributes = deepClone(this.doenetAttributes);
     } else {
       console.warn('serializing a component without forCopy set is not yet converted!!!!')
       let additionalState = {};

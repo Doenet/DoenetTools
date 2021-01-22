@@ -130,7 +130,7 @@ import Div from './components/Div';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
 import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
-import Else from './components/Else';
+import Result from './components/Result';
 import SelectByCondition from './components/SelectByCondition';
 import Empty from './components/Empty';
 
@@ -262,7 +262,7 @@ const componentTypeArray = [
   ConsiderAsResponses,
   SelectByIndex,
   Case,
-  Else,
+  Result,
   SelectByCondition,
   Empty,
 ];

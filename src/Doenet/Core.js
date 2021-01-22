@@ -169,11 +169,14 @@ export default class Core {
 
       // TODO: why are we hard coding a document name here?
       // Seems like a bad idea, author could have named document something esle
-      // serializedState[0].doenetAttributes.componentName = "/_document1";
+      // serializedState[0].componentName = "/_document1";
     }
 
+    // console.log(`serialized state at the beginning`)
+    // console.log(deepClone(serializedState));
 
-    this.documentName = serializedState[0].doenetAttributes.componentName;
+
+    this.documentName = serializedState[0].componentName;
     serializedState[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
@@ -794,10 +797,7 @@ export default class Core {
 
       // if have a componentName, use that for componentName
       // otherwise generate automatic name
-      let componentName;
-      if (serializedComponent.doenetAttributes !== undefined) {
-        componentName = serializedComponent.doenetAttributes.componentName;
-      }
+      let componentName = serializedComponent.componentName;
       if (componentName === undefined) {
         // Note: assuming that document always has a name
         // so we never get here without an ancestor
@@ -1182,6 +1182,20 @@ export default class Core {
           upDeps[varName].push(dep);
           delete dep.componentDeleted;
         }
+
+
+        for (let upVar of dep.upstreamVariableNames) {
+          upComponent.state[upVar].forceRecalculation = true;
+          this.markStateVariableAndUpstreamDependentsStale({
+            component: upComponent,
+            varName: upVar,
+            updatesNeeded,
+          });
+          this.recordActualChangeInUpstreamDependencies({
+            component: upComponent,
+            varName: upVar
+          })
+      }
 
       }
 

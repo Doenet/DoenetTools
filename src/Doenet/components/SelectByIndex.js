@@ -1,10 +1,12 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class SelectByIndex extends CompositeComponent {
   static componentType = "selectByIndex";
 
-  static assignNamesToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  static assignNamesToReplacements = true;
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
@@ -176,37 +178,24 @@ export default class SelectByIndex extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    let replacementsWithInstructions = this.getReplacementsWithInstructions(component);
+    let replacements = this.getReplacements(component, componentInfoObjects);
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
     workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
-    return { replacementsWithInstructions };
+    return { replacements };
 
   }
 
-  static getReplacementsWithInstructions(component) {
+  static getReplacements(component, componentInfoObjects) {
 
-    let replacementsWithInstructions = [];
+    let replacements = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
-
-    for (let [replacementNumber, childIndex] of component.stateValues.selectedIndices.entries()) {
-
-      let name;
-      if (assignNames !== undefined) {
-        name = assignNames[replacementNumber];
-      }
-      let instruction = {
-        operation: "assignName",
-        name,
-        uniqueIdentifier: replacementNumber.toString()
-      };
-
+    for (let childIndex of component.stateValues.selectedIndices) {
 
       // use state, not stateValues, as read only proxy messes up internal
       // links between descendant variant components and the components themselves
@@ -221,33 +210,43 @@ export default class SelectByIndex extends CompositeComponent {
 
         serializedChild.state.hide = true;
 
-        // if assigning names to grandchild, then hide those as well
-        // so that refs of those will be hidden, for consistency
-        if (Array.isArray(name)) {
-          if (serializedChild.children) {
-            for (let grandchild of serializedChild.children) {
-              if (!grandchild.state) {
-                grandchild.state = {};
-              }
-              grandchild.state.hide = true;
-            }
-          }
-        }
+        // // if assigning names to grandchild, then hide those as well
+        // // so that refs of those will be hidden, for consistency
+        // if (Array.isArray(name)) {
+        //   if (serializedChild.children) {
+        //     for (let grandchild of serializedChild.children) {
+        //       if (!grandchild.state) {
+        //         grandchild.state = {};
+        //       }
+        //       grandchild.state.hide = true;
+        //     }
+        //   }
+        // }
       }
 
-      replacementsWithInstructions.push({
-        instructions: [instruction],
-        replacements: [serializedChild]
-      });
+      replacements.push(serializedChild);
     }
-    return replacementsWithInstructions;
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    // console.log(`replacements for selectByIndex`)
+    // console.log(deepClone(processResult.serializedComponents));
+
+    return processResult.serializedComponents;
+
   }
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
+  static calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
-    console.log(`calculate replacement changes for selectByIndex`)
-    console.log([...workspace.previousSelectedIndices]);
-    console.log([...component.stateValues.selectedIndices])
+    // console.log(`calculate replacement changes for selectByIndex`)
+    // console.log([...workspace.previousSelectedIndices]);
+    // console.log([...component.stateValues.selectedIndices])
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -265,14 +264,14 @@ export default class SelectByIndex extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let replacementsWithInstructions = this.getReplacementsWithInstructions(component);
+    let replacements = this.getReplacements(component, componentInfoObjects);
 
     let replacementInstruction = {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: component.replacements.length,
-      replacementsWithInstructions,
+      serializedReplacements: replacements,
       replacementsToWithhold: 0,
     };
 
@@ -280,19 +279,11 @@ export default class SelectByIndex extends CompositeComponent {
 
     workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
-    console.log(`replacementChanges for if ${component.componentName}`);
-    console.log(replacementChanges);
+    // console.log(`replacementChanges for selectByIndex ${component.componentName}`);
+    // console.log(replacementChanges);
+
     return replacementChanges;
 
-    // let replacementChanges = processChangesForReplacements({
-    //   componentChanges: componentChanges,
-    //   componentName: component.componentName,
-    //   downstreamDependencies: component.downstreamDependencies,
-    //   components
-    // })
-    // // console.log(`replacementChanges for group ${component.componentName}`);
-    // // console.log(replacementChanges);
-    // return replacementChanges;
   }
 
 }

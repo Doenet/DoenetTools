@@ -29,6 +29,7 @@ export default class Substitutions extends BaseComponent {
         children: {
           dependencyType: "childIdentity",
           childLogicName: "atLeastZeroChildren",
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: function ({ dependencyValues }) {
