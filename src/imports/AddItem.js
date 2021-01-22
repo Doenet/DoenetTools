@@ -60,11 +60,9 @@ function AddItemRouted(props){
           <button onClick={()=>{setIsExpanded(false)}}>X</button>
         </div>
         <div>
-          {
-            // get add form, dispatch format, getter for form fields
-            <AddNewFolderForm driveId={driveId} folderId={selectedItemId} callback={()=>{setIsExpanded(false)}}/>
-
-          }
+          <AddNewFolderForm driveId={driveId} folderId={selectedItemId} callback={()=>{setIsExpanded(false)}}/>
+          <AddNewURLForm driveId={driveId} folderId={selectedItemId} callback={()=>{setIsExpanded(false)}}/>
+          <AddNewDoenetMLForm driveId={driveId} folderId={selectedItemId} callback={()=>{setIsExpanded(false)}}/>
         </div>
       </div>
     }
@@ -116,30 +114,94 @@ function AddNewFolderForm(props) {
   )
 }
 
-// function AddItemRouted(props){
-//   // console.log("=== AddItemRouted")
+function AddNewURLForm(props) {
   
-//   // console.log(props)
-//   //TODO: driveId and folderId come from route
-//   const driveId = "ZLHh5s8BWM2azTVFhazIH";
-//   const folderId = "ZLHh5s8BWM2azTVFhazIH";
-//   const selectedItemId = "f2";
-//   const [folderInfo,setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId,folderId}))
+  const { driveId, folderId } = props;
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
 
-//   const [label,setLabel] = useState("")
+  const handleSubmit = (ev) => {
+    ev.preventDefault();
+    const label = ev.target.label.value;
+    const url = ev.target.label.url;
+    dispatchAddInstruction({label, url});
+    props.callback?.();
+  }
 
-//   return <div><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)}/>
-//   <button onClick={()=>{setFolderInfo({
-//     instructionType:"addItem",
-//     label,
-//     selectedItemId,
-//     itemType:"Folder"
-//     });setLabel("")}}>Add Folder</button>
-//     <button onClick={()=>{setFolderInfo({
-//     instructionType:"addItem",
-//     label,
-//     selectedItemId,
-//     itemType:"Url"
-//     });setLabel("")}}>Add URL</button>
-//   </div>
-// }
+  const dispatchAddInstruction = ({label, url}) => {
+    setFolderInfo({
+      instructionType:"addItem",
+      label,
+      url,
+      selectedItemId: null,
+      itemType:"Url"
+    });
+  }
+
+  return (
+    <div>
+      <span>New URL</span>
+      <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Label: </label>
+            <input
+              type="text"
+              name="label"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>URL: </label>
+            <input
+              type="text"
+              name="label"
+              required
+            />
+          </div>
+          <div className="form-group" style={{display:"flex", justifyContent:"flex-end"}}>
+            <input className="btn btn-primary" type="submit" value="Add"/>
+          </div>
+      </form>
+    </div> 
+  )
+}
+
+function AddNewDoenetMLForm(props) {
+  
+  const { driveId, folderId } = props;
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
+
+  const handleSubmit = (ev) => {
+    ev.preventDefault();
+    const label = ev.target.label.value;
+    dispatchAddInstruction({label});
+    props.callback?.();
+  }
+
+  const dispatchAddInstruction = ({label}) => {
+    setFolderInfo({
+      instructionType:"addItem",
+      label,
+      selectedItemId: null,
+      itemType:"DoenetML"
+    });
+  }
+
+  return (
+    <div>
+      <span>New DoenetML</span>
+      <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Label: </label>
+            <input
+              type="text"
+              name="label"
+              required
+            />
+          </div>
+          <div className="form-group" style={{display:"flex", justifyContent:"flex-end"}}>
+            <input className="btn btn-primary" type="submit" value="Add"/>
+          </div>
+      </form>
+    </div> 
+  )
+}
