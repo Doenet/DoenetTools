@@ -65,7 +65,9 @@ function AddItemRouted(props){
   return <div>
     { !isExpanded ? 
       <div>
-        <button data-doenet-drive-stayselected onClick={()=>{setIsExpanded(true)}}>Add Item</button>
+        <button 
+        style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
+        data-doenet-drive-stayselected onClick={()=>{setIsExpanded(true)}}>Add Item</button>
       </div> :
       <div>
         <div className="headingContainer" style={{display: "flex", justifyContent: "space-between", padding: "3px"}}>
