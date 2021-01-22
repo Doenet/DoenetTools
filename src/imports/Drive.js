@@ -261,11 +261,15 @@ export const folderDictionarySelector = selectorFamily({
         //Remove from folder
         let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
         let newFInfo = {...fInfo}
-        newFInfo["defaultOrder"] = [...fInfo.defaultOrder];
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
-        let index = newFInfo["defaultOrder"].indexOf(instructions.itemId);
-        newFInfo["defaultOrder"].splice(index,1)
         delete newFInfo["contentsDictionary"][instructions.itemId];
+        newFInfo.folderInfo = {...fInfo.folderInfo}
+        newFInfo.folderInfo.dirty = 1;
+        const sortBy = newFInfo.folderInfo.sortBy;
+        newFInfo.contentIds = {...fInfo.contentIds}
+        newFInfo.contentIds[sortBy] = [...fInfo.contentIds[sortBy]]
+        const index = newFInfo.contentIds[sortBy].indexOf(instructions.itemId)
+        newFInfo.contentIds[sortBy].splice(index,1)
         set(folderDictionary(driveIdFolderId),newFInfo);
         //Remove from selection
         if (get(selectedDriveItemsAtom(item))){
@@ -729,7 +733,7 @@ function Folder(props){
     items = [];
     for (let itemId of contentIdsArr){
       let item = dictionary[itemId];
-      console.log(">>>item",item)
+      // console.log(">>>item",item)
       if (props.hideUnpublished && item.isPublished === "0"){
         //hide item
         continue;

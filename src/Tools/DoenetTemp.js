@@ -27,7 +27,8 @@ import {
 import { 
   BreadcrumbProvider 
 } from '../imports/Breadcrumb';
-import Drive, {folderDictionarySelector}from '../imports/Drive'
+
+import Drive, {folderDictionarySelector} from '../imports/Drive'
 import AddItem from '../imports/AddItem'
 export default function app() {
 return <RecoilRoot>
@@ -40,43 +41,44 @@ return <RecoilRoot>
 };
 import Tool from "../imports/Tool/Tool";
 
+
+
 function Demo(){
   console.log("=== Demo")
   let [hideUnpublished,setHideUnpublished] = useState(false)
 
-
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}))
+  let [hideUnpublished,setHideUnpublished] = useState(false)
+  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
   const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"11lUJQk5yZtaoUEhgfrt"})
+    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
   }}>Publish Content</button>
   const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"11lUJQk5yZtaoUEhgfrt"})
+    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
   }}>Publish Assignment</button>
-
-
-
+  
+  
   let publishText = "Show Student View";
   if (hideUnpublished){publishText = "Show Instructor View"}
   
-  
   let publishButton = <div><button onClick={()=>setHideUnpublished((old)=>!old)}>{publishText}</button></div>
+  
+  const publishContentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Content</button>
+  const publishAssignmentButton = <button onClick={()=>{
+    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+  }}>Publish Assignment</button>
+  
   return <>
+
   {/* <Drive types={['course']} urlClickBehavior="select" /> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
   {/* <h2>Select</h2> */}
-<Tool> 
-  <menuPanel>
-    {publishContentButton}
-    {publishAssignmentButton}
-    {publishButton}
-    </menuPanel> 
+  {publishContentButton}
+  {publishAssignmentButton}
+  {publishButton}
   {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
-  <navPanel><Drive driveId='Fhg532fk9873412s' hideUnpublished={hideUnpublished} urlClickBehavior="select"/></navPanel>
-  </Tool>
-
- 
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/> */}
-
+  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
   {/* <h2>Default</h2>
