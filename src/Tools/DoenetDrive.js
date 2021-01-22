@@ -16,6 +16,7 @@ import {
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
+import GlobalFont from "../fonts/GlobalFont.js";
 
 
 const itemVersionsSelector = selectorFamily({
@@ -92,6 +93,7 @@ export default function DoenetDriveTool(props) {
   return (
     <Tool>
       <navPanel>
+      <GlobalFont/>
         <Drive types={['content','course']}  urlClickBehavior="select" />
       </navPanel>
 

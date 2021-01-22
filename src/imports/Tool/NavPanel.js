@@ -9,7 +9,7 @@ export const IsNavContext = createContext(false);
 const NavPanelWrapper = styled.div`
   grid-area: navPanel;
   width: ${({ visible }) => (visible ? "240px" : "0px")};
-  background-color: #8fb8de;
+  background-color: #f6f8ff;
   overflow: auto;
 `;
 
@@ -17,10 +17,10 @@ const NavPanelWrapper = styled.div`
 const VisibilityButton = styled.button`
   width: 40px;
   height: 40px;
-  color: #8fb8de;
-  background-color: white;
+  color: #ffffff;
+  background-color: #1A5A99;
   border-radius: 50%;
-  border: 1px solid #e3e2e2;
+  border: 1px solid #fff;
   font-size: 16px;
   cursor: pointer;
   position: fixed;

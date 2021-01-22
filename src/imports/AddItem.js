@@ -49,14 +49,23 @@ function AddItemRouted(props){
 
   const [label,setLabel] = useState("")
 
-  return <div><input type="text" value={label} onChange={(e)=>setLabel(e.target.value)}/>
-  <button onClick={()=>{setFolderInfo({
+  return <div style={{padding: "0px 0px 0px 610px"}}>
+  <input 
+    style={{border: "2px solid black", borderRadius: "5px"}}
+    type="text" 
+    value={label} 
+    onChange={(e)=>setLabel(e.target.value)}/>
+  <button 
+    style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
+    onClick={()=>{setFolderInfo({
     instructionType:"addItem",
     label,
     selectedItemId,
     itemType:"Folder"
     });setLabel("")}}>Add Folder</button>
-    <button onClick={()=>{setFolderInfo({
+    <button 
+    style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
+    onClick={()=>{setFolderInfo({
     instructionType:"addItem",
     label,
     selectedItemId,
