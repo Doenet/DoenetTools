@@ -1,5 +1,3 @@
-// import DoenetViewer from '../Tools/DoenetViewer';
-
 import nanoid from 'nanoid';
 // import query from '../queryParamFuncs';
 // import DoenetBox from '../Tools/DoenetBox';
@@ -19,7 +17,7 @@ import Button from "../imports/PanelHeaderComponents/Button";
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
-import Drive, { selectedCourse } from "../imports/Drive";
+import Drive, { folderDictionarySelector}  from "../imports/Drive";
 import DoenetViewer from './DoenetViewer';
 import {
   atom,
@@ -95,11 +93,11 @@ const DisplayCourseContent = (props) => {
   }
 
   return (
-    <div data-cy="overviewNavItem">
+    <div data-cy="doenetviewerItem">
       {doenetML != "" ?
         role === 'Student' ?
           <DoenetViewer
-            key={"loadoverview" + updateNumber}
+            key={"doenetviewer" + updateNumber}
             //contentId={''}
             doenetML={doenetML}
             course={true}
@@ -220,7 +218,21 @@ const MakeAssignment = ({ itemId, courseId }) => {
   const role = useRecoilValue(roleAtom);
   const [assignid, setAssignmentIdValue] = useRecoilState(assignmentIdAtom);
   const setAssignmentObjData = useSetRecoilState(loadAssignment({ assignid, role }));
+  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
+
   const [viewForm, setViewForm] = useState(false);
+
+  const contentPublish = () => {
+    try {
+       axios.post(
+        `/api/contentPublish.php?itemId=${itemId}`
+      ).then((response) => {
+        console.log("response content", response.data);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
   const makeAssignmentValueUpdate = () => {
     if (role === 'Instructor') {
       let assignmentId = nanoid();
@@ -239,7 +251,11 @@ const MakeAssignment = ({ itemId, courseId }) => {
       <>
         {/* {console.log("assignid", assignid)} */}
         { (assignid === '' || typeof(assignid) === 'undefined') ? itemId != '' ?
-          <Button text="makeassignment" callback={makeAssignmentValueUpdate}></Button>
+        <>
+          <ActionButton text="makeassignment" callback={makeAssignmentValueUpdate}></ActionButton> <br/>
+          <ActionButton text="Publish Content" callback={contentPublish}></ActionButton>
+
+          </>
           : null :
           <CollapseSection title="Edit Assignment Settings" >
             <AssignmentForm itemId={itemId} courseId={courseId} />
@@ -393,7 +409,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
 
 
   const handleSubmit = async (e) => {
-    let submitted = '0';
+    let submitted = '1';
     const payload = {
       ...assignmentObjData[0].contents,
       itemId: itemId,
@@ -408,7 +424,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
   }
   return (
     <>
-      {(assignmentObjData[0].contents?.isPublished === '1' || role === "Instructor") && assignmentObjData[0].contents?.isAssignment == '1' ?
+      {role === "Instructor" ?
         <>
         {  role === 'Student' ? 
           <AssignmentViewForm role={role} data={assignmentObjData[0].contents} />
@@ -433,7 +449,7 @@ const AssignmentForm = ({ itemId, courseId }) => {
             <div>
               <label>Time Limit:</label>
               <input required type="text" name="timeLimit" value={assignmentObjData[0].contents?.timeLimit}
-                placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
+                placeholder="01:01:01" onBlur={handleOnBlur} disabled={role === 'Student' ? 'disabled' : ''} onChange={handleChange} />
             </div>
             <div >
               <label >Number Of Attempts:</label>
@@ -493,10 +509,10 @@ const AssignmentForm = ({ itemId, courseId }) => {
 
 
           {
-            role === 'Instructor' ? <Button text="MakeContent" callback={handleMakeContent} /> : null
+            role === 'Instructor' ? <ActionButton text="MakeContent" callback={handleMakeContent} /> : null
           }
           {
-            role === 'Instructor' && assignmentObjData[0].contents?.isPublished === '1' ? <Button text="Publish" id="formSubmitButton" callback={handleSubmit} type="submit" ></Button> : null
+            role === 'Instructor'? <ActionButton text="Publish" id="formSubmitButton" callback={handleSubmit} type="submit" ></ActionButton> : null
 
           }
        </> }
@@ -504,9 +520,9 @@ const AssignmentForm = ({ itemId, courseId }) => {
         </>
         :
         <>
-          {
-            assignmentId !== '' && role === 'Instructor' ? <Button text="LoadAssignment" callback={handleLoadAssignment} /> : null
-          }
+          {/* {
+            assignmentId !== '' && role === 'Instructor' ? <ActionButton text="LoadAssignment" callback={handleLoadAssignment} /> : null
+          } */}
         </>
       }
     </>
@@ -545,10 +561,24 @@ const loadAssignmentSelector = selectorFamily({
     return data;
   }
 })
-function DoenetCourseRouted(props) {
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
-  const [selectedCourse, setSelectedCourse] = useState({});
+const selectedInformation = selectorFamily({
+  key:"selectedInformation",
+  get: ({driveId,folderId})=>({get})=>{  
+    console.log(">>> driveid ", driveId, folderId);  
+    let folderInfo = get(folderDictionarySelector({driveId,folderId}));
+
+    return {number:folderInfo}
+  }
+})
+
+function DoenetCourseRouted(props) {
+
+
+    const setOverlayOpen = useSetRecoilState(openOverlayByName);
+
+  let [hideUnpublished,setHideUnpublished] = useState(false)
+
   const setSupportVisiblity = useSetRecoilState(supportVisible);
 
   let pathItemId = '';
@@ -558,11 +588,15 @@ function DoenetCourseRouted(props) {
   const role = useRecoilValue(roleAtom);
 
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.props.route.location.search));
-  // console.log(">>>route props in course", urlParamsObj);
   const [assignid, setAssignmentIdValue] = useRecoilState(assignmentIdAtom);
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId, routePathFolderId, pathItemId, itemType] = urlParamsObj.path.split(":");
-    // setAssignmentIdValue('');
+  }
+  // const infoLoad = useRecoilValueLoadable(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
+  // const infoLoad = useSetRecoilState(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
+  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}));
+  if (setFolderInfo.state === 'hasValue') {
+    console.log(">>> infoLoad ", setFolderInfo)
   }
   let courseId = 'Fhg532fk9873412s65';
   if (urlParamsObj?.courseId !== undefined) {
@@ -582,10 +616,12 @@ function DoenetCourseRouted(props) {
     console.error(assignmentInfo.contents)
     return null;
   }
+
   const filterAssignment = (assignments, itemId) => {
     return assignments.filter((assignmentInfoData => assignmentInfoData.itemId === itemId))
   }
   let contentId = '';
+
   if (assignmentInfo.state === 'hasValue') {
     // console.log(">>> assignmnt info content", assignmentInfo)
     if (assignmentInfo.contents !== null) {
@@ -596,36 +632,35 @@ function DoenetCourseRouted(props) {
         contentId = assignment[0].contentId;
       }
     }
-
   }
-// const editAssignment = (
-//   <overlay name="Edit assignment">
-//   <headerPanel>
-//     <button
-//       onClick={() => {
-//         setOverlayOpen("");
-//       }}
-//     >
-//       Go Back
-//     </button>
-//       Header
-//     </headerPanel>
-//   <mainPanel>
-//     Main
-//     </mainPanel>
-//   {/* <menuPanel>{editForm}</menuPanel> */}
-// </overlay>
-// )
+  const getContentId = async (pathItemId) => {
+    return await axios.get(
+      `/api/getContentId.php`, { params: { itemId:pathItemId } }
+    ).then((response) => {
+      console.log("data response", response.data);
+      return response.data;
+    });
+  } 
+  if(contentId === '')
+  {
+      let res = getContentId(pathItemId).then(data => {return data});
+      console.log("res", res);
+      contentId = res.contentId;
+  }
+
   return (
     <Tool>
       <navPanel>
         <AddItem />
-        <Drive types={['course']} urlClickBehaviour="select" /><br />
+        {/* <Drive types={['course']} urlClickBehaviour="select" /><br /> */}
+        {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
+
+        <Drive driveId='Fhg532fk9873412s' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
         <Menu label="Role">
           <MenuItem value="Student" onSelect={() => console.log('text')} />
           <MenuItem value="Instructor" onSelect={() => console.log('text123')} />
         </Menu>
-        <Button text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}></Button>
+        {role === 'Instructor' && <ActionButton text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}></ActionButton>}
       </navPanel>
 
       <headerPanel title="my title">
@@ -638,10 +673,10 @@ function DoenetCourseRouted(props) {
       </headerPanel>
       <mainPanel>
         {contentId && routePathDriveId ? <DisplayCourseContent driveId={routePathDriveId} contentId={contentId} /> : null}
-        {openEnrollment ? <Enrollment selectedCourse={enrollCourseId} /> : null}
+        { openEnrollment ? <Enrollment selectedCourse={enrollCourseId} /> : null}
 
       </mainPanel>
-      <menuPanel title="Assignment Info">
+      <menuPanel title="Content Info">
         {
           itemType === 'DoenetML' ?
             <MakeAssignment itemId={pathItemId} courseId={courseId} />
@@ -654,5 +689,6 @@ function DoenetCourseRouted(props) {
     </Tool>
   );
 }
+
 
 

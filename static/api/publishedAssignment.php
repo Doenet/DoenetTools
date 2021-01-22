@@ -37,9 +37,8 @@ $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
 $courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
-$type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
 
-$sqlAssigmentCheck = "SELECT * FROM assignmnet where assignmnetId='$assignmentId';";
+$sqlAssigmentCheck = "SELECT * FROM assignment where assignmentId='$assignmentId';";
 $resultCheck = $conn->query($sqlAssigmentCheck); 
 $responseAssignment = 0;
 
@@ -48,7 +47,7 @@ if ($resultCheck->num_rows > 0){
     
 }
 // if assignment is published already update row
-if($responseAssignment === 0)
+if($responseAssignment === 1)
 {
   $sql = "UPDATE assignment SET
 title = '$title',
@@ -72,8 +71,6 @@ WHERE assignmentId = '$assignmentId'
 
 $result = $conn->query($sql);
 }
-// if new assignment insert 
-
 else
 {
   $sql="
