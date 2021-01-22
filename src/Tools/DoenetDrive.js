@@ -110,6 +110,7 @@ const ItemInfo = function (props){
     
 
   <h1>{itemInfo.label}</h1>
+  <AddItem />
   
   {versionsJSX}
   {editDraft}
@@ -146,7 +147,6 @@ console.log(">>>")
             Open Bob
           </button>
         <BreadcrumbContainer /> 
-        <AddItem />
 
         <Drive types={['content','course']}  urlClickBehavior="select" />
       </mainPanel>
