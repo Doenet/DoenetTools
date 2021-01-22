@@ -16,6 +16,7 @@ import {
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
+import GlobalFont from "../fonts/GlobalFont.js";
 import axios from "axios";
 import Button from "../imports/PanelHeaderComponents/Button.js";
 
@@ -126,6 +127,7 @@ console.log(">>>")
   return (
     <Tool>
       <navPanel>
+      <GlobalFont/>
         <Drive types={['content','course']}  urlClickBehavior="select" />
       </navPanel>
 
