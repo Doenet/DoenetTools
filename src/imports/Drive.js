@@ -997,7 +997,7 @@ const DoenetML = React.memo((props)=>{
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
-        backgroundColor: "#f6f8ff",
+        backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
