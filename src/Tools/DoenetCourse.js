@@ -140,43 +140,50 @@ export default function DoenetCourse(props) {
   )
 }
 
-function getAssignmentData(payload) {
-  // console.log("get payload",payload);
-  return axios.get(
-    `/api/getAllAssignmentSettings.php`, { params: { courseId: payload.courseId } }
-  ).then((response) => {
-    return response.data;
-  });
-}
-
-
-
 const loadAssignmentSelector = selectorFamily({
-  key: 'loadAssignemntSlector',
-  get: (dataObj) => async ({ get }) => {
-    // console.log("role in selector",dataObj);
-    const payload = { courseId: dataObj?.courseId }
-    let data = await getAssignmentData(payload);
-    return data;
-  }
-})
+  key: 'loadAssignmentSelector',
+  get: (courseId) => async ({get,set})=>{
+    const { data } = await axios.get(
+      `/api/getAllAssignmentSettings.php?courseId=${courseId}`
+  );
+  return data;
 
+    }
+    })
+
+
+    export const assignmentDictionary = atomFamily({
+      key:"assignmentDictionary",
+      default:selectorFamily({
+        key:"assignmentDictionary/Default",
+        get:(courseIdassignmentId)=>({get})=>{
+          console.log(">> cid aid", courseIdassignmentId);
+          const assignmentInfo = get(loadAssignmentSelector(courseIdassignmentId.courseId))
+          console.log(">>assignmentInfo", assignmentInfo);
+          return assignmentInfo;
+        } 
+      })
+    })
+
+let loadAssignmentSettings =  selectorFamily({ //recoilvalue(loadAssignmentSettings(assignmentId))
+  key:"loadAssignmentSettings",
+  get: (assignmentId) => async ({get,set})=>{
+   const assignmentData = getLoadAssignmentSelector()
+    
+    }      
+  })
 
 function DoenetCourseRouted(props) {
-  const [isAssignment,setOpenAssignment] = useState();
+  const role = useRecoilValue(roleAtom);
 
+  const [isAssignment,setOpenAssignment] = useState("");
     const setOverlayOpen = useSetRecoilState(openOverlayByName);
-
-  let [hideUnpublished,setHideUnpublished] = useState(false)
-
+  let [hideUnpublished,setHideUnpublished] = useState(role === 'Instructor' ? false :true);
   const setSupportVisiblity = useSetRecoilState(supportVisible);
-
   let pathItemId = '';
   let routePathDriveId = '';
   let routePathFolderId = '';
   let itemType = '';
-  const role = useRecoilValue(roleAtom);
-
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.props.route.location.search));
   const [assignid, setAssignmentIdValue] = useRecoilState(assignmentIdAtom);
   if (urlParamsObj?.path !== undefined) {
@@ -185,47 +192,78 @@ function DoenetCourseRouted(props) {
   // const infoLoad = useRecoilValueLoadable(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
   // const infoLoad = useSetRecoilState(selectedInformation({driveId:routePathDriveId,folderId: routePathFolderId}));
 
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}));
+  // let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}));
+  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}))
+
 console.log(">>> setFolderInfo", setFolderInfo)
   let courseId = 'Fhg532fk9873412s65';
   if (urlParamsObj?.courseId !== undefined) {
     courseId = urlParamsObj?.courseId;
   }
-  // console.log(">>> courseId", courseId);
 
   const [openEnrollment, setEnrollmentView] = useState(false);
 
   const enrollCourseId = { courseId: courseId };
-  // const assignmentInfo = useRecoilValueLoadable(loadAllAssignment({courseId}))
-  // console.log("role in routed", role);
-  const assignmentInfo = useRecoilValueLoadable(loadAssignmentSelector({ courseId }))
-
-  if (assignmentInfo.state === "loading") { return null; }
-  if (assignmentInfo.state === "hasError") {
-    console.error(assignmentInfo.contents)
-    return null;
-  }
-
   const filterAssignment = (assignments, itemId) => {
     return assignments.filter((assignmentInfoData => assignmentInfoData.itemId === itemId))
   }
   let contentId = '';
+  let newnewAssignmentData = '';
+  const assignmentObjInfo = useRecoilValueLoadable(assignmentDictionary({courseId:courseId,assignmentId:props.assignmentId}))
+  console.log(">>> assignmentInfo 12345",assignmentObjInfo);
 
-  if (assignmentInfo.state === 'hasValue') {
-    // console.log(">>> assignmnt info content", assignmentInfo)
-    if (assignmentInfo.contents !== null) {
-      let assignment = filterAssignment(assignmentInfo.contents.assignments, pathItemId);
-      // console.log('>>> asignmnt >> ', assignment)
-      if (assignment.length > 0) {
-        setAssignmentIdValue(assignment[0].assignmentId);
-        contentId = assignment[0].contentId;
-      }
+  if (assignmentObjInfo.state === 'hasValue') {
+      console.log(">>> assignmentobjInfo",assignmentObjInfo);
+    for (let assignment of assignmentObjInfo.contents.assignments){
+    if (assignment.itemId === pathItemId){
+      // if (assignment.itemId === props.itemId){
+
+      console.log(">>>assignment 1234", assignment);
+      // setAssignmentInfo(assignment);
+      newnewAssignmentData = assignment;
+      contentId = assignment.contentId;
+     //setOpenAssignment(assignment.assignmentId);
     }
-  }
+  } 
+}
+if(contentId === '')
+{
+  // contentId = folderInfoObj.contents.contentsDictionary['11lUJQk5yZtaoUE09876'];
+  // console.log("pathitem id ",pathItemId);
+  // console.log("content id null",folderInfoObj.contents.contentsDictionary['11lUJQk5yZtaoUE09876']);
+
+  // console.log("content id null",folderInfoObj.contents[0].contentDictionary[pathItemId]);
+}
 
 
-  const MakeAssignmentNew = () =>{
-    const [assignmentInfo, setAssignmentInfo] = useState({});
+
+  // const AssignmentForm = (props) =>{
+  //   const assignmentInfo = useRecoilValue(assignmentDictionary({courseId:props.courseId,assignmentId:props.assignmentId}))
+  //   console.log(">>> assignmentInfo",assignmentInfo);
+  //   return null;
+  // }
+
+
+  // let loadAssignmentSettings =  selectorFamily({ //recoilvalue(loadAssignmentSettings(assignmentId))
+  //   key:"loadAssignmentSettings",
+  //   get: (assignmentId) => async ({get,set})=>{
+  //    const assignmentData = getLoadAssignmentSelector
+      
+  //     }      
+  //   })
+  
+  const MakeAssignmentNew = (props) => {
+    let data = props.assignment ? props.assignment : {};
+    console.log(">>>> make assignmnet dataa",data)
+
+    const [assignmentInfo, setAssignmentInfo] = useState(data);
+
+//     const assignmentObj234Info = useRecoilValue(assignmentDictionary({courseId:props.courseId,assignmentId:props.assignmentId}))
+
+// console.log("assignmentObj234Info",assignmentObj234Info);
+
+    
+    // const [assignmentInfo, setAssignmentInfo] = useState({});
     const handleChange = (event) => {
       let name = event.target.name;
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -237,6 +275,11 @@ console.log(">>> setFolderInfo", setFolderInfo)
         assignmentId:isAssignment,
        assignment_isPublished:0
       }
+      axios.post("/api/saveAssignmentToDraft.php", payload)
+      .then((resp)=>{
+        console.log(resp.data)
+      }
+      )
      setFolderInfo({instructionType:"assignment saved to draft",itemId:pathItemId,assignedDataSave:payload})
     }
     const handleSubmit = (e) =>{
@@ -245,6 +288,11 @@ console.log(">>> setFolderInfo", setFolderInfo)
         assignmentId:isAssignment,
         assignment_isPublished:1
       }
+      axios.post("/api/publishAssignment.php", payload)
+          .then((resp)=>{
+            console.log(resp.data)
+          }
+          )
       setFolderInfo({instructionType:"assignment was published",itemId:pathItemId,assignedData:payload})
     }
     return (
@@ -333,11 +381,12 @@ console.log(">>> setFolderInfo", setFolderInfo)
      : <div>Student view</div> 
      )
   }
-
+let makeassignmentIsSelected = false;
 const handleMakeAssignment = () =>{
+  makeassignmentIsSelected = true;
   let assignmentId = nanoid();
   setOpenAssignment(assignmentId);
-  setFolderInfo({instructionType:"assignment was make assignment",itemId:pathItemId,assignmentId});
+  // setFolderInfo({instructionType:"make content assignment",itemId:pathItemId,assignmentId});
   
   let payload = {
     assignmentId, pathItemId, courseId
@@ -350,18 +399,35 @@ const handleMakeAssignment = () =>{
   });
 
 }
+
+const handlePublishContent = () =>{
+
+  let payload = {
+    itemId:pathItemId
+  }
+  console.log(">>>handle publish content",payload);
+  axios.post(
+    `/api/handlePublishContent.php`, payload
+  ).then((response) => {
+    console.log(response.data);
+  });
+
+
+}
+
   return (
     <Tool>
       <navPanel>
         <AddItem />
         {/* <Drive types={['course']} urlClickBehaviour="select" /><br /> */}
-        {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
+        {/* {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>} */}
 
         <Drive driveId='Fhg532fk9873412s' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
+        {role === 'Instructor' ?
         <Menu label="Role">
-          <MenuItem value="Student" onSelect={() => console.log('text')} />
-          <MenuItem value="Instructor" onSelect={() => console.log('text123')} />
-        </Menu>
+          <MenuItem value="Student" onSelect={() => setHideUnpublished(true) }/>
+          <MenuItem value="Instructor" onSelect={() => setHideUnpublished(false)} />
+        </Menu>:null}
         {role === 'Instructor' && <ActionButton text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}></ActionButton>}
       </navPanel>
 
@@ -379,19 +445,36 @@ const handleMakeAssignment = () =>{
 
       </mainPanel>
       <menuPanel title="Content Info">
+
+
+{/* New form - make assignment form */}
+
+      {/* existing form */}
+        {/* <AssignmentForm courseId={courseId} assignmentId="9woPGRp9KuppjYXIzDM1T"/> */}
+
+
+
+
+
         {/* {
           itemType === 'DoenetML' ?
             <MakeAssignment itemId={pathItemId} courseId={courseId} />
             : null
         } */}
-        {itemType === 'DoenetML' ? 
+        {itemType === 'DoenetML' && newnewAssignmentData == '' && !makeassignmentIsSelected && !isAssignment? 
+        <>
         <ActionButton text="makeassignment" callback={handleMakeAssignment}></ActionButton>
+        <ActionButton text="publishcontent" callback={handlePublishContent}></ActionButton>
+
+        
+        </>
         :null
         }
 
- {
-   isAssignment ? <MakeAssignmentNew /> : null
- }
+
+          {
+            newnewAssignmentData || isAssignment ? <MakeAssignmentNew courseId={courseId} assignmentId={isAssignment} assignment = {newnewAssignmentData}  itemId={pathItemId}/> : null
+          }
        
 
 

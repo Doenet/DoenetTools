@@ -20,9 +20,10 @@ initialize();
 
 
     ReactDOM.render(
+      <RecoilRoot>
       <DropTargetsProvider>
       <BreadcrumbProvider>
-      <RecoilRoot>
+     
         <Router>
               <Switch>
                 <Route path="/" render={(routeprops) => 
@@ -30,10 +31,9 @@ initialize();
                 }></Route>
               </Switch> 
          </Router>
-      </RecoilRoot>
       </BreadcrumbProvider>
       </DropTargetsProvider>
+      </RecoilRoot>
 
-           
      
   ,document.getElementById('root'));

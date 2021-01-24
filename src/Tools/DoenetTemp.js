@@ -47,7 +47,7 @@ function Demo(){
   console.log("=== Demo")
   let [hideUnpublished,setHideUnpublished] = useState(false)
 
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
+  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"Fhg532fk9873412s",folderId:"Fhg532fk9873412s"}))
  
   
   let publishText = "Show Student View";
@@ -56,10 +56,10 @@ function Demo(){
   let publishButton = <div><button onClick={()=>setHideUnpublished((old)=>!old)}>{publishText}</button></div>
   
   const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+    setFolderInfo({instructionType:"content was published",itemId:"11lUJQk5yZtaoUEmjhgfd"})
   }}>Publish Content</button>
   const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
+    setFolderInfo({instructionType:"assignment was published",itemId:"11lUJQk5yZtaoUEmjhgfd"})
   }}>Publish Assignment</button>
   
   return <>
@@ -71,7 +71,7 @@ function Demo(){
   {publishAssignmentButton}
   {publishButton}
   {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
+  <Drive driveId='Fhg532fk9873412s' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
   {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
   {/* <h2>Default</h2>

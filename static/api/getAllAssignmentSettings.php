@@ -34,7 +34,7 @@ a.proctorMakesAvailable AS proctorMakesAvailable,
 dc.isPublished AS isPublished,
 dc.isAssignment As isAssignment,
 dc.itemId AS itemId,
-dc.contentId AS contentId,
+dc.contentId AS contentId
 FROM assignment_draft AS a
 JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId

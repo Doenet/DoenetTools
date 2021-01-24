@@ -364,22 +364,8 @@ export const folderDictionarySelector = selectorFamily({
           
         }
       break;
-      case "assignment was make assignment":
-        set(folderDictionary(driveIdFolderId),(old)=>{
-          
-          let newObj1 = JSON.parse(JSON.stringify(old));
-          let newItemObj1 = newObj1.contentsDictionary[instructions.itemId];
-          let dataabc = {...newItemObj1,assignmentId:instructions.assignmentId};
-          let arr = newObj1.contentsDictionary;
-          delete arr[newItemObj1.itemId];
-          let obj = {...arr,...{[dataabc.itemId]:dataabc}};          
-          //console.log("newItemObjAss >>>> obj", {...old.folderInfo,...{contentsDictionary:obj},...old.contentIds});
-          return {...old,...{contentsDictionary:obj}};
-        })
-        break;
       case "assignment was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
-          
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];          
           console.log("newItemObjAss", newItemObj);
@@ -388,29 +374,19 @@ export const folderDictionarySelector = selectorFamily({
           newItemObj.assignmentId=instructions.assignedData.assignmentId;
           return newObj;
         })
-         let newObj = JSON.parse(JSON.stringify(fInfo));
-          let newItemObj = newObj.contentsDictionary[instructions.itemId];
-          console.log("newItemObjAss", newItemObj);
-          newItemObj.assignment_isPublished = "1";
-          // newItemObj.isAssignment = "1";
-          console.log(">>>new Obj assigned data", instructions.assignedData)
-          let {assignedData} = instructions; 
-          let payloadB = {...newItemObj,...assignedData}
-          axios.post("/api/publishAssignment.php", payloadB)
-          .then((resp)=>{
-            console.log(resp.data)
-          }
-          )
+      
         break;
       case "content was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];
-          console.log("newItemObj", newItemObj);
           newItemObj.isPublished = "1";
           return newObj;
         })
+        
       break;
+
+      // TO DO : remove from drive
       case "assignment saved to draft":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj2 = JSON.parse(JSON.stringify(old));
@@ -422,15 +398,7 @@ export const folderDictionarySelector = selectorFamily({
           //console.log("newItemObjAss >>>> obj", {...old.folderInfo,...{contentsDictionary:obj},...old.contentIds});
           return {...old,...{contentsDictionary:obj1}};
         })
-        let assignNewObj = JSON.parse(JSON.stringify(fInfo));
-          let newAssignItemObj = assignNewObj.contentsDictionary[instructions.itemId];
-          let {assignedDataSave} = instructions; 
-          let payloadC = {...newAssignItemObj,...assignedDataSave}
-          axios.post("/api/saveAssignmentToDraft.php", payloadC)
-          .then((resp)=>{
-            console.log(resp.data)
-          }
-          )
+     
       break;
      
       // case "assignment title update":
