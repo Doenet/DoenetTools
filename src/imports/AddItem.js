@@ -24,7 +24,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import {folderDictionarySelector, globalSelectedNodesAtom} from './Drive';
+import {folderDictionarySelector, globalSelectedNodesAtom, selectedDriveAtom} from './Drive';
 
 
 export default function AddItem(props){
@@ -40,13 +40,22 @@ export default function AddItem(props){
 
 function AddItemRouted(props){
 
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
+  let selectedItemId = selectedDrive.driveId;  
+  let driveId = selectedDrive.driveId;
+  let itemInfo = null;
+
   const globalSelected = useRecoilValue(globalSelectedNodesAtom);
-  const selectedItemId = globalSelected[0]?.itemId;
-  const driveId = globalSelected[0]?.driveId;
-  const folderId = globalSelected[0]?.parentFolderId;
-  let folderInfo = useRecoilStateLoadable(folderDictionarySelector({driveId,folderId})); 
-  let itemInfo = folderInfo[0]?.contents?.contentsDictionary?.[selectedItemId];
+  if (globalSelected.length > 0) {
+    selectedItemId = globalSelected[0]?.itemId;
+    driveId = globalSelected[0]?.driveId;
+    const parentFolderId = globalSelected[0]?.parentFolderId;
+    const folderInfo = useRecoilStateLoadable(folderDictionarySelector({driveId,parentFolderId})); 
+    itemInfo = folderInfo[0]?.contents?.contentsDictionary?.[selectedItemId];
+  }
+  
   const [activeForm, setActiveForm] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const handleClickFormTab = (id) => {
     if (id !== activeForm) {
@@ -58,9 +67,7 @@ function AddItemRouted(props){
     setActiveForm(0);
   }
   
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  if (itemInfo?.itemType !== "Folder") return <></>;
+  if (itemInfo?.itemType !== "Folder" && !selectedDrive) return <></>;
 
   return <div>
     { !isExpanded ? 

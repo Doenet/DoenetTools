@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom, folderDictionary, selectedDriveAtom} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
 import Switch from "../imports/Switch";
 import {
@@ -60,6 +60,7 @@ const ItemInfo = function (props){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
 
   // console.log(">>>infoLoad",infoLoad)
   if (infoLoad.state === "loading"){ return null;}
@@ -76,8 +77,15 @@ const ItemInfo = function (props){
     <h1>{infoLoad.contents.number} Items Selected</h1>
     </>
   }else if (infoLoad.contents?.number < 1){
+    if (selectedDrive) {
+      return <>
+        <h1>{selectedDrive.label}</h1>
+        <AddItem />
+      </>
+    }
+    
 
- return <>{editDraft}</>
+    return <>{editDraft}</>
     return null;
   }
 

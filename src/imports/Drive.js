@@ -48,6 +48,11 @@ export const globalSelectedNodesAtom = atom({
   default:[]
 })
 
+export const selectedDriveAtom = atom({
+  key: 'selectedDriveAtom',
+  default: null
+})
+
 const dragStateAtom = atom({
   key: 'dragStateAtom',
   default: {
@@ -427,6 +432,7 @@ function DriveRouted(props){
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
+  const [_, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   let driveInstanceId = useRef("");
   const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
 
@@ -457,7 +463,10 @@ function DriveRouted(props){
   //use defaults if not defined
   if (urlParamsObj?.path !== undefined){
     [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
-    if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
+    if (routePathDriveId !== ""){
+      pathDriveId = routePathDriveId;
+      if (props.driveId === pathDriveId) setSelectedDrive(props.driveObj);
+    }
     if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
   }
   //If navigation then build from root else build from path
