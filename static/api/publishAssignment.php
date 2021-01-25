@@ -15,29 +15,36 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["title"]);
+if($title == ''){$title = 'Untitled Assignment';}
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
 if ($dueDate == ''){ $dueDate = '1-1-1 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
 if ($assignedDate == ''){ $assignedDate = '1-1-1 01:01:01';}
 $timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
+if ($timeLimit == ''){ $timeLimit = '01:01:01';}
 $numberOfAttemptsAllowed = mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
 $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation"]);
 $totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
 $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
+if ($individualize == ''){ $individualize = '0';}
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
+if ($multipleAttempts == ''){ $multipleAttempts = '0';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
+if ($showSolution == ''){ $showSolution = '1';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
+if ($showFeedback == ''){ $showFeedback = '1';}
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
+if ($showHints == ''){ $showHints = '1';}
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
+if ($showCorrectness == ''){ $showCorrectness = '1';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
+if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $isPublished =  mysqli_real_escape_string($conn,$_POST["assignment_isPublished"]);
 $courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
-
-
 $sqlAssigmentCheck = "SELECT * FROM assignment where assignmentId='$assignmentId';";
 $resultCheck = $conn->query($sqlAssigmentCheck); 
 $responseAssignment = 0;
@@ -76,9 +83,43 @@ else
 {
   $sql="
   INSERT INTO assignment
-  (assignmentId,courseId,title,dueDate,assignedDate,timeLimit,numberOfAttemptsAllowed,attemptAggregation,totalPointsOrPercent,gradeCategory,individualize,multipleAttempts,showSolution,showFeedback,showHints,showCorrectness,proctorMakesAvailable,isPublished)
+  (assignmentId,
+  courseId,
+  title,
+  dueDate,
+  assignedDate,
+  timeLimit,
+  numberOfAttemptsAllowed,
+  attemptAggregation,
+  totalPointsOrPercent,
+  gradeCategory,
+  individualize,
+  multipleAttempts,
+  showSolution,
+  showFeedback,
+  showHints,
+  showCorrectness,
+  proctorMakesAvailable,
+  isPublished)
   VALUES
-  ('$assignmentId','$courseId','$title','$dueDate','$assignedDate','$timeLimit',$numberOfAttemptsAllowed,'$attemptAggregation',$totalPointsOrPercent,'$gradeCategory',$individualize,$multipleAttempts,$showSolution,$showFeedback,$showHints,$showCorrectness,$proctorMakesAvailable,$isPublished)
+  ('$assignmentId',
+  '$courseId',
+  '$title',
+  '$dueDate',
+  '$assignedDate',
+  '$timeLimit',
+  '$numberOfAttemptsAllowed',
+  '$attemptAggregation',
+  '$totalPointsOrPercent',
+  '$gradeCategory',
+  '$individualize',
+  '$multipleAttempts',
+  '$showSolution',
+  '$showFeedback',
+  '$showHints',
+  '$showCorrectness',
+  '$proctorMakesAvailable',
+  '$isPublished')
   ";
   
   $result = $conn->query($sql); 

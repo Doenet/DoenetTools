@@ -379,36 +379,33 @@ export const folderDictionarySelector = selectorFamily({
       case "content was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
+          // console.log(">>>content published newObj", newObj);
           let newItemObj = newObj.contentsDictionary[instructions.itemId];
           newItemObj.isPublished = "1";
           return newObj;
         })
         
       break;
-
-      // TO DO : remove from drive
-      case "assignment saved to draft":
+      case "assignment title update":
         set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj2 = JSON.parse(JSON.stringify(old));
-          let newItemObj2 = newObj2.contentsDictionary[instructions.itemId];
-          let dataabc1 = {...newItemObj2,...instructions.assignedDataSave};
-          let arr1 = newObj2.contentsDictionary;
-          delete arr1[newItemObj2.itemId];
-          let obj1 = {...arr1,...{[dataabc1.itemId]:dataabc1}};          
-          //console.log("newItemObjAss >>>> obj", {...old.folderInfo,...{contentsDictionary:obj},...old.contentIds});
-          return {...old,...{contentsDictionary:obj1}};
+          // console.log("Assignment title update",instructions?.assignedDataSave?.title);
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isAssignment = "1";
+          newItemObj555.assignment_isPublished = "1";
+          newItemObj.label = instructions?.assignedDataSave;
+          return newObj;
         })
-     
       break;
-     
-      // case "assignment title update":
-      //   set(folderDictionary(driveIdFolderId),(old)=>{
-      //     let newObj = JSON.parse(JSON.stringify(old));
-      //     let newItemObj = newObj.contentsDictionary[instructions.itemId];
-      //     newItemObj.isPublished = "1";
-      //     return newObj;
-      //   })
-      // break;
+      
+      case "handle make content":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isAssignment = "0";
+          return newObj;
+        })
+      break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }

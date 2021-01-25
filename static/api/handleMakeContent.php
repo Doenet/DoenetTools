@@ -14,11 +14,12 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 
 
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$label =  mysqli_real_escape_string($conn,$_POST["label"]);
 
 
 
 $sql = "UPDATE drive_content SET
-isPublished = '1'
+isAssignment = '0'
 WHERE itemId = '$itemId'
 ";
 
