@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
 import Switch from "../imports/Switch";
 import {
@@ -123,7 +123,8 @@ export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const setSupportVisiblity = useSetRecoilState(supportVisible);
-console.log(">>>")
+  const clearSelections = useSetRecoilState(clearAllSelections);
+
   return (
     <Tool>
       <navPanel>
@@ -141,16 +142,24 @@ console.log(">>>")
       </headerPanel>
 
       <mainPanel>
-      <button
+      {/* <button
             onClick={() => {
               setOverlayOpen("Bob");
             }}
           >
             Open Bob
-          </button>
+          </button> */}
         <BreadcrumbContainer /> 
+        <div 
+        // className="noselect nooutline" 
 
+        onClick={()=>{
+          clearSelections();
+        }}
+        style={{height:"100%",width:"100%"}}>
         <Drive types={['content','course']}  urlClickBehavior="select" />
+
+        </div>
       </mainPanel>
 
       <menuPanel title="Item Info">
