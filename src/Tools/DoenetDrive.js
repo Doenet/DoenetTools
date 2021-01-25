@@ -55,21 +55,56 @@ const selectedInformation = selector({
   }
 })
 
+const driveFolderItemVersion = selectorFamily({
+  key:"driveFolderItemVersion",
+  get: (driveIdFolderIdItemId)=> async ({get})=>{
+    let folderInfo = get(folderDictionary({driveId:driveIdFolderIdItemId.driveId,folderId:driveIdFolderIdItemId.folderId})); 
+    let itemInfo = folderInfo?.contentsDictionary?.[driveIdFolderIdItemId.itemId];
+    let versions = [];
+    if (itemInfo?.itemType === "DoenetML"){
+      let branchId = itemInfo.branchId;
+      versions = get(itemVersionsSelector(branchId))
+    }
+    if (!itemInfo && driveIdFolderIdItemId.folderId === driveIdFolderIdItemId.itemId){
+      //TODO: Remove this when drive information is available
+      if (driveIdFolderIdItemId.driveId !==driveIdFolderIdItemId.folderId){
+        itemInfo = folderInfo?.folderInfo;
+      }
+    }
+
+    return {itemInfo,versions}
+}})
+
 const ItemInfo = function (props){
   //data-doenet-drive-stayselected
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
-  // console.log(">>>infoLoad",infoLoad)
-  if (infoLoad.state === "loading"){ return null;}
-  if (infoLoad.state === "hasError"){ 
-    console.error(infoLoad.contents)
-    return null;}
 
-    const editDraft =   <button 
-    data-doenet-drive-stayselected
-     onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
+
+    //Use Route to determine path variables
+  let routePathDriveId = "";
+  let routePathFolderId = "";  
+  let pathItemId = "";  
+  let pathItemType = "";
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+  //use defaults if not defined
+  if (urlParamsObj?.path !== undefined){
+    [routePathDriveId,routePathFolderId,pathItemId,pathItemType] = urlParamsObj.path.split(":");
+  }
+ 
+  const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
+
+
+    // console.log(">>>infoLoad",infoLoad)
+    if (infoLoad.state === "loading"){ return null;}
+    if (infoLoad.state === "hasError"){ 
+      console.error(infoLoad.contents)
+      return null;}
+   
+      let itemInfo = infoLoad?.contents?.itemInfo;
+      let versions = infoLoad?.contents?.versions;
 
   if (infoLoad.contents?.number > 1){
     return <>
@@ -77,13 +112,31 @@ const ItemInfo = function (props){
     </>
   }else if (infoLoad.contents?.number < 1){
 
- return <>{editDraft}</>
-    return null;
+    if (pathFolderInfo.state === "loading"){ return null;}
+    if (pathFolderInfo.state === "hasError"){ 
+      console.error(pathFolderInfo.contents)
+      return null;}
+
+  itemInfo = pathFolderInfo?.contents?.itemInfo;
+  versions = pathFolderInfo?.contents?.versions;
+
+
+    if (!itemInfo){
+      return <div>Nothing Selected</div>;
+    }
   }
 
-  const itemInfo = infoLoad?.contents?.itemInfo;
-  const versions = infoLoad?.contents?.versions;
-  console.log(">>>itemInfo",itemInfo)
+ 
+  let editDraft = null;
+  if (itemInfo?.itemType === "DoenetML"){
+    editDraft =   <button 
+    onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
+  }
+  
+
+
+
+  // console.log(">>>itemInfo",itemInfo)
   const versionsJSX = [];
   let draftObj;
   for (let version of versions){
@@ -92,7 +145,6 @@ const ItemInfo = function (props){
     }else{
       versionsJSX.push(<div
       key={`versions${version.timestamp}`}
-    data-doenet-drive-stayselected
         onClick={() => {
           //set activeBranchInfo to version
           setOverlayOpen("Editor");
@@ -163,7 +215,7 @@ export default function DoenetDriveTool(props) {
       </mainPanel>
 
       <menuPanel title="Item Info">
-        <ItemInfo />
+        <ItemInfo route={props.route} />
       </menuPanel>
 
       <overlay name="Editor">
