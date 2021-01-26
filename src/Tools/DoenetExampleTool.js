@@ -1,58 +1,29 @@
 import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import Drive from "../imports/Drive";
 import AddItem from "../imports/AddItem";
 import Switch from "../imports/Switch";
-import { atom, useSetRecoilState, useRecoilValue, selector } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 
-let numAtom = atom({
-  key: "numAtom",
-  default: 0,
-});
+function OverlayDataViwer() {
+  const overlayData = useRecoilValue(openOverlayByName);
 
-let unitAtom = atom({
-  key: "unitAtom",
-  default: "px",
-});
-
-let molecule = selector({
-  key: "mymolecule",
-  get: ({ get }) => {
-    let aNum = get(numAtom);
-    let unit = get(unitAtom);
-
-    return aNum * 3 + unit;
-  },
-});
-
-function GlobalSelectIndicator() {
-  let selectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  let nodes = [];
-  for (let nodeObj of selectedNodes) {
-    nodes.push(
-      <div key={`gsi${nodeObj.nodeId}`}>
-        {nodeObj.type} {nodeObj.nodeId}
-      </div>
-    );
-  }
   return (
-    <div
-      style={{
-        backgroundColor: "#fcd2a7",
-        border: "1px solid black",
-        margin: "20px",
-        padding: "10px",
-      }}
-    >
-      <h3>Global Select Indicator</h3>
-      {nodes}
+    <div>
+      <h2>Data</h2>
+      <ul>
+        <li> target: {overlayData.target} </li>
+        <li> action: {overlayData.instructions.action} </li>
+        <li> courseId: {overlayData.instructions.courseId} </li>
+        <li> branchId: {overlayData.instructions.branchId} </li>
+      </ul>
     </div>
   );
 }
 
-export default function DoenetExampleTool(props) {
+export default function DoenetExampleTool() {
   const setSupportVisiblity = useSetRecoilState(supportVisible);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // console.log("=== DoenetExampleTool");
@@ -119,11 +90,12 @@ export default function DoenetExampleTool(props) {
               setSupportVisiblity(e.target.checked);
             }}
           />
-          <p>header for important stuff</p>
         </headerPanel>
 
         <mainPanel>
-          <p>do the main important stuff</p>
+          <h1>Editor</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
 
           {/* <BreadcrumbContainer /> */}
           {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
@@ -131,7 +103,7 @@ export default function DoenetExampleTool(props) {
         </mainPanel>
 
         <supportPanel width="40%">
-          <p>I'm here for support</p>
+          <p>Support Panel</p>
           {/* <GlobalSelectIndicator /> */}
         </supportPanel>
 
@@ -184,6 +156,8 @@ export default function DoenetExampleTool(props) {
 
         <mainPanel>
           <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
 
           {/* <BreadcrumbContainer /> */}
           {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}

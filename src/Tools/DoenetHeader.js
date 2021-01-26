@@ -24,7 +24,7 @@ import MenuDropDown from "../imports/MenuDropDown.js";
 const ExtendedHeader = styled.div`
   display: none;
   width: 100%;
-  background-color: white;
+  background-color: red;
   z-index: 1;
   transition: all 0.5s ease-in-out;
   @media (max-width: 768px) {
@@ -439,7 +439,6 @@ class DoenetHeader extends Component {
                     {this.state.myRoles.permissionRoles[0].label}
                   </button>
                 )}
-                {menuToolBox}
                 {profileMenu}
               </div>
             )}
@@ -481,7 +480,6 @@ class DoenetHeader extends Component {
                   }
                 </button>
               )}
-              {menuToolBox}
               {profileMenu}
             </div>
           )}
