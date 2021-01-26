@@ -469,7 +469,7 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
   
-  if (!props.isNav && routePathDriveId && props.driveId !== routePathDriveId) return <></>;  
+  if (!props.isNav && (routePathDriveId && (props.driveId !== routePathDriveId || routePathDriveId === ""))) return <></>;  
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
@@ -1245,6 +1245,7 @@ const nodePathSelector = selectorFamily({
   get: (driveIdFolderId) => ({get})=>{
     
     const { driveId, folderId } = driveIdFolderId;
+    if (!driveId || !folderId) return []
     let path = []
     let currentNode = folderId;
     while (currentNode && currentNode !== driveId) {
@@ -1262,7 +1263,13 @@ function useUpdateBreadcrumb(props) {
   const { dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
   const { isDraggedOverBreadcrumb } = dragState;
-  const[routePathDriveId, routePathFolderId, itemId] = props.path.split(":");
+  let routePathDriveId = "";
+  let routePathFolderId = "";
+  if (props.path) {
+    const[driveId, folderId, itemId] = props.path?.split(":");
+    routePathDriveId = driveId;
+    routePathFolderId = folderId;
+  }
   const [nodesOnPath, _] = useRecoilState(nodePathSelector({driveId: routePathDriveId, folderId: routePathFolderId}));
   const driveLabel = props.driveLabel ?? "/";
 
