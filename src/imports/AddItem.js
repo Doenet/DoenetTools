@@ -41,8 +41,8 @@ export default function AddItem(props){
 function AddItemRouted(props){
 
   const selectedDrive = useRecoilValue(selectedDriveAtom);
-  let selectedItemId = selectedDrive.driveId;  
-  let driveId = selectedDrive.driveId;
+  let selectedItemId = selectedDrive?.driveId;  
+  let driveId = selectedDrive?.driveId;
   let itemInfo = null;
 
   const globalSelected = useRecoilValue(globalSelectedNodesAtom);

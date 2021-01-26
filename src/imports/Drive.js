@@ -434,14 +434,16 @@ function DriveRouted(props){
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   const [_, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   let driveInstanceId = useRef("");
-  const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
+  // const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
+  useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, 
+    path: Object.fromEntries(new URLSearchParams(props.route.location.search))?.path}); 
 
-  useEffect(() => {
-    if (driveInfo.state === "loading") return;
+  // useEffect(() => {
+  //   if (driveInfo.state === "loading") return;
 
-    updateBreadcrumb({routePathDriveId, routePathFolderId});
+  //   updateBreadcrumb({routePathDriveId, routePathFolderId});
     
-  }, [driveInfo.state, routePathDriveId, routePathFolderId])
+  // }, [driveInfo.state, routePathDriveId, routePathFolderId])
 
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
@@ -1254,6 +1256,13 @@ function useUpdateBreadcrumb(props) {
   const { isDraggedOverBreadcrumb } = dragState;
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const driveLabel = props.driveLabel ?? "/";
+
+  useEffect(() => {
+    if (!props.path) return;
+    
+    const[routePathDriveId, routePathFolderId, _] = props.path.split(":");
+    updateBreadcrumb({ routePathDriveId, routePathFolderId });
+  }, [props.path])
   
   const contentsDictionary = useMemo(() => {
     let contentsDictionary = {};
@@ -1363,8 +1372,6 @@ function useUpdateBreadcrumb(props) {
       addBreadcrumbItem(item);      
     }
   }
-
-  return updateBreadcrumb;
 }
 
 const DragGhost = ({ id, element, numItems }) => {
