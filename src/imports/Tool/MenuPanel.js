@@ -25,8 +25,9 @@ const PanelsWrapper = styled.div`
 
 const MenuHeaderButton = styled.button`
   border: none;
-  background-color: ${({ linkedPanel, activePanel }) =>
-    linkedPanel === activePanel ? "#8fb8de" : "#f6f8ff"};
+  border-top: 8px solid ${({ linkedPanel, activePanel }) =>
+    linkedPanel === activePanel ? "#1A5A99" : "#f6f8ff"};
+  background-color: "#f6f8ff";
   border-bottom: 1px solid #3d3d3d;
   border-left: 1px solid #3d3d3d;
   width: 100%;

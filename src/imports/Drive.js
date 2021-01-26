@@ -3,6 +3,8 @@ import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
+import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 import {
@@ -78,7 +80,6 @@ export default function Drive(props){
 
 
   if (props.types){
-
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
@@ -92,7 +93,8 @@ export default function Drive(props){
         }
       }
     }
-    return <>{drives}</>
+    return <>
+    {drives}</>
   }else if (props.driveId){
     for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
         if (driveObj.driveId === props.driveId){
@@ -205,7 +207,7 @@ export const folderDictionarySelector = selectorFamily({
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = JSON.parse(JSON.stringify(old));;
+          let newObj = JSON.parse(JSON.stringify(old));
           newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
@@ -220,6 +222,7 @@ export const folderDictionarySelector = selectorFamily({
             folderInfo:newItem,contentsDictionary:{},contentIds:{"defaultOrder":[]}
           })
         }
+
         const data = { 
           driveId:driveIdFolderId.driveId,
           parentFolderId:driveIdFolderId.folderId,
@@ -261,11 +264,15 @@ export const folderDictionarySelector = selectorFamily({
         //Remove from folder
         let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
         let newFInfo = {...fInfo}
-        newFInfo["defaultOrder"] = [...fInfo.defaultOrder];
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
-        let index = newFInfo["defaultOrder"].indexOf(instructions.itemId);
-        newFInfo["defaultOrder"].splice(index,1)
         delete newFInfo["contentsDictionary"][instructions.itemId];
+        newFInfo.folderInfo = {...fInfo.folderInfo}
+        newFInfo.folderInfo.dirty = 1;
+        const sortBy = newFInfo.folderInfo.sortBy;
+        newFInfo.contentIds = {...fInfo.contentIds}
+        newFInfo.contentIds[sortBy] = [...fInfo.contentIds[sortBy]]
+        const index = newFInfo.contentIds[sortBy].indexOf(instructions.itemId)
+        newFInfo.contentIds[sortBy].splice(index,1)
         set(folderDictionary(driveIdFolderId),newFInfo);
         //Remove from selection
         if (get(selectedDriveItemsAtom(item))){
@@ -355,6 +362,23 @@ export const folderDictionarySelector = selectorFamily({
           
         }
       break;
+      case "assignment was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.assignment_isPublished = "1";
+          newItemObj.isAssignment = "1";
+          return newObj;
+        })
+        break;
+      case "content was published":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isPublished = "1";
+          return newObj;
+        })
+      break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -399,6 +423,8 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
+  let hideUnpublished = false; //Default to showing unpublished
+  if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
@@ -439,8 +465,8 @@ function DriveRouted(props){
   if(props.isNav){
     rootFolderId = props.driveId;
   }
-
   
+  if (!props.isNav && routePathDriveId && props.driveId !== routePathDriveId) return <></>;  
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
@@ -456,6 +482,7 @@ function DriveRouted(props){
   urlClickBehavior={props.urlClickBehavior}
   route={props.route}
   pathItemId={pathItemId}
+  hideUnpublished={hideUnpublished}
   />
   </>
 }
@@ -500,25 +527,32 @@ function Folder(props){
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (dropState.activeDropTargetId === itemId) { bgcolor = "#53ff47"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let marginSize = "50px";
+  let widthSize = "850px";
+  if (props.isNav) {marginSize = "0px"; widthSize = "224px"};
+  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+ 
 
   const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
   const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
  
-  let openCloseText = isOpen ? "Close" : "Open";
+  let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     deleteItem(itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let openCloseButton = <button 
+  style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
@@ -536,6 +570,7 @@ function Folder(props){
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
     return <button
+    style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
     tabIndex={-1}
     onClick={(e)=>{
       e.preventDefault();
@@ -555,10 +590,13 @@ function Folder(props){
       style={{
         cursor: "pointer",
         width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black", 
         backgroundColor: bgcolor,
-        margin: "2px",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         if (props.isNav){
@@ -569,6 +607,8 @@ function Folder(props){
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -583,12 +623,15 @@ function Folder(props){
           //Don't clear on navigation changes
           if (!props.isNav){
           //Only clear if focus goes outside of this node group
-            if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetDriveStayselected)
-              ){
-                setSelected({instructionType:"clear all"})
-            }
+            // if (e.relatedTarget === null ||
+            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+            //   !e.relatedTarget.dataset.doenetDriveStayselected)
+            //   ){
+            //     setSelected({instructionType:"clear all"})
+            // }
+            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+            //   setSelected({instructionType:"clear all"});
+            // }
           }
         }}
       >
@@ -596,7 +639,7 @@ function Folder(props){
       className="noselect" 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} Folder {label} {deleteButton} ({contentIdsArr.length})</div></div>
+      }}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length}) {deleteButton}</div></div>
 
   let items = null;
   
@@ -610,12 +653,14 @@ function Folder(props){
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        margin: "2px",
-        marginLeft: `${props.indentLevel * indentPx}px`
+        width: widthSize,
+        // marginLeft: `${(props.indentLevel * indentPx)}px`,
+        marginLeft: marginSize,
+        fontSize: "24px"
       }}
       onClick={(e)=>{
         if (props.isNav){
@@ -636,12 +681,14 @@ function Folder(props){
         className="noselect nooutline" 
         style={{
           cursor: "pointer",
-          width: "300px",
-          padding: "4px",
-          border: "1px solid black",
+          padding: "8px",
+          border: "0px",
+          borderBottom: "2px solid black",
           backgroundColor: bgcolor,
-          margin: "2px",
-          marginLeft: `${props.indentLevel * indentPx}px`
+          width: widthSize,
+          // marginLeft: `${(props.indentLevel * indentPx)}px`,
+          marginLeft: marginSize,
+          fontSize: "24px"
         }}
       > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
     }
@@ -683,12 +730,12 @@ function Folder(props){
   </WithDropTarget>
 
   if (props.driveObj && !props.isNav) {
-    const sortButtons = <>
+    const sortButtons = <div style={{marginLeft: "50px"}}>
       {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
-    </>;
+    </div>;
 
     folder = <>
       {sortButtons}
@@ -701,6 +748,11 @@ function Folder(props){
     items = [];
     for (let itemId of contentIdsArr){
       let item = dictionary[itemId];
+      // console.log(">>>item",item)
+      if (props.hideUnpublished && item.isPublished === "0"){
+        //hide item
+        continue;
+      }
       switch(item.itemType){
         case "Folder":
         items.push(<Folder 
@@ -715,7 +767,7 @@ function Folder(props){
           pathItemId={props.pathItemId}
           deleteItem={deleteItem}
           parentFolderId={props.folderId}
-
+          hideUnpublished={props.hideUnpublished}
           />)
         break;
         case "Url":
@@ -743,7 +795,7 @@ function Folder(props){
             isNav={props.isNav} 
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-            />)
+          />)
         break;
         default:
         console.warn(`Item not rendered of type ${item.itemType}`)
@@ -765,13 +817,13 @@ function Folder(props){
 const EmptyNode =  React.memo(function Node(props){
 
   return (<div style={{
-    width: "300px",
-    padding: "4px",
-    border: "1px solid black",
-    backgroundColor: "white",
+    width: "840px",
+    padding: "8px",
+    // border: "1px solid black",
+    backgroundColor: "#f6f8ff",
     margin: "2px",
   
-  }} ><div className="noselect" style={{ textAlign: "center" }} >EMPTY</div></div>)
+  }} ><div className="noselect" style={{marginLeft: "50px"}}>EMPTY</div></div>)
 })
 
 function LogVisible(props){
@@ -783,6 +835,19 @@ function LogVisible(props){
 const selectedDriveItemsAtom = atomFamily({
   key:"selectedDriveItemsAtom",
   default:false
+})
+
+export const clearAllSelections = selector({
+  key:"clearAllSelections",
+  set:({get,set})=>{
+    const globalSelected = get(globalSelectedNodesAtom);
+    for (let itemObj of globalSelected){
+      console.log("ItemObj",itemObj)
+      const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
+      set(selectedDriveItemsAtom(atomFormat),false)
+    }
+    set(globalSelectedNodesAtom,[]);
+  }
 })
 
 const selectedDriveItems = selectorFamily({
@@ -916,18 +981,30 @@ const DoenetML = React.memo((props)=>{
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let widthSize = "850px";
+  let marginSize = "50px";
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"}
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+  
+  
 
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     props.deleteItem(props.item.itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
+
+  let label = props.item?.label;
+  if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
+    label = props.item?.assignment_title;
+  }
 
   let doenetMLJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
@@ -935,11 +1012,13 @@ const DoenetML = React.memo((props)=>{
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        margin: "2px",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         
@@ -950,6 +1029,8 @@ const DoenetML = React.memo((props)=>{
           newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -964,25 +1045,26 @@ const DoenetML = React.memo((props)=>{
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
           // if (e.relatedTarget === null){
           //   setSelected({instructionType:"clear all"})
           // }
-          console.log(">>>",e.relatedTarget);
-          console.log(">>>dataset",e?.relatedTarget?.dataset)
-          
+          // console.log(">>>dataset",e?.relatedTarget?.dataset)
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    DoenetML {props.item?.label} {deleteButton} </div></div>
+<FontAwesomeIcon icon={faCode}/> {label} {deleteButton} </div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1020,18 +1102,24 @@ const Url = React.memo((props)=>{
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const indentPx = 20;
-  let bgcolor = "#e2e2e2";
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "#6de5ff"; }
-  if (isSelected && dragState.isDragging) { bgcolor = "#f3ff35"; }  
+  let bgcolor = "#f6f8ff";
+  let borderSide = "0px 0px 0px 0px";
+  let widthSize = "850px";
+  let marginSize = "50px";
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"};
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+  
 
   let deleteButton = <button
+  style={{backgroundColor: bgcolor, border: "none"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
     e.preventDefault();
     e.stopPropagation();
     props.deleteItem(props.item.itemId)
   }}
-  >Delete</button>
+  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let urlJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
@@ -1040,10 +1128,13 @@ const Url = React.memo((props)=>{
       style={{
         cursor: "pointer",
         width: "300px",
-        padding: "4px",
-        border: "1px solid black",
+        padding: "8px",
+        border: "0px",
+        borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        margin: "2px",
+        width: widthSize,
+        // boxShadow: borderSide,
+        marginLeft: marginSize
       }}
       onClick={(e)=>{
         if (props.urlClickBehavior === "select"){
@@ -1054,6 +1145,8 @@ const Url = React.memo((props)=>{
             newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:Url`
             history.push('?'+encodeParams(newParams))
           }else{
+            e.preventDefault();
+            e.stopPropagation();
             if (!e.shiftKey && !e.metaKey){
               setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
             }else if (e.shiftKey && !e.metaKey){
@@ -1066,22 +1159,24 @@ const Url = React.memo((props)=>{
           //Default url behavior is new tab
           let linkTo = props.item?.url; //Enable this when add URL is completed
           window.open(linkTo)
-          // window.open("http://doenet.org")
-
-          // location.href = linkTo; 
-          // location.href = "http://doenet.org"; 
         }
       }}
       onBlur={(e) => {
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
+          // if (e.relatedTarget.dataset.doenetDriveStayselected){
+          //   console.log(">>>GET FOCUS BACK!")
+          // }
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
@@ -1089,7 +1184,7 @@ const Url = React.memo((props)=>{
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`
       }}>
-    Url {props.item?.label} {deleteButton}</div></div>
+    <FontAwesomeIcon icon={faLink}/> {props.item?.label} {deleteButton}</div></div>
 
   if (!props.isNav) {
     // make URL draggable
@@ -1216,7 +1311,7 @@ function useUpdateBreadcrumb(props) {
     
     // generate folder stack
     const breadcrumbItemStyle = {
-      fontSize: "18px",
+      fontSize: "24px",
       color: "#8a8a8a",
       textDecoration: "none",
     }
@@ -1301,7 +1396,7 @@ const DragGhost = ({ id, element, numItems }) => {
 
   const singleItemStyle = {
     boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
-    borderRadius: '4px',
+    borderRadius: '2px solid black',
     animation: 'dragAnimation 2s',
     display: 'flex',
     justifyContent: 'center',
