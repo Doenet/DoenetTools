@@ -115,8 +115,8 @@ export default function DoenetExampleTool(props) {
       <headerPanel title="my title">
         <p>header for important stuff</p>
         <Switch
-          onChange={(value) => {
-            setSupportVisiblity(value);
+          onChange={(e) => {
+            setSupportVisiblity(e.target.checked);
           }}
         />
       </headerPanel>
