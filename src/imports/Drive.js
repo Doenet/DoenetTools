@@ -434,16 +434,8 @@ function DriveRouted(props){
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   const [_, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   let driveInstanceId = useRef("");
-  // const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
-  useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, 
-    path: Object.fromEntries(new URLSearchParams(props.route.location.search))?.path}); 
-
-  // useEffect(() => {
-  //   if (driveInfo.state === "loading") return;
-
-  //   updateBreadcrumb({routePathDriveId, routePathFolderId});
-    
-  // }, [driveInfo.state, routePathDriveId, routePathFolderId])
+  const path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+  useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, path: path}); 
 
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
@@ -1267,35 +1259,18 @@ const nodePathSelector = selectorFamily({
 function useUpdateBreadcrumb(props) {
   const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   const { onDragOverContainer } = useDnDCallbacks();
-  const [ pathDriveIdFolderId, setPathDriveIdFolderId] = useState({})
   const { dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
   const { isDraggedOverBreadcrumb } = dragState;
-  const nodePathObj = useRecoilStateLoadable(nodePathSelector({driveId: pathDriveIdFolderId.driveId, folderId: pathDriveIdFolderId.folderId}));
-  const nodesOnPath = nodePathObj?.[0]?.contents ?? [];
+  const[routePathDriveId, routePathFolderId, itemId] = props.path.split(":");
+  const [nodesOnPath, _] = useRecoilState(nodePathSelector({driveId: routePathDriveId, folderId: routePathFolderId}));
   const driveLabel = props.driveLabel ?? "/";
 
   useEffect(() => {
-    if (!props.path) return;
-    const[routePathDriveId, routePathFolderId, _] = props.path.split(":");
-    // routePathDriveIdRef.current = routePathDriveId;
-    // routePathFolderIdRef.current = routePathFolderId;
-    setPathDriveIdFolderId({driveId: routePathDriveId, folderId: routePathFolderId})
-  }, [props.path, nodePathObj.state, nodesOnPath])
-
-  useEffect(() => {
-    updateBreadcrumb({routePathDriveId: pathDriveIdFolderId.driveId, routePathFolderId: pathDriveIdFolderId.folderId});
-  }, [pathDriveIdFolderId])
+    updateBreadcrumb({routePathDriveId, routePathFolderId});
+  }, [nodesOnPath])
 
   const updateBreadcrumb = ({routePathDriveId, routePathFolderId}) => {
-    // const {routePathDriveId, routePathFolderId} = pathDriveIdFolderId;
-    // console.log(pathDriveIdFolderId)
-    if (routePathDriveId === "") {
-      clearBreadcrumb();
-      addBreadcrumbItem({to: "/", element: <div>{driveLabel}</div>});
-      return;
-    }
-
     if (props.driveId !== routePathDriveId) {
       return;
     }
@@ -1309,7 +1284,6 @@ function useUpdateBreadcrumb(props) {
       color: "#8a8a8a",
       textDecoration: "none",
     }
-    // let nodesOnPath = getNodesOnPath({ currentNodeId: routePathFolderId, end: routePathDriveId});
     console.log(">>>", nodesOnPath)
     
     for (let currentNode of nodesOnPath ) {
