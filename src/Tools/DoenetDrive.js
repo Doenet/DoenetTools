@@ -19,7 +19,10 @@ import { supportVisible } from "../imports/Tool/SupportPanel";
 import GlobalFont from "../fonts/GlobalFont.js";
 import axios from "axios";
 import Button from "../imports/PanelHeaderComponents/Button.js";
-
+import DoenetViewer from './DoenetViewer';
+import {Controlled as CodeMirror} from 'react-codemirror2'
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
 
 
 const itemVersionsSelector = selectorFamily({
@@ -177,6 +180,14 @@ export default function DoenetDriveTool(props) {
   const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
 
+  const [updateNumber,setUpdateNumber] = useState(0);
+  const [viewerDoenetML,setViewerDoenetML] = useState("");
+  const [editorDoenetML,setEditorDoenetML] = useState("");
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
+  
   return (
     <Tool>
       <navPanel>
@@ -232,12 +243,39 @@ export default function DoenetDriveTool(props) {
         </headerPanel>
 
         <mainPanel>
-          <p>DoenetViewer</p>
+        <button onClick={()=>{
+            setViewerDoenetML(editorDoenetML);
+            setUpdateNumber((old)=>{return old+1})
+            }}>Update</button>
+          <DoenetViewer
+            key={"doenetviewer" + updateNumber}
+            doenetML={viewerDoenetML}
+            flags={{
+              showCorrectness: true,
+              readOnly: false,
+              solutionDisplayMode: solutionDisplayMode,
+              showFeedback: true,
+              showHints: true,
+            }}
+            attemptNumber={attemptNumber}
+            assignmentId={assignmentId}
+            ignoreDatabase={false}
+            requestedVariant={requestedVariant}
+
+          />
         
         </mainPanel>
 
         <supportPanel width="40%">
-          <p>Text Editor</p>
+        <CodeMirror
+        value={editorDoenetML}
+        // options={options}
+        onBeforeChange={(editor, data, value) => {
+          setEditorDoenetML(value)
+        }}
+        onChange={(editor, data, value) => {
+        }}
+      />
         </supportPanel>
   
       </overlay>
