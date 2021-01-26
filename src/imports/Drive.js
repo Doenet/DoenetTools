@@ -1248,43 +1248,48 @@ function useDnDCallbacks() {
   }
 }
 
+const nodePathSelector = selectorFamily({
+  key:"nodePathSelector",
+  get: (driveIdFolderId) => ({get})=>{
+    
+    const { driveId, folderId } = driveIdFolderId;
+    let path = []
+    let currentNode = folderId;
+    while (currentNode && currentNode !== driveId) {
+      const folderInfoObj = get(folderDictionary({ driveId, folderId: currentNode})); 
+      path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label})
+      currentNode = folderInfoObj.folderInfo.parentFolderId;
+    }
+    return path;
+  }
+})
+
 function useUpdateBreadcrumb(props) {
   const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   const { onDragOverContainer } = useDnDCallbacks();
+  const [ pathDriveIdFolderId, setPathDriveIdFolderId] = useState({})
   const { dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
   const { isDraggedOverBreadcrumb } = dragState;
-  const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
+  const nodePathObj = useRecoilStateLoadable(nodePathSelector({driveId: pathDriveIdFolderId.driveId, folderId: pathDriveIdFolderId.folderId}));
+  const nodesOnPath = nodePathObj?.[0]?.contents ?? [];
   const driveLabel = props.driveLabel ?? "/";
 
   useEffect(() => {
     if (!props.path) return;
-    
     const[routePathDriveId, routePathFolderId, _] = props.path.split(":");
-    updateBreadcrumb({ routePathDriveId, routePathFolderId });
-  }, [props.path])
-  
-  const contentsDictionary = useMemo(() => {
-    let contentsDictionary = {};
-    for (let index in driveInfo?.contents?.results) {
-      let result = driveInfo?.contents?.results[index];
-      contentsDictionary[result?.itemId] = result;
-    }
-    return contentsDictionary;
-  }, [driveInfo])
-  
-  const getNodesOnPath = ({currentNodeId, end}) => {
-    let list = [];
-    while (currentNodeId && currentNodeId !== end) {
-      const nodeObj = contentsDictionary?.[currentNodeId];
-      list.push(currentNodeId);
-      currentNodeId = nodeObj?.parentFolderId;
-    }
-    return list;
-  }
+    // routePathDriveIdRef.current = routePathDriveId;
+    // routePathFolderIdRef.current = routePathFolderId;
+    setPathDriveIdFolderId({driveId: routePathDriveId, folderId: routePathFolderId})
+  }, [props.path, nodePathObj.state, nodesOnPath])
 
-  const updateBreadcrumb = ({ routePathDriveId, routePathFolderId }) => {
+  useEffect(() => {
+    updateBreadcrumb({routePathDriveId: pathDriveIdFolderId.driveId, routePathFolderId: pathDriveIdFolderId.folderId});
+  }, [pathDriveIdFolderId])
 
+  const updateBreadcrumb = ({routePathDriveId, routePathFolderId}) => {
+    // const {routePathDriveId, routePathFolderId} = pathDriveIdFolderId;
+    // console.log(pathDriveIdFolderId)
     if (routePathDriveId === "") {
       clearBreadcrumb();
       addBreadcrumbItem({to: "/", element: <div>{driveLabel}</div>});
@@ -1304,10 +1309,12 @@ function useUpdateBreadcrumb(props) {
       color: "#8a8a8a",
       textDecoration: "none",
     }
-    let nodesOnPath = getNodesOnPath({ currentNodeId: routePathFolderId, end: routePathDriveId});
+    // let nodesOnPath = getNodesOnPath({ currentNodeId: routePathFolderId, end: routePathDriveId});
+    console.log(">>>", nodesOnPath)
     
-    for (let currentNodeId of nodesOnPath ) {
-      const nodeObj = contentsDictionary?.[currentNodeId];
+    for (let currentNode of nodesOnPath ) {
+      const nodeObj = currentNode;
+      const currentNodeId = nodeObj.folderId;
 
       let newParams = Object.fromEntries(new URLSearchParams());
       newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
