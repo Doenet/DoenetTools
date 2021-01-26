@@ -247,7 +247,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
 function DoenetCourseRouted(props) {
   const role = useRecoilValue(roleAtom);
   // const assignmentIdSettings = useRecoilValueLoadable(assignmentDictionarySelector(assignmentId))
-  const [assignmentIdValue, setOpenAssignment] = useRecoilState(assignmentIdAtom);
+  const [assignmentIdValue, setAssignmentId] = useRecoilState(assignmentIdAtom);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   let [hideUnpublished, setHideUnpublished] = useState(role === 'Instructor' ? false : true);
   const setSupportVisiblity = useSetRecoilState(supportVisible);
@@ -274,10 +274,10 @@ function DoenetCourseRouted(props) {
     const loadBackAssignmentIdSelector = useRecoilValueLoadable(getAssignmentIdSelector({courseId:courseId,itemId:pathItemId}));
     if ( loadBackAssignmentIdSelector?.state === 'hasValue' && loadBackAssignmentIdSelector?.contents) {
       // console.log(">>loadBackAssignmentId",loadBackAssignmentIdSelector);
-      setOpenAssignment(loadBackAssignmentIdSelector?.contents);
+      setAssignmentId(loadBackAssignmentIdSelector?.contents);
     }
     else{
-      //setOpenAssignment('');
+      //setAssignmentId('');
     }
 
   let displayAssignmentSettings = '';
@@ -291,7 +291,7 @@ function DoenetCourseRouted(props) {
   //       console.log(">>>displayAssignmentSettings", assignment);
   //       contentId = assignment.contentId;
   //       //setMakeContent(true);
-  //       //setOpenAssignment(assignment.assignmentId);
+  //       //setAssignmentId(assignment.assignmentId);
   //     }
   //   }
   // }
@@ -456,7 +456,7 @@ function DoenetCourseRouted(props) {
   const handleMakeAssignment = () => {
     makeassignmentIsSelected = true;
     let assignmentId = nanoid();
-    setOpenAssignment(assignmentId);
+    setAssignmentId(assignmentId);
     let newAssignmentObj = {
       assignmentId:assignmentId,
       title:'Untitled Assignment New',
