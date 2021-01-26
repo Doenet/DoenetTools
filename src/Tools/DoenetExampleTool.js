@@ -3,13 +3,7 @@ import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
 import AddItem from "../imports/AddItem";
 import Switch from "../imports/Switch";
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-  selector,
-  atomFamily,
-} from "recoil";
+import { atom, useSetRecoilState, useRecoilValue, selector } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 
@@ -30,15 +24,6 @@ let molecule = selector({
     let unit = get(unitAtom);
 
     return aNum * 3 + unit;
-  },
-});
-
-let mytest = selector({
-  key: "mytest",
-  get: ({ get }) => {
-    let mole = get(molecule);
-    console.log("MOLE!!!");
-    return `this is mole ${mole}`;
   },
 });
 
@@ -67,28 +52,6 @@ function GlobalSelectIndicator() {
   );
 }
 
-let myAtomFam = atomFamily({
-  key: "myAtomFam",
-  default: "default",
-});
-function Inc(props) {
-  let setNum = useSetRecoilState(numAtom);
-  return <button onClick={() => setNum((old) => old + 1)}>+</button>;
-}
-
-function NumIndicator() {
-  let num = useRecoilValue(molecule);
-  return <div>{num}</div>;
-}
-function ShowFam(props) {
-  const famVal = useRecoilValue(myAtomFam(props.mykey));
-  return (
-    <div>
-      mykey{props.mykey} = {famVal}
-    </div>
-  );
-}
-
 export default function DoenetExampleTool(props) {
   const setSupportVisiblity = useSetRecoilState(supportVisible);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
@@ -101,15 +64,6 @@ export default function DoenetExampleTool(props) {
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
         {/* <Drive types={['content','course']} /> */}
-        <div>
-          <button
-            onClick={() => {
-              setOverlayOpen("George");
-            }}
-          >
-            Go to Overlay
-          </button>
-        </div>
       </navPanel>
 
       <headerPanel title="my title">
@@ -136,6 +90,21 @@ export default function DoenetExampleTool(props) {
       </supportPanel>
 
       <menuPanel title="edit">
+        <button
+          onClick={() => {
+            // setOverlayOpen("George");
+            setOverlayOpen({
+              target: "editor",
+              instructions: {
+                action: "open",
+                courseId: "c1",
+                branchId: "b1",
+              },
+            });
+          }}
+        >
+          Go to Overlay
+        </button>
         <p>control important stuff</p>
       </menuPanel>
 
@@ -143,11 +112,11 @@ export default function DoenetExampleTool(props) {
         <p>control more important stuff</p>
       </menuPanel>
 
-      <overlay>
+      <overlay name="editor">
         <headerPanel title="my title">
           <Switch
-            onChange={(value) => {
-              setSupportVisiblity(value);
+            onChange={(e) => {
+              setSupportVisiblity(e.target.checked);
             }}
           />
           <p>header for important stuff</p>
@@ -170,14 +139,78 @@ export default function DoenetExampleTool(props) {
           <p>control important stuff</p>
           <button
             onClick={() => {
-              setOverlayOpen("");
+              setOverlayOpen({
+                instructions: {
+                  action: "close",
+                },
+              });
+            }}
+          >
+            Go Back
+          </button>
+          <div>
+            <button
+              onClick={() => {
+                // setOverlayOpen("George");
+                setOverlayOpen({
+                  target: "cal",
+                  instructions: {
+                    action: "open",
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel name="other">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal">
+        <headerPanel title="my title">
+          <Switch
+            onChange={(e) => {
+              setSupportVisiblity(e.target.checked);
+            }}
+          />
+          <p>header for important stuff</p>
+        </headerPanel>
+
+        <mainPanel>
+          <h1>calender</h1>
+
+          {/* <BreadcrumbContainer /> */}
+          {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
+          {/* <Drive types={['content','course']} /> */}
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>I'm here for support</p>
+          {/* <GlobalSelectIndicator /> */}
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <p>control important stuff</p>
+          <button
+            onClick={() => {
+              setOverlayOpen({
+                instructions: {
+                  action: "close",
+                },
+              });
             }}
           >
             Go Back
           </button>
         </menuPanel>
 
-        <menuPanel title="other">
+        <menuPanel name="other">
           <p>control more important stuff</p>
         </menuPanel>
       </overlay>

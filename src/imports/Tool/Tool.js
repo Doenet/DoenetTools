@@ -40,17 +40,28 @@ const ToolContainer = styled.div`
 
 export const activeOverlayName = atom({
   key: "activeOverlayNameAtom",
-  default: "",
+  default: [],
 });
 
 export const openOverlayByName = selector({
   key: "openOverlayByNameSelector",
   get: ({ get }) => {
-    return get(activeOverlayName);
+    const currentElement = get(activeOverlayName);
+    return currentElement.length === 0
+      ? currentElement
+      : currentElement[currentElement.length - 1];
   },
 
   set: ({ set }, newValue) => {
-    set(activeOverlayName, newValue);
+    if (newValue.instructions.action === "open") {
+      set(activeOverlayName, (old) => [...old, newValue]);
+    } else if (newValue.instructions.action === "close") {
+      set(activeOverlayName, (old) => {
+        let newArray = [...old];
+        newArray.pop();
+        return newArray;
+      });
+    }
   },
 });
 
@@ -84,6 +95,11 @@ export default function Tool(props) {
               children: child.props.children,
               props: newProps,
             });
+          } else if (child.type === "overlay") {
+            if (!toolParts.overlay) {
+              toolParts["overlay"] = {};
+            }
+            toolParts.overlay[child.props.name] = child.props.children;
           } else {
             toolParts[child.type] = {
               children: child.props.children,
@@ -134,13 +150,13 @@ export default function Tool(props) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
-  if (toolParts.overlay) {
-    overlay = toolParts.overlay.children;
+  if (openOverlayName?.target && toolParts.overlay) {
+    overlay = toolParts.overlay[openOverlayName.target];
   }
 
   let toolContent = null;
 
-  if (!props.isOverlay && openOverlayName !== "") {
+  if (!props.isOverlay && openOverlayName?.target) {
     toolContent = <Tool isOverlay>{overlay}</Tool>;
   }
 
