@@ -35,7 +35,9 @@ const ToolContainer = styled.div`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  z-index: ${({ isOverlay }) => (isOverlay ? "10" : "auto")};
+  background-color: #f6f8ff;
+  position: ${({ isOverlay }) => (isOverlay ? "fixed" : "static")};
+  z-index: ${({ isOverlay }) => (isOverlay ? "3" : "auto")};
 `;
 
 export const activeOverlayName = atom({
