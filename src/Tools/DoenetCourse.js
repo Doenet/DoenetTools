@@ -14,6 +14,8 @@ import CollapseSection from "../imports/CollapseSection";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
 import Button from "../imports/PanelHeaderComponents/Button";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton";
+import TextField from "../imports/PanelHeaderComponents/TextField";
+
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
@@ -199,19 +201,19 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
       courseIdassignmentId = {...courseIdassignmentId,assignmentId:instructions.newAssignmentObj.assignmentId}
     }
     console.log(">>>assignInfo",courseIdassignmentId);
-    console.log(">>>cid aid instructions",instructions);
+    // console.log(">>>cid aid instructions",instructions);
     const assignInfo = get(assignmentDictionary(courseIdassignmentId)); // get 
-    console.log(">>> cid aid assignInfo new ", assignInfo);
+    // console.log(">>> cid aid assignInfo new ", assignInfo);
     let {type , ...value} = instructions;
     switch(type){
         case "change settings" :
-        console.log(">>> cid aid assignInfo change", assignInfo);
+        // console.log(">>> cid aid assignInfo change", assignInfo);
         let assignment =  {...assignInfo,...value};
         set(assignmentDictionary(courseIdassignmentId),assignment);
         break;
         case "save assignment settings" :
         // make copy
-        console.log("save assign info", assignInfo);
+        // console.log("save assign info", assignInfo);
           let saveAssignment =  {...assignInfo,...value};     
         set(assignmentDictionary(courseIdassignmentId), saveAssignment);
         const payload = {
@@ -228,7 +230,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
           )
         break;
         case "make new assignment":        
-          console.log("assignmentInfo before making >>>",instructions.newAssignmentObj);          
+          // console.log("assignmentInfo before making >>>",instructions.newAssignmentObj);          
           set(assignmentDictionary(courseIdassignmentId),instructions.newAssignmentObj);
           break;
     }
@@ -271,7 +273,7 @@ function DoenetCourseRouted(props) {
     const [makeContent, setMakeContent] = useState(false);
     const loadBackAssignmentIdSelector = useRecoilValueLoadable(getAssignmentIdSelector({courseId:courseId,itemId:pathItemId}));
     if ( loadBackAssignmentIdSelector?.state === 'hasValue' && loadBackAssignmentIdSelector?.contents) {
-      console.log(">>loadBackAssignmentId",loadBackAssignmentIdSelector);
+      // console.log(">>loadBackAssignmentId",loadBackAssignmentIdSelector);
       setOpenAssignment(loadBackAssignmentIdSelector?.contents);
     }
     else{
@@ -299,13 +301,13 @@ function DoenetCourseRouted(props) {
       contentId = data[pathItemId]?.contentId;
     }
   }
-    const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({courseId:courseId,assignmentId:assignmentIdValue}))
+  const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({courseId:courseId,assignmentId:assignmentIdValue}))
 
   const AssignmentForm = (props) => {
     const role = useRecoilValue(roleAtom);
     const loadBackAssignmentState = useRecoilValueLoadable(assignmentDictionary({courseId:props.courseId,assignmentId:props.assignmentId}))
     const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({courseId:props.courseId,assignmentId:props.assignmentId}))
-    console.log("loadBackAssignmentState",loadBackAssignmentState);
+    // console.log("loadBackAssignmentState",loadBackAssignmentState);
     let assignmentInfo = '';
     if ( loadBackAssignmentState?.state === 'hasValue' && loadBackAssignmentState?.contents) {      
         if (loadBackAssignmentState?.contents.itemId === props.itemId) {
@@ -321,7 +323,6 @@ function DoenetCourseRouted(props) {
     const handleOnBlur = async (e) => {
       let name = e.target.name;
       let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-      console.log(">>>on blur",assignmentInfo);
       setAssignmentSettings({ type: 'save assignment settings',[name]: value});
       
     }
@@ -344,7 +345,7 @@ function DoenetCourseRouted(props) {
       // console.log("load back assignment", assignmentObjInfo.contents.assignments);
       if (loadBackAssignmentState?.contents) {
         for (let assignment of loadBackAssignmentState?.contents?.assignments) {
-          console.log('Assignments ->>> ', loadBackAssignmentState?.contents)
+          // console.log('Assignments ->>> ', loadBackAssignmentState?.contents)
           if (assignment.itemId === props.itemId) {
             // if (assignment.itemId === props.itemId){
               assignmentInfo = assignment;
@@ -446,7 +447,7 @@ function DoenetCourseRouted(props) {
             <p>Due: {assignmentInfo?.dueDate}</p>
             <p>Time Limit: {assignmentInfo?.timeLimit}</p>
             <p>Number of Attempts Allowed: {assignmentInfo?.numberOfAttemptsAllowed}</p>
-            <p>Points: {assignmentInfo?.assignedDatatotalPointsOrPercent}</p>
+            <p>Points: {assignmentInfo?.totalPointsOrPercent}</p>
           </div>
         </div>
     )
@@ -516,7 +517,6 @@ function DoenetCourseRouted(props) {
   return (
     <Tool>
       <navPanel>
-        <AddItem />
         <Drive types={['course']} hideUnpublished={hideUnpublished} urlClickBehaviour="select" /><br />
         {role === 'Instructor' ?  <Menu label="Role"><MenuItem value="Student" onSelect={() => setHideUnpublished(true)} /><MenuItem value="Instructor" onSelect={() => setHideUnpublished(false)} /></Menu> : null}
         {role === 'Instructor' && <Button text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}> </Button>}
@@ -546,14 +546,14 @@ function DoenetCourseRouted(props) {
         {role === 'Instructor' && itemType === 'Url' ? <><ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton> </> : null}
         {role === 'Instructor' && itemType === 'Folder'? <><ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton></>: null}
         {/* {role === 'Instructor' && makeContent ? <Button text="load Assignment" callback={loadBackAssignment} /> : null} */}
-       {console.log("----->>assignmentIdValue",assignmentIdValue)}
-        {assignmentIdValue ?
+       {/* {console.log("----->>assignmentIdValue",assignmentIdValue)} */}
+        {assignmentIdValue  ?
           <>
-            {assignmentIdValue || displayAssignmentSettings  ? <AssignmentForm
+            {  <AssignmentForm
               courseId={courseId}
               assignmentId={assignmentIdValue}
-              assignment={displayAssignmentSettings}
-              itemId={pathItemId} /> : null}
+              // assignment={displayAssignmentSettings}
+              itemId={pathItemId} />}
 
           {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null}
           </> : null}
