@@ -31,36 +31,24 @@ export default function DoenetExampleTool(props) {
   const [editorDoenetML,setEditorDoenetML] = useState("");
 
 
-  return (
-    <div>
-      <CodeMirror
-        value={editorDoenetML}
-        // options={options}
-        onBeforeChange={(editor, data, value) => {
-          setEditorDoenetML(value)
-        }}
-        onChange={(editor, data, value) => {
-        }}
-      />
-    </div>
-    
-  )
-
   // return (
-  //   <ErrorBoundary key={"doenetErrorBoundry"}>
-  //   <DoenetViewer 
-  //           key={"doenetviewer"+updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-  //           doenetML="<p>test</p>" 
-  //           mode={{
-  //           // solutionType:this.state.solutionType,
-  //           allowViewSolutionWithoutRoundTrip:false,
-  //           showHints:true,
-  //           showFeedback:true,
-  //           showCorrectness:true,
-  //       }}           
-  //       />
-  //       </ErrorBoundary>
+  //   <div>
+  //     <CodeMirror
+  //       value={editorDoenetML}
+  //       // options={options}
+  //       onBeforeChange={(editor, data, value) => {
+  //         setEditorDoenetML(value)
+  //       }}
+  //       onChange={(editor, data, value) => {
+  //       }}
+  //     />
+  //   </div>
+    
   // )
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
 
   return (
     <Tool>
@@ -112,22 +100,26 @@ export default function DoenetExampleTool(props) {
         </headerPanel>
 
         <mainPanel>
-          <button onClick={()=>{setViewerDoenetML(editorDoenetML)}}>Update</button>
-          <p>{viewerDoenetML}</p>
-        {/* <ErrorBoundary key={"doenetErrorBoundry"+updateNumber}>
-      <DoenetViewer 
-              key={"doenetviewer"+updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              // free={{doenetCode: this.state.viewerDoenetML}} 
-              doenetML={viewerDoenetML} 
-          //     mode={{
-          //     solutionType:this.state.solutionType,
-          //     allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
-          //     showHints:this.state.showHints,
-          //     showFeedback:this.state.showFeedback,
-          //     showCorrectness:this.state.showCorrectness,
-          // }}           
+          <button onClick={()=>{
+            setViewerDoenetML(editorDoenetML);
+            setUpdateNumber((old)=>{return old+1})
+            }}>Update</button>
+          <DoenetViewer
+            key={"doenetviewer" + updateNumber}
+            doenetML={viewerDoenetML}
+            flags={{
+              showCorrectness: true,
+              readOnly: false,
+              solutionDisplayMode: solutionDisplayMode,
+              showFeedback: true,
+              showHints: true,
+            }}
+            attemptNumber={attemptNumber}
+            assignmentId={assignmentId}
+            ignoreDatabase={false}
+            requestedVariant={requestedVariant}
+
           />
-          </ErrorBoundary> */}
         </mainPanel>
 
         <supportPanel width="40%">
