@@ -1,94 +1,149 @@
-import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
-import './temp.css';
-import axios from "axios";
-import './util.css';
-import nanoid from 'nanoid';
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  useHistory
-} from "react-router-dom";
-
+import React, { useEffect, ErrorBoundary, useState } from "react";
+import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import AddItem from "../imports/AddItem";
+import Switch from "../imports/Switch";
+// import Button from "../imports/Button";
 import {
   atom,
-  atomFamily,
-  selector,
-  selectorFamily,
-  RecoilRoot,
   useSetRecoilState,
-  useRecoilValueLoadable,
-  useRecoilStateLoadable,
-  useRecoilState,
   useRecoilValue,
-} from 'recoil';
+  selector,
+  atomFamily,
+} from "recoil";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
+import { supportVisible } from "../imports/Tool/SupportPanel";
+import DoenetViewer from './DoenetViewer';
 
-import {
-  DropTargetsProvider,
-} from '../imports/DropTarget';
-import { 
-  BreadcrumbProvider 
-} from '../imports/Breadcrumb';
+// import {UnControlled as CodeMirror} from 'react-codemirror2'
+import {Controlled as CodeMirror} from 'react-codemirror2'
 
-import Drive, {folderDictionarySelector} from '../imports/Drive'
-import AddItem from '../imports/AddItem'
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
 
+export default function DoenetExampleTool(props) {
+  // console.log("=== DoenetExampleTool");
+  const setSupportVisiblity = useSetRecoilState(supportVisible);
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
 
-
-export default function app() {
-return <RecoilRoot>
-        <DropTargetsProvider>
-          <BreadcrumbProvider>
-           <Demo />        
-          </BreadcrumbProvider>
-        </DropTargetsProvider>
-</RecoilRoot>
-};
+  const [updateNumber,setUpdateNumber] = useState(0);
+  const [viewerDoenetML,setViewerDoenetML] = useState("");
+  const [editorDoenetML,setEditorDoenetML] = useState("");
 
 
+  return (
+    <div>
+      <CodeMirror
+        value={editorDoenetML}
+        // options={options}
+        onBeforeChange={(editor, data, value) => {
+          setEditorDoenetML(value)
+        }}
+        onChange={(editor, data, value) => {
+        }}
+      />
+    </div>
+    
+  )
+
+  // return (
+  //   <ErrorBoundary key={"doenetErrorBoundry"}>
+  //   <DoenetViewer 
+  //           key={"doenetviewer"+updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+  //           doenetML="<p>test</p>" 
+  //           mode={{
+  //           // solutionType:this.state.solutionType,
+  //           allowViewSolutionWithoutRoundTrip:false,
+  //           showHints:true,
+  //           showFeedback:true,
+  //           showCorrectness:true,
+  //       }}           
+  //       />
+  //       </ErrorBoundary>
+  // )
+
+  return (
+    <Tool>
+      <navPanel>
+        {/* <p>navigate to important stuff</p> */}
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+        {/* <Drive types={['content','course']} /> */}
+        <div>
+          
+        </div>
+      </navPanel>
+
+      <headerPanel title="my title">
+        <p>header for important stuff</p>
+      </headerPanel>
+
+      <mainPanel>
+        <p>do the main important stuff</p>
+        <button
+            onClick={() => {
+              setOverlayOpen("George");
+            }}
+          >
+            Editor in Overlay
+          </button>
+      </mainPanel>
+
+      <menuPanel title="edit">
+        <p>control important stuff</p>
+      </menuPanel>
 
 
-function Demo(){
-  console.log("=== Demo")
+      <overlay>
+        <headerPanel title="my title">
+        <button
+            onClick={() => {
+              setOverlayOpen("");
+            }}
+          >
+            Go Back
+          </button>
+          <Switch
+            onChange={(value) => {
+              setSupportVisiblity(value);
+            }}
+          />
+          <p>header for important stuff</p>
+        </headerPanel>
 
-  let [hideUnpublished,setHideUnpublished] = useState(false)
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
-  const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Content</button>
-  const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Assignment</button>
-  
-  
-  let publishText = "Show Student View";
-  if (hideUnpublished){publishText = "Show Instructor View"}
-  
-  let publishButton = <div><button onClick={()=>setHideUnpublished((old)=>!old)}>{publishText}</button></div>
-  
-  const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Content</button>
-  const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Assignment</button>
-  
-  return <>
+        <mainPanel>
+          <button onClick={()=>{setViewerDoenetML(editorDoenetML)}}>Update</button>
+          <p>{viewerDoenetML}</p>
+        {/* <ErrorBoundary key={"doenetErrorBoundry"+updateNumber}>
+      <DoenetViewer 
+              key={"doenetviewer"+updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={viewerDoenetML} 
+          //     mode={{
+          //     solutionType:this.state.solutionType,
+          //     allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
+          //     showHints:this.state.showHints,
+          //     showFeedback:this.state.showFeedback,
+          //     showCorrectness:this.state.showCorrectness,
+          // }}           
+          />
+          </ErrorBoundary> */}
+        </mainPanel>
 
-  {/* <Drive types={['course']} urlClickBehavior="select" /> */}
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
-  {/* <h2>Select</h2> */}
-  {publishContentButton}
-  {publishAssignmentButton}
-  {publishButton}
-  {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
-  {/* <h2>Default</h2>
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' /> */}
+        <supportPanel width="40%">
+        <CodeMirror
+        value={editorDoenetML}
+        // options={options}
+        onBeforeChange={(editor, data, value) => {
+          setEditorDoenetML(value)
+        }}
+        onChange={(editor, data, value) => {
+        }}
+      />
+        </supportPanel>
 
-  </>
+      
+      </overlay>
+    </Tool>
+  );
 }
-
-
