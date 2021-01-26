@@ -17,27 +17,31 @@ $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["title"]);
 if($title == ''){$title = 'Untitled Assignment';}
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
-if ($dueDate == ''){ $dueDate = '1-1-1 01:01:01';}
+if ($dueDate == ''){ $dueDate = '0001-01-01 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
-if ($assignedDate == ''){ $assignedDate = '1-1-1 01:01:01';}
+if ($assignedDate == ''){ $assignedDate = '0001-01-01 01:01:01';}
 $timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
 if ($timeLimit == ''){ $timeLimit = '01:01:01';}
 $numberOfAttemptsAllowed = mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
+if ($numberOfAttemptsAllowed == ''){ $numberOfAttemptsAllowed = '0';}
 $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation"]);
+if ($attemptAggregation == ''){ $attemptAggregation = 'l';}
 $totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
+if ($totalPointsOrPercent == ''){ $totalPointsOrPercent = '0';}
 $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
+if ($gradeCategory == ''){ $gradeCategory = 'e';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 if ($multipleAttempts == ''){ $multipleAttempts = '0';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
-if ($showSolution == ''){ $showSolution = '1';}
+if ($showSolution == ''){ $showSolution = '0';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
-if ($showFeedback == ''){ $showFeedback = '1';}
+if ($showFeedback == ''){ $showFeedback = '0';}
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
-if ($showHints == ''){ $showHints = '1';}
+if ($showHints == ''){ $showHints = '0';}
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
-if ($showCorrectness == ''){ $showCorrectness = '1';}
+if ($showCorrectness == ''){ $showCorrectness = '0';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
