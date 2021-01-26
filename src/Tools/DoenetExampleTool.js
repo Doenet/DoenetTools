@@ -7,6 +7,7 @@ import { useSetRecoilState, useRecoilValue } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
 
+//example data acessing
 function OverlayDataViwer() {
   const overlayData = useRecoilValue(openOverlayByName);
 
@@ -31,14 +32,10 @@ export default function DoenetExampleTool() {
   return (
     <Tool>
       <navPanel>
-        {/* <p>navigate to important stuff</p> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
-        {/* <Drive types={['content','course']} /> */}
       </navPanel>
 
       <headerPanel title="my title">
-        <p>header for important stuff</p>
         <Switch
           onChange={(e) => {
             setSupportVisiblity(e.target.checked);
@@ -51,19 +48,15 @@ export default function DoenetExampleTool() {
         <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
-
-        {/* <Drive types={['content','course']} /> */}
       </mainPanel>
 
       <supportPanel width="40%">
-        <p>I'm here for support</p>
-        {/* <GlobalSelectIndicator /> */}
+        <p>Support Panel</p>
       </supportPanel>
 
       <menuPanel title="edit">
         <button
           onClick={() => {
-            // setOverlayOpen("George");
             setOverlayOpen({
               target: "editor",
               instructions: {
@@ -96,15 +89,10 @@ export default function DoenetExampleTool() {
           <h1>Editor</h1>
           <h2>Data</h2>
           <OverlayDataViwer />
-
-          {/* <BreadcrumbContainer /> */}
-          {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
-          {/* <Drive types={['content','course']} /> */}
         </mainPanel>
 
         <supportPanel width="40%">
           <p>Support Panel</p>
-          {/* <GlobalSelectIndicator /> */}
         </supportPanel>
 
         <menuPanel title="edit">
@@ -123,7 +111,6 @@ export default function DoenetExampleTool() {
           <div>
             <button
               onClick={() => {
-                // setOverlayOpen("George");
                 setOverlayOpen({
                   target: "cal",
                   instructions: {
@@ -151,22 +138,16 @@ export default function DoenetExampleTool() {
               setSupportVisiblity(e.target.checked);
             }}
           />
-          <p>header for important stuff</p>
         </headerPanel>
 
         <mainPanel>
           <h1>calender</h1>
           <h2>Data</h2>
           <OverlayDataViwer />
-
-          {/* <BreadcrumbContainer /> */}
-          {/* <Drive id="ZLHh5s8BWM2azTVFhazIH" /> */}
-          {/* <Drive types={['content','course']} /> */}
         </mainPanel>
 
         <supportPanel width="40%">
-          <p>I'm here for support</p>
-          {/* <GlobalSelectIndicator /> */}
+          <p>Support Panel</p>
         </supportPanel>
 
         <menuPanel title="edit">

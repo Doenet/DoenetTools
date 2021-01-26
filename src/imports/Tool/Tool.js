@@ -9,22 +9,6 @@ import MenuPanel from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import MainPanel from "./MainPanel";
 
-// import { DropTargetsProvider } from "../DropTarget";
-
-// import { ReactQueryDevtools } from "react-query-devtools";
-// import crypto from "crypto";
-
-// getContentId = ({ code }) => {
-//   const hash = crypto.createHash("sha256");
-//   if (code === undefined) {
-//     return;
-//   }
-
-//   hash.update(code);
-//   let contentId = hash.digest("hex");
-//   return contentId;
-// };
-
 const queryCache = new QueryCache();
 
 const ToolContainer = styled.div`
