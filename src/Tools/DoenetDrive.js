@@ -133,7 +133,15 @@ const ItemInfo = function (props){
   let editDraft = null;
   if (itemInfo?.itemType === "DoenetML"){
     editDraft =   <button 
-    onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
+    onClick={()=>setOverlayOpen({
+      name: "editor", //to match the prop
+      instructions: { 
+        action: "open", //or "close"
+        supportVisble: true, //or false
+        courseId: "c1",
+        branchId: "b1",
+      }
+    })}>Edit Draft</button>
   }
   
 
@@ -229,13 +237,18 @@ export default function DoenetDriveTool(props) {
         <ItemInfo route={props.route} />
       </menuPanel>
 
-      <overlay name="Editor">
+      <overlay name="editor">
         <headerPanel title="my title">
           
           <p>Title of edited</p>
           <button
             onClick={() => {
-              setOverlayOpen("");
+              setOverlayOpen({
+                name: "", //to match the prop
+                instructions: { 
+                  action: "close", //or "close"
+                }
+              });
             }}
           >
             Go Back
