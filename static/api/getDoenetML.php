@@ -77,7 +77,7 @@ if ($branchId == ""){
 			LEFT JOIN repo_access AS ra
 			ON fc.rootId = ra.repoId
 			WHERE fc.childId = '$branchId' 
-			AND ra.userId = '3oN5gDY3392zexHopijG6'
+			AND ra.userId = '$userId'
 			";
 
 			$result = $conn->query($sql);
@@ -89,7 +89,7 @@ if ($branchId == ""){
 				$sql = "
 				SELECT userId 
 			FROM user_content
-			WHERE userId = '3oN5gDY3392zexHopijG6'
+			WHERE userId = '$userId'
 			AND branchId = '$branchId'
 			";
 				$result = $conn->query($sql);

@@ -10,10 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DropTargetsContext,
   WithDropTarget  
-} from './DropTarget';
-import Draggable from './Draggable';
+} from './imports/DropTarget';
+import Draggable from './imports/Draggable';
 
-import { BreadcrumbContext } from './Breadcrumb';
+import { BreadcrumbContext } from './imports/Breadcrumb';
 
 import {
   HashRouter as Router,
@@ -33,8 +33,7 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilState,
-  useRecoilValue,
-  DefaultValue,
+  useRecoilValue
 } from 'recoil';
 
 const sortOptions = Object.freeze({
