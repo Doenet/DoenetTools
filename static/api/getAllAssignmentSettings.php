@@ -12,10 +12,7 @@ $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor or user
 
-$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-$role =  mysqli_real_escape_string($conn,$_REQUEST["role"]);
-
-$type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
+$courseId =  mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 $sql = "SELECT
 a.assignmentId AS assignmentId,
@@ -35,23 +32,22 @@ a.showHints AS showHints,
 a.showCorrectness AS showCorrectness,
 a.proctorMakesAvailable AS proctorMakesAvailable,
 dc.isPublished AS isPublished,
-dc.isAssignment As isAssignment
-FROM $type AS a
+dc.isAssignment As isAssignment,
+dc.itemId AS itemId,
+dc.contentId AS contentId
+FROM assignment_draft AS a
 JOIN drive_content AS dc
 ON a.assignmentId = dc.assignmentId
-JOIN drive_user as du
-ON du.driveId = dc.driveId
-WHERE a.assignmentId = '$assignmentId' AND du.userId='$userId'
+WHERE a.courseId ='$courseId'
 ";
-$result = $conn->query($sql);
 
 // echo $sql;
-$response_arr = array();
+$result = $conn->query($sql);
+$assignment_arr = array();
 
 if ($result->num_rows > 0){
-
-    $row = $result->fetch_assoc();
-    $response_arr = array(
+  while($row = $result->fetch_assoc()){
+    $assignment = array(
         "title" => $row['title'],
         "assignedDate" => $row['assignedDate'],
         "dueDate" => $row['dueDate'],
@@ -68,13 +64,17 @@ if ($result->num_rows > 0){
         "showCorrectness" => $row['showCorrectness'],
         "proctorMakesAvailable" => $row['proctorMakesAvailable'],
         "isPublished" => $row['isPublished'],
-        "isAssignment" => $row['isAssignment'],
-        "assignmentId" => $row['assignmentId']
-
-
+        "isAssignment" => $row['isAssignment'],  
+        "assignmentId" => $row['assignmentId'],
+        "itemId" => $row['itemId'],
+        "contentId" => $row['contentId'],
 
 );
-    
+    array_push($assignment_arr,$assignment);
+  } 
+  $response_arr = array(
+      "assignments" => $assignment_arr
+  );  
 }
 // set response code - 200 OK
 http_response_code(200);
@@ -83,3 +83,5 @@ http_response_code(200);
 echo json_encode($response_arr);
 
 $conn->close();
+
+// WHERE a.assignmentId = '$assignmentId'
