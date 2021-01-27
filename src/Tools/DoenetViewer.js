@@ -43,7 +43,7 @@ class DoenetViewer extends Component {
 
     this.documentRenderer = <>Loading...</>
 
-    if (props.contentId === undefined ) {
+    if (props.contentId === undefined) {
       // use doenetML given via props
       let doenetML = props.doenetML;
 
