@@ -10,10 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DropTargetsContext,
   WithDropTarget  
-} from './imports/DropTarget';
-import Draggable from './imports/Draggable';
+} from '../imports/DropTarget';
+import Draggable from '../imports/Draggable';
 
-import { BreadcrumbContext } from './imports/Breadcrumb';
+import { BreadcrumbContext } from '../imports/Breadcrumb';
 
 import {
   HashRouter as Router,
