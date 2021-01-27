@@ -295,7 +295,7 @@ function DoenetCourseRouted(props) {
       setAssignmentId(loadBackAssignmentIdSelector?.contents);      
     }
     else{
-      console.log('>>> makeasiign selected',assignmentSelected)
+      // console.log('>>> makeasiign selected',assignmentSelected)
       if(!assignmentSelected)
           setAssignmentId('');
     }
