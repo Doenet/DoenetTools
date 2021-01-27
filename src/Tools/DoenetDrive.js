@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections, selectedDriveAtom} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
 import Switch from "../imports/Switch";
 import {
@@ -83,6 +83,7 @@ const ItemInfo = function (props){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
 
 
 
@@ -109,11 +110,11 @@ const ItemInfo = function (props){
       let itemInfo = infoLoad?.contents?.itemInfo;
       let versions = infoLoad?.contents?.versions;
 
-  if (infoLoad.contents?.number > 1){
-    return <>
-    <h1>{infoLoad.contents.number} Items Selected</h1>
-    </>
-  }else if (infoLoad.contents?.number < 1){
+    if (infoLoad.contents?.number > 1){
+      return <>
+      <h1>{infoLoad.contents.number} Items Selected</h1>
+      </>
+    }else if (infoLoad.contents?.number < 1){
 
     if (pathFolderInfo.state === "loading"){ return null;}
     if (pathFolderInfo.state === "hasError"){ 
@@ -123,10 +124,13 @@ const ItemInfo = function (props){
   itemInfo = pathFolderInfo?.contents?.itemInfo;
   versions = pathFolderInfo?.contents?.versions;
 
-
-    if (!itemInfo){
-      return <div>Nothing Selected</div>;
+    if (!itemInfo && selectedDrive){
+      return <>
+        <h1>{selectedDrive}</h1>
+        <AddItem />
+      </>
     }
+    if (!itemInfo) return <div>Nothing Selected</div>;
   }
 
   const versionsJSX = [];
