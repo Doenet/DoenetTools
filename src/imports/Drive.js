@@ -1,4 +1,4 @@
-import React, {useContext, useState, useCallback, useRef, useEffect, useMemo} from 'react';
+import React, {useContext, useState, useCallback, useRef, useEffect, Suspense} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
@@ -92,7 +92,9 @@ export default function Drive(props){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            <Suspense fallback={<div></div>}>
+              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            </Suspense>
            }></Route>
          </Switch></Router></React.Fragment>)
         }
@@ -105,7 +107,9 @@ export default function Drive(props){
         if (driveObj.driveId === props.driveId){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            <Suspense fallback={<div></div>}>
+              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            </Suspense>
            }></Route>
          </Switch></Router>
         }
