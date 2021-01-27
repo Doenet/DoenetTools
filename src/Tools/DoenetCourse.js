@@ -240,7 +240,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
           ...publishAssignment,
           assignmentId:courseIdassignmentId.assignmentId ? courseIdassignmentId.assignmentId : instructions.newAssignmentObj.assignmentId,
           assignment_isPublished: 1,
-          courseId:courseId
+          courseId:courseIdassignmentId.courseId
         }
         axios.post("/api/publishAssignment.php", payloadPublish)
         .then((resp) => {
