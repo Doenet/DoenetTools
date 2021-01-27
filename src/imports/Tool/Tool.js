@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { atom, selector, useRecoilValue } from "recoil";
 import NavPanel from "./NavPanel";
 import HeaderPanel from "./HeaderPanel";
 import ContentPanel from "./ContentPanel";
-import SupportPanel from "./SupportPanel";
-import MenuPanel from "./MenuPanel";
+import SupportPanel, {
+  supportVisibleAtom,
+  SupportVisiblitySwitch,
+} from "./SupportPanel";
+import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
 import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import MainPanel from "./MainPanel";
+import DoenetHeader from "../../Tools/DoenetHeader";
+import { useCookies } from "react-cookie";
+import axios from "axios";
 
 const queryCache = new QueryCache();
 
@@ -41,8 +47,23 @@ export const openOverlayByName = selector({
   set: ({ set }, newValue) => {
     if (newValue.instructions.action === "open") {
       set(activeOverlayName, (old) => [...old, newValue]);
+      set(supportVisibleAtom, (old) => [
+        ...old,
+        newValue.instructions.supportVisble,
+      ]);
+      set(activeMenuPanelAtom, (old) => [...old, 0]);
     } else if (newValue.instructions.action === "close") {
       set(activeOverlayName, (old) => {
+        let newArray = [...old];
+        newArray.pop();
+        return newArray;
+      });
+      set(supportVisibleAtom, (old) => {
+        let newArray = [...old];
+        newArray.pop();
+        return newArray;
+      });
+      set(activeMenuPanelAtom, (old) => {
         let newArray = [...old];
         newArray.pop();
         return newArray;
@@ -53,8 +74,43 @@ export const openOverlayByName = selector({
 
 export default function Tool(props) {
   const openOverlayName = useRecoilValue(openOverlayByName);
-  // console.log("=== Tool (only once)");
 
+  //User profile logic
+  const [profile, setProfile] = useState({});
+  const [jwt, setjwt] = useCookies("JWT_JS");
+
+  let isSignedIn = false;
+  if (Object.keys(jwt).includes("JWT_JS")) {
+    isSignedIn = true;
+  }
+
+  useEffect(() => {
+    //Fires each time you change the tool
+    //Need to load profile from database each time
+    const phpUrl = "/api/loadProfile.php";
+    const data = {};
+    const payload = {
+      params: data,
+    };
+    axios
+      .get(phpUrl, payload)
+      .then((resp) => {
+        if (resp.data.success === "1") {
+          setProfile(resp.data.profile);
+        }
+      })
+      .catch((error) => {
+        this.setState({ error: error });
+      });
+  }, []);
+
+  //should this be here??
+  if (Object.keys(profile).length < 1) {
+    return <h1>Loading...</h1>;
+  }
+  console.log("=== Tool (only once)");
+
+  //lowercase names logic
   var toolParts = {};
 
   const implementedToolParts = [
@@ -119,7 +175,25 @@ export default function Tool(props) {
   }
 
   if (toolParts.headerPanel) {
-    headerPanel = <HeaderPanel>{toolParts.headerPanel.children}</HeaderPanel>;
+    headerPanel = (
+      <HeaderPanel>
+        {toolParts.headerPanel.children}
+        <SupportVisiblitySwitch />
+        {!props.isOverlay ? (
+          <DoenetHeader
+            profile={profile}
+            cookies={jwt}
+            isSignedIn={isSignedIn}
+            showProfileOnly={true}
+            // TODO: this needs review
+            // headerRoleFromLayout={props.headerRoleFromLayout}
+            // headerChangesFromLayout={props.headerChangesFromLayout}
+            // guestUser={props.guestUser}
+            // onChange={showCollapseMenu}
+          />
+        ) : null}
+      </HeaderPanel>
+    );
   }
 
   if (toolParts.mainPanel) {
@@ -131,7 +205,7 @@ export default function Tool(props) {
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
-
+  console.log(">>>MenuPanel: ", toolParts.menuPanel);
   if (toolParts.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }

@@ -2,10 +2,8 @@ import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive from "../imports/Drive";
 import AddItem from "../imports/AddItem";
-import Switch from "../imports/Switch";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
 
 //example data acessing
 function OverlayDataViwer() {
@@ -17,6 +15,7 @@ function OverlayDataViwer() {
       <ul>
         <li> target: {overlayData.target} </li>
         <li> action: {overlayData.instructions.action} </li>
+        <li> supportVisble: {overlayData.supportVisble} </li>
         <li> courseId: {overlayData.instructions.courseId} </li>
         <li> branchId: {overlayData.instructions.branchId} </li>
       </ul>
@@ -25,7 +24,6 @@ function OverlayDataViwer() {
 }
 
 export default function DoenetExampleTool() {
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // console.log("=== DoenetExampleTool");
 
@@ -35,13 +33,7 @@ export default function DoenetExampleTool() {
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
       </navPanel>
 
-      <headerPanel title="my title">
-        <Switch
-          onChange={(e) => {
-            setSupportVisiblity(e.target.checked);
-          }}
-        />
-      </headerPanel>
+      <headerPanel title="my title"></headerPanel>
 
       <mainPanel>
         <BreadcrumbContainer />
@@ -60,6 +52,7 @@ export default function DoenetExampleTool() {
               target: "editor",
               instructions: {
                 action: "open",
+                supportVisble: true,
                 courseId: "c1",
                 branchId: "b1",
               },
@@ -76,13 +69,7 @@ export default function DoenetExampleTool() {
       </menuPanel>
 
       <overlay name="editor">
-        <headerPanel title="my title">
-          <Switch
-            onChange={(e) => {
-              setSupportVisiblity(e.target.checked);
-            }}
-          />
-        </headerPanel>
+        <headerPanel title="my title"></headerPanel>
 
         <mainPanel>
           <h1>Editor</h1>
@@ -94,7 +81,7 @@ export default function DoenetExampleTool() {
           <p>Support Panel</p>
         </supportPanel>
 
-        <menuPanel title="edit">
+        <menuPanel title="control">
           <p>control important stuff</p>
           <button
             onClick={() => {
@@ -114,6 +101,7 @@ export default function DoenetExampleTool() {
                   target: "cal",
                   instructions: {
                     action: "open",
+                    supportVisble: false,
                     courseId: "d1",
                     branchId: "e1",
                   },
@@ -125,19 +113,13 @@ export default function DoenetExampleTool() {
           </div>
         </menuPanel>
 
-        <menuPanel name="other">
+        <menuPanel title="extras">
           <p>control more important stuff</p>
         </menuPanel>
       </overlay>
 
       <overlay name="cal">
-        <headerPanel title="my title">
-          <Switch
-            onChange={(e) => {
-              setSupportVisiblity(e.target.checked);
-            }}
-          />
-        </headerPanel>
+        <headerPanel title="my title"></headerPanel>
 
         <mainPanel>
           <h1>calender</h1>
@@ -164,7 +146,7 @@ export default function DoenetExampleTool() {
           </button>
         </menuPanel>
 
-        <menuPanel name="other">
+        <menuPanel title="other">
           <p>control more important stuff</p>
         </menuPanel>
       </overlay>
