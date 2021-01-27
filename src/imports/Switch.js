@@ -41,7 +41,7 @@ export default function Switch(props) {
           type="checkbox"
           onChange={(e) => {
             setChecked(e.target.checked);
-            props.onChange(e.target.checked);
+            props.onChange(e);
           }}
           id={id}
           name={props.name}
