@@ -13,7 +13,7 @@ function OverlayDataViwer() {
     <div>
       <h2>Data</h2>
       <ul>
-        <li> target: {overlayData.target} </li>
+        <li> name: {overlayData.name} </li>
         <li> action: {overlayData.instructions.action} </li>
         <li> supportVisble: {overlayData.supportVisble} </li>
         <li> courseId: {overlayData.instructions.courseId} </li>
@@ -49,7 +49,7 @@ export default function DoenetExampleTool() {
         <button
           onClick={() => {
             setOverlayOpen({
-              target: "editor",
+              name: "editor",
               instructions: {
                 action: "open",
                 supportVisble: true,
@@ -98,7 +98,7 @@ export default function DoenetExampleTool() {
             <button
               onClick={() => {
                 setOverlayOpen({
-                  target: "cal",
+                  name: "cal",
                   instructions: {
                     action: "open",
                     supportVisble: false,

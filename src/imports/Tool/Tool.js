@@ -210,13 +210,13 @@ export default function Tool(props) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
 
-  if (openOverlayName?.target && toolParts.overlay) {
-    overlay = toolParts.overlay[openOverlayName.target];
+  if (openOverlayName?.name && toolParts.overlay) {
+    overlay = toolParts.overlay[openOverlayName.name];
   }
 
   let toolContent = null;
 
-  if (!props.isOverlay && openOverlayName?.target) {
+  if (!props.isOverlay && openOverlayName?.name) {
     toolContent = <Tool isOverlay>{overlay}</Tool>;
   }
 
