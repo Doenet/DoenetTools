@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -17,9 +18,6 @@ import {
 
 import DoenetTemp from '../Tools/DoenetTemp';
 
-import { initialize } from '../imports/courseInfo';
-initialize();
-
     ReactDOM.render(
       <DropTargetsProvider>
         <BreadcrumbProvider>
@@ -34,3 +32,4 @@ initialize();
         </BreadcrumbProvider>
       </DropTargetsProvider>
   ,document.getElementById('root'));
+
