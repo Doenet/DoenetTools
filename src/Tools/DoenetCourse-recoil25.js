@@ -233,21 +233,6 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
           // console.log("assignmentInfo before making >>>",instructions.newAssignmentObj);          
           set(assignmentDictionary(courseIdassignmentId),instructions.newAssignmentObj);
           break;
-        case "assignment was published" :
-          let publishAssignment =  {...assignInfo};     
-        set(assignmentDictionary(courseIdassignmentId), publishAssignment);
-        const payloadPublish = {
-          ...publishAssignment,
-          assignmentId:courseIdassignmentId.assignmentId ? courseIdassignmentId.assignmentId : instructions.newAssignmentObj.assignmentId,
-          assignment_isPublished: 1,
-          courseId:courseId
-        }
-        axios.post("/api/publishAssignment.php", payloadPublish)
-        .then((resp) => {
-          console.log(resp.data)
-        }
-        )  
-          break;
     }
   }
 })
@@ -282,22 +267,17 @@ function DoenetCourseRouted(props) {
   }
 
   const [openEnrollment, setEnrollmentView] = useState(false);
-  const [assignmentSelected, setAssignmentSelected] = useState(false);
-
-  let makeassignmentIsSelected = false;
 
   const enrollCourseId = { courseId: courseId };
   let contentId = '';
     const [makeContent, setMakeContent] = useState(false);
     const loadBackAssignmentIdSelector = useRecoilValueLoadable(getAssignmentIdSelector({courseId:courseId,itemId:pathItemId}));
-     console.log(">>loadBackAssignmentId --->>> ",loadBackAssignmentIdSelector);
     if ( loadBackAssignmentIdSelector?.state === 'hasValue' && loadBackAssignmentIdSelector?.contents) {
-      setAssignmentId(loadBackAssignmentIdSelector?.contents);      
+      // console.log(">>loadBackAssignmentId",loadBackAssignmentIdSelector);
+      setAssignmentId(loadBackAssignmentIdSelector?.contents);
     }
     else{
-      console.log('>>> makeasiign selected',assignmentSelected)
-      if(!assignmentSelected)
-          setAssignmentId('');
+      //setAssignmentId('');
     }
 
   let displayAssignmentSettings = '';
@@ -332,7 +312,6 @@ function DoenetCourseRouted(props) {
     if ( loadBackAssignmentState?.state === 'hasValue' && loadBackAssignmentState?.contents) {      
         if (loadBackAssignmentState?.contents.itemId === props.itemId) {
             assignmentInfo = loadBackAssignmentState?.contents;
-            console.log(">>>assignment info in form", assignmentInfo);
         }
     }
     // const [assignmentInfo, setAssignmentInfo] = useState({});
@@ -354,8 +333,12 @@ function DoenetCourseRouted(props) {
         assignment_isPublished: 1,
         courseId: courseId
       }
-    
-        setAssignmentSettings({ type: "assignment was published", itemId: pathItemId, assignedData: payload })
+      axios.post("/api/publishAssignment.php", payload)
+        .then((resp) => {
+          console.log(resp.data)
+        }
+        )
+      setFolderInfo({ instructionType: "assignment was published", itemId: pathItemId, assignedData: payload })
     }
 
     const loadBackAssignment = () => {
@@ -368,10 +351,13 @@ function DoenetCourseRouted(props) {
               assignmentInfo = assignment;
           }
         }
-      }  
+      }
+  
     }
+
+
     return (
-      role === 'Instructor'  ?
+      role === 'Instructor' ?
         <>
              {role === 'Instructor' && displayAssignmentSettings.isAssignment === '0' ? <Button text="load Assignment" callback={loadBackAssignment} /> : null}
 
@@ -466,11 +452,10 @@ function DoenetCourseRouted(props) {
         </div>
     )
   }
- 
+  let makeassignmentIsSelected = false;
   const handleMakeAssignment = () => {
     makeassignmentIsSelected = true;
     let assignmentId = nanoid();
-    setAssignmentSelected(true);
     setAssignmentId(assignmentId);
     let newAssignmentObj = {
       assignmentId:assignmentId,
@@ -562,15 +547,15 @@ function DoenetCourseRouted(props) {
         {role === 'Instructor' && itemType === 'Folder'? <><ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton></>: null}
         {/* {role === 'Instructor' && makeContent ? <Button text="load Assignment" callback={loadBackAssignment} /> : null} */}
        {/* {console.log("----->>assignmentIdValue",assignmentIdValue)} */}
-        {assignmentIdValue ?
+        {assignmentIdValue  ?
           <>
             {  <AssignmentForm
               courseId={courseId}
               assignmentId={assignmentIdValue}
-              assignment={displayAssignmentSettings}
+              // assignment={displayAssignmentSettings}
               itemId={pathItemId} />}
 
-          {/* {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null} */}
+          {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null}
           </> : null}
 
       </menuPanel>

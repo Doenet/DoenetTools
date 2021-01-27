@@ -19,7 +19,7 @@ import TextField from "../imports/PanelHeaderComponents/TextField";
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
-import Drive, { folderDictionarySelector } from "../imports/Drive";
+import Drive, { folderDictionarySelector } from "../imports/Drive-recoilattempt26j";
 import DoenetViewer from './DoenetViewer';
 import {
   atom,
@@ -570,7 +570,7 @@ function DoenetCourseRouted(props) {
               assignment={displayAssignmentSettings}
               itemId={pathItemId} />}
 
-          {/* {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null} */}
+          {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null}
           </> : null}
 
       </menuPanel>

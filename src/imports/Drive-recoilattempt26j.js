@@ -368,9 +368,9 @@ export const folderDictionarySelector = selectorFamily({
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];          
+          console.log("newItemObjAss", newItemObj);
           newItemObj.assignment_isPublished = "1";
           newItemObj.isAssignment = "1";
-          newItemObj.assignment_title = instructions.assignedData.title;
           newItemObj.assignmentId=instructions.assignedData.assignmentId;
           return newObj;
         })
@@ -379,12 +379,25 @@ export const folderDictionarySelector = selectorFamily({
       case "content was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
+          // console.log(">>>content published newObj", newObj);
           let newItemObj = newObj.contentsDictionary[instructions.itemId];
           newItemObj.isPublished = "1";
           return newObj;
         })
         
       break;
+      case "assignment title update":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          // console.log("Assignment title update",instructions?.assignedDataSave?.title);
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isAssignment = "1";
+          newItemObj555.assignment_isPublished = "1";
+          newItemObj.label = instructions?.assignedDataSave;
+          return newObj;
+        })
+      break;
+      
       case "handle make content":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
