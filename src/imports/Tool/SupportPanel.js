@@ -1,12 +1,44 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { atom } from "recoil";
+import { atom, selector, useRecoilState } from "recoil";
 import ResponsiveControlsWrapper from "../Tool/ResponsiveControls";
+import Switch from "../Switch";
 
-export const supportVisible = atom({
+export const supportVisibleAtom = atom({
   key: "supportVisibleAtom",
-  default: false,
+  default: [false],
 });
+
+export const supportVisible = selector({
+  key: "supportVisibleSelector",
+  get: ({ get }) => {
+    const supportVisibleArray = get(supportVisibleAtom);
+    return supportVisibleArray[supportVisibleArray.length - 1];
+  },
+
+  set: ({ set }, newValue) => {
+    set(supportVisibleAtom, (old) => {
+      let newArray = [...old];
+      newArray[newArray.length - 1] = newValue;
+      return newArray;
+    });
+  },
+});
+
+export function SupportVisiblitySwitch() {
+  const [supportVisiblity, setSupportVisiblity] = useRecoilState(
+    supportVisible
+  );
+
+  return (
+    <Switch
+      checked={supportVisiblity}
+      onChange={(e) => {
+        setSupportVisiblity(e.target.checked);
+      }}
+    />
+  );
+}
 
 const SupportPanelContainer = styled.div`
   overflow: auto;

@@ -610,6 +610,8 @@ function Folder(props){
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -624,12 +626,15 @@ function Folder(props){
           //Don't clear on navigation changes
           if (!props.isNav){
           //Only clear if focus goes outside of this node group
-            if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetDriveStayselected)
-              ){
-                setSelected({instructionType:"clear all"})
-            }
+            // if (e.relatedTarget === null ||
+            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+            //   !e.relatedTarget.dataset.doenetDriveStayselected)
+            //   ){
+            //     setSelected({instructionType:"clear all"})
+            // }
+            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+            //   setSelected({instructionType:"clear all"});
+            // }
           }
         }}
       >
@@ -835,6 +840,19 @@ const selectedDriveItemsAtom = atomFamily({
   default:false
 })
 
+export const clearAllSelections = selector({
+  key:"clearAllSelections",
+  set:({get,set})=>{
+    const globalSelected = get(globalSelectedNodesAtom);
+    for (let itemObj of globalSelected){
+      console.log("ItemObj",itemObj)
+      const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
+      set(selectedDriveItemsAtom(atomFormat),false)
+    }
+    set(globalSelectedNodesAtom,[]);
+  }
+})
+
 const selectedDriveItems = selectorFamily({
   key:"selectedDriveItems",
   // get:(driveIdDriveInstanceIdItemId) =>({get})=>{ 
@@ -1014,6 +1032,8 @@ const DoenetML = React.memo((props)=>{
           newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -1028,18 +1048,19 @@ const DoenetML = React.memo((props)=>{
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
           // if (e.relatedTarget === null){
           //   setSelected({instructionType:"clear all"})
           // }
-          // console.log(">>>",e.relatedTarget);
           // console.log(">>>dataset",e?.relatedTarget?.dataset)
-          
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
@@ -1127,6 +1148,8 @@ const Url = React.memo((props)=>{
             newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:Url`
             history.push('?'+encodeParams(newParams))
           }else{
+            e.preventDefault();
+            e.stopPropagation();
             if (!e.shiftKey && !e.metaKey){
               setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
             }else if (e.shiftKey && !e.metaKey){
@@ -1145,12 +1168,18 @@ const Url = React.memo((props)=>{
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
+          // if (e.relatedTarget.dataset.doenetDriveStayselected){
+          //   console.log(">>>GET FOCUS BACK!")
+          // }
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
@@ -1261,8 +1290,6 @@ function useUpdateBreadcrumb(props) {
   const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   const { onDragOverContainer } = useDnDCallbacks();
   const { dropActions } = useContext(DropTargetsContext);
-  const [dragState] = useRecoilState(dragStateAtom);
-  const { isDraggedOverBreadcrumb } = dragState;
   let routePathDriveId = "";
   let routePathFolderId = "";
   if (props.path) {
