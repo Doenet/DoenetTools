@@ -243,6 +243,11 @@ class DoenetProfile extends Component {
         subLabel: `${this.props.cookies.Device}`,
       },
       {
+        id: "Dashboard",
+        label: "Dashboard",
+        link: "/dashboard/",
+      },
+      {
         id: "Chooser",
         label: "Chooser",
         link: "/chooser/",
@@ -261,11 +266,6 @@ class DoenetProfile extends Component {
         id: "Gradebook",
         label: "Gradebook",
         link: "/gradebook/",
-      },
-      {
-        id: "Dashboard",
-        label: "Dashboard",
-        link: "/dashboard/",
       },
       {
         id: "Account",

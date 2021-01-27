@@ -44,7 +44,6 @@ export default function DoenetExampleTool() {
       </headerPanel>
 
       <mainPanel>
-        <p>do the main important stuff</p>
         <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />

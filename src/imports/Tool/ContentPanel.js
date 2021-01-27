@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
+import { clearAllSelections } from "../Drive";
 
 const ContentPanelContainer = styled.div`
   grid-area: contentPanel;
@@ -21,6 +22,7 @@ const DragHandle = styled.div`
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   const supportInUse = useRecoilValue(supportVisible);
+  const clearDriveSelections = useSetRecoilState(clearAllSelections);
   let isDragging = false;
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function ContentPanel({ main, support }) {
       onMouseLeave={handleMouseUp}
       ref={wrapperRef}
       supportInUse={supportInUse}
+      onClick={clearDriveSelections}
     >
       {main}
       <DragHandle onMouseDown={handleMouseDown} />
