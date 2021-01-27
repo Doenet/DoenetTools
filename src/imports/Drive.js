@@ -10,10 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DropTargetsContext,
   WithDropTarget  
-} from '../imports/DropTarget';
-import Draggable from '../imports/Draggable';
+} from './imports/DropTarget';
+import Draggable from './imports/Draggable';
 
-import { BreadcrumbContext } from '../imports/Breadcrumb';
+import { BreadcrumbContext } from './imports/Breadcrumb';
 
 import {
   HashRouter as Router,
@@ -33,7 +33,7 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilState,
-  useRecoilValue,
+  useRecoilValue
 } from 'recoil';
 
 const sortOptions = Object.freeze({
@@ -178,6 +178,7 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
+    // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -365,17 +366,29 @@ export const folderDictionarySelector = selectorFamily({
       case "assignment was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
-          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];          
           newItemObj.assignment_isPublished = "1";
           newItemObj.isAssignment = "1";
+          newItemObj.assignment_title = instructions.assignedData.title;
+          newItemObj.assignmentId=instructions.assignedData.assignmentId;
           return newObj;
         })
+      
         break;
       case "content was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];
           newItemObj.isPublished = "1";
+          return newObj;
+        })
+        
+      break;
+      case "handle make content":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isAssignment = "0";
           return newObj;
         })
       break;
