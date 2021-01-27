@@ -53,7 +53,7 @@ function AddItemRouted(props){
     parentFolderId = globalSelected[0]?.parentFolderId;
   }  
   const folderInfo = useRecoilStateLoadable(folderDictionarySelector({driveId, parentFolderId})); 
-  console.log(">>>", globalSelected, driveId, parentFolderId, folderInfo[0]?.contents)
+  // console.log(">>>", globalSelected, driveId, parentFolderId, folderInfo[0]?.contents)
   itemInfo = folderInfo[0]?.contents?.contentsDictionary?.[selectedItemId];
   
   const [activeForm, setActiveForm] = useState(0);
