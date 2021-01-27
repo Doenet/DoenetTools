@@ -469,7 +469,7 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
   
-  if (!props.isNav && (routePathDriveId && (props.driveId !== routePathDriveId || routePathDriveId === ""))) return <></>;  
+  if (!props.isNav && (routePathDriveId === "" || props.driveId !== routePathDriveId)) return <></>;
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
