@@ -1,255 +1,583 @@
-// import DoenetViewer from '../Tools/DoenetViewer';
-// import axios from 'axios';
-// import './course.css';
-// import nanoid from 'nanoid';
-// import query from '../queryParamFuncs';
+import nanoid from 'nanoid';
 // import DoenetBox from '../Tools/DoenetBox';
 // import DoenetAssignmentTree from "./DoenetAssignmentTree"
 import DoenetEditor from './DoenetEditor';
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  Link,
-} from "react-router-dom";
 import React, { useState, useEffect, useCallback } from "react";
-import ToolLayout from "./ToolLayout/ToolLayout";
-import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
-import { TreeView } from './TreeView/TreeView';
-// import styled from "styled-components";
 import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 import Enrollment from './Enrollment';
 import LearnerGrades from './LearnerGrades';
 import LearnerGradesAttempts from './LearnerGradesAttempts';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import MenuDropDown from '../imports/MenuDropDown.js';
-import Overlay from "../imports/Overlay";
-import {CourseAssignments,CourseAssignmentControls} from "./courseAssignments";
+import { CourseAssignments, CourseAssignmentControls } from "./courseAssignments";
 import LearnerAssignment from './LearnerAssignment';
+import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import CollapseSection from "../imports/CollapseSection";
+import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
+import Button from "../imports/PanelHeaderComponents/Button";
+import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton";
+import TextField from "../imports/PanelHeaderComponents/TextField";
+
+import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
+import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
+import axios from "axios";
+import Drive, { folderDictionarySelector } from "../imports/Drive";
+import DoenetViewer from './DoenetViewer';
+import {
+  atom,
+  atomFamily,
+  selector,
+  selectorFamily,
+  RecoilRoot,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+  useRecoilStateLoadable,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil';
+import Switch from "../imports/Switch";
+import AddItem from '../imports/AddItem'
+import { supportVisible } from "../imports/Tool/SupportPanel";
+
+
+export const roleAtom = atom({
+  key: "roleAtom",
+  default: 'Instructor'
+
+})
+export const contentIdAtom = atom({
+  key: "contentIdAtom",
+  default: ''
+
+})
+// export const assignmentIdAtom = atom({
+//   key: "assignmentIdAtom",
+//   default: ''
+
+// })
+
+const DisplayCourseContent = (props) => {
+  const [doenetML, setDoenetMLUpdate] = useState('');
+  const [updateNumber, setUpdateNumber] = useState(0)
+  const role = useRecoilValue(roleAtom);
+  const data = {
+    branchId: props.driveId,
+    contentId: "",
+    contentId: props.contentId,
+    ListOfContentId: "",
+    List_Of_Recent_doenetML: [],
+  }
+  const payload = {
+    params: data
+  }
+
+  useEffect(() => {
+    let mounted = true;
+    getDoenetML().then((response) => {
+      if (mounted) {
+        setDoenetMLUpdate(response);
+        setUpdateNumber(updateNumber + 1)
+      }
+    });
+    return () => { mounted = false };
+  }, [props.contentId]);
+
+  const getDoenetML = () => {
+    try {
+      return axios.get(
+        `/media/${props.contentId}`
+      ).then((response) => {
+        console.log(response);
+
+        return response.data;
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  return (
+    <div data-cy="doenetviewerItem">
+      {doenetML != "" ?
+        role === 'Student' ?
+          <DoenetViewer
+            key={"doenetviewer" + updateNumber}
+            doenetML={doenetML}
+            course={true}
+            // attemptNumber={latestAttemptNumber}
+            mode={{
+              solutionType: "displayed",
+              allowViewSolutionWithoutRoundTrip: false,
+              showHints: false,
+              showFeedback: true,
+              showCorrectness: true,
+              interactive: false,
+            }}
+          />
+          : <DoenetViewer
+            key={"load" + updateNumber}
+            //contentId={''}
+            doenetML={doenetML}
+            course={true}
+            // attemptNumber={updateNumber}
+            //  attemptNumber={latestAttemptNumber}
+            mode={{
+              solutionType: "displayed",
+              allowViewSolutionWithoutRoundTrip: true,
+              showHints: true,
+              showFeedback: true,
+              showCorrectness: true,
+              interactive: false,
+            }}
+          />
+        : null}
+    </div>
+  )
+}
+
 
 export default function DoenetCourse(props) {
-  const [selectedCourse, setSelectedCourse] = useState({});
-  const [studentInstructor,setStudentInstructor] = useState("Student")
-  const [modalOpen, setModalOpen] = useState(false)
-  const [assignmentObj,setAssignmentObj] = useState({title:"test title"})
-  const [assignmentId,setAssignmentId] = useState("");
-  useEffect(() => {
-    getCourses_CI((courseListArray, selectedCourseObj) => { setSelectedCourse(selectedCourseObj) })
-  }, [])
-  let menuStudentInstructor = null;
-  if (selectedCourse.role === "Instructor"){
-    menuStudentInstructor = <MenuDropDown 
-    position={'left'}  
-    offset={-20} 
-    showThisMenuText={"Student"} 
-    options={[
-      {id:"Student", label:"Student", callBackFunction:()=>{setStudentInstructor("Student")}},
-      {id:"Instructor", label:"Instructor", callBackFunction:()=>{setStudentInstructor("Instructor")}},
-  ]} />;
+  console.log("=== DoenetCourse");
+  return (
+    <DoenetCourseRouted props={props} />
+  )
+}
+
+const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get: (courseIdassignmentId) => async({ get, set }) => {
+    const { data } = await axios.get(
+      `/api/getAllAssignmentSettings.php?courseId=${courseIdassignmentId.courseId}`
+    );
+    return data;
   }
-  function overlayOnClose() {
-    setModalOpen(false)
-    // const { location: { pathname = '' } } = this.history
-    // this.history.push(`${pathname}`)
+})
+
+
+export const assignmentDictionary = atomFamily({
+  key: "assignmentDictionary",
+  default: selectorFamily({
+    key: "assignmentDictionary/Default",
+    get: (courseIdassignmentId) => ({ get },instructions) => {
+      // console.log(">> cid aid", courseIdassignmentId);
+      const assignmentInfo = get(loadAssignmentSelector(courseIdassignmentId))
+      // console.log(">>assignmentInfo", assignmentInfo);
+      return courseIdassignmentId.assignmentId ? 
+      assignmentInfo?.assignments.filter((item) => item.assignmentId === courseIdassignmentId.assignmentId)[0]
+      : assignmentInfo?.assignments.filter((item) => item.itemId === courseIdassignmentId.itemId)[0]
+    }
+  })
+})
+
+let assignmentIdAtom = atom({
+  key: "assignmentIdAtom",
+  default:''
+});
+
+let assignmentIdSelector = selector ({
+  key: "assignmentIdSelector",
+  get:({get})=>{
+    return get(assignmentIdAtom());
+  },
+  set:({set},instructions) => {
+    set(assignmentIdAtom(),instructions);
+  } 
+});
+
+let getAssignmentIdSelector = selectorFamily({
+  key: "getAssignmentIdSelector",
+  get: (courseIdassignmentId) => ({ get }) => {
+    let getAllAssignments = get(assignmentDictionary(courseIdassignmentId));
+    //let assignmentId = getAllAssignments.itemId === courseIdassignmentId.itemId ? getAllAssignments.assignmentId :'';
+    return  getAllAssignments ?  getAllAssignments.assignmentId : '';
   }
-  let leftNavDrives = ['overview','syllabus','grades','assignments']
-  if (studentInstructor === "Instructor"){ leftNavDrives.push('enrollment'); }
-
-  //Assume student assignment in overlay
-  let overlaycontent = (<LearnerAssignment 
-    assignmentId={assignmentId}
-    assignmentObj={assignmentObj}
-  />)
-    console.log("assignmentObj!!!!!!!!!",assignmentObj)
-
-  if (studentInstructor === "Instructor"){
-  overlaycontent = (<DoenetEditor hideHeader={true} 
-        branchId={"6soU1bOi77NmxYQz8nfnf"}
-        contentId={"18029ced9d03f2629636c4fdbdf5b6da76ecc624d51250863638f617045bb8be"}
-        headerTitleChange={"title here"}/> )
+})
+let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDictionarySelector(assignmentId))
+  key: "assignmentDictionarySelector",
+  get: (courseIdassignmentId) => ({ get }) => {
+    return get(assignmentDictionary(courseIdassignmentId));
+  },
+  set: (courseIdassignmentId) => async ({set,get},instructions)=>{
+    if(courseIdassignmentId.assignmentId === '')
+    {
+      courseIdassignmentId = {...courseIdassignmentId,assignmentId:instructions.newAssignmentObj.assignmentId}
+    }
+    // console.log(">>>assignInfo",courseIdassignmentId);
+    // console.log(">>>cid aid instructions",instructions);
+    const assignInfo = get(assignmentDictionary(courseIdassignmentId)); // get 
+    // console.log(">>> cid aid assignInfo new ", assignInfo);
+    let {type , ...value} = instructions;
+    switch(type){
+        case "change settings" :
+        // console.log(">>> cid aid assignInfo change", assignInfo);
+        let assignment =  {...assignInfo,...value};
+        set(assignmentDictionary(courseIdassignmentId),assignment);
+        break;
+        case "save assignment settings" :
+        // make copy
+        // console.log("save assign info", assignInfo);
+          let saveAssignment =  {...assignInfo,...value};     
+        set(assignmentDictionary(courseIdassignmentId), saveAssignment);
+        const payload = {
+          ...saveAssignment,
+          assignmentId:courseIdassignmentId.assignmentId ? courseIdassignmentId.assignmentId : instructions.newAssignmentObj.assignmentId,
+          assignment_isPublished: 0
+        }
+  
+        axios.post("/api/saveAssignmentToDraft.php", payload)
+          .then((resp) => {
+            console.log(resp.data)
+        
+          }
+          )
+        break;
+        case "make new assignment":        
+          // console.log("assignmentInfo before making >>>",instructions.newAssignmentObj);          
+          set(assignmentDictionary(courseIdassignmentId),instructions.newAssignmentObj);
+          break;
+        case "assignment was published" :
+          let publishAssignment =  {...assignInfo};     
+        set(assignmentDictionary(courseIdassignmentId), publishAssignment);
+        const payloadPublish = {
+          ...publishAssignment,
+          assignmentId:courseIdassignmentId.assignmentId ? courseIdassignmentId.assignmentId : instructions.newAssignmentObj.assignmentId,
+          assignment_isPublished: 1,
+          courseId:courseIdassignmentId.courseId
+        }
+        axios.post("/api/publishAssignment.php", payloadPublish)
+        .then((resp) => {
+          console.log(resp.data)
+        }
+        )  
+          break;
+    }
   }
-  // panelHeaderControls={[contextPanelMenu]}
-  return (<>
-    <Overlay 
-             open={modalOpen} 
-             name="Assignment"
-             header= {assignmentObj.title}
-             body={ overlaycontent }
-          onClose={()=>overlayOnClose()} 
-          />
-    {/* {modalOpen} */}
-    <Router>
-      <ToolLayout toolName="Course" headingTitle={selectedCourse.longname} extraMenus={[menuStudentInstructor]}>
-        <ToolLayoutPanel
-          panelName="Left Nav"
-        >
-          <React.Fragment>
-            <CourseTreeView leftNavDrives={leftNavDrives}/>
-          </React.Fragment>
-        </ToolLayoutPanel>
-        <Switch>
-          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel><h1>Overview</h1></ToolLayoutPanel>} />
-          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel><h1>Syllabus</h1></ToolLayoutPanel>} />
-          <Route sensitive exact path="/grades" render={(props) => (<LearnerGrades selectedCourse={selectedCourse} studentInstructor={studentInstructor}/>)} />
-          <Route sensitive exact path="/grades/attempt" render={(props) => (<LearnerGradesAttempts selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignments  selectedCourse={selectedCourse} studentInstructor={studentInstructor} setModalOpen={setModalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={(props) => (<Enrollment selectedCourse={selectedCourse} studentInstructor={studentInstructor} />)} />
-        </Switch>
+})
+// let assignmentDictionarySelector =  selectorFamily({ //recoilvalue(assignmentDictionarySelector(assignmentId))
+//   key:"assignmentDictionarySelector",
+//   get: (assignmentId) => async ({get,set})=>{
+//    const assignmentData = get(loadAssignmentSelector(assignmentId))
+//     console.log(">>>assignmentData settings",assignmentData);
+//     }      
+//   })
 
-        <Switch>
-          <Route sensitive exact path="/overview" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/syllabus" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/grades" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/grades/attempt" render={() => <ToolLayoutPanel />} />
-          <Route sensitive exact path="/assignments" render={() => <CourseAssignmentControls setAssignmentObj={setAssignmentObj} selectedCourse={selectedCourse} studentInstructor={studentInstructor} assignmentId={assignmentId}  setModalOpen={setModalOpen} modalOpen={modalOpen} setAssignmentId = {setAssignmentId}/>} />
-          <Route sensitive exact path="/enrollment" render={() => <ToolLayoutPanel />} />
-        </Switch>
+function DoenetCourseRouted(props) {
+  const role = useRecoilValue(roleAtom);
+  // const assignmentIdSettings = useRecoilValueLoadable(assignmentDictionarySelector(assignmentId))
+  const [assignmentIdValue, setAssignmentId] = useRecoilState(assignmentIdAtom);
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  let [hideUnpublished, setHideUnpublished] = useState(role === 'Instructor' ? false : true);
+  const setSupportVisiblity = useSetRecoilState(supportVisible);
+  let pathItemId = '';
+  let routePathDriveId = '';
+  let routePathFolderId = '';
+  let itemType = '';
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.props.route.location.search));
+  const [assignid, setAssignmentIdValue] = useRecoilState(assignmentIdAtom);
+  if (urlParamsObj?.path !== undefined) {
+    [routePathDriveId, routePathFolderId, pathItemId, itemType] = urlParamsObj.path.split(":");
+  }
+  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({ driveId: routePathDriveId, folderId: routePathFolderId }))
+  let courseId = 'Fhg532fk9873412s65';
+  if (urlParamsObj?.courseId !== undefined) {
+    courseId = urlParamsObj?.courseId;
+  }
 
-        {/* <ToolLayoutPanel
-          panelName="Rt. Nav">
-          <p>Assignment Control Panel</p>
-        </ToolLayoutPanel> */}
-      </ToolLayout>
+  const [openEnrollment, setEnrollmentView] = useState(false);
+  const [assignmentSelected, setAssignmentSelected] = useState(false);
 
-    </Router>
-    </>
+  let makeassignmentIsSelected = false;
+
+  const enrollCourseId = { courseId: courseId };
+  let contentId = '';
+    const [makeContent, setMakeContent] = useState(false);
+    const loadBackAssignmentIdSelector = useRecoilValueLoadable(getAssignmentIdSelector({courseId:courseId,itemId:pathItemId}));
+    //  console.log(">>loadBackAssignmentId --->>> ",loadBackAssignmentIdSelector);
+    if ( loadBackAssignmentIdSelector?.state === 'hasValue' && loadBackAssignmentIdSelector?.contents) {
+      setAssignmentId(loadBackAssignmentIdSelector?.contents);      
+    }
+    else{
+      // console.log('>>> makeasiign selected',assignmentSelected)
+      if(!assignmentSelected)
+          setAssignmentId('');
+    }
+
+  let displayAssignmentSettings = '';
+  // const assignmentObjInfo = useRecoilValueLoadable(assignmentDictionary({ courseId: courseId, assignmentId: props.assignmentId }))
+  // const [makeContent, setMakeContent] = useState(false);
+  // if (assignmentObjInfo.state === 'hasValue' && assignmentObjInfo.contents) {
+  //   for (let assignment of assignmentObjInfo.contents.assignments) {
+  //     if (assignment.itemId === pathItemId) {
+  //       // if (assignment.itemId === props.itemId){
+  //       displayAssignmentSettings = assignment;
+  //       console.log(">>>displayAssignmentSettings", assignment);
+  //       contentId = assignment.contentId;
+  //       //setMakeContent(true);
+  //       //setAssignmentId(assignment.assignmentId);
+  //     }
+  //   }
+  // }
+  if (contentId === '') {
+    let data = folderInfoObj.contents.contentsDictionary;
+    if (data) {
+      contentId = data[pathItemId]?.contentId;
+    }
+  }
+  const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({courseId:courseId,assignmentId:assignmentIdValue}))
+
+  const AssignmentForm = (props) => {
+    const role = useRecoilValue(roleAtom);
+    const loadBackAssignmentState = useRecoilValueLoadable(assignmentDictionary({courseId:props.courseId,assignmentId:props.assignmentId}))
+    const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({courseId:props.courseId,assignmentId:props.assignmentId}))
+    // console.log("loadBackAssignmentState",loadBackAssignmentState);
+    let assignmentInfo = '';
+    if ( loadBackAssignmentState?.state === 'hasValue' && loadBackAssignmentState?.contents) {      
+        if (loadBackAssignmentState?.contents.itemId === props.itemId) {
+            assignmentInfo = loadBackAssignmentState?.contents;
+            // console.log(">>>assignment info in form", assignmentInfo);
+        }
+    }
+    // const [assignmentInfo, setAssignmentInfo] = useState({});
+    const handleChange = (event) => {
+      let name = event.target.name;
+      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+      setAssignmentSettings({ type: 'change settings',[name]: value});
+    }
+    const handleOnBlur = async (e) => {
+      let name = e.target.name;
+      let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      setAssignmentSettings({ type: 'save assignment settings',[name]: value});
+      
+    }
+    const handleSubmit = (e) => {
+      const payload = {
+        ...assignmentInfo,
+        assignmentId: assignmentIdValue ? assignmentIdValue : displayAssignmentSettings.assignmentId,
+        assignment_isPublished: 1,
+        courseId: courseId
+      }
+    
+        setAssignmentSettings({ type: "assignment was published", itemId: pathItemId, assignedData: payload })
+    }
+
+    const loadBackAssignment = () => {
+      // console.log("load back assignment", assignmentObjInfo.contents.assignments);
+      if (loadBackAssignmentState?.contents) {
+        for (let assignment of loadBackAssignmentState?.contents?.assignments) {
+          // console.log('Assignments ->>> ', loadBackAssignmentState?.contents)
+          if (assignment.itemId === props.itemId) {
+            // if (assignment.itemId === props.itemId){
+              assignmentInfo = assignment;
+          }
+        }
+      }  
+    }
+    return (
+      role === 'Instructor'  ?
+        <>
+             {role === 'Instructor' && displayAssignmentSettings.isAssignment === '0' ? <Button text="load Assignment" callback={loadBackAssignment} /> : null}
+
+          <div>
+            <label>Assignment Name :</label>
+            <input required type="text" name="title" value={assignmentInfo?.title}
+              placeholder="Title goes here" onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Assigned Date:</label>
+            <input required type="text" name="assignedDate" value={assignmentInfo?.assignedDate}
+              placeholder="0001-01-01 01:01:01 " onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Due date: </label>
+            <input required type="text" name="dueDate" value={assignmentInfo?.dueDate}
+              placeholder="0001-01-01 01:01:01" onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+
+          <div>
+            <label>Time Limit:</label>
+            <input required type="time" name="timeLimit" value={assignmentInfo?.timeLimit}
+              placeholder="01:01:01" onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Number Of Attempts:</label>
+            <input required type="number" name="numberOfAttemptsAllowed" value={assignmentInfo?.numberOfAttemptsAllowed}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div>
+            <label >Attempt Aggregation :</label>
+            <input required type="text" name="attemptAggregation" value={assignmentInfo?.attemptAggregation}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label>Total Points Or Percent: </label>
+            <input required type="number" name="totalPointsOrPercent" value={assignmentInfo?.totalPointsOrPercent}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label>Grade Category: </label>
+            <input required type="select" name="gradeCategory" value={assignmentInfo?.gradeCategory}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label>Individualize: </label>
+            <input required type="checkbox" name="individualize" value={assignmentInfo?.individualize}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Multiple Attempts: </label>
+            <input required type="checkbox" name="multipleAttempts" value={assignmentInfo?.multipleAttempts}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Show solution: </label>
+            <input required type="checkbox" name="showSolution" value={assignmentInfo?.showSolution}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Show feedback: </label>
+            <input required type="checkbox" name="showFeedback" value={assignmentInfo?.showFeedback}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Show hints: </label>
+            <input required type="checkbox" name="showHints" value={assignmentInfo?.showHints}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Show correctness: </label>
+            <input required type="checkbox" name="showCorrectness" value={assignmentInfo?.showCorrectness}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div >
+            <label >Proctor make available: </label>
+            <input required type="checkbox" name="proctorMakesAvailable" value={assignmentInfo?.proctorMakesAvailable}
+              onBlur={handleOnBlur} onChange={handleChange} />
+          </div>
+          <div>
+            <ToggleButton text="Publish" switch_text="publish changes" callback={handleSubmit} type="submit" ></ToggleButton>
+          </div>
+        </>
+        : <div>
+          <div>
+            <h1>{assignmentInfo?.title}</h1>
+            <p>Due: {assignmentInfo?.dueDate}</p>
+            <p>Time Limit: {assignmentInfo?.timeLimit}</p>
+            <p>Number of Attempts Allowed: {assignmentInfo?.numberOfAttemptsAllowed}</p>
+            <p>Points: {assignmentInfo?.totalPointsOrPercent}</p>
+          </div>
+        </div>
+    )
+  }
+ 
+  const handleMakeAssignment = () => {
+    makeassignmentIsSelected = true;
+    let assignmentId = nanoid();
+    setAssignmentSelected(true);
+    setAssignmentId(assignmentId);
+    let newAssignmentObj = {
+      assignmentId:assignmentId,
+      title:'Untitled Assignment New',
+      assignedDate: "",
+      attemptAggregation: "",
+      dueDate: "",
+      gradeCategory: "",
+      individualize: "0",
+      isAssignment: "1",
+      isPublished: "0",
+      itemId: pathItemId,
+      multipleAttempts: "0",
+      numberOfAttemptsAllowed: "0",
+      proctorMakesAvailable: "0",
+      showCorrectness: "1",
+      showFeedback: "1",
+      showHints: "1",
+      showSolution: "1",
+      timeLimit: "",
+      totalPointsOrPercent: "0"
+        }
+    setAssignmentSettings({ type: 'make new assignment',newAssignmentObj});
+    let payload = {
+      assignmentId, pathItemId, courseId
+    }
+    axios.post(
+      `/api/makeNewAssignment.php`, payload
+    ).then((response) => {
+      console.log(response.data);
+    });
+
+  }
+
+  const handlePublishContent = () => {
+    let payload = {
+      itemId: pathItemId
+    }
+    axios.post(
+      `/api/handlePublishContent.php`, payload
+    ).then((response) => {
+      console.log(response.data);
+    });
+  }
+
+  const handleMakeContent = () => {
+    let payload = {
+      itemId: pathItemId,
+    }
+    setMakeContent(true);
+    axios.post(
+      `/api/handleMakeContent.php`, payload
+    ).then((response) => {
+      console.log(response.data);
+    });
+    setFolderInfo({ instructionType: "handle make content", itemId: pathItemId, assignedDataSavenew: payload })
+  }
+
+  return (
+    <Tool>
+      <navPanel>
+        <Drive types={['course']} hideUnpublished={hideUnpublished} urlClickBehaviour="select" /><br />
+        {role === 'Instructor' ?  <Menu label="Role"><MenuItem value="Student" onSelect={() => setHideUnpublished(true)} /><MenuItem value="Instructor" onSelect={() => setHideUnpublished(false)} /></Menu> : null}
+        {role === 'Instructor' && <Button text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}> </Button>}
+      </navPanel>
+
+      <headerPanel title="my title">
+        <Switch
+          onChange={(value) => {
+            setSupportVisiblity(value);
+          }}
+        />
+      </headerPanel>
+      <mainPanel>
+
+        {contentId && routePathDriveId ?
+          <DisplayCourseContent
+            driveId={routePathDriveId}
+            contentId={contentId} />
+          : null}
+        {openEnrollment ? <Enrollment selectedCourse={enrollCourseId} /> : null}
+
+      </mainPanel>
+      <menuPanel title="Content Info">
+        {role === 'Instructor' && itemType === 'DoenetML' && displayAssignmentSettings == '' && !makeassignmentIsSelected && !assignmentIdValue ?
+                                   <><Button text="Make Assignment" callback={handleMakeAssignment}></Button>
+                                   <ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton> </>: null}
+        {role === 'Instructor' && itemType === 'Url' ? <><ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton> </> : null}
+        {role === 'Instructor' && itemType === 'Folder'? <><ToggleButton text="Publish Content" switch_text="Published" callback={handlePublishContent}></ToggleButton></>: null}
+        {/* {role === 'Instructor' && makeContent ? <Button text="load Assignment" callback={loadBackAssignment} /> : null} */}
+       {/* {console.log("----->>assignmentIdValue",assignmentIdValue)} */}
+        {assignmentIdValue ?
+          <>
+            {  <AssignmentForm
+              courseId={courseId}
+              assignmentId={assignmentIdValue}
+              assignment={displayAssignmentSettings}
+              itemId={pathItemId} />}
+
+          {/* {role === 'Instructor' && !makeContent  ? <Button text="Make Content" callback={handleMakeContent}></Button> : null} */}
+          </> : null}
+
+      </menuPanel>
+    </Tool>
   );
 }
 
 
 
-const treeNodeItem = (nodeItem) => {
-  const { title, icon } = nodeItem
-  return <div>
-    {icon}
-    <Link
-      to={`/${title}`}
-      style={{
-        color: 'white',
-        textDecoration: 'none',
-        fontWeight: "700",
-        paddingLeft: "5px",
-        fontSize: "20px",
-        textTransform: 'capitalize',
-      }}>
-      {title}
-    </Link>
-  </div>
-};
 
-const CourseTreeView = (props) => {
-  const parentsInfo = {
-    root: {
-      childContent: [],
-      childFolders: [],
-      childUrls: [],
-      isPublic: false,
-      title: "Courses",
-      type: "folder"
-    }
-  };
-
-  props.leftNavDrives.forEach(title => {
-    parentsInfo[title] = {
-      childContent: [],
-      childFolders: [],
-      childUrls: [],
-      isPublic: false,
-      isRepo: false,
-      numChild: 0,
-      parentId: "root",
-      publishDate: "",
-      rootId: "root",
-      title,
-      type: "folder"
-    }
-    parentsInfo.root.childFolders.push(title);
-  });
-
-  return (<TreeView
-    containerId={'courses'}
-    containerType={'course_assignments'}
-    loading={false}
-    parentsInfo={parentsInfo}
-    childrenInfo={{}}
-    parentNodeItem={treeNodeItem}
-    leafNodeItem={treeNodeItem}
-    specialNodes={new Set()}
-    hideRoot={true}
-    disableSearch={true}
-    treeNodeIcons={(itemType) => {
-      let map = {};
-      return map[itemType]
-    }}
-    hideRoot={true}
-    treeStyles={{
-
-      specialParentNode: {
-        "title": {
-          color: "white",
-          paddingLeft: "5px"
-        },
-        "node": {
-          backgroundColor: "rgba(192, 220, 242,0.3)",
-          color: "white",
-          borderLeft: '8px solid #1b216e',
-          height: "2.6em",
-          width: "100%"
-        }
-      },
-      parentNode: {
-        "title": { color: "white", paddingLeft: '5px', fontWeight: "700" },
-        "node": {
-          width: "100%",
-          height: "2.6em",
-        },
-
-      },
-      childNode: {
-        "title": {
-          color: "white",
-          paddingLeft: "5px"
-        },
-        "node": {
-          backgroundColor: "rgba(192, 220, 242,0.3)",
-          color: "white",
-          borderLeft: '8px solid #1b216e',
-          height: "2.6em",
-          width: "100%"
-        }
-      },
-
-      emptyParentExpanderIcon: {
-        opened: <FontAwesomeIcon
-          style={{
-            padding: '1px',
-            width: '1.3em',
-            height: '1.2em',
-            border: "1px solid darkblue",
-            borderRadius: '2px',
-            marginLeft: "5px"
-
-          }}
-          icon={faChevronDown} />,
-        closed: <FontAwesomeIcon
-          style={{
-            padding: '1px',
-            width: '1.3em',
-            height: '1.2em',
-            border: "1px solid darkblue",
-            borderRadius: '2px',
-            marginLeft: "5px"
-
-          }}
-          icon={faChevronRight} />,
-      },
-    }}
-    onLeafNodeClick={(nodeId) => {
-     // console.log(nodeId)
-    }}
-    onParentNodeClick={(nodeId) => {
-     // console.log(nodeId)
-    }}
-      />)
-}
