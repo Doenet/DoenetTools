@@ -41,18 +41,19 @@ export default function AddItem(props){
 function AddItemRouted(props){
 
   const selectedDrive = useRecoilValue(selectedDriveAtom);
-  let selectedItemId = selectedDrive?.driveId;  
-  let driveId = selectedDrive?.driveId;
+  let selectedItemId = selectedDrive;  
+  let driveId = selectedDrive;
+  let parentFolderId = selectedDrive;
   let itemInfo = null;
 
   const globalSelected = useRecoilValue(globalSelectedNodesAtom);
   if (globalSelected.length > 0) {
     selectedItemId = globalSelected[0]?.itemId;
     driveId = globalSelected[0]?.driveId;
-    const parentFolderId = globalSelected[0]?.parentFolderId;
-    const folderInfo = useRecoilStateLoadable(folderDictionarySelector({driveId,parentFolderId})); 
-    itemInfo = folderInfo[0]?.contents?.contentsDictionary?.[selectedItemId];
-  }
+    parentFolderId = globalSelected[0]?.parentFolderId;
+  }  
+  const folderInfo = useRecoilStateLoadable(folderDictionarySelector({driveId, parentFolderId})); 
+  itemInfo = folderInfo[0]?.contents?.contentsDictionary?.[selectedItemId];
   
   const [activeForm, setActiveForm] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
