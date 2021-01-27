@@ -25,7 +25,7 @@ const MenuController = styled.button`
 const DropDownContent = styled.div`
   opacity: 1;
   display: ${(props) => (props.open ? "block" : "none")};
-  background-color: white;
+  background-color: rgb(246, 248, 255);
   width: 300px;
   border-radius: 1%;
   border: 1px solid black;
