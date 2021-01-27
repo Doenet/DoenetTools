@@ -200,7 +200,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
     {
       courseIdassignmentId = {...courseIdassignmentId,assignmentId:instructions.newAssignmentObj.assignmentId}
     }
-    console.log(">>>assignInfo",courseIdassignmentId);
+    // console.log(">>>assignInfo",courseIdassignmentId);
     // console.log(">>>cid aid instructions",instructions);
     const assignInfo = get(assignmentDictionary(courseIdassignmentId)); // get 
     // console.log(">>> cid aid assignInfo new ", assignInfo);
@@ -290,7 +290,7 @@ function DoenetCourseRouted(props) {
   let contentId = '';
     const [makeContent, setMakeContent] = useState(false);
     const loadBackAssignmentIdSelector = useRecoilValueLoadable(getAssignmentIdSelector({courseId:courseId,itemId:pathItemId}));
-     console.log(">>loadBackAssignmentId --->>> ",loadBackAssignmentIdSelector);
+    //  console.log(">>loadBackAssignmentId --->>> ",loadBackAssignmentIdSelector);
     if ( loadBackAssignmentIdSelector?.state === 'hasValue' && loadBackAssignmentIdSelector?.contents) {
       setAssignmentId(loadBackAssignmentIdSelector?.contents);      
     }
@@ -332,7 +332,7 @@ function DoenetCourseRouted(props) {
     if ( loadBackAssignmentState?.state === 'hasValue' && loadBackAssignmentState?.contents) {      
         if (loadBackAssignmentState?.contents.itemId === props.itemId) {
             assignmentInfo = loadBackAssignmentState?.contents;
-            console.log(">>>assignment info in form", assignmentInfo);
+            // console.log(">>>assignment info in form", assignmentInfo);
         }
     }
     // const [assignmentInfo, setAssignmentInfo] = useState({});
