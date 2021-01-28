@@ -393,6 +393,7 @@ export const folderDictionarySelector = selectorFamily({
         })
         
       break;
+      //TODO: update to say goes from assignment to content
       case "handle make content":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));

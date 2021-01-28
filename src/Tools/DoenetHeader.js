@@ -202,9 +202,9 @@ class DoenetHeader extends Component {
   populateMenuToolbox(tools) {
     const toolObjs = {
       chooser: {
-        id: "Chooser",
-        label: "Chooser",
-        link: "/chooser/",
+        id: "Drive",
+        label: "Drive",
+        link: "/drive/",
       },
       course: {
         id: "Course",
@@ -253,9 +253,9 @@ class DoenetHeader extends Component {
         link: "/dashboard/",
       },
       {
-        id: "Chooser",
-        label: "Chooser",
-        link: "/chooser/",
+        id: "Drive",
+        label: "Drive",
+        link: "/drive/",
       },
       {
         id: "Course",

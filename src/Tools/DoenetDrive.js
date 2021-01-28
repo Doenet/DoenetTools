@@ -201,7 +201,7 @@ const fileByContent = atomFamily({
   default: selectorFamily({
     key:"fileByContent/Default",
     get:(contentId)=> async ({get})=>{
-      console.log(">>>contentId",contentId);
+      // console.log(">>>contentId",contentId);
       if (!contentId){
         return "";
       }
@@ -217,16 +217,7 @@ const editorDoenetMLAtom = atom({
 })
 
 function TextEditor(props){
-  // const loadedDoenetML = useRecoilValueLoadable(fileByContent(props.contentId))
-  // let doenetMLValue = useRef("test");
-  // console.log(doenetMLValue)
-  // if (loadedDoenetML.state === "hasValue"){
-  //   let doenetML = loadedDoenetML?.contents?.data;
-  //   console.log(">>>doenetML",doenetML)
-  // }
-  // const [editorDoenetML,setEditorDoenetML] = useState("");
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
-  
 
   return <CodeMirror
   value={editorDoenetML}
@@ -239,9 +230,71 @@ function TextEditor(props){
 />
 }
 
-function DoenetViewerUpdateButton(props){
+const viewerDoenetMLAtom = atom({
+  key:"viewerDoenetMLAtom",
+  default:{updateNumber:0,doenetML:"test"}
+})
+
+function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
-  return <button onClick={()=>props.setEditorValue(editorDoenetML)}>Update</button>
+  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+
+  return <button onClick={()=>{setViewerDoenetML((old)=>{
+    let newInfo = {...old};
+    newInfo.doenetML = editorDoenetML;
+    newInfo.updateNumber = old.updateNumber+1;
+    return newInfo;
+  })}}>Update</button>
+}
+
+function DoenetViewerPanel(){
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
+
+  return <DoenetViewer
+      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      doenetML={viewerDoenetML?.doenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+      }}
+      attemptNumber={attemptNumber}
+      assignmentId={assignmentId}
+      ignoreDatabase={false}
+      requestedVariant={requestedVariant}
+      /> 
+}
+
+//When contentId changes then set the new loaded info into the editor atoms
+function SetEditorDoenetML(props){
+    const loadedDoenetML = useRecoilValueLoadable(fileByContent(props.contentId))
+    const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+    const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+    let lastContentId = useRef("");
+
+    //Set only once
+    if (lastContentId.current !== props.contentId){
+      if (loadedDoenetML.state === "hasValue"){
+        let doenetML = loadedDoenetML?.contents?.data;
+        setEditorDoenetML(doenetML);
+        setViewerDoenetML((old)=>{
+          let newInfo = {...old};
+          newInfo.doenetML = doenetML;
+          newInfo.updateNumber = old.updateNumber+1;
+          return newInfo;
+        })
+        lastContentId.current = props.contentId; //Don't set again
+      }
+    }
+
+
+  return null;
 }
 
 
@@ -249,29 +302,22 @@ export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
-  console.log(">>>overlayInfo",overlayInfo)
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
+  // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
 
   const contentId = overlayInfo?.instructions?.contentId;
-  const [updateNumber,setUpdateNumber] = useState(0);
-  const [viewerDoenetML,setViewerDoenetML] = useState("");
   
-
-  let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
-  let solutionDisplayMode = "button";
-
   let textEditor = null;
+  let doenetViewerEditorControls = null;
+  let doenetViewerEditor = null;
+  let setLoadContentId = null;
   if (overlayInfo?.name === "editor"){
-        textEditor = <TextEditor contentId={contentId} />
+    setLoadContentId = <SetEditorDoenetML contentId={contentId} />
+    textEditor = <TextEditor />
+    doenetViewerEditorControls = <DoenetViewerUpdateButton  />
+    doenetViewerEditor =  <DoenetViewerPanel />
   }
 
-  function setEditorValue(value){
-    setViewerDoenetML(value);
-    setUpdateNumber((old)=>{return old+1})
-  }
   
   return (
     <Tool>
@@ -281,12 +327,7 @@ export default function DoenetDriveTool(props) {
       </navPanel>
 
       <headerPanel title="my title">
-        {/* <Switch
-          onChange={(value) => {
-            setSupportVisiblity(value);
-          }}
-        /> */}
-        <p>header for important stuff</p>
+        <p>Drive</p>
       </headerPanel>
 
       <mainPanel>
@@ -299,8 +340,6 @@ export default function DoenetDriveTool(props) {
           </button> */}
         <BreadcrumbContainer /> 
         <div 
-        // className="noselect nooutline" 
-
         onClick={()=>{
           clearSelections();
         }}
@@ -336,25 +375,9 @@ export default function DoenetDriveTool(props) {
         </headerPanel>
 
         <mainPanel>
-          {/* {DoenetViewerPanel} */}
-        <DoenetViewerUpdateButton setEditorValue={setEditorValue} />
-          <DoenetViewer
-            key={"doenetviewer" + updateNumber}
-            doenetML={viewerDoenetML}
-            flags={{
-              showCorrectness: true,
-              readOnly: false,
-              solutionDisplayMode: solutionDisplayMode,
-              showFeedback: true,
-              showHints: true,
-            }}
-            attemptNumber={attemptNumber}
-            assignmentId={assignmentId}
-            ignoreDatabase={false}
-            requestedVariant={requestedVariant}
-
-          />
-        
+          {setLoadContentId}
+          {doenetViewerEditorControls}
+          {doenetViewerEditor}
         </mainPanel>
 
         <supportPanel width="40%">
