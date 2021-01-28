@@ -87,6 +87,7 @@ export const openOverlayByName = selector({
 });
 
 export default function Tool(props) {
+  // console.log("=== Tool (only once)");
   const [openOverlayName, setOpenOverlayName] = useRecoilState(
     openOverlayByName
   );
@@ -124,7 +125,6 @@ export default function Tool(props) {
   if (Object.keys(profile).length < 1) {
     return <h1>Loading...</h1>;
   }
-  console.log("=== Tool (only once)");
 
   //lowercase names logic
   var toolParts = {};
@@ -230,8 +230,6 @@ export default function Tool(props) {
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
-
-  console.log(">>>MenuPanel: ", toolParts.menuPanel);
 
   if (toolParts.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
