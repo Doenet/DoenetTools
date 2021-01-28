@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { atom, selector, useRecoilValue } from "recoil";
+import { atom, selector, useRecoilState } from "recoil";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import NavPanel from "./NavPanel";
 import HeaderPanel from "./HeaderPanel";
 import ContentPanel from "./ContentPanel";
+import MainPanel from "./MainPanel";
 import SupportPanel, {
   supportVisibleAtom,
   SupportVisiblitySwitch,
 } from "./SupportPanel";
 import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
-import MainPanel from "./MainPanel";
 import DoenetHeader from "../../Tools/DoenetHeader";
+import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
@@ -28,6 +30,18 @@ const ToolContainer = styled.div`
   background-color: #f6f8ff;
   position: ${({ isOverlay }) => (isOverlay ? "fixed" : "static")};
   z-index: ${({ isOverlay }) => (isOverlay ? "3" : "auto")};
+`;
+
+const ExitOverlayButton = styled.button`
+  width: 45px;
+  height: 45px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #1a5a99;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  /* border-style: none; */
+  cursor: pointer;
 `;
 
 export const activeOverlayName = atom({
@@ -73,11 +87,13 @@ export const openOverlayByName = selector({
 });
 
 export default function Tool(props) {
-  const openOverlayName = useRecoilValue(openOverlayByName);
+  const [openOverlayName, setOpenOverlayName] = useRecoilState(
+    openOverlayByName
+  );
 
   //User profile logic
   const [profile, setProfile] = useState({});
-  const [jwt, setjwt] = useCookies("JWT_JS");
+  const [jwt] = useCookies("JWT_JS");
 
   let isSignedIn = false;
   if (Object.keys(jwt).includes("JWT_JS")) {
@@ -169,6 +185,7 @@ export default function Tool(props) {
   let supportPanel = null;
   let menuPanel = null;
   let overlay = null;
+  let toolContent = null;
 
   if (toolParts.navPanel) {
     navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
@@ -191,7 +208,15 @@ export default function Tool(props) {
             // guestUser={props.guestUser}
             // onChange={showCollapseMenu}
           />
-        ) : null}
+        ) : (
+          <ExitOverlayButton
+            onClick={() =>
+              setOpenOverlayName({ instructions: { action: "close" } })
+            }
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </ExitOverlayButton>
+        )}
       </HeaderPanel>
     );
   }
@@ -205,7 +230,9 @@ export default function Tool(props) {
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
+
   console.log(">>>MenuPanel: ", toolParts.menuPanel);
+
   if (toolParts.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
@@ -213,8 +240,6 @@ export default function Tool(props) {
   if (openOverlayName?.name && toolParts.overlay) {
     overlay = toolParts.overlay[openOverlayName.name];
   }
-
-  let toolContent = null;
 
   if (!props.isOverlay && openOverlayName?.name) {
     toolContent = <Tool isOverlay>{overlay}</Tool>;

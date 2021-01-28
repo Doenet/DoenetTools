@@ -83,17 +83,6 @@ export default function DoenetExampleTool() {
 
         <menuPanel title="control">
           <p>control important stuff</p>
-          <button
-            onClick={() => {
-              setOverlayOpen({
-                instructions: {
-                  action: "close",
-                },
-              });
-            }}
-          >
-            Go Back
-          </button>
           <div>
             <button
               onClick={() => {
@@ -133,17 +122,6 @@ export default function DoenetExampleTool() {
 
         <menuPanel title="edit">
           <p>control important stuff</p>
-          <button
-            onClick={() => {
-              setOverlayOpen({
-                instructions: {
-                  action: "close",
-                },
-              });
-            }}
-          >
-            Go Back
-          </button>
         </menuPanel>
 
         <menuPanel title="other">
