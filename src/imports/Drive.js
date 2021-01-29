@@ -37,6 +37,7 @@ import {
 } from 'recoil';
 
 const sortOptions = Object.freeze({
+  "DEFAULT": "defaultOrder",
   "LABEL_ASC": "label ascending",
   "LABEL_DESC": "label descending",
   "CREATION_DATE_ASC": "creation date ascending",
@@ -412,6 +413,29 @@ export const folderDictionarySelector = selectorFamily({
 
   // }
 })
+
+const folderSortOrderAtom = atomFamily({
+  key:"folderSortOrderAtom",
+  default:sortOptions.DEFAULT
+})
+
+const folderSortOrderSelector = selectorFamily({
+  key:"folderSortOrderSelector",
+  get:(driveInstanceIdItemId)=>({get})=>{
+    return get(folderSortOrderAtom(driveInstanceIdItemId));
+  },
+  set:(driveInstanceIdItemId) => ({set}, sortOrder)=>{
+    set(folderSortOrderAtom(driveInstanceIdItemId),sortOrder); 
+  }
+})
+
+export const folderInfoSelector = selectorFamily({
+  get:(driveIdInstanceIdFolderId)=>({get})=>{
+    // return get(folderDictionary(driveIdFolderId));
+  },
+  set: (driveIdInstanceIdFolderId) => async ({set,get},instructions)=>{
+  }
+});
 
 const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   let tempArr = [...defaultFolderChildrenIds];
@@ -1297,7 +1321,7 @@ const nodePathSelector = selectorFamily({
     let path = []
     let currentNode = folderId;
     while (currentNode && currentNode !== driveId) {
-      const folderInfoObj = get(folderDictionary({ driveId, folderId: currentNode})); 
+      const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNode}));
       path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label})
       currentNode = folderInfoObj.folderInfo.parentFolderId;
     }
@@ -1346,7 +1370,7 @@ function useUpdateBreadcrumb(props) {
       newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
       const destinationLink = `../?${encodeParams(newParams)}`
       // const draggedOver = DnDState.activeDropTargetId === currentNodeId && isDraggedOverBreadcrumb;  
-      const breadcrumbElement = <Link 
+      let breadcrumbElement = <Link 
         style={breadcrumbItemStyle} 
         to={destinationLink}>
         {nodeObj?.label}
