@@ -201,7 +201,6 @@ const fileByContent = atomFamily({
   default: selectorFamily({
     key:"fileByContent/Default",
     get:(contentId)=> async ({get})=>{
-      // console.log(">>>contentId",contentId);
       if (!contentId){
         return "";
       }
@@ -210,6 +209,17 @@ const fileByContent = atomFamily({
   })
   
 })
+
+// getContentId ({doenetML}){
+//   const hash = crypto.createHash('sha256');
+//   if (doenetML === undefined){
+//     return;
+//   }
+  
+//   hash.update(doenetML);
+//   let contentId = hash.digest('hex');
+//   return contentId;
+// }
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -232,7 +242,7 @@ function TextEditor(props){
 
 const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
-  default:{updateNumber:0,doenetML:"test"}
+  default:{updateNumber:0,doenetML:""}
 })
 
 function DoenetViewerUpdateButton(){
@@ -245,6 +255,26 @@ function DoenetViewerUpdateButton(){
     newInfo.updateNumber = old.updateNumber+1;
     return newInfo;
   })}}>Update</button>
+}
+
+function SaveVersionControl(){
+  const infoLoad = useRecoilValueLoadable(selectedInformation);
+  let versions = infoLoad?.contents?.versions;
+  
+   
+  let nextVersionNumber = 1;
+  if (versions){nextVersionNumber = versions.length}
+  const [title,setTitle] = useState(`Version ${nextVersionNumber}`);
+  //Can't equal the value of earlier versions
+  if (infoLoad.state === "loading"){ return null;}
+  if (infoLoad.state === "hasError"){ 
+    console.error(infoLoad.contents)
+    return null;}
+
+  return <>
+  <label>Version Title: <input type="text" value={title} onChange={(e)=>setTitle(e.target.value)}/></label><button>Save</button>
+  </>
+  
 }
 
 function DoenetViewerPanel(){
@@ -297,12 +327,9 @@ function SetEditorDoenetML(props){
   return null;
 }
 
-
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
-  // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
-  // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
 
   const contentId = overlayInfo?.instructions?.contentId;
@@ -311,10 +338,11 @@ export default function DoenetDriveTool(props) {
   let doenetViewerEditorControls = null;
   let doenetViewerEditor = null;
   let setLoadContentId = null;
+
   if (overlayInfo?.name === "editor"){
     setLoadContentId = <SetEditorDoenetML contentId={contentId} />
     textEditor = <TextEditor />
-    doenetViewerEditorControls = <DoenetViewerUpdateButton  />
+    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
   }
 
@@ -331,13 +359,6 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
-      {/* <button
-            onClick={() => {
-              setOverlayOpen("Bob");
-            }}
-          >
-            Open Bob
-          </button> */}
         <BreadcrumbContainer /> 
         <div 
         onClick={()=>{
