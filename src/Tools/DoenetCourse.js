@@ -361,17 +361,17 @@ const AssignmentForm = (props) => {
 
 
 
-const handleMakeContent = () => {
-  let payload = {
-    itemId: itemId
-  }
-  axios.post(
-    `/api/handleMakeContent.php`, payload
-  ).then((response) => {
-    console.log(response.data);
-  });
-  setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
-}
+// const handleMakeContent = () => {
+//   let payload = {
+//     itemId: itemId
+//   }
+//   axios.post(
+//     `/api/handleMakeContent.php`, payload
+//   ).then((response) => {
+//     console.log(response.data);
+//   });
+//   setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
+// }
 
   return (
     role === 'Instructor'  ?
@@ -495,6 +495,7 @@ const ContentInfoPanel = (props) =>{
   const assignmentIdSettings = useRecoilValueLoadable(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
   const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({ driveId:driveId , folderId: folderId }));
+  const [makeNewAssignment, setMakeNewAssignment] = useState(false);
 
   // let assignmentViewForm = null;
   let assignmentInfo = '';
@@ -506,9 +507,9 @@ const ContentInfoPanel = (props) =>{
         assignmentId = assignmentInfo?.assignmentId;
         setAssignmentSettings({ type: 'update new assignment',assignmentInfo});
       }
-  } 
-  
-  const [makeNewAssignment, setMakeNewAssignment] = useState(false);
+     } 
+
+ 
   const handleMakeAssignment = () => {
     console.log("!!!!!!!!!!!!!!!");
     setMakeNewAssignment(true);
@@ -520,6 +521,7 @@ const ContentInfoPanel = (props) =>{
     let payload = {
       assignmentId, itemId, courseId
     }
+    setMakeNewAssignment(false);
     axios.post(
       `/api/makeNewAssignment.php`, payload
     ).then((response) => {
@@ -539,6 +541,22 @@ const ContentInfoPanel = (props) =>{
       console.log(response.data);
     });
   }
+ 
+  // const handleMakeContent = () => {
+  //   let payload = {
+  //     itemId: itemId
+  //   }
+  //   setMakebackContent(true);
+  //   axios.post(
+  //     `/api/handleMakeContent.php`, payload
+  //   ).then((response) => {
+  //     console.log(response.data);
+  //   });
+  //   setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
+  // }
+  let assignmentForm = null;
+  
+
   return (
     <div>
        <br />
@@ -556,6 +574,11 @@ const ContentInfoPanel = (props) =>{
     assignmentId={assignmentId}
     assignmentInfo={assignmentInfo}
     itemId={itemId} /> }
+
+
+
+{/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
+
   </div>
   ) 
 }
