@@ -11,41 +11,39 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 
+// $escapedDoenetML = mysqli_real_escape_string($conn,$_POST["doenetML"]);
+// $escapedCID = hash('sha256',$escapedDoenetML);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
-$doenetML = mysqli_real_escape_string($conn,$_POST["doenetML"]);
+$dangerousDoenetML = $_POST["doenetML"];
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $draft = mysqli_real_escape_string($conn,$_POST["draft"]);
 
-var_dump($_POST);
 //Add new version to content table
-//Update draft version (Overwrite BranchId named file)
+//TODO: Update draft version (Overwrite BranchId named file)
+
+//TODO: Test if we have permission to save to branchId
 
 //save to file as contentid
-$contentId = hash('sha256', $doenetML);
+$contentId = hash('sha256', $dangerousDoenetML);
 $response_arr = array(
     "success"=> TRUE,
     "contentId"=> $contentId
 );
 //Config file needed for server
-// $newfile = fopen("../media/$contentId", "w") or die("Unable to open file!");
-// fwrite($newfile, $doenetML);
-// fclose($newfile);
+$newfile = fopen("../media/$contentId", "w") or die("Unable to open file!");
+fwrite($newfile, $dangerousDoenetML);
+fclose($newfile);
 
 
-// $sql = "INSERT INTO assignment 
-// SET assignmentId='$assignmentId',
-// courseHeadingId='$headingId',
-// assignmentName='$documentName',
-// sourceContentId='$contentId', 
-// courseId='$courseId',
-// contentRevisionNumber='$latestVersion',
-// sortOrder='$sortOrder',
-// gradeCategory='$gradeCategory',
-// totalPointsOrPercent='$totalPointsOrPercent',
-// creationDate=NOW()
-// ";
+$sql = "INSERT INTO content 
+SET branchId='$branchId',
+contentId='$contentId', 
+title='$title',
+timestamp=NOW(),
+isDraft='0'
+";
 
-// $result = $conn->query($sql); 
+$result = $conn->query($sql); 
 
 
 // set response code - 200 OK

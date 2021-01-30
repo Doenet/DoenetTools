@@ -229,7 +229,6 @@ function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
 
-  console.log(">>>DoenetViewerUpdateButton",editorDoenetML)
   return <button onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
@@ -259,7 +258,7 @@ const getContentId = (doenetML)=>{
   if (doenetML === undefined){
     return;
   }
-  console.log(">>>sha doenetML",doenetML)
+  console.log(`>>>sha doenetML>${doenetML}<`)
   hash.update(doenetML);
   let contentId = hash.digest('hex');
   return contentId;
@@ -274,6 +273,7 @@ const updateItemVersionsSelector = selectorFamily({
     const doenetML = get(editorDoenetMLAtom);
     const oldVersions = get(itemVersionsAtom(branchId))
     const contentId = getContentId(doenetML);
+    console.log(">>>js contentId",contentId)
     const dt = new Date();
     const timestamp = `${
       dt.getFullYear().toString().padStart(2, '0')}-${
@@ -293,15 +293,21 @@ const updateItemVersionsSelector = selectorFamily({
     set(itemVersionsAtom(branchId),newVersions)
     set(fileByContentId(contentId),{data:doenetML})
     axios.post("/api/saveNewVersion.php",{title,branchId,doenetML})
-    // .then((resp)=>{console.log(">>>resp",resp.data)})
+    .then((resp)=>{console.log(">>>resp",resp.data)})
   }
+})
+
+let overlayTitleAtom = atom({
+  key:"overlayTitleAtom",
+  default:""
 })
 
 function SaveVersionControl(props){
   let [versionsInfo,setVersionsInfo] = useRecoilStateLoadable(updateItemVersionsSelector(props.branchId))
-  // let versionsInfo = useRecoilValueLoadable(itemVersionsAtom(props.branchId))
   const firstTitle = "Version 1"
   const [title,setTitle] = useState(firstTitle);
+  const [versionNumber,setVersionNumber] = useState(1);
+  const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
 
   //Can't equal the value of earlier versions
   if (versionsInfo.state === "loading"){ return null;}
@@ -309,14 +315,19 @@ function SaveVersionControl(props){
     console.error(versionsInfo.contents)
     return null;}
   if (versionsInfo.state === "hasValue" && title === firstTitle && versionsInfo.contents?.length){
-    setTitle(`Version ${versionsInfo.contents.length}`)
+    setVersionNumber(versionsInfo.contents.length);
+    setTitle(`Version ${versionsInfo.contents.length}`);
   }
-  console.log(">>>SaveVersionControl versionsInfo",props.branchId,versionsInfo)
 
   return <>
   <label>Version Title: <input type="text" value={title} onChange={(e)=>setTitle(e.target.value)}/>
   </label>
-  <button onClick={()=>{setVersionsInfo(title)}}>Save</button>
+  <button onClick={()=>{
+    setVersionsInfo(title);
+    setEditorOverlayTitle(title);
+    setTitle(`Version ${versionNumber+1}`);
+    setVersionNumber((old)=>old+1);
+    }}>Save as New Version</button>
   </>
   
 }
@@ -346,23 +357,20 @@ function DoenetViewerPanel(){
 }
 
 //When contentId changes then set the new loaded info into the editor atoms
-function SetEditorDoenetML(props){
+function SetEditorDoenetMLandTitle(props){
     const loadedDoenetML = useRecoilValueLoadable(fileByContentId(props.contentId))
     const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
     const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
     let lastContentId = useRef("");
+    const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
+    const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
 
     //Set only once
     if (lastContentId.current !== props.contentId){
       if (loadedDoenetML.state === "hasValue"){
+        let overlayTitle = overlayInfo?.instructions?.title;
+        setEditorOverlayTitle(overlayTitle)
         let doenetML = loadedDoenetML?.contents?.data;
-        console.log(">>>>---------------------------------")
-        console.log(">>>SetEditorDoenetML SET EDITOR AND VIEWER!!!!!")
-        console.log(">>>contentId ",props.contentId)
-        console.log(">>>loadedDoenetML",loadedDoenetML)
-        console.log(">>>loadedDoenetML?.contents",loadedDoenetML?.contents)
-        console.log(">>>doenetML",doenetML)
-        console.log(">>>>---------------------------------")
         setEditorDoenetML(doenetML);
         setViewerDoenetML((old)=>{
           let newInfo = {...old};
@@ -378,6 +386,11 @@ function SetEditorDoenetML(props){
   return null;
 }
 
+const EditorTitle = ()=>{
+  const overlayTitle = useRecoilValue(overlayTitleAtom);
+  return <span>{overlayTitle}</span>
+}
+
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
@@ -390,9 +403,11 @@ export default function DoenetDriveTool(props) {
   let doenetViewerEditorControls = null;
   let doenetViewerEditor = null;
   let setLoadContentId = null;
+  let editorTitle = null;
 
   if (overlayInfo?.name === "editor"){
-    setLoadContentId = <SetEditorDoenetML contentId={contentId} />
+    editorTitle = <EditorTitle />
+    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
     textEditor = <TextEditor />
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
@@ -431,8 +446,8 @@ export default function DoenetDriveTool(props) {
 
       <overlay name="editor">
         <headerPanel title="my title">
-          
-          <p>{overlayInfo?.instructions?.title}</p>
+          {editorTitle}
+          {/* <p>{overlayInfo?.instructions?.title}</p> */}
           <button
             onClick={() => {
               setOverlayOpen({
