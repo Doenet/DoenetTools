@@ -296,6 +296,26 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
           set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), editAssignment);          
           
           break;
+          case "handle make content" : 
+          let handlebackContent = get(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
+         
+          const payloadContent = {
+            ...handlebackContent,
+            isAssignment: 0
+          }
+          set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), payloadContent); 
+
+           break;
+           case "load back assignment":
+            let handlebackAssignment = get(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
+         
+            const payloadAssignment = {
+              ...handlebackAssignment,
+              isAssignment: 1
+            }
+            set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), payloadAssignment); 
+  
+             break;
     }
   }
 })
@@ -344,39 +364,9 @@ const AssignmentForm = (props) => {
       
   }
 
-  const loadBackAssignment = () => {
-    // console.log("load back assignment", assignmentObjInfo.contents.assignments);
-    if (loadBackAssignmentState?.contents) {
-      for (let assignment of loadBackAssignmentState?.contents?.assignments) {
-        // console.log('Assignments ->>> ', loadBackAssignmentState?.contents)
-        if (assignment.itemId === props.itemId) {
-          // if (assignment.itemId === props.itemId){
-            assignmentInfo = assignment;
-        }
-      }
-    }  
-  }
-
-   
-
-
-
-// const handleMakeContent = () => {
-//   let payload = {
-//     itemId: itemId
-//   }
-//   axios.post(
-//     `/api/handleMakeContent.php`, payload
-//   ).then((response) => {
-//     console.log(response.data);
-//   });
-//   setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
-// }
-
   return (
     role === 'Instructor'  ?
       <>
-           {/* {  <Button text="load Assignment" callback={loadBackAssignment} /> : null} */}
           
 
        {assignmentId && 
@@ -489,8 +479,8 @@ const ContentInfoPanel = (props) =>{
   let assignmentObjNew = props.assignmentObjInfo;
   let driveId = props.routePathDriveId;
   let folderId = props.routePathFolderId;
+  let handlemakeContentView = false;
   const [role,setRole] = useRecoilState(roleAtom);
-
   console.log(">>> in content panel assignmentId",assignmentId);
   const assignmentIdSettings = useRecoilValueLoadable(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
   const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
@@ -542,20 +532,43 @@ const ContentInfoPanel = (props) =>{
     });
   }
  
-  // const handleMakeContent = () => {
-  //   let payload = {
-  //     itemId: itemId
-  //   }
-  //   setMakebackContent(true);
-  //   axios.post(
-  //     `/api/handleMakeContent.php`, payload
-  //   ).then((response) => {
-  //     console.log(response.data);
-  //   });
-  //   setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
-  // }
-  let assignmentForm = null;
-  
+  const [makecontent,setMakeContent] =useState(false);
+
+  const handleMakeContent = (e) =>{
+    e.preventDefault();
+    e.stopPropagation();
+   setMakeContent(true);
+  }
+
+  if(makecontent) {
+    let payload = {
+      itemId: itemId
+    }
+    setMakeContent(false);
+    axios.post(
+      `/api/handleMakeContent.php`, payload
+    ).then((response) => {
+      console.log(response.data);
+    });
+    setAssignmentSettings({ type: 'handle make content',assignmentInfo});
+    setFolderInfo({ instructionType: "handle make content", itemId: itemId, assignedDataSavenew: payload })
+  }  
+
+
+  const loadBackAssignment = () => {
+    let payload={
+      itemId:itemId
+    }
+    axios.post(
+      `/api/handleBackAssignment.php`, payload
+    ).then((response) => {
+      console.log(response.data);
+    });
+    setAssignmentSettings({ type: 'load back assignment',assignmentInfo});
+    setFolderInfo({ instructionType: "load back assignment", itemId: itemId, payloadAssignment: assignmentInfo })
+  }
+
+   
 
   return (
     <div>
@@ -566,7 +579,7 @@ const ContentInfoPanel = (props) =>{
 
           {(assignmentId === '' || assignmentId === undefined ) &&  itemType === 'DoenetML' ? <button text="Make Assignment" onClick={handleMakeAssignment}>Make Assignment</button> : null} 
           <br />
-    { assignmentId && <AssignmentForm
+    { assignmentId && assignmentInfo?.isAssignment == '1' && <AssignmentForm
     itemType={itemType}
     courseId={courseId}
     driveId={driveId}
@@ -576,8 +589,11 @@ const ContentInfoPanel = (props) =>{
     itemId={itemId} /> }
 
 
-
+{console.log(">>>> handle click for make content",assignmentInfo)}
+{( assignmentInfo?.isAssignment == '1')  && <button text="Make Content" onClick={handleMakeContent}>Make Content</button>} 
 {/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
+         
+  { assignmentId && assignmentInfo?.isAssignment == '0' ? <button text="load Assignment" onClick={loadBackAssignment} >load back Assignment</button> : null}
 
   </div>
   ) 
@@ -586,6 +602,7 @@ const ContentInfoPanel = (props) =>{
 
 
 function DoenetCourseRouted(props) {
+  console.log("props in course routed", props);
   let courseId = 'Fhg532fk9873412s65'; // TODO : need to come from props.route.courseId 
 
   const [role,setRole] = useRecoilState(roleAtom);
