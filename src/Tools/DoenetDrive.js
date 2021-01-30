@@ -13,6 +13,7 @@ import {
   selectorFamily,
   RecoilRoot,
   useRecoilValueLoadable,
+  useRecoilStateLoadable,
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { supportVisible } from "../imports/Tool/SupportPanel";
@@ -23,18 +24,8 @@ import DoenetViewer from './DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
+import crypto from 'crypto';
 
-
-const itemVersionsSelector = selectorFamily({
-  key:"itemInfoSelector",
-  get:(branchId)=> async ({get})=>{
-    // Load versions from database
-    const { data } = await axios.get(
-      `/api/loadVersions.php?branchId=${branchId}`
-    );
-    return data.versions
-  }
-})
 
 const selectedInformation = selector({
   key:"selectedInformation",
@@ -52,7 +43,7 @@ const selectedInformation = selector({
     let versions = [];
     if (itemInfo.itemType === "DoenetML"){
       let branchId = itemInfo.branchId;
-      versions = get(itemVersionsSelector(branchId))
+      versions = get(itemVersionsAtom(branchId))
     }
     return {number:globalSelected.length,itemInfo,versions}
   }
@@ -66,7 +57,7 @@ const driveFolderItemVersion = selectorFamily({
     let versions = [];
     if (itemInfo?.itemType === "DoenetML"){
       let branchId = itemInfo.branchId;
-      versions = get(itemVersionsSelector(branchId))
+      versions = get(itemVersionsAtom(branchId))
     }
     if (!itemInfo && driveIdFolderIdItemId.folderId === driveIdFolderIdItemId.itemId){
       //TODO: Remove this when drive information is available
@@ -196,30 +187,19 @@ const ItemInfo = function (props){
   </div>
 }
 
-const fileByContent = atomFamily({
-  key:"fileByContent",
+const fileByContentId = atomFamily({
+  key:"fileByContentId",
   default: selectorFamily({
-    key:"fileByContent/Default",
+    key:"fileByContentId/Default",
     get:(contentId)=> async ({get})=>{
+      console.log(">>>fileByConentId Atom! LOADING......... contentId=",contentId)
       if (!contentId){
         return "";
       }
       return await axios.get(`/media/${contentId}`) 
     }
   })
-  
 })
-
-// getContentId ({doenetML}){
-//   const hash = crypto.createHash('sha256');
-//   if (doenetML === undefined){
-//     return;
-//   }
-  
-//   hash.update(doenetML);
-//   let contentId = hash.digest('hex');
-//   return contentId;
-// }
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -249,6 +229,7 @@ function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
 
+  console.log(">>>DoenetViewerUpdateButton",editorDoenetML)
   return <button onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
@@ -257,22 +238,85 @@ function DoenetViewerUpdateButton(){
   })}}>Update</button>
 }
 
-function SaveVersionControl(){
-  const infoLoad = useRecoilValueLoadable(selectedInformation);
-  let versions = infoLoad?.contents?.versions;
-  
-   
-  let nextVersionNumber = 1;
-  if (versions){nextVersionNumber = versions.length}
-  const [title,setTitle] = useState(`Version ${nextVersionNumber}`);
+const itemVersionsAtom = atomFamily({
+  key:"itemVersionsAtom",
+  default: selectorFamily({
+    key:"itemVersionsAtom/Default",
+    get:(branchId)=> async ({get})=>{
+      if (!branchId){
+        return "";
+      }
+      const { data } = await axios.get(
+        `/api/loadVersions.php?branchId=${branchId}`
+      );
+      return data.versions
+    }
+  })
+})
+
+const getContentId = (doenetML)=>{
+  const hash = crypto.createHash('sha256');
+  if (doenetML === undefined){
+    return;
+  }
+  console.log(">>>sha doenetML",doenetML)
+  hash.update(doenetML);
+  let contentId = hash.digest('hex');
+  return contentId;
+}
+
+const updateItemVersionsSelector = selectorFamily({
+  key:"updateItemVersionsSelector",
+  get:(branchId)=> ({get})=>{
+    return get(itemVersionsAtom(branchId))
+  },
+  set:(branchId)=> ({get,set},title)=>{
+    const doenetML = get(editorDoenetMLAtom);
+    const oldVersions = get(itemVersionsAtom(branchId))
+    const contentId = getContentId(doenetML);
+    const dt = new Date();
+    const timestamp = `${
+      dt.getFullYear().toString().padStart(2, '0')}-${
+      (dt.getMonth()+1).toString().padStart(2, '0')}-${
+      dt.getDate().toString().padStart(2, '0')} ${
+      dt.getHours().toString().padStart(2, '0')}:${
+      dt.getMinutes().toString().padStart(2, '0')}:${
+      dt.getSeconds().toString().padStart(2, '0')}`
+
+    let newVersion = {
+      title,
+      contentId,
+      timestamp,
+      isDraft: "0"
+    }
+    const newVersions = [...oldVersions,newVersion];
+    set(itemVersionsAtom(branchId),newVersions)
+    set(fileByContentId(contentId),{data:doenetML})
+    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML})
+    // .then((resp)=>{console.log(">>>resp",resp.data)})
+  }
+})
+
+function SaveVersionControl(props){
+  let [versionsInfo,setVersionsInfo] = useRecoilStateLoadable(updateItemVersionsSelector(props.branchId))
+  // let versionsInfo = useRecoilValueLoadable(itemVersionsAtom(props.branchId))
+  const firstTitle = "Version 1"
+  const [title,setTitle] = useState(firstTitle);
+
   //Can't equal the value of earlier versions
-  if (infoLoad.state === "loading"){ return null;}
-  if (infoLoad.state === "hasError"){ 
-    console.error(infoLoad.contents)
+  if (versionsInfo.state === "loading"){ return null;}
+  if (versionsInfo.state === "hasError"){ 
+    console.error(versionsInfo.contents)
     return null;}
+  if (versionsInfo.state === "hasValue" && title === firstTitle && versionsInfo.contents?.length){
+    setTitle(`Version ${versionsInfo.contents.length}`)
+  }
+  console.log(">>>SaveVersionControl versionsInfo",props.branchId,versionsInfo)
 
   return <>
-  <label>Version Title: <input type="text" value={title} onChange={(e)=>setTitle(e.target.value)}/></label><button>Save</button>
+  <label>Version Title: <input type="text" value={title} onChange={(e)=>setTitle(e.target.value)}/>
+  </label>
+  <button onClick={()=>{setVersionsInfo(title)}}>Save</button>
   </>
   
 }
@@ -303,7 +347,7 @@ function DoenetViewerPanel(){
 
 //When contentId changes then set the new loaded info into the editor atoms
 function SetEditorDoenetML(props){
-    const loadedDoenetML = useRecoilValueLoadable(fileByContent(props.contentId))
+    const loadedDoenetML = useRecoilValueLoadable(fileByContentId(props.contentId))
     const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
     const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
     let lastContentId = useRef("");
@@ -312,6 +356,13 @@ function SetEditorDoenetML(props){
     if (lastContentId.current !== props.contentId){
       if (loadedDoenetML.state === "hasValue"){
         let doenetML = loadedDoenetML?.contents?.data;
+        console.log(">>>>---------------------------------")
+        console.log(">>>SetEditorDoenetML SET EDITOR AND VIEWER!!!!!")
+        console.log(">>>contentId ",props.contentId)
+        console.log(">>>loadedDoenetML",loadedDoenetML)
+        console.log(">>>loadedDoenetML?.contents",loadedDoenetML?.contents)
+        console.log(">>>doenetML",doenetML)
+        console.log(">>>>---------------------------------")
         setEditorDoenetML(doenetML);
         setViewerDoenetML((old)=>{
           let newInfo = {...old};
@@ -333,6 +384,7 @@ export default function DoenetDriveTool(props) {
   const clearSelections = useSetRecoilState(clearAllSelections);
 
   const contentId = overlayInfo?.instructions?.contentId;
+  const branchId = overlayInfo?.instructions?.branchId;
   
   let textEditor = null;
   let doenetViewerEditorControls = null;
@@ -342,7 +394,7 @@ export default function DoenetDriveTool(props) {
   if (overlayInfo?.name === "editor"){
     setLoadContentId = <SetEditorDoenetML contentId={contentId} />
     textEditor = <TextEditor />
-    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl /></div>
+    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
   }
 

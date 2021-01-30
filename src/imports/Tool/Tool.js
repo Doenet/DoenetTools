@@ -205,7 +205,6 @@ export default function Tool(props) {
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
-  console.log(">>>MenuPanel: ", toolParts.menuPanel);
   if (toolParts.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }

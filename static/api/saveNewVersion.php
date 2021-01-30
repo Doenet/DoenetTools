@@ -10,13 +10,13 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
+
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $doenetML = mysqli_real_escape_string($conn,$_POST["doenetML"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
-$publish = mysqli_real_escape_string($conn,$_POST["publish"]);
-// $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
+$draft = mysqli_real_escape_string($conn,$_POST["draft"]);
 
-
+var_dump($_POST);
 //Add new version to content table
 //Update draft version (Overwrite BranchId named file)
 
