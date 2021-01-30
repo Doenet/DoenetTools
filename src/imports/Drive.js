@@ -10,10 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DropTargetsContext,
   WithDropTarget  
-} from './imports/DropTarget';
-import Draggable from './imports/Draggable';
+} from '../imports/DropTarget';
+import Draggable from '../imports/Draggable';
 
-import { BreadcrumbContext } from './imports/Breadcrumb';
+import { BreadcrumbContext } from '../imports/Breadcrumb';
 
 import {
   HashRouter as Router,
@@ -369,8 +369,8 @@ export const folderDictionarySelector = selectorFamily({
           let newItemObj = newObj.contentsDictionary[instructions.itemId];          
           newItemObj.assignment_isPublished = "1";
           newItemObj.isAssignment = "1";
-          newItemObj.assignment_title = instructions.assignedData.title;
-          newItemObj.assignmentId=instructions.assignedData.assignmentId;
+          newItemObj.assignment_title = instructions.payload.title;
+          newItemObj.assignmentId=instructions.payload.assignmentId;
           return newObj;
         })
       

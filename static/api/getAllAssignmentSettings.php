@@ -12,33 +12,35 @@ $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor or user
 
-$courseId =  mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
 $sql = "SELECT
-a.assignmentId AS assignmentId,
-a.title AS title,
-a.assignedDate AS assignedDate,
-a.dueDate AS dueDate,
-a.timeLimit AS timeLimit,
-a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-a.attemptAggregation AS attemptAggregation,
-a.totalPointsOrPercent AS totalPointsOrPercent,
-a.gradeCategory AS gradeCategory,
-a.individualize AS individualize,
-a.multipleAttempts AS multipleAttempts,
-a.showSolution AS showSolution,
-a.showFeedback AS showFeedback,
-a.showHints AS showHints,
-a.showCorrectness AS showCorrectness,
-a.proctorMakesAvailable AS proctorMakesAvailable,
+ad.assignmentId AS assignmentId,
+ad.title AS title,
+ad.assignedDate AS assignedDate,
+ad.dueDate AS dueDate,
+ad.timeLimit AS timeLimit,
+ad.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+ad.attemptAggregation AS attemptAggregation,
+ad.totalPointsOrPercent AS totalPointsOrPercent,
+ad.gradeCategory AS gradeCategory,
+ad.individualize AS individualize,
+ad.multipleAttempts AS multipleAttempts,
+ad.showSolution AS showSolution,
+ad.showFeedback AS showFeedback,
+ad.showHints AS showHints,
+ad.showCorrectness AS showCorrectness,
+ad.proctorMakesAvailable AS proctorMakesAvailable,
+a.isPublished As isPublishedAssignment,
 dc.isPublished AS isPublished,
 dc.isAssignment As isAssignment,
 dc.itemId AS itemId,
 dc.contentId AS contentId
-FROM assignment_draft AS a
+FROM assignment_draft AS ad
 JOIN drive_content AS dc
+JOIN assignment As a
 ON a.assignmentId = dc.assignmentId
-WHERE a.courseId ='$courseId'
+WHERE a.assignmentId ='$assignmentId'
 ";
 
 // echo $sql;
@@ -68,6 +70,7 @@ if ($result->num_rows > 0){
         "assignmentId" => $row['assignmentId'],
         "itemId" => $row['itemId'],
         "contentId" => $row['contentId'],
+        "assignment_isPublished" => $row['isPublishedAssignment']
 
 );
     array_push($assignment_arr,$assignment);
@@ -83,5 +86,3 @@ http_response_code(200);
 echo json_encode($response_arr);
 
 $conn->close();
-
-// WHERE a.assignmentId = '$assignmentId'
