@@ -92,7 +92,6 @@ const ItemInfo = function (props){
   const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
 
 
-    // console.log(">>>infoLoad",infoLoad)
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
       console.error(infoLoad.contents)
@@ -192,7 +191,6 @@ const fileByContentId = atomFamily({
   default: selectorFamily({
     key:"fileByContentId/Default",
     get:(contentId)=> async ({get})=>{
-      console.log(">>>fileByConentId Atom! LOADING......... contentId=",contentId)
       if (!contentId){
         return "";
       }
@@ -258,7 +256,6 @@ const getContentId = (doenetML)=>{
   if (doenetML === undefined){
     return;
   }
-  console.log(`>>>sha doenetML>${doenetML}<`)
   hash.update(doenetML);
   let contentId = hash.digest('hex');
   return contentId;
@@ -273,7 +270,6 @@ const updateItemVersionsSelector = selectorFamily({
     const doenetML = get(editorDoenetMLAtom);
     const oldVersions = get(itemVersionsAtom(branchId))
     const contentId = getContentId(doenetML);
-    console.log(">>>js contentId",contentId)
     const dt = new Date();
     const timestamp = `${
       dt.getFullYear().toString().padStart(2, '0')}-${
@@ -293,7 +289,7 @@ const updateItemVersionsSelector = selectorFamily({
     set(itemVersionsAtom(branchId),newVersions)
     set(fileByContentId(contentId),{data:doenetML})
     axios.post("/api/saveNewVersion.php",{title,branchId,doenetML})
-    .then((resp)=>{console.log(">>>resp",resp.data)})
+    // .then((resp)=>{console.log(">>>resp",resp.data)})
   }
 })
 
@@ -304,29 +300,27 @@ let overlayTitleAtom = atom({
 
 function SaveVersionControl(props){
   let [versionsInfo,setVersionsInfo] = useRecoilStateLoadable(updateItemVersionsSelector(props.branchId))
-  const firstTitle = "Version 1"
-  const [title,setTitle] = useState(firstTitle);
-  const [versionNumber,setVersionNumber] = useState(1);
   const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
+  const [userDefinedTitle,setUserDefinedTitle] = useState("");
 
   //Can't equal the value of earlier versions
   if (versionsInfo.state === "loading"){ return null;}
   if (versionsInfo.state === "hasError"){ 
     console.error(versionsInfo.contents)
     return null;}
-  if (versionsInfo.state === "hasValue" && title === firstTitle && versionsInfo.contents?.length){
-    setVersionNumber(versionsInfo.contents.length);
-    setTitle(`Version ${versionsInfo.contents.length}`);
-  }
+    let versionNumber = versionsInfo?.contents?.length;
+    let versionTitle = `Version ${versionNumber}`
+    if (userDefinedTitle !== ""){
+      versionTitle = userDefinedTitle;
+    }
 
   return <>
-  <label>Version Title: <input type="text" value={title} onChange={(e)=>setTitle(e.target.value)}/>
+  <label>Version Title: <input type="text" value={versionTitle} onChange={(e)=>setUserDefinedTitle(e.target.value)}/>
   </label>
   <button onClick={()=>{
-    setVersionsInfo(title);
-    setEditorOverlayTitle(title);
-    setTitle(`Version ${versionNumber+1}`);
-    setVersionNumber((old)=>old+1);
+    setVersionsInfo(versionTitle);
+    setEditorOverlayTitle(versionTitle);
+    setUserDefinedTitle("") //Reset user defined title
     }}>Save as New Version</button>
   </>
   
