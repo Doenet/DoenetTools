@@ -35,6 +35,7 @@ import {
 } from 'recoil';
 import Switch from "../imports/Switch";
 import AddItem from '../imports/AddItem'
+import { supportVisible } from "../imports/Tool/SupportPanel";
 
 
 export const roleAtom = atom({
@@ -581,7 +582,7 @@ const ContentInfoPanel = (props) =>{
       {role === 'Instructor' && ( assignmentInfo?.isAssignment == '1')  && <button text="Make Content" onClick={handleMakeContent}>Make Content</button>} 
       {/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
               
-        { role === 'Instructor' && (assignmentId && assignmentInfo?.isAssignment == '0') ? <button text="load Assignment" onClick={loadBackAssignment} >load back Assignment</button> : null}
+        { role === 'Instructor' && (assignmentId && assignmentInfo?.isAssignment == '0') ? <button text="load Assignment" onClick={loadBackAssignment} >Make Assignment</button> : null}
 
         </div>
         ) 
