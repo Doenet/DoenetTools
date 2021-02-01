@@ -1,54 +1,20 @@
-import React, { useEffect, ErrorBoundary, useState,useRef } from "react";
-import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
-import AddItem from "../imports/AddItem";
-import Switch from "../imports/Switch";
-// import Button from "../imports/Button";
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-  selector,
-  atomFamily,
-  useRecoilState
-} from "recoil";
-import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
-import DoenetViewer from './DoenetViewer';
-
-
-// function delaySaveDraft(doenetML,timeout) {
-
+import React from 'react';
+import Date from '../imports/PanelHeaderComponents/Date.js';
+import GlobalFont from '../fonts/GlobalFont.js';
 
 //   // var timeout;
 //   // var timeout, promise,cancel;
 //   var latestDoenetML = doenetML;
 //   // console.log({timeout})
 
-//   function myalert(){
-//     timeout.current = setTimeout(function(){
-//           alert(latestDoenetML)
-//           timeout.current = null;
-//         },5000)
-
-//   }
-//   console.log({timeout:timeout.current})
-//   if (timeout.current === null){
-//     myalert();
-//   }
-//   console.log({timeout:timeout.current})
-
-  // cancel = function(){clearTimeout(timeout)}
-
-
-  // console.log(">>>latestDoenetML",latestDoenetML);
-
-  // promise = new Promise(function(resolve,reject){
-  //   timeout = setTimeout(function(){
-  //     resolve(doenetML)
-  //   },4000)
-  // })
-
+export default function app() {
+return (
+<>
+<GlobalFont/>
+<Date/>
+</>
+);
+}
 
   // return {promise,
   //         cancel}
