@@ -13,12 +13,11 @@ const NavPanelWrapper = styled.div`
   overflow: auto;
 `;
 
-
 const VisibilityButton = styled.button`
   width: 40px;
   height: 40px;
   color: #ffffff;
-  background-color: #1A5A99;
+  background-color: #1a5a99;
   border-radius: 50%;
   border: 1px solid #fff;
   font-size: 16px;
@@ -26,7 +25,7 @@ const VisibilityButton = styled.button`
   position: fixed;
   bottom: 2%;
   left: 1%;
-  z-index: 100;
+  z-index: 2;
 `;
 
 export default function NavPanel({ children }) {

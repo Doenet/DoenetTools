@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections, selectedDriveAtom} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
 import Switch from "../imports/Switch";
 import {
@@ -19,7 +19,10 @@ import { supportVisible } from "../imports/Tool/SupportPanel";
 import GlobalFont from "../fonts/GlobalFont.js";
 import axios from "axios";
 import Button from "../imports/PanelHeaderComponents/Button.js";
-
+import DoenetViewer from './DoenetViewer';
+import {Controlled as CodeMirror} from 'react-codemirror2'
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
 
 
 const itemVersionsSelector = selectorFamily({
@@ -80,6 +83,7 @@ const ItemInfo = function (props){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
 
 
 
@@ -106,11 +110,11 @@ const ItemInfo = function (props){
       let itemInfo = infoLoad?.contents?.itemInfo;
       let versions = infoLoad?.contents?.versions;
 
-  if (infoLoad.contents?.number > 1){
-    return <>
-    <h1>{infoLoad.contents.number} Items Selected</h1>
-    </>
-  }else if (infoLoad.contents?.number < 1){
+    if (infoLoad.contents?.number > 1){
+      return <>
+      <h1>{infoLoad.contents.number} Items Selected</h1>
+      </>
+    }else if (infoLoad.contents?.number < 1){
 
     if (pathFolderInfo.state === "loading"){ return null;}
     if (pathFolderInfo.state === "hasError"){ 
@@ -120,24 +124,18 @@ const ItemInfo = function (props){
   itemInfo = pathFolderInfo?.contents?.itemInfo;
   versions = pathFolderInfo?.contents?.versions;
 
-
-    if (!itemInfo){
-      return <div>Nothing Selected</div>;
+    if (!itemInfo && selectedDrive){
+      return <>
+        <h1>{selectedDrive}</h1>
+        <AddItem />
+      </>
     }
+    if (!itemInfo) return <div>Nothing Selected</div>;
   }
 
- 
-  let editDraft = null;
-  if (itemInfo?.itemType === "DoenetML"){
-    editDraft =   <button 
-    onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
-  }
-  
-
-
-
-  // console.log(">>>itemInfo",itemInfo)
   const versionsJSX = [];
+ 
+  if (itemInfo?.itemType === "DoenetML"){
   let draftObj;
   for (let version of versions){
     if (version.isDraft === "1"){
@@ -147,7 +145,18 @@ const ItemInfo = function (props){
       key={`versions${version.timestamp}`}
         onClick={() => {
           //set activeBranchInfo to version
-          setOverlayOpen("Editor");
+          setOverlayOpen({
+            name: "editor", //to match the prop
+            instructions: { 
+              supportVisble: true,
+              action: "open", //or "close"
+              contentId: version.contentId,
+              branchId: itemInfo.branchId,
+              title: version.title,
+              isDraft: version.isDraft,
+              timestamp: version.timestamp
+            }
+          });
         }}
       >
         {version.title}
@@ -155,28 +164,161 @@ const ItemInfo = function (props){
     }
   }
 
+  versionsJSX.push(<button key='edit draft'
+    onClick={()=>setOverlayOpen({
+      name: "editor", //to match the prop
+      instructions: { 
+        supportVisble: true,
+        action: "open", //or "close"
+        contentId: draftObj.contentId,
+        branchId: itemInfo.branchId,
+        title: draftObj.title,
+        isDraft: draftObj.isDraft,
+        timestamp: draftObj.timestamp
+      }
+    })}>Edit Draft</button>)
+
+  }
+  
+
+
+
+ 
+
   return <div
-  data-doenet-drive-stayselected
-  tabIndex={0}
   style={{height:"100%"}}
   >
     
 
   <h1>{itemInfo.label}</h1>
   <AddItem />
-  
   {versionsJSX}
-  {editDraft}
   </div>
+}
+
+const fileByContent = atomFamily({
+  key:"fileByContent",
+  default: selectorFamily({
+    key:"fileByContent/Default",
+    get:(contentId)=> async ({get})=>{
+      // console.log(">>>contentId",contentId);
+      if (!contentId){
+        return "";
+      }
+      return await axios.get(`/media/${contentId}`) 
+    }
+  })
+  
+})
+
+const editorDoenetMLAtom = atom({
+  key:"editorDoenetMLAtom",
+  default:""
+})
+
+function TextEditor(props){
+  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+
+  return <CodeMirror
+  value={editorDoenetML}
+  // options={options}
+  onBeforeChange={(editor, data, value) => {
+    setEditorDoenetML(value)
+  }}
+  onChange={(editor, data, value) => {
+  }}
+/>
+}
+
+const viewerDoenetMLAtom = atom({
+  key:"viewerDoenetMLAtom",
+  default:{updateNumber:0,doenetML:"test"}
+})
+
+function DoenetViewerUpdateButton(){
+  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
+  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+
+  return <button onClick={()=>{setViewerDoenetML((old)=>{
+    let newInfo = {...old};
+    newInfo.doenetML = editorDoenetML;
+    newInfo.updateNumber = old.updateNumber+1;
+    return newInfo;
+  })}}>Update</button>
+}
+
+function DoenetViewerPanel(){
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
+
+  return <DoenetViewer
+      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      doenetML={viewerDoenetML?.doenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+      }}
+      attemptNumber={attemptNumber}
+      assignmentId={assignmentId}
+      ignoreDatabase={false}
+      requestedVariant={requestedVariant}
+      /> 
+}
+
+//When contentId changes then set the new loaded info into the editor atoms
+function SetEditorDoenetML(props){
+    const loadedDoenetML = useRecoilValueLoadable(fileByContent(props.contentId))
+    const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+    const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+    let lastContentId = useRef("");
+
+    //Set only once
+    if (lastContentId.current !== props.contentId){
+      if (loadedDoenetML.state === "hasValue"){
+        let doenetML = loadedDoenetML?.contents?.data;
+        setEditorDoenetML(doenetML);
+        setViewerDoenetML((old)=>{
+          let newInfo = {...old};
+          newInfo.doenetML = doenetML;
+          newInfo.updateNumber = old.updateNumber+1;
+          return newInfo;
+        })
+        lastContentId.current = props.contentId; //Don't set again
+      }
+    }
+
+
+  return null;
 }
 
 
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
+  // const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
+  // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
 
+  const contentId = overlayInfo?.instructions?.contentId;
+  
+  let textEditor = null;
+  let doenetViewerEditorControls = null;
+  let doenetViewerEditor = null;
+  let setLoadContentId = null;
+  if (overlayInfo?.name === "editor"){
+    setLoadContentId = <SetEditorDoenetML contentId={contentId} />
+    textEditor = <TextEditor />
+    doenetViewerEditorControls = <DoenetViewerUpdateButton  />
+    doenetViewerEditor =  <DoenetViewerPanel />
+  }
+
+  
   return (
     <Tool>
       <navPanel>
@@ -185,12 +327,7 @@ export default function DoenetDriveTool(props) {
       </navPanel>
 
       <headerPanel title="my title">
-        <Switch
-          onChange={(value) => {
-            setSupportVisiblity(value);
-          }}
-        />
-        <p>header for important stuff</p>
+        <p>Drive</p>
       </headerPanel>
 
       <mainPanel>
@@ -203,8 +340,6 @@ export default function DoenetDriveTool(props) {
           </button> */}
         <BreadcrumbContainer /> 
         <div 
-        // className="noselect nooutline" 
-
         onClick={()=>{
           clearSelections();
         }}
@@ -213,18 +348,26 @@ export default function DoenetDriveTool(props) {
 
         </div>
       </mainPanel>
+      <supportPanel>
+      <Drive types={['content','course']}  urlClickBehavior="select" />
+      </supportPanel>
 
       <menuPanel title="Item Info">
         <ItemInfo route={props.route} />
       </menuPanel>
 
-      <overlay name="Editor">
+      <overlay name="editor">
         <headerPanel title="my title">
           
-          <p>Title of edited</p>
+          <p>{overlayInfo?.instructions?.title}</p>
           <button
             onClick={() => {
-              setOverlayOpen("");
+              setOverlayOpen({
+                name: "", //to match the prop
+                instructions: { 
+                  action: "close", //or "close"
+                }
+              });
             }}
           >
             Go Back
@@ -232,12 +375,13 @@ export default function DoenetDriveTool(props) {
         </headerPanel>
 
         <mainPanel>
-          <p>DoenetViewer</p>
-        
+          {setLoadContentId}
+          {doenetViewerEditorControls}
+          {doenetViewerEditor}
         </mainPanel>
 
         <supportPanel width="40%">
-          <p>Text Editor</p>
+          {textEditor}
         </supportPanel>
   
       </overlay>
