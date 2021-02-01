@@ -155,10 +155,7 @@ export const folderDictionary = atomFamily({
       let defaultOrder = [];
       let contentsDictionary = {};
       let contentIds = {};
-      let folderInfo = {
-        sortBy: "defaultOrder",
-        dirty: 0  
-      };
+      let folderInfo = {};
       for (let item of driveInfo.results){
         if (item.parentFolderId === driveIdFolderId.folderId){
           defaultOrder.push(item.itemId);
@@ -168,14 +165,8 @@ export const folderDictionary = atomFamily({
           folderInfo = item;
         }
       }
-      
-      if (folderInfo.dirty) {
-        folderInfo.sortBy = "defaultOrder";
-        folderInfo.dirty = 0;
-      }
 
-      contentIds["defaultOrder"] = defaultOrder;
-  
+      contentIds[sortOptions.DEFAULT] = defaultOrder;
       return {folderInfo,contentsDictionary,contentIds}
     } 
   })
@@ -213,8 +204,6 @@ export const folderDictionarySelector = selectorFamily({
           url: null,
           urlDescription: null,
           urlId: null,
-          sortBy: "defaultOrder",
-          dirty: 0
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
@@ -223,8 +212,8 @@ export const folderDictionarySelector = selectorFamily({
           let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
           newDefaultOrder.splice(index+1, 0, itemId);
+          newObj.contentIds = {}
           newObj.contentIds["defaultOrder"] = newDefaultOrder;
-          // newObj.folderInfo.dirty = 1;
           return newObj;
         })
         if (instructions.itemType === "Folder"){
@@ -260,9 +249,6 @@ export const folderDictionarySelector = selectorFamily({
           // sort folder child array
           const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds["defaultOrder"]});
 
-          // modify folder sortBy            
-          newFolderInfo.sortBy = sortKey;
-
           // update folder data
           newObj.folderInfo = newFolderInfo;
           newObj.contentIds[sortKey] = sortedFolderChildrenIds;
@@ -278,12 +264,10 @@ export const folderDictionarySelector = selectorFamily({
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
         delete newFInfo["contentsDictionary"][instructions.itemId];
         newFInfo.folderInfo = {...fInfo.folderInfo}
-        newFInfo.folderInfo.dirty = 1;
-        const sortBy = newFInfo.folderInfo.sortBy;
-        newFInfo.contentIds = {...fInfo.contentIds}
-        newFInfo.contentIds[sortBy] = [...fInfo.contentIds[sortBy]]
-        const index = newFInfo.contentIds[sortBy].indexOf(instructions.itemId)
-        newFInfo.contentIds[sortBy].splice(index,1)
+        newFInfo.contentIds = {}
+        newFInfo.contentIds[sortOptions.DEFAULT] = [...fInfo.contentIds[sortOptions.DEFAULT]]
+        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(instructions.itemId)
+        newFInfo.contentIds[sortOptions.DEFAULT].splice(index,1)
         set(folderDictionary(driveIdFolderId),newFInfo);
         //Remove from selection
         if (get(selectedDriveItemsAtom(item))){
@@ -429,32 +413,42 @@ const folderSortOrderSelector = selectorFamily({
   }
 })
 
-// folderInfoSelector
-// get: (driveId, instanceId, folderId)
-  // get folderInfo, contentIds, contentDictionary from folderDictionarySelector (driveId, folderId)
-  // get sortOrder from folderSortOrderSelector (driveId, instanceId, folderId)
-// set:
-  // dispatch actions to folderDictionarySelector
-  // check if dirtyBit set, if true set sortOrder to sortOptions.DEFAULT
-
-
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
     
     const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
-    return {folderInfo, contentsDictionary, contentIds};
-    // const folderSortOrder = get(folderSortOrderSelector(driveIdInstanceIdFolderId))
-    // const contentIdsArr = contentIds[folderSortOrder];
-    // const contentIdsArr = contentIds[folderSortOrder];
-    // return {folderInfo, contentsDictionary, contentIdsArr};
+    const folderSortOrder = get(folderSortOrderSelector(driveIdInstanceIdFolderId))
+    const contentIdsArr = contentIds[folderSortOrder];
+    
+    let newFolderInfo = { ...folderInfo };
+    newFolderInfo.sortBy = folderSortOrder
+    
+    return {folderInfo: newFolderInfo, contentsDictionary, contentIds};
   },
   set: (driveIdInstanceIdFolderId) => async ({set,get}, instructions)=>{
-    
-    set(folderDictionarySelector, {
-      instructionType:"sort",
-      sortKey: sortOptions.LABEL_DESC
-    })
+    const { driveId, folderId } = driveIdInstanceIdFolderId;
+
+    const dirtyActions = new Set(["addItem", "delete item"])
+    if (dirtyActions.has(instructions.instructionType)) {
+      set(folderSortOrderSelector(driveIdInstanceIdFolderId), sortOptions.DEFAULT);
+    }
+
+    switch(instructions.instructionType){
+      case "sort":
+        const {contentIds} = get(folderDictionarySelector({driveId, folderId}))
+        
+        set(folderSortOrderSelector(driveIdInstanceIdFolderId), instructions.sortKey);
+        
+        // if sortOrder not already cached in folderDictionary
+        if (!contentIds[instructions.sortKey]) {
+          set(folderDictionarySelector({driveId, folderId}), instructions);
+        }
+        
+        break;
+      default:
+        set(folderDictionarySelector({driveId, folderId}), instructions);
+    }
   }
 });
 
@@ -575,11 +569,10 @@ function Folder(props){
 
   let history = useHistory();
   
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIds} = folderInfoObj.contents;
 
-  const [test, setTest] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
-  
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
@@ -620,13 +613,9 @@ function Folder(props){
   style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}
   data-doenet-driveinstanceid={props.driveInstanceId}
   onClick={(e)=>{
-    // e.preventDefault();
-    // e.stopPropagation();
-    // toggleOpen();
-    setTest({
-      instructionType:"sort",
-      sortKey: sortOptions.LABEL_DESC
-    });
+    e.preventDefault();
+    e.stopPropagation();
+    toggleOpen();
   }}>{openCloseText}</button>
 
   const sortHandler = ({ sortKey }) => {
