@@ -82,7 +82,7 @@ export default function Temp() {
       timeout.current = setTimeout(function(){
         setSave()
         timeout.current = null;
-    },3000)
+      },3000)
     }
   }}
     onBlur={()=>{
