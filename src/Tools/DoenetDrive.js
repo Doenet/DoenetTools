@@ -215,6 +215,7 @@ function TextEditor(props){
   }}
   onChange={(editor, data, value) => {
   }}
+  onBlur={()=>{console.log(">>>BLUR!!!")}}
 />
 }
 
