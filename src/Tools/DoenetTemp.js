@@ -1,94 +1,108 @@
-import React, {useState, useCallback, useEffect, useRef, useMemo, useContext} from 'react';
-import './temp.css';
-import axios from "axios";
-import './util.css';
-import nanoid from 'nanoid';
-import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  useHistory
-} from "react-router-dom";
-
+import React, { useEffect, ErrorBoundary, useState,useRef } from "react";
+import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import AddItem from "../imports/AddItem";
+import Switch from "../imports/Switch";
+// import Button from "../imports/Button";
 import {
   atom,
-  atomFamily,
-  selector,
-  selectorFamily,
-  RecoilRoot,
   useSetRecoilState,
-  useRecoilValueLoadable,
-  useRecoilStateLoadable,
-  useRecoilState,
   useRecoilValue,
-} from 'recoil';
-
-import {
-  DropTargetsProvider,
-} from '../imports/DropTarget';
-import { 
-  BreadcrumbProvider 
-} from '../imports/Breadcrumb';
-
-import Drive, {folderDictionarySelector} from '../imports/Drive'
-import AddItem from '../imports/AddItem'
+  selector,
+  atomFamily,
+  useRecoilState
+} from "recoil";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
+import { supportVisible } from "../imports/Tool/SupportPanel";
+import DoenetViewer from './DoenetViewer';
 
 
-
-export default function app() {
-return <RecoilRoot>
-        <DropTargetsProvider>
-          <BreadcrumbProvider>
-           <Demo />        
-          </BreadcrumbProvider>
-        </DropTargetsProvider>
-</RecoilRoot>
-};
+// function delaySaveDraft(doenetML,timeout) {
 
 
+//   // var timeout;
+//   // var timeout, promise,cancel;
+//   var latestDoenetML = doenetML;
+//   // console.log({timeout})
+
+//   function myalert(){
+//     timeout.current = setTimeout(function(){
+//           alert(latestDoenetML)
+//           timeout.current = null;
+//         },5000)
+
+//   }
+//   console.log({timeout:timeout.current})
+//   if (timeout.current === null){
+//     myalert();
+//   }
+//   console.log({timeout:timeout.current})
+
+  // cancel = function(){clearTimeout(timeout)}
 
 
-function Demo(){
-  console.log("=== Demo")
+  // console.log(">>>latestDoenetML",latestDoenetML);
 
-  let [hideUnpublished,setHideUnpublished] = useState(false)
-  let setFolderInfo = useSetRecoilState(folderDictionarySelector({driveId:"ZLHh5s8BWM2azTVFhazIH",folderId:"ZLHh5s8BWM2azTVFhazIH"}))
-  const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Content</button>
-  const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Assignment</button>
-  
-  
-  let publishText = "Show Student View";
-  if (hideUnpublished){publishText = "Show Instructor View"}
-  
-  let publishButton = <div><button onClick={()=>setHideUnpublished((old)=>!old)}>{publishText}</button></div>
-  
-  const publishContentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"content was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Content</button>
-  const publishAssignmentButton = <button onClick={()=>{
-    setFolderInfo({instructionType:"assignment was published",itemId:"29hfuBErLnrwTiDpltU9q"})
-  }}>Publish Assignment</button>
-  
-  return <>
+  // promise = new Promise(function(resolve,reject){
+  //   timeout = setTimeout(function(){
+  //     resolve(doenetML)
+  //   },4000)
+  // })
 
-  {/* <Drive types={['course']} urlClickBehavior="select" /> */}
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' rootCollapsible={true} /> */}
-  {/* <h2>Select</h2> */}
-  {publishContentButton}
-  {publishAssignmentButton}
-  {publishButton}
-  {hideUnpublished ? <p>hideUnpublished is True</p> : <p>hideUnpublished is False</p>}
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' hideUnpublished={hideUnpublished} urlClickBehavior="select"/>
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="select"/> */}
-  {/* <Drive driveId='ZLHh5s8BWM2azTVFhazIH' urlClickBehavior="new tab"/> */}
-  {/* <h2>Default</h2>
-  <Drive driveId='ZLHh5s8BWM2azTVFhazIH' /> */}
 
+  // return {promise,
+  //         cancel}
+// }
+
+let doenetMLAtom = atom({
+  key:"doenetMLAtom",
+  default:""
+})
+
+
+let saveSelector = selector({
+  key:"saveSelector",
+  set: ({get,set})=>{
+    const doenetML = get(doenetMLAtom);
+    console.log(">>>doenetML",doenetML)
+  }
+})
+
+export default function Temp() {
+
+  // let delaySave = delaySaveDraft("Done!")
+  const [doenetML,setDoenetML] = useRecoilState(doenetMLAtom)
+  const setSave = useSetRecoilState(saveSelector);
+  const timeout = useRef(null);
+
+
+  return <><textarea value={doenetML} onChange={(e)=>{
+    setDoenetML(e.target.value);
+    if (timeout.current === null){
+      timeout.current = setTimeout(function(){
+        setSave()
+        timeout.current = null;
+      },3000)
+    }
+  }}
+    onBlur={()=>{
+      if (timeout.current !== null){
+        clearTimeout(timeout.current)
+        timeout.current = null;
+        setSave();
+      }
+    }}
+  />
+  {/* <button onClick={()=>{
+    // delaySaveDraft(doenetML,timeout)
+    delaySaveDraft();
+    // delaySave.promise.then((result)=>{
+      // alert(result)
+    // })
+  }}>Create Promise</button>
+  <button onClick={()=>{
+    // delaySave.cancel();
+  }}>Cancel</button> */}
   </>
+  
 }
-
-

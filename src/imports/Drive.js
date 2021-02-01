@@ -1,4 +1,4 @@
-import React, {useContext, useState, useCallback, useRef, useEffect, useMemo} from 'react';
+import React, {useContext, useState, useCallback, useRef, useEffect, Suspense} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
@@ -33,7 +33,7 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilState,
-  useRecoilValue,
+  useRecoilValue
 } from 'recoil';
 
 const sortOptions = Object.freeze({
@@ -46,6 +46,11 @@ const sortOptions = Object.freeze({
 export const globalSelectedNodesAtom = atom({
   key:'globalSelectedNodesAtom',
   default:[]
+})
+
+export const selectedDriveAtom = atom({
+  key: 'selectedDriveAtom',
+  default: ""
 })
 
 const dragStateAtom = atom({
@@ -87,7 +92,9 @@ export default function Drive(props){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            <Suspense fallback={<div></div>}>
+              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            </Suspense>
            }></Route>
          </Switch></Router></React.Fragment>)
         }
@@ -100,7 +107,9 @@ export default function Drive(props){
         if (driveObj.driveId === props.driveId){
          return <Router><Switch>
            <Route path="/" render={(routeprops)=>
-           <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            <Suspense fallback={<div></div>}>
+              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+            </Suspense>
            }></Route>
          </Switch></Router>
         }
@@ -178,6 +187,7 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
+    // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -365,11 +375,14 @@ export const folderDictionarySelector = selectorFamily({
       case "assignment was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
-          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];          
           newItemObj.assignment_isPublished = "1";
           newItemObj.isAssignment = "1";
+          newItemObj.assignment_title = instructions.payload.title;
+          newItemObj.assignmentId=instructions.payload.assignmentId;
           return newObj;
         })
+      
         break;
       case "content was published":
         set(folderDictionary(driveIdFolderId),(old)=>{
@@ -378,7 +391,28 @@ export const folderDictionarySelector = selectorFamily({
           newItemObj.isPublished = "1";
           return newObj;
         })
+        
       break;
+      //TODO: update to say goes from assignment to content
+      case "handle make content":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];
+          newItemObj.isAssignment = "0";
+          return newObj;
+        })
+     
+      break;
+      case "load back assignment":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];          
+          newItemObj.isAssignment = "1";
+          newItemObj.assignment_title = instructions.payloadAssignment.title;
+          newItemObj.assignmentId=instructions.payloadAssignment.assignmentId;
+          return newObj;
+        })
+        break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
@@ -428,14 +462,8 @@ function DriveRouted(props){
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
-  const updateBreadcrumb = useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label}); 
-
-  useEffect(() => {
-    if (driveInfo.state === "loading") return;
-
-    updateBreadcrumb({routePathDriveId, routePathFolderId});
-    
-  }, [driveInfo.state, routePathDriveId, routePathFolderId])
+  const path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+  useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, path: path}); 
 
   if (driveInfo.state === "loading"){ return null;}
   if (driveInfo.state === "hasError"){ 
@@ -457,7 +485,7 @@ function DriveRouted(props){
   //use defaults if not defined
   if (urlParamsObj?.path !== undefined){
     [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
-    if (routePathDriveId !== ""){pathDriveId = routePathDriveId;}
+    if (routePathDriveId !== ""){ pathDriveId = routePathDriveId}
     if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
   }
   //If navigation then build from root else build from path
@@ -466,7 +494,7 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
   
-  if (!props.isNav && routePathDriveId && props.driveId !== routePathDriveId) return <></>;  
+  if (!props.isNav && (routePathDriveId === "" || props.driveId !== routePathDriveId)) return <></>;
 
   return <>
   {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
@@ -521,6 +549,7 @@ function Folder(props){
   const [dragState] = useRecoilState(dragStateAtom);
   
   // console.log(`=== 📁 ${folderInfo?.label}`)
+  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",driveInstanceId:props.driveInstanceId,itemId})}
@@ -607,6 +636,8 @@ function Folder(props){
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -615,18 +646,21 @@ function Folder(props){
             setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
           }
         }
-        
+        setSelectedDrive(props.driveId);
         }}
         onBlur={(e) => {
           //Don't clear on navigation changes
           if (!props.isNav){
           //Only clear if focus goes outside of this node group
-            if (e.relatedTarget === null ||
-              (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-              !e.relatedTarget.dataset.doenetDriveStayselected)
-              ){
-                setSelected({instructionType:"clear all"})
-            }
+            // if (e.relatedTarget === null ||
+            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+            //   !e.relatedTarget.dataset.doenetDriveStayselected)
+            //   ){
+            //     setSelected({instructionType:"clear all"})
+            // }
+            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+            //   setSelected({instructionType:"clear all"});
+            // }
           }
         }}
       >
@@ -661,11 +695,12 @@ function Folder(props){
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-
+          
           let newParams = {...urlParamsObj} 
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Drive`
           history.push('?'+encodeParams(newParams))
         }
+        setSelectedDrive(props.driveId);
       }
     }
     >Drive {label} ({contentIdsArr.length})</div></>
@@ -832,6 +867,19 @@ const selectedDriveItemsAtom = atomFamily({
   default:false
 })
 
+export const clearAllSelections = selector({
+  key:"clearAllSelections",
+  set:({get,set})=>{
+    const globalSelected = get(globalSelectedNodesAtom);
+    for (let itemObj of globalSelected){
+      console.log("ItemObj",itemObj)
+      const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
+      set(selectedDriveItemsAtom(atomFormat),false)
+    }
+    set(globalSelectedNodesAtom,[]);
+  }
+})
+
 const selectedDriveItems = selectorFamily({
   key:"selectedDriveItems",
   // get:(driveIdDriveInstanceIdItemId) =>({get})=>{ 
@@ -958,6 +1006,7 @@ const DoenetML = React.memo((props)=>{
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
+  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const [dragState] = useRecoilState(dragStateAtom);
   const { onDragStart, onDrag, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
@@ -1011,6 +1060,8 @@ const DoenetML = React.memo((props)=>{
           newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
           history.push('?'+encodeParams(newParams))
         }else{
+          e.preventDefault();
+          e.stopPropagation();
           if (!e.shiftKey && !e.metaKey){
             setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
           }else if (e.shiftKey && !e.metaKey){
@@ -1019,24 +1070,25 @@ const DoenetML = React.memo((props)=>{
             setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
           }
         }
-       
+        setSelectedDrive(props.driveId);
       }}
       onBlur={(e) => {
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
           // if (e.relatedTarget === null){
           //   setSelected({instructionType:"clear all"})
           // }
-          // console.log(">>>",e.relatedTarget);
           // console.log(">>>dataset",e?.relatedTarget?.dataset)
-          
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
@@ -1079,6 +1131,7 @@ const Url = React.memo((props)=>{
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
+  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
@@ -1124,6 +1177,8 @@ const Url = React.memo((props)=>{
             newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:Url`
             history.push('?'+encodeParams(newParams))
           }else{
+            e.preventDefault();
+            e.stopPropagation();
             if (!e.shiftKey && !e.metaKey){
               setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
             }else if (e.shiftKey && !e.metaKey){
@@ -1132,6 +1187,7 @@ const Url = React.memo((props)=>{
               setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
             }
           }
+          setSelectedDrive(props.driveId);
         }else{
           //Default url behavior is new tab
           let linkTo = props.item?.url; //Enable this when add URL is completed
@@ -1142,12 +1198,18 @@ const Url = React.memo((props)=>{
         //Don't clear on navigation changes
         if (!props.isNav){
         //Only clear if focus goes outside of this node group
-          if (e.relatedTarget === null ||
-            (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            !e.relatedTarget.dataset.doenetDriveStayselected)
-            ){
-              setSelected({instructionType:"clear all"})
-          }
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
+          // if (e.relatedTarget.dataset.doenetDriveStayselected){
+          //   console.log(">>>GET FOCUS BACK!")
+          // }
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }
       }}
       ><div 
@@ -1237,42 +1299,42 @@ function useDnDCallbacks() {
   }
 }
 
+const nodePathSelector = selectorFamily({
+  key:"nodePathSelector",
+  get: (driveIdFolderId) => ({get})=>{
+    
+    const { driveId, folderId } = driveIdFolderId;
+    if (!driveId || !folderId) return []
+    let path = []
+    let currentNode = folderId;
+    while (currentNode && currentNode !== driveId) {
+      const folderInfoObj = get(folderDictionary({ driveId, folderId: currentNode})); 
+      path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label})
+      currentNode = folderInfoObj.folderInfo.parentFolderId;
+    }
+    return path;
+  }
+})
+
 function useUpdateBreadcrumb(props) {
   const { addItem: addBreadcrumbItem , clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   const { onDragOverContainer } = useDnDCallbacks();
   const { dropActions } = useContext(DropTargetsContext);
-  const [dragState] = useRecoilState(dragStateAtom);
-  const { isDraggedOverBreadcrumb } = dragState;
-  const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
-  const driveLabel = props.driveLabel ?? "/";
-  
-  const contentsDictionary = useMemo(() => {
-    let contentsDictionary = {};
-    for (let index in driveInfo?.contents?.results) {
-      let result = driveInfo?.contents?.results[index];
-      contentsDictionary[result?.itemId] = result;
-    }
-    return contentsDictionary;
-  }, [driveInfo])
-  
-  const getNodesOnPath = ({currentNodeId, end}) => {
-    let list = [];
-    while (currentNodeId && currentNodeId !== end) {
-      const nodeObj = contentsDictionary?.[currentNodeId];
-      list.push(currentNodeId);
-      currentNodeId = nodeObj?.parentFolderId;
-    }
-    return list;
+  let routePathDriveId = "";
+  let routePathFolderId = "";
+  if (props.path) {
+    const[driveId, folderId, itemId] = props.path?.split(":");
+    routePathDriveId = driveId;
+    routePathFolderId = folderId;
   }
+  const [nodesOnPath, _] = useRecoilState(nodePathSelector({driveId: routePathDriveId, folderId: routePathFolderId}));
+  const driveLabel = props.driveLabel ?? "/";
 
-  const updateBreadcrumb = ({ routePathDriveId, routePathFolderId }) => {
+  useEffect(() => {
+    updateBreadcrumb({routePathDriveId, routePathFolderId});
+  }, [nodesOnPath])
 
-    if (routePathDriveId === "") {
-      clearBreadcrumb();
-      addBreadcrumbItem({to: "/", element: <div>{driveLabel}</div>});
-      return;
-    }
-
+  const updateBreadcrumb = ({routePathDriveId, routePathFolderId}) => {
     if (props.driveId !== routePathDriveId) {
       return;
     }
@@ -1286,10 +1348,10 @@ function useUpdateBreadcrumb(props) {
       color: "#8a8a8a",
       textDecoration: "none",
     }
-    let nodesOnPath = getNodesOnPath({ currentNodeId: routePathFolderId, end: routePathDriveId});
     
-    for (let currentNodeId of nodesOnPath ) {
-      const nodeObj = contentsDictionary?.[currentNodeId];
+    for (let currentNode of nodesOnPath ) {
+      const nodeObj = currentNode;
+      const currentNodeId = nodeObj.folderId;
 
       let newParams = Object.fromEntries(new URLSearchParams());
       newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
@@ -1354,8 +1416,6 @@ function useUpdateBreadcrumb(props) {
       addBreadcrumbItem(item);      
     }
   }
-
-  return updateBreadcrumb;
 }
 
 const DragGhost = ({ id, element, numItems }) => {

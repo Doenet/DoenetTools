@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary} from "../imports/Drive";
+import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections, selectedDriveAtom} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
-import Switch from "../imports/Switch";
+// import Switch from "../imports/Switch";
 import {
   atom,
   useSetRecoilState,
@@ -11,27 +11,20 @@ import {
   selector,
   atomFamily,
   selectorFamily,
-  RecoilRoot,
   useRecoilValueLoadable,
+  useRecoilStateLoadable,
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
+// import { supportVisible } from "../imports/Tool/SupportPanel";
 import GlobalFont from "../fonts/GlobalFont.js";
 import axios from "axios";
-import Button from "../imports/PanelHeaderComponents/Button.js";
+// import Button from "../imports/PanelHeaderComponents/Button.js";
+import DoenetViewer from './DoenetViewer';
+import {Controlled as CodeMirror} from 'react-codemirror2'
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
+import crypto from 'crypto';
 
-
-
-const itemVersionsSelector = selectorFamily({
-  key:"itemInfoSelector",
-  get:(branchId)=> async ({get})=>{
-    // Load versions from database
-    const { data } = await axios.get(
-      `/api/loadVersions.php?branchId=${branchId}`
-    );
-    return data.versions
-  }
-})
 
 const selectedInformation = selector({
   key:"selectedInformation",
@@ -49,42 +42,88 @@ const selectedInformation = selector({
     let versions = [];
     if (itemInfo.itemType === "DoenetML"){
       let branchId = itemInfo.branchId;
-      versions = get(itemVersionsSelector(branchId))
+      versions = get(itemVersionsAtom(branchId))
     }
     return {number:globalSelected.length,itemInfo,versions}
   }
 })
+
+const driveFolderItemVersion = selectorFamily({
+  key:"driveFolderItemVersion",
+  get: (driveIdFolderIdItemId)=> async ({get})=>{
+    let folderInfo = get(folderDictionary({driveId:driveIdFolderIdItemId.driveId,folderId:driveIdFolderIdItemId.folderId})); 
+    let itemInfo = folderInfo?.contentsDictionary?.[driveIdFolderIdItemId.itemId];
+    let versions = [];
+    if (itemInfo?.itemType === "DoenetML"){
+      let branchId = itemInfo.branchId;
+      versions = get(itemVersionsAtom(branchId))
+    }
+    if (!itemInfo && driveIdFolderIdItemId.folderId === driveIdFolderIdItemId.itemId){
+      //TODO: Remove this when drive information is available
+      if (driveIdFolderIdItemId.driveId !==driveIdFolderIdItemId.folderId){
+        itemInfo = folderInfo?.folderInfo;
+      }
+    }
+
+    return {itemInfo,versions}
+}})
 
 const ItemInfo = function (props){
   //data-doenet-drive-stayselected
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
 
-  // console.log(">>>infoLoad",infoLoad)
-  if (infoLoad.state === "loading"){ return null;}
-  if (infoLoad.state === "hasError"){ 
-    console.error(infoLoad.contents)
-    return null;}
 
-    const editDraft =   <button 
-    data-doenet-drive-stayselected
-     onClick={()=>setOverlayOpen('Editor')}>Edit Draft</button>
 
-  if (infoLoad.contents?.number > 1){
-    return <>
-    <h1>{infoLoad.contents.number} Items Selected</h1>
-    </>
-  }else if (infoLoad.contents?.number < 1){
+    //Use Route to determine path variables
+  let routePathDriveId = "";
+  let routePathFolderId = "";  
+  let pathItemId = "";  
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+  //use defaults if not defined
+  if (urlParamsObj?.path !== undefined){
+    [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
+  }
+ 
+  const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
 
- return <>{editDraft}</>
-    return null;
+
+    if (infoLoad.state === "loading"){ return null;}
+    if (infoLoad.state === "hasError"){ 
+      console.error(infoLoad.contents)
+      return null;}
+   
+      let itemInfo = infoLoad?.contents?.itemInfo;
+      let versions = infoLoad?.contents?.versions;
+
+    if (infoLoad.contents?.number > 1){
+      return <>
+      <h1>{infoLoad.contents.number} Items Selected</h1>
+      </>
+    }else if (infoLoad.contents?.number < 1){
+
+    if (pathFolderInfo.state === "loading"){ return null;}
+    if (pathFolderInfo.state === "hasError"){ 
+      console.error(pathFolderInfo.contents)
+      return null;}
+
+  itemInfo = pathFolderInfo?.contents?.itemInfo;
+  versions = pathFolderInfo?.contents?.versions;
+
+    if (!itemInfo && selectedDrive){
+      return <>
+        <h1>{selectedDrive}</h1>
+        <AddItem />
+      </>
+    }
+    if (!itemInfo) return <div>Nothing Selected</div>;
   }
 
-  const itemInfo = infoLoad?.contents?.itemInfo;
-  const versions = infoLoad?.contents?.versions;
-  console.log(">>>itemInfo",itemInfo)
   const versionsJSX = [];
+ 
+  if (itemInfo?.itemType === "DoenetML"){
   let draftObj;
   for (let version of versions){
     if (version.isDraft === "1"){
@@ -92,10 +131,20 @@ const ItemInfo = function (props){
     }else{
       versionsJSX.push(<div
       key={`versions${version.timestamp}`}
-    data-doenet-drive-stayselected
         onClick={() => {
           //set activeBranchInfo to version
-          setOverlayOpen("Editor");
+          setOverlayOpen({
+            name: "editor", //to match the prop
+            instructions: { 
+              supportVisble: true,
+              action: "open", //or "close"
+              contentId: version.contentId,
+              branchId: itemInfo.branchId,
+              title: version.title,
+              isDraft: version.isDraft,
+              timestamp: version.timestamp
+            }
+          });
         }}
       >
         {version.title}
@@ -103,27 +152,286 @@ const ItemInfo = function (props){
     }
   }
 
+  versionsJSX.push(<button key='edit draft'
+    onClick={()=>setOverlayOpen({
+      name: "editor", //to match the prop
+      instructions: { 
+        supportVisble: true,
+        action: "open", //or "close"
+        contentId: draftObj.contentId,
+        branchId: itemInfo.branchId,
+        title: draftObj.title,
+        isDraft: draftObj.isDraft,
+        timestamp: draftObj.timestamp
+      }
+    })}>Edit Draft</button>)
+
+  }
+  
+
+
+
+ 
+
   return <div
-  data-doenet-drive-stayselected
-  tabIndex={0}
   style={{height:"100%"}}
   >
     
 
   <h1>{itemInfo.label}</h1>
   <AddItem />
-  
   {versionsJSX}
-  {editDraft}
   </div>
 }
 
+const fileByContentId = atomFamily({
+  key:"fileByContentId",
+  default: selectorFamily({
+    key:"fileByContentId/Default",
+    get:(contentId)=> async ()=>{
+      if (!contentId){
+        return "";
+      }
+      return await axios.get(`/media/${contentId}`) 
+    }
+  })
+})
+
+const saveDraftSelector = selectorFamily({
+  key:"fileByContentIdSelector",
+
+  set:(branchId)=>({set,get})=>{
+    const doenetML = get(editorDoenetMLAtom);
+    set(fileByContentId(branchId),{data:doenetML});
+    axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
+    // .then((resp)=>{console.log(">>>resp",resp.data)})
+  }
+})
+
+const editorDoenetMLAtom = atom({
+  key:"editorDoenetMLAtom",
+  default:""
+})
+
+function TextEditor(props){
+  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const saveDraft = useSetRecoilState(saveDraftSelector(props.branchId))
+  const timeout = useRef(null);
+
+  return <CodeMirror
+  value={editorDoenetML}
+  // options={options}
+  onBeforeChange={(editor, data, value) => {
+    setEditorDoenetML(value)
+    if (timeout.current === null){
+      timeout.current = setTimeout(function(){
+        saveDraft()
+        timeout.current = null;
+      },3000)
+    }
+  }}
+  // onChange={(editor, data, value) => {
+  // }}
+  onBlur={()=>{
+    if (timeout.current !== null){
+      clearTimeout(timeout.current)
+      timeout.current = null;
+      saveDraft();
+    }
+  }}
+/>
+}
+
+const viewerDoenetMLAtom = atom({
+  key:"viewerDoenetMLAtom",
+  default:{updateNumber:0,doenetML:""}
+})
+
+function DoenetViewerUpdateButton(){
+  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
+  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+
+  return <button onClick={()=>{setViewerDoenetML((old)=>{
+    let newInfo = {...old};
+    newInfo.doenetML = editorDoenetML;
+    newInfo.updateNumber = old.updateNumber+1;
+    return newInfo;
+  })}}>Update</button>
+}
+
+const itemVersionsAtom = atomFamily({
+  key:"itemVersionsAtom",
+  default: selectorFamily({
+    key:"itemVersionsAtom/Default",
+    get:(branchId)=> async ()=>{
+      if (!branchId){
+        return "";
+      }
+      const { data } = await axios.get(
+        `/api/loadVersions.php?branchId=${branchId}`
+      );
+      return data.versions
+    }
+  })
+})
+
+const getSHAofContent = (doenetML)=>{
+  const hash = crypto.createHash('sha256');
+  if (doenetML === undefined){
+    return;
+  }
+  hash.update(doenetML);
+  let contentId = hash.digest('hex');
+  return contentId;
+}
+
+const updateItemVersionsSelector = selectorFamily({
+  key:"updateItemVersionsSelector",
+  get:(branchId)=> ({get})=>{
+    return get(itemVersionsAtom(branchId))
+  },
+  set:(branchId)=> ({get,set},title)=>{
+    const doenetML = get(editorDoenetMLAtom);
+    const oldVersions = get(itemVersionsAtom(branchId))
+    const contentId = getSHAofContent(doenetML);
+    const dt = new Date();
+    const timestamp = `${
+      dt.getFullYear().toString().padStart(2, '0')}-${
+      (dt.getMonth()+1).toString().padStart(2, '0')}-${
+      dt.getDate().toString().padStart(2, '0')} ${
+      dt.getHours().toString().padStart(2, '0')}:${
+      dt.getMinutes().toString().padStart(2, '0')}:${
+      dt.getSeconds().toString().padStart(2, '0')}`
+
+    let newVersion = {
+      title,
+      contentId,
+      timestamp,
+      isDraft: "0"
+    }
+    const newVersions = [...oldVersions,newVersion];
+    set(itemVersionsAtom(branchId),newVersions)
+    set(fileByContentId(contentId),{data:doenetML})
+    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML})
+    // .then((resp)=>{console.log(">>>resp",resp.data)})
+  }
+})
+
+let overlayTitleAtom = atom({
+  key:"overlayTitleAtom",
+  default:""
+})
+
+function SaveVersionControl(props){
+  let [versionsInfo,setVersionsInfo] = useRecoilStateLoadable(updateItemVersionsSelector(props.branchId))
+  const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
+  const [userDefinedTitle,setUserDefinedTitle] = useState("");
+
+  //Can't equal the value of earlier versions
+  if (versionsInfo.state === "loading"){ return null;}
+  if (versionsInfo.state === "hasError"){ 
+    console.error(versionsInfo.contents)
+    return null;}
+    let versionNumber = versionsInfo?.contents?.length;
+    let versionTitle = `Version ${versionNumber}`
+    if (userDefinedTitle !== ""){
+      versionTitle = userDefinedTitle;
+    }
+
+  return <>
+  <label>Version Title: <input type="text" value={versionTitle} onChange={(e)=>setUserDefinedTitle(e.target.value)}/>
+  </label>
+  <button onClick={()=>{
+    setVersionsInfo(versionTitle);
+    setEditorOverlayTitle(versionTitle);
+    setUserDefinedTitle("") //Reset user defined title
+    }}>Save as New Version</button>
+  </>
+  
+}
+
+function DoenetViewerPanel(){
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
+
+  return <DoenetViewer
+      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      doenetML={viewerDoenetML?.doenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+      }}
+      attemptNumber={attemptNumber}
+      assignmentId={assignmentId}
+      ignoreDatabase={false}
+      requestedVariant={requestedVariant}
+      /> 
+}
+
+//When contentId changes then set the new loaded info into the editor atoms
+function SetEditorDoenetMLandTitle(props){
+    const loadedDoenetML = useRecoilValueLoadable(fileByContentId(props.contentId))
+    const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+    const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+    let lastContentId = useRef("");
+    const overlayInfo = useRecoilValue(openOverlayByName);
+    const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
+
+    //Set only once
+    if (lastContentId.current !== props.contentId){
+      if (loadedDoenetML.state === "hasValue"){
+        let overlayTitle = overlayInfo?.instructions?.title;
+        setEditorOverlayTitle(overlayTitle)
+        let doenetML = loadedDoenetML?.contents?.data;
+        setEditorDoenetML(doenetML);
+        setViewerDoenetML((old)=>{
+          let newInfo = {...old};
+          newInfo.doenetML = doenetML;
+          newInfo.updateNumber = old.updateNumber+1;
+          return newInfo;
+        })
+        lastContentId.current = props.contentId; //Don't set again
+      }
+    }
+
+
+  return null;
+}
+
+const EditorTitle = ()=>{
+  const overlayTitle = useRecoilValue(overlayTitleAtom);
+  return <span>{overlayTitle}</span>
+}
 
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
-console.log(">>>")
+  const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
+  const clearSelections = useSetRecoilState(clearAllSelections);
+
+  const contentId = overlayInfo?.instructions?.contentId;
+  const branchId = overlayInfo?.instructions?.branchId;
+  
+  let textEditor = null;
+  let doenetViewerEditorControls = null;
+  let doenetViewerEditor = null;
+  let setLoadContentId = null;
+  let editorTitle = null;
+
+  if (overlayInfo?.name === "editor"){
+    editorTitle = <EditorTitle />
+    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
+    textEditor = <TextEditor branchId={branchId} />
+    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
+    doenetViewerEditor =  <DoenetViewerPanel />
+  }
+
+  
   return (
     <Tool>
       <navPanel>
@@ -132,38 +440,40 @@ console.log(">>>")
       </navPanel>
 
       <headerPanel title="my title">
-        <Switch
-          onChange={(value) => {
-            setSupportVisiblity(value);
-          }}
-        />
-        <p>header for important stuff</p>
+        <p>Drive</p>
       </headerPanel>
 
       <mainPanel>
-      <button
-            onClick={() => {
-              setOverlayOpen("Bob");
-            }}
-          >
-            Open Bob
-          </button>
         <BreadcrumbContainer /> 
-
+        <div 
+        onClick={()=>{
+          clearSelections();
+        }}
+        style={{height:"100%",width:"100%"}}>
         <Drive types={['content','course']}  urlClickBehavior="select" />
+
+        </div>
       </mainPanel>
+      <supportPanel>
+      <Drive types={['content','course']}  urlClickBehavior="select" />
+      </supportPanel>
 
       <menuPanel title="Item Info">
-        <ItemInfo />
+        <ItemInfo route={props.route} />
       </menuPanel>
 
-      <overlay name="Editor">
+      <overlay name="editor">
         <headerPanel title="my title">
-          
-          <p>Title of edited</p>
+          {editorTitle}
+          {/* <p>{overlayInfo?.instructions?.title}</p> */}
           <button
             onClick={() => {
-              setOverlayOpen("");
+              setOverlayOpen({
+                name: "", //to match the prop
+                instructions: { 
+                  action: "close", //or "close"
+                }
+              });
             }}
           >
             Go Back
@@ -171,12 +481,13 @@ console.log(">>>")
         </headerPanel>
 
         <mainPanel>
-          <p>DoenetViewer</p>
-        
+          {setLoadContentId}
+          {doenetViewerEditorControls}
+          {doenetViewerEditor}
         </mainPanel>
 
         <supportPanel width="40%">
-          <p>Text Editor</p>
+          {textEditor}
         </supportPanel>
   
       </overlay>

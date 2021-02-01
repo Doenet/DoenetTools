@@ -203,7 +203,4 @@ You may also get MariaDB to work. Please let us know if you do. c:
 
 We have not tested the current configuration with Nginx, you are on your own if you choose to use it. If you do, we would love to hear about how it turned out. c:
 
-You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.
-
-## Use Postman for API Testing
-User-authentication for DoenetTools is based on a JWT that is static when controlled for certain factors that are controlled in the dev environment. In order to test the API with postman, you can import the collection with a request already containing this pre-generated JWT cookie. The collection is located at `DoenetToolsDev.postman_collection.json`.
+You must use port 80 for Apache/Nginx or our PHP probably won't work on your stack.
