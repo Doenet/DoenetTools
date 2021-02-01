@@ -378,8 +378,8 @@ export const folderDictionarySelector = selectorFamily({
           let newItemObj = newObj.contentsDictionary[instructions.itemId];          
           newItemObj.assignment_isPublished = "1";
           newItemObj.isAssignment = "1";
-          newItemObj.assignment_title = instructions.assignedData.title;
-          newItemObj.assignmentId=instructions.assignedData.assignmentId;
+          newItemObj.assignment_title = instructions.payload.title;
+          newItemObj.assignmentId=instructions.payload.assignmentId;
           return newObj;
         })
       
@@ -401,7 +401,18 @@ export const folderDictionarySelector = selectorFamily({
           newItemObj.isAssignment = "0";
           return newObj;
         })
+     
       break;
+      case "load back assignment":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];          
+          newItemObj.isAssignment = "1";
+          newItemObj.assignment_title = instructions.payloadAssignment.title;
+          newItemObj.assignmentId=instructions.payloadAssignment.assignmentId;
+          return newObj;
+        })
+        break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
