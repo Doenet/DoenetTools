@@ -29,21 +29,35 @@ $response_arr = array(
     "success"=> TRUE,
     "contentId"=> $contentId
 );
+$fileName = $contentId;
+if ($draft){$fileName = $branchId;}
 //Config file needed for server
-$newfile = fopen("../media/$contentId", "w") or die("Unable to open file!");
+$newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
 fwrite($newfile, $dangerousDoenetML);
 fclose($newfile);
 
+if ($draft){
+    $sql = "UPDATE content 
+    SET timestamp=NOW()
+    WHERE isDraft='1'
+    AND branchId='$branchId'
+    ";
 
-$sql = "INSERT INTO content 
-SET branchId='$branchId',
-contentId='$contentId', 
-title='$title',
-timestamp=NOW(),
-isDraft='0'
-";
+    $result = $conn->query($sql);
 
-$result = $conn->query($sql); 
+}else{
+    $sql = "INSERT INTO content 
+    SET branchId='$branchId',
+    contentId='$contentId', 
+    title='$title',
+    timestamp=NOW(),
+    isDraft='0'
+    ";
+
+    $result = $conn->query($sql);
+}
+
+ 
 
 
 // set response code - 200 OK

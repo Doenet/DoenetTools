@@ -197,23 +197,48 @@ const fileByContentId = atomFamily({
   })
 })
 
+const saveDraftSelector = selectorFamily({
+  key:"fileByContentIdSelector",
+
+  set:(branchId)=>({set,get})=>{
+    const doenetML = get(editorDoenetMLAtom);
+    set(fileByContentId(branchId),{data:doenetML});
+    axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
+    // .then((resp)=>{console.log(">>>resp",resp.data)})
+  }
+})
+
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
   default:""
 })
 
-function TextEditor(){
+function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const saveDraft = useSetRecoilState(saveDraftSelector(props.branchId))
+  const timeout = useRef(null);
 
   return <CodeMirror
   value={editorDoenetML}
   // options={options}
   onBeforeChange={(editor, data, value) => {
     setEditorDoenetML(value)
+    if (timeout.current === null){
+      timeout.current = setTimeout(function(){
+        saveDraft()
+        timeout.current = null;
+      },3000)
+    }
   }}
   // onChange={(editor, data, value) => {
   // }}
-  onBlur={()=>{console.log(">>>BLUR!!!")}}
+  onBlur={()=>{
+    if (timeout.current !== null){
+      clearTimeout(timeout.current)
+      timeout.current = null;
+      saveDraft();
+    }
+  }}
 />
 }
 
@@ -250,7 +275,7 @@ const itemVersionsAtom = atomFamily({
   })
 })
 
-const getContentId = (doenetML)=>{
+const getSHAofContent = (doenetML)=>{
   const hash = crypto.createHash('sha256');
   if (doenetML === undefined){
     return;
@@ -268,7 +293,7 @@ const updateItemVersionsSelector = selectorFamily({
   set:(branchId)=> ({get,set},title)=>{
     const doenetML = get(editorDoenetMLAtom);
     const oldVersions = get(itemVersionsAtom(branchId))
-    const contentId = getContentId(doenetML);
+    const contentId = getSHAofContent(doenetML);
     const dt = new Date();
     const timestamp = `${
       dt.getFullYear().toString().padStart(2, '0')}-${
@@ -401,7 +426,7 @@ export default function DoenetDriveTool(props) {
   if (overlayInfo?.name === "editor"){
     editorTitle = <EditorTitle />
     setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
-    textEditor = <TextEditor />
+    textEditor = <TextEditor branchId={branchId} />
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
   }
