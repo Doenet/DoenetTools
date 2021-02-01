@@ -236,7 +236,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
         const payload = {
           ...saveInfo,
           assignmentId: saveAssignmentNew.assignmentId,
-          assignment_isPublished: 0
+          assignment_isPublished: "0"
         }
 
         axios.post("/api/saveAssignmentToDraft.php", payload)
@@ -247,26 +247,35 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
           )
         break;
         case "make new assignment":  
+        const dt = new Date();
+        const creationDate = `${
+          dt.getFullYear().toString().padStart(2, '0')}-${
+            (dt.getMonth()+1).toString().padStart(2, '0')}-${
+            dt.getDate().toString().padStart(2, '0')} ${
+          dt.getHours().toString().padStart(2, '0')}:${
+          dt.getMinutes().toString().padStart(2, '0')}:${
+          dt.getSeconds().toString().padStart(2, '0')}`
         let newAssignmentObj = {
           ...value,
           title:'Untitled Assignment',
-          assignedDate: "",
-          attemptAggregation: "",
-          dueDate: "",
-          gradeCategory: "",
+          creationDate,
+          assignedDate: null,
+          attemptAggregation: null,
+          dueDate: null,
+          gradeCategory: null,
           individualize: "0",
           isAssignment: "1",
           isPublished: "0",
           itemId: driveIdcourseIditemIdparentFolderId.itemId,
-          multipleAttempts: "0",
-          numberOfAttemptsAllowed: "0",
+          multipleAttempts: null,
+          numberOfAttemptsAllowed: null,
           proctorMakesAvailable: "0",
           showCorrectness: "1",
           showFeedback: "1",
           showHints: "1",
           showSolution: "1",
-          timeLimit: "",
-          totalPointsOrPercent: "0",
+          timeLimit: null,
+          totalPointsOrPercent: null,
           assignment_isPublished:"0"
             }
     
@@ -281,7 +290,7 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
         const payloadPublish = {
           ...publishAssignment,
           assignmentId:publishAssignment.assignmentId,
-          assignment_isPublished: 1,
+          assignment_isPublished: "1",
           courseId:driveIdcourseIditemIdparentFolderId.courseId
         }
         axios.post("/api/publishAssignment.php", payloadPublish)
@@ -354,7 +363,7 @@ const AssignmentForm = (props) => {
     const payload = {
       ...assignmentInfo,
       assignmentId: assignmentId,
-      assignment_isPublished: 1,
+      assignment_isPublished: "1",
       courseId: courseId
     }
   
@@ -451,8 +460,6 @@ const AssignmentForm = (props) => {
           <ToggleButton text="Publish" switch_text="publish changes" callback={handleSubmit} type="submit" ></ToggleButton>
         </div>
         <div>
-          {/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
-
         </div>
 
         </>}
@@ -573,11 +580,10 @@ const ContentInfoPanel = (props) =>{
   return (
     <div>
        <br />
-          {/* {(assignmentId === '' || assignmentId === undefined ) &&  itemType === 'DoenetML' ? <Button text="Make Assignment" callback={handleMakeAssignment}></Button> : null}  */}
+       
           { role === 'Instructor' && assignmentInfo?.assignment_isPublished !== "1" && <button text="Publish Content"  onClick={handlePublishContent}>Publish Content</button>}
-          {/* { <ToggleButton text="Publish Content" switch_text="Published" onClick={handlePublishContent}>Publish Content</ToggleButton>} */}
 
-          {(assignmentId === '' || assignmentId === undefined ) &&  itemType === 'DoenetML' ? <button text="Make Assignment" onClick={handleMakeAssignment}>Make Assignment</button> : null} 
+          {role === 'Instructor' && (assignmentId === '' || assignmentId === undefined ) &&  itemType === 'DoenetML' ? <button text="Make Assignment" onClick={handleMakeAssignment}>Make Assignment</button> : null} 
           <br />
     { assignmentId && assignmentInfo?.isAssignment == '1' && <AssignmentForm
     itemType={itemType}
@@ -589,14 +595,14 @@ const ContentInfoPanel = (props) =>{
     itemId={itemId} /> }
 
 
-{console.log(">>>> handle click for make content",assignmentInfo)}
-{( assignmentInfo?.isAssignment == '1')  && <button text="Make Content" onClick={handleMakeContent}>Make Content</button>} 
-{/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
-         
-  { assignmentId && assignmentInfo?.isAssignment == '0' ? <button text="load Assignment" onClick={loadBackAssignment} >load back Assignment</button> : null}
+      {console.log(">>>> handle click for make content",assignmentInfo)}
+      {role === 'Instructor' && ( assignmentInfo?.isAssignment == '1')  && <button text="Make Content" onClick={handleMakeContent}>Make Content</button>} 
+      {/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
+              
+        { role === 'Instructor' && (assignmentId && assignmentInfo?.isAssignment == '0') ? <button text="load Assignment" onClick={loadBackAssignment} >load back Assignment</button> : null}
 
-  </div>
-  ) 
+        </div>
+        ) 
 }
 
 

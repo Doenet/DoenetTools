@@ -66,6 +66,7 @@ if ($result->num_rows > 0){
   dc.contentId AS contentId
   FROM assignment_draft AS ad
   JOIN drive_content AS dc
+  ON ad.assignmentId = dc.assignmentId 
   JOIN assignment As a
   ON a.assignmentId = dc.assignmentId
   WHERE a.assignmentId ='$assignmentId'
@@ -164,7 +165,7 @@ else{
           "assignmentId" => $row['assignmentId'],
           "itemId" => $row['itemId'],
           "contentId" => $row['contentId'],
-          "assignment_isPublished" => 0
+          "assignment_isPublished" => "0"
   
   );
       array_push($assignment_arr,$assignment);

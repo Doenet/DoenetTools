@@ -392,6 +392,16 @@ export const folderDictionarySelector = selectorFamily({
           return newObj;
         })
       break;
+      case "load back assignment":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = JSON.parse(JSON.stringify(old));
+          let newItemObj = newObj.contentsDictionary[instructions.itemId];          
+          newItemObj.isAssignment = "1";
+          newItemObj.assignment_title = instructions.payloadAssignment.title;
+          newItemObj.assignmentId=instructions.payloadAssignment.assignmentId;
+          return newObj;
+        })
+        break;
       default:
         console.warn(`Intruction ${instructions.instructionType} not currently handled`)
     }
