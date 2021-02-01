@@ -639,7 +639,7 @@ if(pathItemId && routePathDriveId){
       
       <navPanel>
         
-        <Drive types={['course']} hideUnpublished={hideUnpublished} urlClickBehaviour="select" /><br />
+        <Drive types={['course']} hideUnpublished={hideUnpublished} urlClickBehavior="select" /><br />
         {role === 'Instructor' && <Button text="Course Enrollment" callback={() => { setEnrollmentView(!openEnrollment) }}> </Button>}
       </navPanel>
 
