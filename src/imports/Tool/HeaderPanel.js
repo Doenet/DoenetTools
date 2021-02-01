@@ -11,7 +11,7 @@ const HeaderPanelContainer = styled.div`
   align-items: center;
   gap: 4px;
   border-left: 1px solid black;
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
   padding: 4px;
 `;
 
