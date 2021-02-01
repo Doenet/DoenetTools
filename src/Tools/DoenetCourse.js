@@ -65,10 +65,8 @@ const itemIdToDoenetML = selectorFamily({
     folderId:driveIdcourseIditemIdparentFolderId.folderId
   }
     let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
-    console.log(">>>> folderInfo", folderInfo);
     const contentId = folderInfo?.contentsDictionary?.[driveIdcourseIditemIdparentFolderId.itemId]?.contentId;
     const doenetML = get(fileByContent(contentId));
-  //  console.log(">>>> doenetML", doenetML);
      return doenetML;
   }
 })
@@ -85,7 +83,6 @@ let folderId = props.parentFolderId;
   const doenetMLInfo = useRecoilValueLoadable(itemIdToDoenetML({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}))
   // use folderDictionarySelector to go from an itemId to contentId & use load doenetMl from contentId .. need info from props
 
-console.log("doenetML" , doenetMLInfo);
   if (doenetMLInfo.state === "loading"){ return null;}
   if (doenetMLInfo.state === "hasError"){ 
     console.error(doenetMLInfo.contents)
@@ -149,18 +146,14 @@ export const assignmentDictionary = atomFamily({
         folderId:driveIdcourseIditemIdparentFolderId.folderId
       }
       let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
-      console.log(">>>> folderInfo 123", folderInfo);
 
 const itemObj = folderInfo?.contentsDictionary?.[driveIdcourseIditemIdparentFolderId.itemId];
 let itemIdassignmentId = itemObj?.assignmentId ? itemObj.assignmentId : null;
-console.log(">>>> itemIdassignmentId", itemIdassignmentId);
     if(itemIdassignmentId)
     {
-      console.log(">> cid aid", itemIdassignmentId);
       const assignmentInfo = await get(loadAssignmentSelector(itemIdassignmentId));
       if(assignmentInfo)
       {
-        console.log(">>>> assignmentInfo", assignmentInfo);
         return assignmentInfo?.assignments[0];
       }
       else
@@ -197,7 +190,6 @@ let getAssignmentIdSelector = selectorFamily({
   },
   set:(courseIdassignmentId)=> ({get,set},instructions) => {
     let getAllAssignments = get(loadAssignmentSelector(courseIdassignmentId));
-    console.log(" >>> get assigment Id selector ", instructions , getAllAssignments, courseIdassignmentId);
     //let assignData = getAllAssignments.assignments.filter((item)=> item.itemId === courseIdassignmentId.itemId)[0]?.assignmentId;
     set(assignmentIdAtom(),instructions);
   } 
@@ -213,11 +205,8 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
     let {type , ...value} = instructions;
     switch(type){
       case "change settings":
-        // console.log(">>> cid aid assignInfo change", assignInfo);
    
         set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old)=>{
-          console.log("change settings  --> ", old);
-          console.log("change settings 12345 --> ", {...old,...value});
           return {...old,...value};
         });
 
@@ -227,8 +216,6 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
     
         const saveInfo = get(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
           set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old)=>{
-          console.log("save settings  --> ", old);
-          console.log("save settings 1234 --> ", {...old,...value});
           return {...old,...value};
         });
         let saveAssignmentNew = { ...saveInfo, ...value };
@@ -280,7 +267,6 @@ let assignmentDictionarySelector = selectorFamily({ //recoilvalue(assignmentDict
             }
     
               
-          // console.log("assignmentInfo before making >>>",instructions.newAssignmentObj);          
           set(assignmentDictionary(driveIdcourseIditemIdparentFolderId),newAssignmentObj);
           break;
         case "assignment was published" :
@@ -488,7 +474,6 @@ const ContentInfoPanel = (props) =>{
   let folderId = props.routePathFolderId;
   let handlemakeContentView = false;
   const [role,setRole] = useRecoilState(roleAtom);
-  console.log(">>> in content panel assignmentId",assignmentId);
   const assignmentIdSettings = useRecoilValueLoadable(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
   const setAssignmentSettings = useSetRecoilState(assignmentDictionarySelector({itemId:itemId,courseId:courseId,driveId:driveId,folderId:folderId}));
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({ driveId:driveId , folderId: folderId }));
@@ -498,7 +483,6 @@ const ContentInfoPanel = (props) =>{
   let assignmentInfo = '';
 
   if(assignmentIdSettings?.state === 'hasValue'){
-    console.log(">>>> assignmentIdSettings 333",assignmentIdSettings);    
        assignmentInfo = assignmentIdSettings?.contents;  
       if(assignmentInfo?.assignmentId){
         assignmentId = assignmentInfo?.assignmentId;
@@ -508,7 +492,6 @@ const ContentInfoPanel = (props) =>{
 
  
   const handleMakeAssignment = () => {
-    console.log("!!!!!!!!!!!!!!!");
     setMakeNewAssignment(true);
   }
   if(makeNewAssignment && (assignmentId === '' || assignmentId === undefined )){
@@ -595,7 +578,6 @@ const ContentInfoPanel = (props) =>{
     itemId={itemId} /> }
 
 
-      {console.log(">>>> handle click for make content",assignmentInfo)}
       {role === 'Instructor' && ( assignmentInfo?.isAssignment == '1')  && <button text="Make Content" onClick={handleMakeContent}>Make Content</button>} 
       {/* {( assignmentInfo?.isAssignment === '1')  ? <Button text="Make Content" callback={handleMakeContent}></Button>: null}  */}
               
@@ -608,7 +590,6 @@ const ContentInfoPanel = (props) =>{
 
 
 function DoenetCourseRouted(props) {
-  console.log("props in course routed", props);
   let courseId = 'Fhg532fk9873412s65'; // TODO : need to come from props.route.courseId 
 
   const [role,setRole] = useRecoilState(roleAtom);
