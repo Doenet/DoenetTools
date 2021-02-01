@@ -209,17 +209,17 @@ export const folderDictionarySelector = selectorFamily({
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           newObj.contentsDictionary[itemId] = newItem;
-          let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
+          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
           newDefaultOrder.splice(index+1, 0, itemId);
           newObj.contentIds = {}
-          newObj.contentIds["defaultOrder"] = newDefaultOrder;
+          newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
           return newObj;
         })
         if (instructions.itemType === "Folder"){
           //If a folder set folderInfo and zero items
           set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}),{
-            folderInfo:newItem,contentsDictionary:{},contentIds:{"defaultOrder":[]}
+            folderInfo:newItem,contentsDictionary:{},contentIds:{[sortOptions.DEFAULT]:[]}
           })
         }
 
@@ -419,12 +419,12 @@ export const folderInfoSelector = selectorFamily({
     
     const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
     const folderSortOrder = get(folderSortOrderSelector(driveIdInstanceIdFolderId))
-    const contentIdsArr = contentIds[folderSortOrder];
+    const contentIdsArr = contentIds[folderSortOrder] ?? [];
     
     let newFolderInfo = { ...folderInfo };
     newFolderInfo.sortBy = folderSortOrder
     
-    return {folderInfo: newFolderInfo, contentsDictionary, contentIds};
+    return {folderInfo: newFolderInfo, contentsDictionary, contentIdsArr};
   },
   set: (driveIdInstanceIdFolderId) => async ({set,get}, instructions)=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
@@ -571,8 +571,7 @@ function Folder(props){
   
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
-  const {folderInfo, contentsDictionary, contentIds} = folderInfoObj.contents;
-
+  const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
@@ -594,9 +593,8 @@ function Folder(props){
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
  
-
-  const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
-  const contentIdsArr = contentIds?.[contentIdsOrder] ?? [];
+  if (folderInfoObj.state === "loading"){ return null;}
+  // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
  
   let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
   let deleteButton = <button
