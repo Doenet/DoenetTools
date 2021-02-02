@@ -1,4 +1,4 @@
-import React, {useContext, useState, useCallback, useRef, useEffect, Suspense} from 'react';
+import React, {useContext, useRef, useEffect, Suspense} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
@@ -28,7 +28,6 @@ import {
   atomFamily,
   selector,
   selectorFamily,
-  RecoilRoot,
   useSetRecoilState,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
@@ -64,7 +63,7 @@ const dragStateAtom = atom({
 
 let fetchDrivesQuery = selector({
   key:"fetchDrivesQuery",
-  get: async ({get})=>{
+  get: async ()=>{
     const { data } = await axios.get(
       `/api/loadAvailableDrives.php`
     );
@@ -511,6 +510,7 @@ function DriveRouted(props){
   route={props.route}
   pathItemId={pathItemId}
   hideUnpublished={hideUnpublished}
+  foldersOnly={props.foldersOnly}
   />
   </>
 }
@@ -790,53 +790,75 @@ function Folder(props){
         //hide item
         continue;
       }
-      switch(item.itemType){
-        case "Folder":
-        items.push(<Folder 
-          key={`item${itemId}${props.driveInstanceId}`} 
-          driveId={props.driveId} 
-          folderId={item.itemId} 
-          indentLevel={props.indentLevel+1}  
-          driveInstanceId={props.driveInstanceId}
-          route={props.route}
-          isNav={props.isNav}
-          urlClickBehavior={props.urlClickBehavior}
-          pathItemId={props.pathItemId}
-          deleteItem={deleteItem}
-          parentFolderId={props.folderId}
-          hideUnpublished={props.hideUnpublished}
-          />)
-        break;
-        case "Url":
-          items.push(<Url 
+      if (props.foldersOnly){
+        if (item.itemType === "Folder"){
+          items.push(<Folder 
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
-            item={item} 
+            folderId={item.itemId} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
-            isNav={props.isNav} 
+            isNav={props.isNav}
             urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-          />)
-        break;
-        case "DoenetML":
-          items.push(<DoenetML 
+            parentFolderId={props.folderId}
+            hideUnpublished={props.hideUnpublished}
+            foldersOnly={props.foldersOnly}
+            />)
+        }
+      }else{
+        switch(item.itemType){
+          case "Folder":
+          items.push(<Folder 
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
-            item={item} 
+            folderId={item.itemId} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
-            isNav={props.isNav} 
+            isNav={props.isNav}
+            urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-          />)
-        break;
-        default:
-        console.warn(`Item not rendered of type ${item.itemType}`)
+            parentFolderId={props.folderId}
+            hideUnpublished={props.hideUnpublished}
+            foldersOnly={props.foldersOnly}
+            />)
+          break;
+          case "Url":
+            items.push(<Url 
+              key={`item${itemId}${props.driveInstanceId}`} 
+              driveId={props.driveId} 
+              item={item} 
+              indentLevel={props.indentLevel+1}  
+              driveInstanceId={props.driveInstanceId}
+              route={props.route}
+              isNav={props.isNav} 
+              urlClickBehavior={props.urlClickBehavior}
+              pathItemId={props.pathItemId}
+              deleteItem={deleteItem}
+            />)
+          break;
+          case "DoenetML":
+            items.push(<DoenetML 
+              key={`item${itemId}${props.driveInstanceId}`} 
+              driveId={props.driveId} 
+              item={item} 
+              indentLevel={props.indentLevel+1}  
+              driveInstanceId={props.driveInstanceId}
+              route={props.route}
+              isNav={props.isNav} 
+              pathItemId={props.pathItemId}
+              deleteItem={deleteItem}
+            />)
+          break;
+          default:
+          console.warn(`Item not rendered of type ${item.itemType}`)
+        }
       }
+      
  
     }
 
