@@ -11,7 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
-$itemId = mysqli_real_escape_string($conn,$_POST["pathItemId"]);
+$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
 $courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 
 
