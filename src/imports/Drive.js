@@ -12,6 +12,7 @@ import {
   WithDropTarget  
 } from '../imports/DropTarget';
 import Draggable from '../imports/Draggable';
+import getSortOrder from '../imports/LexicographicalRankingSort';
 
 import { BreadcrumbContext } from '../imports/Breadcrumb';
 
@@ -212,17 +213,24 @@ export const folderDictionarySelector = selectorFamily({
           url: null,
           urlDescription: null,
           urlId: null,
+          sortOrder: "",
           sortBy: "defaultOrder",
           dirty: 0
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
-          newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds["defaultOrder"]];
-          let index = newDefaultOrder.indexOf(instructions.selectedItemId);
-          newDefaultOrder.splice(index+1, 0, itemId);
+          let index = newDefaultOrder.indexOf(instructions.selectedItemId) + 1;
+          const newOrder = getLexicographicOrder({
+            index, 
+            nodeObjs: newObj.contentsDictionary, 
+            defaultFolderChildrenIds: newDefaultOrder 
+          });
+          newItem.sortOrder = newOrder;
+          newDefaultOrder.splice(index, 0, itemId);
           newObj.contentIds["defaultOrder"] = newDefaultOrder;
+          newObj.contentsDictionary[itemId] = newItem;
           // newObj.folderInfo.dirty = 1;
           return newObj;
         })
@@ -460,6 +468,31 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   }
   return tempArr;
 };
+
+const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] }) => {
+  let prevItemId = "";
+  let nextItemId = "";
+  let prevItemOrder = "";
+  let nextItemOrder = "";
+
+  if (defaultFolderChildrenIds.length !== 0) {
+    if (index <= 0) {
+      nextItemId = defaultFolderChildrenIds[0];
+    } else if (index >= defaultFolderChildrenIds.length - 1) {
+      prevItemId = defaultFolderChildrenIds[defaultFolderChildrenIds.length - 1];
+    } else {
+      nextItemId = defaultFolderChildrenIds[index];
+      prevItemId = defaultFolderChildrenIds[index - 1];
+    }
+    
+    if (nodeObjs[prevItemId]) prevItemOrder = nodeObjs?.[prevItemId]?.sortOrder ?? "";
+    if (nodeObjs[nextItemId]) nextItemOrder = nodeObjs?.[nextItemId]?.sortOrder ?? "";
+  }
+
+  const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
+  console.log(">>> new order", prevItemOrder, nextItemOrder, sortOrder);
+  return sortOrder;
+}
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
