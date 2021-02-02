@@ -1,7 +1,6 @@
 import nanoid from "nanoid";
 // import DoenetBox from '../Tools/DoenetBox';
 // import DoenetAssignmentTree from "./DoenetAssignmentTree"
-import DoenetEditor from "./DoenetEditor";
 import React, { useState, useEffect, useCallback } from "react";
 import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 import Enrollment from "./Enrollment";
