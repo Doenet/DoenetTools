@@ -541,7 +541,7 @@ export const fetchDrivesSelector = selector({
     }
 
   axios.get("/api/addDrive.php", payload)
-  .then((resp)=>console.log(">>>resp",resp.data))
+  // .then((resp)=>console.log(">>>resp",resp.data))
   }
 })
 

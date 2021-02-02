@@ -17,65 +17,23 @@ $success = TRUE;
 $results_arr = array();
 
 
-echo "driveId:".$driveId;
-echo "label:".$label;
+$sql = "
+INSERT INTO drive
+(driveId,label,driveType,isShared,courseId)
+VALUES
+('$driveId','$label','content','0',null)
+";
+$result = $conn->query($sql); 
 
-// $sql = "
-// SELECT canAddItemsAndFolders
-// FROM drive_user
-// WHERE userId = '$userId'
-// AND driveId = '$driveId'
-// ";
-
-// $result = $conn->query($sql); 
-// if ($result->num_rows > 0){
-// $row = $result->fetch_assoc();
-// $canAdd = $row["canAddItemsAndFolders"];
-// if (!$canAdd){
-//   $success = FALSE;
-// }
-// }else{
-//   //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
-//   $success = FALSE;
-// }
-
-// if ($success){
-
-
-//   if ($type == 'Folder'){
-//     $sql="
-//   INSERT INTO drive_content
-//   (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
-//   VALUES
-//   ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
-//   ";
-
-//   $result = $conn->query($sql); 
-
-//   }else if ($type == 'Url'){
-//     $sql="
-//   INSERT INTO drive_content
-//   (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
-//   VALUES
-//   ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
-//   ";
-
-//   $result = $conn->query($sql); 
-
-//   }else if ($type == 'DoenetML'){
-//     $sql="
-//     INSERT INTO drive_content
-//     (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
-//     VALUES
-//     ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
-//     ";
-    
-//     $result = $conn->query($sql); 
-//   }else{
-//     $success = FALSE;
-//   }
-
-// }
+$sql = "
+INSERT INTO drive_user
+(userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,
+canDeleteItemsAndFolders,canMoveItemsAndFolders,canRenameItemsAndFolders,
+canPublishItemsAndFolders,canViewUnpublishItemsAndFolders,canChangeAllDriveSettings)
+VALUES
+('$userId','$driveId','1','1','1','1','1','1','1','1','1','1')
+";
+$result = $conn->query($sql); 
 
 $response_arr = array(
   "success"=>$success
