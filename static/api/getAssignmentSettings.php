@@ -13,29 +13,39 @@ $userId = $jwtArray['userId'];
 //TODO: Make sure of instructor or user
 
 $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
+$role =  mysqli_real_escape_string($conn,$_REQUEST["role"]);
+
+$type = $role == 'Instructor' ? 'assignment_draft' : 'assignment';
 
 $sql = "SELECT
-title,
-assignedDate,
-dueDate,
-timeLimit,
-numberOfAttemptsAllowed,
-attemptAggregation,
-totalPointsOrPercent,
-gradeCategory,
-individualize,
-multipleAttempts,
-showSolution,
-showFeedback,
-showHints,
-showCorrectness,
-proctorMakesAvailable
-FROM assignment
-WHERE assignmentId = '$assignmentId'
+a.assignmentId AS assignmentId,
+a.title AS title,
+a.assignedDate AS assignedDate,
+a.dueDate AS dueDate,
+a.timeLimit AS timeLimit,
+a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+a.attemptAggregation AS attemptAggregation,
+a.totalPointsOrPercent AS totalPointsOrPercent,
+a.gradeCategory AS gradeCategory,
+a.individualize AS individualize,
+a.multipleAttempts AS multipleAttempts,
+a.showSolution AS showSolution,
+a.showFeedback AS showFeedback,
+a.showHints AS showHints,
+a.showCorrectness AS showCorrectness,
+a.proctorMakesAvailable AS proctorMakesAvailable,
+dc.isPublished AS isPublished,
+dc.isAssignment As isAssignment
+FROM $type AS a
+JOIN drive_content AS dc
+ON a.assignmentId = dc.assignmentId
+JOIN drive_user as du
+ON du.driveId = dc.driveId
+WHERE a.assignmentId = '$assignmentId' AND du.userId='$userId'
 ";
-
 $result = $conn->query($sql);
 
+// echo $sql;
 $response_arr = array();
 
 if ($result->num_rows > 0){
@@ -56,7 +66,13 @@ if ($result->num_rows > 0){
         "showFeedback" => $row['showFeedback'],
         "showHints" => $row['showHints'],
         "showCorrectness" => $row['showCorrectness'],
-        "proctorMakesAvailable" => $row['proctorMakesAvailable']
+        "proctorMakesAvailable" => $row['proctorMakesAvailable'],
+        "isPublished" => $row['isPublished'],
+        "isAssignment" => $row['isAssignment'],
+        "assignmentId" => $row['assignmentId']
+
+
+
 );
     
 }

@@ -1,34 +1,94 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { atom, selector, useRecoilState } from "recoil";
 import ResponsiveControlsWrapper from "../Tool/ResponsiveControls";
+import Switch from "../Switch";
 
-const SupportPanelDiv = styled.div`
-height: 100vh;`;
+export const supportVisibleAtom = atom({
+  key: "supportVisibleAtom",
+  default: [false],
+});
 
-export default function SupportPanel(props) {
-  const [supportPanelHeaderGrpWidth, setSupportPanelHeaderGrpWidth] = useState(0);
-  const [supportPanelHeaderCtrlGrpEl, setSupportPanelHeaderCtrlGrpEl] = useState(null);
+export const supportVisible = selector({
+  key: "supportVisibleSelector",
+  get: ({ get }) => {
+    const supportVisibleArray = get(supportVisibleAtom);
+    return supportVisibleArray[supportVisibleArray.length - 1];
+  },
 
-  const setSupportHeaderCtrlGroupRef = element => {
+  set: ({ set }, newValue) => {
+    set(supportVisibleAtom, (old) => {
+      let newArray = [...old];
+      newArray[newArray.length - 1] = newValue;
+      return newArray;
+    });
+  },
+});
+
+export function SupportVisiblitySwitch() {
+  const [supportVisiblity, setSupportVisiblity] = useRecoilState(
+    supportVisible
+  );
+
+  return (
+    <Switch
+      checked={supportVisiblity}
+      onChange={(e) => {
+        setSupportVisiblity(e.target.checked);
+      }}
+    />
+  );
+}
+
+const SupportPanelContainer = styled.div`
+  overflow: auto;
+`;
+
+const ResponsiveControlsContainer = styled.div`
+  height: 32px;
+  border-bottom: 1px solid black;
+  display: flex;
+`;
+
+export default function SupportPanel({ children, responsiveControls }) {
+  const [supportPanelHeaderGrpWidth, setSupportPanelHeaderGrpWidth] = useState(
+    0
+  );
+  const [
+    supportPanelHeaderCtrlGrpEl,
+    setSupportPanelHeaderCtrlGrpEl,
+  ] = useState(null);
+
+  const setSupportHeaderCtrlGroupRef = (element) => {
     if (element) {
       setSupportPanelHeaderCtrlGrpEl(element);
       setSupportPanelHeaderGrpWidth(element.clientWidth);
     }
-  }
+  };
 
   const resizeWindowHanlderForSupportPanel = () => {
-    if(supportPanelHeaderCtrlGrpEl) {
+    if (supportPanelHeaderCtrlGrpEl) {
       //console.log(supportPanelHeaderCtrlGrpEl.clientWidth, "supportPanelHeaderCtrlGrpEl.clientWidth");
       setSupportPanelHeaderGrpWidth(supportPanelHeaderCtrlGrpEl.clientWidth);
     }
+  };
+
+  let responsiveControlsContents = null;
+
+  if (responsiveControls) {
+    responsiveControlsContents = (
+      <ResponsiveControlsContainer>
+        <ResponsiveControlsWrapper mainPanelWidth={supportPanelHeaderGrpWidth}>
+          {responsiveControls}
+        </ResponsiveControlsWrapper>
+      </ResponsiveControlsContainer>
+    );
   }
 
-  // window.addEventListener("resize", resizeWindowHanlderForSupportPanel);
-
   return (
-    <SupportPanelDiv>
-      {props.responsiveControls ? <div style={{height: "32px", borderBottom: "1px solid black", display: "flex"}}><ResponsiveControlsWrapper mainPanelWidth={supportPanelHeaderGrpWidth}>{props.responsiveControls}</ResponsiveControlsWrapper></div> : "" }
-      <div style={{height: props.responsiveControls ? 'calc(100vh - 82px)' : 'calc(100vh - 50px) ',overflow: "scroll"}}>{props.children}</div>
-    </SupportPanelDiv>
-  )
+    <SupportPanelContainer>
+      {responsiveControlsContents}
+      {children}
+    </SupportPanelContainer>
+  );
 }

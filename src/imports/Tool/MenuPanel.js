@@ -1,93 +1,91 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { atom, selector, useRecoilState } from "recoil";
 import styled from "styled-components";
 
-const HeaderDiv = styled.div`
-  grid-area: menuPanelHeader;
-  width: 240px;
-  display: flex;
-  border-left: 1px solid black;
-`;
-
-const SectionDiv = styled.div`
+const MenuPanelWrapper = styled.div`
   grid-area: menuPanel;
   width: 240px;
-  overflow: scroll;
+  display: grid;
+  grid-template:
+    "buttons" 60px
+    "sections" 1fr;
+  border-left: 1px solid black
+`;
+const ButtonsWrapper = styled.div`
+  grid-area: buttons;
+  display: flex;
+`;
+
+const PanelsWrapper = styled.div`
+  grid-area: sections;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
   border-left: 1px solid black;
 `;
 
-const ButtonDiv = styled.div`
-  border-bottom: 1px solid #3d3d3d;
-  border-right: 1px solid #3d3d3d;
-  width: 100%;
-`;
-const HeaderButton = styled.button`
+const MenuHeaderButton = styled.button`
   border: none;
-  background-color: white;
+  border-top: 8px solid
+    ${({ linkedPanel, activePanel }) =>
+      linkedPanel === activePanel ? "#1A5A99" : "#f6f8ff"};
+  background-color: "#f6f8ff";
+  border-bottom: 1px solid #3d3d3d;
+  border-left: 1px solid #3d3d3d;
   width: 100%;
   height: 100%;
 `;
 
-export default function MenuPanel(props) {
-  const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
+export const activeMenuPanelAtom = atom({
+  key: "activeMenuPanelAtom",
+  default: [0],
+});
 
-  const showHideMenuPanelContent = (index) => {
-    setPanelDataIndex(index);
-  };
+const activeMenuPanel = selector({
+  key: "activeMenuPanel",
+  get: ({ get }) => {
+    const activePanelArray = get(activeMenuPanelAtom);
+    return activePanelArray[activePanelArray.length - 1];
+  },
 
-  React.useEffect(() => {
-    if (props.children && Array.isArray(props.children)) {
-      props.children.map((obj, index) => {
-        if (
-          obj &&
-          obj.type &&
-          typeof obj.type === "function" &&
-          obj.type.name === "MenuPanel"
-        ) {
-          if (panelDataIndex === -1) {
-            setPanelDataIndex((prevState) => {
-              //console.log(prevState);
-              let oldIndex = prevState;
-              if (oldIndex === -1) {
-                return index;
-              }
-              return oldIndex;
-            });
-          }
-        }
-      });
-    }
-  }, [panelDataIndex]);
+  set: ({ set }, newValue) => {
+    set(activeMenuPanelAtom, (old) => {
+      let newArray = [...old];
+      newArray[newArray.length - 1] = newValue;
+      return newArray;
+    });
+  },
+});
 
-  console.log(">>>MenuPanel Props:", props);
+export default function MenuPanel({ children }) {
+  const [activePanel, setActivePanel] = useRecoilState(activeMenuPanel);
+  const [panels, setPanels] = useState([]);
+
+  // console.log(">>>Loading Menu w/ Child");
+
+  useEffect(() => {
+    setPanels(children.map((panel) => panel)); //swap this to only render buttons once (store in state)
+  }, [children]);
+
   return (
-    <>
-      <HeaderDiv>
-        {props.children &&
-          Array.isArray(props.children) &&
-          props.children.map((obj, index) => {
-            switch (obj?.type?.name) {
-              case "MenuPanelSection":
-                let bg = index === panelDataIndex ? "#8FB8DE" : "#E2E2E2";
-                return (
-                  <ButtonDiv key={index}>
-                    <HeaderButton
-                      onClick={() => {
-                        showHideMenuPanelContent(index);
-                      }}
-                      style={{backgroundColor: bg}}
-                    >
-                      {obj.props.title}
-                    </HeaderButton>
-                  </ButtonDiv>
-                );
-              default:
-                return null;
-            }
-          })}
-      </HeaderDiv>
-      <SectionDiv>
-        {panelDataIndex !== -1 ? props.children[panelDataIndex] : ""}
-      </SectionDiv>
-    </>
+    <MenuPanelWrapper>
+      <ButtonsWrapper>
+        {panels.map((panel, idx) => {
+          return (
+            <MenuHeaderButton
+              key={`headerB${idx}`}
+              onClick={() => {
+                activePanel !== idx ? setActivePanel(idx) : null;
+              }}
+              linkedPanel={idx}
+              activePanel={activePanel}
+            >
+              {panel.props.title}
+            </MenuHeaderButton>
+          );
+        })}
+      </ButtonsWrapper>
+      <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
+    </MenuPanelWrapper>
   );
 }
