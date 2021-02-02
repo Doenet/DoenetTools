@@ -15,6 +15,7 @@ $parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
+$branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 
 $success = TRUE;
 $results_arr = array();
@@ -66,7 +67,15 @@ if ($success){
     INSERT INTO drive_content
     (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
     VALUES
-    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId')
+    ";
+    
+    $result = $conn->query($sql); 
+    $sql="
+    INSERT INTO content
+    (branchId,contentId,title,timestamp,isDraft,removedFlag,public)
+    VALUES
+    ('$branchId','$branchId','Draft',NOW(),'1','0','1')
     ";
     
     $result = $conn->query($sql); 

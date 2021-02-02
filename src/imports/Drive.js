@@ -188,9 +188,10 @@ export const folderDictionarySelector = selectorFamily({
           dt.getMinutes().toString().padStart(2, '0')}:${
           dt.getSeconds().toString().padStart(2, '0')}`
         const itemId = nanoid();
+        const branchId = nanoid();
         const newItem = {
           assignmentId: null,
-          branchId: null,
+          branchId,
           contentId: null,
           creationDate,
           isPublished: "0",
@@ -227,7 +228,8 @@ export const folderDictionarySelector = selectorFamily({
           parentFolderId:driveIdFolderId.folderId,
           itemId,
           label:instructions.label,
-          type:instructions.itemType
+          type:instructions.itemType,
+          branchId,
          };
         const payload = { params: data };
 
