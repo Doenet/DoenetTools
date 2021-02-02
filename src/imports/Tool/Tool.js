@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useSpring, animated } from "react-spring";
 import { atom, selector, useRecoilState } from "recoil";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +20,7 @@ import axios from "axios";
 
 const queryCache = new QueryCache();
 
-const ToolContainer = styled.div`
+const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
     "navPanel headerPanel menuPanel" 60px
@@ -28,8 +29,8 @@ const ToolContainer = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: #f6f8ff;
-  position: ${({ isOverlay }) => (isOverlay ? "fixed" : "static")};
-  z-index: ${({ isOverlay }) => (isOverlay ? "3" : "auto")};
+  position: ${({ isoverlay }) => (isoverlay ? "fixed" : "static")};
+  z-index: ${({ isoverlay }) => (isoverlay ? "3" : "auto")};
 `;
 
 const ExitOverlayButton = styled.button`
@@ -91,6 +92,12 @@ export default function Tool(props) {
   const [openOverlayName, setOpenOverlayName] = useRecoilState(
     openOverlayByName
   );
+  const spring = useSpring({
+    value: 0,
+    from: { value: 100 },
+    delay: 100,
+    immediate: !props.isoverlay,
+  });
 
   //User profile logic
   const [profile, setProfile] = useState({});
@@ -196,7 +203,7 @@ export default function Tool(props) {
       <HeaderPanel>
         {toolParts.headerPanel.children}
         <SupportVisiblitySwitch />
-        {!props.isOverlay ? (
+        {!props.isoverlay ? (
           <DoenetHeader
             profile={profile}
             cookies={jwt}
@@ -239,14 +246,17 @@ export default function Tool(props) {
     overlay = toolParts.overlay[openOverlayName.name];
   }
 
-  if (!props.isOverlay && openOverlayName?.name) {
-    toolContent = <Tool isOverlay>{overlay}</Tool>;
+  if (!props.isoverlay && openOverlayName?.name) {
+    toolContent = <Tool isoverlay>{overlay}</Tool>;
   }
 
   return (
     <ReactQueryCacheProvider queryCache={queryCache}>
       {toolContent}
-      <ToolContainer style={props.style} isOverlay={props.isOverlay}>
+      <ToolContainer
+        style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
+        isoverlay={props.isoverlay}
+      >
         {navPanel}
         {headerPanel}
         <ContentPanel main={mainPanel} support={supportPanel} />
