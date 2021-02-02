@@ -384,8 +384,7 @@ export const folderDictionarySelector = selectorFamily({
         })
         
       break;
-      //TODO: update to say goes from assignment to content
-      case "handle make content":
+      case "assignment to content":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];
@@ -394,7 +393,7 @@ export const folderDictionarySelector = selectorFamily({
         })
      
       break;
-      case "load back assignment":
+      case "assignment title update":
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[instructions.itemId];          
@@ -820,7 +819,9 @@ function Folder(props){
       // console.log(">>>item",item)
       if (props.hideUnpublished && item.isPublished === "0"){
         //hide item
-        continue;
+        if(item.assignment_isPublished != '1')
+          continue;
+        // TODO : update
       }
       if (props.foldersOnly){
         if (item.itemType === "Folder"){
