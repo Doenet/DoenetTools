@@ -1,140 +1,154 @@
-import React, { useEffect, ErrorBoundary, useState } from "react";
+import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
+import Drive from "../imports/Drive";
 import AddItem from "../imports/AddItem";
-import Switch from "../imports/Switch";
-// import Button from "../imports/Button";
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-  selector,
-  atomFamily,
-} from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
-import DoenetViewer from './DoenetViewer';
 
-// import {UnControlled as CodeMirror} from 'react-codemirror2'
-import {Controlled as CodeMirror} from 'react-codemirror2'
+//example data acessing
+function OverlayDataViwer() {
+  const overlayData = useRecoilValue(openOverlayByName);
 
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
+  return (
+    <div>
+      <h2>Data</h2>
+      <ul>
+        <li> name: {overlayData.name} </li>
+        <li> action: {overlayData.instructions.action} </li>
+        <li> supportVisble: {overlayData.supportVisble} </li>
+        <li> courseId: {overlayData.instructions.courseId} </li>
+        <li> branchId: {overlayData.instructions.branchId} </li>
+      </ul>
+    </div>
+  );
+}
 
-export default function DoenetExampleTool(props) {
-  // console.log("=== DoenetExampleTool");
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
+export default function DoenetExampleTool() {
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
-
-  const [updateNumber,setUpdateNumber] = useState(0);
-  const [viewerDoenetML,setViewerDoenetML] = useState("");
-  const [editorDoenetML,setEditorDoenetML] = useState("");
-
-
-  // return (
-  //   <div>
-  //     <CodeMirror
-  //       value={editorDoenetML}
-  //       // options={options}
-  //       onBeforeChange={(editor, data, value) => {
-  //         setEditorDoenetML(value)
-  //       }}
-  //       onChange={(editor, data, value) => {
-  //       }}
-  //     />
-  //   </div>
-    
-  // )
-  let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
-  let solutionDisplayMode = "button";
+  // console.log("=== DoenetExampleTool");
 
   return (
     <Tool>
       <navPanel>
-        {/* <p>navigate to important stuff</p> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
-        {/* <Drive types={['content','course']} /> */}
-        <div>
-          
-        </div>
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" foldersOnly={true} />
       </navPanel>
 
-      <headerPanel title="my title">
-        <p>header for important stuff</p>
-      </headerPanel>
+      <headerPanel title="my title"></headerPanel>
 
       <mainPanel>
-        <p>do the main important stuff</p>
-        <button
-            onClick={() => {
-              setOverlayOpen("George");
-            }}
-          >
-            Editor in Overlay
-          </button>
+        <BreadcrumbContainer />
+        <AddItem />
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
       </mainPanel>
 
+      <supportPanel width="40%">
+        <p>Support Panel</p>
+      </supportPanel>
+
       <menuPanel title="edit">
+        <button
+          onClick={() => {
+            setOverlayOpen({
+              name: "editor",
+              instructions: {
+                action: "open",
+                supportVisble: true,
+                courseId: "c1",
+                branchId: "b1",
+              },
+            });
+          }}
+        >
+          Go to Overlay
+        </button>
         <p>control important stuff</p>
       </menuPanel>
 
+      <menuPanel title="other">
+        <p>control more important stuff</p>
+      </menuPanel>
 
-      <overlay>
-        <headerPanel title="my title">
-        <button
+      <overlay name="editor">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>Editor</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="control">
+          <p>control important stuff</p>
+          <button
             onClick={() => {
-              setOverlayOpen("");
+              setOverlayOpen({
+                instructions: {
+                  action: "close",
+                },
+              });
             }}
           >
             Go Back
           </button>
-          <Switch
-            onChange={(value) => {
-              setSupportVisiblity(value);
-            }}
-          />
-          <p>header for important stuff</p>
-        </headerPanel>
+          <div>
+            <button
+              onClick={() => {
+                setOverlayOpen({
+                  name: "cal",
+                  instructions: {
+                    action: "open",
+                    supportVisble: false,
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel title="extras">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal">
+        <headerPanel title="my title"></headerPanel>
 
         <mainPanel>
-          <button onClick={()=>{
-            setViewerDoenetML(editorDoenetML);
-            setUpdateNumber((old)=>{return old+1})
-            }}>Update</button>
-          <DoenetViewer
-            key={"doenetviewer" + updateNumber}
-            doenetML={viewerDoenetML}
-            flags={{
-              showCorrectness: true,
-              readOnly: false,
-              solutionDisplayMode: solutionDisplayMode,
-              showFeedback: true,
-              showHints: true,
-            }}
-            attemptNumber={attemptNumber}
-            assignmentId={assignmentId}
-            ignoreDatabase={false}
-            requestedVariant={requestedVariant}
-
-          />
+          <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
         </mainPanel>
 
         <supportPanel width="40%">
-        <CodeMirror
-        value={editorDoenetML}
-        // options={options}
-        onBeforeChange={(editor, data, value) => {
-          setEditorDoenetML(value)
-        }}
-        onChange={(editor, data, value) => {
-        }}
-      />
+          <p>Support Panel</p>
         </supportPanel>
 
-      
+        <menuPanel title="edit">
+          <p>control important stuff</p>
+          <button
+            onClick={() => {
+              setOverlayOpen({
+                instructions: {
+                  action: "close",
+                },
+              });
+            }}
+          >
+            Go Back
+          </button>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+        </menuPanel>
       </overlay>
     </Tool>
   );

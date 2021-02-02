@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections, selectedDriveAtom} from "../imports/Drive";
 import AddItem from '../imports/AddItem'
-import Switch from "../imports/Switch";
+// import Switch from "../imports/Switch";
 import {
   atom,
   useSetRecoilState,
@@ -11,14 +11,13 @@ import {
   selector,
   atomFamily,
   selectorFamily,
-  RecoilRoot,
   useRecoilValueLoadable,
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
+// import { supportVisible } from "../imports/Tool/SupportPanel";
 import GlobalFont from "../fonts/GlobalFont.js";
 import axios from "axios";
-import Button from "../imports/PanelHeaderComponents/Button.js";
+// import Button from "../imports/PanelHeaderComponents/Button.js";
 import DoenetViewer from './DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
@@ -77,124 +76,6 @@ const driveFolderItemVersion = selectorFamily({
 
     return {itemInfo,versions}
 }})
-
-const ItemInfo = function (props){
-  //data-doenet-drive-stayselected
-  // console.log("=== 🧐 Item Info")
-  const infoLoad = useRecoilValueLoadable(selectedInformation);
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  const selectedDrive = useRecoilValue(selectedDriveAtom);
-
-
-
-    //Use Route to determine path variables
-  let routePathDriveId = "";
-  let routePathFolderId = "";  
-  let pathItemId = "";  
-  let pathItemType = "";
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-  //use defaults if not defined
-  if (urlParamsObj?.path !== undefined){
-    [routePathDriveId,routePathFolderId,pathItemId,pathItemType] = urlParamsObj.path.split(":");
-  }
- 
-  const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
-
-
-    // console.log(">>>infoLoad",infoLoad)
-    if (infoLoad.state === "loading"){ return null;}
-    if (infoLoad.state === "hasError"){ 
-      console.error(infoLoad.contents)
-      return null;}
-   
-      let itemInfo = infoLoad?.contents?.itemInfo;
-      let versions = infoLoad?.contents?.versions;
-
-    if (infoLoad.contents?.number > 1){
-      return <>
-      <h1>{infoLoad.contents.number} Items Selected</h1>
-      </>
-    }else if (infoLoad.contents?.number < 1){
-
-    if (pathFolderInfo.state === "loading"){ return null;}
-    if (pathFolderInfo.state === "hasError"){ 
-      console.error(pathFolderInfo.contents)
-      return null;}
-
-  itemInfo = pathFolderInfo?.contents?.itemInfo;
-  versions = pathFolderInfo?.contents?.versions;
-
-    if (!itemInfo && selectedDrive){
-      return <>
-        <h1>{selectedDrive}</h1>
-        <AddItem />
-      </>
-    }
-    if (!itemInfo) return <div>Nothing Selected</div>;
-  }
-
-  const versionsJSX = [];
- 
-  if (itemInfo?.itemType === "DoenetML"){
-  let draftObj;
-  for (let version of versions){
-    if (version.isDraft === "1"){
-      draftObj = version;
-    }else{
-      versionsJSX.push(<div
-      key={`versions${version.timestamp}`}
-        onClick={() => {
-          //set activeBranchInfo to version
-          setOverlayOpen({
-            name: "editor", //to match the prop
-            instructions: { 
-              supportVisble: true,
-              action: "open", //or "close"
-              contentId: version.contentId,
-              branchId: itemInfo.branchId,
-              title: version.title,
-              isDraft: version.isDraft,
-              timestamp: version.timestamp
-            }
-          });
-        }}
-      >
-        {version.title}
-      </div>)
-    }
-  }
-
-  versionsJSX.push(<button key='edit draft'
-    onClick={()=>setOverlayOpen({
-      name: "editor", //to match the prop
-      instructions: { 
-        supportVisble: true,
-        action: "open", //or "close"
-        contentId: draftObj.contentId,
-        branchId: itemInfo.branchId,
-        title: draftObj.title,
-        isDraft: draftObj.isDraft,
-        timestamp: draftObj.timestamp
-      }
-    })}>Edit Draft</button>)
-
-  }
-  
-
-
-
- 
-
-  return <div
-  style={{height:"100%"}}
-  >
-    
-
-  <h1>{itemInfo.label}</h1>
-  <AddItem />
-  {versionsJSX}
-  </div>
-}
 
 const fileByContent = atomFamily({
   key:"fileByContent",
@@ -297,6 +178,118 @@ function SetEditorDoenetML(props){
   return null;
 }
 
+const ItemInfo = function (){
+  //data-doenet-drive-stayselected
+  console.log("=== 🧐 Item Info")
+  const infoLoad = useRecoilValueLoadable(selectedInformation);
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const selectedDrive = useRecoilValue(selectedDriveAtom);
+
+  //   //Use Route to determine path variables
+  // let routePathDriveId = "";
+  // let routePathFolderId = "";  
+  // let pathItemId = "";  
+  // // let pathItemType = "";
+  // let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+  // //use defaults if not defined
+  // if (urlParamsObj?.path !== undefined){
+  //   [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
+  // }
+ 
+  // const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
+
+
+    console.log(">>>infoLoad",infoLoad)
+    if (infoLoad.state === "loading"){ return null;}
+    if (infoLoad.state === "hasError"){ 
+      console.error(infoLoad.contents)
+      return null;}
+
+      // console.log(">>>infoLoad",infoLoad)
+   
+      let itemInfo = infoLoad?.contents?.itemInfo;
+      let versions = infoLoad?.contents?.versions;
+
+    if (infoLoad.contents?.number > 1){
+      return <>
+      <h1>{infoLoad.contents.number} Items Selected</h1>
+      </>
+    }else if (infoLoad.contents?.number < 1){
+
+  //   if (pathFolderInfo.state === "loading"){ return null;}
+  //   if (pathFolderInfo.state === "hasError"){ 
+  //     console.error(pathFolderInfo.contents)
+  //     return null;}
+
+  // itemInfo = pathFolderInfo?.contents?.itemInfo;
+  // versions = pathFolderInfo?.contents?.versions;
+
+    // if (!itemInfo && selectedDrive){
+    //   return <>
+    //     <h1>{selectedDrive}</h1>
+    //     <AddItem />
+    //   </>
+    // }
+    if (!itemInfo) return <h3>No Items Selected</h3>;
+  }
+
+  const versionsJSX = [];
+ 
+  if (itemInfo?.itemType === "DoenetML"){
+  let draftObj;
+  for (let version of versions){
+    if (version.isDraft === "1"){
+      draftObj = version;
+    }else{
+      versionsJSX.push(<div
+      key={`versions${version.timestamp}`}
+        onClick={() => {
+          //set activeBranchInfo to version
+          setOverlayOpen({
+            name: "editor", //to match the prop
+            instructions: { 
+              supportVisble: true,
+              action: "open", //or "close"
+              contentId: version.contentId,
+              branchId: itemInfo.branchId,
+              title: version.title,
+              isDraft: version.isDraft,
+              timestamp: version.timestamp
+            }
+          });
+        }}
+      >
+        {version.title}
+      </div>)
+    }
+  }
+
+  versionsJSX.push(<button key='edit draft'
+    onClick={()=>setOverlayOpen({
+      name: "editor", //to match the prop
+      instructions: { 
+        supportVisble: true,
+        action: "open", //or "close"
+        contentId: draftObj.contentId,
+        branchId: itemInfo.branchId,
+        title: draftObj.title,
+        isDraft: draftObj.isDraft,
+        timestamp: draftObj.timestamp
+      }
+    })}>Edit Draft</button>)
+
+  }
+  
+
+  return <div
+  style={{height:"100%"}}
+  >
+    
+  <h1>{itemInfo.label}</h1>
+  <AddItem />
+  {versionsJSX}
+  </div>
+}
 
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
@@ -323,7 +316,8 @@ export default function DoenetDriveTool(props) {
     <Tool>
       <navPanel>
       <GlobalFont/>
-        <Drive types={['content','course']}  urlClickBehavior="select" />
+        <Drive types={['content','course']}  foldersOnly={true} />
+        {/* <Drive types={['content','course']}  urlClickBehavior="select" /> */}
       </navPanel>
 
       <headerPanel title="my title">
@@ -353,7 +347,8 @@ export default function DoenetDriveTool(props) {
       </supportPanel>
 
       <menuPanel title="Item Info">
-        <ItemInfo route={props.route} />
+        {/* <ItemInfo route={props.route} /> */}
+        <ItemInfo  />
       </menuPanel>
 
       <overlay name="editor">
