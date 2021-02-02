@@ -63,6 +63,12 @@ if ($success){
   $result = $conn->query($sql); 
 
   }else if ($type == 'DoenetML'){
+    $fileName = $branchId;
+    //TODO: Config file needed for server
+    $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
+    fwrite($newfile, "");
+    fclose($newfile);
+
     $sql="
     INSERT INTO drive_content
     (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
