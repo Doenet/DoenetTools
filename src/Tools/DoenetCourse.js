@@ -769,6 +769,10 @@ function DoenetCourseRouted({ props }) {
   if (role === "Instructor") {
     hideUnpublished = false;
   }
+  let urlClickBehavior = 'select';
+  if(role === 'Instructor'){
+    urlClickBehavior = 'select';
+  }
   let pathItemId = "";
   let routePathDriveId = "";
   let routePathFolderId = "";
@@ -824,7 +828,7 @@ function DoenetCourseRouted({ props }) {
         <Drive
           types={["course"]}
           hideUnpublished={hideUnpublished}
-          urlClickBehavior={role === "Instructor" ? "select" : null}
+          urlClickBehavior={urlClickBehavior}
         />
         <br />
         {role === "Instructor" && (
