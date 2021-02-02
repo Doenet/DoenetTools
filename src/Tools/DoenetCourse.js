@@ -1,7 +1,6 @@
 import nanoid from "nanoid";
 // import DoenetBox from '../Tools/DoenetBox';
 // import DoenetAssignmentTree from "./DoenetAssignmentTree"
-import DoenetEditor from "./DoenetEditor";
 import React, { useState, useEffect, useCallback } from "react";
 import { getCourses_CI, setSelected_CI } from "../imports/courseInfo";
 import Enrollment from "./Enrollment";
@@ -18,7 +17,6 @@ import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
 import Button from "../imports/PanelHeaderComponents/Button";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton";
 import TextField from "../imports/PanelHeaderComponents/TextField";
-
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
