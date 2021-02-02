@@ -1,8 +1,16 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom, folderDictionary, clearAllSelections, selectedDriveAtom} from "../imports/Drive";
-import AddItem from '../imports/AddItem'
+import Drive, { 
+  folderDictionarySelector, 
+  globalSelectedNodesAtom, 
+  folderDictionary, 
+  clearAllSelections, 
+  selectedDriveAtom,
+  fetchDrivesSelector
+} from "../imports/Drive";
+// import AddItem from '../imports/AddItem'
 // import Switch from "../imports/Switch";
+import Button from "../imports/PanelHeaderComponents/Button";
 import {
   atom,
   useSetRecoilState,
@@ -12,6 +20,7 @@ import {
   atomFamily,
   selectorFamily,
   useRecoilValueLoadable,
+  useRecoilStateLoadable,
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 // import { supportVisible } from "../imports/Tool/SupportPanel";
@@ -199,7 +208,7 @@ const ItemInfo = function (){
   // const pathFolderInfo = useRecoilValueLoadable(driveFolderItemVersion({driveId:routePathDriveId,folderId:routePathFolderId,itemId:pathItemId}))
 
 
-    console.log(">>>infoLoad",infoLoad)
+    // console.log(">>>infoLoad",infoLoad)
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
       console.error(infoLoad.contents)
@@ -286,9 +295,78 @@ const ItemInfo = function (){
   >
     
   <h1>{itemInfo.label}</h1>
-  <AddItem />
   {versionsJSX}
   </div>
+}
+
+function AddMenuPanel(props){
+  let path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+  if (!path){path = ":"}
+  let [driveId,folderId] = path.split(":");
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
+  const setNewDrive = useSetRecoilState(fetchDrivesSelector)
+
+  let [folderLabel,setFolderLabel] = useState("")
+  let [doenetMLLabel,setDoenetMLLabel] = useState("")
+  let [URLLabel,setURLLabel] = useState("")
+  let [URLLink,setURLLink] = useState("")
+  let [driveLabel,setDriveLabel] = useState("")
+
+
+
+  let addDrive =  <div style={{marginBottom:"10px"}}>
+  <h3>Drive</h3>
+  <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
+    setNewDrive(driveLabel === "" ? "Untitled" : driveLabel)
+    setDriveLabel("")
+    }} text="Add" />
+</div>
+
+if (driveId === ""){
+  return <>{addDrive}</>
+}
+
+  return <>
+ {addDrive}
+  <hr width="100"/>
+  <h3>Folder</h3>
+  <div>
+    <label>Label <input size="10" type="text" onChange={(e)=>setFolderLabel(e.target.value)} value={folderLabel}/></label><Button callback={()=>{
+     setFolderInfo({instructionType:"addItem",
+      label:folderLabel === "" ? "Untitled" : folderLabel,
+      itemType:"Folder"
+      })
+      setFolderLabel("");
+    }} text="Add" />
+  </div>
+  <h3>DoenetML</h3>
+  <div>
+    <label>Label <input size="10" type="text" onChange={(e)=>setDoenetMLLabel(e.target.value)} value={doenetMLLabel}/></label><Button callback={()=>{
+      setFolderInfo({instructionType:"addItem",
+      label:doenetMLLabel === "" ? "Untitled" : doenetMLLabel,
+      itemType:"DoenetML"
+      })
+      setDoenetMLLabel("");
+      }} text="Add" />
+  </div>
+  {/* <h3>URL</h3>
+  <div>
+    <label>Label <input size="10" type="text" onChange={(e)=>setURLLabel(e.target.value)} value={URLLabel} /></label>
+  </div>
+  <div>
+    <label>URL <input size="10" type="text" onChange={(e)=>setURLLink(e.target.value)} value={URLLink}/></label>
+  <Button callback={()=>{
+    setFolderInfo({instructionType:"addItem",
+    label:URLLabel === "" ? "Untitled" : URLLabel,
+    url:URLLink,
+    itemType:"url"
+    })
+    setURLLink("");
+  }} text="Add" />
+
+  </div> */}
+
+  </>
 }
 
 export default function DoenetDriveTool(props) {
@@ -317,7 +395,6 @@ export default function DoenetDriveTool(props) {
       <navPanel>
       <GlobalFont/>
         <Drive types={['content','course']}  foldersOnly={true} />
-        {/* <Drive types={['content','course']}  urlClickBehavior="select" /> */}
       </navPanel>
 
       <headerPanel title="my title">
@@ -325,13 +402,7 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
-      {/* <button
-            onClick={() => {
-              setOverlayOpen("Bob");
-            }}
-          >
-            Open Bob
-          </button> */}
+
         <BreadcrumbContainer /> 
         <div 
         onClick={()=>{
@@ -349,6 +420,10 @@ export default function DoenetDriveTool(props) {
       <menuPanel title="Item Info">
         {/* <ItemInfo route={props.route} /> */}
         <ItemInfo  />
+      </menuPanel>
+      <menuPanel title="+">
+       <h3>Add Item</h3>
+       <AddMenuPanel route={props.route} />
       </menuPanel>
 
       <overlay name="editor">
