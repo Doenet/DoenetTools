@@ -24,7 +24,7 @@ VALUES
 ";
 
 $result = $conn->query($sql); 
-  echo $sql;
+  // echo $sql;
 $sqlnew="UPDATE drive_content SET assignmentId='$assignmentId',isAssignment=1 WHERE itemId='$itemId';";
 //  echo $sqlnew;
 $result = $conn->query($sqlnew); 
