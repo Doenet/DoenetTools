@@ -1,141 +1,74 @@
-import React, { useEffect, ErrorBoundary, useState } from "react";
-import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import Drive, { globalSelectedNodesAtom } from "../imports/Drive";
-import AddItem from "../imports/AddItem";
-import Switch from "../imports/Switch";
-// import Button from "../imports/Button";
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-  selector,
-  atomFamily,
-} from "recoil";
-import { BreadcrumbContainer } from "../imports/Breadcrumb";
-import { supportVisible } from "../imports/Tool/SupportPanel";
-import DoenetViewer from './DoenetViewer';
+import React from 'react';
+import Date from '../imports/PanelHeaderComponents/Date.js';
+import GlobalFont from '../fonts/GlobalFont.js';
 
-// import {UnControlled as CodeMirror} from 'react-codemirror2'
-import {Controlled as CodeMirror} from 'react-codemirror2'
+//   // var timeout;
+//   // var timeout, promise,cancel;
+//   var latestDoenetML = doenetML;
+//   // console.log({timeout})
 
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
+export default function app() {
+return (
+<>
+<GlobalFont/>
+<Date/>
+</>
+);
+}
 
-export default function DoenetExampleTool(props) {
-  // console.log("=== DoenetExampleTool");
-  const setSupportVisiblity = useSetRecoilState(supportVisible);
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  // return {promise,
+  //         cancel}
+// }
 
-  const [updateNumber,setUpdateNumber] = useState(0);
-  const [viewerDoenetML,setViewerDoenetML] = useState("");
-  const [editorDoenetML,setEditorDoenetML] = useState("");
+let doenetMLAtom = atom({
+  key:"doenetMLAtom",
+  default:""
+})
 
 
-  // return (
-  //   <div>
-  //     <CodeMirror
-  //       value={editorDoenetML}
-  //       // options={options}
-  //       onBeforeChange={(editor, data, value) => {
-  //         setEditorDoenetML(value)
-  //       }}
-  //       onChange={(editor, data, value) => {
-  //       }}
-  //     />
-  //   </div>
-    
-  // )
-  let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
-  let solutionDisplayMode = "button";
+let saveSelector = selector({
+  key:"saveSelector",
+  set: ({get,set})=>{
+    const doenetML = get(doenetMLAtom);
+    console.log(">>>doenetML",doenetML)
+  }
+})
 
-  return (
-    <Tool>
-      <navPanel>
-        {/* <p>navigate to important stuff</p> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" /> */}
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
-        {/* <Drive types={['content','course']} /> */}
-        <div>
-          
-        </div>
-      </navPanel>
+export default function Temp() {
 
-      <headerPanel title="my title">
-        <p>header for important stuff</p>
-      </headerPanel>
-
-      <mainPanel>
-        <p>do the main important stuff</p>
-        <button
-            onClick={() => {
-              setOverlayOpen("George");
-            }}
-          >
-            Editor in Overlay
-          </button>
-      </mainPanel>
-
-      <menuPanel title="edit">
-        <p>control important stuff</p>
-      </menuPanel>
+  // let delaySave = delaySaveDraft("Done!")
+  const [doenetML,setDoenetML] = useRecoilState(doenetMLAtom)
+  const setSave = useSetRecoilState(saveSelector);
+  const timeout = useRef(null);
 
 
-      <overlay>
-        <headerPanel title="my title">
-        <button
-            onClick={() => {
-              setOverlayOpen("");
-            }}
-          >
-            Go Back
-          </button>
-          <Switch
-            onChange={(value) => {
-              setSupportVisiblity(value);
-            }}
-          />
-          <p>header for important stuff</p>
-        </headerPanel>
-
-        <mainPanel>
-          <button onClick={()=>{
-            setViewerDoenetML(editorDoenetML);
-            setUpdateNumber((old)=>{return old+1})
-            }}>Update</button>
-          <DoenetViewer
-            key={"doenetviewer" + updateNumber}
-            doenetML={viewerDoenetML}
-            flags={{
-              showCorrectness: true,
-              readOnly: false,
-              solutionDisplayMode: solutionDisplayMode,
-              showFeedback: true,
-              showHints: true,
-            }}
-            attemptNumber={attemptNumber}
-            assignmentId={assignmentId}
-            ignoreDatabase={false}
-            requestedVariant={requestedVariant}
-
-          />
-        </mainPanel>
-
-        <supportPanel width="40%">
-        <CodeMirror
-        value={editorDoenetML}
-        // options={options}
-        onBeforeChange={(editor, data, value) => {
-          setEditorDoenetML(value)
-        }}
-        onChange={(editor, data, value) => {
-        }}
-      />
-        </supportPanel>
-
-      
-      </overlay>
-    </Tool>
-  );
+  return <><textarea value={doenetML} onChange={(e)=>{
+    setDoenetML(e.target.value);
+    if (timeout.current === null){
+      timeout.current = setTimeout(function(){
+        setSave()
+        timeout.current = null;
+      },3000)
+    }
+  }}
+    onBlur={()=>{
+      if (timeout.current !== null){
+        clearTimeout(timeout.current)
+        timeout.current = null;
+        setSave();
+      }
+    }}
+  />
+  {/* <button onClick={()=>{
+    // delaySaveDraft(doenetML,timeout)
+    delaySaveDraft();
+    // delaySave.promise.then((result)=>{
+      // alert(result)
+    // })
+  }}>Create Promise</button>
+  <button onClick={()=>{
+    // delaySave.cancel();
+  }}>Cancel</button> */}
+  </>
+  
 }
