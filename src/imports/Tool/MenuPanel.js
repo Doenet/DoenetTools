@@ -9,6 +9,7 @@ const MenuPanelWrapper = styled.div`
   grid-template:
     "buttons" 60px
     "sections" 1fr;
+  border-left: 1px solid black
 `;
 const ButtonsWrapper = styled.div`
   grid-area: buttons;

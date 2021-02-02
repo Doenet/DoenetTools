@@ -1,9 +1,9 @@
-import React, {useContext, useState, useCallback, useRef, useEffect, Suspense} from 'react';
+import React, {useContext, useRef, useEffect, Suspense} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
-import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown, faUsersSlash, faUsers, faUserEdit, faSort } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -28,7 +28,6 @@ import {
   atomFamily,
   selector,
   selectorFamily,
-  RecoilRoot,
   useSetRecoilState,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
@@ -60,17 +59,6 @@ const dragStateAtom = atom({
     draggedOverDriveId: null,
     isDraggedOverBreadcrumb: false
   }
-})
-
-let fetchDrivesQuery = selector({
-  key:"fetchDrivesQuery",
-  get: async ({get})=>{
-    const { data } = await axios.get(
-      `/api/loadAvailableDrives.php`
-    );
-    return data
-  },
- 
 })
 
 export default function Drive(props){
@@ -188,6 +176,7 @@ export const folderDictionarySelector = selectorFamily({
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
     // console.log(">>>finfo",fInfo)
+    console.log({instructions})
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -199,9 +188,10 @@ export const folderDictionarySelector = selectorFamily({
           dt.getMinutes().toString().padStart(2, '0')}:${
           dt.getSeconds().toString().padStart(2, '0')}`
         const itemId = nanoid();
+        const branchId = nanoid();
         const newItem = {
           assignmentId: null,
-          branchId: null,
+          branchId,
           contentId: null,
           creationDate,
           isPublished: "0",
@@ -209,7 +199,7 @@ export const folderDictionarySelector = selectorFamily({
           itemType: instructions.itemType,
           label: instructions.label,
           parentFolderId: driveIdFolderId.folderId,
-          url: null,
+          url: instructions.url,
           urlDescription: null,
           urlId: null,
           sortBy: "defaultOrder",
@@ -238,7 +228,8 @@ export const folderDictionarySelector = selectorFamily({
           parentFolderId:driveIdFolderId.folderId,
           itemId,
           label:instructions.label,
-          type:instructions.itemType
+          type:instructions.itemType,
+          branchId,
          };
         const payload = { params: data };
 
@@ -511,9 +502,50 @@ function DriveRouted(props){
   route={props.route}
   pathItemId={pathItemId}
   hideUnpublished={hideUnpublished}
+  foldersOnly={props.foldersOnly}
   />
   </>
 }
+
+
+let fetchDrivesQuery = atom({
+  key:"fetchDrivesQuery",
+  default: selector({
+    key:"fetchDrivesQuery/Default",
+    get: async ()=>{
+    const { data } = await axios.get(
+      `/api/loadAvailableDrives.php`
+    );
+    return data
+  },
+ 
+  })
+})
+
+export const fetchDrivesSelector = selector({
+  key:"fetchDrivesSelector",
+  set:({get,set},label)=>{
+    let driveData = get(fetchDrivesQuery)
+    let newDriveData = {...driveData};
+    newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
+    const driveId = nanoid();
+    const newDrive = {
+      courseId:null,
+      driveId,
+      isShared:"0",
+      label,
+      type: "content"
+    }
+    newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+    const payload = {
+      params: {driveId,label}
+    }
+
+  axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
+  }
+})
 
 const folderOpenAtom = atomFamily({
   key:"folderOpenAtom",
@@ -558,12 +590,14 @@ function Folder(props){
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
-  let marginSize = "50px";
-  let widthSize = "850px";
+  let marginSize = "2.5vw";
+  let widthSize = "60vw";
   if (props.isNav) {marginSize = "0px"; widthSize = "224px"};
   if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+
+  
  
 
   const contentIdsOrder = folderInfo?.sortBy ?? "defaultOrder";
@@ -618,7 +652,7 @@ function Folder(props){
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
+        // width: "300px",
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black", 
@@ -667,8 +701,12 @@ function Folder(props){
         <div 
       className="noselect" 
       style={{
-        marginLeft: `${props.indentLevel * indentPx}px`
-      }}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length}) {deleteButton}</div></div>
+        marginLeft: `${props.indentLevel * indentPx}px`,
+        display: 'grid',
+        gridTemplateColumns: '80% 20%',
+        gridTemplateRows: '1fr',
+        alignContent: 'center'
+      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length})</div> {deleteButton}</div></div>
 
   let items = null;
   
@@ -760,7 +798,7 @@ function Folder(props){
   </WithDropTarget>
 
   if (props.driveObj && !props.isNav) {
-    const sortButtons = <div style={{marginLeft: "50px"}}>
+    const sortButtons = <div style={{marginLeft: "2.5vw"}}>
       {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
       {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
@@ -770,6 +808,7 @@ function Folder(props){
     folder = <>
       {sortButtons}
       {folder}
+      
     </>;
   }
 
@@ -783,53 +822,75 @@ function Folder(props){
         //hide item
         continue;
       }
-      switch(item.itemType){
-        case "Folder":
-        items.push(<Folder 
-          key={`item${itemId}${props.driveInstanceId}`} 
-          driveId={props.driveId} 
-          folderId={item.itemId} 
-          indentLevel={props.indentLevel+1}  
-          driveInstanceId={props.driveInstanceId}
-          route={props.route}
-          isNav={props.isNav}
-          urlClickBehavior={props.urlClickBehavior}
-          pathItemId={props.pathItemId}
-          deleteItem={deleteItem}
-          parentFolderId={props.folderId}
-          hideUnpublished={props.hideUnpublished}
-          />)
-        break;
-        case "Url":
-          items.push(<Url 
+      if (props.foldersOnly){
+        if (item.itemType === "Folder"){
+          items.push(<Folder 
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
-            item={item} 
+            folderId={item.itemId} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
-            isNav={props.isNav} 
+            isNav={props.isNav}
             urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-          />)
-        break;
-        case "DoenetML":
-          items.push(<DoenetML 
+            parentFolderId={props.folderId}
+            hideUnpublished={props.hideUnpublished}
+            foldersOnly={props.foldersOnly}
+            />)
+        }
+      }else{
+        switch(item.itemType){
+          case "Folder":
+          items.push(<Folder 
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
-            item={item} 
+            folderId={item.itemId} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
-            isNav={props.isNav} 
+            isNav={props.isNav}
+            urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
             deleteItem={deleteItem}
-          />)
-        break;
-        default:
-        console.warn(`Item not rendered of type ${item.itemType}`)
+            parentFolderId={props.folderId}
+            hideUnpublished={props.hideUnpublished}
+            foldersOnly={props.foldersOnly}
+            />)
+          break;
+          case "Url":
+            items.push(<Url 
+              key={`item${itemId}${props.driveInstanceId}`} 
+              driveId={props.driveId} 
+              item={item} 
+              indentLevel={props.indentLevel+1}  
+              driveInstanceId={props.driveInstanceId}
+              route={props.route}
+              isNav={props.isNav} 
+              urlClickBehavior={props.urlClickBehavior}
+              pathItemId={props.pathItemId}
+              deleteItem={deleteItem}
+            />)
+          break;
+          case "DoenetML":
+            items.push(<DoenetML 
+              key={`item${itemId}${props.driveInstanceId}`} 
+              driveId={props.driveId} 
+              item={item} 
+              indentLevel={props.indentLevel+1}  
+              driveInstanceId={props.driveInstanceId}
+              route={props.route}
+              isNav={props.isNav} 
+              pathItemId={props.pathItemId}
+              deleteItem={deleteItem}
+            />)
+          break;
+          default:
+          console.warn(`Item not rendered of type ${item.itemType}`)
+        }
       }
+      
  
     }
 
@@ -1014,13 +1075,17 @@ const DoenetML = React.memo((props)=>{
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
-  let widthSize = "850px";
-  let marginSize = "50px";
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"}
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  let widthSize = "60vw";
+  let marginSize = "2.5vw";
+  let date = props.item.creationDate.slice(0,10)
+  let published = <p><FontAwesomeIcon icon={faUsersSlash}/></p>
+  let assigned = '-'
+  let columns = 'repeat(5, 20%)'
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='80% 20%'}
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-  
-  
+  if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
+  if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   let deleteButton = <button
   style={{backgroundColor: bgcolor, border: "none"}}
@@ -1093,9 +1158,13 @@ const DoenetML = React.memo((props)=>{
       }}
       ><div 
       style={{
-        marginLeft: `${props.indentLevel * indentPx}px`
+        marginLeft: `${props.indentLevel * indentPx}px`, 
+        display: 'grid',
+        gridTemplateColumns: columns,
+        gridTemplateRows: '1fr',
+        alignItems: 'center'
       }}>
-<FontAwesomeIcon icon={faCode}/> {label} {deleteButton} </div></div>
+<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> {date} {published} {assigned} {deleteButton}</div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1136,12 +1205,17 @@ const Url = React.memo((props)=>{
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
-  let widthSize = "850px";
-  let marginSize = "50px";
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"};
+  let widthSize = "60vw";
+  let marginSize = "2.5vw";
+  let date = props.item.creationDate.slice(0,10);
+  let published = <FontAwesomeIcon icon={faUsersSlash}/>
+  let assigned = '-'
+  let columns = 'repeat(5, 20%)'
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='80% 20%'};
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-  
+  if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
+  if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   let deleteButton = <button
   style={{backgroundColor: bgcolor, border: "none"}}
@@ -1159,7 +1233,7 @@ const Url = React.memo((props)=>{
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        width: "300px",
+        // width: "60vw",
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
@@ -1215,9 +1289,13 @@ const Url = React.memo((props)=>{
       ><div 
       className="noselect" 
       style={{
-        marginLeft: `${props.indentLevel * indentPx}px`
+        marginLeft: `${props.indentLevel * indentPx}px`,
+        display: 'grid',
+        gridTemplateColumns: columns,
+        gridTemplateRows: '1fr',
+        alignItems: 'center'
       }}>
-    <FontAwesomeIcon icon={faLink}/> {props.item?.label} {deleteButton}</div></div>
+    <div style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faLink}/> {props.item?.label}</div> {date} {published} {assigned}  {deleteButton}</div></div>
 
   if (!props.isNav) {
     // make URL draggable
@@ -1422,7 +1500,13 @@ const DragGhost = ({ id, element, numItems }) => {
 
   const containerStyle = {
     transform: "rotate(-5deg)",
-    zIndex: "10"
+    zIndex: "10",
+    background: "#e2e2e2",
+    width: "800px",
+    border: "2px solid black",
+    padding: "0px",
+    height: "38px",
+    overflow: "hidden",
   }
 
   const singleItemStyle = {
@@ -1432,7 +1516,8 @@ const DragGhost = ({ id, element, numItems }) => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: "#fff"
+    background: "#e2e2e2",
+    marginLeft: "-60px"
   }
 
   const multipleItemsNumCircleContainerStyle = {
@@ -1471,7 +1556,6 @@ const DragGhost = ({ id, element, numItems }) => {
     alignItems: 'center',
     zIndex: "2"
   }
-
 
   return (
     <div id={id} style={containerStyle}>
