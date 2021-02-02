@@ -61,17 +61,6 @@ const dragStateAtom = atom({
   }
 })
 
-let fetchDrivesQuery = selector({
-  key:"fetchDrivesQuery",
-  get: async ()=>{
-    const { data } = await axios.get(
-      `/api/loadAvailableDrives.php`
-    );
-    return data
-  },
- 
-})
-
 export default function Drive(props){
   // console.log("=== Drive")
   const isNav = useContext(IsNavContext);
@@ -187,6 +176,7 @@ export const folderDictionarySelector = selectorFamily({
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
     // console.log(">>>finfo",fInfo)
+    console.log({instructions})
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -198,9 +188,10 @@ export const folderDictionarySelector = selectorFamily({
           dt.getMinutes().toString().padStart(2, '0')}:${
           dt.getSeconds().toString().padStart(2, '0')}`
         const itemId = nanoid();
+        const branchId = nanoid();
         const newItem = {
           assignmentId: null,
-          branchId: null,
+          branchId,
           contentId: null,
           creationDate,
           isPublished: "0",
@@ -208,7 +199,7 @@ export const folderDictionarySelector = selectorFamily({
           itemType: instructions.itemType,
           label: instructions.label,
           parentFolderId: driveIdFolderId.folderId,
-          url: null,
+          url: instructions.url,
           urlDescription: null,
           urlId: null,
           sortBy: "defaultOrder",
@@ -237,7 +228,8 @@ export const folderDictionarySelector = selectorFamily({
           parentFolderId:driveIdFolderId.folderId,
           itemId,
           label:instructions.label,
-          type:instructions.itemType
+          type:instructions.itemType,
+          branchId,
          };
         const payload = { params: data };
 
@@ -514,6 +506,46 @@ function DriveRouted(props){
   />
   </>
 }
+
+
+let fetchDrivesQuery = atom({
+  key:"fetchDrivesQuery",
+  default: selector({
+    key:"fetchDrivesQuery/Default",
+    get: async ()=>{
+    const { data } = await axios.get(
+      `/api/loadAvailableDrives.php`
+    );
+    return data
+  },
+ 
+  })
+})
+
+export const fetchDrivesSelector = selector({
+  key:"fetchDrivesSelector",
+  set:({get,set},label)=>{
+    let driveData = get(fetchDrivesQuery)
+    let newDriveData = {...driveData};
+    newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
+    const driveId = nanoid();
+    const newDrive = {
+      courseId:null,
+      driveId,
+      isShared:"0",
+      label,
+      type: "content"
+    }
+    newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+    const payload = {
+      params: {driveId,label}
+    }
+
+  axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
+  }
+})
 
 const folderOpenAtom = atomFamily({
   key:"folderOpenAtom",
