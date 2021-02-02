@@ -36,6 +36,7 @@ import {
 } from 'recoil';
 
 const sortOptions = Object.freeze({
+  "DEFAULT": "defaultOrder",
   "LABEL_ASC": "label ascending",
   "LABEL_DESC": "label descending",
   "CREATION_DATE_ASC": "creation date ascending",
@@ -426,6 +427,12 @@ export const folderDictionarySelector = selectorFamily({
 const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   let tempArr = [...defaultFolderChildrenIds];
   switch (sortKey) {
+    case sortOptions.DEFAULT:
+      tempArr.sort(
+        (a,b) => { 
+          return (nodeObjs[a].sortOrder.localeCompare(nodeObjs[b].sortOrder))}
+      );
+      break;
     case sortOptions.LABEL_ASC:
       tempArr.sort(
         (a,b) => { 
