@@ -11,6 +11,7 @@ const NavPanelWrapper = styled.div`
   width: ${({ visible }) => (visible ? "240px" : "0px")};
   background-color: #f6f8ff;
   overflow: auto;
+  border-right: 1px solid black
 `;
 
 const VisibilityButton = styled.button`

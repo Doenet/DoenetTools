@@ -7,6 +7,7 @@ const HeaderMenuPanelContainer = styled.div`
   right: 0px;
   width: 240px;
   border: 1px solid black;
+  border-bottom: 2px solid black;
   position: absolute;
   overflow: hidden;
 
@@ -40,7 +41,7 @@ const HeaderMenuPanel = styled.div`
   height: calc(100vh - 60px);
   overflow: scroll;
   background-color: white;
-  top: 50px;
+  top: 50px
 `;
 
 export default function HeaderMenuPanelContent(props) {
