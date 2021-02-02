@@ -9,13 +9,11 @@ import SupportPanel, {
   SupportVisiblitySwitch,
 } from "./SupportPanel";
 import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import MainPanel from "./MainPanel";
 import DoenetHeader from "../../Tools/DoenetHeader";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-const queryCache = new QueryCache();
 
 const ToolContainer = styled.div`
   display: grid;
@@ -205,7 +203,6 @@ export default function Tool(props) {
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
-  console.log(">>>MenuPanel: ", toolParts.menuPanel);
   if (toolParts.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
@@ -221,7 +218,7 @@ export default function Tool(props) {
   }
 
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
+    <>
       {toolContent}
       <ToolContainer style={props.style} isOverlay={props.isOverlay}>
         {navPanel}
@@ -230,6 +227,6 @@ export default function Tool(props) {
         {menuPanel}
         {/* <ReactQueryDevtools /> */}
       </ToolContainer>
-    </ReactQueryCacheProvider>
+    </>
   );
 }
