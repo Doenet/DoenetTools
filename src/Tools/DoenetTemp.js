@@ -1,17 +1,28 @@
-import React from 'react';
-import Date from '../imports/PanelHeaderComponents/Date.js';
+import React, {useRef} from 'react';
+// import Date from '../imports/PanelHeaderComponents/Date.js';
 import GlobalFont from '../fonts/GlobalFont.js';
-
+import {
+  atom,
+  atomFamily,
+  selector,
+  selectorFamily,
+  RecoilRoot,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+  useRecoilStateLoadable,
+  useRecoilState,
+  useRecoilValue,
+} from "recoil";
 //   // var timeout;
 //   // var timeout, promise,cancel;
 //   var latestDoenetML = doenetML;
 //   // console.log({timeout})
 
-export default function app() {
+export function app() {
 return (
 <>
 <GlobalFont/>
-<Date/>
+{/* <Date/> */}
 </>
 );
 }
