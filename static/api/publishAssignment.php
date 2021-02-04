@@ -12,6 +12,7 @@ $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
+$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["title"]);
@@ -23,9 +24,13 @@ if ($assignedDate == ''){ $assignedDate = '1-1-1 01:01:01';}
 $timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
 if ($timeLimit == ''){ $timeLimit = '01:01:01';}
 $numberOfAttemptsAllowed = mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
+if ($numberOfAttemptsAllowed == ''){ $numberOfAttemptsAllowed = '0';}
 $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation"]);
+if ($attemptAggregation == ''){ $attemptAggregation = '0';}
 $totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
+if ($totalPointsOrPercent == ''){ $totalPointsOrPercent = '0';}
 $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
+if ($gradeCategory == ''){ $gradeCategory = '0';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
@@ -100,7 +105,8 @@ else
   showHints,
   showCorrectness,
   proctorMakesAvailable,
-  isPublished)
+  isPublished,
+  sourceBranchId)
   VALUES
   ('$assignmentId',
   '$courseId',
@@ -119,12 +125,13 @@ else
   '$showHints',
   '$showCorrectness',
   '$proctorMakesAvailable',
-  '$isPublished')
+  '$isPublished',
+  '$branchId')
   ";
   
   $result = $conn->query($sql); 
 }
-echo $sql;
+// echo $sql;
 // set response code - 200 OK
 http_response_code(200);
 
