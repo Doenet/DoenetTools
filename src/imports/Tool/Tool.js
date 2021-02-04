@@ -2,22 +2,12 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useSpring, animated, useTransition } from "react-spring";
 import { atom, selector, useRecoilValue, useRecoilCallback } from "recoil";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import NavPanel from "./NavPanel";
 import HeaderPanel from "./HeaderPanel";
 import ContentPanel from "./ContentPanel";
 import MainPanel from "./MainPanel";
-import SupportPanel, {
-  supportVisibleAtom,
-  SupportVisiblitySwitch,
-} from "./SupportPanel";
-import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
-import MainPanel from "./MainPanel";
-import DoenetHeader from "../../Tools/DoenetHeader";
-import { useCookies } from "react-cookie";
-import axios from "axios";
-
+import SupportPanel, { supportVisible } from "./SupportPanel";
+import MenuPanel from "./MenuPanel";
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -28,20 +18,8 @@ const ToolContainer = styled(animated.div)`
   width: 100vw;
   height: 100vh;
   background-color: #f6f8ff;
-  position: ${({ isoverlay }) => (isoverlay ? "fixed" : "static")};
-  z-index: ${({ isoverlay }) => (isoverlay ? "3" : "auto")};
-`;
-
-const ExitOverlayButton = styled.button`
-  width: 45px;
-  height: 45px;
-  font-size: 16px;
-  color: #ffffff;
-  background-color: #1a5a99;
-  border: 1px solid #ffffff;
-  border-radius: 50%;
-  /* border-style: none; */
-  cursor: pointer;
+  position: ${({ $isoverlay }) => ($isoverlay ? "fixed" : "static")};
+  z-index: ${({ $isoverlay }) => ($isoverlay ? "3" : "auto")};
 `;
 
 export const overlayStack = atom({
@@ -90,46 +68,18 @@ export default function Tool(props) {
   const stackId = useStackId();
   const openOverlayObj = useRecoilValue(openOverlayByName);
 
+  const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
+    from: { position: "fixed", top: 100 },
+    enter: { top: 0 },
+    leave: { top: 100 },
+  });
+
   const spring = useSpring({
     value: 0,
     from: { value: 100 },
-    delay: 100,
-    immediate: !props.isoverlay,
+    delay: 50,
+    immediate: !(stackId > 0 ?? false),
   });
-
-  //User profile logic
-  const [profile, setProfile] = useState({});
-  const [jwt] = useCookies("JWT_JS");
-
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT_JS")) {
-    isSignedIn = true;
-  }
-
-  useEffect(() => {
-    //Fires each time you change the tool
-    //Need to load profile from database each time
-    const phpUrl = "/api/loadProfile.php";
-    const data = {};
-    const payload = {
-      params: data,
-    };
-    axios
-      .get(phpUrl, payload)
-      .then((resp) => {
-        if (resp.data.success === "1") {
-          setProfile(resp.data.profile);
-        }
-      })
-      .catch((error) => {
-        this.setState({ error: error });
-      });
-  }, []);
-
-  //should this be here??
-  if (Object.keys(profile).length < 1) {
-    return <h1>Loading...</h1>;
-  }
 
   //lowercase names logic
   var toolParts = {};
@@ -199,30 +149,8 @@ export default function Tool(props) {
 
   if (toolParts?.headerPanel) {
     headerPanel = (
-      <HeaderPanel>
+      <HeaderPanel props={toolParts.headerPanel.props}>
         {toolParts.headerPanel.children}
-        <SupportVisiblitySwitch />
-        {!props.isoverlay ? (
-          <DoenetHeader
-            profile={profile}
-            cookies={jwt}
-            isSignedIn={isSignedIn}
-            showProfileOnly={true}
-            // TODO: this needs review
-            // headerRoleFromLayout={props.headerRoleFromLayout}
-            // headerChangesFromLayout={props.headerChangesFromLayout}
-            // guestUser={props.guestUser}
-            // onChange={showCollapseMenu}
-          />
-        ) : (
-          <ExitOverlayButton
-            onClick={() =>
-              setOpenOverlayName({ instructions: { action: "close" } })
-            }
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </ExitOverlayButton>
-        )}
       </HeaderPanel>
     );
   }
@@ -246,10 +174,17 @@ export default function Tool(props) {
 
   return (
     <>
-      {toolContent}
+      {transition.map(
+        ({ item, key, props }) =>
+          item && (
+            <animated.div key={key} stly={props}>
+              {overlay}
+            </animated.div>
+          )
+      )}
       <ToolContainer
-        style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
-        isoverlay={props.isoverlay}
+        // style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
+        $isoverlay={stackId > 0 ?? false}
       >
         {navPanel}
         {headerPanel}
