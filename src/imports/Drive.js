@@ -168,7 +168,6 @@ export const folderDictionarySelector = selectorFamily({
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
     // console.log(">>>finfo",fInfo)
-    console.log({instructions})
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -991,10 +990,9 @@ const selectedDriveItems = selectorFamily({
     const {driveId,driveInstanceId,itemId} = driveIdDriveInstanceIdItemId;
     function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId}){
       let itemIdsParentFolderIdsInRange = [];
-      let folder = get(folderDictionary({driveId,folderId:currentFolderId}))      
-      let sortOrder = folder.folderInfo.sortBy;
+      let folder = get(folderInfoSelector({driveId, instanceId:driveInstanceId, folderId:currentFolderId}))      
 
-      for (let itemId of folder.contentIds[sortOrder]){
+      for (let itemId of folder.contentIdsArr){
         if (foundClickNeedle && foundLastNeedle){
           break;
         }
@@ -1065,7 +1063,7 @@ const selectedDriveItems = selectorFamily({
           //TODO: Just select one if driveInstanceId doesn't match
           //Starting at root build array of visible items in order
           let [selectTheseItemIdParentFolderIds] = findRange({
-            currentFolderId:driveId,
+            currentFolderId:lastSelectedItem.parentFolderId,
             lastNeedle:lastSelectedItem.itemId,
             clickNeedle:driveIdDriveInstanceIdItemId.itemId});
           let addToGlobalSelected = []
