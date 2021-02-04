@@ -674,8 +674,6 @@ const ContentInfoPanel = (props) => {
   const [makecontent, setMakeContent] = useState(false);
 
   const handleMakeContent = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
     setMakeContent(true);
   };
 
@@ -758,8 +756,8 @@ const ContentInfoPanel = (props) => {
 };
 
 function DoenetCourseRouted({ props }) {
-  // let courseId = ""; 
-  let courseId = "Fhg532fk9873412s65"; 
+  let courseId = ""; 
+  // let courseId = "Fhg532fk9873412s65"; //TODO
 
   const [role, setRole] = useRecoilState(roleAtom);
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
@@ -829,7 +827,7 @@ function DoenetCourseRouted({ props }) {
           urlClickBehavior={urlClickBehavior}
         />
         <br />
-        {role === "Instructor" && (
+        {role === "Instructor" && courseId && (
           <Button
             text="Course Enrollment"
             callback={() => {
