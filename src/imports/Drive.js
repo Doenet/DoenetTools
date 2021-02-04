@@ -523,6 +523,9 @@ let fetchDrivesQuery = atom({
 
 export const fetchDrivesSelector = selector({
   key:"fetchDrivesSelector",
+  get:({get})=>{
+    return get(fetchDrivesQuery)
+  },
   set:({get,set},label)=>{
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
