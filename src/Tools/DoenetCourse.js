@@ -756,8 +756,8 @@ const ContentInfoPanel = (props) => {
 };
 
 function DoenetCourseRouted({ props }) {
-  let courseId = ""; 
-  // let courseId = "Fhg532fk9873412s65"; //TODO
+  // let courseId = ""; 
+  let courseId = "Fhg532fk9873412s65"; //TODO
 
   const [role, setRole] = useRecoilState(roleAtom);
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
