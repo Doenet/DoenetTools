@@ -2,13 +2,13 @@ import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
+import { useStackId } from "./Tool";
 import { clearAllSelections } from "../Drive";
 
 const ContentPanelContainer = styled.div`
   grid-area: contentPanel;
   display: grid;
-  grid-template: "mainPanel handle supportPanel" / ${({ supportInUse }) =>
-      supportInUse ? `1fr 3px 1fr` : " 1fr 0px 0fr"};
+  grid-template: "mainPanel handle supportPanel" / 1fr 0px 0fr;
   border-left: 1px solid black;
 `;
 
@@ -21,14 +21,15 @@ const DragHandle = styled.div`
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
-  const supportInUse = useRecoilValue(supportVisible);
+  const stackId = useStackId();
+  const supportInUse = useRecoilValue(supportVisible(stackId));
   const clearDriveSelections = useSetRecoilState(clearAllSelections);
   let isDragging = false;
 
   useEffect(() => {
     wrapperRef.current.style.gridTemplateColumns = supportInUse
-      ? `1fr 3px 1fr`
-      : " 1fr 0px 0fr";
+      ? "1fr 3px 1fr"
+      : "1fr 0px 0fr";
   }, [supportInUse]);
 
   const handleMouseDown = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useSpring, animated } from "react-spring";
-import { atom, selector, useRecoilState } from "recoil";
+import { useSpring, animated, useTransition } from "react-spring";
+import { atom, selector, useRecoilValue, useRecoilCallback } from "recoil";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import NavPanel from "./NavPanel";
@@ -13,12 +13,11 @@ import SupportPanel, {
   SupportVisiblitySwitch,
 } from "./SupportPanel";
 import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
+import MainPanel from "./MainPanel";
 import DoenetHeader from "../../Tools/DoenetHeader";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-const queryCache = new QueryCache();
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -45,7 +44,7 @@ const ExitOverlayButton = styled.button`
   cursor: pointer;
 `;
 
-export const activeOverlayName = atom({
+export const overlayStack = atom({
   key: "activeOverlayNameAtom",
   default: [],
 });
@@ -53,32 +52,22 @@ export const activeOverlayName = atom({
 export const openOverlayByName = selector({
   key: "openOverlayByNameSelector",
   get: ({ get }) => {
-    const currentElement = get(activeOverlayName);
+    const currentElement = get(overlayStack);
     return currentElement.length === 0
       ? currentElement
       : currentElement[currentElement.length - 1];
   },
 
-  set: ({ set }, newValue) => {
+  set: ({ get, set }, newValue) => {
     if (newValue.instructions.action === "open") {
-      set(activeOverlayName, (old) => [...old, newValue]);
-      set(supportVisibleAtom, (old) => [
-        ...old,
-        newValue.instructions.supportVisble,
-      ]);
-      set(activeMenuPanelAtom, (old) => [...old, 0]);
+      const stackDepth = get(overlayStack).length + 1;
+      set(overlayStack, (old) => [...old, newValue]);
+      set(
+        supportVisible(stackDepth),
+        newValue?.instructions?.supportVisble ?? false
+      );
     } else if (newValue.instructions.action === "close") {
-      set(activeOverlayName, (old) => {
-        let newArray = [...old];
-        newArray.pop();
-        return newArray;
-      });
-      set(supportVisibleAtom, (old) => {
-        let newArray = [...old];
-        newArray.pop();
-        return newArray;
-      });
-      set(activeMenuPanelAtom, (old) => {
+      set(overlayStack, (old) => {
         let newArray = [...old];
         newArray.pop();
         return newArray;
@@ -87,11 +76,20 @@ export const openOverlayByName = selector({
   },
 });
 
+export const useStackId = () => {
+  const getId = useRecoilCallback(({ snapshot }) => () => {
+    const currentId = snapshot.getLoadable(overlayStack);
+    return currentId.getValue().length;
+  });
+  const [stackId] = useState(() => getId());
+  return stackId;
+};
+
 export default function Tool(props) {
   // console.log("=== Tool (only once)");
-  const [openOverlayName, setOpenOverlayName] = useRecoilState(
-    openOverlayByName
-  );
+  const stackId = useStackId();
+  const openOverlayObj = useRecoilValue(openOverlayByName);
+
   const spring = useSpring({
     value: 0,
     from: { value: 100 },
@@ -164,7 +162,9 @@ export default function Tool(props) {
             if (!toolParts.overlay) {
               toolParts["overlay"] = {};
             }
-            toolParts.overlay[child.props.name] = child.props.children;
+            toolParts.overlay[child.props.name] = (
+              <Tool key={child.props.name}>{child.props.children}</Tool>
+            );
           } else {
             toolParts[child.type] = {
               children: child.props.children,
@@ -192,13 +192,12 @@ export default function Tool(props) {
   let supportPanel = null;
   let menuPanel = null;
   let overlay = null;
-  let toolContent = null;
 
-  if (toolParts.navPanel) {
+  if (toolParts?.navPanel) {
     navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
   }
 
-  if (toolParts.headerPanel) {
+  if (toolParts?.headerPanel) {
     headerPanel = (
       <HeaderPanel>
         {toolParts.headerPanel.children}
@@ -228,30 +227,25 @@ export default function Tool(props) {
     );
   }
 
-  if (toolParts.mainPanel) {
+  if (toolParts?.mainPanel) {
     mainPanel = <MainPanel>{toolParts.mainPanel.children}</MainPanel>;
   }
 
-  if (toolParts.supportPanel) {
+  if (toolParts?.supportPanel) {
     supportPanel = (
       <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
     );
   }
 
-  if (toolParts.menuPanel) {
+  if (toolParts?.menuPanel) {
     menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
   }
-
-  if (openOverlayName?.name && toolParts.overlay) {
-    overlay = toolParts.overlay[openOverlayName.name];
-  }
-
-  if (!props.isoverlay && openOverlayName?.name) {
-    toolContent = <Tool isoverlay>{overlay}</Tool>;
+  if (stackId === 0 && openOverlayObj?.name && toolParts?.overlay) {
+    overlay = toolParts.overlay[openOverlayObj.name];
   }
 
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
+    <>
       {toolContent}
       <ToolContainer
         style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
@@ -263,6 +257,6 @@ export default function Tool(props) {
         {menuPanel}
         {/* <ReactQueryDevtools /> */}
       </ToolContainer>
-    </ReactQueryCacheProvider>
+    </>
   );
 }

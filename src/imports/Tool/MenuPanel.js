@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { atom, selector, useRecoilState } from "recoil";
+import { atomFamily, selector, useRecoilState } from "recoil";
 import styled from "styled-components";
+import { useStackId } from "./Tool";
 
 const MenuPanelWrapper = styled.div`
   grid-area: menuPanel;
@@ -9,7 +10,7 @@ const MenuPanelWrapper = styled.div`
   grid-template:
     "buttons" 60px
     "sections" 1fr;
-  border-left: 1px solid black
+  border-left: 1px solid black;
 `;
 const ButtonsWrapper = styled.div`
   grid-area: buttons;
@@ -36,29 +37,16 @@ const MenuHeaderButton = styled.button`
   height: 100%;
 `;
 
-export const activeMenuPanelAtom = atom({
+export const activeMenuPanel = atomFamily({
   key: "activeMenuPanelAtom",
-  default: [0],
-});
-
-const activeMenuPanel = selector({
-  key: "activeMenuPanel",
-  get: ({ get }) => {
-    const activePanelArray = get(activeMenuPanelAtom);
-    return activePanelArray[activePanelArray.length - 1];
-  },
-
-  set: ({ set }, newValue) => {
-    set(activeMenuPanelAtom, (old) => {
-      let newArray = [...old];
-      newArray[newArray.length - 1] = newValue;
-      return newArray;
-    });
-  },
+  default: 0,
 });
 
 export default function MenuPanel({ children }) {
-  const [activePanel, setActivePanel] = useRecoilState(activeMenuPanel);
+  const stackId = useStackId();
+  const [activePanel, setActivePanel] = useRecoilState(
+    activeMenuPanel(stackId)
+  );
   const [panels, setPanels] = useState([]);
 
   // console.log(">>>Loading Menu w/ Child");
