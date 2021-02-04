@@ -18,8 +18,8 @@ const ToolContainer = styled(animated.div)`
   width: 100vw;
   height: 100vh;
   background-color: #f6f8ff;
-  position: ${({ $isoverlay }) => ($isoverlay ? "fixed" : "static")};
-  z-index: ${({ $isoverlay }) => ($isoverlay ? "3" : "auto")};
+  /* position: ${({ $isoverlay }) => ($isoverlay ? "fixed" : "static")}; */
+  /* z-index: ${({ $isoverlay }) => ($isoverlay ? "3" : "auto")}; */
 `;
 
 export const overlayStack = atom({
@@ -69,7 +69,7 @@ export default function Tool(props) {
   const openOverlayObj = useRecoilValue(openOverlayByName);
 
   const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
-    from: { position: "fixed", top: 100 },
+    from: { position: "fixed", zIndex: "3", top: 100 },
     enter: { top: 0 },
     leave: { top: 100 },
   });
@@ -177,7 +177,10 @@ export default function Tool(props) {
       {transition.map(
         ({ item, key, props }) =>
           item && (
-            <animated.div key={key} stly={props}>
+            <animated.div
+              key={key}
+              style={{ ...props, top: props.top.interpolate((h) => `${h}vh`) }}
+            >
               {overlay}
             </animated.div>
           )
