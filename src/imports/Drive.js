@@ -710,7 +710,7 @@ function Folder(props){
         gridTemplateColumns: '80% 20%',
         gridTemplateRows: '1fr',
         alignContent: 'center'
-      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length})</div> {deleteButton}</div></div>
+      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> {deleteButton}</div></div>
 
   let items = null;
   
@@ -747,7 +747,7 @@ function Folder(props){
         setSelectedDrive(props.driveId);
       }
     }
-    >Drive {label} ({contentIdsArr.length})</div></>
+    >Drive {label}</div></>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-driveinstanceid={props.driveInstanceId}
@@ -764,7 +764,7 @@ function Folder(props){
           marginLeft: marginSize,
           fontSize: "24px"
         }}
-      > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
+      > {openCloseButton} Drive {label}</div>
     }
   }
 
@@ -1373,9 +1373,10 @@ function useDnDCallbacks() {
 
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
-    // const numItems = Object.keys(selectedNodes).length;
-    const numItems = 1;
-    
+    // const numItems = Object.keys(globalSelectedNodesAtom).length;
+    // const numItems = 1;
+    const numItems = useRecoilValue(globalSelectedNodesAtom).length;
+    // console.log(numItems)
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
 
@@ -1534,39 +1535,42 @@ const DragGhost = ({ id, element, numItems }) => {
   const multipleItemsNumCircleContainerStyle = {
     position: 'absolute',
     zIndex: "5",
-    top: "-10px",
-    right: "-15px",
+    top: "6px",
+    right: "5px",
     borderRadius: '25px',
-    background: '#bc0101',
+    background: '#1A5A99',
     fontSize: '12px',
     color: 'white',
     width: '25px',
     height: '25px',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center', 
+    marginLeft: "-60px"
   }
 
-  const multipleItemsRearStackStyle = {
-    boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
-    borderRadius: '4px',
-    padding: "0 5px 5px 0px",
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    zIndex: "1",
-    background: "#fff"
-  }
+  // const multipleItemsRearStackStyle = {
+  //   boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
+  //   borderRadius: '4px',
+  //   padding: "0 5px 5px 0px",
+  //   display: 'flex',
+  //   justifyContent: 'flex-start',
+  //   alignItems: 'flex-start',
+  //   zIndex: "1",
+  //   background: "#fff",
+  //   marginLeft: "-60px"
+  // }
 
-  const multipleItemsFrontStackStyle = {
-    borderRadius: '4px',
-    boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
-    border: '1px solid rgba(0, 0, 0, 0.70)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: "2"
-  }
+  // const multipleItemsFrontStackStyle = {
+  //   borderRadius: '4px',
+  //   boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
+  //   border: '1px solid rgba(0, 0, 0, 0.70)',
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   zIndex: "2",
+  //   marginLeft: "-60px"
+  // }
 
   return (
     <div id={id} style={containerStyle}>
@@ -1577,15 +1581,18 @@ const DragGhost = ({ id, element, numItems }) => {
           { element }
         </div>
       :
-      <div style={{minWidth: "300px"}}>
+      <div 
+        // style={{minWidth: "300px"}}
+        >
         <div
           style={multipleItemsNumCircleContainerStyle}>
           {numItems}
         </div>
         <div
-          style={multipleItemsRearStackStyle}>
+          // style={multipleItemsRearStackStyle}
+          >
           <div
-            style={multipleItemsFrontStackStyle}>
+            style={singleItemStyle}>
             { element }
           </div>
         </div>
