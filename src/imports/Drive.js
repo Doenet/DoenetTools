@@ -1443,7 +1443,7 @@ function useUpdateBreadcrumb(props) {
       const currentNodeId = nodeObj.folderId;
 
       let newParams = Object.fromEntries(new URLSearchParams());
-      newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
+      newParams['path'] = `${routePathDriveId}:${currentNodeId}:${currentNodeId}:Folder`;
       const destinationLink = `../?${encodeParams(newParams)}`
       // const draggedOver = DnDState.activeDropTargetId === currentNodeId && isDraggedOverBreadcrumb;  
       const breadcrumbElement = <Link 
@@ -1476,7 +1476,7 @@ function useUpdateBreadcrumb(props) {
     
     // add current drive to head of stack
     let newParams = Object.fromEntries(new URLSearchParams());
-    newParams['path'] = `${routePathDriveId}:${routePathDriveId}::/`;
+    newParams['path'] = `${routePathDriveId}:${routePathDriveId}:${routePathDriveId}:Drive`;
     const driveDestinationLink = `../?${encodeParams(newParams)}`
     
     const driveBreadcrumbElement = <WithDropTarget

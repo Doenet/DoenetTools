@@ -488,7 +488,7 @@ export default function DoenetDriveTool(props) {
     <Tool>
       <navPanel>
       <GlobalFont/>
-      <div style={{backgroundColor:"skyblue",marginBottom:"40px",height:"100vh"}} 
+      <div style={{marginBottom:"40px",height:"100vh"}} 
        onClick={useOutsideDriveSelector} >
       <Drive types={['content','course']}  foldersOnly={true} />
       </div>
@@ -499,8 +499,8 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
-
-        <BreadcrumbContainer /> 
+      
+      <BreadcrumbContainer /> 
         <div 
         onClick={()=>{
           clearSelections();
