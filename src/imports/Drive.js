@@ -664,6 +664,8 @@ function Folder(props){
         marginLeft: marginSize
       }}
       onClick={(e)=>{
+        e.preventDefault(); // Folder
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -732,6 +734,8 @@ function Folder(props){
         fontSize: "24px"
       }}
       onClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -1121,7 +1125,8 @@ const DoenetML = React.memo((props)=>{
         marginLeft: marginSize
       }}
       onClick={(e)=>{
-        
+        e.preventDefault();
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -1247,6 +1252,8 @@ const Url = React.memo((props)=>{
         marginLeft: marginSize
       }}
       onClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
         if (props.urlClickBehavior === "select"){
           if (props.isNav){
             //Only select one item
