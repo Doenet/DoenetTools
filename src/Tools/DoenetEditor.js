@@ -7,7 +7,6 @@ import allComponents from '../../docs/complete-docs.json';
 import ErrorBoundary from './ErrorBoundary';
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
-import MonacoEditor from 'react-monaco-editor';
 import PlacementContext from "./ToolLayout/PlacementContext";
 
 
