@@ -523,25 +523,117 @@ let fetchDrivesQuery = atom({
 
 export const fetchDrivesSelector = selector({
   key:"fetchDrivesSelector",
-  set:({get,set},label)=>{
+  get:({get})=>{
+    return get(fetchDrivesQuery);
+  },
+  set:({get,set},labelTypeDriveId)=>{
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     const driveId = nanoid();
-    const newDrive = {
-      courseId:null,
-      driveId,
-      isShared:"0",
-      label,
-      type: "content"
+    let params = {driveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
+    let newDrive;
+    function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
+      let contentObjs = {};
+      const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
+      if (destFolderId === undefined){
+        destFolderId = destDriveId;  //Root Folder of drive
+        destParentFolderId = destDriveId;  //Root Folder of drive
+      }
+
+      let contentIds = {defaultOrder:[]};
+      let contentsDictionary = {}
+      let folderInfo = {...sourceFolder.folderInfo}
+      folderInfo.folderId = destFolderId;
+      folderInfo.parentFolderId = destParentFolderId;
+
+      for (let sourceItemId of sourceFolder.contentIds.defaultOrder){
+        const destItemId = nanoid();
+        contentIds.defaultOrder.push(destItemId);
+        let sourceItem = sourceFolder.contentsDictionary[sourceItemId]
+        contentsDictionary[destItemId] = {...sourceItem}
+        contentsDictionary[destItemId].parentFolderId = destFolderId;
+        contentsDictionary[destItemId].itemId = destItemId;
+        if (sourceItem.itemType === 'Folder'){
+         let childContentObjs = duplicateFolder({sourceFolderId:sourceItemId,sourceDriveId,destDriveId,destFolderId:destItemId,destParentFolderId:destFolderId})
+          contentObjs = {...contentObjs,...childContentObjs};
+        }else if (sourceItem.itemType === 'DoenetML'){
+          let destBranchId = nanoid();
+          contentsDictionary[destItemId].branchId = destBranchId;
+        }else if (sourceItem.itemType === 'URL'){
+          let desturlId = nanoid();
+          contentsDictionary[destItemId].urlId = desturlId;
+        }else{
+          console.log(`!!! Unsupported type ${sourceItem.itemType}`)
+        }
+        contentObjs[destItemId] = contentsDictionary[destItemId];
+      }
+      const destFolderObj = {contentIds,contentsDictionary,folderInfo}
+      // console.log({destFolderObj})
+      set(folderDictionary({driveId:destDriveId,folderId:destFolderId}),destFolderObj)
+      return contentObjs;
     }
+    if (labelTypeDriveId.type === "new content drive"){
+      newDrive = {
+        courseId:null,
+        driveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "content"
+      }
+    }else if (labelTypeDriveId.type === "make course drive from content drive"){
+      const sourceDriveId = labelTypeDriveId.driveId;
+      params['sourceDriveId'] = sourceDriveId;
+      //TODO: duplicate items from driveId
+      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:driveId});
+      console.log({contentObjs}) //Save these in addBulkItems.php post
+      newDrive = {
+        courseId:null,
+        driveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "course"
+      }
+    }
+    // else if (labelTypeDriveId.type === "duplicate content drive"){
+    //     //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //     newDrive = {
+    //       courseId:null,
+    //       driveId,
+    //       isShared:"0",
+    //       label:labelTypeDriveId.label,
+    //       type: "content"
+    //     }
+    // }else if (labelTypeDriveId.type === "duplicate course drive"){
+    //     //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //     newDrive = {
+    //       courseId:null,
+    //       driveId,
+    //       isShared:"0",
+    //       label:labelTypeDriveId.label,
+    //       type: "course"
+    //     }
+    // }else if (labelTypeDriveId.type === "make content drive from course drive"){
+    //   //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //   newDrive = {
+    //     courseId:null,
+    //     driveId,
+    //     isShared:"0",
+    //     label:labelTypeDriveId.label,
+    //     type: "content"
+    //   }
+    // }
+    
     newDriveData.driveIdsAndLabels.unshift(newDrive)
     set(fetchDrivesQuery,newDriveData)
-    const payload = {
-      params: {driveId,label}
-    }
-
-  axios.get("/api/addDrive.php", payload)
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
   // .then((resp)=>console.log(">>>resp",resp.data))
   }
 })
