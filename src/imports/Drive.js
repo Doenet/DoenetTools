@@ -559,6 +559,7 @@ export const fetchDrivesSelector = selector({
           contentObjs = {...contentObjs,...childContentObjs};
         }else if (sourceItem.itemType === 'DoenetML'){
           let destBranchId = nanoid();
+          contentsDictionary[destItemId].sourceBranchId = sourceItem.branchId;
           contentsDictionary[destItemId].branchId = destBranchId;
         }else if (sourceItem.itemType === 'URL'){
           let desturlId = nanoid();
@@ -587,6 +588,8 @@ export const fetchDrivesSelector = selector({
       //TODO: duplicate items from driveId
       let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:driveId});
       console.log({contentObjs}) //Save these in addBulkItems.php post
+      axios.post('/api/addBulkItems.php',{driveId,content:contentObjs})
+      .then(resp=>{console.log(resp.data)})
       newDrive = {
         courseId:null,
         driveId,
