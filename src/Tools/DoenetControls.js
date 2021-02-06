@@ -74,10 +74,10 @@ export default function attempt() {
           propPreview: '<ActionButton size="medium"/>',
           propCode: {size: 'medium'},
           description: 'The default is small, as shown above.'},
-          {name: 'Text',
-          propPreview: '<ActionButton text="Edit"/>',
-          propCode: {text: 'Edit'},
-          description: 'Changes the text'}
+          {name: 'Value',
+          propPreview: '<ActionButton value="Edit"/>',
+          propCode: {value: 'Edit'},
+          description: 'Changes the value'}
       ]
     },
     {
@@ -102,10 +102,10 @@ export default function attempt() {
           propPreview: '<Button size="medium"/>',
           propCode: {size: 'medium'},
           description: 'The default is small, as shown above.'},
-          {name: 'Text',
-          propPreview: '<Button text="This button is amazing!"/>',
-          propCode: {text: 'This button is amazing!'},
-          description: 'Changes the text'}
+          {name: 'Value',
+          propPreview: '<Button value="This button is amazing!"/>',
+          propCode: {value: 'This button is amazing!'},
+          description: 'Changes the value'}
       ]
     },
     {
@@ -130,9 +130,9 @@ export default function attempt() {
       propPreview: '<Textfield size="medium"/>',
       propCode: {size: 'medium'},
       description: 'The default is small, as shown above.'},
-      {name: 'Text',
-      propPreview: '<Textfield text="Enter cat names"/>',
-      propCode: {text: 'Enter cat names'},
+      {name: 'Value',
+      propPreview: '<Textfield value="Enter cat names"/>',
+      propCode: {value: 'Enter cat names'},
       description: 'Changes the text'},
       ]
     },
@@ -149,17 +149,17 @@ export default function attempt() {
         propPreview: '<ToggleButton size="medium"/>',
         propCode: {size: 'medium'},
         description: 'The default is small, as shown above.'},
-        {name: 'Text',
-        propPreview: '<ToggleButton text="Select me"/>',
-        propCode: {text: 'Select me'},
-        description: 'Changes the text'},
+        {name: 'Value',
+        propPreview: '<ToggleButton value="Select me"/>',
+        propCode: {value: 'Select me'},
+        description: 'Changes the value'},
         // {name: 'isSelected',
         // propPreview: '<ToggleButton isSelected/>',
         // propCode: {'isSelected'},
         // description: 'If added, starts the button in selected state.'},
-        {name: 'Switch Text',
-        propPreview: '<ToggleButton switch_text="frog"/>',
-        propCode: {switch_text: 'frog'},
+        {name: 'Switch Value',
+        propPreview: '<ToggleButton switch_value="frog"/>',
+        propCode: {switch_value: 'frog'},
         description: 'Sets different text value for when the button is selected'},
         {name: 'Label',
         propPreview: '<ToggleButton label="What: "/>',
@@ -220,6 +220,54 @@ export default function attempt() {
     );
   }
 
+//NEW COMPONENT PAGE 
+  function  New() {
+    return (
+      <div>
+        <h1>Features of A Standard Doenet Component</h1>
+        <p>These are the guidelines for creating components for user input on Doenet. 
+          They are guidelines -- you can break them (and should if something looks ridiculous), 
+          but make sure you have a reason why you need to. 
+          Once you’ve created or fixed a component, update the component spreadsheet 
+          <a href='https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing' target='_blank'> here</a>. </p>
+          <hr/>
+
+        <h2>States to Consider (* denotes required)</h2>
+          <p>*<i>disabled</i> - remove ability for user to interact with component, see styling  
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.997keaoy7se2' target='_blank'> here</a></p>
+          <p><i>required</i> - if component requires user input, see styling 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0' target='_blank'> here</a></p>
+          <hr/>
+
+        <h2>Standard Props (* denotes required)</h2>
+          <p>*<i>aria-label</i> = built in HTML accessibility requirement</p>
+          <p><i>value</i> = information expected to be shown on component (text on Button)</p>
+          <p><i>icon</i> = small image that can be displayed, if it can show text - it can have an icon</p>
+          <p><i>placeholder</i> = default shown before user input, use light gray (#e2e2e2) font</p>
+          <p><i>size</i> = small, medium, large as shown 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.1q2bsnet5j1p' target='_blank'> here </a>
+          - this includes font size</p>
+          <p>*<i>margin</i> = 0px default, make it able to be changed when called</p>
+          <p><i>width</i> = choose default based on where/how component will be implemented, consider whether width can be changed - add if needed</p>
+          <p><i>height</i> = same concept as width</p>
+          <p><i>onClick</i> = you know what this is, don’t use callback function</p>
+          <p><i>onChange</i> = okay you probably know this as well, no callback function!</p>
+          <p><i>onHover</i> = you can guess this, see 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.4fxdjra8uv4t' target='_blank'> here </a></p>
+          <p><i>onFocus</i> = yeah, you know this, too; styling shown 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84' target='_blank'> here </a></p>
+          <hr/>
+
+        <h2>Comments on Styling</h2>
+          <p>Only use the colors found on the 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb' target='_blank'> Style Guide!! </a> (Unless Kevin says otherwise…)</p>
+          <p>Give it a border or a color, as shown 
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.53fu07uoic4t' target='_blank'> here </a></p>
+          <p>Don’t apply the font to the component, fonts will be called in the Tool that loads it</p>
+      </div>
+    )
+  }  
+
 //COMPONENT PAGES
   function Components({ match }) {
 
@@ -274,16 +322,18 @@ export default function attempt() {
             <h1>Components</h1>
             {/* <SearchBar width='110px'/> */}
           </div>
+            <h3><Link to={`/controls/new_components`} style={{color: "black"}}>New Component Guidelines</Link></h3>
           <List>
             {dataStructure.map(({ name, id}) => (
-              <li key={id}><Link to={`/controls/${id}`} style={{color: "black"}}>{name}</Link></li>
+              <li key={id}><Link to={`/controls/component/${id}`} style={{color: "black"}}>{name}</Link></li>
             ))}
           </List>
         </NavBar>
 
         <Content>
           <Route exact path='/controls' component={Home}></Route>
-          <Route path={`/controls/:componentId`} component={Components}></Route>
+          <Route exact path={`/controls/new_components`} component={New}></Route>
+          <Route path={`/controls/component/:componentId`} component={Components}></Route>
         </Content>
 
       </div>
