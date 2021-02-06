@@ -380,27 +380,50 @@ function AddMenuPanel(props){
   if (!path){path = ":"}
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-  const setNewDrive = useSetRecoilState(fetchDrivesSelector)
+  const [drivesInfo,setNewDrive] = useRecoilState(fetchDrivesSelector)
+
+  var activeDriveInfo = {};
+  for (const driveObj of drivesInfo.driveIdsAndLabels){
+    if (driveObj.driveId === driveId){
+      activeDriveInfo = driveObj;
+      break;
+    }
+  }
+
 
   let [folderLabel,setFolderLabel] = useState("")
   let [doenetMLLabel,setDoenetMLLabel] = useState("")
   // let [URLLabel,setURLLabel] = useState("")
   // let [URLLink,setURLLink] = useState("")
   let [driveLabel,setDriveLabel] = useState("")
+  let [courseDriveLabel,setCourseDriveLabel] = useState("")
 
 
 
-  let addDrive =  <div style={{marginBottom:"10px"}}>
-  <h3>Drive</h3>
+  let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
+  <h3>Content Drive</h3>
   <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
-    setNewDrive(driveLabel === "" ? "Untitled" : driveLabel)
+    const label = driveLabel === "" ? "Untitled" : driveLabel;
+    setNewDrive({label,type:"new content drive",driveId})
     setDriveLabel("")
-    }} text="Add" />
-</div>
+    }} text="New Drive" />
+</div>]
 
 if (driveId === ""){
   return <>{addDrive}</>
 }
+
+if (activeDriveInfo?.type === 'content'){
+  addDrive.push(<div key="course from content drive">
+  <h3>Make a Course Drive</h3>
+<label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
+  const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
+  setNewDrive({label,type:"make course drive from content drive",driveId})
+  setCourseDriveLabel("")
+  }} text="Make Course" />
+</div>)
+}
+
 
   return <>
  {addDrive}
