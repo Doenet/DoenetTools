@@ -7,6 +7,10 @@ import Drive, {
   clearAllSelections, 
   fetchDrivesSelector
 } from "../imports/Drive";
+
+import {
+  useHistory
+} from "react-router-dom";
 // import AddItem from '../imports/AddItem'
 // import Switch from "../imports/Switch";
 import Button from "../imports/PanelHeaderComponents/Button";
@@ -492,13 +496,38 @@ export default function DoenetDriveTool(props) {
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
   }
-
-  
+  const history = useHistory();
+  let encodeParams = (p) =>
+    Object.entries(p)
+      .map((kv) => kv.map(encodeURIComponent).join("="))
+      .join("&");
+  function useOutsideDriveSelector() {
+    let newParams = {};
+    newParams["path"] = `:::`;
+    history.push("?" + encodeParams(newParams));
+  }
+  // Breadcrumb container
+  let routePathDriveId = "";
+  let urlParamsObj = Object.fromEntries(
+    new URLSearchParams(props.route.location.search)
+  );
+  if (urlParamsObj?.path !== undefined) {
+    [
+      routePathDriveId
+    ] = urlParamsObj.path.split(":");
+  }
+  let breadcrumbContainer = '';
+  if(routePathDriveId){
+    breadcrumbContainer = <BreadcrumbContainer />
+  }
   return (
     <Tool>
       <navPanel>
       <GlobalFont/>
-        <Drive types={['content','course']}  foldersOnly={true} />
+      <div style={{marginBottom:"40px",height:"100vh"}} 
+       onClick={useOutsideDriveSelector} >
+      <Drive types={['content','course']}  foldersOnly={true} />
+      </div>
       </navPanel>
 
       <headerPanel title="my title">
@@ -506,15 +535,15 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
-
-        <BreadcrumbContainer /> 
+        
+      {breadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections();
         }}
         style={{height:"100%",width:"100%"}}>
         <Drive types={['content','course']}  urlClickBehavior="select" />
-
+      
         </div>
       </mainPanel>
       <supportPanel>

@@ -796,6 +796,8 @@ function Folder(props){
         marginLeft: marginSize
       }}
       onClick={(e)=>{
+        e.preventDefault(); // Folder
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -864,6 +866,8 @@ function Folder(props){
         fontSize: "24px"
       }}
       onClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -1254,7 +1258,8 @@ const DoenetML = React.memo((props)=>{
         marginLeft: marginSize
       }}
       onClick={(e)=>{
-        
+        e.preventDefault();
+        e.stopPropagation();
         if (props.isNav){
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -1380,6 +1385,8 @@ const Url = React.memo((props)=>{
         marginLeft: marginSize
       }}
       onClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
         if (props.urlClickBehavior === "select"){
           if (props.isNav){
             //Only select one item
@@ -1570,7 +1577,7 @@ function useUpdateBreadcrumb(props) {
       const currentNodeId = nodeObj.folderId;
 
       let newParams = Object.fromEntries(new URLSearchParams());
-      newParams['path'] = `${routePathDriveId}:${currentNodeId}::/`;
+      newParams['path'] = `${routePathDriveId}:${currentNodeId}:${currentNodeId}:Folder`;
       const destinationLink = `../?${encodeParams(newParams)}`
       // const draggedOver = DnDState.activeDropTargetId === currentNodeId && isDraggedOverBreadcrumb;  
       let breadcrumbElement = <Link 
@@ -1603,7 +1610,7 @@ function useUpdateBreadcrumb(props) {
     
     // add current drive to head of stack
     let newParams = Object.fromEntries(new URLSearchParams());
-    newParams['path'] = `${routePathDriveId}:${routePathDriveId}::/`;
+    newParams['path'] = `${routePathDriveId}:${routePathDriveId}:${routePathDriveId}:Drive`;
     const driveDestinationLink = `../?${encodeParams(newParams)}`
     
     const driveBreadcrumbElement = <WithDropTarget
