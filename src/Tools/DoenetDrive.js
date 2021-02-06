@@ -483,7 +483,20 @@ export default function DoenetDriveTool(props) {
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
   }
-
+  // Breadcrumb container
+  let routePathDriveId = "";
+  let urlParamsObj = Object.fromEntries(
+    new URLSearchParams(props.route.location.search)
+  );
+  if (urlParamsObj?.path !== undefined) {
+    [
+      routePathDriveId
+    ] = urlParamsObj.path.split(":");
+  }
+  let breadcrumbContainer = '';
+  if(routePathDriveId){
+    breadcrumbContainer = <BreadcrumbContainer />
+  }
   return (
     <Tool>
       <navPanel>
@@ -499,8 +512,8 @@ export default function DoenetDriveTool(props) {
       </headerPanel>
 
       <mainPanel>
-      
-      <BreadcrumbContainer /> 
+        
+      {breadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections();
