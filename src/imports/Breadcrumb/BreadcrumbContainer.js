@@ -59,5 +59,5 @@ export const BreadcrumbContainer = ({ divider = '/', ...props }) => {
   
   }
 
-  return (<ol style={breadcrumbContainerStyle}>{<div onClick={leftmostBreadcrumb}>{<FontAwesomeIcon icon={faChevronLeft}/>}</div>}{children}</ol>);
+  return (<ol style={breadcrumbContainerStyle}>{<div onClick={leftmostBreadcrumb} style={{marginLeft:'10px',marginRight:'10px'}} >{<FontAwesomeIcon icon={faChevronLeft}/>}</div>}{children}</ol>);
 };
