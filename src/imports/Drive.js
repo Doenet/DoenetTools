@@ -293,6 +293,7 @@ export const folderDictionarySelector = selectorFamily({
           
           // //Add to destination at end
           let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
+          console.log(">>>Here", instructions.itemId, destinationFolderObj)
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let sourcesByParentFolderId = {};
@@ -335,7 +336,7 @@ export const folderDictionarySelector = selectorFamily({
           const payload = {
             sourceDriveId:globalSelectedItems[0].driveId,
             selectedItemIds, 
-            destinationItemId:destinationFolderObj.folderInfo.itemId,
+            destinationItemId:instructions.itemId,
             destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
             destinationDriveId:driveIdFolderId.driveId
           }
@@ -823,14 +824,15 @@ function Folder(props){
     </Draggable>;
   }
 
+  const dropTargetId = props.driveObj ? props.driveId : props.folderId;
   folder = <WithDropTarget
     key={`wdtnode${props.driveInstanceId}${props.folderId}`} 
-    id={props.folderId}
+    id={dropTargetId}
     registerDropTarget={dropActions.registerDropTarget} 
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
       onDragOver: () => onDragOverContainer({ id: props.folderId, driveId: props.driveId }),
-      onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: props.folderId});}
+      onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});}
     }}
     >
     { folder } 
