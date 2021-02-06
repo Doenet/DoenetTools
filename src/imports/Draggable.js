@@ -16,6 +16,8 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
 
   const handleMouseDown = useCallback(
     (ev) => {
+      if (ev.button !== 0) return;
+
       setInitializingDrag(true);
       targetEvent.current = { ...ev };      
 

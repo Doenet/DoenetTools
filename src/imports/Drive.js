@@ -293,7 +293,6 @@ export const folderDictionarySelector = selectorFamily({
           
           // //Add to destination at end
           let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
-          console.log(">>>Here", instructions.itemId, destinationFolderObj)
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let sourcesByParentFolderId = {};
