@@ -12,16 +12,23 @@ $userId = $jwtArray['userId'];
 
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
+$type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
+$sourceDriveId = mysqli_real_escape_string($conn,$_REQUEST["sourceDriveId"]);
 
 $success = TRUE;
 $results_arr = array();
 
+$contentOrCourse = 'content';
+if ($type === "make course drive from content drive"){
+  $contentOrCourse = 'course';
+  echo "sourceDriveId".$sourceDriveId;
+}
 
 $sql = "
 INSERT INTO drive
 (driveId,label,driveType,isShared,courseId)
 VALUES
-('$driveId','$label','content','0',null)
+('$driveId','$label','$contentOrCourse','0',null)
 ";
 $result = $conn->query($sql); 
 

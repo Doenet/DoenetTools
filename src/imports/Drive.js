@@ -564,25 +564,120 @@ let fetchDrivesQuery = atom({
 
 export const fetchDrivesSelector = selector({
   key:"fetchDrivesSelector",
-  set:({get,set},label)=>{
+  get:({get})=>{
+    return get(fetchDrivesQuery);
+  },
+  set:({get,set},labelTypeDriveId)=>{
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     const driveId = nanoid();
-    const newDrive = {
-      courseId:null,
-      driveId,
-      isShared:"0",
-      label,
-      type: "content"
+    let params = {driveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
+    let newDrive;
+    function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
+      let contentObjs = {};
+      const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
+      if (destFolderId === undefined){
+        destFolderId = destDriveId;  //Root Folder of drive
+        destParentFolderId = destDriveId;  //Root Folder of drive
+      }
+
+      let contentIds = {defaultOrder:[]};
+      let contentsDictionary = {}
+      let folderInfo = {...sourceFolder.folderInfo}
+      folderInfo.folderId = destFolderId;
+      folderInfo.parentFolderId = destParentFolderId;
+
+      for (let sourceItemId of sourceFolder.contentIds.defaultOrder){
+        const destItemId = nanoid();
+        contentIds.defaultOrder.push(destItemId);
+        let sourceItem = sourceFolder.contentsDictionary[sourceItemId]
+        contentsDictionary[destItemId] = {...sourceItem}
+        contentsDictionary[destItemId].parentFolderId = destFolderId;
+        contentsDictionary[destItemId].itemId = destItemId;
+        if (sourceItem.itemType === 'Folder'){
+         let childContentObjs = duplicateFolder({sourceFolderId:sourceItemId,sourceDriveId,destDriveId,destFolderId:destItemId,destParentFolderId:destFolderId})
+          contentObjs = {...contentObjs,...childContentObjs};
+        }else if (sourceItem.itemType === 'DoenetML'){
+          let destBranchId = nanoid();
+          contentsDictionary[destItemId].sourceBranchId = sourceItem.branchId;
+          contentsDictionary[destItemId].branchId = destBranchId;
+        }else if (sourceItem.itemType === 'URL'){
+          let desturlId = nanoid();
+          contentsDictionary[destItemId].urlId = desturlId;
+        }else{
+          console.log(`!!! Unsupported type ${sourceItem.itemType}`)
+        }
+        contentObjs[destItemId] = contentsDictionary[destItemId];
+      }
+      const destFolderObj = {contentIds,contentsDictionary,folderInfo}
+      // console.log({destFolderObj})
+      set(folderDictionary({driveId:destDriveId,folderId:destFolderId}),destFolderObj)
+      return contentObjs;
     }
+    if (labelTypeDriveId.type === "new content drive"){
+      newDrive = {
+        courseId:null,
+        driveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "content"
+      }
+    }else if (labelTypeDriveId.type === "make course drive from content drive"){
+      const sourceDriveId = labelTypeDriveId.driveId;
+      params['sourceDriveId'] = sourceDriveId;
+      //TODO: duplicate items from driveId
+      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:driveId});
+      console.log({contentObjs}) //Save these in addBulkItems.php post
+      axios.post('/api/addBulkItems.php',{driveId,content:contentObjs})
+      .then(resp=>{console.log(resp.data)})
+      newDrive = {
+        courseId:null,
+        driveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "course"
+      }
+    }
+    // else if (labelTypeDriveId.type === "duplicate content drive"){
+    //     //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //     newDrive = {
+    //       courseId:null,
+    //       driveId,
+    //       isShared:"0",
+    //       label:labelTypeDriveId.label,
+    //       type: "content"
+    //     }
+    // }else if (labelTypeDriveId.type === "duplicate course drive"){
+    //     //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //     newDrive = {
+    //       courseId:null,
+    //       driveId,
+    //       isShared:"0",
+    //       label:labelTypeDriveId.label,
+    //       type: "course"
+    //     }
+    // }else if (labelTypeDriveId.type === "make content drive from course drive"){
+    //   //TODO: duplicate items from driveId
+    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     params['sourceDriveId'] = sourceDriveId;
+    //   newDrive = {
+    //     courseId:null,
+    //     driveId,
+    //     isShared:"0",
+    //     label:labelTypeDriveId.label,
+    //     type: "content"
+    //   }
+    // }
+    
     newDriveData.driveIdsAndLabels.unshift(newDrive)
     set(fetchDrivesQuery,newDriveData)
-    const payload = {
-      params: {driveId,label}
-    }
-
-  axios.get("/api/addDrive.php", payload)
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
   // .then((resp)=>console.log(">>>resp",resp.data))
   }
 })
@@ -745,7 +840,7 @@ function Folder(props){
         gridTemplateColumns: '80% 20%',
         gridTemplateRows: '1fr',
         alignContent: 'center'
-      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label} ({contentIdsArr.length})</div> {deleteButton}</div></div>
+      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> {deleteButton}</div></div>
 
   let items = null;
   
@@ -780,7 +875,7 @@ function Folder(props){
         setSelectedDrive(props.driveId);
       }
     }
-    >Drive {label} ({contentIdsArr.length})</div></>
+    >Drive {label}</div></>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-driveinstanceid={props.driveInstanceId}
@@ -797,7 +892,7 @@ function Folder(props){
           marginLeft: marginSize,
           fontSize: "24px"
         }}
-      > {openCloseButton} Drive {label} ({contentIdsArr.length})</div>
+      > {openCloseButton} Drive {label}</div>
     }
   }
 
@@ -1404,9 +1499,10 @@ function useDnDCallbacks() {
 
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
-    // const numItems = Object.keys(selectedNodes).length;
-    const numItems = 1;
-    
+    // const numItems = Object.keys(globalSelectedNodesAtom).length;
+    // const numItems = 1;
+    const numItems = useRecoilValue(globalSelectedNodesAtom).length;
+    // console.log(numItems)
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
 
@@ -1565,39 +1661,42 @@ const DragGhost = ({ id, element, numItems }) => {
   const multipleItemsNumCircleContainerStyle = {
     position: 'absolute',
     zIndex: "5",
-    top: "-10px",
-    right: "-15px",
+    top: "6px",
+    right: "5px",
     borderRadius: '25px',
-    background: '#bc0101',
+    background: '#1A5A99',
     fontSize: '12px',
     color: 'white',
     width: '25px',
     height: '25px',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center', 
+    marginLeft: "-60px"
   }
 
-  const multipleItemsRearStackStyle = {
-    boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
-    borderRadius: '4px',
-    padding: "0 5px 5px 0px",
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    zIndex: "1",
-    background: "#fff"
-  }
+  // const multipleItemsRearStackStyle = {
+  //   boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
+  //   borderRadius: '4px',
+  //   padding: "0 5px 5px 0px",
+  //   display: 'flex',
+  //   justifyContent: 'flex-start',
+  //   alignItems: 'flex-start',
+  //   zIndex: "1",
+  //   background: "#fff",
+  //   marginLeft: "-60px"
+  // }
 
-  const multipleItemsFrontStackStyle = {
-    borderRadius: '4px',
-    boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
-    border: '1px solid rgba(0, 0, 0, 0.70)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: "2"
-  }
+  // const multipleItemsFrontStackStyle = {
+  //   borderRadius: '4px',
+  //   boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
+  //   border: '1px solid rgba(0, 0, 0, 0.70)',
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   zIndex: "2",
+  //   marginLeft: "-60px"
+  // }
 
   return (
     <div id={id} style={containerStyle}>
@@ -1608,15 +1707,18 @@ const DragGhost = ({ id, element, numItems }) => {
           { element }
         </div>
       :
-      <div style={{minWidth: "300px"}}>
+      <div 
+        // style={{minWidth: "300px"}}
+        >
         <div
           style={multipleItemsNumCircleContainerStyle}>
           {numItems}
         </div>
         <div
-          style={multipleItemsRearStackStyle}>
+          // style={multipleItemsRearStackStyle}
+          >
           <div
-            style={multipleItemsFrontStackStyle}>
+            style={singleItemStyle}>
             { element }
           </div>
         </div>
