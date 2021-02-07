@@ -543,6 +543,7 @@ function DriveRouted(props){
   pathItemId={pathItemId}
   hideUnpublished={hideUnpublished}
   foldersOnly={props.foldersOnly}
+  doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
   />
   </>
 }
@@ -999,6 +1000,7 @@ function Folder(props){
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
+            doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
             />)
           break;
           case "Url":
@@ -1025,6 +1027,7 @@ function Folder(props){
               route={props.route}
               isNav={props.isNav} 
               pathItemId={props.pathItemId}
+              doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItem}
             />)
           break;
@@ -1256,6 +1259,20 @@ const DoenetML = React.memo((props)=>{
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
+      }}
+      onDoubleClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        if (props.doubleClickCallback){
+          props.doubleClickCallback({
+            driveId:props.driveId,
+            item:props.item,
+            driveInstanceId:props.driveInstanceId,
+            route:props.route,
+            isNav:props.isNav, 
+            pathItemId:props.pathItemId,
+          })
+        }
       }}
       onClick={(e)=>{
         e.preventDefault();

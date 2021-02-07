@@ -542,7 +542,22 @@ export default function DoenetDriveTool(props) {
           clearSelections();
         }}
         style={{height:"100%",width:"100%"}}>
-        <Drive types={['content','course']}  urlClickBehavior="select" />
+        <Drive types={['content','course']}  urlClickBehavior="select" 
+        doenetMLDoubleClickCallback={(info)=>{
+          setOverlayOpen({
+            name: "editor", //to match the prop
+            instructions: { 
+              supportVisble: true,
+              action: "open", //or "close"
+              // contentId: info.item.contentId,
+              contentId: info.item.branchId,
+              branchId: info.item.branchId,
+              title: info.item.label,
+              isDraft: '1',
+              timestamp: info.item.creationDate
+            }
+          });
+          }}/>
       
         </div>
       </mainPanel>
