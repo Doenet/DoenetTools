@@ -53,18 +53,17 @@ foreach ($items as &$item){
     $creationDate = $item['creationDate'];
     $itemType = $item['itemType'];
     $branchId = nullifier($item['branchId']);
-    $contentId = nullifier($item['contentId']);
     $assignmentId = nullifier($item['ass$assignmentId']);
     $urlId = nullifier($item['urlId']);
 
     $sql_values = $sql_values . "('$driveId','$itemId','$parentFolderId','$label'," .
-    "'$creationDate','0','0','0','$itemType',$branchId,$contentId,$assignmentId,$urlId),\n";
+    "'$creationDate','0','0','0','$itemType',$branchId,$assignmentId,$urlId),\n";
 }
 
 $sql_values = rtrim($sql_values,",\n");
 
   $sql = "INSERT INTO drive_content 
-      (driveId,itemId,parentFolderId,label,creationDate,isDeleted,isPublished,isAssignment,itemType,branchId,contentId,assignmentId,urlId)
+      (driveId,itemId,parentFolderId,label,creationDate,isDeleted,isPublished,isAssignment,itemType,branchId,assignmentId,urlId)
       values
       $sql_values
       ";
