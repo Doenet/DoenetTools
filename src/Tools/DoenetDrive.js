@@ -84,16 +84,6 @@ const fileByContentId = atomFamily({
   
 })
 
-const saveDraftSelector = selectorFamily({
-  key:"fileByContentIdSelector",
-
-  set:(branchId)=>({set,get})=>{
-    const doenetML = get(editorDoenetMLAtom);
-    set(fileByContentId(branchId),{data:doenetML});
-    axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
-    // .then((resp)=>{console.log(">>>resp",resp.data)})
-  }
-})
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -102,8 +92,10 @@ const editorDoenetMLAtom = atom({
 
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
-  const saveDraft = useSetRecoilState(saveDraftSelector(props.branchId))
+  const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
+
   const timeout = useRef(null);
+  const autosavetimeout = useRef(null);
 
   return <CodeMirror
   value={editorDoenetML}
@@ -112,9 +104,15 @@ function TextEditor(props){
     setEditorDoenetML(value)
     if (timeout.current === null){
       timeout.current = setTimeout(function(){
-        saveDraft()
+        setVersion({instructions:{type:"Save Draft"}})
         timeout.current = null;
       },3000)
+    }
+    if (autosavetimeout.current === null){
+      autosavetimeout.current = setTimeout(function(){
+        setVersion({instructions:{type:"Autosave"}})
+        autosavetimeout.current = null;
+      },10000) //TODO: Make 5 minutes 300000
     }
   }}
   // onChange={(editor, data, value) => {
@@ -123,7 +121,7 @@ function TextEditor(props){
     if (timeout.current !== null){
       clearTimeout(timeout.current)
       timeout.current = null;
-      saveDraft();
+        setVersion({instructions:{type:"Save Draft"}})
     }
   }}
 />
@@ -146,11 +144,20 @@ function DoenetViewerUpdateButton(){
   })}}>Update</button>
 }
 
+const getSHAofContent = (doenetML)=>{
+  const hash = crypto.createHash('sha256');
+  if (doenetML === undefined){
+    return;
+  }
+  hash.update(doenetML);
+  let contentId = hash.digest('hex');
+  return contentId;
+}
 
-const itemVersionsAtom = atomFamily({
-  key:"itemVersionsAtom",
+const itemHistoryAtom = atomFamily({
+  key:"itemHistoryAtom",
   default: selectorFamily({
-    key:"itemVersionsAtom/Default",
+    key:"itemHistoryAtom/Default",
     get:(branchId)=> async ()=>{
       if (!branchId){
         return "";
@@ -163,24 +170,14 @@ const itemVersionsAtom = atomFamily({
   })
 })
 
-const getSHAofContent = (doenetML)=>{
-  const hash = crypto.createHash('sha256');
-  if (doenetML === undefined){
-    return;
-  }
-  hash.update(doenetML);
-  let contentId = hash.digest('hex');
-  return contentId;
-}
-
-const updateItemVersionsSelector = selectorFamily({
-  key:"updateItemVersionsSelector",
+const updateItemHistorySelector = selectorFamily({
+  key:"updateItemHistorySelector",
   get:(branchId)=> ({get})=>{
-    return get(itemVersionsAtom(branchId))
+    return get(itemHistoryAtom(branchId))
   },
-  set:(branchId)=> ({get,set},title)=>{
+  set:(branchId)=> ({get,set},instructions)=>{
+    console.log(">>>instructions.type",instructions.instructions.type)
     const doenetML = get(editorDoenetMLAtom);
-    const oldVersions = get(itemVersionsAtom(branchId))
     const contentId = getSHAofContent(doenetML);
     const dt = new Date();
     const timestamp = `${
@@ -191,44 +188,108 @@ const updateItemVersionsSelector = selectorFamily({
       dt.getMinutes().toString().padStart(2, '0')}:${
       dt.getSeconds().toString().padStart(2, '0')}`
 
+      let title = timestamp;
+      let isNamed = "0";
+      let draft = false;
+
+      if (instructions.instructions.type === "Name Current Version"){
+        isNamed = "1";
+      }else if (instructions.instructions.type === "Save Draft"){
+        draft = true;
+       } else if (instructions.instructions.type === "Autosave"){
+        title = "Autosave";
+       } 
+
+       
+
+
     let newVersion = {
-      title,
+      title:timestamp,
       contentId,
       timestamp,
-      isDraft: "0"
+      isDraft: "0",
+      isNamed
     }
-    const newVersions = [...oldVersions,newVersion];
-    set(itemVersionsAtom(branchId),newVersions)
-    set(fileByContentId(contentId),{data:doenetML})
-    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML})
-    // .then((resp)=>{console.log(">>>resp",resp.data)})
+
+    if (!draft){
+      set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
+      set(fileByContentId(branchId),{data:doenetML})
+    }else{
+      set(fileByContentId(contentId),{data:doenetML})
+    }
+    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
+     .then((resp)=>{console.log(">>>resp",resp.data)})
   }
 })
 
-function SaveVersionControl(props){
-  let [versionsInfo,setVersionsInfo] = useRecoilStateLoadable(updateItemVersionsSelector(props.branchId))
-  const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
-  const [userDefinedTitle,setUserDefinedTitle] = useState("");
+// const saveDraftSelector = selectorFamily({
+//   key:"fileByContentIdSelector",
 
-  //Can't equal the value of earlier versions
-  if (versionsInfo.state === "loading"){ return null;}
-  if (versionsInfo.state === "hasError"){ 
-    console.error(versionsInfo.contents)
+//   set:(branchId)=>({set,get})=>{
+//     const doenetML = get(editorDoenetMLAtom);
+//     set(fileByContentId(branchId),{data:doenetML});
+//     axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
+//     // .then((resp)=>{console.log(">>>resp",resp.data)})
+//   }
+// })
+
+function VersionHistoryPanel(props){
+  const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
+
+  if (versionHistory.state === "loading"){ return null;}
+  if (versionHistory.state === "hasError"){ 
+    console.error(versionHistory.contents)
     return null;}
-    let versionNumber = versionsInfo?.contents?.length;
-    let versionTitle = `Version ${versionNumber}`
-    if (userDefinedTitle !== ""){
-      versionTitle = userDefinedTitle;
+
+    var currentVersionInfo;
+
+    let pastVersions = [];
+  for (let version of versionHistory.contents){
+    if (version.isDraft === "1"){
+      currentVersionInfo = version;
+    }else{
+      let title = version.timestamp;
+      let nameItButton = <button>Name Version</button>;
+
+      if (version.isNamed === "1"){
+        title = version.title;
+        nameItButton = <button>Rename Version</button>
+      }
+
+
+      pastVersions.push(<div key={`pastVersion${version.timestamp}`}>
+        <div><b>{title}</b></div>
+        <div>{version.timestamp}</div>
+        <div><button>View</button>{nameItButton}<button>Make a Copy</button></div>
+        </div>)
+
     }
+  }
+
+
+  const currentVersion = <div>
+    <div><b>Current Version</b></div>
+    <div>{currentVersionInfo.timestamp}</div>
+    <div><button>View</button>
+    <button onClick={()=>{
+    setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
+    <button>Make a Copy</button></div>
+    </div>
+
+  
+  return <>
+  {currentVersion}
+  {pastVersions}
+  </>
+}
+
+function NameCurrentVersionControl(props){
+  const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
 
   return <>
-  <label>Version Title: <input type="text" value={versionTitle} onChange={(e)=>setUserDefinedTitle(e.target.value)}/>
-  </label>
   <button onClick={()=>{
-    setVersionsInfo(versionTitle);
-    setEditorOverlayTitle(versionTitle);
-    setUserDefinedTitle("") //Reset user defined title
-    }}>Save as New Version</button>
+    setVersion({instructions:{type:"Name Current Version"}})
+    }}>Name Current Version</button>
   </>
   
 }
@@ -271,9 +332,9 @@ function SetEditorDoenetMLandTitle(props){
   const overlayInfo = useRecoilValue(openOverlayByName);
   const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
 
-  console.log({overlaytitle:overlayInfo?.instructions?.title})
-  console.log({lastId:lastContentId.current,propsId:props.contentId})
-  console.log({state:loadedDoenetML.state})
+  // console.log({overlaytitle:overlayInfo?.instructions?.title})
+  // console.log({lastId:lastContentId.current,propsId:props.contentId})
+  // console.log({state:loadedDoenetML.state})
   //Set only once
   if (lastContentId.current !== props.contentId){
     if (loadedDoenetML.state === "hasValue"){
@@ -307,7 +368,6 @@ const ItemInfo = function (){
       return null;}
    
       let itemInfo = infoLoad?.contents?.itemInfo;
-      let versions = infoLoad?.contents?.versions;
 
     if (infoLoad.contents?.number > 1){
       return <>
@@ -318,60 +378,37 @@ const ItemInfo = function (){
     if (!itemInfo) return <h3>No Items Selected</h3>;
   }
 
-  const versionsJSX = [];
  
   if (itemInfo?.itemType === "DoenetML"){
-  let draftObj;
-  for (let version of versions){
-    if (version.isDraft === "1"){
-      draftObj = version;
-    }else{
-      versionsJSX.push(<div
-      key={`versions${version.timestamp}`}
-        onClick={() => {
-          //set activeBranchInfo to version
-          setOverlayOpen({
-            name: "editor", //to match the prop
-            instructions: { 
-              supportVisble: true,
-              action: "open", //or "close"
-              contentId: version.contentId,
-              branchId: itemInfo.branchId,
-              title: version.title,
-              isDraft: version.isDraft,
-              timestamp: version.timestamp
-            }
-          });
-        }}
-      >
-        {version.title}
-      </div>)
-    }
-  }
-
-  versionsJSX.push(<button key='edit draft'
-    onClick={()=>setOverlayOpen({
-      name: "editor", //to match the prop
-      instructions: { 
-        supportVisble: true,
-        action: "open", //or "close"
-        contentId: draftObj.contentId,
-        branchId: itemInfo.branchId,
-        title: draftObj.title,
-        isDraft: draftObj.isDraft,
-        timestamp: draftObj.timestamp
-      }
-    })}>Edit Draft</button>)
-
-  }
-  
+    
+    console.log({itemInfo})
 
   return <div
   style={{height:"100%"}}
   >
-    
   <h1>{itemInfo.label}</h1>
-  {versionsJSX}
+  
+  <button 
+  onClick={()=>setOverlayOpen({
+    name: "editor", //to match the prop
+    instructions: { 
+      supportVisble: true,
+      action: "open", //or "close"
+      // contentId: draftObj.contentId,
+      // branchId: itemInfo.branchId,
+      // title: draftObj.title,
+      // isDraft: draftObj.isDraft,
+      // timestamp: draftObj.timestamp
+    }
+  })}>Edit</button>
+  </div>
+    }
+
+
+  return <div
+  style={{height:"100%"}}
+  >
+  <h1>{itemInfo.label}</h1>
   </div>
 }
 
@@ -488,13 +525,15 @@ export default function DoenetDriveTool(props) {
   let doenetViewerEditor = null;
   let setLoadContentId = null;
   let editorTitle = null;
+  let versionHistory = null;
 
   if (overlayInfo?.name === "editor"){
     editorTitle = <EditorTitle />
     setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
-    textEditor = <TextEditor  branchId={branchId}/>
-    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
+    textEditor = <div><NameCurrentVersionControl branchId={branchId} /><TextEditor  branchId={branchId}/></div>
+    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
+    versionHistory = <VersionHistoryPanel branchId={branchId} />
   }
   const history = useHistory();
   let encodeParams = (p) =>
@@ -600,6 +639,10 @@ export default function DoenetDriveTool(props) {
         <supportPanel width="40%">
           {textEditor}
         </supportPanel>
+
+        <menuPanel title="Version history">
+        {versionHistory}
+      </menuPanel>
   
       </overlay>
 
