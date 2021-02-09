@@ -572,8 +572,7 @@ export const fetchDrivesSelector = selector({
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
-    const driveId = nanoid();
-    let params = {driveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
+    let params = {driveId:labelTypeDriveId.newDriveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
     let newDrive;
     function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
       let contentObjs = {};
@@ -619,26 +618,37 @@ export const fetchDrivesSelector = selector({
     if (labelTypeDriveId.type === "new content drive"){
       newDrive = {
         courseId:null,
-        driveId,
+        driveId:labelTypeDriveId.newDriveId,
         isShared:"0",
         label:labelTypeDriveId.label,
         type: "content"
       }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
     }else if (labelTypeDriveId.type === "make course drive from content drive"){
       const sourceDriveId = labelTypeDriveId.driveId;
       params['sourceDriveId'] = sourceDriveId;
       //TODO: duplicate items from driveId
-      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:driveId});
-      console.log({contentObjs}) //Save these in addBulkItems.php post
-      axios.post('/api/addBulkItems.php',{driveId,content:contentObjs})
-      .then(resp=>{console.log(resp.data)})
+      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:labelTypeDriveId.newDriveId});
+      // console.log({contentObjs}) //Save these in addBulkItems.php post
+      axios.post('/api/addBulkItems.php',{driveId:labelTypeDriveId.newDriveId,content:contentObjs})
+      // .then(resp=>{console.log(resp.data)})
       newDrive = {
         courseId:null,
-        driveId,
+        driveId:labelTypeDriveId.newDriveId,
         isShared:"0",
         label:labelTypeDriveId.label,
         type: "course"
       }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
     }
     // else if (labelTypeDriveId.type === "duplicate content drive"){
     //     //TODO: duplicate items from driveId
@@ -675,11 +685,7 @@ export const fetchDrivesSelector = selector({
     //   }
     // }
     
-    newDriveData.driveIdsAndLabels.unshift(newDrive)
-    set(fetchDrivesQuery,newDriveData)
-    const payload = { params }
-    axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
+    
   }
 })
 
@@ -696,7 +702,7 @@ const folderOpenSelector = selectorFamily({
   }
 })
 
-let encodeParams = p => 
+export let encodeParams = p => 
 Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
 function Folder(props){

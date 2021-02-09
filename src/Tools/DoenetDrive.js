@@ -5,8 +5,11 @@ import Drive, {
   globalSelectedNodesAtom, 
   folderDictionary, 
   clearAllSelections, 
-  fetchDrivesSelector
+  fetchDrivesSelector,
+  encodeParams
 } from "../imports/Drive";
+import nanoid from 'nanoid';
+
 
 import {
   useHistory
@@ -418,6 +421,7 @@ function AddMenuPanel(props){
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
   const [drivesInfo,setNewDrive] = useRecoilState(fetchDrivesSelector)
+  const history = useHistory();
 
   var activeDriveInfo = {};
   for (const driveObj of drivesInfo.driveIdsAndLabels){
@@ -441,8 +445,13 @@ function AddMenuPanel(props){
   <h3>Content Drive</h3>
   <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
     const label = driveLabel === "" ? "Untitled" : driveLabel;
-    setNewDrive({label,type:"new content drive",driveId})
+    let newDriveId = nanoid();
+    setNewDrive({label,type:"new content drive",driveId,newDriveId})
     setDriveLabel("")
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    let newParams = {...urlParamsObj} 
+    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    history.push('?'+encodeParams(newParams))
     }} text="New Drive" />
 </div>]
 
@@ -455,8 +464,13 @@ if (activeDriveInfo?.type === 'content'){
   <h3>Make a Course Drive</h3>
 <label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
   const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
-  setNewDrive({label,type:"make course drive from content drive",driveId})
+  let newDriveId = nanoid();
+  setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
   setCourseDriveLabel("")
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    let newParams = {...urlParamsObj} 
+    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    history.push('?'+encodeParams(newParams))
   }} text="Make Course" />
 </div>)
 }
