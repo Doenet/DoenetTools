@@ -31,7 +31,7 @@ $response_arr = array(
 );
 $fileName = $contentId;
 if ($draft){$fileName = $branchId;}
-//Config file needed for server
+//TODO: Config file needed for server
 $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
 fwrite($newfile, $dangerousDoenetML);
 fclose($newfile);

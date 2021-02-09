@@ -13,12 +13,11 @@ import SupportPanel, {
   SupportVisiblitySwitch,
 } from "./SupportPanel";
 import MenuPanel, { activeMenuPanelAtom } from "./MenuPanel";
+import MainPanel from "./MainPanel";
 import DoenetHeader from "../../Tools/DoenetHeader";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-const queryCache = new QueryCache();
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -251,7 +250,7 @@ export default function Tool(props) {
   }
 
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
+    <>
       {toolContent}
       <ToolContainer
         style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
@@ -263,6 +262,6 @@ export default function Tool(props) {
         {menuPanel}
         {/* <ReactQueryDevtools /> */}
       </ToolContainer>
-    </ReactQueryCacheProvider>
+    </>
   );
 }
