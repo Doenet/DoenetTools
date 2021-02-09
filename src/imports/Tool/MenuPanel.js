@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { atomFamily, selector, useRecoilState } from "recoil";
+import { atomFamily, useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { useStackId } from "./Tool";
 
@@ -41,6 +41,12 @@ export const activeMenuPanel = atomFamily({
   key: "activeMenuPanelAtom",
   default: 0,
 });
+
+export const useMenuPanelController = () => {
+  const stackId = useStackId();
+  const menuAtomControl = useSetRecoilState(activeMenuPanel(stackId));
+  return menuAtomControl;
+};
 
 export default function MenuPanel({ children }) {
   const stackId = useStackId();

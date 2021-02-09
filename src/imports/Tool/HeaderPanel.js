@@ -20,6 +20,14 @@ const HeaderPanelContainer = styled.div`
   padding: 4px;
 `;
 
+const HeaderControlsContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+`;
+
 const ExitOverlayButton = styled.button`
   width: 45px;
   height: 45px;
@@ -71,16 +79,10 @@ export default function HeaderPanel({ title, children }) {
 
   return (
     <HeaderPanelContainer>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-start",
-          width: "100%",
-        }}
-      >
+      <HeaderControlsContainer>
         <p>{title}</p>
         {children}
-      </div>
+      </HeaderControlsContainer>
       <SupportVisiblitySwitch />
       {!(stackId > 0 ?? false) ? (
         <DoenetHeader

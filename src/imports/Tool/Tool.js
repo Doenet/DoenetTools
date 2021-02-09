@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useSpring, animated, useTransition } from "react-spring";
+import { animated, useTransition } from "react-spring";
 import { atom, selector, useRecoilValue, useRecoilCallback } from "recoil";
 import NavPanel from "./NavPanel";
 import HeaderPanel from "./HeaderPanel";
@@ -18,8 +18,6 @@ const ToolContainer = styled(animated.div)`
   width: 100vw;
   height: 100vh;
   background-color: #f6f8ff;
-  /* position: ${({ $isoverlay }) => ($isoverlay ? "fixed" : "static")}; */
-  /* z-index: ${({ $isoverlay }) => ($isoverlay ? "3" : "auto")}; */
 `;
 
 export const overlayStack = atom({
@@ -69,16 +67,11 @@ export default function Tool(props) {
   const openOverlayObj = useRecoilValue(openOverlayByName);
 
   const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
-    from: { position: "fixed", zIndex: "3", top: 100 },
+    from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
     enter: { top: 0 },
     leave: { top: 100 },
-  });
-
-  const spring = useSpring({
-    value: 0,
-    from: { value: 100 },
-    delay: 50,
-    immediate: !(stackId > 0 ?? false),
+    unique: true,
+    reset: true,
   });
 
   //lowercase names logic
@@ -149,7 +142,7 @@ export default function Tool(props) {
 
   if (toolParts?.headerPanel) {
     headerPanel = (
-      <HeaderPanel props={toolParts.headerPanel.props}>
+      <HeaderPanel title={toolParts.headerPanel.props.title}>
         {toolParts.headerPanel.children}
       </HeaderPanel>
     );

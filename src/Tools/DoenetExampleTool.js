@@ -39,6 +39,9 @@ export default function DoenetExampleTool() {
         <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+        <div
+          style={{ width: "80px", height: "2000px", backgroundColor: "red" }}
+        />
       </mainPanel>
 
       <supportPanel width="40%">

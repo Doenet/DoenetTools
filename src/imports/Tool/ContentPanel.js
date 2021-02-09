@@ -10,6 +10,8 @@ const ContentPanelContainer = styled.div`
   display: grid;
   grid-template: "mainPanel handle supportPanel" / 1fr 0px 0fr;
   border-left: 1px solid black;
+  overflow-x: hidden;
+  overflow-y: auto;
 `;
 
 const DragHandle = styled.div`
