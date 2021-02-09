@@ -1,10 +1,17 @@
-import React from 'react'
+import React ,{useContext} from 'react'
 import { useBreadcrumbItems } from './hooks/useBreadcrumbItems'
 import BreadcrumbItem from './components/BreadcrumbItem'
 import BreadcrumbDivider from './components/BreadcrumbDivider'
+import { BreadcrumbContext } from "./BreadcrumbProvider";
+import {
+  useHistory
+} from "react-router-dom";
+import { faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export const BreadcrumbContainer = ({ divider = '/', ...props }) => {
   const items = useBreadcrumbItems();
+  const { clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
   
   let children = items.map((item, index) => (
     <BreadcrumbItem key={`breadcrumbItem${index}`}>
@@ -39,6 +46,18 @@ export const BreadcrumbContainer = ({ divider = '/', ...props }) => {
     borderBottom: "1px solid #cdcdcd",
     margin: "0",
   }
+  const history = useHistory();
+  let encodeParams = (p) =>
+    Object.entries(p)
+      .map((kv) => kv.map(encodeURIComponent).join("="))
+      .join("&");
+  const leftmostBreadcrumb = () =>{
+    clearBreadcrumb();
+    let newParams = {};
+    newParams["path"] = `:::`;
+    history.push("?" + encodeParams(newParams));
+  
+  }
 
-  return (<ol style={breadcrumbContainerStyle}>{children}</ol>);
+  return (<ol style={breadcrumbContainerStyle}>{<div onClick={leftmostBreadcrumb} style={{marginLeft:'10px',marginRight:'10px'}} >{<FontAwesomeIcon icon={faChevronLeft}/>}</div>}{children}</ol>);
 };

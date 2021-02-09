@@ -30,7 +30,8 @@ export default function DoenetExampleTool() {
   return (
     <Tool>
       <navPanel>
-        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+        <div>DEMO!</div>
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </navPanel>
 
       <headerPanel title="my title"></headerPanel>

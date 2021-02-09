@@ -2,7 +2,6 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { resolve } = require("path");
-const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
 
@@ -95,13 +94,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new MonacoWebpackPlugin(),
-    new HtmlWebPackPlugin({
-      chunks: ["index.js"],
-      template: "./src/index.html",
-      filename: "./index.html",
-      favicon: "./src/Tools/favicon.ico",
-    }),
     new HtmlWebPackPlugin({
       chunks: ['admin/index.js'],
       template: "./src/admin/index.html",
