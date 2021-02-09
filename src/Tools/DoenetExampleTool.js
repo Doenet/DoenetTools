@@ -1,5 +1,6 @@
 import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 import Drive from "../imports/Drive";
 import AddItem from "../imports/AddItem";
 import { useSetRecoilState, useRecoilValue } from "recoil";
@@ -24,8 +25,11 @@ function OverlayDataViwer() {
 }
 
 export default function DoenetExampleTool() {
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // console.log("=== DoenetExampleTool");
+
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const setOpenMenuPanel = useMenuPanelController();
+  setOpenMenuPanel(1); //array ID index of the desired panel
 
   return (
     <Tool>
