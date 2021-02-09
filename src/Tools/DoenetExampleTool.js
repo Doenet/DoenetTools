@@ -40,6 +40,9 @@ export default function DoenetExampleTool() {
         <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+        <div
+          style={{ width: "80px", height: "2000px", backgroundColor: "red" }}
+        />
       </mainPanel>
 
       <supportPanel width="40%">
@@ -109,6 +112,45 @@ export default function DoenetExampleTool() {
       </overlay>
 
       <overlay name="cal">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <p>control important stuff</p>
+          <div>
+            <button
+              onClick={() => {
+                setOverlayOpen({
+                  name: "cal2",
+                  instructions: {
+                    action: "open",
+                    supportVisble: false,
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal2">
         <headerPanel title="my title"></headerPanel>
 
         <mainPanel>
