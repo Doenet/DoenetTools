@@ -1,5 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+
 import Drive, { 
   folderDictionarySelector, 
   globalSelectedNodesAtom, 
@@ -86,7 +88,6 @@ const fileByContentId = atomFamily({
   })
   
 })
-
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -243,6 +244,7 @@ function VersionHistoryPanel(props){
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
+
 
     var currentVersionInfo;
 
@@ -519,47 +521,15 @@ if (activeDriveInfo?.type === 'content'){
   </>
 }
 
-const EditorTitle = ()=>{
-  const overlayTitle = useRecoilValue(overlayTitleAtom);
-  return <span>{overlayTitle}</span>
-}
-
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
+  const setOpenMenuPanel = useMenuPanelController();
+
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
 
-  const contentId = overlayInfo?.instructions?.contentId;
-  const branchId = overlayInfo?.instructions?.branchId;
-  
-  let textEditor = null;
-  let doenetViewerEditorControls = null;
-  let doenetViewerEditor = null;
-  let setLoadContentId = null;
-  let editorTitle = null;
-  let versionHistory = null;
-
-  if (overlayInfo?.name === "editor"){
-    editorTitle = <EditorTitle />
-    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
-    textEditor = <div><NameCurrentVersionControl branchId={branchId} /><TextEditor  branchId={branchId}/></div>
-    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
-    doenetViewerEditor =  <DoenetViewerPanel />
-    versionHistory = <VersionHistoryPanel branchId={branchId} />
-  }
-  const history = useHistory();
-  let encodeParams = (p) =>
-    Object.entries(p)
-      .map((kv) => kv.map(encodeURIComponent).join("="))
-      .join("&");
-  function useOutsideDriveSelector() {
-    let newParams = {};
-    newParams["path"] = `:::`;
-    history.push("?" + encodeParams(newParams));
-  }
-  // Breadcrumb container
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -569,7 +539,41 @@ export default function DoenetDriveTool(props) {
       routePathDriveId
     ] = urlParamsObj.path.split(":");
   }
-  let breadcrumbContainer = '';
+
+  //Select +Add menuPanel if no drives selected on startup
+  useEffect(()=>{
+    if (routePathDriveId === ""){
+      setOpenMenuPanel(1)
+    }
+  },[]);
+
+  
+  let textEditor = null;
+  let doenetViewerEditorControls = null;
+  let doenetViewerEditor = null;
+  let setLoadContentId = null;
+  let editorTitle = null;
+  let versionHistory = null;
+
+  if (overlayInfo?.name === "editor"){
+    const contentId = overlayInfo?.instructions?.contentId;
+    const branchId = overlayInfo?.instructions?.branchId;
+    editorTitle = overlayInfo?.instructions?.title;
+    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
+    textEditor = <div><NameCurrentVersionControl branchId={branchId} /><TextEditor  branchId={branchId}/></div>
+    doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
+    doenetViewerEditor =  <DoenetViewerPanel />
+    versionHistory = <VersionHistoryPanel branchId={branchId} />
+  }
+  const history = useHistory();
+
+  function useOutsideDriveSelector() {
+    let newParams = {};
+    newParams["path"] = `:::`;
+    history.push("?" + encodeParams(newParams));
+  }
+  // Breadcrumb container
+  let breadcrumbContainer = null;
   if(routePathDriveId){
     breadcrumbContainer = <BreadcrumbContainer />
   }
@@ -583,8 +587,8 @@ export default function DoenetDriveTool(props) {
       </div>
       </navPanel>
 
-      <headerPanel title="my title">
-        <p>Drive</p>
+      <headerPanel title="Drive">
+        {/* <p>Drive</p> */}
       </headerPanel>
 
       <mainPanel>
@@ -622,26 +626,14 @@ export default function DoenetDriveTool(props) {
         {/* <ItemInfo route={props.route} /> */}
         <ItemInfo  />
       </menuPanel>
-      <menuPanel title="+">
+      <menuPanel title="+ Add Items">
        <AddMenuPanel route={props.route} />
       </menuPanel>
 
       <overlay name="editor">
-        <headerPanel title="my title">
-          {editorTitle}
+        <headerPanel title={editorTitle}>
+          {/* {editorTitle} */}
           {/* <p>{overlayInfo?.instructions?.title}</p> */}
-          <button
-            onClick={() => {
-              setOverlayOpen({
-                name: "", //to match the prop
-                instructions: { 
-                  action: "close", //or "close"
-                }
-              });
-            }}
-          >
-            Go Back
-          </button>
         </headerPanel>
 
         <mainPanel>
