@@ -98,6 +98,7 @@ function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
 
+  console.log(">>>editorDoenetML",editorDoenetML)
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
 
@@ -105,6 +106,7 @@ function TextEditor(props){
   value={editorDoenetML}
   // options={options}
   onBeforeChange={(editor, data, value) => {
+    console.log(">>>onBeforeChange",value)
     setEditorDoenetML(value)
     if (timeout.current === null){
       timeout.current = setTimeout(function(){
@@ -116,7 +118,7 @@ function TextEditor(props){
       autosavetimeout.current = setTimeout(function(){
         setVersion({instructions:{type:"Autosave"}})
         autosavetimeout.current = null;
-      },10000) //TODO: Make 5 minutes 300000
+      },20000) //TODO: Make 5 minutes 300000
     }
   }}
   // onChange={(editor, data, value) => {
@@ -125,7 +127,10 @@ function TextEditor(props){
     if (timeout.current !== null){
       clearTimeout(timeout.current)
       timeout.current = null;
-        setVersion({instructions:{type:"Save Draft"}})
+      setVersion({instructions:{type:"Save Draft"}})
+    }
+    if (autosavetimeout.current !== null){
+      clearTimeout(autosavetimeout.current)
     }
   }}
 />
@@ -200,11 +205,10 @@ const updateItemHistorySelector = selectorFamily({
         isNamed = "1";
       }else if (instructions.instructions.type === "Save Draft"){
         draft = true;
+        title = "draft";
        } else if (instructions.instructions.type === "Autosave"){
         title = "Autosave";
        } 
-
-       
 
 
     let newVersion = {
@@ -217,9 +221,9 @@ const updateItemHistorySelector = selectorFamily({
 
     if (!draft){
       set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
-      set(fileByContentId(branchId),{data:doenetML})
-    }else{
       set(fileByContentId(contentId),{data:doenetML})
+    }else{
+      set(fileByContentId(branchId),{data:doenetML})
     }
     axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
      .then((resp)=>{console.log(">>>resp",resp.data)})
@@ -330,18 +334,17 @@ function DoenetViewerPanel(){
 
 //When contentId changes then set the new loaded info into the editor atoms
 function SetEditorDoenetMLandTitle(props){
-  const loadedDoenetML = useRecoilValueLoadable(fileByContentId(props.contentId))
+  let contentId = props.contentId;
+  if (props.isDraft){ contentId = props.branchId;}
+  const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
   let lastContentId = useRef("");
   const overlayInfo = useRecoilValue(openOverlayByName);
   const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
 
-  // console.log({overlaytitle:overlayInfo?.instructions?.title})
-  // console.log({lastId:lastContentId.current,propsId:props.contentId})
-  // console.log({state:loadedDoenetML.state})
   //Set only once
-  if (lastContentId.current !== props.contentId){
+  if (lastContentId.current !== contentId){
     if (loadedDoenetML.state === "hasValue"){
       let overlayTitle = overlayInfo?.instructions?.title;
       setEditorOverlayTitle(overlayTitle)
@@ -353,7 +356,7 @@ function SetEditorDoenetMLandTitle(props){
         newInfo.updateNumber = old.updateNumber+1;
         return newInfo;
       })
-      lastContentId.current = props.contentId; //Don't set again
+      lastContentId.current = contentId; //Don't set again
     }
   }
 
@@ -558,8 +561,9 @@ export default function DoenetDriveTool(props) {
   if (overlayInfo?.name === "editor"){
     const contentId = overlayInfo?.instructions?.contentId;
     const branchId = overlayInfo?.instructions?.branchId;
+    const isDraft = overlayInfo?.instructions?.isDraft;
     editorTitle = overlayInfo?.instructions?.title;
-    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} />
+    setLoadContentId = <SetEditorDoenetMLandTitle contentId={contentId} branchId={branchId} isDraft={isDraft} />
     textEditor = <div><NameCurrentVersionControl branchId={branchId} /><TextEditor  branchId={branchId}/></div>
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
@@ -606,8 +610,7 @@ export default function DoenetDriveTool(props) {
             instructions: { 
               supportVisble: true,
               action: "open", //or "close"
-              // contentId: info.item.contentId,
-              contentId: info.item.branchId,
+              contentId: info.item.contentId,
               branchId: info.item.branchId,
               title: info.item.label,
               isDraft: '1',
