@@ -14,7 +14,6 @@ const DriveCardContainer = Styled.div`
   border-radius: 4px;
   display: flex; /*added*/
   flex-direction: column; /*added*/
-  justify-content: space-between;
   background-image: url(${(props) => props.url});
   background-color: ${(props) => `#${props.color}`};
 `;
@@ -51,7 +50,7 @@ const LabelContainer = Styled.p`
 
 
 const DriveCard = props => {
-  console.log(">>> Drive Card", props)
+  // console.log(">>> Drive Card", props)
 return(
   <DriveCardContainer  
   url={`/course_pictures/${props.image}.jpg`} 

@@ -9,7 +9,6 @@
   /* overflow: hidden; */
   user-select: none;
   display: flex;
-  justify-content: space-between;
   /* background: #f0f0f0; */
   /* padding: 15px; */
   flex-direction: row;
@@ -46,7 +45,5 @@ text-decoration: none;
   outline: none;
 
 }
-.adiv:hover{
-transform: scale(3);
-}
+
 

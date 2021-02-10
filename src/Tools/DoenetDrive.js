@@ -36,7 +36,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import crypto from 'crypto';
 import DriveCard from '../imports/DoenetDriveCard';
-import { useTransition, a, useSpring } from "react-spring";
+import { useTransition, a, useSprings, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
 
@@ -483,89 +483,103 @@ const DriveCardComponent = React.memo((props) => {
     Object.entries(p)
       .map((kv) => kv.map(encodeURIComponent).join("="))
       .join("&");
- let transitions='';
+  let transitions = "";
 
- const columns = useMedia(
-  [
-    "(min-width: 1500px)",
-    "(min-width: 1000px)",
-    "(min-width: 600px)",
-    "(min-width: 400px)",
-  ],
-  [5, 4, 3, 2],
-  1
-);
-let heights = [];
- let gridItems = props.drivesIds.map((child, i) => {  
-   heights = new Array(columns).fill(0); 
-  let width = window.innerWidth - 400  ;
-  const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-  const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-  return { ...child, xy, width: 250, height: 250 };
-});
-  if(props.drivesIds)
-  {
-    transitions = useTransition(gridItems, (item) => item.label, {
-      from: ({ xy, width, height }) => ({ xy, width, height, opacity: 0 ,scale:0.5}),
-      enter: ({ xy, width, height }) => ({ xy, width, height, opacity: 1 , scale:1.6}),
-      update: ({ xy, width, height }) => ({ xy, width, height }),
-      leave: { height: 0, opacity: 0 },
+  const columns = useMedia(
+    [
+      "(min-width: 1500px)",
+      "(min-width: 1000px)",
+      "(min-width: 600px)",
+      "(min-width: 400px)",
+    ],
+    [5, 4, 3, 2],
+    1
+  );
+  let heights = [];
+  let driveCardItems = props.drivesIds.map((child, i) => {
+    heights = new Array(columns).fill(0);
+    let width = window.innerWidth - 400;
+    const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
+    const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
+    return { ...child, xy, width: 250, height: 250 };
+  });
+  if (props.drivesIds) {
+    transitions = useTransition(driveCardItems, (item) => item.label, {
+      from: ({ xy, width, height }) => ({
+        xy,
+        width,
+        height,
+        opacity: 0,
+        scale: 1.1
+      }),
+      enter: ({ xy, width, height }) => ({
+        xy,
+        width,
+        height,
+        opacity: 1,
+        scale: 1
+      }),
+      update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
+      leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 500, friction: 100 },
       trail: 25
     });
   }
-  const calc = (x, y) => [-(y - window.innerHeight / 2) / 20, (x - window.innerWidth / 2) / 20, 1.1]
-  const trans = (x, y, s) => `scale(${s})`
-
-  const [aProps,set] = useSpring(() => ({ xys: [0, 0, 1], config: { mass: 5, tension: 350, friction: 40,scale:4 } }))
 
   function driveCardSelector(item) {
-    // console.log(">>>> item in drive selector",item);
+    let newParams = {};
+    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+    history.push("?" + encodeParams(newParams));
+  }
+  const handleKeyDown = (e, item) => {
+    if (e.key === "Enter") {
+      let newParams = {};
+      newParams[
+        "path"
+      ] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+      history.push("?" + encodeParams(newParams));
+    }
+  };
+  const [on, toggle] = useState(false);
+  const textUse = useRef();
 
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
-  }
-const handleKeyDown = (e,item)=>{
-  if(e.key === 'Enter'){
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
-  }
-}
   return (
     <div className="drivecardContainer">
-       {transitions.map(({ item, props: { xy, ...rest } }, index) => (
-                  <a.div
-                    className="adiv"
-                    key={index}
-                    // style={{
-                    //   transform: xy.interpolate(
-                    //     (x, y) => `translate3d(${x}px,${y}px,0)`
-                    //   ),
-                    //   ...rest,
-                    // }}
-                    style={{transform: aProps.xys.interpolate(trans),width:"250px",height:"250px" } }
-                    onMouseMove={({ clientX: x, clientY: y }) => set({ xys: calc(x, y) })}
-                    onMouseLeave={() => set({ xys: [0, 0, 1] })}
-                  >
-                   <div className="drivecardlist"
-                tabIndex={index}
-                onKeyDown={(e)=>handleKeyDown(e,item)} 
-                onDoubleClick = {()=>driveCardSelector(item)}>
-              <DriveCard driveId={item.driveId} 
-              image={item.image} 
-              color={item.color} 
-              label={item.label}/>
-              </div>
-                  
-                  </a.div>
-       
-       ))}
-       </div>
-  )
-
-})
+      {transitions.map(({ item, props }, index) => {
+        //  console.log(">>>  item !!!!!!!!", props);
+        return (
+          <a.div
+            className="adiv"
+            key={index}
+            ref={textUse}
+            onMouseOver={() => toggle(props.scale.setValue(1.1))}
+            onMouseLeave={() => toggle(props.scale.setValue(1))}
+            style={{
+              transform: props.xy.interpolate(
+                (scale) => `scale(${props.scale.value})`
+              ),
+              ...props,
+            }}
+          >
+            <div
+              className="drivecardlist"
+              tabIndex={index}
+              onKeyDown={(e) => handleKeyDown(e, item)}
+              onDoubleClick={() => driveCardSelector(item)}
+            >
+              <DriveCard
+                driveId={item.driveId}
+                image={item.image}
+                color={item.color}
+                label={item.label}
+              />
+            </div>
+          </a.div>
+        );
+      })}
+    </div>
+  );
+});
 
 export default function DoenetDriveTool(props) {
   console.log("=== 💾 Doenet Drive Tool");  
@@ -590,6 +604,7 @@ export default function DoenetDriveTool(props) {
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /><SaveVersionControl branchId={branchId} /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
   }
+  
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
@@ -601,9 +616,9 @@ export default function DoenetDriveTool(props) {
     history.push("?" + encodeParams(newParams));
   }
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
-  let drivesIds = ''; 
-  if (drivesInfo.state === "hasValue"){
-      drivesIds = drivesInfo.contents.driveIdsAndLabels;
+  let drivesIds = [];
+  if (drivesInfo.state === "hasValue") {
+    drivesIds = drivesInfo.contents.driveIdsAndLabels;
   }
   // Breadcrumb container
   let routePathDriveId = "";
@@ -611,19 +626,23 @@ export default function DoenetDriveTool(props) {
     new URLSearchParams(props.route.location.search)
   );
   if (urlParamsObj?.path !== undefined) {
-    [
-      routePathDriveId
-    ] = urlParamsObj.path.split(":");
+    [routePathDriveId] = urlParamsObj.path.split(":");
   }
   let breadcrumbContainer = null;
-  if(routePathDriveId){
-    breadcrumbContainer = <BreadcrumbContainer />
+  if (routePathDriveId) {
+    breadcrumbContainer = <BreadcrumbContainer />;
   }
 
-  let drivecardComponent = null ;
-  if(drivesIds && routePathDriveId === ''){
-    drivecardComponent = <DriveCardComponent drivesIds={drivesIds}/>
+  // Drive cards component
+  let drivecardComponent = null;
+  if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
+    drivecardComponent = <DriveCardComponent drivesIds={drivesIds} />;
+  } else if (drivesIds.length === 0 && routePathDriveId === "") {
+    drivecardComponent = (
+      <h2>You have no drives. Add one using the Menu Panel --> </h2>
+    );
   }
+
   return (
     <Tool>
       <navPanel>
@@ -698,56 +717,3 @@ export default function DoenetDriveTool(props) {
     </Tool>
   );
 }
-
-const getTransitions = (drivesIds) => {
-  return useTransition(drivesIds, (item) => item.label, {
-    from: ({ xy, width, height }) => ({ xy, width, height, opacity: 0 }),
-    enter: ({ xy, width, height }) => ({ xy, width, height, opacity: 1 }),
-    update: ({ xy, width, height }) => ({ xy, width, height }),
-    leave: { height: 0, opacity: 0 },
-    config: { mass: 5, tension: 500, friction: 100 },
-    trail: 25,
-  });
-}
-
-// {transitions ? 
-//   transitions?.map(({ item, props: { xy, ...rest } }, index)=>{
-//     console.log(">>>> item", item);
-//     return(
-//      <a.div
-//      className="adiv"
-//      key={index}
-//      style={{
-//        transform: xy.interpolate(
-//          (x, y) => `translate3d(${x}px,${y}px,0)`
-//        ),
-//        ...rest,
-//      }}
-//    >
-//      <div style={{width:'200px',height:'200px'}}><DriveCard driveId={item.driveId} image={item.image} color={item.color}/></div>      
-//    </a.div>
-//     )
-//   })
- 
-//   : null
-// } 
-
-
-
-
-
-
-// {transitions && transitions?.map((item, index)=>{
-//   console.log(">>>> item", item);
-//      return(
-//       <div style={{width:'250px',height:'250px'}}  
-//       tabIndex={index}
-//       onKeyDown={(e)=>handleKeyDown(e,item)} 
-//       onDoubleClick = {()=>driveCardSelector(item)}>
-//         <DriveCard driveId={item.driveId} 
-//         // image={item.image} 
-//         // color={item.color} 
-//         label={item.label}/>
-//         </div>      
-//      )
-//    })}
