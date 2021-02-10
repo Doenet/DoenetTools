@@ -717,13 +717,6 @@ export default function DoenetDriveTool(props) {
     drivesIds = drivesInfo.contents.driveIdsAndLabels;
   }
   // Breadcrumb container
-  let routePathDriveId = "";
-  let urlParamsObj = Object.fromEntries(
-    new URLSearchParams(props.route.location.search)
-  );
-  if (urlParamsObj?.path !== undefined) {
-    [routePathDriveId] = urlParamsObj.path.split(":");
-  }
   let breadcrumbContainer = null;
   if (routePathDriveId) {
     breadcrumbContainer = <BreadcrumbContainer />;
@@ -738,6 +731,15 @@ export default function DoenetDriveTool(props) {
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
     );
   }
+  
+  let mainPanelStyle ={
+    height:'100%',
+    width:'100%'
+  }
+  if(routePathDriveId === ''){
+    mainPanelStyle = {}
+  }
+  
 
   return (
     <Tool>
@@ -760,7 +762,8 @@ export default function DoenetDriveTool(props) {
         onClick={()=>{
           clearSelections();
         }}
-        style={{height:"100%",width:"100%"}}>
+        style={mainPanelStyle}
+        >
         <Drive types={['content','course']}  urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
           setOverlayOpen({
@@ -776,9 +779,9 @@ export default function DoenetDriveTool(props) {
             }
           });
           }}/>
-      
+      {drivecardComponent}
         </div>
-        {drivecardComponent}
+        
           
         </mainPanel>
       <supportPanel>
