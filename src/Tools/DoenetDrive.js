@@ -94,12 +94,27 @@ const editorDoenetMLAtom = atom({
   default:""
 })
 
+const cancelAutoSaveAtom = atom({
+  key:"cancelAutoSaveAtom",
+  default:false
+})
+
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
+  const [cancelAutoSave,setCancelAutoSave] = useRecoilState(cancelAutoSaveAtom);
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
+
+  if (cancelAutoSave){
+    if (autosavetimeout.current !== null){
+      clearTimeout(autosavetimeout.current)
+    }
+    setCancelAutoSave(false);
+  }
+
+  //Used to work around second mount of codemirror with the same value it doesn't display value
   const trackMount = useRef("Init");
   let value = editorDoenetML;
   if (trackMount.current === "Init"){
@@ -122,7 +137,7 @@ function TextEditor(props){
       autosavetimeout.current = setTimeout(function(){
         setVersion({instructions:{type:"Autosave"}})
         autosavetimeout.current = null;
-      },20000) //TODO: Make 5 minutes 300000
+      },5000) //TODO: Make 5 minutes 300000
     }
   }}
   // onChange={(editor, data, value) => {
@@ -298,10 +313,11 @@ function VersionHistoryPanel(props){
 
 function NameCurrentVersionControl(props){
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
-
+  const setCancelAutoSave = useSetRecoilState(cancelAutoSaveAtom);
   return <>
   <button onClick={()=>{
     setVersion({instructions:{type:"Name Current Version"}})
+    setCancelAutoSave(true);
     }}>Name Current Version</button>
   </>
   
