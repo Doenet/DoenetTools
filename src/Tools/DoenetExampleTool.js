@@ -1,5 +1,6 @@
 import React from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 import Drive from "../imports/Drive";
 import AddItem from "../imports/AddItem";
 import { useSetRecoilState, useRecoilValue } from "recoil";
@@ -24,8 +25,11 @@ function OverlayDataViwer() {
 }
 
 export default function DoenetExampleTool() {
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // console.log("=== DoenetExampleTool");
+
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const setOpenMenuPanel = useMenuPanelController();
+  setOpenMenuPanel(1); //array ID index of the desired panel
 
   return (
     <Tool>
@@ -40,6 +44,9 @@ export default function DoenetExampleTool() {
         <BreadcrumbContainer />
         <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+        <div
+          style={{ width: "80px", height: "2000px", backgroundColor: "red" }}
+        />
       </mainPanel>
 
       <supportPanel width="40%">
@@ -84,17 +91,6 @@ export default function DoenetExampleTool() {
 
         <menuPanel title="control">
           <p>control important stuff</p>
-          <button
-            onClick={() => {
-              setOverlayOpen({
-                instructions: {
-                  action: "close",
-                },
-              });
-            }}
-          >
-            Go Back
-          </button>
           <div>
             <button
               onClick={() => {
@@ -134,17 +130,45 @@ export default function DoenetExampleTool() {
 
         <menuPanel title="edit">
           <p>control important stuff</p>
-          <button
-            onClick={() => {
-              setOverlayOpen({
-                instructions: {
-                  action: "close",
-                },
-              });
-            }}
-          >
-            Go Back
-          </button>
+          <div>
+            <button
+              onClick={() => {
+                setOverlayOpen({
+                  name: "cal2",
+                  instructions: {
+                    action: "open",
+                    supportVisble: false,
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal2">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <p>control important stuff</p>
         </menuPanel>
 
         <menuPanel title="other">

@@ -5,7 +5,7 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 // import MenuItem from './menuItem.js';
 
-const DropDown = styled.div`
+const DropDown = styled(animated.div)`
   text-align: center;
   color: black;
   padding: 0px;
