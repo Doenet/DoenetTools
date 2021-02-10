@@ -98,15 +98,19 @@ function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
 
-  console.log(">>>editorDoenetML",editorDoenetML)
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
+  const trackMount = useRef("Init");
+  let value = editorDoenetML;
+  if (trackMount.current === "Init"){
+    value = "";
+  }
 
   return <CodeMirror
-  value={editorDoenetML}
+  editorDidMount={()=>trackMount.current = "Mount"}
+  value={value}
   // options={options}
   onBeforeChange={(editor, data, value) => {
-    console.log(">>>onBeforeChange",value)
     setEditorDoenetML(value)
     if (timeout.current === null){
       timeout.current = setTimeout(function(){
