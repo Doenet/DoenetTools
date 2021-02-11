@@ -16,6 +16,7 @@ $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$sortOrder = mysqli_real_escape_string($conn,$_REQUEST["sortOrder"]);
 
 $success = TRUE;
 $results_arr = array();
@@ -45,9 +46,9 @@ if ($success){
   if ($type == 'Folder'){
     $sql="
   INSERT INTO drive_content
-  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
   VALUES
-  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL,'$sortOrder')
   ";
 
   $result = $conn->query($sql); 
@@ -55,9 +56,9 @@ if ($success){
   }else if ($type == 'Url'){
     $sql="
   INSERT INTO drive_content
-  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
   VALUES
-  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL)
+  ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL,'$sortOrder')
   ";
 
   $result = $conn->query($sql); 
@@ -71,9 +72,9 @@ if ($success){
 
     $sql="
     INSERT INTO drive_content
-    (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId)
+    (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
     VALUES
-    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId')
+    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId''$sortOrder')
     ";
     
     $result = $conn->query($sql); 

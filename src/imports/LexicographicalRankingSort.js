@@ -33,7 +33,7 @@ const CHAR_B_ALPHACODE = 98;          // char code for 'b'
 const CHAR_Z_ALPHACODE = 122;         // char code for 'z'
 
 export default function getSortOrder(prev, next) {
-  var p, n, pos = 0, newOrder = "";
+  let p, n, pos = 0, newOrder = "";
 
   // find first non-matching character
   while (p == n) {

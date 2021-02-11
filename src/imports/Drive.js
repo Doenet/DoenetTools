@@ -227,6 +227,7 @@ export const folderDictionarySelector = selectorFamily({
           label:instructions.label,
           type:instructions.itemType,
           branchId,
+          sortOrder: newItem.sortOrder,
          };
         const payload = { params: data };
 
