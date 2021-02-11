@@ -74,7 +74,7 @@ if ($success){
     INSERT INTO drive_content
     (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
     VALUES
-    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId''$sortOrder')
+    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId','$sortOrder')
     ";
     
     $result = $conn->query($sql); 
