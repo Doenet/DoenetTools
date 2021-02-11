@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 
@@ -445,69 +445,85 @@ const ItemInfo = function (){
   </div>
 }
 
+function AddContentDriveButton(props){
+
+  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+
+  return <Button text="Add Content Drive" callback={()=>alert("add")}/>
+}
+
+function AddCourseDriveButton(props){
+
+  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+
+  return <Button text="Add Course Drive" callback={()=>alert("add")}/>
+}
+
 function AddMenuPanel(props){
-  let path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
-  if (!path){path = ":"}
+  let path = ":";
+  if (props?.route?.location?.search){
+      path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+  }
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-  const [drivesInfo,setNewDrive] = useRecoilState(fetchDrivesSelector)
   const history = useHistory();
 
-  var activeDriveInfo = {};
-  for (const driveObj of drivesInfo.driveIdsAndLabels){
-    if (driveObj.driveId === driveId){
-      activeDriveInfo = driveObj;
-      break;
-    }
-  }
+
+  let addDrives = <>
+  <Suspense fallback={<p>Failed to make add drive button</p>} >
+     <AddContentDriveButton />
+   </Suspense>
+   <Suspense fallback={<p>Failed to make add drive button</p>} >
+     <AddCourseDriveButton />
+   </Suspense>
+   </>
+
+let [folderLabel,setFolderLabel] = useState("")
+let [doenetMLLabel,setDoenetMLLabel] = useState("")
+
+  if (driveId === ""){ return <>{addDrives}</>; }
 
 
-  let [folderLabel,setFolderLabel] = useState("")
-  let [doenetMLLabel,setDoenetMLLabel] = useState("")
+
   // let [URLLabel,setURLLabel] = useState("")
   // let [URLLink,setURLLink] = useState("")
-  let [driveLabel,setDriveLabel] = useState("")
-  let [courseDriveLabel,setCourseDriveLabel] = useState("")
+  // let [driveLabel,setDriveLabel] = useState("")
+  // let [courseDriveLabel,setCourseDriveLabel] = useState("")
 
 
 
-  let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
-  <h3>Content Drive</h3>
-  <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
-    const label = driveLabel === "" ? "Untitled" : driveLabel;
-    let newDriveId = nanoid();
-    setNewDrive({label,type:"new content drive",driveId,newDriveId})
-    setDriveLabel("")
-    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-    history.push('?'+encodeParams(newParams))
-    }} text="New Drive" />
-</div>]
+//   let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
+//   <h3>Content Drive</h3>
+//   <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
+//     const label = driveLabel === "" ? "Untitled" : driveLabel;
+//     let newDriveId = nanoid();
+//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
+//     setDriveLabel("")
+//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     history.push('?'+encodeParams(newParams))
+//     }} text="New Drive" />
+// </div>]
 
-if (driveId === ""){
-  return <>{addDrive}</>
-}
+//   addDrive.push(<div key="course from content drive">
+//   <h3>Make a Course Drive</h3>
+// <label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
+//   const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
+//   let newDriveId = nanoid();
+//   setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
+//   setCourseDriveLabel("")
+//   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     history.push('?'+encodeParams(newParams))
+//   }} text="Make Course" />
+// </div>)
 
-if (activeDriveInfo?.type === 'content'){
-  addDrive.push(<div key="course from content drive">
-  <h3>Make a Course Drive</h3>
-<label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
-  const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
-  let newDriveId = nanoid();
-  setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
-  setCourseDriveLabel("")
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-    history.push('?'+encodeParams(newParams))
-  }} text="Make Course" />
-</div>)
-}
 
 
   return <>
- {addDrive}
+   {addDrives}
   <hr width="100"/>
   <h3>Folder</h3>
   <div>

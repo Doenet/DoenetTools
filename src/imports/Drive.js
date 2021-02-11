@@ -139,6 +139,9 @@ export const folderDictionary = atomFamily({
   default:selectorFamily({
     key:"folderDictionary/Default",
     get:(driveIdFolderId)=>({get})=>{
+      if (driveIdFolderId.driveId === ""){
+        return {folderInfo:{},contentsDictionary:{},contentIds:{}}
+      }
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
       let defaultOrder = [];
       let contentsDictionary = {};
