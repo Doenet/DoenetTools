@@ -16,17 +16,15 @@ import {
   RecoilRoot,
 } from 'recoil';
 
-import DoenetTemp from '../Tools/DoenetTemp';
+import  DoenetDateTime from "../Tools/DoenetDateTime";
 
     ReactDOM.render(
       <DropTargetsProvider>
         <BreadcrumbProvider>
           <RecoilRoot>
             <Router >
-              <Switch>
-                <Route path="/" render={(routeprops)=>
-                  <DoenetTemp route={{...routeprops}} />} />
-              </Switch>
+              <Route path="/" render={()=>
+                <DoenetDateTime  onDateChange = {(date) => console.log(date)} /> }/>
             </Router>
           </RecoilRoot>
         </BreadcrumbProvider>
