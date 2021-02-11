@@ -646,6 +646,20 @@ export const fetchDrivesSelector = selector({
     const payload = { params }
     axios.get("/api/addDrive.php", payload)
   // .then((resp)=>console.log(">>>resp",resp.data))
+    }else if (labelTypeDriveId.type === "new course drive"){
+      newDrive = {
+        courseId:null,
+        driveId:labelTypeDriveId.newDriveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "course"
+      }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
     }else if (labelTypeDriveId.type === "make course drive from content drive"){
       const sourceDriveId = labelTypeDriveId.driveId;
       params['sourceDriveId'] = sourceDriveId;

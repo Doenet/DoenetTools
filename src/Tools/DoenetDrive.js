@@ -446,17 +446,40 @@ const ItemInfo = function (){
 }
 
 function AddContentDriveButton(props){
+  const history = useHistory();
 
   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Content Drive" callback={()=>alert("add")}/>
+  return <Button text="Add Content Drive" callback={()=>{
+    let driveId = null;
+    let newDriveId = nanoid();
+    let label = "Untitled";
+    setNewDrive({label,type:"new content drive",driveId,newDriveId})
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    let newParams = {...urlParamsObj} 
+    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    newParams['path'] = `:::`
+    history.push('?'+encodeParams(newParams))
+  }}/>
 }
 
 function AddCourseDriveButton(props){
+  const history = useHistory();
 
   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Course Drive" callback={()=>alert("add")}/>
+  return <Button text="Add Course Drive" callback={()=>{
+    let driveId = null;
+    let newDriveId = nanoid();
+    let label = "Untitled";
+    setNewDrive({label,type:"new course drive",driveId,newDriveId})
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    let newParams = {...urlParamsObj} 
+    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    newParams['path'] = `:::`
+    history.push('?'+encodeParams(newParams))
+
+  }}/>
 }
 
 function AddMenuPanel(props){
@@ -466,15 +489,14 @@ function AddMenuPanel(props){
   }
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-  const history = useHistory();
 
 
   let addDrives = <>
-  <Suspense fallback={<p>Failed to make add drive button</p>} >
-     <AddContentDriveButton />
+  <Suspense fallback={<p>Failed to make add content drive button</p>} >
+     <AddContentDriveButton route={props.route} />
    </Suspense>
-   <Suspense fallback={<p>Failed to make add drive button</p>} >
-     <AddCourseDriveButton />
+   <Suspense fallback={<p>Failed to make add course drive button</p>} >
+     <AddCourseDriveButton route={props.route} />
    </Suspense>
    </>
 
@@ -804,7 +826,7 @@ export default function DoenetDriveTool(props) {
       <Drive types={['content','course']}  urlClickBehavior="select" />
       </supportPanel>
 
-      <menuPanel title="Item Info">
+      <menuPanel title="Selected">
         {/* <ItemInfo route={props.route} /> */}
         <ItemInfo  />
       </menuPanel>
