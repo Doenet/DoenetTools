@@ -445,30 +445,30 @@ const ItemInfo = function (){
   </div>
 }
 
-function AddContentDriveButton(props){
-  const history = useHistory();
+// function AddContentDriveButton(props){
+//   const history = useHistory();
 
-  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+//   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Content Drive" callback={()=>{
-    let driveId = null;
-    let newDriveId = nanoid();
-    let label = "Untitled";
-    setNewDrive({label,type:"new content drive",driveId,newDriveId})
-    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-    newParams['path'] = `:::`
-    history.push('?'+encodeParams(newParams))
-  }}/>
-}
+//   return <Button text="Add Content Drive" callback={()=>{
+//     let driveId = null;
+//     let newDriveId = nanoid();
+//     let label = "Untitled";
+//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
+//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     newParams['path'] = `:::`
+//     history.push('?'+encodeParams(newParams))
+//   }}/>
+// }
 
 function AddCourseDriveButton(props){
   const history = useHistory();
 
   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Course Drive" callback={()=>{
+  return <Button text="Create a New Course" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
@@ -492,9 +492,6 @@ function AddMenuPanel(props){
 
 
   let addDrives = <>
-  <Suspense fallback={<p>Failed to make add content drive button</p>} >
-     <AddContentDriveButton route={props.route} />
-   </Suspense>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
      <AddCourseDriveButton route={props.route} />
    </Suspense>
