@@ -45,7 +45,20 @@ import { useTransition, a, useSprings, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
 
+export const drivecardSelectedNodesAtom = atom({
+  key:'drivecardSelectedNodesAtom',
+  default:[]
+})
 
+const selectedDriveInformation = selector({
+  key:"selectedDriveInformation",
+   get: ({get})=>{
+    const driveSelected = get(drivecardSelectedNodesAtom);
+    console.log(">>>> driveSelected",driveSelected)
+
+    return driveSelected;
+  }
+})
 const itemVersionsSelector = selectorFamily({
   key:"itemInfoSelector",
   get:(branchId)=> async ()=>{
@@ -392,8 +405,19 @@ return null;
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
+  const driveInfoLoad = useRecoilValueLoadable(selectedDriveInformation);
+  console.log(">>>> driveInfoLoad", driveInfoLoad);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
+
+  if (driveInfoLoad.state === "loading"){ return null;}
+  if (driveInfoLoad.state === "hasError"){ 
+    console.error(driveInfoLoad.contents)
+    return null;}
+ 
+    let drivecardInfo = driveInfoLoad?.contents?.drivecardInfo;
+
+
 
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
@@ -445,6 +469,9 @@ const ItemInfo = function (){
   </div>
 }
 
+const driveSelectedInfo = function(){
+
+}
 function AddMenuPanel(props){
   let path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   if (!path){path = ":"}
@@ -620,6 +647,16 @@ const DriveCardComponent = React.memo((props) => {
   const [on, toggle] = useState(false);
   const textUse = useRef();
 
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
+ const drivecardselection = (e,item) =>{
+   e.preventDefault();
+   e.stopPropagation();
+   console.log('>>>> drivecard selection', item);
+   console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
+
+  setDrivecardSelection((old) => [...old,item]);
+ }
   return (
     <div className="drivecardContainer">
       {transitions.map(({ item, props }, index) => {
@@ -629,8 +666,8 @@ const DriveCardComponent = React.memo((props) => {
             className="adiv"
             key={index}
             ref={textUse}
-            onMouseOver={() => toggle(props.scale.setValue(1.1))}
-            onMouseLeave={() => toggle(props.scale.setValue(1))}
+            // onMouseOver={() => toggle(props.scale.setValue(1.1))}
+            // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
                 (scale) => `scale(${props.scale.value})`
@@ -640,7 +677,10 @@ const DriveCardComponent = React.memo((props) => {
           >
             <div
               className="drivecardlist"
+              // tabIndex={index}
               tabIndex={index}
+              // onclick scale
+              onClick = {(e) => drivecardselection(e,item)}
               onKeyDown={(e) => handleKeyDown(e, item)}
               onDoubleClick={() => driveCardSelector(item)}
             >
@@ -666,6 +706,7 @@ export default function DoenetDriveTool(props) {
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
@@ -707,9 +748,18 @@ export default function DoenetDriveTool(props) {
   const history = useHistory();
 
   function useOutsideDriveSelector() {
+
     let newParams = {};
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
+  }
+  function cleardrivecardSelection(){
+    console.log("#EDRF!!!!!!!!!!!!!!!")
+    setDrivecardSelection([]);
+    console.log(">>>> setDrivecardSelection", drivecardSelectedValue);
+    // let newParams = {};
+    // newParams["path"] = `:::`;
+    // history.push("?" + encodeParams(newParams));
   }
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let drivesIds = [];
@@ -725,7 +775,7 @@ export default function DoenetDriveTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent drivesIds={drivesIds} />;
+    drivecardComponent = <DriveCardComponent style={mainPanelStyle} drivesIds={drivesIds}/>;
   } else if (drivesIds.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
@@ -760,7 +810,7 @@ export default function DoenetDriveTool(props) {
       {breadcrumbContainer}
         <div 
         onClick={()=>{
-          clearSelections();
+          clearSelections()
         }}
         style={mainPanelStyle}
         >
@@ -779,7 +829,18 @@ export default function DoenetDriveTool(props) {
             }
           });
           }}/>
-      {drivecardComponent}
+
+     
+        </div>
+
+        <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        style={{width:"100%",height:"100%"}}
+        >
+       {drivecardComponent}
         </div>
         
           
