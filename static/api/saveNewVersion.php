@@ -17,6 +17,7 @@ $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $draft = mysqli_real_escape_string($conn,$_POST["draft"]);
+$isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
 
 //Add new version to content table
 //TODO: Update draft version (Overwrite BranchId named file)
@@ -51,7 +52,8 @@ if ($draft){
     contentId='$contentId', 
     title='$title',
     timestamp=NOW(),
-    isDraft='0'
+    isDraft='0',
+    isNamed='$isNamed'
     ";
 
     $result = $conn->query($sql);

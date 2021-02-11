@@ -84,13 +84,13 @@ if ($init == 'true'){
   dc.isPublished as isPublished,
   dc.itemType as itemType,
   dc.branchId as branchId,
-  dc.contentId as contentId,
   dc.assignmentId as assignmentId,
   dc.urlId as urlId,
   dc.isAssignment as isAssignment,
   u.url as url,
   u.description as urlDescription,
   a.title as assignment_title,
+  a.contentId as contentId,
   a.isPublished as assignment_isPublished
 FROM drive_content AS dc
 LEFT JOIN url AS u
@@ -134,13 +134,13 @@ ON dc.assignmentId = a.assignmentId
     dc.isPublished as isPublished,
     dc.itemType as itemType,
     dc.branchId as branchId,
-    dc.contentId as contentId,
     dc.assignmentId as assignmentId,
     dc.urlId as urlId,
     dc.isAssignment as isAssignment,
     u.url as url,
     u.description as urlDescription,
     a.title as assignment_title,
+    a.contentId as contentId,
     a.isPublished as assignment_isPublished
   FROM drive_content AS dc
   LEFT JOIN url AS u
