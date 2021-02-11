@@ -3,7 +3,21 @@ import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
-import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown, faUsersSlash, faUsers, faUserEdit, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, 
+  faLink, 
+  faCode, 
+  faFolder,
+  faChevronRight, 
+  faChevronDown, 
+  faSortUp, 
+  faSortDown, 
+  faUsersSlash, 
+  faUsers, 
+  faUserEdit, 
+  faSort,
+  faBookOpen,
+  faChalkboard
+ } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -139,6 +153,9 @@ export const folderDictionary = atomFamily({
   default:selectorFamily({
     key:"folderDictionary/Default",
     get:(driveIdFolderId)=>({get})=>{
+      if (driveIdFolderId.driveId === ""){
+        return {folderInfo:{},contentsDictionary:{},contentIds:{}}
+      }
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
       let defaultOrder = [];
       let contentsDictionary = {};
@@ -629,6 +646,20 @@ export const fetchDrivesSelector = selector({
     const payload = { params }
     axios.get("/api/addDrive.php", payload)
   // .then((resp)=>console.log(">>>resp",resp.data))
+    }else if (labelTypeDriveId.type === "new course drive"){
+      newDrive = {
+        courseId:null,
+        driveId:labelTypeDriveId.newDriveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "course"
+      }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
     }else if (labelTypeDriveId.type === "make course drive from content drive"){
       const sourceDriveId = labelTypeDriveId.driveId;
       params['sourceDriveId'] = sourceDriveId;
@@ -738,8 +769,6 @@ function Folder(props){
   if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-
-  
  
   if (folderInfoObj.state === "loading"){ return null;}
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
@@ -787,7 +816,14 @@ function Folder(props){
   }
 
   let label = folderInfo?.label;
-  let folder = <div
+
+  let folder = null;
+  let items = null;
+
+  if (!props.driveObj){
+
+
+  folder = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
@@ -850,11 +886,15 @@ function Folder(props){
         gridTemplateRows: '1fr',
         alignContent: 'center'
       }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> {deleteButton}</div></div>
+    
+    
+    } else if (props.driveObj && props.isNav){
 
-  let items = null;
-  
-  if (props.driveObj){
-    //Root of Drive
+    let driveIcon = <FontAwesomeIcon icon={faBookOpen}/>;
+    if (props.driveObj?.type === "course"){
+      driveIcon = <FontAwesomeIcon icon={faChalkboard}/>;
+    }
+    //Root of Drive and in navPanel
     label = props.driveObj.label;
     folder = <>
     <div
@@ -886,7 +926,7 @@ function Folder(props){
         setSelectedDrive(props.driveId);
       }
     }
-    >Drive {label}</div></>
+    >{driveIcon} {label}</div></>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-driveinstanceid={props.driveInstanceId}
