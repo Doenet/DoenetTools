@@ -519,7 +519,6 @@ const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] })
   }
 
   const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
-  console.log(">>> new order", prevItemOrder, nextItemOrder, sortOrder);
   return sortOrder;
 }
 
