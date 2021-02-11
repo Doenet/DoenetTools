@@ -88,6 +88,7 @@ if ($init == 'true'){
   dc.assignmentId as assignmentId,
   dc.urlId as urlId,
   dc.isAssignment as isAssignment,
+  dc.sortOrder as sortOrder,
   u.url as url,
   u.description as urlDescription,
   a.title as assignment_title,
@@ -118,8 +119,8 @@ ON dc.assignmentId = a.assignmentId
     "urlDescription"=>$row['urlDescription'],
     "assignment_title"=>$row['assignment_title'],
     "assignment_isPublished"=>$row['assignment_isPublished'],
-    "isAssignment"=>$row['isAssignment']
-    
+    "isAssignment"=>$row['isAssignment'],
+    "sortOrder"=>$row['sortOrder']
   );
   array_push($results_arr,$item);
   }
@@ -138,6 +139,7 @@ ON dc.assignmentId = a.assignmentId
     dc.assignmentId as assignmentId,
     dc.urlId as urlId,
     dc.isAssignment as isAssignment,
+    dc.sortOrder as sortOrder,
     u.url as url,
     u.description as urlDescription,
     a.title as assignment_title,
@@ -179,7 +181,8 @@ ON dc.assignmentId = a.assignmentId
       "assignment_isPublished"=>$assignment_isPublished,
       "assignmentId"=>$assignmentId,
       "assignment_title"=>$assignment_title,
-      "isAssignment"=>$isAssignment
+      "isAssignment"=>$isAssignment,
+      "sortOrder"=>$row['sortOrder']
     );
     array_push($results_arr,$item);
     }
