@@ -26,6 +26,7 @@ import {
   WithDropTarget  
 } from '../imports/DropTarget';
 import Draggable from '../imports/Draggable';
+import getSortOrder from '../imports/LexicographicalRankingSort';
 
 import { BreadcrumbContext } from '../imports/Breadcrumb';
 
@@ -170,7 +171,7 @@ export const folderDictionary = atomFamily({
           folderInfo = item;
         }
       }
-
+      defaultOrder = sortItems({sortKey: sortOptions.DEFAULT, nodeObjs: contentsDictionary, defaultFolderChildrenIds: defaultOrder});
       contentIds[sortOptions.DEFAULT] = defaultOrder;
       return {folderInfo,contentsDictionary,contentIds}
     } 
@@ -210,16 +211,23 @@ export const folderDictionarySelector = selectorFamily({
           url: instructions.url,
           urlDescription: null,
           urlId: null,
+          sortOrder: "",
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
-          newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
+          const newOrder = getLexicographicOrder({
+            index, 
+            nodeObjs: newObj.contentsDictionary, 
+            defaultFolderChildrenIds: newDefaultOrder 
+          });
+          newItem.sortOrder = newOrder;
           newDefaultOrder.splice(index+1, 0, itemId);
-          newObj.contentIds = {}
           newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+          newObj.contentsDictionary[itemId] = newItem;
+          // newObj.folderInfo.dirty = 1;
           return newObj;
         })
         if (instructions.itemType === "Folder"){
@@ -236,6 +244,7 @@ export const folderDictionarySelector = selectorFamily({
           label:instructions.label,
           type:instructions.itemType,
           branchId,
+          sortOrder: newItem.sortOrder,
          };
         const payload = { params: data };
 
@@ -473,8 +482,11 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   let tempArr = [...defaultFolderChildrenIds];
   switch (sortKey) {
     case sortOptions.DEFAULT:
-      // TODO: placeholder for sorting lexicographical sort
-    break;
+      tempArr.sort(
+        (a,b) => { 
+          return (nodeObjs[a].sortOrder.localeCompare(nodeObjs[b].sortOrder))}
+      );
+      break;
     case sortOptions.LABEL_ASC:
       tempArr.sort(
         (a,b) => { 
@@ -502,6 +514,30 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   }
   return tempArr;
 };
+
+const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] }) => {
+  let prevItemId = "";
+  let nextItemId = "";
+  let prevItemOrder = "";
+  let nextItemOrder = "";
+
+  if (defaultFolderChildrenIds.length !== 0) {
+    if (index <= 0) {
+      nextItemId = defaultFolderChildrenIds[0];
+    } else if (index >= defaultFolderChildrenIds.length - 1) {
+      prevItemId = defaultFolderChildrenIds[defaultFolderChildrenIds.length - 1];
+    } else {
+      nextItemId = defaultFolderChildrenIds[index];
+      prevItemId = defaultFolderChildrenIds[index - 1];
+    }
+    
+    if (nodeObjs[prevItemId]) prevItemOrder = nodeObjs?.[prevItemId]?.sortOrder ?? "";
+    if (nodeObjs[nextItemId]) nextItemOrder = nodeObjs?.[nextItemId]?.sortOrder ?? "";
+  }
+
+  const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
+  return sortOrder;
+}
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
