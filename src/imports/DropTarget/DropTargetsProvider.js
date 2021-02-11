@@ -20,7 +20,7 @@ export default function DropTargetsProvider({ children }) {
         if (dropTargetId === ignoreId) continue;
         const refs = dropTargetsRef.current[dropTargetId]?.refs;
         for (let ref of refs) {
-          if (underCursor.includes(ref)) return dropTargetId;
+          if (underCursor.includes(ref)) return [dropTargetId, ref];
         } 
       }
       return null;
@@ -47,11 +47,21 @@ export default function DropTargetsProvider({ children }) {
 
   const handleDrag = useCallback(
     (x, y, selfId = null) => {
-      const dropTargetId = getDropTargetFromCursor(x, y, selfId);
-      // trigger onDrag once
-      if (activeDropTargetId !== dropTargetId) {
-        setActiveDropTargetId(dropTargetId);
+      const dropTarget = getDropTargetFromCursor(x, y, selfId);
+      let dropTargetId = "", dropTargetRef = null;
+      if (dropTarget) [dropTargetId, dropTargetRef] = dropTarget;
+      
+      // // trigger onDrag once
+      // if (activeDropTargetId !== dropTargetId) {
+      //   setActiveDropTargetId(dropTargetId);
+      //   dropTargetsRef.current[dropTargetId]?.onDragOver();
+      //   console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
+      // }
+
+      setActiveDropTargetId(dropTargetId);
+      if (dropTargetId) {
         dropTargetsRef.current[dropTargetId]?.onDragOver();
+        console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
       }
     },
     [activeDropTargetId, getDropTargetFromCursor]
