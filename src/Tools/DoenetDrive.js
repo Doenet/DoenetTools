@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 
@@ -445,69 +445,107 @@ const ItemInfo = function (){
   </div>
 }
 
-function AddMenuPanel(props){
-  let path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
-  if (!path){path = ":"}
-  let [driveId,folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-  const [drivesInfo,setNewDrive] = useRecoilState(fetchDrivesSelector)
+function AddContentDriveButton(props){
   const history = useHistory();
 
-  var activeDriveInfo = {};
-  for (const driveObj of drivesInfo.driveIdsAndLabels){
-    if (driveObj.driveId === driveId){
-      activeDriveInfo = driveObj;
-      break;
-    }
-  }
+  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-
-  let [folderLabel,setFolderLabel] = useState("")
-  let [doenetMLLabel,setDoenetMLLabel] = useState("")
-  // let [URLLabel,setURLLabel] = useState("")
-  // let [URLLink,setURLLink] = useState("")
-  let [driveLabel,setDriveLabel] = useState("")
-  let [courseDriveLabel,setCourseDriveLabel] = useState("")
-
-
-
-  let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
-  <h3>Content Drive</h3>
-  <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
-    const label = driveLabel === "" ? "Untitled" : driveLabel;
+  return <Button text="Add Content Drive" callback={()=>{
+    let driveId = null;
     let newDriveId = nanoid();
+    let label = "Untitled";
     setNewDrive({label,type:"new content drive",driveId,newDriveId})
-    setDriveLabel("")
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
-    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    newParams['path'] = `:::`
     history.push('?'+encodeParams(newParams))
-    }} text="New Drive" />
-</div>]
-
-if (driveId === ""){
-  return <>{addDrive}</>
+  }}/>
 }
 
-if (activeDriveInfo?.type === 'content'){
-  addDrive.push(<div key="course from content drive">
-  <h3>Make a Course Drive</h3>
-<label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
-  const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
-  let newDriveId = nanoid();
-  setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
-  setCourseDriveLabel("")
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+function AddCourseDriveButton(props){
+  const history = useHistory();
+
+  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+
+  return <Button text="Add Course Drive" callback={()=>{
+    let driveId = null;
+    let newDriveId = nanoid();
+    let label = "Untitled";
+    setNewDrive({label,type:"new course drive",driveId,newDriveId})
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
-    newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+    newParams['path'] = `:::`
     history.push('?'+encodeParams(newParams))
-  }} text="Make Course" />
-</div>)
+
+  }}/>
 }
+
+function AddMenuPanel(props){
+  let path = ":";
+  if (props?.route?.location?.search){
+      path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+  }
+  let [driveId,folderId] = path.split(":");
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
+
+
+  let addDrives = <>
+  <Suspense fallback={<p>Failed to make add content drive button</p>} >
+     <AddContentDriveButton route={props.route} />
+   </Suspense>
+   <Suspense fallback={<p>Failed to make add course drive button</p>} >
+     <AddCourseDriveButton route={props.route} />
+   </Suspense>
+   </>
+
+let [folderLabel,setFolderLabel] = useState("")
+let [doenetMLLabel,setDoenetMLLabel] = useState("")
+
+  if (driveId === ""){ return <>{addDrives}</>; }
+
+
+
+  // let [URLLabel,setURLLabel] = useState("")
+  // let [URLLink,setURLLink] = useState("")
+  // let [driveLabel,setDriveLabel] = useState("")
+  // let [courseDriveLabel,setCourseDriveLabel] = useState("")
+
+
+
+//   let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
+//   <h3>Content Drive</h3>
+//   <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
+//     const label = driveLabel === "" ? "Untitled" : driveLabel;
+//     let newDriveId = nanoid();
+//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
+//     setDriveLabel("")
+//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     history.push('?'+encodeParams(newParams))
+//     }} text="New Drive" />
+// </div>]
+
+//   addDrive.push(<div key="course from content drive">
+//   <h3>Make a Course Drive</h3>
+// <label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
+//   const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
+//   let newDriveId = nanoid();
+//   setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
+//   setCourseDriveLabel("")
+//   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     history.push('?'+encodeParams(newParams))
+//   }} text="Make Course" />
+// </div>)
+
 
 
   return <>
- {addDrive}
+   {addDrives}
   <hr width="100"/>
   <h3>Folder</h3>
   <div>
@@ -788,7 +826,7 @@ export default function DoenetDriveTool(props) {
       <Drive types={['content','course']}  urlClickBehavior="select" />
       </supportPanel>
 
-      <menuPanel title="Item Info">
+      <menuPanel title="Selected">
         {/* <ItemInfo route={props.route} /> */}
         <ItemInfo  />
       </menuPanel>
