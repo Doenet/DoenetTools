@@ -677,19 +677,51 @@ const DriveCardComponent = React.memo((props) => {
   };
   const [on, toggle] = useState(false);
   const textUse = useRef();
-
+  
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  // drive selection 
+  const setOpenMenuPanel = useMenuPanelController();
+  // Drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
-   if (!e.shiftKey && !e.metaKey){
+   setOpenMenuPanel(0);
+  //  console.log(">>> on click selected $$$$$$$$$",drivecardSelectedValue);
+   if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){
-    setDrivecardSelection((old) => [...old,item]);
-  }else if (!e.shiftKey && e.metaKey){
-    setDrivecardSelection((old) => [item]);
+  }else if (e.shiftKey && !e.metaKey){      // ToDo : range to item 
+    
+    setDrivecardSelection((old) => {
+      if(old.length > 0)
+      {
+        let initalIndex = old[0].driveId;
+        return [...old,item];
+        
+      }
+      else{
+        return [...old,item];
+      }
+    }); 
+  }else if (!e.shiftKey && e.metaKey){   // add item
+    setDrivecardSelection((old) =>{
+      console.log(">>>> old", old);
+      let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
+      if(alreadyAvaliable.length > 0)
+      {
+        const arr = [];
+        for(let i = 0;i<old.length;i++)
+        {
+          if(old[i].driveId != item.driveId)
+          {
+            arr.push(old[i]);
+          }
+        }
+        return arr;
+      }
+      else{
+        return [...old,item];
+      }
+    } );
   }
 
   //  console.log('>>>> drivecard selection item', item);
@@ -698,12 +730,17 @@ const DriveCardComponent = React.memo((props) => {
  }
 
  const getSelectedCard = (cardItem) => {
+   if(drivecardSelectedValue.length == 0)
+   {
+     return false;
+   }
   let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
   return avalibleCard.length > 0 ? true : false;
  }
 
   return (
     <div className="drivecardContainer">
+      {/* {drivecardSelectedValue.length} */}
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
