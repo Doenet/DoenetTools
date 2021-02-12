@@ -54,9 +54,10 @@ const selectedDriveInformation = selector({
   key:"selectedDriveInformation",
    get: ({get})=>{
     const driveSelected = get(drivecardSelectedNodesAtom);
-    console.log(">>>> driveSelected",driveSelected)
-
     return driveSelected;
+  },
+  set:(newObj)=>({set})=>{
+    set(drivecardSelectedNodesAtom,(old)=>[...old,newObj])
   }
 })
 const itemVersionsSelector = selectorFamily({
@@ -406,7 +407,7 @@ const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const driveSelections = useRecoilValue(selectedDriveInformation);
-  console.log(">>>> driveSelections", driveSelections);
+  console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
 
@@ -630,7 +631,7 @@ const DriveCardComponent = React.memo((props) => {
   );
   let heights = [];
   // console.log(">>>> props.drivesIds",props.drivesIds );
-  let driveCardItems = props.drivesIds.map((child, i) => {
+  let driveCardItem = props.drivesIds.map((child, i) => {
     heights = new Array(columns).fill(0);
     let width = window.innerWidth - 400;
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
@@ -638,7 +639,7 @@ const DriveCardComponent = React.memo((props) => {
     return { ...child, xy, width: 250, height: 250 };
   });
   if (props.drivesIds.length > 0) {
-    transitions = useTransition(driveCardItems, (item) => item.driveId, {
+    transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
         width,
@@ -679,18 +680,33 @@ const DriveCardComponent = React.memo((props) => {
 
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
+  // drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
-  //  console.log('>>>> drivecard selection item', item);
-   console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
+   if (!e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }else if (e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [...old,item]);
+  }else if (!e.shiftKey && e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }
 
-  setDrivecardSelection((old) => [...old,item]);
+  //  console.log('>>>> drivecard selection item', item);
+  //console.log('>>>> drivecardSelectedValue onclick@@@@@ewfc23456', drivecardSelectedValue);
+
  }
+
+ const getSelectedCard = (cardItem) => {
+  let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
+  return avalibleCard.length > 0 ? true : false;
+ }
+
   return (
     <div className="drivecardContainer">
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
+        let selectedCard = getSelectedCard(item);
         return (
           <a.div
             className="adiv"
@@ -706,7 +722,7 @@ const DriveCardComponent = React.memo((props) => {
             }}
           >
             <div
-              className="drivecardlist"
+              className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
               tabIndex={index}
               // tabIndex={0}
               // onclick scale
@@ -738,6 +754,7 @@ export default function DoenetDriveTool(props) {
   const clearSelections = useSetRecoilState(clearAllSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -784,7 +801,6 @@ export default function DoenetDriveTool(props) {
     history.push("?" + encodeParams(newParams));
   }
   function cleardrivecardSelection(){
-    console.log("#EDRF!!!!!!!!!!!!!!!")
     setDrivecardSelection([]);
     // let newParams = {};
     // newParams["path"] = `:::`;
