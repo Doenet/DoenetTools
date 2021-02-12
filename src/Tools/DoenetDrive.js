@@ -683,7 +683,7 @@ const DriveCardComponent = React.memo((props) => {
    e.preventDefault();
    e.stopPropagation();
   //  console.log('>>>> drivecard selection item', item);
-  //  console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
+   console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
 
   setDrivecardSelection((old) => [...old,item]);
  }
@@ -786,7 +786,6 @@ export default function DoenetDriveTool(props) {
   function cleardrivecardSelection(){
     console.log("#EDRF!!!!!!!!!!!!!!!")
     setDrivecardSelection([]);
-    console.log(">>>> setDrivecardSelection", drivecardSelectedValue);
     // let newParams = {};
     // newParams["path"] = `:::`;
     // history.push("?" + encodeParams(newParams));
