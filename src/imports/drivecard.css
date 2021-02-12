@@ -38,6 +38,10 @@ text-decoration: none;
   /* flex-direction: column;  */
   /* justify-content: space-between;   */
 }
+
+.borderselection{
+  border : 2px solid black;
+}
 .adiv {
   /* position: absolute; */
   will-change: transform, width, height, opacity;

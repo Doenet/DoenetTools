@@ -45,7 +45,21 @@ import { useTransition, a, useSprings, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
 
+export const drivecardSelectedNodesAtom = atom({
+  key:'drivecardSelectedNodesAtom',
+  default:[]
+})
 
+const selectedDriveInformation = selector({
+  key:"selectedDriveInformation",
+   get: ({get})=>{
+    const driveSelected = get(drivecardSelectedNodesAtom);
+    return driveSelected;
+  },
+  set:(newObj)=>({set})=>{
+    set(drivecardSelectedNodesAtom,(old)=>[...old,newObj])
+  }
+})
 const itemVersionsSelector = selectorFamily({
   key:"itemInfoSelector",
   get:(branchId)=> async ()=>{
@@ -392,8 +406,13 @@ return null;
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
+  const driveSelections = useRecoilValue(selectedDriveInformation);
+  console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
+
+
+
 
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
@@ -611,15 +630,16 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  let driveCardItems = props.drivesIds.map((child, i) => {
+  // console.log(">>>> props.drivesIds",props.drivesIds );
+  let driveCardItem = props.drivesIds.map((child, i) => {
     heights = new Array(columns).fill(0);
     let width = window.innerWidth - 400;
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: 250, height: 250 };
   });
-  if (props.drivesIds) {
-    transitions = useTransition(driveCardItems, (item) => item.label, {
+  if (props.drivesIds.length > 0) {
+    transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
         width,
@@ -658,17 +678,42 @@ const DriveCardComponent = React.memo((props) => {
   const [on, toggle] = useState(false);
   const textUse = useRef();
 
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
+  // drive selection 
+  const drivecardselection = (e,item) =>{
+   e.preventDefault();
+   e.stopPropagation();
+   if (!e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }else if (e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [...old,item]);
+  }else if (!e.shiftKey && e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }
+
+  //  console.log('>>>> drivecard selection item', item);
+  //console.log('>>>> drivecardSelectedValue onclick@@@@@ewfc23456', drivecardSelectedValue);
+
+ }
+
+ const getSelectedCard = (cardItem) => {
+  let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
+  return avalibleCard.length > 0 ? true : false;
+ }
+
   return (
     <div className="drivecardContainer">
       {transitions.map(({ item, props }, index) => {
-        //  console.log(">>>  item !!!!!!!!", props);
+        //  console.log(">>>  item props !!!!!!!!", item);
+        let selectedCard = getSelectedCard(item);
         return (
           <a.div
             className="adiv"
             key={index}
             ref={textUse}
-            onMouseOver={() => toggle(props.scale.setValue(1.1))}
-            onMouseLeave={() => toggle(props.scale.setValue(1))}
+            // onMouseOver={() => toggle(props.scale.setValue(1.1))}
+            // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
                 (scale) => `scale(${props.scale.value})`
@@ -677,8 +722,11 @@ const DriveCardComponent = React.memo((props) => {
             }}
           >
             <div
-              className="drivecardlist"
+              className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
               tabIndex={index}
+              // tabIndex={0}
+              // onclick scale
+              onClick = {(e) => drivecardselection(e,item)}
               onKeyDown={(e) => handleKeyDown(e, item)}
               onDoubleClick={() => driveCardSelector(item)}
             >
@@ -689,7 +737,7 @@ const DriveCardComponent = React.memo((props) => {
                 label={item.label}
               />
             </div>
-          </a.div>
+           </a.div>
         );
       })}
     </div>
@@ -704,7 +752,9 @@ export default function DoenetDriveTool(props) {
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -745,9 +795,16 @@ export default function DoenetDriveTool(props) {
   const history = useHistory();
 
   function useOutsideDriveSelector() {
+
     let newParams = {};
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
+  }
+  function cleardrivecardSelection(){
+    setDrivecardSelection([]);
+    // let newParams = {};
+    // newParams["path"] = `:::`;
+    // history.push("?" + encodeParams(newParams));
   }
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let drivesIds = [];
@@ -763,7 +820,7 @@ export default function DoenetDriveTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent drivesIds={drivesIds} />;
+    drivecardComponent = <DriveCardComponent style={mainPanelStyle} drivesIds={drivesIds}/>;
   } else if (drivesIds.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
@@ -798,7 +855,7 @@ export default function DoenetDriveTool(props) {
       {breadcrumbContainer}
         <div 
         onClick={()=>{
-          clearSelections();
+          clearSelections()
         }}
         style={mainPanelStyle}
         >
@@ -817,7 +874,18 @@ export default function DoenetDriveTool(props) {
             }
           });
           }}/>
-      {drivecardComponent}
+
+     
+        </div>
+
+        <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        style={{width:"100%",height:"100%"}}
+        >
+       {drivecardComponent}
         </div>
         
           
