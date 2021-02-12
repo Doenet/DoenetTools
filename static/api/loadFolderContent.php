@@ -84,13 +84,14 @@ if ($init == 'true'){
   dc.isPublished as isPublished,
   dc.itemType as itemType,
   dc.branchId as branchId,
-  dc.contentId as contentId,
   dc.assignmentId as assignmentId,
   dc.urlId as urlId,
   dc.isAssignment as isAssignment,
+  dc.sortOrder as sortOrder,
   u.url as url,
   u.description as urlDescription,
   a.title as assignment_title,
+  a.contentId as contentId,
   a.isPublished as assignment_isPublished
 FROM drive_content AS dc
 LEFT JOIN url AS u
@@ -118,8 +119,8 @@ ON dc.assignmentId = a.assignmentId
     "urlDescription"=>$row['urlDescription'],
     "assignment_title"=>$row['assignment_title'],
     "assignment_isPublished"=>$row['assignment_isPublished'],
-    "isAssignment"=>$row['isAssignment']
-    
+    "isAssignment"=>$row['isAssignment'],
+    "sortOrder"=>$row['sortOrder']
   );
   array_push($results_arr,$item);
   }
@@ -134,13 +135,14 @@ ON dc.assignmentId = a.assignmentId
     dc.isPublished as isPublished,
     dc.itemType as itemType,
     dc.branchId as branchId,
-    dc.contentId as contentId,
     dc.assignmentId as assignmentId,
     dc.urlId as urlId,
     dc.isAssignment as isAssignment,
+    dc.sortOrder as sortOrder,
     u.url as url,
     u.description as urlDescription,
     a.title as assignment_title,
+    a.contentId as contentId,
     a.isPublished as assignment_isPublished
   FROM drive_content AS dc
   LEFT JOIN url AS u
@@ -179,7 +181,8 @@ ON dc.assignmentId = a.assignmentId
       "assignment_isPublished"=>$assignment_isPublished,
       "assignmentId"=>$assignmentId,
       "assignment_title"=>$assignment_title,
-      "isAssignment"=>$isAssignment
+      "isAssignment"=>$isAssignment,
+      "sortOrder"=>$row['sortOrder']
     );
     array_push($results_arr,$item);
     }

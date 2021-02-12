@@ -3,7 +3,21 @@ import { IsNavContext } from './Tool/NavPanel'
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
-import { faTrashAlt, faLink, faCode, faFolder,faChevronRight, faChevronDown, faSortUp, faSortDown, faUsersSlash, faUsers, faUserEdit, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, 
+  faLink, 
+  faCode, 
+  faFolder,
+  faChevronRight, 
+  faChevronDown, 
+  faSortUp, 
+  faSortDown, 
+  faUsersSlash, 
+  faUsers, 
+  faUserEdit, 
+  faSort,
+  faBookOpen,
+  faChalkboard
+ } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -12,6 +26,7 @@ import {
   WithDropTarget  
 } from '../imports/DropTarget';
 import Draggable from '../imports/Draggable';
+import getSortOrder from '../imports/LexicographicalRankingSort';
 
 import { BreadcrumbContext } from '../imports/Breadcrumb';
 
@@ -139,6 +154,9 @@ export const folderDictionary = atomFamily({
   default:selectorFamily({
     key:"folderDictionary/Default",
     get:(driveIdFolderId)=>({get})=>{
+      if (driveIdFolderId.driveId === ""){
+        return {folderInfo:{},contentsDictionary:{},contentIds:{}}
+      }
       const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId))
       let defaultOrder = [];
       let contentsDictionary = {};
@@ -153,7 +171,7 @@ export const folderDictionary = atomFamily({
           folderInfo = item;
         }
       }
-
+      defaultOrder = sortItems({sortKey: sortOptions.DEFAULT, nodeObjs: contentsDictionary, defaultFolderChildrenIds: defaultOrder});
       contentIds[sortOptions.DEFAULT] = defaultOrder;
       return {folderInfo,contentsDictionary,contentIds}
     } 
@@ -193,16 +211,23 @@ export const folderDictionarySelector = selectorFamily({
           url: instructions.url,
           urlDescription: null,
           urlId: null,
+          sortOrder: "",
         }
         //TODO: update to use fInfo
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
-          newObj.contentsDictionary[itemId] = newItem;
           let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
           let index = newDefaultOrder.indexOf(instructions.selectedItemId);
+          const newOrder = getLexicographicOrder({
+            index, 
+            nodeObjs: newObj.contentsDictionary, 
+            defaultFolderChildrenIds: newDefaultOrder 
+          });
+          newItem.sortOrder = newOrder;
           newDefaultOrder.splice(index+1, 0, itemId);
-          newObj.contentIds = {}
           newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+          newObj.contentsDictionary[itemId] = newItem;
+          // newObj.folderInfo.dirty = 1;
           return newObj;
         })
         if (instructions.itemType === "Folder"){
@@ -219,6 +244,7 @@ export const folderDictionarySelector = selectorFamily({
           label:instructions.label,
           type:instructions.itemType,
           branchId,
+          sortOrder: newItem.sortOrder,
          };
         const payload = { params: data };
 
@@ -456,8 +482,11 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   let tempArr = [...defaultFolderChildrenIds];
   switch (sortKey) {
     case sortOptions.DEFAULT:
-      // TODO: placeholder for sorting lexicographical sort
-    break;
+      tempArr.sort(
+        (a,b) => { 
+          return (nodeObjs[a].sortOrder.localeCompare(nodeObjs[b].sortOrder))}
+      );
+      break;
     case sortOptions.LABEL_ASC:
       tempArr.sort(
         (a,b) => { 
@@ -485,6 +514,30 @@ const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   }
   return tempArr;
 };
+
+const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] }) => {
+  let prevItemId = "";
+  let nextItemId = "";
+  let prevItemOrder = "";
+  let nextItemOrder = "";
+
+  if (defaultFolderChildrenIds.length !== 0) {
+    if (index <= 0) {
+      nextItemId = defaultFolderChildrenIds[0];
+    } else if (index >= defaultFolderChildrenIds.length - 1) {
+      prevItemId = defaultFolderChildrenIds[defaultFolderChildrenIds.length - 1];
+    } else {
+      nextItemId = defaultFolderChildrenIds[index];
+      prevItemId = defaultFolderChildrenIds[index - 1];
+    }
+    
+    if (nodeObjs[prevItemId]) prevItemOrder = nodeObjs?.[prevItemId]?.sortOrder ?? "";
+    if (nodeObjs[nextItemId]) nextItemOrder = nodeObjs?.[nextItemId]?.sortOrder ?? "";
+  }
+
+  const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
+  return sortOrder;
+}
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
@@ -543,6 +596,7 @@ function DriveRouted(props){
   pathItemId={pathItemId}
   hideUnpublished={hideUnpublished}
   foldersOnly={props.foldersOnly}
+  doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
   />
   </>
 }
@@ -571,8 +625,7 @@ export const fetchDrivesSelector = selector({
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
-    const driveId = nanoid();
-    let params = {driveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
+    let params = {driveId:labelTypeDriveId.newDriveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
     let newDrive;
     function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
       let contentObjs = {};
@@ -618,26 +671,51 @@ export const fetchDrivesSelector = selector({
     if (labelTypeDriveId.type === "new content drive"){
       newDrive = {
         courseId:null,
-        driveId,
+        driveId:labelTypeDriveId.newDriveId,
         isShared:"0",
         label:labelTypeDriveId.label,
         type: "content"
       }
-    }else if (labelTypeDriveId.type === "make course drive from content drive"){
-      const sourceDriveId = labelTypeDriveId.driveId;
-      params['sourceDriveId'] = sourceDriveId;
-      //TODO: duplicate items from driveId
-      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:driveId});
-      console.log({contentObjs}) //Save these in addBulkItems.php post
-      axios.post('/api/addBulkItems.php',{driveId,content:contentObjs})
-      .then(resp=>{console.log(resp.data)})
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
+    }else if (labelTypeDriveId.type === "new course drive"){
       newDrive = {
         courseId:null,
-        driveId,
+        driveId:labelTypeDriveId.newDriveId,
         isShared:"0",
         label:labelTypeDriveId.label,
         type: "course"
       }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
+    }else if (labelTypeDriveId.type === "make course drive from content drive"){
+      const sourceDriveId = labelTypeDriveId.driveId;
+      params['sourceDriveId'] = sourceDriveId;
+      //TODO: duplicate items from driveId
+      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:labelTypeDriveId.newDriveId});
+      // console.log({contentObjs}) //Save these in addBulkItems.php post
+      axios.post('/api/addBulkItems.php',{driveId:labelTypeDriveId.newDriveId,content:contentObjs})
+      // .then(resp=>{console.log(resp.data)})
+      newDrive = {
+        courseId:null,
+        driveId:labelTypeDriveId.newDriveId,
+        isShared:"0",
+        label:labelTypeDriveId.label,
+        type: "course"
+      }
+      newDriveData.driveIdsAndLabels.unshift(newDrive)
+    set(fetchDrivesQuery,newDriveData)
+    const payload = { params }
+    axios.get("/api/addDrive.php", payload)
+  // .then((resp)=>console.log(">>>resp",resp.data))
     }
     // else if (labelTypeDriveId.type === "duplicate content drive"){
     //     //TODO: duplicate items from driveId
@@ -674,11 +752,7 @@ export const fetchDrivesSelector = selector({
     //   }
     // }
     
-    newDriveData.driveIdsAndLabels.unshift(newDrive)
-    set(fetchDrivesQuery,newDriveData)
-    const payload = { params }
-    axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
+    
   }
 })
 
@@ -695,7 +769,7 @@ const folderOpenSelector = selectorFamily({
   }
 })
 
-let encodeParams = p => 
+export let encodeParams = p => 
 Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
 function Folder(props){
@@ -731,8 +805,6 @@ function Folder(props){
   if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-
-  
  
   if (folderInfoObj.state === "loading"){ return null;}
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
@@ -780,7 +852,14 @@ function Folder(props){
   }
 
   let label = folderInfo?.label;
-  let folder = <div
+
+  let folder = null;
+  let items = null;
+
+  if (!props.driveObj){
+
+
+  folder = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
       tabIndex={0}
       className="noselect nooutline" 
@@ -843,11 +922,15 @@ function Folder(props){
         gridTemplateRows: '1fr',
         alignContent: 'center'
       }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> {deleteButton}</div></div>
+    
+    
+    } else if (props.driveObj && props.isNav){
 
-  let items = null;
-  
-  if (props.driveObj){
-    //Root of Drive
+    let driveIcon = <FontAwesomeIcon icon={faBookOpen}/>;
+    if (props.driveObj?.type === "course"){
+      driveIcon = <FontAwesomeIcon icon={faChalkboard}/>;
+    }
+    //Root of Drive and in navPanel
     label = props.driveObj.label;
     folder = <>
     <div
@@ -879,7 +962,7 @@ function Folder(props){
         setSelectedDrive(props.driveId);
       }
     }
-    >Drive {label}</div></>
+    >{driveIcon} {label}</div></>
     if (props.rootCollapsible){
       folder = <div
         data-doenet-driveinstanceid={props.driveInstanceId}
@@ -999,6 +1082,7 @@ function Folder(props){
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
+            doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
             />)
           break;
           case "Url":
@@ -1025,6 +1109,7 @@ function Folder(props){
               route={props.route}
               isNav={props.isNav} 
               pathItemId={props.pathItemId}
+              doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItem}
             />)
           break;
@@ -1256,6 +1341,20 @@ const DoenetML = React.memo((props)=>{
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
+      }}
+      onDoubleClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        if (props.doubleClickCallback){
+          props.doubleClickCallback({
+            driveId:props.driveId,
+            item:props.item,
+            driveInstanceId:props.driveInstanceId,
+            route:props.route,
+            isNav:props.isNav, 
+            pathItemId:props.pathItemId,
+          })
+        }
       }}
       onClick={(e)=>{
         e.preventDefault();
