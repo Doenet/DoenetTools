@@ -405,17 +405,11 @@ return null;
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
-  const driveInfoLoad = useRecoilValueLoadable(selectedDriveInformation);
-  console.log(">>>> driveInfoLoad", driveInfoLoad);
+  const driveSelections = useRecoilValue(selectedDriveInformation);
+  console.log(">>>> driveSelections", driveSelections);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
 
-  if (driveInfoLoad.state === "loading"){ return null;}
-  if (driveInfoLoad.state === "hasError"){ 
-    console.error(driveInfoLoad.contents)
-    return null;}
- 
-    let drivecardInfo = driveInfoLoad?.contents?.drivecardInfo;
 
 
 
@@ -635,6 +629,7 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
+  // console.log(">>>> props.drivesIds",props.drivesIds );
   let driveCardItems = props.drivesIds.map((child, i) => {
     heights = new Array(columns).fill(0);
     let width = window.innerWidth - 400;
@@ -642,8 +637,8 @@ const DriveCardComponent = React.memo((props) => {
     const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: 250, height: 250 };
   });
-  if (props.drivesIds) {
-    transitions = useTransition(driveCardItems, (item) => item.label, {
+  if (props.drivesIds.length > 0) {
+    transitions = useTransition(driveCardItems, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
         width,
@@ -684,18 +679,18 @@ const DriveCardComponent = React.memo((props) => {
 
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
- const drivecardselection = (e,item) =>{
+  const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
-   console.log('>>>> drivecard selection', item);
-   console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
+  //  console.log('>>>> drivecard selection item', item);
+  //  console.log('>>>> drivecardSelectedValue', drivecardSelectedValue);
 
   setDrivecardSelection((old) => [...old,item]);
  }
   return (
     <div className="drivecardContainer">
       {transitions.map(({ item, props }, index) => {
-        //  console.log(">>>  item !!!!!!!!", props);
+        //  console.log(">>>  item props !!!!!!!!", item);
         return (
           <a.div
             className="adiv"
@@ -712,8 +707,8 @@ const DriveCardComponent = React.memo((props) => {
           >
             <div
               className="drivecardlist"
-              // tabIndex={index}
               tabIndex={index}
+              // tabIndex={0}
               // onclick scale
               onClick = {(e) => drivecardselection(e,item)}
               onKeyDown={(e) => handleKeyDown(e, item)}
@@ -726,7 +721,7 @@ const DriveCardComponent = React.memo((props) => {
                 label={item.label}
               />
             </div>
-          </a.div>
+           </a.div>
         );
       })}
     </div>
