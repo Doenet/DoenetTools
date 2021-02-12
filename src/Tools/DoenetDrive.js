@@ -110,6 +110,10 @@ function TextEditor(props){
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
+  const trackMount = useRef("Init");
+
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  
 
   if (cancelAutoSave){
     if (autosavetimeout.current !== null){
@@ -119,7 +123,6 @@ function TextEditor(props){
   }
 
   //Used to work around second mount of codemirror with the same value it doesn't display value
-  const trackMount = useRef("Init");
   let value = editorDoenetML;
   if (trackMount.current === "Init"){
     value = "";
@@ -130,20 +133,21 @@ function TextEditor(props){
   value={value}
   // options={options}
   onBeforeChange={(editor, data, value) => {
-    console.log(">>>onBeforeChange",value)
-    setEditorDoenetML(value)
-    if (timeout.current === null){
-      timeout.current = setTimeout(function(){
-        setVersion({instructions:{type:"Save Draft"}})
-        timeout.current = null;
-      },3000)
-    }
-    if (autosavetimeout.current === null){
-      autosavetimeout.current = setTimeout(function(){
-        setVersion({instructions:{type:"Autosave"}})
-        autosavetimeout.current = null;
-      },5000) //TODO: Make 5 minutes 300000
-    }
+    if (selectedTimestamp === "") { //Only update if an inactive version history
+      setEditorDoenetML(value)
+      if (timeout.current === null){
+        timeout.current = setTimeout(function(){
+          setVersion({instructions:{type:"Save Draft"}})
+          timeout.current = null;
+        },3000)
+      }
+      if (autosavetimeout.current === null){
+        autosavetimeout.current = setTimeout(function(){
+          setVersion({instructions:{type:"Autosave"}})
+          autosavetimeout.current = null;
+        },5000) //TODO: Make 5 minutes 300000
+      }
+  }
   }}
   // onChange={(editor, data, value) => {
   // }}
@@ -168,6 +172,8 @@ const viewerDoenetMLAtom = atom({
 function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
 
   return <button onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
@@ -232,7 +238,10 @@ const updateItemHistorySelector = selectorFamily({
         title = "draft";
        } else if (instructions.instructions.type === "Autosave"){
         title = "Autosave";
-       } 
+       } else if (instructions.instructions.type === "Name Version"){
+        //  title = instructions.instructions.newTitle;
+        //  isNamed = "1";
+       }
 
 
     let newVersion = {
@@ -265,60 +274,102 @@ const updateItemHistorySelector = selectorFamily({
 //   }
 // })
 
+const versionHistorySelectedAtom = atom({
+  key:"versionHistorySelectedAtom",
+  default:""
+})
+
 function VersionHistoryPanel(props){
   const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
+  const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  const [editingTimestamp,setEditingTimestamp] = useState("")
+  const [editingText,setEditingText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
 
-
-    var currentVersionInfo;
-
-    let pastVersions = [];
+    let versions = [];
   for (let version of versionHistory.contents){
-    if (version.isDraft === "1"){
-      currentVersionInfo = version;
-    }else{
-      let title = version.timestamp;
-      let nameItButton = <button>Name Version</button>;
+      if (version.isDraft !== "1"){
+      // let nameItButton = <button>Name Version</button>;
+
+      let titleText = version.timestamp;
+      let titleStyle = {}
 
       if (version.isNamed === "1"){
-        title = version.title;
-        nameItButton = <button>Rename Version</button>
+        titleText = version.title;
       }
 
+      let drawer = null;
+      let versionStyle = {};
 
-      pastVersions.push(<div key={`pastVersion${version.timestamp}`}>
-        <div><b>{title}</b></div>
+      if (selectedTimestamp === version.timestamp){
+        versionStyle = {backgroundColor:"#b8d2ea"}
+        titleStyle = {border: "1px solid black", padding: "1px"}
+        drawer = <>
+        {/* <div>{nameItButton}</div> */}
+        <div><button>Make a copy</button></div>
+        <div><button onClick={()=>{
+          setSelectedTimestamp("")
+          setEditingTimestamp("")
+          }}>Return to editing</button></div>
+        </>
+      }
+      let title = <div><b 
+      onClick={()=>{
+        if (selectedTimestamp !== ""){
+          setEditingText(titleText);
+          setEditingTimestamp(version.timestamp)
+        }
+      }} 
+      style={titleStyle}>{titleText}</b></div>
+
+      if (editingTimestamp === version.timestamp){
+        title = <div><input 
+        autoFocus
+        onBlur={()=>{
+          setEditingTimestamp("");
+          // setVersion({instructions:{type:"Name Version",newTitle:editingText}})
+          console.log(">>>Set Title to ",editingText)
+        }}
+        onChange={(e)=>{setEditingText(e.target.value)}}
+        value = {editingText}
+      type="text" /></div>
+      }
+
+      versions.push(<React.Fragment key={`pastVersion${version.timestamp}`}>
+        <div 
+        onClick={()=>setSelectedTimestamp(version.timestamp)}
+      style={versionStyle}
+      >
+        {title}
         <div>{version.timestamp}</div>
-        <div><button>View</button>{nameItButton}<button>Make a Copy</button></div>
-        </div>)
+        </div>
+        {drawer}
+        </React.Fragment> )
 
     }
   }
 
+  //   setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
 
-  const currentVersion = <div>
-    <div><b>Current Version</b></div>
-    <div>{currentVersionInfo.timestamp}</div>
-    <div><button>View</button>
-    <button onClick={()=>{
-    setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
-    <button>Make a Copy</button></div>
-    </div>
-
+  if (versions.length === 0){
+    versions = <b>No Saved Versions</b>
+  }
   
   return <>
-  {currentVersion}
-  {pastVersions}
+  {versions}
   </>
 }
 
 function NameCurrentVersionControl(props){
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
   const setCancelAutoSave = useSetRecoilState(cancelAutoSaveAtom);
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
+
   return <>
   <button onClick={()=>{
     setVersion({instructions:{type:"Name Current Version"}})
