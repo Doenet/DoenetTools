@@ -246,11 +246,9 @@ const updateItemHistorySelector = selectorFamily({
        if (instructions.instructions.type === "Name Version"){
         const newTitle = instructions.instructions.newTitle;
         const timestamp = instructions.instructions.timestamp;
-        console.log(">>>newTitle",newTitle)
         set(itemHistoryAtom(branchId),(oldVersions)=>{
           let newVersions = [];
           for (let version of oldVersions){
-            console.log(">>>version",version)
             if (version.timestamp === timestamp){
             let newVersion = {...version};
               newVersion.title = newTitle;
@@ -264,7 +262,7 @@ const updateItemHistorySelector = selectorFamily({
           return [...newVersions]
         })
         axios.get("/api/updateNamedVersion.php",{ params: {timestamp,newTitle,branchId,isNamed:'1'} })
-         .then((resp)=>{console.log(">>>resp",resp.data)})
+        //  .then((resp)=>{console.log(">>>resp",resp.data)})
 
        }else{
         let newVersion = {
@@ -282,7 +280,7 @@ const updateItemHistorySelector = selectorFamily({
           set(fileByContentId(branchId),{data:doenetML})
         }
         axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
-         .then((resp)=>{console.log(">>>resp",resp.data)})
+        //  .then((resp)=>{console.log(">>>resp",resp.data)})
        }
 
 
@@ -290,26 +288,47 @@ const updateItemHistorySelector = selectorFamily({
   }
 })
 
-// const saveDraftSelector = selectorFamily({
-//   key:"fileByContentIdSelector",
-
-//   set:(branchId)=>({set,get})=>{
-//     const doenetML = get(editorDoenetMLAtom);
-//     set(fileByContentId(branchId),{data:doenetML});
-//     axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
-//     // .then((resp)=>{console.log(">>>resp",resp.data)})
-//   }
-// })
-
 const versionHistorySelectedAtom = atom({
   key:"versionHistorySelectedAtom",
   default:""
 })
 
+const EditingTimestampAtom = atom({
+  key:"EditingTimestampAtom",
+  default:""
+})
+const EditingContentIdAtom = atom({
+  key:"EditingContentIdAtom",
+  default:""
+})
+
+function ReturnToEditingButton(){
+  const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
+  const [editingContentId,setEditingContentId] = useRecoilState(EditingContentIdAtom);
+
+  if (selectedTimestamp === "" && 
+  editingTimestamp === "" &&
+  editingContentId === ""
+  ){
+    return null;
+  }
+
+  return <>
+  <button onClick={()=>{
+  setSelectedTimestamp("")
+  setEditingTimestamp("")
+  setEditingContentId("")
+  }}>Return to editing</button>
+  </>
+}
+
 function VersionHistoryPanel(props){
   const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
   const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
-  const [editingTimestamp,setEditingTimestamp] = useState("")
+  const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
+  const setEditingContentId = useSetRecoilState(EditingContentIdAtom);
+
   const [editingText,setEditingText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
@@ -319,6 +338,7 @@ function VersionHistoryPanel(props){
 
     let versions = [];
   for (let version of versionHistory.contents){
+    // console.log(">>>version",version)
       if (version.isDraft !== "1"){
       // let nameItButton = <button>Name Version</button>;
 
@@ -337,11 +357,9 @@ function VersionHistoryPanel(props){
         titleStyle = {border: "1px solid black", padding: "1px"}
         drawer = <>
         {/* <div>{nameItButton}</div> */}
-        <div><button>Make a copy</button></div>
-        <div><button onClick={()=>{
-          setSelectedTimestamp("")
-          setEditingTimestamp("")
-          }}>Return to editing</button></div>
+        <div><Button text="Make a copy" /></div>
+        <div><Button text="Delete Version" /></div>
+        <div><Button text="Use as Current Version" /></div>
         </>
       }
       let title = <div><b 
@@ -367,7 +385,13 @@ function VersionHistoryPanel(props){
 
       versions.push(<React.Fragment key={`pastVersion${version.timestamp}`}>
         <div 
-        onClick={()=>setSelectedTimestamp(version.timestamp)}
+        onClick={()=>{
+          if (version.timestamp !== selectedTimestamp){
+            setSelectedTimestamp(version.timestamp)
+            console.log(">>>version.contentId",version.contentId)
+            setEditingContentId(version.contentId)
+          }
+        }}
       style={versionStyle}
       >
         {title}
@@ -438,6 +462,10 @@ function DoenetViewerPanel(){
 function SetEditorDoenetMLandTitle(props){
   let contentId = props.contentId;
   if (props.isDraft){ contentId = props.branchId;}
+  const editingContentId = useRecoilValue(EditingContentIdAtom);
+  if (editingContentId !== ""){ contentId = editingContentId}
+console.log(">>>SetEditorDoenetMLandTitle editingContentId",editingContentId)
+console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
   const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
@@ -491,8 +519,6 @@ const ItemInfo = function (){
  
   if (itemInfo?.itemType === "DoenetML"){
     
-    console.log({itemInfo})
-
   return <div
   style={{height:"100%"}}
   >
@@ -771,7 +797,7 @@ const DriveCardComponent = React.memo((props) => {
 });
 
 export default function DoenetDriveTool(props) {
-  console.log("=== 💾 Doenet Drive Tool");  
+  // console.log("=== 💾 Doenet Drive Tool");  
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
   const setOpenMenuPanel = useMenuPanelController();
@@ -803,6 +829,7 @@ export default function DoenetDriveTool(props) {
   let setLoadContentId = null;
   let editorTitle = null;
   let versionHistory = null;
+  let returnToEditingButton = null;
 
   if (overlayInfo?.name === "editor"){
     const contentId = overlayInfo?.instructions?.contentId;
@@ -814,6 +841,7 @@ export default function DoenetDriveTool(props) {
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
     versionHistory = <VersionHistoryPanel branchId={branchId} />
+    returnToEditingButton = <ReturnToEditingButton />
   }
   
   const history = useHistory();
@@ -910,6 +938,7 @@ export default function DoenetDriveTool(props) {
 
       <overlay name="editor">
         <headerPanel title={editorTitle}>
+          {returnToEditingButton}
           {/* {editorTitle} */}
           {/* <p>{overlayInfo?.instructions?.title}</p> */}
         </headerPanel>
