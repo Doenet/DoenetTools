@@ -215,7 +215,9 @@ const updateItemHistorySelector = selectorFamily({
     return get(itemHistoryAtom(branchId))
   },
   set:(branchId)=> ({get,set},instructions)=>{
-    console.log(">>>instructions.type",instructions.instructions.type)
+    console.log(">>>instructions",instructions.instructions)
+    
+
     const doenetML = get(editorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const dt = new Date();
@@ -238,28 +240,53 @@ const updateItemHistorySelector = selectorFamily({
         title = "draft";
        } else if (instructions.instructions.type === "Autosave"){
         title = "Autosave";
-       } else if (instructions.instructions.type === "Name Version"){
-        //  title = instructions.instructions.newTitle;
-        //  isNamed = "1";
+       } 
+
+
+       if (instructions.instructions.type === "Name Version"){
+        const newTitle = instructions.instructions.newTitle;
+        const timestamp = instructions.instructions.timestamp;
+        console.log(">>>newTitle",newTitle)
+        set(itemHistoryAtom(branchId),(oldVersions)=>{
+          let newVersions = [];
+          for (let version of oldVersions){
+            console.log(">>>version",version)
+            if (version.timestamp === timestamp){
+            let newVersion = {...version};
+              newVersion.title = newTitle;
+              newVersion.isNamed="1";
+              newVersions.push(newVersion);
+            }else{
+              newVersions.push(version);
+            }
+
+          }
+          return [...newVersions]
+        })
+        axios.get("/api/updateNamedVersion.php",{ params: {timestamp,newTitle,branchId,isNamed:'1'} })
+         .then((resp)=>{console.log(">>>resp",resp.data)})
+
+       }else{
+        let newVersion = {
+          title:timestamp,
+          contentId,
+          timestamp,
+          isDraft: "0",
+          isNamed
+        }
+    
+        if (!draft){
+          set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
+          set(fileByContentId(contentId),{data:doenetML})
+        }else{
+          set(fileByContentId(branchId),{data:doenetML})
+        }
+        axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
+         .then((resp)=>{console.log(">>>resp",resp.data)})
        }
 
 
-    let newVersion = {
-      title:timestamp,
-      contentId,
-      timestamp,
-      isDraft: "0",
-      isNamed
-    }
-
-    if (!draft){
-      set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
-      set(fileByContentId(contentId),{data:doenetML})
-    }else{
-      set(fileByContentId(branchId),{data:doenetML})
-    }
-    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
-     .then((resp)=>{console.log(">>>resp",resp.data)})
+    
   }
 })
 
@@ -331,8 +358,7 @@ function VersionHistoryPanel(props){
         autoFocus
         onBlur={()=>{
           setEditingTimestamp("");
-          // setVersion({instructions:{type:"Name Version",newTitle:editingText}})
-          console.log(">>>Set Title to ",editingText)
+          setVersion({instructions:{type:"Name Version",newTitle:editingText,timestamp:version.timestamp}})
         }}
         onChange={(e)=>{setEditingText(e.target.value)}}
         value = {editingText}
