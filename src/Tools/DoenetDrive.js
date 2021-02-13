@@ -694,8 +694,23 @@ const DriveCardComponent = React.memo((props) => {
     setDrivecardSelection((old) => {
       if(old.length > 0)
       {
-        let initalIndex = old[0].driveId;
-        return [...old,item];
+        let initalDriveId = old[0].driveId;
+        let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
+        let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
+
+        // console.log('<<<<<< First index >>> <<< last Index >>', firstDriveId,lastDriveId);
+        let finalArray = [];
+        if(firstDriveId > lastDriveId)
+        {
+          let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
+          finalArray = sampleArr.map((l)=>l.item);
+        }
+        else{
+          let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
+          finalArray = sampleArr.map((m)=>m.item);
+        }
+        // console.log(">>>> final array",finalArray);
+        return finalArray;
         
       }
       else{
