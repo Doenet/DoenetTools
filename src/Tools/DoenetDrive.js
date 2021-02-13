@@ -852,31 +852,6 @@ const DriveCardComponent = React.memo((props) => {
   let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
   return avalibleCard.length > 0 ? true : false;
  }
-
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
-  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  // drive selection 
-  const drivecardselection = (e,item) =>{
-   e.preventDefault();
-   e.stopPropagation();
-   if (!e.shiftKey && !e.metaKey){
-    setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){
-    setDrivecardSelection((old) => [...old,item]);
-  }else if (!e.shiftKey && e.metaKey){
-    setDrivecardSelection((old) => [item]);
-  }
-
-  //  console.log('>>>> drivecard selection item', item);
-  //console.log('>>>> drivecardSelectedValue onclick@@@@@ewfc23456', drivecardSelectedValue);
-
- }
-
- const getSelectedCard = (cardItem) => {
-  let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
-  return avalibleCard.length > 0 ? true : false;
- }
-
   return (
     <div className="drivecardContainer">
       {/* {drivecardSelectedValue.length} */}
