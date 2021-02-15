@@ -1,17 +1,28 @@
 import React from 'react';
-import Date from '../imports/PanelHeaderComponents/Date.js';
+// import Date from '../imports/PanelHeaderComponents/Date.js';
 import GlobalFont from '../fonts/GlobalFont.js';
+import {driveColors} from '../imports/Util';
+import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 
 //   // var timeout;
 //   // var timeout, promise,cancel;
 //   var latestDoenetML = doenetML;
 //   // console.log({timeout})
 
-export default function app() {
+export default function App() {
 return (
 <>
 <GlobalFont/>
-<Date/>
+{/* <Date/> */}
+<div>
+  ffuyguy
+
+<DoenetDriveCardMenu
+      data={driveColors} 
+      driveId = {'34XeNDOlpUtNIng4jsCKH'} 
+      // updateCourseColor = {'#FF0000'}
+      />
+</div>
 </>
 );
 }
@@ -20,21 +31,21 @@ return (
   //         cancel}
 // }
 
-let doenetMLAtom = atom({
-  key:"doenetMLAtom",
-  default:""
-})
+// let doenetMLAtom = atom({
+//   key:"doenetMLAtom",
+//   default:""
+// })
 
 
-let saveSelector = selector({
-  key:"saveSelector",
-  set: ({get,set})=>{
-    const doenetML = get(doenetMLAtom);
-    console.log(">>>doenetML",doenetML)
-  }
-})
+// let saveSelector = selector({
+//   key:"saveSelector",
+//   set: ({get,set})=>{
+//     const doenetML = get(doenetMLAtom);
+//     console.log(">>>doenetML",doenetML)
+//   }
+// })
 
-export default function Temp() {
+function Temp() {
 
   // let delaySave = delaySaveDraft("Done!")
   const [doenetML,setDoenetML] = useRecoilState(doenetMLAtom)
