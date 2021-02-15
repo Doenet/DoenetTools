@@ -55,9 +55,6 @@ return(
   <DriveCardContainer  
   url={`/course_pictures/test1.jpg`} 
   color={props.color}>
-  <Menu
-  data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]}
-   driveId = {props.driveId} />
   <Image url={`/course_pictures/test1.jpg`} color={props.color} />
   <Info>
     <LabelContainer><b>{props.label}</b></LabelContainer>
