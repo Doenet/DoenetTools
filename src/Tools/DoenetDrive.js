@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+import {driveColors,driveImages} from '../imports/Util';
 
 import Drive, { 
   folderDictionarySelector, 
@@ -594,7 +595,9 @@ function AddCourseDriveButton(props){
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
-    setNewDrive({label,type:"new course drive",driveId,newDriveId})
+    let image = driveImages[Math.floor(Math.random() * driveImages.length)];
+    let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+    setNewDrive({label,type:"new course drive",driveId,newDriveId,image,color})
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
