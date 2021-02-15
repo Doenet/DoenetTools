@@ -1,3 +1,6 @@
  .bp3-html-select select {
-    padding: 0px 15px 0px 0px !important;
+    padding: 0px 15px 0px 5px !important;
+}
+.bp3-timepicker-ampm-select select {
+    padding: 0px 25px 0px 5px !important;
 }

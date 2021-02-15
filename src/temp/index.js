@@ -17,6 +17,7 @@ import {
 } from 'recoil';
 
 import  DoenetDateTime from "../Tools/DoenetDateTime";
+import App from '../Tools/DoenetTemp';
 
     ReactDOM.render(
       <DropTargetsProvider>
@@ -24,7 +25,9 @@ import  DoenetDateTime from "../Tools/DoenetDateTime";
           <RecoilRoot>
             <Router >
               <Route path="/" render={()=>
-                <DoenetDateTime  onDateChange = {(date) => console.log(date)} /> }/>
+              <App />
+                // <DoenetDateTime  onDateChange = {(date) => console.log(date)} /> 
+                }/>
             </Router>
           </RecoilRoot>
         </BreadcrumbProvider>
