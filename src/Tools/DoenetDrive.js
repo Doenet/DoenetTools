@@ -45,7 +45,21 @@ import { useTransition, a, useSprings, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
 
+export const drivecardSelectedNodesAtom = atom({
+  key:'drivecardSelectedNodesAtom',
+  default:[]
+})
 
+const selectedDriveInformation = selector({
+  key:"selectedDriveInformation",
+   get: ({get})=>{
+    const driveSelected = get(drivecardSelectedNodesAtom);
+    return driveSelected;
+  },
+  set:(newObj)=>({set})=>{
+    set(drivecardSelectedNodesAtom,(old)=>[...old,newObj])
+  }
+})
 const itemVersionsSelector = selectorFamily({
   key:"itemInfoSelector",
   get:(branchId)=> async ()=>{
@@ -110,6 +124,10 @@ function TextEditor(props){
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
+  const trackMount = useRef("Init");
+
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  
 
   if (cancelAutoSave){
     if (autosavetimeout.current !== null){
@@ -119,7 +137,6 @@ function TextEditor(props){
   }
 
   //Used to work around second mount of codemirror with the same value it doesn't display value
-  const trackMount = useRef("Init");
   let value = editorDoenetML;
   if (trackMount.current === "Init"){
     value = "";
@@ -130,20 +147,21 @@ function TextEditor(props){
   value={value}
   // options={options}
   onBeforeChange={(editor, data, value) => {
-    console.log(">>>onBeforeChange",value)
-    setEditorDoenetML(value)
-    if (timeout.current === null){
-      timeout.current = setTimeout(function(){
-        setVersion({instructions:{type:"Save Draft"}})
-        timeout.current = null;
-      },3000)
-    }
-    if (autosavetimeout.current === null){
-      autosavetimeout.current = setTimeout(function(){
-        setVersion({instructions:{type:"Autosave"}})
-        autosavetimeout.current = null;
-      },5000) //TODO: Make 5 minutes 300000
-    }
+    if (selectedTimestamp === "") { //Only update if an inactive version history
+      setEditorDoenetML(value)
+      if (timeout.current === null){
+        timeout.current = setTimeout(function(){
+          setVersion({instructions:{type:"Save Draft"}})
+          timeout.current = null;
+        },3000)
+      }
+      if (autosavetimeout.current === null){
+        autosavetimeout.current = setTimeout(function(){
+          setVersion({instructions:{type:"Autosave"}})
+          autosavetimeout.current = null;
+        },5000) //TODO: Make 5 minutes 300000
+      }
+  }
   }}
   // onChange={(editor, data, value) => {
   // }}
@@ -168,6 +186,8 @@ const viewerDoenetMLAtom = atom({
 function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
 
   return <button onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
@@ -209,7 +229,9 @@ const updateItemHistorySelector = selectorFamily({
     return get(itemHistoryAtom(branchId))
   },
   set:(branchId)=> ({get,set},instructions)=>{
-    console.log(">>>instructions.type",instructions.instructions.type)
+    console.log(">>>instructions",instructions.instructions)
+    
+
     const doenetML = get(editorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const dt = new Date();
@@ -235,90 +257,183 @@ const updateItemHistorySelector = selectorFamily({
        } 
 
 
-    let newVersion = {
-      title:timestamp,
-      contentId,
-      timestamp,
-      isDraft: "0",
-      isNamed
-    }
+       if (instructions.instructions.type === "Name Version"){
+        const newTitle = instructions.instructions.newTitle;
+        const timestamp = instructions.instructions.timestamp;
+        set(itemHistoryAtom(branchId),(oldVersions)=>{
+          let newVersions = [];
+          for (let version of oldVersions){
+            if (version.timestamp === timestamp){
+            let newVersion = {...version};
+              newVersion.title = newTitle;
+              newVersion.isNamed="1";
+              newVersions.push(newVersion);
+            }else{
+              newVersions.push(version);
+            }
 
-    if (!draft){
-      set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
-      set(fileByContentId(contentId),{data:doenetML})
-    }else{
-      set(fileByContentId(branchId),{data:doenetML})
-    }
-    axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
-     .then((resp)=>{console.log(">>>resp",resp.data)})
+          }
+          return [...newVersions]
+        })
+        axios.get("/api/updateNamedVersion.php",{ params: {timestamp,newTitle,branchId,isNamed:'1'} })
+        //  .then((resp)=>{console.log(">>>resp",resp.data)})
+
+       }else{
+        let newVersion = {
+          title:timestamp,
+          contentId,
+          timestamp,
+          isDraft: "0",
+          isNamed
+        }
+    
+        if (!draft){
+          set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
+          set(fileByContentId(contentId),{data:doenetML})
+        }else{
+          set(fileByContentId(branchId),{data:doenetML})
+        }
+        axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
+        //  .then((resp)=>{console.log(">>>resp",resp.data)})
+       }
+
+
+    
   }
 })
 
-// const saveDraftSelector = selectorFamily({
-//   key:"fileByContentIdSelector",
+const versionHistorySelectedAtom = atom({
+  key:"versionHistorySelectedAtom",
+  default:""
+})
 
-//   set:(branchId)=>({set,get})=>{
-//     const doenetML = get(editorDoenetMLAtom);
-//     set(fileByContentId(branchId),{data:doenetML});
-//     axios.post("/api/saveNewVersion.php",{branchId,doenetML,draft:true})
-//     // .then((resp)=>{console.log(">>>resp",resp.data)})
-//   }
-// })
+const EditingTimestampAtom = atom({
+  key:"EditingTimestampAtom",
+  default:""
+})
+const EditingContentIdAtom = atom({
+  key:"EditingContentIdAtom",
+  default:""
+})
+
+function ReturnToEditingButton(){
+  const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
+  const [editingContentId,setEditingContentId] = useRecoilState(EditingContentIdAtom);
+
+  if (selectedTimestamp === "" && 
+  editingTimestamp === "" &&
+  editingContentId === ""
+  ){
+    return null;
+  }
+
+  return <>
+  <button onClick={()=>{
+  setSelectedTimestamp("")
+  setEditingTimestamp("")
+  setEditingContentId("")
+  }}>Return to editing</button>
+  </>
+}
 
 function VersionHistoryPanel(props){
   const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
+  const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
+  const setEditingContentId = useSetRecoilState(EditingContentIdAtom);
+
+  const [editingText,setEditingText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
 
-
-    var currentVersionInfo;
-
-    let pastVersions = [];
+    let versions = [];
   for (let version of versionHistory.contents){
-    if (version.isDraft === "1"){
-      currentVersionInfo = version;
-    }else{
-      let title = version.timestamp;
-      let nameItButton = <button>Name Version</button>;
+    // console.log(">>>version",version)
+      if (version.isDraft !== "1"){
+      // let nameItButton = <button>Name Version</button>;
+
+      let titleText = version.timestamp;
+      let titleStyle = {}
 
       if (version.isNamed === "1"){
-        title = version.title;
-        nameItButton = <button>Rename Version</button>
+        titleText = version.title;
       }
 
+      let drawer = null;
+      let versionStyle = {};
 
-      pastVersions.push(<div key={`pastVersion${version.timestamp}`}>
-        <div><b>{title}</b></div>
+      if (selectedTimestamp === version.timestamp){
+        versionStyle = {backgroundColor:"#b8d2ea"}
+        titleStyle = {border: "1px solid black", padding: "1px"}
+        drawer = <>
+        {/* <div>{nameItButton}</div> */}
+        <div><Button text="Make a copy" /></div>
+        <div><Button text="Delete Version" /></div>
+        <div><Button text="Use as Current Version" /></div>
+        </>
+      }
+      let title = <div><b 
+      onClick={()=>{
+        if (selectedTimestamp !== ""){
+          setEditingText(titleText);
+          setEditingTimestamp(version.timestamp)
+        }
+      }} 
+      style={titleStyle}>{titleText}</b></div>
+
+      if (editingTimestamp === version.timestamp){
+        title = <div><input 
+        autoFocus
+        onBlur={()=>{
+          setEditingTimestamp("");
+          setVersion({instructions:{type:"Name Version",newTitle:editingText,timestamp:version.timestamp}})
+        }}
+        onChange={(e)=>{setEditingText(e.target.value)}}
+        value = {editingText}
+      type="text" /></div>
+      }
+
+      versions.push(<React.Fragment key={`pastVersion${version.timestamp}`}>
+        <div 
+        onClick={()=>{
+          if (version.timestamp !== selectedTimestamp){
+            setSelectedTimestamp(version.timestamp)
+            console.log(">>>version.contentId",version.contentId)
+            setEditingContentId(version.contentId)
+          }
+        }}
+      style={versionStyle}
+      >
+        {title}
         <div>{version.timestamp}</div>
-        <div><button>View</button>{nameItButton}<button>Make a Copy</button></div>
-        </div>)
+        </div>
+        {drawer}
+        </React.Fragment> )
 
     }
   }
 
+  //   setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
 
-  const currentVersion = <div>
-    <div><b>Current Version</b></div>
-    <div>{currentVersionInfo.timestamp}</div>
-    <div><button>View</button>
-    <button onClick={()=>{
-    setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
-    <button>Make a Copy</button></div>
-    </div>
-
+  if (versions.length === 0){
+    versions = <b>No Saved Versions</b>
+  }
   
   return <>
-  {currentVersion}
-  {pastVersions}
+  {versions}
   </>
 }
 
 function NameCurrentVersionControl(props){
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
   const setCancelAutoSave = useSetRecoilState(cancelAutoSaveAtom);
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
+
   return <>
   <button onClick={()=>{
     setVersion({instructions:{type:"Name Current Version"}})
@@ -361,6 +476,10 @@ function DoenetViewerPanel(){
 function SetEditorDoenetMLandTitle(props){
   let contentId = props.contentId;
   if (props.isDraft){ contentId = props.branchId;}
+  const editingContentId = useRecoilValue(EditingContentIdAtom);
+  if (editingContentId !== ""){ contentId = editingContentId}
+console.log(">>>SetEditorDoenetMLandTitle editingContentId",editingContentId)
+console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
   const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
@@ -392,8 +511,13 @@ return null;
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
+  const driveSelections = useRecoilValue(selectedDriveInformation);
+  console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
+
+
+
 
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
@@ -414,8 +538,6 @@ const ItemInfo = function (){
  
   if (itemInfo?.itemType === "DoenetML"){
     
-    console.log({itemInfo})
-
   return <div
   style={{height:"100%"}}
   >
@@ -445,30 +567,30 @@ const ItemInfo = function (){
   </div>
 }
 
-function AddContentDriveButton(props){
-  const history = useHistory();
+// function AddContentDriveButton(props){
+//   const history = useHistory();
 
-  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+//   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Content Drive" callback={()=>{
-    let driveId = null;
-    let newDriveId = nanoid();
-    let label = "Untitled";
-    setNewDrive({label,type:"new content drive",driveId,newDriveId})
-    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-    newParams['path'] = `:::`
-    history.push('?'+encodeParams(newParams))
-  }}/>
-}
+//   return <Button text="Add Content Drive" callback={()=>{
+//     let driveId = null;
+//     let newDriveId = nanoid();
+//     let label = "Untitled";
+//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
+//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+//     let newParams = {...urlParamsObj} 
+//     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
+//     newParams['path'] = `:::`
+//     history.push('?'+encodeParams(newParams))
+//   }}/>
+// }
 
 function AddCourseDriveButton(props){
   const history = useHistory();
 
   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Add Course Drive" callback={()=>{
+  return <Button text="Create a New Course" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
@@ -492,9 +614,6 @@ function AddMenuPanel(props){
 
 
   let addDrives = <>
-  <Suspense fallback={<p>Failed to make add content drive button</p>} >
-     <AddContentDriveButton route={props.route} />
-   </Suspense>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
      <AddCourseDriveButton route={props.route} />
    </Suspense>
@@ -611,15 +730,16 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  let driveCardItems = props.drivesIds.map((child, i) => {
+  // console.log(">>>> props.drivesIds",props.drivesIds );
+  let driveCardItem = props.drivesIds.map((child, i) => {
     heights = new Array(columns).fill(0);
     let width = window.innerWidth - 400;
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: 250, height: 250 };
   });
-  if (props.drivesIds) {
-    transitions = useTransition(driveCardItems, (item) => item.label, {
+  if (props.drivesIds.length > 0) {
+    transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
         width,
@@ -658,17 +778,42 @@ const DriveCardComponent = React.memo((props) => {
   const [on, toggle] = useState(false);
   const textUse = useRef();
 
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
+  // drive selection 
+  const drivecardselection = (e,item) =>{
+   e.preventDefault();
+   e.stopPropagation();
+   if (!e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }else if (e.shiftKey && !e.metaKey){
+    setDrivecardSelection((old) => [...old,item]);
+  }else if (!e.shiftKey && e.metaKey){
+    setDrivecardSelection((old) => [item]);
+  }
+
+  //  console.log('>>>> drivecard selection item', item);
+  //console.log('>>>> drivecardSelectedValue onclick@@@@@ewfc23456', drivecardSelectedValue);
+
+ }
+
+ const getSelectedCard = (cardItem) => {
+  let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
+  return avalibleCard.length > 0 ? true : false;
+ }
+
   return (
     <div className="drivecardContainer">
       {transitions.map(({ item, props }, index) => {
-        //  console.log(">>>  item !!!!!!!!", props);
+        //  console.log(">>>  item props !!!!!!!!", item);
+        let selectedCard = getSelectedCard(item);
         return (
           <a.div
             className="adiv"
             key={index}
             ref={textUse}
-            onMouseOver={() => toggle(props.scale.setValue(1.1))}
-            onMouseLeave={() => toggle(props.scale.setValue(1))}
+            // onMouseOver={() => toggle(props.scale.setValue(1.1))}
+            // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
                 (scale) => `scale(${props.scale.value})`
@@ -677,8 +822,11 @@ const DriveCardComponent = React.memo((props) => {
             }}
           >
             <div
-              className="drivecardlist"
+              className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
               tabIndex={index}
+              // tabIndex={0}
+              // onclick scale
+              onClick = {(e) => drivecardselection(e,item)}
               onKeyDown={(e) => handleKeyDown(e, item)}
               onDoubleClick={() => driveCardSelector(item)}
             >
@@ -689,7 +837,7 @@ const DriveCardComponent = React.memo((props) => {
                 label={item.label}
               />
             </div>
-          </a.div>
+           </a.div>
         );
       })}
     </div>
@@ -697,14 +845,16 @@ const DriveCardComponent = React.memo((props) => {
 });
 
 export default function DoenetDriveTool(props) {
-  console.log("=== 💾 Doenet Drive Tool");  
+  // console.log("=== 💾 Doenet Drive Tool");  
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
   const setOpenMenuPanel = useMenuPanelController();
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -729,6 +879,7 @@ export default function DoenetDriveTool(props) {
   let setLoadContentId = null;
   let editorTitle = null;
   let versionHistory = null;
+  let returnToEditingButton = null;
 
   if (overlayInfo?.name === "editor"){
     const contentId = overlayInfo?.instructions?.contentId;
@@ -740,14 +891,22 @@ export default function DoenetDriveTool(props) {
     doenetViewerEditorControls = <div><DoenetViewerUpdateButton  /></div>
     doenetViewerEditor =  <DoenetViewerPanel />
     versionHistory = <VersionHistoryPanel branchId={branchId} />
+    returnToEditingButton = <ReturnToEditingButton />
   }
   
   const history = useHistory();
 
   function useOutsideDriveSelector() {
+
     let newParams = {};
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
+  }
+  function cleardrivecardSelection(){
+    setDrivecardSelection([]);
+    // let newParams = {};
+    // newParams["path"] = `:::`;
+    // history.push("?" + encodeParams(newParams));
   }
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let drivesIds = [];
@@ -763,7 +922,7 @@ export default function DoenetDriveTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent drivesIds={drivesIds} />;
+    drivecardComponent = <DriveCardComponent style={mainPanelStyle} drivesIds={drivesIds}/>;
   } else if (drivesIds.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
@@ -798,7 +957,7 @@ export default function DoenetDriveTool(props) {
       {breadcrumbContainer}
         <div 
         onClick={()=>{
-          clearSelections();
+          clearSelections()
         }}
         style={mainPanelStyle}
         >
@@ -817,7 +976,18 @@ export default function DoenetDriveTool(props) {
             }
           });
           }}/>
-      {drivecardComponent}
+
+     
+        </div>
+
+        <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        style={{width:"100%",height:"100%"}}
+        >
+       {drivecardComponent}
         </div>
         
           
@@ -836,6 +1006,7 @@ export default function DoenetDriveTool(props) {
 
       <overlay name="editor">
         <headerPanel title={editorTitle}>
+          {returnToEditingButton}
           {/* {editorTitle} */}
           {/* <p>{overlayInfo?.instructions?.title}</p> */}
         </headerPanel>
