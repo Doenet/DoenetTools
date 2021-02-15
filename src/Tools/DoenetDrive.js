@@ -874,7 +874,7 @@ const DriveCardComponent = React.memo((props) => {
           >
             <div
               className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
-              tabIndex={index}
+              tabIndex={index+1}
               // tabIndex={0}
               // onclick scale
               onClick = {(e) => drivecardselection(e,item)}
