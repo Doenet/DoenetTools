@@ -19,9 +19,8 @@ $success = TRUE;
 $results_arr = array();
 
 $contentOrCourse = 'content';
-if ($type === "make course drive from content drive"){
+if ($type === "new course drive"){
   $contentOrCourse = 'course';
-  echo "sourceDriveId".$sourceDriveId;
 }
 
 $sql = "
