@@ -53,12 +53,12 @@ export default function DoenetCourseCardMenu(props) {
 
   return (
     <div className="dropdown-container">
-      {/* <button className="color-picker-menu-button" onClick={handleOnClick}>
+      <button className="color-picker-menu-button" onClick={handleOnClick}>
         <FontAwesomeIcon icon={faEllipsisV} />
       </button>
       <div className="list-container" onClick = {handleBorderClick}>
         {expand ? <ul className="color-list">{list}</ul> : null}
-      </div> */}
+      </div>
     </div>
   );
 }
