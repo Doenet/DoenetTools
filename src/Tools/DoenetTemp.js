@@ -18,7 +18,7 @@ return (
 <DoenetDriveCardMenu
       data={driveColors} 
       driveId = {'34XeNDOlpUtNIng4jsCKH'} 
-      //updateDriveColor = {'#FF0000'}
+      // updateDriveColor = {updateDriveColor}
       />
 </div>
 </>
