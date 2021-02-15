@@ -730,15 +730,15 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  // console.log(">>>> props.drivesIds",props.drivesIds );
-  let driveCardItem = props.drivesIds.map((child, i) => {
+  // console.log(">>>> props.driveInfo",props.driveInfo );
+  let driveCardItem = props.driveInfo.map((child, i) => {
     heights = new Array(columns).fill(0);
     let width = window.innerWidth - 400;
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: 250, height: 250 };
   });
-  if (props.drivesIds.length > 0) {
+  if (props.driveInfo.length > 0) {
     transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
@@ -794,22 +794,34 @@ const DriveCardComponent = React.memo((props) => {
     setDrivecardSelection((old) => {
       if(old.length > 0)
       {
-        let initalDriveId = old[0].driveId;
+
+        let finalArray = [];
+        let initalDriveId = '';
+        if(old.length === 1)
+        {
+          initalDriveId = old[0].driveId;
+        }
+        else
+        {
+          finalArray = [...old];
+          initalDriveId = old[old.length-1].driveId;
+        }
         let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
         let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
 
         // console.log('<<<<<< First index >>> <<< last Index >>', firstDriveId,lastDriveId);
-        let finalArray = [];
         if(firstDriveId > lastDriveId)
         {
           let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
-          finalArray = sampleArr.map((l)=>l.item);
+          let arr = sampleArr.map((l)=>l.item);
+          finalArray = [...finalArray,...arr];
         }
         else{
           let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
-          finalArray = sampleArr.map((m)=>m.item);
+          let arr1 = sampleArr.map((m)=>m.item);
+          finalArray = [...finalArray,...arr1];
         }
-        // console.log(">>>> final array",finalArray);
+        //  console.log(">>>> final array",finalArray);
         return finalArray;
         
       }
@@ -819,7 +831,7 @@ const DriveCardComponent = React.memo((props) => {
     }); 
   }else if (!e.shiftKey && e.metaKey){   // add item
     setDrivecardSelection((old) =>{
-      console.log(">>>> old", old);
+      // console.log(">>>> old", old);
       let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
       if(alreadyAvaliable.length > 0)
       {
@@ -960,9 +972,9 @@ export default function DoenetDriveTool(props) {
     // history.push("?" + encodeParams(newParams));
   }
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
-  let drivesIds = [];
+  let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
-    drivesIds = drivesInfo.contents.driveIdsAndLabels;
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
   }
   // Breadcrumb container
   let breadcrumbContainer = null;
@@ -972,9 +984,9 @@ export default function DoenetDriveTool(props) {
 
   // Drive cards component
   let drivecardComponent = null;
-  if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent style={mainPanelStyle} drivesIds={drivesIds}/>;
-  } else if (drivesIds.length === 0 && routePathDriveId === "") {
+  if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+    drivecardComponent = <DriveCardComponent style={mainPanelStyle} driveInfo={driveInfo}/>;
+  } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
     );
