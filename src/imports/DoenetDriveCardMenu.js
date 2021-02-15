@@ -12,8 +12,39 @@ const ColorBox = Styled.button`
   border-radius: 3px;
 `;
 
+const HexBoxContainer = Styled.div`
+width:100%;
+text-align:right;
+`;
+ const ColorPickerHexButton = Styled.div`
+ border:1px solid black;
+ width: 50px;
+ background: rgba(0, 0, 0, 0);
+ cursor: pointer;
+ padding:0px 5px 0px 5px;
+ `;
+ const ColorPickerHexValue = Styled.div`
+ border: none;
+ width: 20px;
+ background: rgba(0, 0, 0, 0);
+ cursor: pointer;
+ `;
+ const ColorPickerContainer = Styled.div`
+ margin-right: 0;
+ width: 86px;
+ `; 
+ const ColorList = Styled.ul`
+ padding: 4px;
+ list-style-type: none;
+ /* border: 1px solid #505050; */
+ border-radius: 3px;
+ box-shadow: 3px 3px 7px #888888;
+ background: #ffffff;
+ margin: 0 auto;
+ text-align: left;
+ `;
 export default function DoenetDriveCardMenu(props) {
-  console.log(props);
+  // console.log(props);
 
   const [expand, setExpand] = useState(false);
   const [value, setValue] = useState(null);
@@ -31,19 +62,17 @@ export default function DoenetDriveCardMenu(props) {
       />
     </li>
   ));
-  console.log(props.data);
+  // console.log(props.data);
 
   function handleColorChange(e) {
     // console.log(e.target.value);
     e.preventDefault();
     setValue(e.target.value);
     setExpand(false);
-
-    //props.updateCourseColor(e.target.value, props.driveId);
+    //props.updateDriveColor(e.target.value, props.driveId);
   }
 
   function handleOnClick(e) {
-
     e.preventDefault();
     setExpand(!expand);
   }
@@ -53,14 +82,16 @@ export default function DoenetDriveCardMenu(props) {
   }
 
   return (
-    <div className="dropdown-container">
-      <button className="color-picker-menu-button" onClick={handleOnClick}>
+    <>
+    <HexBoxContainer>
+    <ColorPickerHexButton onClick={handleOnClick}>
        #HEX
-      </button>
-      <div>{value}</div>
-      <div className="list-container" onClick = {handleBorderClick}>
-        {expand ? <ul className="color-list">{list}</ul> : null}
-      </div>
-    </div>
+      </ColorPickerHexButton>
+      <ColorPickerHexValue>{value}</ColorPickerHexValue>
+      <ColorPickerContainer onClick = {handleBorderClick}>
+        {expand ? <ColorList>{list}</ColorList> : null}
+      </ColorPickerContainer>
+    </HexBoxContainer>
+    </>
   );
 }

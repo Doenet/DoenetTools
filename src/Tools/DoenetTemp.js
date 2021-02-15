@@ -15,12 +15,10 @@ return (
 <GlobalFont/>
 {/* <Date/> */}
 <div>
-  ffuyguy
-
 <DoenetDriveCardMenu
       data={driveColors} 
       driveId = {'34XeNDOlpUtNIng4jsCKH'} 
-      // updateCourseColor = {'#FF0000'}
+      //updateDriveColor = {'#FF0000'}
       />
 </div>
 </>
