@@ -621,11 +621,17 @@ export const fetchDrivesSelector = selector({
   get:({get})=>{
     return get(fetchDrivesQuery);
   },
-  set:({get,set},labelTypeDriveId)=>{
+  set:({get,set},labelTypeDriveIdColorImage)=>{
     let driveData = get(fetchDrivesQuery)
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
-    let params = {driveId:labelTypeDriveId.newDriveId,label:labelTypeDriveId.label,type:labelTypeDriveId.type}
+    let params = {
+      driveId:labelTypeDriveIdColorImage.newDriveId,
+      label:labelTypeDriveIdColorImage.label,
+      type:labelTypeDriveIdColorImage.type,
+      image:labelTypeDriveIdColorImage.image,
+      color:labelTypeDriveIdColorImage.color,
+    }
     let newDrive;
     function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
       let contentObjs = {};
@@ -668,12 +674,12 @@ export const fetchDrivesSelector = selector({
       set(folderDictionary({driveId:destDriveId,folderId:destFolderId}),destFolderObj)
       return contentObjs;
     }
-    if (labelTypeDriveId.type === "new content drive"){
+    if (labelTypeDriveIdColorImage.type === "new content drive"){
       newDrive = {
         courseId:null,
-        driveId:labelTypeDriveId.newDriveId,
+        driveId:labelTypeDriveIdColorImage.newDriveId,
         isShared:"0",
-        label:labelTypeDriveId.label,
+        label:labelTypeDriveIdColorImage.label,
         type: "content"
       }
       newDriveData.driveIdsAndLabels.unshift(newDrive)
@@ -682,72 +688,75 @@ export const fetchDrivesSelector = selector({
     const payload = { params }
     axios.get("/api/addDrive.php", payload)
   // .then((resp)=>console.log(">>>resp",resp.data))
-    }else if (labelTypeDriveId.type === "new course drive"){
+    }else if (labelTypeDriveIdColorImage.type === "new course drive"){
       newDrive = {
         courseId:null,
-        driveId:labelTypeDriveId.newDriveId,
+        driveId:labelTypeDriveIdColorImage.newDriveId,
         isShared:"0",
-        label:labelTypeDriveId.label,
-        type: "course"
+        label:labelTypeDriveIdColorImage.label,
+        type: "course",
+        image:labelTypeDriveIdColorImage.image,
+        color:labelTypeDriveIdColorImage.color
       }
       newDriveData.driveIdsAndLabels.unshift(newDrive)
     set(fetchDrivesQuery,newDriveData)
 
     const payload = { params }
     axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
-    }else if (labelTypeDriveId.type === "make course drive from content drive"){
-      const sourceDriveId = labelTypeDriveId.driveId;
-      params['sourceDriveId'] = sourceDriveId;
-      //TODO: duplicate items from driveId
-      let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:labelTypeDriveId.newDriveId});
-      // console.log({contentObjs}) //Save these in addBulkItems.php post
-      axios.post('/api/addBulkItems.php',{driveId:labelTypeDriveId.newDriveId,content:contentObjs})
-      // .then(resp=>{console.log(resp.data)})
-      newDrive = {
-        courseId:null,
-        driveId:labelTypeDriveId.newDriveId,
-        isShared:"0",
-        label:labelTypeDriveId.label,
-        type: "course"
-      }
-      newDriveData.driveIdsAndLabels.unshift(newDrive)
-    set(fetchDrivesQuery,newDriveData)
-    const payload = { params }
-    axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
+  .then((resp)=>console.log(">>>resp",resp.data))
     }
-    // else if (labelTypeDriveId.type === "duplicate content drive"){
+  //   else if (labelTypeDriveIdColorImage.type === "make course drive from content drive"){
+  //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
+  //     params['sourceDriveId'] = sourceDriveId;
+  //     //TODO: duplicate items from driveId
+  //     let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:labelTypeDriveIdColorImage.newDriveId});
+  //     // console.log({contentObjs}) //Save these in addBulkItems.php post
+  //     axios.post('/api/addBulkItems.php',{driveId:labelTypeDriveIdColorImage.newDriveId,content:contentObjs})
+  //     // .then(resp=>{console.log(resp.data)})
+  //     newDrive = {
+  //       courseId:null,
+  //       driveId:labelTypeDriveIdColorImage.newDriveId,
+  //       isShared:"0",
+  //       label:labelTypeDriveIdColorImage.label,
+  //       type: "course"
+  //     }
+  //     newDriveData.driveIdsAndLabels.unshift(newDrive)
+  //   set(fetchDrivesQuery,newDriveData)
+  //   const payload = { params }
+  //   axios.get("/api/addDrive.php", payload)
+  // // .then((resp)=>console.log(">>>resp",resp.data))
+  //   }
+    // else if (labelTypeDriveIdColorImage.type === "duplicate content drive"){
     //     //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
     //     params['sourceDriveId'] = sourceDriveId;
     //     newDrive = {
     //       courseId:null,
     //       driveId,
     //       isShared:"0",
-    //       label:labelTypeDriveId.label,
+    //       label:labelTypeDriveIdColorImage.label,
     //       type: "content"
     //     }
-    // }else if (labelTypeDriveId.type === "duplicate course drive"){
+    // }else if (labelTypeDriveIdColorImage.type === "duplicate course drive"){
     //     //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
     //     params['sourceDriveId'] = sourceDriveId;
     //     newDrive = {
     //       courseId:null,
     //       driveId,
     //       isShared:"0",
-    //       label:labelTypeDriveId.label,
+    //       label:labelTypeDriveIdColorImage.label,
     //       type: "course"
     //     }
-    // }else if (labelTypeDriveId.type === "make content drive from course drive"){
+    // }else if (labelTypeDriveIdColorImage.type === "make content drive from course drive"){
     //   //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveId.driveId;
+    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
     //     params['sourceDriveId'] = sourceDriveId;
     //   newDrive = {
     //     courseId:null,
     //     driveId,
     //     isShared:"0",
-    //     label:labelTypeDriveId.label,
+    //     label:labelTypeDriveIdColorImage.label,
     //     type: "content"
     //   }
     // }

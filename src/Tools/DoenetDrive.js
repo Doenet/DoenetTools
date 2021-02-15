@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+import {driveColors,driveImages} from '../imports/Util';
 
 import Drive, { 
   folderDictionarySelector, 
@@ -594,7 +595,9 @@ function AddCourseDriveButton(props){
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
-    setNewDrive({label,type:"new course drive",driveId,newDriveId})
+    let image = driveImages[Math.floor(Math.random() * driveImages.length)];
+    let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+    setNewDrive({label,type:"new course drive",driveId,newDriveId,image,color})
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
@@ -777,19 +780,66 @@ const DriveCardComponent = React.memo((props) => {
   };
   const [on, toggle] = useState(false);
   const textUse = useRef();
-
+  
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  // drive selection 
+  const setOpenMenuPanel = useMenuPanelController();
+  // Drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
-   if (!e.shiftKey && !e.metaKey){
+   setOpenMenuPanel(0);
+  //  console.log(">>> on click selected $$$$$$$$$",drivecardSelectedValue);
+   if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){
-    setDrivecardSelection((old) => [...old,item]);
-  }else if (!e.shiftKey && e.metaKey){
-    setDrivecardSelection((old) => [item]);
+  }else if (e.shiftKey && !e.metaKey){      // ToDo : range to item 
+    
+    setDrivecardSelection((old) => {
+      if(old.length > 0)
+      {
+        let initalDriveId = old[0].driveId;
+        let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
+        let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
+
+        // console.log('<<<<<< First index >>> <<< last Index >>', firstDriveId,lastDriveId);
+        let finalArray = [];
+        if(firstDriveId > lastDriveId)
+        {
+          let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
+          finalArray = sampleArr.map((l)=>l.item);
+        }
+        else{
+          let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
+          finalArray = sampleArr.map((m)=>m.item);
+        }
+        // console.log(">>>> final array",finalArray);
+        return finalArray;
+        
+      }
+      else{
+        return [...old,item];
+      }
+    }); 
+  }else if (!e.shiftKey && e.metaKey){   // add item
+    setDrivecardSelection((old) =>{
+      console.log(">>>> old", old);
+      let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
+      if(alreadyAvaliable.length > 0)
+      {
+        const arr = [];
+        for(let i = 0;i<old.length;i++)
+        {
+          if(old[i].driveId != item.driveId)
+          {
+            arr.push(old[i]);
+          }
+        }
+        return arr;
+      }
+      else{
+        return [...old,item];
+      }
+    } );
   }
 
   //  console.log('>>>> drivecard selection item', item);
@@ -798,12 +848,16 @@ const DriveCardComponent = React.memo((props) => {
  }
 
  const getSelectedCard = (cardItem) => {
+   if(drivecardSelectedValue.length == 0)
+   {
+     return false;
+   }
   let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
   return avalibleCard.length > 0 ? true : false;
  }
-
   return (
     <div className="drivecardContainer">
+      {/* {drivecardSelectedValue.length} */}
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
@@ -823,7 +877,7 @@ const DriveCardComponent = React.memo((props) => {
           >
             <div
               className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
-              tabIndex={index}
+              tabIndex={index+1}
               // tabIndex={0}
               // onclick scale
               onClick = {(e) => drivecardselection(e,item)}
