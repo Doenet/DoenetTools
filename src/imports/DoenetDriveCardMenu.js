@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Styled from "styled-components";
-import "../Tools/DoenetCourseCardMenu.css";
 
 const ColorBox = Styled.button`
   width: 20px;
