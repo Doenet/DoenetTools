@@ -8,11 +8,10 @@
   width: 100%;
   /* overflow: hidden; */
   user-select: none;
-  display: flex;
   /* background: #f0f0f0; */
   /* padding: 15px; */
-  flex-direction: row;
-  flex-wrap: wrap;
+  /* flex-direction: row;
+  flex-wrap: wrap; */
 }
 
 /* a, Link {
@@ -47,6 +46,8 @@ text-decoration: none;
   will-change: transform, width, height, opacity;
   padding:15px;
   outline: none;
+  float: left;
+  display: block;
 
 }
 

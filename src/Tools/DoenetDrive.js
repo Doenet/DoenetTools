@@ -42,7 +42,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import crypto from 'crypto';
 import DriveCard from '../imports/DoenetDriveCard';
-import { useTransition, a, useSprings, interpolate } from "react-spring";
+import { useTransition, animated, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
 
@@ -733,15 +733,14 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  // console.log(">>>> props.driveInfo",props.driveInfo );
+  console.log(">>>> props.driveInfo",props.driveInfo );
+  heights = new Array(columns).fill(0);
+  const width = window.innerWidth - 400;
   let driveCardItem = props.driveInfo.map((child, i) => {
-    heights = new Array(columns).fill(0);
-    let width = window.innerWidth - 400;
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: 250, height: 250 };
+    return { ...child, xy, width: width / columns, height: 250};
   });
-  if (props.driveInfo.length > 0) {
     transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
@@ -757,12 +756,11 @@ const DriveCardComponent = React.memo((props) => {
         opacity: 1,
         scale: 1
       }),
-      update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
+      update: ({ xy, width, height }) => ({ xy:[0,0], width, height, scale: 1 }),
       leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 500, friction: 100 },
       trail: 25
     });
-  }
 
   function driveCardSelector(item) {
     let newParams = {};
@@ -874,7 +872,7 @@ const DriveCardComponent = React.memo((props) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
         return (
-          <a.div
+          <animated.div
             className="adiv"
             key={index}
             ref={textUse}
@@ -882,7 +880,7 @@ const DriveCardComponent = React.memo((props) => {
             // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
-                (scale) => `scale(${props.scale.value})`
+                (x,y) => `translate3d(${x}px,${y}px,0)`
               ),
               ...props,
             }}
@@ -903,7 +901,7 @@ const DriveCardComponent = React.memo((props) => {
                 label={item.label}
               />
             </div>
-           </a.div>
+           </animated.div>
         );
       })}
     </div>
