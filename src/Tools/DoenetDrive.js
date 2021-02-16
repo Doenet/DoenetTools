@@ -809,13 +809,13 @@ const DriveCardComponent = (props) => {
         let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
         if(firstDriveId > lastDriveId)
         {
-          let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
-          let filteredArr = sampleArr.map((l)=>l.item);
+          let slicedArr = transitions.slice(lastDriveId,firstDriveId+1);
+          let filteredArr = slicedArr.map((l)=>l.item);
           finalArray = [...finalArray,...filteredArr];
         }
         else{
-          let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
-          let filteredArr = sampleArr.map((m)=>m.item);
+          let slicedArr = transitions.slice(firstDriveId,lastDriveId+1);
+          let filteredArr = slicedArr.map((m)=>m.item);
           finalArray = [...finalArray,...filteredArr];
         }
         //  console.log(">>>> final array",finalArray);
