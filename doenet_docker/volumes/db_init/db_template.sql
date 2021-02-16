@@ -510,6 +510,7 @@ CREATE TABLE `drive` (
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
+  `isDeleted` tinyint(1) DEFAULT '0',
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1245,4 +1246,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-11 16:42:45
+-- Dump completed on 2021-02-16 23:38:54

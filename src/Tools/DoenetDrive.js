@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
+import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 
 import Drive, { 
   folderDictionarySelector, 
@@ -12,6 +13,10 @@ import Drive, {
   encodeParams
 } from "../imports/Drive";
 import nanoid from 'nanoid';
+
+import { faChalkboard
+ } from '@fortawesome/free-solid-svg-icons';
+ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 import {
@@ -61,6 +66,7 @@ const selectedDriveInformation = selector({
     set(drivecardSelectedNodesAtom,(old)=>[...old,newObj])
   }
 })
+
 const itemVersionsSelector = selectorFamily({
   key:"itemInfoSelector",
   get:(branchId)=> async ()=>{
@@ -312,6 +318,7 @@ const EditingTimestampAtom = atom({
   key:"EditingTimestampAtom",
   default:""
 })
+
 const EditingContentIdAtom = atom({
   key:"EditingContentIdAtom",
   default:""
@@ -509,63 +516,142 @@ console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
 return null;
 }
 
+const DriveInfoPanel = function(props){
+  const [driveLabel,setDriveLabel] = useState(props.label);
+  const [panelDriveLabel,setPanelDriveLabel] = useState(props.label);
+  const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
+
+
+  let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
+
+  return <>
+  <h2>{dIcon} {panelDriveLabel}</h2>
+  <label>Course Name<input type="text" 
+  value={driveLabel} 
+  onChange={(e)=>setDriveLabel(e.target.value)} 
+  onKeyDown={(e)=>{
+    if (e.keyCode === 13){
+      setPanelDriveLabel(driveLabel)
+      setDrivesInfo({
+        color:props.color,
+        label:driveLabel,
+        image:props.image,
+        newDriveId:props.driveId,
+        type:"update drive label",
+      })
+    }
+  }}
+  onBlur={()=>{
+    setPanelDriveLabel(driveLabel)
+    setDrivesInfo({
+      color:props.color,
+      label:driveLabel,
+      image:props.image,
+      newDriveId:props.driveId,
+      type:"update drive label",
+    })
+  }}/></label>
+  <DoenetDriveCardMenu
+  key={`colorMenu${props.driveId}`}
+  colors={driveColors} 
+  initialValue={props.color}
+  callback={(color)=>{
+        setDrivesInfo({
+          color,
+          label:driveLabel,
+          image:props.image,
+          newDriveId:props.driveId,
+          type:"update drive color"
+        })
+  }}
+  />
+  <Button text="Delete Course" callback={()=>{
+    // alert("Delete Drive")
+    setDrivesInfo({
+      color:props.color,
+      label:driveLabel,
+      image:props.image,
+      newDriveId:props.driveId,
+      type:"delete drive"
+    })
+  }} />
+
+  </>
+}
+
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const driveSelections = useRecoilValue(selectedDriveInformation);
-  console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
   const setOverlayOpen = useSetRecoilState(openOverlayByName);
   // const selectedDrive = useRecoilValue(selectedDriveAtom);
-
-
-
 
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
       console.error(infoLoad.contents)
       return null;}
    
+  // console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
+
       let itemInfo = infoLoad?.contents?.itemInfo;
 
     if (infoLoad.contents?.number > 1){
       return <>
       <h1>{infoLoad.contents.number} Items Selected</h1>
       </>
-    }else if (infoLoad.contents?.number < 1){
+    }else if (driveSelections.length > 1){
+      return  <h1>{driveSelections.length} Drives Selected</h1>
+
+    }else if (infoLoad.contents?.number < 1 && driveSelections.length < 1){
 
     if (!itemInfo) return <h3>No Items Selected</h3>;
-  }
+    }else if (driveSelections.length === 1){
+      const dInfo = driveSelections[0];
+
+      return <DriveInfoPanel 
+      key={`DriveInfoPanel${dInfo.driveId}`}
+      label={dInfo.label} 
+      color={dInfo.color}
+      image={dInfo.image}
+      driveId={dInfo.driveId} 
+      />
+
+    }else if (infoLoad.contents?.number === 1){
+      if (itemInfo?.itemType === "DoenetML"){
+    
+        return <div
+        style={{height:"100%"}}
+        >
+        <h1>{itemInfo.label}</h1>
+        
+        <button 
+        onClick={()=>setOverlayOpen({
+          name: "editor", //to match the prop
+          instructions: { 
+            supportVisble: true,
+            action: "open", //or "close"
+            // contentId: draftObj.contentId,
+            // branchId: itemInfo.branchId,
+            // title: draftObj.title,
+            // isDraft: draftObj.isDraft,
+            // timestamp: draftObj.timestamp
+          }
+        })}>Edit</button>
+        </div>
+          }
+      
+      
+        return <div
+        style={{height:"100%"}}
+        >
+        <h1>{itemInfo.label}</h1>
+        </div>
+    }
+
+  
 
  
-  if (itemInfo?.itemType === "DoenetML"){
-    
-  return <div
-  style={{height:"100%"}}
-  >
-  <h1>{itemInfo.label}</h1>
   
-  <button 
-  onClick={()=>setOverlayOpen({
-    name: "editor", //to match the prop
-    instructions: { 
-      supportVisble: true,
-      action: "open", //or "close"
-      // contentId: draftObj.contentId,
-      // branchId: itemInfo.branchId,
-      // title: draftObj.title,
-      // isDraft: draftObj.isDraft,
-      // timestamp: draftObj.timestamp
-    }
-  })}>Edit</button>
-  </div>
-    }
-
-
-  return <div
-  style={{height:"100%"}}
-  >
-  <h1>{itemInfo.label}</h1>
-  </div>
 }
 
 // function AddContentDriveButton(props){
@@ -956,12 +1042,14 @@ export default function DoenetDriveTool(props) {
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
   }
+
   function cleardrivecardSelection(){
     setDrivecardSelection([]);
     // let newParams = {};
     // newParams["path"] = `:::`;
     // history.push("?" + encodeParams(newParams));
   }
+
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let drivesIds = [];
   if (drivesInfo.state === "hasValue") {
