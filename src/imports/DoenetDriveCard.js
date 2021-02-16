@@ -3,19 +3,20 @@ import Styled from "styled-components";
 import Menu from "../Tools/DoenetCourseCardMenu";
 
 const DriveCardContainer = Styled.div`
-  position: relative;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-size: 10px;
-  line-height: 12px;
-  border-radius: 4px;
-  display: flex; /*added*/
-  flex-direction: column; /*added*/
-  background-image: url(${(props) => props.url});
-  background-color: ${(props) => `#${props.color}`};
+position: relative;
+background-size: cover;
+background-position: center center;
+width: 100%;
+height: 100%;
+overflow: hidden;
+font-size: 10px;
+line-height: 12px;
+border-radius: 4px;
+box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 20%);
+display: flex; /*added*/
+flex-direction: column; /*added*/
+background-image: url(${(props) => props.url});
+background-color: ${(props) => `#${props.color}`};
 `;
 
 const Image = Styled.div`

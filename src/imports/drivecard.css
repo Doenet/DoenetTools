@@ -1,24 +1,9 @@
 .drivecardContainer * {
   box-sizing: border-box;
+  user-select: none;
 }
 
 .drivecardContainer {
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  /* overflow: hidden; */
-  user-select: none;
-  /* background: #f0f0f0; */
-  /* padding: 15px; */
-  /* flex-direction: row;
-  flex-wrap: wrap; */
-}
-
-/* a, Link {
-text-decoration: none;
-} */
-
-.list {
   position: relative;
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
     segoe ui, arial, sans-serif;
@@ -26,29 +11,27 @@ text-decoration: none;
   height: 100%;
 }
 .drivecardlist{
-  /* position: relative; */
-  /* background-size: cover; */
-  /* background-position: center center; */
-  /* width: 100%; */
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  width: 100%;
   height: 100%;
+  overflow: hidden;
+  text-transform: uppercase;
+  font-size: 10px;
+  line-height: 10px;
   border-radius: 4px;
   box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
-  /* display: flex; /*added*/
-  /* flex-direction: column;  */
-  /* justify-content: space-between;   */
+  outline:none;
 }
 
 .borderselection{
   border : 2px solid black;
 }
 .adiv {
-  /* position: absolute; */
+  position: absolute;
   will-change: transform, width, height, opacity;
-  padding:15px;
-  outline: none;
-  float: left;
-  display: block;
-
+  padding: 15px;
 }
 
 

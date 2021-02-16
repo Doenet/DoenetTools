@@ -45,6 +45,7 @@ import DriveCard from '../imports/DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
+import useMeasure  from "./useMeasure";
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -714,7 +715,7 @@ const EditorTitle = ()=>{
   return <span>{overlayTitle}</span>
 }
 
-const DriveCardComponent = React.memo((props) => {
+const DriveCardComponent = (props) => {
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
@@ -733,13 +734,13 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  console.log(">>>> props.driveInfo",props.driveInfo );
+  // console.log(">>>> props.driveInfo",props.driveInfo );
   heights = new Array(columns).fill(0);
-  const width = window.innerWidth - 400;
+  const [bind, { width }] = useMeasure();
   let driveCardItem = props.driveInfo.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-    const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: width / columns, height: 250};
+    const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
+    return { ...child, xy, width: (width / columns), height: 250};
   });
     transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
@@ -756,8 +757,8 @@ const DriveCardComponent = React.memo((props) => {
         opacity: 1,
         scale: 1
       }),
-      update: ({ xy, width, height }) => ({ xy:[0,0], width, height, scale: 1 }),
-      leave: { height: 0, opacity: 0, scale: 0 },
+      update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
+      leave: { xy:[0,0],height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 500, friction: 100 },
       trail: 25
     });
@@ -776,9 +777,7 @@ const DriveCardComponent = React.memo((props) => {
       history.push("?" + encodeParams(newParams));
     }
   };
-  const [on, toggle] = useState(false);
-  const textUse = useRef();
-  
+  const [on, toggle] = useState(false);  
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
@@ -787,10 +786,9 @@ const DriveCardComponent = React.memo((props) => {
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
-  //  console.log(">>> on click selected $$$$$$$$$",drivecardSelectedValue);
    if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){      // ToDo : range to item 
+  }else if (e.shiftKey && !e.metaKey){      // range to item 
     
     setDrivecardSelection((old) => {
       if(old.length > 0)
@@ -809,18 +807,16 @@ const DriveCardComponent = React.memo((props) => {
         }
         let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
         let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
-
-        // console.log('<<<<<< First index >>> <<< last Index >>', firstDriveId,lastDriveId);
         if(firstDriveId > lastDriveId)
         {
           let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
-          let arr = sampleArr.map((l)=>l.item);
-          finalArray = [...finalArray,...arr];
+          let filteredArr = sampleArr.map((l)=>l.item);
+          finalArray = [...finalArray,...filteredArr];
         }
         else{
           let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
-          let arr1 = sampleArr.map((m)=>m.item);
-          finalArray = [...finalArray,...arr1];
+          let filteredArr = sampleArr.map((m)=>m.item);
+          finalArray = [...finalArray,...filteredArr];
         }
         //  console.log(">>>> final array",finalArray);
         return finalArray;
@@ -866,8 +862,7 @@ const DriveCardComponent = React.memo((props) => {
   return avalibleCard.length > 0 ? true : false;
  }
   return (
-    <div className="drivecardContainer">
-      {/* {drivecardSelectedValue.length} */}
+    <div className="drivecardContainer" {...bind} style={{ display:"flex",height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
@@ -875,12 +870,11 @@ const DriveCardComponent = React.memo((props) => {
           <animated.div
             className="adiv"
             key={index}
-            ref={textUse}
             // onMouseOver={() => toggle(props.scale.setValue(1.1))}
             // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
-                (x,y) => `translate3d(${x}px,${y}px,0)`
+                (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
               ),
               ...props,
             }}
@@ -890,7 +884,9 @@ const DriveCardComponent = React.memo((props) => {
               tabIndex={index+1}
               // tabIndex={0}
               // onclick scale
-              onClick = {(e) => drivecardselection(e,item)}
+              onClick = {(e) => {drivecardselection(e,item,props);
+                // toggle(props.scale.setValue(0.9))
+              }}
               onKeyDown={(e) => handleKeyDown(e, item)}
               onDoubleClick={() => driveCardSelector(item)}
             >
@@ -906,7 +902,7 @@ const DriveCardComponent = React.memo((props) => {
       })}
     </div>
   );
-});
+};
 
 export default function DoenetDriveTool(props) {
   // console.log("=== 💾 Doenet Drive Tool");  
