@@ -43,20 +43,18 @@ text-align:right;
  text-align: left;
  `;
 export default function DoenetDriveCardMenu(props) {
-  // console.log(props);
 
   const [expand, setExpand] = useState(false);
-  const [value, setValue] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [value, setValue] = useState(props.initialValue);
 
-  var list = props.data.map((item, i) => (
+  var list = props.colors.map((item, i) => (
     <li className="color-item" key={i}>
       <ColorBox
         className = "color-box"
         value={item}
         onClick={handleColorChange}
         type="checkbox"
-        color={item}
+        color={`#${item}`}
         selected = {value === item}
       />
     </li>
@@ -68,6 +66,9 @@ export default function DoenetDriveCardMenu(props) {
     e.preventDefault();
     setValue(e.target.value);
     setExpand(false);
+    if (props.callback){
+      props.callback(e.target.value)
+    }
     //props.updateDriveColor(e.target.value, props.driveId);
   }
 
@@ -84,7 +85,12 @@ export default function DoenetDriveCardMenu(props) {
     <>
     <HexBoxContainer>
     <ColorPickerHexButton onClick={handleOnClick}>
-       #HEX
+    <ColorBox
+        className = "color-box"
+        value={value}
+        type="checkbox"
+        color={`#${value}`}
+      />
       </ColorPickerHexButton>
       <ColorPickerHexValue>{value}</ColorPickerHexValue>
       <ColorPickerContainer onClick = {handleBorderClick}>

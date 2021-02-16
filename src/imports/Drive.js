@@ -703,7 +703,44 @@ export const fetchDrivesSelector = selector({
 
     const payload = { params }
     axios.get("/api/addDrive.php", payload)
-  .then((resp)=>console.log(">>>resp",resp.data))
+  // .then((resp)=>console.log(">>>resp",resp.data))
+    
+    }else if (labelTypeDriveIdColorImage.type === "update drive label"){
+      //Find matching drive and update label
+      for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
+          let newDrive = {...drive};
+          newDrive.label = labelTypeDriveIdColorImage.label
+          newDriveData.driveIdsAndLabels[i] = newDrive;
+          break;
+        }
+      }
+      //Set drive
+    set(fetchDrivesQuery,newDriveData)
+      //Save to db
+      const payload = { params }
+      axios.get("/api/updateDrive.php", payload)
+    // .then((resp)=>console.log(">>>updateDrive resp",resp.data))
+    }else if (labelTypeDriveIdColorImage.type === "update drive color"){
+      console.log(">>>drive color params:",params)
+     
+
+    }else if (labelTypeDriveIdColorImage.type === "delete drive"){
+      console.log(">>>delete drive params:",params)
+      // set(fetchDrivesQuery,newDriveData)
+      //Find matching drive and update label
+      for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
+          newDriveData.driveIdsAndLabels.splice(i,1);
+          break;
+        }
+      }
+      //Set drive
+      set(fetchDrivesQuery,newDriveData)
+        //Save to db
+        const payload = { params }
+        axios.get("/api/updateDrive.php", payload)
+      .then((resp)=>console.log(">>>updateDrive resp",resp.data))
     }
   //   else if (labelTypeDriveIdColorImage.type === "make course drive from content drive"){
   //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
@@ -1130,7 +1167,7 @@ function Folder(props){
  
     }
 
-    if (contentIdsArr.length === 0){
+    if (contentIdsArr.length === 0 && !props.foldersOnly){
       items.push(<EmptyNode key={`emptyitem${folderInfo?.itemId}`}/>)
     }
   }
