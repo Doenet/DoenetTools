@@ -31,6 +31,7 @@ FROM drive AS d
 LEFT JOIN drive_user AS du
 ON d.driveId = du.driveId
 WHERE du.userId='$userId'
+AND d.isDeleted = '0'
 ";
 
 $result = $conn->query($sql);
