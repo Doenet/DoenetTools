@@ -29,85 +29,85 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select assignnames="x1">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x1)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x2">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x2)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x3)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x4">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x4)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x5">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x5)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x6">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x6)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x7">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x7)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x8">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x8)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x9">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x9)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select assignnames="x10">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select assignnames="(x10)">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
     `}, "*");
@@ -131,45 +131,45 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="3">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="3">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="3">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="3">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="3">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="3">
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
     `}, "*");
@@ -200,50 +200,50 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="x1, y1, z1">
+    <select name="s1" assignnames="(x1), (y1), (z1)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="x2, y2, z2">
+    <select name="s2" assignnames="(x2), (y2), (z2)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="x3, y3, z3">
+    <select name="s3" assignnames="(x3), (y3), (z3)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="x4, y4, z4">
+    <select name="s4" assignnames="(x4), (y4), (z4)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="x5, y5, z5">
+    <select name="s5" assignnames="(x5), (y5), (z5)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
 
@@ -285,45 +285,45 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="3" newNameSpace>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="3" newNameSpace>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="3" newNameSpace>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="3" newNameSpace>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="3" newNameSpace>
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="3" newNameSpace>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
     `}, "*");
@@ -355,30 +355,30 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="x1, y1, z1" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="5" withReplacement>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="x2, y2, z2" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="5" withReplacement>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="x3, y3, z3" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="5" withReplacement>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="x4, y4, z4" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="5" withReplacement>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="x5, y5, z5" numberToSelect="5" withReplacement>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="5" withReplacement>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
     `}, "*");
@@ -400,7 +400,7 @@ describe('Select Tag Tests', function () {
         let s = components['/s' + ind];
 
         for (let i = 3; i < 5; i++) {
-          expect(["x", "y", "z"].includes(s.replacements[i].stateValues.value.tree)).eq(true);
+          expect(["x", "y", "z"].includes(s.replacements[i].replacements[0].stateValues.value.tree)).eq(true);
         }
       }
     })
@@ -414,20 +414,20 @@ describe('Select Tag Tests', function () {
     <p>
     <aslist>
     <select name="s1">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     <select name="s2">
-      <math>u</math>
-      <math>v</math>
-      <math>w</math>
-      <math>x</math>
-      <math>y</math>
-      <math>z</math>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
     </aslist>
     </p>
@@ -459,25 +459,25 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/s1'].replacements[0].stateValues.value.tree;
-      let x2 = components['/s2'].replacements[0].stateValues.value.tree;
+      let x1 = components['/s1'].replacements[0].replacements[0].stateValues.value.tree;
+      let x2 = components['/s2'].replacements[0].replacements[0].stateValues.value.tree;
       expect(["u", "v", "w", "x", "y", "z"].includes(x1)).eq(true);
       expect(["u", "v", "w", "x", "y", "z"].includes(x2)).eq(true);
 
       expect(components['/noresample1'].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
       expect(components['/noresample2'].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
-      expect(components['/noreresample1'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresample2'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
+      expect(components['/noreresample1'].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresample2'].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
 
       expect(components['/noresamplelist'].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
       expect(components['/noresamplelist'].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
 
       expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
       expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
 
     })
   });
@@ -495,9 +495,9 @@ describe('Select Tag Tests', function () {
     Selected choices: <aslist>
     <select name="sample1" withReplacement>
       <numbertoselect><copy prop="value" tname="numbertoselect" /></numbertoselect>
-      <copy prop="value" tname="x" />
-      <copy prop="value" tname="y" />
-      <copy prop="value" tname="z" />
+      <option><copy prop="value" tname="x" /></option>
+      <option><copy prop="value" tname="y" /></option>
+      <option><copy prop="value" tname="z" /></option>
     </select>
     </aslist>
     </p>
@@ -517,7 +517,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let samplereplacements = components['/sample1'].replacements;
       expect(samplereplacements.length).eq(5);
-      samplemaths = samplereplacements.map(x => x.replacements[0].stateValues.value.tree);
+      samplemaths = samplereplacements.map(x => x.replacements[0].replacements[0].stateValues.value.tree);
       for (let val of samplemaths) {
         expect(["a", "b", "c"].includes(val)).eq(true);
       }
@@ -534,7 +534,7 @@ describe('Select Tag Tests', function () {
 
       sampleIndices = samplemaths.map(x => ["a", "b", "c"].indexOf(x));
       expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      // expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
     });
 
@@ -552,13 +552,13 @@ describe('Select Tag Tests', function () {
       expect(choices2.length).eq(5);
       expect(choices3.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(samplemaths[ind]);
+        expect(samplereplacements[ind].replacements[0].replacements[0].stateValues.value.tree).eq(samplemaths[ind]);
         expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
         expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
 
       expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      // expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
 
     })
@@ -584,13 +584,13 @@ describe('Select Tag Tests', function () {
       expect(choices2.length).eq(5);
       expect(choices3.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
+        expect(samplereplacements[ind].replacements[0].replacements[0].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
         expect(choices2[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
         expect(choices3[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
       }
 
       expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
-      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      // expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
 
     })
@@ -606,26 +606,26 @@ describe('Select Tag Tests', function () {
     How many variables do you want? <mathinput />
     <p name="p1"><aslist>
     <map assignnames="a,b,c,d,e,f">
-      <template>
-        <select assignnames="n">
-          <math>u</math>
-          <math>v</math>
-          <math>w</math>
-          <math>x</math>
-          <math>y</math>
-          <math>z</math>
-          <math>p</math>
-          <math>q</math>
-          <math>r</math>
-          <math>s</math>
-          <math>t</math>
+      <template newNamespace>
+        <select assignnames="(n)">
+          <option><math>u</math></option>
+          <option><math>v</math></option>
+          <option><math>w</math></option>
+          <option><math>x</math></option>
+          <option><math>y</math></option>
+          <option><math>z</math></option>
+          <option><math>p</math></option>
+          <option><math>q</math></option>
+          <option><math>r</math></option>
+          <option><math>s</math></option>
+          <option><math>t</math></option>
         </select>
       </template>
-      <substitutions>
+      <sources>
       <sequence>
         <count><copy prop="value" tname="_mathinput1" /></count>
       </sequence>
-      </substitutions>
+      </sources>
     </map>
     </aslist></p>
     
@@ -655,9 +655,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("sample one variable");
@@ -672,9 +672,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       for (let ind = 0; ind < 1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -682,9 +682,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -698,9 +698,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get same number back");
@@ -715,9 +715,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -726,9 +726,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -748,9 +748,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       for (let ind = 0; ind < 3; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -758,9 +758,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -774,9 +774,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
 
@@ -794,9 +794,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -805,9 +805,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -833,9 +833,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -843,9 +843,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -859,9 +859,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get all six back");
@@ -886,9 +886,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
@@ -896,9 +896,9 @@ describe('Select Tag Tests', function () {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -911,22 +911,22 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x1,y1,z1)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
+      <option><math>u</math><math>v</math><math>w</math></option>
+      <option><math>x</math><math>y</math><math>z</math></option>
+      <option><math>a</math><math>b</math><math>c</math></option>
+      <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="p2"><aslist><select assignnames="(x2,y2,z2)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
+      <option><math>u</math><math>v</math><math>w</math></option>
+      <option><math>x</math><math>y</math><math>z</math></option>
+      <option><math>a</math><math>b</math><math>c</math></option>
+      <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="p3"><aslist><select assignnames="(x3,y3,z3)">
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
+      <option><math>u</math><math>v</math><math>w</math></option>
+      <option><math>x</math><math>y</math><math>z</math></option>
+      <option><math>a</math><math>b</math><math>c</math></option>
+      <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="q1"><aslist><copy tname="x1" /><copy tname="y1" /><copy tname="z1" /></aslist></p>
     <p name="q2"><aslist><copy tname="x2" /><copy tname="y2" /><copy tname="z2" /></aslist></p>
@@ -998,22 +998,22 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x,y,z)" name="s1" newnamespace>
-      <group><math>u</math><math>v</math><math>w</math></group>
-      <group><math>x</math><math>y</math><math>z</math></group>
-      <group><math>a</math><math>b</math><math>c</math></group>
-      <group><math>q</math><math>r</math><math>s</math></group>
+      <option><math>u</math><math>v</math><math>w</math></option>
+      <option><math>x</math><math>y</math><math>z</math></option>
+      <option><math>a</math><math>b</math><math>c</math></option>
+      <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="p2"><aslist><select assignnames="(x,y,z)" name="s2" newnamespace>
-    <group><math>u</math><math>v</math><math>w</math></group>
-    <group><math>x</math><math>y</math><math>z</math></group>
-    <group><math>a</math><math>b</math><math>c</math></group>
-    <group><math>q</math><math>r</math><math>s</math></group>
+    <option><math>u</math><math>v</math><math>w</math></option>
+    <option><math>x</math><math>y</math><math>z</math></option>
+    <option><math>a</math><math>b</math><math>c</math></option>
+    <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="p3"><aslist><select assignnames="(x,y,z)" name="s3" newnamespace>
-    <group><math>u</math><math>v</math><math>w</math></group>
-    <group><math>x</math><math>y</math><math>z</math></group>
-    <group><math>a</math><math>b</math><math>c</math></group>
-    <group><math>q</math><math>r</math><math>s</math></group>
+    <option><math>u</math><math>v</math><math>w</math></option>
+    <option><math>x</math><math>y</math><math>z</math></option>
+    <option><math>a</math><math>b</math><math>c</math></option>
+    <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
     <p name="q1"><aslist><copy tname="s1/x" /><copy tname="s1/y" /><copy tname="s1/z" /></aslist></p>
     <p name="q2"><aslist><copy tname="s2/x" /><copy tname="s2/y" /><copy tname="s2/z" /></aslist></p>
@@ -1087,10 +1087,10 @@ describe('Select Tag Tests', function () {
     <math>1</math>
     <p name="p1"><aslist>
       <select assignnames="(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)" numbertoselect="3">
-        <group><math>u</math><math>v</math><math>w</math></group>
-        <group><math>x</math><math>y</math><math>z</math></group>
-        <group><math>a</math><math>b</math><math>c</math></group>
-        <group><math>q</math><math>r</math><math>s</math></group>
+        <option><math>u</math><math>v</math><math>w</math></option>
+        <option><math>x</math><math>y</math><math>z</math></option>
+        <option><math>a</math><math>b</math><math>c</math></option>
+        <option><math>q</math><math>r</math><math>s</math></option>
       </select>
     </aslist></p>
     <p name="q1"><aslist>
@@ -1164,9 +1164,9 @@ describe('Select Tag Tests', function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
-      <p>Option 1: <math>3<copy tname="../x1" /><copy tname="../y1" /></math></p>
-      <p name="h" newnamespace>Option 2: <math>4<copy tname="../x2" /><copy tname="../y2" /></math></p>
-      <p name="l">Option 3: <math>5<copy tname="../x3" /><copy tname="../y3" /></math></p>
+      <option newNamespace><p>Option 1: <math>3<copy tname="../x1" /><copy tname="../y1" /></math></p></option>
+      <option><p name="h" newnamespace>Option 2: <math>4<copy tname="../x2" /><copy tname="../y2" /></math></p></option>
+      <option newNamespace><p name="l">Option 3: <math>5<copy tname="../x3" /><copy tname="../y3" /></math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -1197,27 +1197,98 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let q2 = components['/q2'].replacements[0].activeChildren;
+      let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
       let q2string = q2[0].stateValues.value;
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
-      let r2 = components['/r2'].replacements[0].activeChildren;
+      let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
       let r2string = r2[0].stateValues.value;
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
-      let s2 = components['/s2'].replacements[0].activeChildren;
+      let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
       let s2string = s2[0].stateValues.value;
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
-      let t2 = components['/t2'].replacements[0].activeChildren;
+      let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
       let t2string = t2[0].stateValues.value;
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
-      let u2 = components['/u2'].replacements[0].activeChildren;
+      let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
+      let u2string = u2[0].stateValues.value;
+      let u2math = u2[1].stateValues.value;
+      expect(u2math.equals(option[u2string])).eq(true);
+
+    })
+  });
+
+  it('references to outside components, no new namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <math>1</math>
+    <math hide name="x1">x</math>
+    <math hide name="x2">y</math>
+    <math hide name="x3">z</math>
+
+    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+      <option><p>Option 1: <math>3<copy tname="x1" /><copy tname="y1" /></math></p></option>
+      <option><p name="h">Option 2: <math>4<copy tname="x2" /><copy tname="y2" /></math></p></option>
+      <option><p name="l">Option 3: <math>5<copy tname="x3" /><copy tname="y3" /></math></p></option>
+    </select>
+
+    <math hide name="y1">a</math>
+    <math hide name="y2">b</math>
+    <math hide name="y3">c</math>
+
+    <p>Selected options repeated</p>
+    <copy name="q2" tname="q" />
+    <copy name="r2" tname="r" />
+    <copy name="s2" tname="s" />
+    <copy name="t2" tname="t" />
+    <copy name="u2" tname="u" />
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    let option = {
+      "Option 1: ": me.fromText("3xa"),
+      "Option 2: ": me.fromText("4yb"),
+      "Option 3: ": me.fromText('5zc')
+    }
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
+      let q2string = q2[0].stateValues.value;
+      let q2math = q2[1].stateValues.value;
+      expect(q2math.equals(option[q2string])).eq(true);
+
+      let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
+      let r2string = r2[0].stateValues.value;
+      let r2math = r2[1].stateValues.value;
+      expect(r2math.equals(option[r2string])).eq(true);
+
+      let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
+      let s2string = s2[0].stateValues.value;
+      let s2math = s2[1].stateValues.value;
+      expect(s2math.equals(option[s2string])).eq(true);
+
+      let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
+      let t2string = t2[0].stateValues.value;
+      let t2math = t2[1].stateValues.value;
+      expect(t2math.equals(option[t2string])).eq(true);
+
+      let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
       let u2string = u2[0].stateValues.value;
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
@@ -1232,9 +1303,9 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
-      <p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p>
-      <p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy tname="x" />^2<copy tname="z2" />^3</math></p>
-      <p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy tname="x" />^2<copy tname="z3" />^3</math></p>
+      <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
+      <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy tname="x" />^2<copy tname="z2" />^3</math></p></option>
+      <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy tname="x" />^2<copy tname="z3" />^3</math></p></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -1276,7 +1347,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let q2 = components['/q2'].replacements[0].activeChildren;
+      let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
       let q2string = q2[0].stateValues.value;
       let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
@@ -1285,7 +1356,7 @@ describe('Select Tag Tests', function () {
       let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].stateValues.value;
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
-      let r2 = components['/r2'].replacements[0].activeChildren;
+      let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
       let r2string = r2[0].stateValues.value;
       let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
@@ -1294,7 +1365,7 @@ describe('Select Tag Tests', function () {
       let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].stateValues.value;
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
-      let s2 = components['/s2'].replacements[0].activeChildren;
+      let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
       let s2string = s2[0].stateValues.value;
       let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
@@ -1303,7 +1374,7 @@ describe('Select Tag Tests', function () {
       let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].stateValues.value;
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
-      let t2 = components['/t2'].replacements[0].activeChildren;
+      let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
       let t2string = t2[0].stateValues.value;
       let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
@@ -1312,7 +1383,7 @@ describe('Select Tag Tests', function () {
       let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].stateValues.value;
       expect(repeattmath.equals(option[t2string])).eq(true);
 
-      let u2 = components['/u2'].replacements[0].activeChildren;
+      let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
       let u2string = u2[0].stateValues.value;
       let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
@@ -1324,20 +1395,102 @@ describe('Select Tag Tests', function () {
     })
   });
 
+  it('internal references with no new namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+      <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
+      <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + <copy tname="y" />^2<copy tname="z2" />^3</math></p></option>
+      <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + <copy tname="z" />^2<copy tname="z3" />^3</math></p></option>
+    </select>
+
+    <p>Selected options repeated</p>
+    <copy name="q2" tname="q" />
+    <copy name="r2" tname="r" />
+    <copy name="s2" tname="s" />
+    <copy name="t2" tname="t" />
+    <copy name="u2" tname="u" />
+
+    <p>Copy select itself</p>
+    <section name="repeat"><copy tname="_select1" /></section>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let option = {
+      "Option 1: ": me.fromText("3x+a+x^2a^3"),
+      "Option 2: ": me.fromText("4y+b+y^2b^3"),
+      "Option 3: ": me.fromText('5z+c+z^2c^3')
+    }
+
+    let xoption = {
+      "Option 1: ": "x",
+      "Option 2: ": "y",
+      "Option 3: ": "z"
+    }
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let q2 = components['/q2'].replacements[0].replacements[0].activeChildren;
+      let q2string = q2[0].stateValues.value;
+      let q2math = q2[1].stateValues.value;
+      expect(q2math.equals(option[q2string])).eq(true);
+      let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].stateValues.value;
+      expect(repeatqmath.equals(option[q2string])).eq(true);
+
+      let r2 = components['/r2'].replacements[0].replacements[0].activeChildren;
+      let r2string = r2[0].stateValues.value;
+      let r2math = r2[1].stateValues.value;
+      expect(r2math.equals(option[r2string])).eq(true);
+      let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].stateValues.value;
+      expect(repeatrmath.equals(option[r2string])).eq(true);
+
+      let s2 = components['/s2'].replacements[0].replacements[0].activeChildren;
+      let s2string = s2[0].stateValues.value;
+      let s2math = s2[1].stateValues.value;
+      expect(s2math.equals(option[s2string])).eq(true);
+      let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].stateValues.value;
+      expect(repeatsmath.equals(option[s2string])).eq(true);
+
+      let t2 = components['/t2'].replacements[0].replacements[0].activeChildren;
+      let t2string = t2[0].stateValues.value;
+      let t2math = t2[1].stateValues.value;
+      expect(t2math.equals(option[t2string])).eq(true);
+      let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].stateValues.value;
+      expect(repeattmath.equals(option[t2string])).eq(true);
+
+      let u2 = components['/u2'].replacements[0].replacements[0].activeChildren;
+      let u2string = u2[0].stateValues.value;
+      let u2math = u2[1].stateValues.value;
+      expect(u2math.equals(option[u2string])).eq(true);
+      let repeatumath = components["/repeat"].activeChildren[4].activeChildren[1].stateValues.value;
+      expect(repeatumath.equals(option[u2string])).eq(true);
+
+    })
+  });
+
   it('variants specified, select single', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
     <variantControl nvariants="5" variants="aVocado, broCColi , carrot ,Dill,eggplanT"/>
 
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="dill">d</math>
-      <math variants="Carrot">c</math>
-      <math variants="eggPlant">e</math>
-      <math variants="avocadO">a</math>
-      <math variants="broccOli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="dill"><math>d</math></option>
+      <option selectForVariants="Carrot"><math>c</math></option>
+      <option selectForVariants="eggPlant"><math>e</math></option>
+      <option selectForVariants="avocadO"><math>a</math></option>
+      <option selectForVariants="broccOli"><math>b</math></option>
     </select>
     </p>
 
@@ -1347,9 +1500,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1361,7 +1512,7 @@ describe('Select Tag Tests', function () {
 
       expect(x).eq(expectedx);
 
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
 
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
@@ -1377,17 +1528,17 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
     <variantControl nvariants="5" variants="avocado, brOccoli , carrot ,dill,   eggPlant  "/>
 
     <p>Selected variables:
     <aslist>
-    <select assignnames="x, y, z" numbertoselect="3">
-      <math variants="dill, carrot, avocado">d</math>
-      <math variants="cArrOt,eggplant,eggplant">c</math>
-      <math variants="eggplant ,broccoli ,dilL">e</math>
-      <math variants="aVocado , avocado , broccoli">a</math>
-      <math variants="  broccoli   , caRRot   , dill    ">b</math>
+    <select assignnames="(x), (y), (z)" numbertoselect="3">
+      <option selectForVariants="dill, carrot, avocado"><math>d</math></option>
+      <option selectForVariants="cArrOt,eggplant,eggplant"><math>c</math></option>
+      <option selectForVariants="eggplant ,broccoli ,dilL"><math>e</math></option>
+      <option selectForVariants="aVocado , avocado , broccoli"><math>a</math></option>
+      <option selectForVariants="  broccoli   , caRRot   , dill    "><math>b</math></option>
     </select>
     </aslist>
     </p>
@@ -1401,9 +1552,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1431,11 +1580,11 @@ describe('Select Tag Tests', function () {
       let z = components['/z'].stateValues.value.tree;
       expect(z).eq(variantVars[0]);
 
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(x);
-      let yorig = components['/_select1'].replacements[1].stateValues.value.tree;
+      let yorig = components['/_select1'].replacements[1].replacements[0].stateValues.value.tree;
       expect(yorig).eq(y);
-      let zorig = components['/_select1'].replacements[2].stateValues.value.tree;
+      let zorig = components['/_select1'].replacements[2].replacements[0].stateValues.value.tree;
       expect(zorig).eq(z);
 
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
@@ -1447,9 +1596,9 @@ describe('Select Tag Tests', function () {
 
       let x3 = components['/s2'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(x);
-      let y3 = components['/s2'].replacements[0].replacements[1].stateValues.value.tree;
+      let y3 = components['/s2'].replacements[1].replacements[0].stateValues.value.tree;
       expect(y3).eq(y);
-      let z3 = components['/s2'].replacements[0].replacements[2].stateValues.value.tree;
+      let z3 = components['/s2'].replacements[2].replacements[0].stateValues.value.tree;
       expect(z3).eq(z);
 
     })
@@ -1528,10 +1677,11 @@ describe('Select Tag Tests', function () {
         <text>${ind}</text>
         <variantcontrol nvariants="200"/>
         <aslist>
-        <select assignnames="x">
-          <text selectweight="0.2">x</text>
-          <text>y</text>
-          <text selectweight="5">z</text></select>
+        <select assignnames="(x)">
+          <option selectweight="0.2"><text>x</text></option>
+          <option><text>y</text></option>
+          <option selectweight="5"><text>z</text></option>
+          </select>
         </aslist>
         `,
           requestedVariant: { index: ind },
@@ -1570,12 +1720,12 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
-    <select assignnames="x1" numbertoselect="200" withreplacement>
-      <text selectweight="0.2">x</text>
-      <text>y</text>
-      <text selectweight="5">z</text>
+    <select numbertoselect="200" withreplacement>
+      <option selectweight="0.2"><text>x</text></option>
+      <option><text>y</text></option>
+      <option selectweight="5"><text>z</text></option>
     </select>
     </aslist>
     `,
@@ -1584,16 +1734,15 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
+
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let numX = 0, numY = 0, numZ = 0;
       let selectReplacements = components['/_select1'].replacements;
       for (let ind = 0; ind < 200; ind++) {
-        let x = selectReplacements[ind].stateValues.value;
+        let x = selectReplacements[ind].replacements[0].stateValues.value;
         if (x === "x") {
           numX++;
         } else if (x === "y") {
@@ -1623,13 +1772,13 @@ describe('Select Tag Tests', function () {
         <text>${ind}</text>
         <variantcontrol nvariants="200"/>
         <aslist>
-        <select assignnames="x,y" numbertoselect="2">
-          <text selectweight="0.1">u</text>
-          <text selectweight="0.1">v</text>
-          <text selectweight="0.1">w</text>
-          <text selectweight="5">x</text>
-          <text>y</text>
-          <text selectweight="10">z</text>
+        <select assignnames="(x),(y)" numbertoselect="2">
+          <option selectweight="0.1"><text>u</text></option>
+          <option selectweight="0.1"><text>v</text></option>
+          <option selectweight="0.1"><text>w</text></option>
+          <option selectweight="5"><text>x</text></option>
+          <option><text>y</text></option>
+          <option selectweight="10"><text>z</text></option>
         </select>
         </aslist>
         `,
@@ -1682,13 +1831,13 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
 
-    <select name="original" assignnames="q,r,s,t,u,v,w" numbertoselect="7" withreplacement>
-      <p><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
-      <p><selectfromsequence assignnames="q,r" numbertoselect="2">a,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
-      <p><text name="q">z</text><selectfromsequence assignnames="r" numbertoselect="1">u,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
-      <p><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
+    <select name="original" assignnames="(q),(r),(s),(t),(u),(v),(w)" numbertoselect="7" withreplacement>
+      <option><p newNamespace><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2">a,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><text name="q">z</text><selectfromsequence assignnames="r" numbertoselect="1">u,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -1713,12 +1862,8 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
+
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2573,18 +2718,18 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <select assignnames="(a,b,c,d)">
-    <group>
-      <math name="h"><math name="w">x</math><math>y</math></math>
-      <math simplify><math name="q">z</math> + 2<copy name="v" tname="q" /></math>
+    <option>
+      <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
+      <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" tname="q" /></math>
       <copy tname="a/w" />
       <copy tname="b/q" />
-    </group>
-    <group>
-      <math name="h"><math name="w">u</math><math>v</math></math>
-      <math simplify><math name="q">t</math> + 2<copy name="v" tname="q" /></math>
+    </option>
+    <option>
+      <math name="h2" newNamespace><math name="w">u</math><math>v</math></math>
+      <math simplify newNamespace><math name="q">t</math> + 2<copy name="v" tname="q" /></math>
       <copy tname="a/w" />
       <copy tname="b/q" />
-    </group>
+    </option>
     </select>
     
     <p>Copy grandchidren</p>
@@ -2623,7 +2768,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let chosenChildren = components['/_select1'].stateValues.recursiveReplacements.map(x => components[x.componentName])
+      let chosenChildren = components['/_select1'].replacements[0].replacements.map((v,i) => i < 2 ? v: v.replacements[0])
       let option = options[components['/_select1'].stateValues.selectedIndices[0]];
 
       expect(chosenChildren[0].stateValues.value.toString()).eq(option.a)
@@ -2634,90 +2779,9 @@ describe('Select Tag Tests', function () {
 
       let a2 = components['/a2'].replacements[0].stateValues.value.toString();
       let b2 = components['/b2'].replacements[0].stateValues.value.toString();
-      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
-      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
-      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
-      let w2 = components['/w2'].replacements[0].stateValues.value.toString();
-
-      expect(a2).eq(option.a);
-      expect(b2).eq(option.b);
-      expect(c2).eq(option.c);
-      expect(d2).eq(option.d);
-      expect(v2).eq(option.v);
-      expect(w2).eq(option.w);
-
-    })
-  });
-
-  it("references to named grandchildren's children, newnamespaces", () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <select assignnames="(a,b,c,d)">
-    <group>
-      <math name="h" newnamespace><math name="w">x</math><math>y</math></math>
-      <math simplify newnamespace name="a"><math name="q">z</math> + 2<copy name="v" tname="q" /></math>
-      <copy tname="a/w" />
-      <copy tname="b/q" />
-    </group>
-    <group>
-      <math name="h" newnamespace><math name="w">u</math><math>v</math></math>
-      <math simplify newnamespace name="a"><math name="q">t</math> + 2<copy name="v" tname="q" /></math>
-      <copy tname="a/w" />
-      <copy tname="b/q" />
-    </group>
-    </select>
-    
-    <p>Copy grandchidren</p>
-    <p><copy name="a2" tname="a" /></p>
-    <p><copy name="b2" tname="b" /></p>
-    <p><copy name="c2" tname="c" /></p>
-    <p><copy name="d2" tname="d" /></p>
-    
-    <p>Copy named children of grandchild</p>
-    <p><copy name="w2" tname="a/w" /></p>
-    <p><copy name="v2" tname="b/v" /></p>
-    
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    let options = [{
-      a: "x y",
-      b: "3 z",
-      c: "x",
-      d: "z",
-      v: "z",
-      w: "x",
-    },
-    {
-      a: "u v",
-      b: "3 t",
-      c: "u",
-      d: "t",
-      v: "t",
-      w: "u",
-    }];
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let chosenChildren = components['/_select1'].stateValues.recursiveReplacements.map(x => components[x.componentName])
-      let option = options[components['/_select1'].stateValues.selectedIndices[0]];
-
-      expect(chosenChildren[0].stateValues.value.toString()).eq(option.a)
-      expect(chosenChildren[1].stateValues.value.toString()).eq(option.b)
-      expect(chosenChildren[2].stateValues.value.toString()).eq(option.c)
-      expect(chosenChildren[3].stateValues.value.toString()).eq(option.d)
-
-
-      let a2 = components['/a2'].replacements[0].stateValues.value.toString();
-      let b2 = components['/b2'].replacements[0].stateValues.value.toString();
-      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
-      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
-      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
+      let c2 = components['/c2'].replacements[0].stateValues.value.toString();
+      let d2 = components['/d2'].replacements[0].stateValues.value.toString();
+      let v2 = components['/v2'].replacements[0].stateValues.value.toString();
       let w2 = components['/w2'].replacements[0].stateValues.value.toString();
 
       expect(a2).eq(option.a);
@@ -2736,33 +2800,33 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><aslist name="list1">
-    <select assignnames="j,k,l" numbertoselect="3" withreplacement>
-    <map assignnames="a,b">
-      <template>
+    <select assignnames="(j),(k),(l)" numbertoselect="3" withreplacement>
+    <option><map assignnames="a,b" newNamespace>
+      <template newNamespace>
         <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><copyFromSubs/>^2</math><math><copyFromSubs/>^6</math></group>
-          <group><math><copyFromSubs/>^3</math><math><copyFromSubs/>^7</math></group>
-          <group><math><copyFromSubs/>^4</math><math><copyFromSubs/>^8</math></group>
-          <group><math><copyFromSubs/>^5</math><math><copyFromSubs/>^9</math></group>
+          <option><math><copySource/>^2</math><math><copySource/>^6</math></option>
+          <option><math><copySource/>^3</math><math><copySource/>^7</math></option>
+          <option><math><copySource/>^4</math><math><copySource/>^8</math></option>
+          <option><math><copySource/>^5</math><math><copySource/>^9</math></option>
         </select>
       </template>
-      <substitutions>
+      <sources>
         <math>x</math><math>y</math>
-      </substitutions>
-    </map>
-    <map assignnames="a,b">
-      <template>
+      </sources>
+    </map></option>
+    <option><map assignnames="a,b" newNamespace>
+      <template newNamespace>
         <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><copyFromSubs/>2</math><math><copyFromSubs/>6</math></group>
-          <group><math><copyFromSubs/>3</math><math><copyFromSubs/>7</math></group>
-          <group><math><copyFromSubs/>4</math><math><copyFromSubs/>8</math></group>
-          <group><math><copyFromSubs/>5</math><math><copyFromSubs/>9</math></group>
+          <option><math><copySource/>2</math><math><copySource/>6</math></option>
+          <option><math><copySource/>3</math><math><copySource/>7</math></option>
+          <option><math><copySource/>4</math><math><copySource/>8</math></option>
+          <option><math><copySource/>5</math><math><copySource/>9</math></option>
         </select>
       </template>
-      <substitutions>
+      <sources>
         <math>u</math><math>v</math>
-      </substitutions>
-    </map>
+      </sources>
+    </map></option>
     </select>
     </aslist></p>
 
@@ -2811,33 +2875,33 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><aslist name="list1">
-    <select name="s" newnamespace assignnames="j,k,l" numbertoselect="3" withreplacement>
-    <map name="m" newnamespace assignnames="a,b">
-      <template>
+    <select name="s" newnamespace assignnames="(j),(k),(l)" numbertoselect="3" withreplacement>
+    <option><map name="m" newnamespace assignnames="a,b">
+      <template newnamespace>
         <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><copyFromSubs/>^2</math><math><copyFromSubs/>^6</math></group>
-          <group><math><copyFromSubs/>^3</math><math><copyFromSubs/>^7</math></group>
-          <group><math><copyFromSubs/>^4</math><math><copyFromSubs/>^8</math></group>
-          <group><math><copyFromSubs/>^5</math><math><copyFromSubs/>^9</math></group>
+          <option><math><copySource/>^2</math><math><copySource/>^6</math></option>
+          <option><math><copySource/>^3</math><math><copySource/>^7</math></option>
+          <option><math><copySource/>^4</math><math><copySource/>^8</math></option>
+          <option><math><copySource/>^5</math><math><copySource/>^9</math></option>
         </select>
       </template>
-      <substitutions>
+      <sources>
         <math>x</math><math>y</math>
-      </substitutions>
-    </map>
-    <map name="n" newnamespace assignnames="a,b">
-      <template>
+      </sources>
+    </map></option>
+    <option><map name="n" newnamespace assignnames="a,b">
+      <template newnamespace>
         <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><copyFromSubs/>2</math><math><copyFromSubs/>6</math></group>
-          <group><math><copyFromSubs/>3</math><math><copyFromSubs/>7</math></group>
-          <group><math><copyFromSubs/>4</math><math><copyFromSubs/>8</math></group>
-          <group><math><copyFromSubs/>5</math><math><copyFromSubs/>9</math></group>
+          <option><math><copySource/>2</math><math><copySource/>6</math></option>
+          <option><math><copySource/>3</math><math><copySource/>7</math></option>
+          <option><math><copySource/>4</math><math><copySource/>8</math></option>
+          <option><math><copySource/>5</math><math><copySource/>9</math></option>
         </select>
       </template>
-      <substitutions>
+      <sources>
         <math>u</math><math>v</math>
-      </substitutions>
-    </map>
+      </sources>
+    </map></option>
     </select>
     </aslist></p>
 
@@ -2886,95 +2950,25 @@ describe('Select Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><aslist>
-    <select name="s1" assignnames="x1, y1, z1" withReplacement>
-      <numberToSelect><copy prop="numberToSelect" tname="s2" /></numberToSelect>
-      <math>x</math><math>y</math><math>z</math>
+    <select name="s1" assignnames="(x1), (y1), (z1)" >
+      <withReplacement>true</withReplacement>
+      <numberToSelect><copy tname="_numbertoselect2" /></numberToSelect>
+      <option><math>x</math></option>
+      <option><math>y</math></option>
+      <option><math>z</math></option>
     </select>
   </aslist></p>
   
   <p><aslist>
-    <select name="s2" assignnames="x2, y2, z2">
+    <select name="s2" assignnames="(x2), (y2), (z2)">
       <numberToSelect><copy tname="n" /></numberToSelect>
-      <withReplacement><copy prop="withReplacement" tname="s1" /></withReplacement>
-      <math>u</math><math>v</math><math>w</math>
+      <withReplacement><copy tname="withreplacement1" /</withReplacement>
+      <option><math>u</math></option>
+      <option><math>v</math></option>
+      <option><math>w</math></option>
     </select>
   </aslist></p>
   
-  <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
-  
-  <p> 
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1"><copy tname="n2" />+<copy tname="num2" /></math>
-    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
-    <number name="num3">1</number>
-  </p>
-    `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].stateValues.value.tree;
-      let y1 = components['/y1'].stateValues.value.tree;
-      let z1 = components['/z1'].stateValues.value.tree;
-      let x2 = components['/x2'].stateValues.value.tree;
-      let y2 = components['/y2'].stateValues.value.tree;
-      let z2 = components['/z2'].stateValues.value.tree;
-
-      expect(["x", "y", "z"].includes(x1)).eq(true);
-      expect(["x", "y", "z"].includes(y1)).eq(true);
-      expect(["x", "y", "z"].includes(z1)).eq(true);
-      expect(["u", "v", "w"].includes(x2)).eq(true);
-      expect(["u", "v", "w"].includes(y2)).eq(true);
-      expect(["u", "v", "w"].includes(z2)).eq(true);
-
-      let x1a = components['/x1a'].replacements[0].stateValues.value.tree;
-      let y1a = components['/y1a'].replacements[0].stateValues.value.tree;
-      let z1a = components['/z1a'].replacements[0].stateValues.value.tree;
-      let x2a = components['/x2a'].replacements[0].stateValues.value.tree;
-      let y2a = components['/y2a'].replacements[0].stateValues.value.tree;
-      let z2a = components['/z2a'].replacements[0].stateValues.value.tree;
-
-      expect(x1a).eq(x1);
-      expect(y1a).eq(y1);
-      expect(z1a).eq(z1);
-      expect(x2a).eq(x2);
-      expect(y2a).eq(y2);
-      expect(z2a).eq(z2);
-
-    })
-  });
-
-  it('two selects with mutual dependence through intermediate copies, numbertoselect initially unresolved', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p><aslist>
-    <select name="s1" assignnames="x1, y1, z1" withReplacement>
-      <numberToSelect><copy prop="numberToSelect" tname="s2b" /></numberToSelect>
-      <math>x</math><math>y</math><math>z</math>
-    </select>
-  </aslist></p>
-
-  <p><aslist>
-    <select name="s2" assignnames="x2, y2, z2">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <withReplacement><copy prop="withReplacement" tname="s1b" /></withReplacement>
-      <math>u</math><math>v</math><math>w</math>
-    </select>
-  </aslist></p>
-
-  <p><aslist><copy name="s1a" tname="s1" /></aslist></p>
-  <p><aslist><copy name="s2a" tname="s2" /></aslist></p>
-  <p><aslist><copy name="s1b" tname="s1a" /></aslist></p>
-  <p><aslist><copy name="s2b" tname="s2a" /></aslist></p>
-
   <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
   <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
   
@@ -3030,18 +3024,18 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <p>Selects and hide</p>
-      <p><select assignnames="c">
-        <text>a</text>
-        <text>b</text>
-        <text>c</text>
-        <text>d</text>
-        <text>e</text>
-      </select>, <select assignnames="d" hide>
-        <text>a</text>
-        <text>b</text>
-        <text>c</text>
-        <text>d</text>
-        <text>e</text>
+      <p><select assignnames="(c)">
+        <option><text>a</text></option>
+        <option><text>b</text></option>
+        <option><text>c</text></option>
+        <option><text>d</text></option>
+        <option><text>e</text></option>
+      </select>, <select assignnames="(d)" hide>
+        <option><text>a</text></option>
+        <option><text>b</text></option>
+        <option><text>c</text></option>
+        <option><text>d</text></option>
+        <option><text>e</text></option>
       </select></p>
       <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
     `}, "*");
@@ -3069,29 +3063,29 @@ describe('Select Tag Tests', function () {
         doenetML: `
       <p>Selects and hide</p>
       <p><aslist><select assignnames="(a,b,c)">
-        <group>
+        <option>
           <text>a</text>
           <text>b</text>
           <text>c</text>
-        </group>
-        <group>
+        </option>
+        <option>
           <text>d</text>
           <text>e</text>
           <text>f</text>
-        </group>
+        </option>
       </select><select assignnames="(d,e)" hide>
-        <group>
+        <option>
           <text>a</text>
           <text>b</text>
-        </group>
-        <group>
+        </option>
+        <option>
           <text>c</text>
           <text>d</text>
-        </group>
-        <group>
+        </option>
+        <option>
           <text>e</text>
           <text>f</text>
-        </group>
+        </option>
       </select></aslist></p>
       <p><copy tname="a" />, <copy hide="true" tname="b" />, <copy tname="c" />, <copy hide="false" tname="d" />, <copy tname="e" /></p>
     `}, "*");

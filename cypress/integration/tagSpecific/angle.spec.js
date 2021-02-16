@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Angle Tag Tests', function () {
 
   beforeEach(() => {
@@ -31,7 +41,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
@@ -121,7 +131,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(4, 1E-6)
@@ -203,7 +213,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).eq("＿");
@@ -263,7 +273,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/alpha"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/alpha"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(1, 1E-6)
@@ -334,8 +344,8 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/alpha"].replacements[0].componentName;
-      let angleDegAnchor = '#' + components["/alphadeg"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/alpha"].replacements[0].componentName);
+      let angleDegAnchor = cesc('#' + components["/alphadeg"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text).eq("＿")

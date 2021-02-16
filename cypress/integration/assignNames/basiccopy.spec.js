@@ -81,19 +81,19 @@ describe('Basic copy assignName Tests', function () {
 
       expect(components['/cp1'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp2'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp3'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp3'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp4'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp5'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp5'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp6'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp7'].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp7'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp8'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp9'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp9'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp10'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp11'].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp11'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp12'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp13'].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp13'].replacements[0].stateValues.value).eq('hello');
       expect(components['/cp14'].replacements[0].stateValues.value).eq('hello');
-      expect(components['/cp15'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.value).eq('hello');
+      expect(components['/cp15'].replacements[0].stateValues.value).eq('hello');
 
 
 
@@ -177,14 +177,14 @@ describe('Basic copy assignName Tests', function () {
 
       expect(components['/cp1'].replacements[0].stateValues.value).eq('none');
       expect(components['/cp2'].replacements[0].stateValues.value).eq('none');
-      expect(components['/cp3'].replacements[0].replacements[0].stateValues.value).eq('none');
+      expect(components['/cp3'].replacements[0].stateValues.value).eq('none');
       expect(components['/cp4'].replacements[0].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(components['/cp5'].replacements[0].stateValues.value).eq('full');
       expect(components['/cp6'].replacements[0].stateValues.value).eq('full');
       expect(components['/cp7'].replacements[0].stateValues.value).eq('full');
-      expect(components['/cp8'].replacements[0].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp8'].replacements[0].stateValues.value).eq('full');
       expect(components['/cp9'].replacements[0].stateValues.value).eq('full');
-      expect(components['/cp10'].replacements[0].replacements[0].stateValues.value).eq('full');
+      expect(components['/cp10'].replacements[0].stateValues.value).eq('full');
 
       expect(components['/cp11'].replacements[0].stateValues.value).eq('none');
       expect(components['/cp12'].replacements[0].stateValues.value).eq('full');
@@ -742,10 +742,10 @@ describe('Basic copy assignName Tests', function () {
       let components = Object.assign({}, win.state.components);
       let point1Anchor = cesc('#' + components["/cp1"].replacements[0].componentName);
       let point2Anchor = cesc('#' + components["/cp1"].replacements[1].componentName);
-      let point1aAnchor = cesc('#' + components["/cp3"].replacements[0].replacements[0].componentName);
-      let point2aAnchor = cesc('#' + components["/cp3"].replacements[0].replacements[1].componentName);
-      let point1bAnchor = cesc('#' + components["/cp4"].replacements[0].replacements[0].replacements[0].componentName);
-      let point2bAnchor = cesc('#' + components["/cp4"].replacements[0].replacements[0].replacements[1].componentName);
+      let point1aAnchor = cesc('#' + components["/cp3"].replacements[0].componentName);
+      let point2aAnchor = cesc('#' + components["/cp3"].replacements[1].componentName);
+      let point1bAnchor = cesc('#' + components["/cp4"].replacements[0].componentName);
+      let point2bAnchor = cesc('#' + components["/cp4"].replacements[1].componentName);
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,0)')
@@ -1057,10 +1057,10 @@ describe('Basic copy assignName Tests', function () {
       let components = Object.assign({}, win.state.components);
       let point1Anchor = cesc('#' + components["/hello/cp1"].replacements[0].componentName);
       let point2Anchor = cesc('#' + components["/hello/cp1"].replacements[1].componentName);
-      let point1aAnchor = cesc('#' + components["/hello/cp3"].replacements[0].replacements[0].componentName);
-      let point2aAnchor = cesc('#' + components["/hello/cp3"].replacements[0].replacements[1].componentName);
-      let point1bAnchor = cesc('#' + components["/hello/cp4"].replacements[0].replacements[0].replacements[0].componentName);
-      let point2bAnchor = cesc('#' + components["/hello/cp4"].replacements[0].replacements[0].replacements[1].componentName);
+      let point1aAnchor = cesc('#' + components["/hello/cp3"].replacements[0].componentName);
+      let point2aAnchor = cesc('#' + components["/hello/cp3"].replacements[1].componentName);
+      let point1bAnchor = cesc('#' + components["/hello/cp4"].replacements[0].componentName);
+      let point2bAnchor = cesc('#' + components["/hello/cp4"].replacements[1].componentName);
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,0)')
@@ -1375,57 +1375,69 @@ describe('Basic copy assignName Tests', function () {
     })
   })
 
-
-  it('assign names creates namespace', () => {
+  it('assign names can access namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>Hello, <text name="person">Jesse</text>!</p>
+  <section newNamespace>
+    <subsection>
+      <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
+    </subsection>
+    <subsection>
+      <p>Hello, <text name="person">Jessica</text>!</p>
+    </subsection>
+  </section>
 
-  <copy assignNames="a" tname="_p1"/>
+  <copy assignNames="a" tname="_section1"/>
 
   <copy assignNames="b" tname="a" />
 
-  <p><copy tname="person"/> <copy tname="a/person" /> <copy tname="b/person" /></p>
-
+  <p><copy tname="_section1/_p1/person"/> <copy tname="_section1/person"/>
+<copy tname="a/_p1/person" /> <copy tname="a/person" />
+<copy tname="b/_p1/person" /> <copy tname="b/person" /></p>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/_p1').should('have.text', 'Hello, Jesse!');
-    cy.get('#\\/a').should('have.text', 'Hello, Jesse!');
-    cy.get('#\\/b').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/_section1\\/_p1').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/_section1\\/_p2').should('have.text', 'Hello, Jessica!');
+    cy.get('#\\/a\\/_p1').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/a\\/_p2').should('have.text', 'Hello, Jessica!');
+    cy.get('#\\/b\\/_p1').should('have.text', 'Hello, Jesse!');
+    cy.get('#\\/b\\/_p2').should('have.text', 'Hello, Jessica!');
 
-    cy.get('#\\/_p2').should('have.text', 'Jesse Jesse Jesse');
+    cy.get('#\\/_p1').should('have.text', 'Jesse Jessica\nJesse Jessica\nJesse Jessica');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/person'].stateValues.value).eq("Jesse");
-      expect(components['/a/person'].stateValues.value).eq("Jesse");
-      expect(components['/b/person'].stateValues.value).eq("Jesse");
+      expect(components['/_section1/_p1/person'].stateValues.value).eq("Jesse");
+      expect(components['/_section1/person'].stateValues.value).eq("Jessica");
+      expect(components['/a/_p1/person'].stateValues.value).eq("Jesse");
+      expect(components['/a/person'].stateValues.value).eq("Jessica");
+      expect(components['/b/_p1/person'].stateValues.value).eq("Jesse");
+      expect(components['/b/person'].stateValues.value).eq("Jessica");
 
     })
 
   });
 
-
-  it('assign names creates namespace 2', () => {
+  it('assign names can access namespace, across namespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <section name="hello" newNamespace title="Hello">
-    <p>Hello, <text name="person">Jesse</text>!</p>
+    <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
     <copy assignNames="a" tname="_p1"/>
-    <p><copy tname="person"/> <copy tname="a/person" /> <copy tname="../bye/a/person" /></p>
+    <p><copy tname="_p1/person"/> <copy tname="a/person" /> <copy tname="../bye/a/person" /></p>
   </section>
 
   <section name="bye" newNamespace title="Bye">
     <copy assignNames="a" tname="../hello/_p1"/>
-    <p><copy tname="../hello/person"/> <copy tname="../hello/a/person" /> <copy tname="a/person" /></p>
+    <p><copy tname="../hello/_p1/person"/> <copy tname="../hello/a/person" /> <copy tname="a/person" /></p>
   </section>
   `}, "*");
     });
@@ -1443,7 +1455,7 @@ describe('Basic copy assignName Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/hello/person'].stateValues.value).eq("Jesse");
+      expect(components['/hello/_p1/person'].stateValues.value).eq("Jesse");
       expect(components['/hello/a/person'].stateValues.value).eq("Jesse");
       expect(components['/bye/a/person'].stateValues.value).eq("Jesse");
 
@@ -1451,80 +1463,56 @@ describe('Basic copy assignName Tests', function () {
 
   })
 
-
-  it('extra assignNames create empties', () => {
+  it('assign names can access namespace even with math', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <text name="h">Hello</text>
+  <p newNamespace name="pOriginal">
+    <math name="expression">
+      <math name="x">x</math>+<math name="y">y</math>
+    </math>
+  </p>
 
-  <p><copy name="cp1" tname="h" assignNames="a,b" /></p>
-  <p><copy name="cp2" tname="cp1" assignNames="c,d" /></p>
-  <p><copy name="cp3" tname="h" assignNames="(e,f)" /></p>
-  
-  <p><copy tname="a"/></p>
-  <p>Nothing 1: <copy tname="b" /></p>
-  <p><copy tname="c"/></p>
-  <p>Nothing 2: <copy tname="d" /></p>
-  <p>Nothing 3: <copy tname="e" /></p>
-  <p>Nothing 4: <copy tname="f" /></p>
+  <copy tname="pOriginal" assignNames="pCopy" />
+
+  <p>This grabs expression: <copy tname="pOriginal/expression" assignNames="expressionCopy" /></p>
+  <p>This grabs expression: <copy tname="pCopy/expression" assignNames="expressionCopy2" /></p>
+  <p>This grabs piece x: <copy tname="pOriginal/x" assignNames="xCopy" /></p>
+  <p>This grabs piece y: <copy tname="pOriginal/y" assignNames="yCopy" /></p>
+  <p>Should this grab piece x? <copy tname="pCopy/x" assignNames="xCopy2" /></p>
+  <p>Should this grab piece y? <copy tname="pCopy/y" assignNames="yCopy2" /></p>
 
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    cy.get(`#\\/pOriginal\\/expression`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    })
+    cy.get(`#\\/pCopy\\/expression`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    })
+    cy.get(`#\\/expressionCopy`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    })
+    cy.get(`#\\/expressionCopy2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+y')
+    })
+    cy.get(`#\\/xCopy`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get(`#\\/xCopy2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get(`#\\/yCopy`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
+    cy.get(`#\\/yCopy2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    })
 
-    cy.get('#\\/_p1').should('have.text', 'Hello');
-    cy.get('#\\/_p2').should('have.text', 'Hello');
-    cy.get('#\\/_p3').should('have.text', 'Hello');
-    cy.get('#\\/_p4').should('have.text', 'Hello');
-    cy.get('#\\/_p5').should('have.text', 'Nothing 1: ');
-    cy.get('#\\/_p6').should('have.text', 'Hello');
-    cy.get('#\\/_p7').should('have.text', 'Nothing 2: ');
-    cy.get('#\\/_p8').should('have.text', 'Nothing 3: ');
-    cy.get('#\\/_p9').should('have.text', 'Nothing 4: ');
-
-
-  })
-
-  it('extra assignNames create empties, inside namespace', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <section name="hello" title="Hello" newNamespace >
-  <text name="h">Hello</text>
-
-  <p><copy name="cp1" tname="h" assignNames="a,b" /></p>
-  <p><copy name="cp2" tname="cp1" assignNames="c,d" /></p>
-  <p><copy name="cp3" tname="h" assignNames="(e,f)" /></p>
-  
-  <p><copy tname="a"/></p>
-  <p>Nothing 1: <copy tname="b" /></p>
-  <p><copy tname="c"/></p>
-  <p>Nothing 2: <copy tname="d" /></p>
-  <p>Nothing 3: <copy tname="e" /></p>
-  <p>Nothing 4: <copy tname="f" /></p>
-  </section>
-
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.get(cesc('#/hello/_p1')).should('have.text', 'Hello');
-    cy.get(cesc('#/hello/_p2')).should('have.text', 'Hello');
-    cy.get(cesc('#/hello/_p3')).should('have.text', 'Hello');
-    cy.get(cesc('#/hello/_p4')).should('have.text', 'Hello');
-    cy.get(cesc('#/hello/_p5')).should('have.text', 'Nothing 1: ');
-    cy.get(cesc('#/hello/_p6')).should('have.text', 'Hello');
-    cy.get(cesc('#/hello/_p7')).should('have.text', 'Nothing 2: ');
-    cy.get(cesc('#/hello/_p8')).should('have.text', 'Nothing 3: ');
-    cy.get(cesc('#/hello/_p9')).should('have.text', 'Nothing 4: ');
-
-
-  })
+  });
 
 
 });

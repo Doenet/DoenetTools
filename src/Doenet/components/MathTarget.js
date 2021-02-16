@@ -25,7 +25,7 @@ export default class MathTarget extends BaseComponent {
     stateVariableDefinitions.mathChildName = {
       returnDependencies: () => ({
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath",
         },
       }),

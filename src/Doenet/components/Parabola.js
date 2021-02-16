@@ -70,7 +70,7 @@ export default class Parabola extends Curve {
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneThrough",
           variableNames: ["nPoints"]
         }
@@ -162,7 +162,7 @@ export default class Parabola extends Curve {
 
           dependenciesByKey[arrayKey] = {
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneThrough",
               variableNames: ["pointX" + varEnding]
             }

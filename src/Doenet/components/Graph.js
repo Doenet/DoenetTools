@@ -49,7 +49,7 @@ export default class Graph extends BlockComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         atLeastOneString: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneString",
           variableNames: ["value"]
         }
@@ -83,7 +83,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         graphicalDescendants: {
-          dependencyType: "descendantIdentity",
+          dependencyType: "descendant",
           componentTypes: ["_graphical"]
         },
       }),
@@ -125,7 +125,7 @@ export default class Graph extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroGraphical"
         }
       }),

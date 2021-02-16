@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Selectable Type Tag Tests', function () {
 
@@ -20,7 +29,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let numberAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let numberAnchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
 
       cy.get(numberAnchor).should('have.text','7');
 
@@ -48,7 +57,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let letterAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let letterAnchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
 
       cy.get(letterAnchor).should('have.text', 'q')
 
@@ -75,7 +84,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let textAnchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
 
       cy.get(textAnchor).should('have.text', 'z3')
 
@@ -102,7 +111,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let booleanAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let booleanAnchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
 
       cy.get(booleanAnchor).should('have.text', 'false')
 
@@ -130,7 +139,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let booleanAnchor = "#" + components["/_copy2"].replacements[0].componentName;
+      let booleanAnchor = cesc("#" + components["/_copy2"].replacements[0].componentName);
 
       cy.get(booleanAnchor).should('have.text', 'false')
 
@@ -183,7 +192,7 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathAnchor = "#" + components["/_copy2"].replacements[0].componentName;
+      let mathAnchor = cesc("#" + components["/_copy2"].replacements[0].componentName);
 
       cy.get(mathAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')
@@ -214,8 +223,8 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let number1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
-      let number2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+      let number1Anchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
+      let number2Anchor = cesc("#" + components["/_copy1"].replacements[1].componentName);
 
       cy.get(number1Anchor).should('have.text', '3');
       cy.get(number2Anchor).should('have.text', '7');
@@ -244,8 +253,8 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let text1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
-      let text2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+      let text1Anchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
+      let text2Anchor = cesc("#" + components["/_copy1"].replacements[1].componentName);
 
       cy.get(text1Anchor).should('have.text', 'q')
       cy.get(text2Anchor).should('have.text', 'u')
@@ -273,8 +282,8 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let text1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
-      let text2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+      let text1Anchor = cesc("#" + components["/_copy1"].replacements[0].componentName);
+      let text2Anchor = cesc("#" + components["/_copy1"].replacements[1].componentName);
 
       cy.get(text1Anchor).should('have.text', '2')
       cy.get(text2Anchor).should('have.text', 'i')
@@ -307,8 +316,8 @@ describe('Selectable Type Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let math1Anchor = "#" + components["/_copy2"].replacements[0].componentName;
-      let math2Anchor = "#" + components["/_copy2"].replacements[1].componentName;
+      let math1Anchor = cesc("#" + components["/_copy2"].replacements[0].componentName);
+      let math2Anchor = cesc("#" + components["/_copy2"].replacements[1].componentName);
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2')

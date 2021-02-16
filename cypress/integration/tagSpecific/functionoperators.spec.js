@@ -27,26 +27,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../original" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../original" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../clamp01" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../clamp01" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../clampn35" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../clampn35" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -62,15 +56,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements;
+      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements;
+      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements;
+      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements[0].replacements;
+      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements[0].replacements;
+      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
@@ -123,26 +117,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../original" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../original" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../wrap01" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../wrap01" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../wrapn23" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../wrapn23" /><copySource/></evaluate></template>
+      <sources><sequence step="0.2">-2,2</sequence></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -158,15 +146,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements;
+      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements;
+      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements;
+      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements[0].replacements;
+      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements[0].replacements;
+      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);

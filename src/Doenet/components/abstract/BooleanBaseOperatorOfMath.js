@@ -33,7 +33,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneMath",
           variableNames: ["value"]
         }

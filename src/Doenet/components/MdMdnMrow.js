@@ -38,7 +38,7 @@ export class Md extends InlineComponent {
       defaultValue: "",
       returnDependencies: () => ({
         mrowChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
           variableNames: ["latex", "hide"],
         }
@@ -66,7 +66,7 @@ export class Md extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         mrowChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
           variableNames: ["latexWithInputChildren"],
         },
@@ -146,7 +146,7 @@ export class Md extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         mrowChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
           variableNames: ["childrenToRender"],
         },

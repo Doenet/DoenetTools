@@ -12,8 +12,8 @@ export default class Line extends GraphicalComponent {
   };
 
   // used when referencing this component without prop
-  // static useChildrenForReference = false;
-  // static get stateVariablesShadowedForReference() { return ["points"] };
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["points"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -162,7 +162,7 @@ export default class Line extends GraphicalComponent {
       logicToWaitOnSugar: ["exactlyOneEquation", "exactlyOneThrough"],
       returnSugarDependencies: () => ({
         stringAndMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
@@ -278,7 +278,7 @@ export default class Line extends GraphicalComponent {
         if (stateValues.equationChild === null) {
           return {
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneThrough",
               variableNames: ["nDimensions"],
             }
@@ -286,7 +286,7 @@ export default class Line extends GraphicalComponent {
         } else {
           return {
             equationChild: {
-              dependencyType: "childIdentity",
+              dependencyType: "child",
               childLogicName: "exactlyOneEquation"
             },
           }
@@ -343,7 +343,7 @@ export default class Line extends GraphicalComponent {
       returnArrayDependenciesByKey() {
         let globalDependencies = {
           variablesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneVariables",
             variableNames: ["variables"],
           }
@@ -372,7 +372,7 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.equationChild = {
       returnDependencies: () => ({
         equationChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneEquation"
         }
       }),
@@ -457,7 +457,7 @@ export default class Line extends GraphicalComponent {
 
             dependenciesByKey[arrayKey] = {
               throughChild: {
-                dependencyType: "childStateVariables",
+                dependencyType: "child",
                 childLogicName: "exactlyOneThrough",
                 variableNames: ["pointX" + varEnding]
               }
@@ -491,7 +491,11 @@ export default class Line extends GraphicalComponent {
         }
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize, componentName }) {
+        console.log(`array definition of points for ${componentName}`)
+        console.log(globalDependencyValues)
+        console.log(dependencyValuesByKey)
+        console.log(arrayKeys)
 
         if ("coeff0" in globalDependencyValues) {
 
@@ -539,6 +543,9 @@ export default class Line extends GraphicalComponent {
           if (Object.keys(essentialPoints).length > 0) {
             result.useEssentialOrDefaultValue = { points: essentialPoints }
           }
+
+          console.log(`result of array definition of key of points`)
+          console.log(result);
           return result;
         }
       },
@@ -747,7 +754,7 @@ export default class Line extends GraphicalComponent {
           }
         } else {
           dependencies.equationChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneEquation",
             variableNames: ["value"],
           };
@@ -963,7 +970,14 @@ export default class Line extends GraphicalComponent {
         return { globalDependencies, dependenciesByKey }
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, componentName }) {
+        console.log(`array definition by key of numericalPoints of ${componentName}`)
+
+        console.log(globalDependencyValues)
+        console.log(dependencyValuesByKey)
+        console.log(arrayKeys);
+
+
         if (Number.isNaN(globalDependencyValues.nDimensions)) {
           return {}
         }

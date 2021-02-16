@@ -20,7 +20,8 @@ import NumberList from './NumberList';
 import MathList from './MathList';
 import When from './When';
 import TextOrInline from './abstract/TextOrInline';
-import Result from './Result';
+import Option from './Option';
+import Variants from './Variants';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -57,8 +58,8 @@ export class ChildNumber extends Integer {
   static rendererType = "number";
 }
 
-export class IncludeUndefinedArrayEntries extends BooleanComponent {
-  static componentType = "includeUndefinedArrayEntries";
+export class includeUndefinedObjects extends BooleanComponent {
+  static componentType = "includeUndefinedObjects";
   static rendererType = "boolean";
 }
 
@@ -424,6 +425,10 @@ export class Level extends NumberComponent {
 export class Variant extends TextFromSingleStringChild {
   static componentType = "variant";
   static rendererType = "text";
+}
+
+export class SelectForVariants extends Variants {
+  static componentType = "selectForVariants";
 }
 
 export class NVariants extends Integer {
@@ -836,6 +841,11 @@ export class MaximumNumber extends NumberComponent {
   static rendererType = "number";
 }
 
+export class MaximumNumberToSelect extends NumberComponent {
+  static componentType = "maximumNumberToSelect";
+  static rendererType = "number";
+}
+
 export class ShowLabel extends BooleanComponent {
   static componentType = "showlabel";
   static rendererType = "boolean";
@@ -901,8 +911,8 @@ export class delegateCheckWorkToAnswerNumber extends NumberComponent {
   static rendererType = "number";
 }
 
-export class FromSubstitutions extends NumberComponent {
-  static componentType = "fromSubstitutions";
+export class FromSources extends NumberComponent {
+  static componentType = "fromSources";
   static rendererType = "number";
 }
 
@@ -950,7 +960,20 @@ export class Rendered extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Else extends Result {
+export class Else extends Option {
   static componentType = "else";
 }
 
+export class Result extends Option {
+  static componentType = "result";
+}
+
+export class ComponentIndex extends NumberComponent {
+  static componentType = "componentIndex";
+  static rendererType = "number";
+}
+
+export class PropIndex extends NumberList {
+  static componentType = "propIndex";
+  static rendererType = "number";
+}

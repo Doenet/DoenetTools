@@ -253,7 +253,7 @@ export default class Vector extends GraphicalComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
@@ -394,7 +394,7 @@ export default class Vector extends GraphicalComponent {
     stateVariableDefinitions.basedOnHead = {
       returnDependencies: () => ({
         headChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneHead"
         },
         headShadow: {
@@ -402,11 +402,11 @@ export default class Vector extends GraphicalComponent {
           variableName: "headShadow"
         },
         tailChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneTail"
         },
         displacementOptions: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "displacementOptions"
         },
       }),
@@ -444,7 +444,7 @@ export default class Vector extends GraphicalComponent {
     stateVariableDefinitions.basedOnTail = {
       returnDependencies: () => ({
         tailChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneTail"
         },
         tailShadow: {
@@ -472,7 +472,7 @@ export default class Vector extends GraphicalComponent {
     stateVariableDefinitions.basedOnDisplacement = {
       returnDependencies: () => ({
         displacementOptions: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "displacementOptions"
         },
         displacementShadow: {
@@ -521,24 +521,24 @@ export default class Vector extends GraphicalComponent {
           variableName: "displacementShadow",
         },
         displacementChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneDisplacement",
           variableNames: ["nDimensions"],
         },
         xChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneX",
         },
         yChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneY",
         },
         zChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneZ",
         },
         xsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneXs",
           variableNames: ["nComponents"]
         },
@@ -547,7 +547,7 @@ export default class Vector extends GraphicalComponent {
           variableName: "headShadow",
         },
         headChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneHead",
           variableNames: ["nDimensions"],
         },
@@ -556,7 +556,7 @@ export default class Vector extends GraphicalComponent {
           variableName: "tailShadow",
         },
         tailChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneTail",
           variableNames: ["nDimensions"],
         },
@@ -704,31 +704,31 @@ export default class Vector extends GraphicalComponent {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             displacementChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneDisplacement",
               variableNames: ["x" + varEnding],
             },
             xsChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneXs",
               variableNames: ["math" + varEnding]
             },
           }
           if (arrayKey === "0") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneX",
               variableNames: ["value"],
             }
           } else if (arrayKey === "1") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneY",
               variableNames: ["value"],
             }
           } else if (arrayKey === "2") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneZ",
               variableNames: ["value"],
             }
@@ -940,7 +940,7 @@ export default class Vector extends GraphicalComponent {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             headChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneHead",
               variableNames: ["x" + varEnding],
             },
@@ -1177,7 +1177,7 @@ export default class Vector extends GraphicalComponent {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             tailChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneTail",
               variableNames: ["x" + varEnding],
             },

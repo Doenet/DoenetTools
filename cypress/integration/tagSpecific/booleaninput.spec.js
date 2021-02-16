@@ -32,7 +32,7 @@ describe('Booleaninput Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let boolean1 = components['/_copy1'].replacements[0];
       let boolean1Anchor = cesc('#' + boolean1.componentName);
-      let boolean2 = components['/_copy2'].replacements[0].replacements[0];
+      let boolean2 = components['/_copy2'].replacements[0];
       let boolean2Anchor = cesc('#' + boolean2.componentName);
 
       cy.log('Test values displayed in browser')

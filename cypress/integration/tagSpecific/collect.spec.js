@@ -125,11 +125,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -151,11 +151,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -177,11 +177,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -204,11 +204,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -231,11 +231,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -257,11 +257,11 @@ describe('Collect Tag Tests',function() {
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
         expect(components['/points'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
-        expect(components['/points2'].replacements[0].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
+        expect(components['/points2'].replacements[i].stateValues.xs[1].tree).eq(ys[i]);
         expect(components['/coords'].replacements[i].stateValues.value.tree).eqls(["vector", xs[i], ys[i]]);
         expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[0].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
         expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
@@ -278,16 +278,16 @@ describe('Collect Tag Tests',function() {
     <panel>
     <graph>
       <map>
-        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
-        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
+        <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
+        <sources><sequence><to><copy prop="value" tname="count" /></to></sequence></sources>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
-      <substitutions><collect componentTypes="point" tname="_map1"/></substitutions>
+      <template newNamespace><point>(<extract prop="x"><copySource/></extract>+1, 1.5*<extract prop="y"><copySource/></extract>)</point></template>
+      <sources><collect componentTypes="point" tname="_map1"/></sources>
     </map>
 
     </graph>
@@ -643,7 +643,7 @@ describe('Collect Tag Tests',function() {
     })
   })
 
-  it('collect points and lines from graphs',() => {
+  it('collect points and vectors from graphs',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <panel>
@@ -768,16 +768,16 @@ describe('Collect Tag Tests',function() {
     <panel>
     <graph>
       <map>
-        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
-        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
+        <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
+        <sources><sequence><to><copy prop="value" tname="count" /></to></sequence></sources>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
-      <substitutions><collect componentTypes="point" tname="_map1"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect></substitutions>
+      <template newNamespace><point>(<extract prop="x"><copySource/></extract>+1, 1.5*<extract prop="y"><copySource/></extract>)</point></template>
+      <sources><collect componentTypes="point" tname="_map1"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect></sources>
     </map>
 
     </graph>
@@ -1129,9 +1129,9 @@ describe('Collect Tag Tests',function() {
       <template>
         <mathinput />
       </template>
-      <substitutions>
+      <sources>
         <sequence><count><copy prop="value" tname="n" /></count></sequence>
-      </substitutions>
+      </sources>
     </map>
   </p>
   

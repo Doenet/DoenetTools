@@ -50,7 +50,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
           variableName: "type",
         },
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"],
         }
@@ -169,7 +169,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       componentType: "text",
       returnDependencies: () => ({
         anythingForSelectedType: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anythingForSelectedType",
         },
       }),
@@ -190,7 +190,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
     stateVariableDefinitions.nValues = {
       returnDependencies: () => ({
         anythingForSelectedType: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anythingForSelectedType",
         },
       }),
@@ -224,7 +224,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "anythingForSelectedType",
               variableNames: ["value"],
               childIndices: [arrayKey]

@@ -1,16 +1,14 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 
-export default class IndexFromSubs extends CompositeComponent {
-  static componentType = "indexfromsubs";
-
-  static useReplacementsWhenCopyProp = true;
+export default class SourceIndex extends CompositeComponent {
+  static componentType = "sourceIndex";
 
   static assignNamesToReplacements = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.fromSubstitutions = { default: 1 };
+    properties.fromSources = { default: 1 };
     properties.fromMapAncestor = { default: 1 };
     return properties;
   }
@@ -21,22 +19,22 @@ export default class IndexFromSubs extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.index = {
-      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSubstitutions"],
+      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSources"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
-        let substitutionsChildIndices = sharedParameters.substitutionsChildIndices;
+        let sourcesChildIndices = sharedParameters.sourcesChildIndices;
 
-        if (substitutionsChildIndices === undefined) {
-          throw Error(`indexfromsubs can only be inside a map template.`);
+        if (sourcesChildIndices === undefined) {
+          throw Error(`sourceIndex can only be inside a map template.`);
         }
 
-        let level = substitutionsChildIndices.length - stateValues.fromMapAncestor;
-        let childIndices = substitutionsChildIndices[level];
+        let level = sourcesChildIndices.length - stateValues.fromMapAncestor;
+        let childIndices = sourcesChildIndices[level];
         if (childIndices === undefined) {
-          throw Error(`Invalid value of indexfromsubs fromMapAncestor: ${stateValues.fromMapAncestor}`);
+          throw Error(`Invalid value of sourceIndex fromMapAncestor: ${stateValues.fromMapAncestor}`);
         }
-        let childIndex = childIndices[stateValues.fromSubstitutions - 1];
+        let childIndex = childIndices[stateValues.fromSources - 1];
         if (childIndex === undefined) {
-          throw Error(`Invalid fromSubstitutions of indexfromsubs: ${stateValues.fromSubstitutions}`);
+          throw Error(`Invalid fromSources of sourceIndex: ${stateValues.fromSources}`);
         };
 
         return {
@@ -52,18 +50,6 @@ export default class IndexFromSubs extends CompositeComponent {
           newValues: { index: dependencyValues.index },
           makeEssential: ["index"]
         }
-      },
-    };
-
-    stateVariableDefinitions.replacementClassesForProp = {
-      returnDependencies: () => ({
-      }),
-      definition: function ({ componentInfoObjects }) {
-        return {
-          newValues: {
-            replacementClassesForProp: [componentInfoObjects.allComponentClasses.number],
-          }
-        };
       },
     };
 

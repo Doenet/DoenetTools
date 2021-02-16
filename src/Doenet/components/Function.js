@@ -169,7 +169,7 @@ export default class Function extends InlineComponent {
           variableName: "styleNumber",
         },
         ancestorWithStyle: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         }
       }),
@@ -231,12 +231,12 @@ export default class Function extends InlineComponent {
       defaultValue: me.fromAst("x"),
       returnDependencies: () => ({
         variableChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneVariable",
           variableNames: ["value"],
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["variable"],
         }
@@ -265,12 +265,12 @@ export default class Function extends InlineComponent {
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
         formulaChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFormula",
           variableNames: ["value"]
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["formula"],
         }
@@ -313,7 +313,7 @@ export default class Function extends InlineComponent {
           variableName: "variable"
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["f"],
         }
@@ -349,7 +349,7 @@ export default class Function extends InlineComponent {
           variableName: "variable"
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["numericalf"],
         }
@@ -493,7 +493,7 @@ export default class Function extends InlineComponent {
             variableName: "xscale"
           },
           functionChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneFunction",
             variableNames: ["minima"],
           }
@@ -653,7 +653,7 @@ export default class Function extends InlineComponent {
             variableName: "xscale"
           },
           functionChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneFunction",
             variableNames: ["maxima"],
           }
@@ -736,7 +736,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.functionChild = {
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction"
         }
       }),
@@ -905,7 +905,7 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.returnDerivativesOfNumericalf = {
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["returnDerivativesOfNumericalf"],
         }

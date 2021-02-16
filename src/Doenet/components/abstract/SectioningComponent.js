@@ -66,7 +66,7 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "countAmongSiblingsOfSameType"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: ["enumeration"]
         }
@@ -94,7 +94,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
         },
       }),
@@ -113,7 +113,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
           variableNames: ["text"],
         },
@@ -173,7 +173,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["_sectioningcomponent", "answer"],
           variableNames: [
             "scoredDescendants",
@@ -204,7 +204,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendantIdentity",
+          dependencyType: "descendant",
           componentTypes: ["answer"],
           recurseToMatchedChildren: false,
         }
@@ -218,7 +218,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["answer"],
           variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
@@ -284,8 +284,8 @@ export default class SectioningComponent extends BlockComponent {
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: descendant,
+              dependencyType: "stateVariable",
+              componentName: descendant.componentName,
               variableName: "creditAchieved"
             }
           }
@@ -337,8 +337,8 @@ export default class SectioningComponent extends BlockComponent {
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchievedIfSubmit" + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: descendant,
+              dependencyType: "stateVariable",
+              componentName: descendant.componentName,
               variableName: "creditAchievedIfSubmit"
             }
           }
@@ -376,12 +376,12 @@ export default class SectioningComponent extends BlockComponent {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneVariantControl",
           variableNames: ["selectedVariantNumber"]
         },
         variantDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
@@ -459,11 +459,11 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle"
         },
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anything"
         }
       }),
@@ -553,7 +553,7 @@ export default class SectioningComponent extends BlockComponent {
           variableName: "creditAchieved"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: [
             "suppressAnswerSubmitButtons",

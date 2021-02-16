@@ -70,25 +70,25 @@ export default class BooleanComponent extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         stringTextChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndTexts",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
         },
         booleanChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneBoolean",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
         },
         whenChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneWhen",
           variableNames: ["conditionSatisfied"],
           requireChildLogicInitiallySatisfied: true,
         },
         mathChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,

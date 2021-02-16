@@ -37,7 +37,7 @@ export default class Choice extends InlineComponent {
       componentType: this.componentType,
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren",
           variableNames: ["text"],
           variablesOptional: true
@@ -157,7 +157,7 @@ export default class Choice extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren"
         }
       }),

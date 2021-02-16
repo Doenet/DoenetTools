@@ -46,7 +46,7 @@ export default class ConditionalContent extends CompositeComponent {
     stateVariableDefinitions.hide = {
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
           variableNames: ["conditionSatisfied"],
         },
@@ -71,7 +71,7 @@ export default class ConditionalContent extends CompositeComponent {
           variableName: "hide",
         },
         anyChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
         }
       }),
@@ -108,7 +108,7 @@ export default class ConditionalContent extends CompositeComponent {
     stateVariableDefinitions.conditionName = {
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
         },
       }),

@@ -90,13 +90,13 @@ export default class NumberComponent extends InlineComponent {
       componentType: this.componentType,
       returnDependencies: () => ({
         numberChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneNumber",
           variableNames: ["value", "canBeModified"],
           requireChildLogicInitiallySatisfied: true,
         },
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneString",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -274,7 +274,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({
         numberChildModifiable: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneNumber",
           variableNames: ["canBeModified"],
           requireChildLogicInitiallySatisfied: true,

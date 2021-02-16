@@ -128,7 +128,7 @@ export default class Angle extends GraphicalComponent {
     stateVariableDefinitions.nPointsSpecified = {
       returnDependencies: () => ({
         throughChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneThrough",
           variableNames: ["nPoints"]
         },
@@ -155,7 +155,7 @@ export default class Angle extends GraphicalComponent {
       stateVariablesDeterminingDependencies: ["nPointsSpecified"],
       returnArraySizeDependencies: () => ({
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath"
         },
       }),
@@ -205,7 +205,7 @@ export default class Angle extends GraphicalComponent {
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
           lineChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyTwoLines",
             variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
           },
@@ -230,7 +230,7 @@ export default class Angle extends GraphicalComponent {
 
             dependenciesByKey[arrayKey] = {
               throughChild: {
-                dependencyType: "childStateVariables",
+                dependencyType: "child",
                 childLogicName: "exactlyOneThrough",
                 variableNames: ["pointX" + varEnding]
               },
@@ -243,7 +243,7 @@ export default class Angle extends GraphicalComponent {
 
             dependenciesByKey[arrayKey] = {
               throughChild: {
-                dependencyType: "childStateVariables",
+                dependencyType: "child",
                 childLogicName: "exactlyOneThrough",
                 variableNames: ["pointX" + varEnding]
               },
@@ -381,7 +381,7 @@ export default class Angle extends GraphicalComponent {
       forRenderer: true,
       returnDependencies: () => ({
         mathChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath",
           variableNames: ["value"]
         },
@@ -460,7 +460,7 @@ export default class Angle extends GraphicalComponent {
       forRenderer: true,
       returnArraySizeDependencies: () => ({
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath"
         },
       }),

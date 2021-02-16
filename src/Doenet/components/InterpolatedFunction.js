@@ -74,7 +74,7 @@ export default class InterpolatedFunction extends Function {
           variableName: "styleNumber",
         },
         ancestorWithStyle: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         }
       }),
@@ -134,7 +134,7 @@ export default class InterpolatedFunction extends Function {
       additionalStateVariablesDefined: ["throughInfoForArrayKey"],
       returnDependencies: () => ({
         throughChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroThroughs",
           variableNames: ["nPoints"]
         }
@@ -188,7 +188,7 @@ export default class InterpolatedFunction extends Function {
           let throughIndex = stateValues.throughInfoForArrayKey[arrayKey].throughIndex;
           dependenciesByKey[arrayKey] = {
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroThroughs",
               variableNames: [pointVariable, "slope"],
               childIndices: [throughIndex]
@@ -228,7 +228,7 @@ export default class InterpolatedFunction extends Function {
     stateVariableDefinitions.prescribedMinima = {
       returnDependencies: () => ({
         minimumChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMinima",
           variableNames: ["location", "value"]
         }
@@ -246,7 +246,7 @@ export default class InterpolatedFunction extends Function {
     stateVariableDefinitions.prescribedMaxima = {
       returnDependencies: () => ({
         maximumChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaxima",
           variableNames: ["location", "value"]
         }
@@ -264,7 +264,7 @@ export default class InterpolatedFunction extends Function {
     stateVariableDefinitions.prescribedExtrema = {
       returnDependencies: () => ({
         extremumChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroExtrema",
           variableNames: ["location", "value"]
         }

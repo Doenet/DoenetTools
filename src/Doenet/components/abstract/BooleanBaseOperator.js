@@ -34,7 +34,7 @@ export default class BooleanOperator extends BooleanComponent {
       forRenderer: true,
       returnDependencies: () => ({
         booleanChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneBoolean",
           variableNames: ["value"]
         }

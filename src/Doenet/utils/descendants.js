@@ -137,7 +137,10 @@ export function gatherDescendants({ ancestor, descendantClasses,
   for (let child of childrenToCheck) {
     let matchedChild = descendantClasses.some(x => child instanceof x);
     if (matchedChild) {
-      descendants.push(child.componentName);
+      descendants.push({
+        componentName: child.componentName,
+        componentType: child.componentType,
+      });
     }
 
     if (!matchedChild || recurseToMatchedChildren) {

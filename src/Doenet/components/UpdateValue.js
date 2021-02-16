@@ -57,7 +57,7 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.targetedMathName = {
       returnDependencies: () => ({
         mathTarget: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneMathTarget",
           variableNames: ["mathChildName"]
         },
@@ -74,7 +74,7 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.newMathValue = {
       returnDependencies: () => ({
         newMathValueChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneNewMathValue",
           variableNames: ["value"]
         },

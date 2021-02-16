@@ -17,7 +17,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers/>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -75,7 +75,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers>6</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -134,7 +134,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers>-3,5</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -193,7 +193,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers exclude="0">-3,5</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -252,7 +252,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers step="2">-3,5</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -311,7 +311,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers step="2" exclude="0" numberOfSamples="2">-4,4</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -374,7 +374,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers step="2" exclude="0" numberOfSamples="5" withReplacement>-4,4</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,10</sequence></substitutions>
+      <sources><sequence>1,10</sequence></sources>
     </map>
     </aslist></p>
 
@@ -435,7 +435,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers type="uniform" numberOfSamples="5" />
       </template>
-      <substitutions><sequence>1,10</sequence></substitutions>
+      <sources><sequence>1,10</sequence></sources>
     </map>
     </aslist></p>
 
@@ -497,7 +497,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers type="uniform" numberOfSamples="10">-3,-2</generaterandomnumbers>
       </template>
-      <substitutions><sequence>1,5</sequence></substitutions>
+      <sources><sequence>1,5</sequence></sources>
     </map>
     </aslist></p>
 
@@ -559,7 +559,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers type="gaussian" numberOfSamples="20"/>
       </template>
-      <substitutions><sequence>1,5</sequence></substitutions>
+      <sources><sequence>1,5</sequence></sources>
     </map>
     </aslist></p>
 
@@ -642,7 +642,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers type="gaussian" mean="100" standardDeviation="10" numberOfSamples="20"/>
       </template>
-      <substitutions><sequence>1,5</sequence></substitutions>
+      <sources><sequence>1,5</sequence></sources>
     </map>
     </aslist></p>
 
@@ -725,7 +725,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers type="gaussian" mean="-3" variance="0.01" numberOfSamples="20"/>
       </template>
-      <substitutions><sequence>1,5</sequence></substitutions>
+      <sources><sequence>1,5</sequence></sources>
     </map>
     </aslist></p>
 
@@ -935,11 +935,11 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       <template>
         <generaterandomnumbers assignnames="n">1000000000</generaterandomnumbers>
       </template>
-      <substitutions>
+      <sources>
       <sequence>
         <count><ref prop="value">_mathinput1</ref></count>
       </sequence>
-      </substitutions>
+      </sources>
     </map>
     </aslist></p>
     

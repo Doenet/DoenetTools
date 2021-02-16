@@ -91,7 +91,7 @@ export default class MathComponent extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -105,7 +105,7 @@ export default class MathComponent extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -134,13 +134,13 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "canBeModified"],
           requireChildLogicInitiallySatisfied: true,
         },
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -329,7 +329,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.codesAdjacentToStrings = {
       returnDependencies: () => ({
         stringMathChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
         },
         codePre: {
@@ -351,7 +351,7 @@ export default class MathComponent extends InlineComponent {
       ],
       returnDependencies: () => ({
         mathChildrenModifiable: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["canBeModified"],
           requireChildLogicInitiallySatisfied: true,
@@ -383,7 +383,7 @@ export default class MathComponent extends InlineComponent {
           variableName: "codePre",
         },
         mathChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
         },
         expressionWithCodes: {
@@ -1151,10 +1151,10 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
         });
 
       } else {
-        if (stringCodes.prevCode !== null) {
+        if (stringCodes.prevCode) {
           thisString = thisString.split(stringCodes.prevCode)[1];
         }
-        if (stringCodes.nextCode !== null) {
+        if (stringCodes.nextCode) {
           thisString = thisString.split(stringCodes.nextCode)[0];
         }
         instructions.push({

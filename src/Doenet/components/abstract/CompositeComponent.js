@@ -14,15 +14,11 @@ export default class CompositeComponent extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.replacementClasses = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { replacementClasses: [] } })
-    }
 
     stateVariableDefinitions.replacements = {
       returnDependencies: () => ({
         replacements: {
-          dependencyType: "replacementIdentity",
+          dependencyType: "replacement",
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -34,26 +30,12 @@ export default class CompositeComponent extends BaseComponent {
     stateVariableDefinitions.recursiveReplacements = {
       returnDependencies: () => ({
         recursiveReplacements: {
-          dependencyType: "replacementIdentity",
+          dependencyType: "replacement",
           recursive: true,
         },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: { recursiveReplacements: dependencyValues.recursiveReplacements }
-      })
-    }
-
-
-    stateVariableDefinitions.recursiveReplacementsForProp = {
-      returnDependencies: () => ({
-        recursiveReplacementsForProp: {
-          dependencyType: "replacementIdentity",
-          recursive: true,
-          recurseForProp: true,
-        },
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { recursiveReplacementsForProp: dependencyValues.recursiveReplacementsForProp }
       })
     }
 

@@ -339,7 +339,7 @@ export default class Curve extends GraphicalComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"],
         },
@@ -535,16 +535,16 @@ export default class Curve extends GraphicalComponent {
       defaultValue: 2,
       returnDependencies: () => ({
         stringAndMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         },
         functionChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
         },
         functionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastTwoFunctions",
         }
       }),
@@ -625,7 +625,7 @@ export default class Curve extends GraphicalComponent {
       returnArrayDependenciesByKey() {
         let globalDependencies = {
           variablesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneVariables",
             variableNames: ["variables"],
           }
@@ -652,7 +652,7 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         curveChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneCurve",
           variableNames: ["nearestPoint"]
         }
@@ -666,7 +666,7 @@ export default class Curve extends GraphicalComponent {
       additionalStateVariablesDefined: ["curveChild"],
       returnDependencies: () => ({
         curveChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneCurve"
         }
       }),

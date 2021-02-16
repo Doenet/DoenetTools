@@ -25,7 +25,7 @@ export default class Input extends InlineComponent {
     stateVariableDefinitions.answerAncestor = {
       returnDependencies: () => ({
         answerAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "answer",
           variableNames: [
             "delegateCheckWorkToInput",

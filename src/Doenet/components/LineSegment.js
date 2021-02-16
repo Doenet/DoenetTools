@@ -132,7 +132,7 @@ export default class LineSegment extends GraphicalComponent {
       componentType: "number",
       returnDependencies: () => ({
         endpointsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneEndpoints",
           variableNames: ["nDimensions"],
         }
@@ -225,7 +225,7 @@ export default class LineSegment extends GraphicalComponent {
 
           dependenciesByKey[arrayKey] = {
             endpointsChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneEndpoints",
               variableNames: ["pointX" + varEnding]
             }

@@ -103,7 +103,7 @@ export default class Sequence extends CompositeComponent {
           variableName: "type",
         },
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -178,7 +178,7 @@ export default class Sequence extends CompositeComponent {
       additionalStateVariablesDefined: ["typeOfFrom"],
       returnDependencies: () => ({
         fromChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneFrom",
           variableNames: ["value", "selectedType"],
           requireChildLogicInitiallySatisfied: true
@@ -220,7 +220,7 @@ export default class Sequence extends CompositeComponent {
 
       returnDependencies: () => ({
         toChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneTo",
           variableNames: ["value", "selectedType"],
           requireChildLogicInitiallySatisfied: true
@@ -292,7 +292,7 @@ export default class Sequence extends CompositeComponent {
     stateVariableDefinitions.specifiedCount = {
       returnDependencies: () => ({
         countChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneCount",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
@@ -326,7 +326,7 @@ export default class Sequence extends CompositeComponent {
     stateVariableDefinitions.specifiedStep = {
       returnDependencies: () => ({
         stepChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneStep",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
@@ -366,7 +366,7 @@ export default class Sequence extends CompositeComponent {
     stateVariableDefinitions.specifiedExclude = {
       returnDependencies: () => ({
         excludeChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroExcludes",
           variableNames: ["values"],
           requireChildLogicInitiallySatisfied: true

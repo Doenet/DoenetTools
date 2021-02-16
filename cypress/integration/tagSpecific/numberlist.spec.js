@@ -156,44 +156,6 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
-  it('numberlist originally gets blank string children from group', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <numberlist>
-      <group>
-        <number>5</number>
-        <number>1+1</number>
-      </group>
-    </numberlist>
-    ` }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_numberlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_numberlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = cesc('#' + child2Name);
-
-      cy.log('Test value displayed in browser')
-      cy.get(child1Anchor).should('have.text', '5')
-      cy.get(child2Anchor).should('have.text', '2')
-
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
-        expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
-        expect(components['/_numberlist1'].stateValues.numbers[0]).eq(5);
-        expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
-      })
-    })
-  })
-
   it('numberlist with numberlist children, test inverse', () => {
     cy.window().then((win) => {
       win.postMessage({

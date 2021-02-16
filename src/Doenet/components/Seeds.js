@@ -33,7 +33,7 @@ export default class Seeds extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -63,7 +63,7 @@ export default class Seeds extends InlineComponent {
       componentType: "number",
       returnDependencies: () => ({
         seedChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroSeeds",
         }
       }),
@@ -91,7 +91,7 @@ export default class Seeds extends InlineComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             seedChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroSeeds",
               variableNames: ["value"],
               childIndices: [arrayKey]

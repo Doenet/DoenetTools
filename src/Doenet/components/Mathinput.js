@@ -71,7 +71,7 @@ export default class Mathinput extends Input {
       forRenderer: true,
       returnDependencies: () => ({
         mathChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneMath",
           variableNames: ["value", "valueForDisplay"],
           requireChildLogicInitiallySatisfied: true,

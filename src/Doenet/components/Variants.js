@@ -1,8 +1,10 @@
-import InlineComponent from './abstract/InlineComponent';
+import BaseComponent from './abstract/BaseComponent';
 
-export default class Variants extends InlineComponent {
+export default class Variants extends BaseComponent {
   static componentType = "variants";
   static rendererType = undefined;
+
+  static stateVariableForPropertyValue = "variants";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -35,7 +37,7 @@ export default class Variants extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -64,7 +66,7 @@ export default class Variants extends InlineComponent {
       componentType: "number",
       returnDependencies: () => ({
         variantChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVariants",
         }
       }),
@@ -92,7 +94,7 @@ export default class Variants extends InlineComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             variantChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroVariants",
               variableNames: ["value"],
               childIndices: [arrayKey]

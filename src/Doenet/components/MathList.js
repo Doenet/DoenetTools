@@ -76,7 +76,7 @@ export default class MathList extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -134,14 +134,14 @@ export default class MathList extends InlineComponent {
 
         if (stateValues.mergeMathLists) {
           dependencies.mathAndMathlistChildren = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "mathAndMathLists",
             variableNames: ["value", "nComponents"],
             variablesOptional: true,
           };
         } else {
           dependencies.mathAndMathlistChildren = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "mathAndMathLists",
             variableNames: ["nComponents"],
             variablesOptional: true,
@@ -237,7 +237,7 @@ export default class MathList extends InlineComponent {
           }
           dependenciesByKey[arrayKey] = {
             mathAndMathlistChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "mathAndMathLists",
               variableNames: ["value", "math" + mathIndex],
               variablesOptional: true,
@@ -337,7 +337,7 @@ export default class MathList extends InlineComponent {
       componentType: "text",
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["valueForDisplay", "latex", "latexs"],
           variablesOptional: true,
@@ -393,7 +393,7 @@ export default class MathList extends InlineComponent {
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
@@ -444,7 +444,7 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

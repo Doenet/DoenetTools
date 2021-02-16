@@ -2726,11 +2726,14 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point>(<copyFromSubs/> + <math>0</math>, 2<copyFromSubs/> + <math>0</math>)</point>
+        <point>
+          <x><copySource/> + <math>0</math></x>
+          <y>2<copySource/> + <math>0</math></y>
+        </point>
       </template>
-      <substitutions>
+      <sources>
         <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
-      </substitutions>
+      </sources>
     </map>
     </through></line>
     <copy name="A" prop="point1" tname="_line1" />
@@ -3872,11 +3875,11 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point>(<copyFromSubs/>, 2<copyFromSubs/>)</point>
+        <point>(<copySource/>, 2<copySource/>)</point>
       </template>
-      <substitutions>
+      <sources>
         <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
-      </substitutions>
+      </sources>
     </map>
     </through></line>
     <copy name="A" prop="point1" tname="_line1" />
@@ -4969,7 +4972,7 @@ describe('Line Tag Tests', function () {
   <graph>
     <line>
       <through hide="false">
-      <point>(3, <copy prop="pointX1_1" tname="_line1"/>)</point>
+      <point><x>3</x><y><copy prop="pointX1_1" tname="_line1"/></y></point>
       <point>(4,5)</point>
       </through>
     </line>
@@ -5150,7 +5153,7 @@ describe('Line Tag Tests', function () {
   <graph>
     <line>
       <through hide="false">
-      <point>(3, <copy prop="pointX1_1" tname="la"/>)</point>
+      <point><x>3</x><y><copy prop="pointX1_1" tname="la"/></y></point>
       <point>(4,5)</point>
       </through>
     </line>
@@ -5327,8 +5330,8 @@ describe('Line Tag Tests', function () {
   <graph>
     <line>
       <through hide="false">
-      <point>(2<copy prop="pointX2_2" tname="_line1"/> +1, 2<copy prop="pointX2_1" tname="_line1"/> +1)</point>
-      <point>(<copy prop="pointX1_1" tname="_line1"/> +1,1)</point>
+      <point><x>2<copy prop="pointX2_2" tname="_line1"/> +1</x><y>2<copy prop="pointX2_1" tname="_line1"/> +1</y></point>
+      <point><x><copy prop="pointX1_1" tname="_line1"/> +1</x><y>1</y></point>
       </through>
     </line>
   </graph>
@@ -5537,8 +5540,8 @@ describe('Line Tag Tests', function () {
   <graph>
     <line>
       <through hide="false">
-      <point>(2<copy prop="pointX2_2" tname="la"/> +1, 2<copy prop="pointX2_1" tname="la"/> +1)</point>
-      <point>(<copy prop="pointX1_1" tname="la"/> +1,1)</point>
+      <point><x>2<copy prop="pointX2_2" tname="la"/> +1</x><y>2<copy prop="pointX2_1" tname="la"/> +1</y></point>
+      <point><x><copy prop="pointX1_1" tname="la"/> +1</x><y>1</y></point>
       </through>
     </line>
   </graph>

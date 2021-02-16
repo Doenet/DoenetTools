@@ -80,18 +80,18 @@ export default class Award extends BaseComponent {
       triggerParentChildLogicWhenResolved: true,
       returnDependencies: () => ({
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
         },
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath",
           requireChildLogicInitiallySatisfied: true,
         },
         textChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneText",
           requireChildLogicInitiallySatisfied: true,
         },
@@ -126,7 +126,7 @@ export default class Award extends BaseComponent {
           variableName: "credit"
         },
         whenChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneWhen",
           variableNames: ["fractionSatisfied"]
         }

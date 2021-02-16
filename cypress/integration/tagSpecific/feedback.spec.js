@@ -36,8 +36,8 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -121,8 +121,8 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -223,7 +223,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', '');
@@ -360,10 +360,10 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
-      let choiceinputAnchor = '#' + choiceinputName;
-      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName)
+      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputAnchor = cesc('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(caAnchor).invoke('text').then((text) => {
@@ -444,7 +444,7 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -503,11 +503,11 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');

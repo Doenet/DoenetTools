@@ -1,8 +1,12 @@
 import { deepClone } from '../utils/deepFunctions';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class Template extends CompositeComponent {
   static componentType = "template";
+
+  static treatAsComponentForRecursiveReplacements = true;
+  static includeBlankStringChildren = true;
 
   static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
@@ -74,6 +78,22 @@ export default class Template extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.newNamespace = {
+      returnDependencies: () => ({
+        newNamespace: {
+          dependencyType: "doenetAttribute",
+          attributeName: "newNamespace"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            newNamespace: dependencyValues.newNamespace
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({}),
       definition: function () {
@@ -84,12 +104,25 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component }) {
+  static createSerializedReplacements({ component, componentInfoObjects }) {
 
     if (!component.stateValues.rendered) {
       return { replacements: [] };
     } else {
-      return { replacements: deepClone(component.state.serializedChildren.value) }
+
+      let replacements = deepClone(component.state.serializedChildren.value);
+
+      if (component.stateValues.hide) {
+        // if template is hidden, then make each of its replacements hidden
+        for (let rep of replacements) {
+          if (!rep.state) {
+            rep.state = {};
+          }
+          rep.state.hide = true;
+        }
+      }
+
+      return { replacements }
     }
 
   }

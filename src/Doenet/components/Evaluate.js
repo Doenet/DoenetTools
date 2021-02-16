@@ -56,11 +56,11 @@ export default class Evaluate extends MathComponent {
     stateVariableDefinitions.nResults = {
       returnDependencies: () => ({
         functionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroFunctions",
         },
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneMath",
         }
       }),
@@ -102,7 +102,7 @@ export default class Evaluate extends MathComponent {
             variableName: "symbolic",
           },
           mathChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneMath",
             variableNames: ["value"]
           }
@@ -113,7 +113,7 @@ export default class Evaluate extends MathComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             functionChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroFunctions",
               variableNames: ["f", "numericalf"],
               childIndices: [arrayKey]

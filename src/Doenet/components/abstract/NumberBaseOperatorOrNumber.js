@@ -49,7 +49,7 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         exactlyOneString: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -89,7 +89,7 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
       } else {
         return {
           atLeastZeroNumbers: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroNumbers",
             variableNames: ["value"],
           },

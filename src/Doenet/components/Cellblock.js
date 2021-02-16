@@ -61,7 +61,7 @@ export default class Cellblock extends BaseComponent {
     stateVariableDefinitions.prescribedCellsRowsColumnsBlocks = {
       returnDependencies: () => ({
         cellRelatedChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "cellsRowsColumnsBlocks",
           variableNames: [
             "rowNum",

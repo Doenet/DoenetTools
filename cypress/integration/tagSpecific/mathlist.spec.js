@@ -179,47 +179,6 @@ describe('Mathlist Tag Tests', function () {
     })
   })
 
-  it('mathlist originally gets blank string children from group', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <mathlist>
-      <group>
-        <math>a</math>
-        <math>1+1</math>
-      </group>
-    </mathlist>
-    ` }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = cesc('#' + child2Name);
-
-      cy.log('Test value displayed in browser')
-      cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('a')
-      })
-      cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1+1')
-      })
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
-        expect(components['/_mathlist1'].stateValues.maths[1].tree).eqls(['+', 1, 1]);
-      })
-    })
-  })
-
   it('mathlist with mathlist children, test inverse', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -671,16 +630,16 @@ describe('Mathlist Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let childNames = components['/_mathlist1'].stateValues.childrenToRender;
-      let childAnchors = childNames.map(x => '#' + x);
+      let childAnchors = childNames.map(x => cesc('#' + x));
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -745,13 +704,13 @@ describe('Mathlist Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('a+a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -818,13 +777,13 @@ describe('Mathlist Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

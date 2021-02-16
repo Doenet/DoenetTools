@@ -135,7 +135,7 @@ export default class Polyline extends GraphicalComponent {
       forRenderer: true,
       returnDependencies: () => ({
         verticesChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneVertices",
           variableNames: ["nPoints"]
         }
@@ -156,7 +156,7 @@ export default class Polyline extends GraphicalComponent {
       returnDependencies() {
         return {
           verticesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneVertices",
             variableNames: ["nDimensions"],
           }
@@ -252,7 +252,7 @@ export default class Polyline extends GraphicalComponent {
 
           dependenciesByKey[arrayKey] = {
             verticesChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneVertices",
               variableNames: ["pointX" + varEnding]
             }

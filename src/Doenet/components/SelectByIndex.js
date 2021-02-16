@@ -12,44 +12,44 @@ export default class SelectByIndex extends CompositeComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
-  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
-    if (serializedComponent.children === undefined) {
-      return [];
-    }
+  // static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
+  //   if (serializedComponent.children === undefined) {
+  //     return [];
+  //   }
 
-    let propertyClasses = [];
-    for (let componentType in this.createPropertiesObject({})) {
-      let ct = componentType.toLowerCase();
-      propertyClasses.push({
-        componentType: ct,
-        class: componentInfoObjects.allComponentClasses[ct]
-      });
-    }
+  //   let propertyClasses = [];
+  //   for (let componentType in this.createPropertiesObject({})) {
+  //     let ct = componentType.toLowerCase();
+  //     propertyClasses.push({
+  //       componentType: ct,
+  //       class: componentInfoObjects.allComponentClasses[ct]
+  //     });
+  //   }
 
-    let nonPropertyChildInds = [];
+  //   let nonPropertyChildInds = [];
 
-    // first occurence of a property component class
-    // will be created
-    // any other component will stay serialized
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      let propFound = false;
-      for (let propObj of propertyClasses) {
-        if (componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: child.componentType,
-          baseComponentType: propObj.componentType
-        }) && !propObj.propFound) {
-          propFound = propObj.propFound = true;
-          break;
-        }
-      }
-      if (!propFound) {
-        nonPropertyChildInds.push(ind);
-      }
-    }
+  //   // first occurence of a property component class
+  //   // will be created
+  //   // any other component will stay serialized
+  //   for (let [ind, child] of serializedComponent.children.entries()) {
+  //     let propFound = false;
+  //     for (let propObj of propertyClasses) {
+  //       if (componentInfoObjects.isInheritedComponentType({
+  //         inheritedComponentType: child.componentType,
+  //         baseComponentType: propObj.componentType
+  //       }) && !propObj.propFound) {
+  //         propFound = propObj.propFound = true;
+  //         break;
+  //       }
+  //     }
+  //     if (!propFound) {
+  //       nonPropertyChildInds.push(ind);
+  //     }
+  //   }
 
-    return nonPropertyChildInds;
+  //   return nonPropertyChildInds;
 
-  }
+  // }
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -57,69 +57,50 @@ export default class SelectByIndex extends CompositeComponent {
     return properties;
   }
 
-  // don't need additional child logic
-  // as all non-property children will remain serialized
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "atLeastOneOption",
+      componentType: 'option',
+      comparison: 'atLeast',
+      number: 1,
+      setAsBase: true,
+    });
+
+    return childLogic;
+  }
+
 
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.childrenToSelect = {
+    stateVariableDefinitions.nOptions = {
+      additionalStateVariablesDefined: ["optionChildren"],
       returnDependencies: () => ({
-        serializedChildren: {
-          dependencyType: "serializedChildren",
-          doNotProxy: true
+        optionChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastOneOption",
         },
       }),
-      definition: function ({ dependencyValues }) {
-
-        // deepClone remove readonly proxy
-        let childrenToSelect = deepClone(dependencyValues.serializedChildren);
-
-        // if have just one string, convert it to array of text or numbers
-        // in the same fashion that sugar works for regular children
-        if (childrenToSelect.length === 1 && childrenToSelect[0].componentType === "string") {
-          childrenToSelect = numbersOrTextFromString(childrenToSelect[0].state.value)
-        }
-
-        for (let child of childrenToSelect) {
-
-          // make sure each serialized child has children and doenetAttributes
-          if (child.children === undefined) {
-            child.children = [];
-          }
-          if (child.doenetAttributes === undefined) {
-            child.doenetAttributes = {};
-          }
-
-        }
-
+      definition({ dependencyValues }) {
         return {
           newValues: {
-            childrenToSelect,
+            optionChildren: dependencyValues.optionChildren,
+            nOptions: dependencyValues.optionChildren.length
           }
         }
-      }
-    }
-
-    stateVariableDefinitions.numberOfChildren = {
-      returnDependencies: () => ({
-        childrenToSelect: {
-          dependencyType: "stateVariable",
-          variableName: "childrenToSelect"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { numberOfChildren: dependencyValues.childrenToSelect.length } };
       }
     }
 
     stateVariableDefinitions.selectedIndices = {
       returnDependencies: () => ({
-        numberOfChildren: {
+        nOptions: {
           dependencyType: "stateVariable",
-          variableName: "numberOfChildren"
+          variableName: "nOptions"
         },
         selectIndices: {
           dependencyType: "stateVariable",
@@ -130,7 +111,7 @@ export default class SelectByIndex extends CompositeComponent {
         // console.log(`definition of selectedIndices`)
         // console.log(dependencyValues);
 
-        if (dependencyValues.numberOfChildren === 0) {
+        if (dependencyValues.nOptions === 0) {
           return { newValues: { selectedIndices: [] } }
         }
 
@@ -138,8 +119,8 @@ export default class SelectByIndex extends CompositeComponent {
 
         let selectedIndices = indicesToSelect.filter(ind =>
           Number.isInteger(ind) && ind >= 1
-          && ind <= dependencyValues.numberOfChildren
-        );
+          && ind <= dependencyValues.nOptions
+        ).map(x => x - 1);
 
         return { newValues: { selectedIndices } };
 
@@ -180,7 +161,7 @@ export default class SelectByIndex extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    let replacements = this.getReplacements(component, componentInfoObjects);
+    let replacements = this.getReplacements(component, components, componentInfoObjects);
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -191,15 +172,27 @@ export default class SelectByIndex extends CompositeComponent {
 
   }
 
-  static getReplacements(component, componentInfoObjects) {
+  static getReplacements(component, components, componentInfoObjects) {
 
     let replacements = [];
 
-    for (let childIndex of component.stateValues.selectedIndices) {
+    for (let selectedIndex of component.stateValues.selectedIndices) {
+
+
+      let selectedChildName = component.stateValues.optionChildren[selectedIndex].componentName;
 
       // use state, not stateValues, as read only proxy messes up internal
       // links between descendant variant components and the components themselves
-      let serializedChild = deepClone(component.state.childrenToSelect.value[childIndex - 1]);
+
+      let serializedGrandchildren = deepClone(components[selectedChildName].state.serializedChildren.value);
+      let serializedChild = {
+        componentType: "option",
+        state: { rendered: true },
+        doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
+        children: serializedGrandchildren,
+        originalName: selectedChildName,
+      }
+
 
 
       if (component.stateValues.hide) {
@@ -264,7 +257,7 @@ export default class SelectByIndex extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let replacements = this.getReplacements(component, componentInfoObjects);
+    let replacements = this.getReplacements(component, components, componentInfoObjects);
 
     let replacementInstruction = {
       changeType: "add",

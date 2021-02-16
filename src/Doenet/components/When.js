@@ -117,7 +117,7 @@ export default class When extends BaseComponent {
       ],
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsMathsTextsAndBooleans",
           variableNames: ["value", "texts", "maths", "booleans"],
           variablesOptional: true,
@@ -173,13 +173,13 @@ export default class When extends BaseComponent {
           variableName: "parsedExpression",
         },
         stringMathTextBooleanChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsMathsTextsAndBooleans",
           variableNames: ["value", "texts", "maths", "unordered"],
           variablesOptional: true,
         },
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "expand", "simplify"]
         },

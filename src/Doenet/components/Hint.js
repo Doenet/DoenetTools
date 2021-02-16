@@ -102,7 +102,7 @@ export default class Hint extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
         },
       }),
@@ -121,7 +121,7 @@ export default class Hint extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
           variableNames: ["text"],
         },
@@ -139,7 +139,7 @@ export default class Hint extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "titleAndContent"
         }
       }),

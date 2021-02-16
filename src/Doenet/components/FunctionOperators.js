@@ -165,7 +165,7 @@ export class Derivative extends FunctionBaseOperator {
       returnDependencies: () => ({
 
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["returnDerivativesOfNumericalf"],
           variablesOptional: true,

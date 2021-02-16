@@ -100,7 +100,7 @@ export default class PointListComponent extends BaseComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
@@ -128,7 +128,7 @@ export default class PointListComponent extends BaseComponent {
     stateVariableDefinitions.nPoints = {
       returnDependencies: () => ({
         pointChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
         }
       }),
@@ -144,7 +144,7 @@ export default class PointListComponent extends BaseComponent {
     stateVariableDefinitions.nDimensions = {
       returnDependencies: () => ({
         pointChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
           variableNames: ["nDimensions"]
         }
@@ -241,7 +241,7 @@ export default class PointListComponent extends BaseComponent {
           let [pointInd, dim] = arrayKey.split(',');
           dependenciesByKey[arrayKey] = {
             pointChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroPoints",
               variableNames: ["x" + (Number(dim) + 1)],
               childIndices: [pointInd],
@@ -304,7 +304,7 @@ export default class PointListComponent extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         pointChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
         }
       }),

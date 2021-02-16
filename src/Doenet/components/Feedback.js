@@ -47,7 +47,7 @@ export default class Feedback extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
           variableNames: ["conditionSatisfied"],
         },
@@ -80,7 +80,7 @@ export default class Feedback extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
         }
       }),

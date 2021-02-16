@@ -70,7 +70,7 @@ export default class NumberList extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -119,7 +119,7 @@ export default class NumberList extends InlineComponent {
           variableName: "maximumNumber",
         },
         numberAndNumberlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "numberAndNumberLists",
           variableNames: ["nComponents"],
           variablesOptional: true,
@@ -191,7 +191,7 @@ export default class NumberList extends InlineComponent {
           }
           dependenciesByKey[arrayKey] = {
             numberAndNumberlistChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "numberAndNumberLists",
               variableNames: ["value", "number" + numberIndex],
               variablesOptional: true,
@@ -278,7 +278,7 @@ export default class NumberList extends InlineComponent {
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         numberAndNumberlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "numberAndNumberLists",
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
@@ -317,7 +317,7 @@ export default class NumberList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         numberAndNumberlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "numberAndNumberLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

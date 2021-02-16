@@ -14,7 +14,13 @@ export default class SelectByCondition extends CompositeComponent {
 
   // used when referencing this component without prop
   // static useChildrenForReference = false;
-  // static get stateVariablesShadowedForReference() { return ["selectedIndex"] };
+  // static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.maximumNumberToSelect = { default: null };
+    return properties;
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -53,7 +59,7 @@ export default class SelectByCondition extends CompositeComponent {
       additionalStateVariablesDefined: ["caseChildren"],
       returnDependencies: () => ({
         caseChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastOneCase",
         },
       }),
@@ -67,35 +73,58 @@ export default class SelectByCondition extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.selectedIndex = {
-      additionalStateVariablesDefined: ["elseChild"],
+    stateVariableDefinitions.elseChild = {
+      returnDependencies: () => ({
+        elseChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneElse"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let elseChild = null;
+        if (dependencyValues.elseChild.length === 1) {
+          elseChild = dependencyValues.elseChild[0]
+        }
+        return { newValues: { elseChild } };
+      }
+    }
+
+
+    stateVariableDefinitions.selectedIndices = {
       returnDependencies: () => ({
         caseChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneCase",
           variableNames: ["conditionSatisfied"]
         },
         elseChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneElse"
+          dependencyType: "stateVariable",
+          variableName: "elseChild"
+        },
+        maximumNumberToSelect: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumberToSelect"
         }
       }),
       definition({ dependencyValues }) {
-        let selectedIndex = null;
+        let selectedIndices = [];
         for (let [ind, child] of dependencyValues.caseChildren.entries()) {
           if (child.stateValues.conditionSatisfied) {
-            selectedIndex = ind;
-            break;
+            selectedIndices.push(ind);
           }
         }
-        if (selectedIndex === null && dependencyValues.elseChild.length === 1) {
-          selectedIndex = dependencyValues.caseChildren.length;
+        if (selectedIndices.length === 0 && dependencyValues.elseChild) {
+          selectedIndices.push(dependencyValues.caseChildren.length);
+        }
+
+        if (dependencyValues.maximumNumberToSelect !== null && selectedIndices.length > dependencyValues.maximumNumberToSelect) {
+          let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumberToSelect));
+          selectedIndices = selectedIndices.slice(0, maxnum)
         }
 
         return {
           newValues: {
-            selectedIndex,
-            elseChild: dependencyValues.elseChild[0]
+            selectedIndices,
           }
         };
       }
@@ -105,7 +134,7 @@ export default class SelectByCondition extends CompositeComponent {
       returnDependencies: () => ({
         selectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "selectedIndex"
+          variableName: "selectedIndices"
         }
       }),
       definition() {
@@ -117,9 +146,9 @@ export default class SelectByCondition extends CompositeComponent {
 
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       returnDependencies: () => ({
-        selectedIndex: {
+        selectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "selectedIndex"
+          variableName: "selectedIndices"
         }
       }),
       // the whole point of this state variable is to return updateReplacements
@@ -140,7 +169,7 @@ export default class SelectByCondition extends CompositeComponent {
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
-    workspace.previousSelectedIndex = component.stateValues.selectedIndex;
+    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
     // console.log(`replacements for ${component.componentName}`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
@@ -154,11 +183,11 @@ export default class SelectByCondition extends CompositeComponent {
 
     let replacements = [];
 
-    if (component.stateValues.selectedIndex !== null) {
+    for (let selectedIndex of component.stateValues.selectedIndices) {
 
       let selectedChildName, selectedGroupIdentity = {};
-      if (component.stateValues.selectedIndex < component.stateValues.nCases) {
-        selectedChildName = component.stateValues.caseChildren[component.stateValues.selectedIndex].componentName;
+      if (selectedIndex < component.stateValues.nCases) {
+        selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
         selectedGroupIdentity.componentType = "result";
         selectedGroupIdentity.componentName = components[selectedChildName].stateValues.resultChild.componentName;
 
@@ -175,7 +204,7 @@ export default class SelectByCondition extends CompositeComponent {
         state: { rendered: true },
         doenetAttributes: Object.assign({}, components[selectedGroupIdentity.componentName].doenetAttributes),
         children: serializedGrandchildren,
-        preserializedName: selectedGroupIdentity.componentName,
+        originalName: selectedGroupIdentity.componentName,
       }
 
 
@@ -220,13 +249,15 @@ export default class SelectByCondition extends CompositeComponent {
   static calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
     // console.log(`calculate replacement changes for selectByCondition`)
-    // console.log(workspace.previousSelectedIndex);
-    // console.log(component.stateValues.selectedIndex);
+    // console.log(workspace.previousSelectedIndices);
+    // console.log(component.stateValues.selectedIndices);
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
-    if (workspace.previousSelectedIndex === component.stateValues.selectedIndex) {
+    if (workspace.previousSelectedIndices.length === component.stateValues.selectedIndices.length
+      && workspace.previousSelectedIndices.every((v, i) => v === component.stateValues.selectedIndices[i])
+    ) {
       return [];
     }
 
@@ -250,7 +281,7 @@ export default class SelectByCondition extends CompositeComponent {
 
     replacementChanges.push(replacementInstruction);
 
-    workspace.previousSelectedIndex = component.stateValues.selectedIndex;
+    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
     console.log(`replacementChanges for if ${component.componentName}`);
     console.log(replacementChanges);

@@ -122,7 +122,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneThrough",
           variableNames: ["nPoints"]
         }
@@ -210,7 +210,7 @@ export default class Circle extends Curve {
 
           dependenciesByKey[arrayKey] = {
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneThrough",
               variableNames: ["pointX" + varEnding]
             }
@@ -335,7 +335,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.havePrescribedCenter = {
       returnDependencies: () => ({
         centerChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneCenter"
         },
         centerShadow: {
@@ -379,7 +379,7 @@ export default class Circle extends Curve {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             centerChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneCenter",
               variableNames: ["x" + varEnding],
             },
@@ -468,7 +468,7 @@ export default class Circle extends Curve {
       defaultValue: null,
       returnDependencies: () => ({
         radiusChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneRadius",
           variableNames: ["value"],
         },
@@ -519,7 +519,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.havePrescribedRadius = {
       returnDependencies: () => ({
         radiusChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneRadius"
         },
         radiusShadow: {

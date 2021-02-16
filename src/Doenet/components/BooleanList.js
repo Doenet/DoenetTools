@@ -48,7 +48,7 @@ export default class BooleanList extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -98,7 +98,7 @@ export default class BooleanList extends InlineComponent {
             variableName: "maximumNumber",
           },
           booleanAndBooleanlistChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "booleanAndBooleanLists",
             variableNames: ["nComponents"],
             variablesOptional: true,
@@ -169,7 +169,7 @@ export default class BooleanList extends InlineComponent {
           }
           dependenciesByKey[arrayKey] = {
             booleanAndBooleanlistChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "booleanAndBooleanLists",
               variableNames: ["value", "boolean" + booleanIndex],
               variablesOptional: true,
@@ -253,7 +253,7 @@ export default class BooleanList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         booleanAndBooleanlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "booleanAndBooleanLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

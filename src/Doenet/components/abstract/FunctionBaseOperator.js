@@ -138,7 +138,7 @@ export default class FunctionOperator extends Function {
           variableName: "operatorBasedOnFormulaIfAvailable"
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["formula"],
         },
@@ -188,7 +188,7 @@ export default class FunctionOperator extends Function {
           variableName: "variable",
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["numericalf",]
         },
@@ -260,7 +260,7 @@ export default class FunctionOperator extends Function {
           variableName: "variable",
         },
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["f",]
         },

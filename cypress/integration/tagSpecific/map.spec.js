@@ -21,13 +21,11 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map>
-      <template>
-        <math>sin(2<copyFromSubs/>) + <indexFromSubs/></math>
-      </template>
-      <substitutions>
+      <template><math>sin(2<copySource/>) + <sourceIndex/></math></template>
+      <sources>
         <math>x</math>
         <math>y</math>
-      </substitutions>
+      </sources>
     </map>
     </aslist>
     `}, "*");
@@ -65,8 +63,8 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map >
-      <template><text>You are a <copyFromSubs/>!</text> </template>
-      <substitutions><text>squirrel</text><text>bat</text></substitutions>
+      <template><text>You are a <copySource/>!</text> </template>
+      <sources><text>squirrel</text><text>bat</text></sources>
     </map>
     `}, "*");
     });
@@ -98,8 +96,8 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-      <template><math simplify><copyFromSubs/>^2</math> </template>
-      <substitutions><sequence from="1" to="5"/></substitutions>
+      <template><math simplify><copySource/>^2</math> </template>
+      <sources><sequence from="1" to="5"/></sources>
     </map>
     `}, "*");
     });
@@ -147,13 +145,10 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map behavior="parallel">
-      <template>
-        <math>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />, <copyFromSubs fromSubstitutions="3" />)</math>
-        <math>(<indexFromSubs/>, <indexFromSubs fromSubstitutions="2" />, <indexFromSubs fromSubstitutions="3" />)</math>
-      </template>
-      <substitutions><sequence from="1" to="5"/></substitutions>
-      <substitutions><sequence from="21" to="23"/></substitutions>
-      <substitutions><sequence from="-5" to="-21" step="-3"/></substitutions>
+      <template><math>(<copySource/>, <copySource fromSources="2" />, <copySource fromSources="3" />)</math><math>(<sourceIndex/>, <sourceIndex fromSources="2" />, <sourceIndex fromSources="3" />)</math></template>
+      <sources><sequence from="1" to="5"/></sources>
+      <sources><sequence from="21" to="23"/></sources>
+      <sources><sequence from="-5" to="-21" step="-3"/></sources>
     </map>
     </aslist>
     `}, "*");
@@ -206,13 +201,10 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map behavior="combination">
-      <template>
-        <math>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />, <copyFromSubs fromSubstitutions="3" />)</math>
-        <math>(<indexFromSubs/>, <indexFromSubs fromSubstitutions="2" />, <indexFromSubs fromSubstitutions="3" />)</math>
-      </template>
-      <substitutions><sequence from="1" to="3"/></substitutions>
-      <substitutions><sequence from="21" to="23" step="2"/></substitutions>
-      <substitutions><sequence from="-5" to="-8" step="-3"/></substitutions>
+      <template><math>(<copySource/>, <copySource fromSources="2" />, <copySource fromSources="3" />)</math><math>(<sourceIndex/>, <sourceIndex fromSources="2" />, <sourceIndex fromSources="3" />)</math></template>
+      <sources><sequence from="1" to="3"/></sources>
+      <sources><sequence from="21" to="23" step="2"/></sources>
+      <sources><sequence from="-5" to="-8" step="-3"/></sources>
     </map>
     `}, "*");
     });
@@ -336,16 +328,11 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map>
-      <template>
-        <map>
-          <template>
-            <math simplify><copyFromSubs/>+<copyFromSubs fromMapAncestor="2" /></math>
-            <math simplify><indexFromSubs/>+2<indexFromSubs fromMapAncestor="2" /></math>
-          </template>
-          <substitutions><sequence from="1" to="2"/></substitutions>
-        </map>
-      </template>
-      <substitutions><number>-10</number><number>5</number></substitutions>
+      <template><map>
+          <template><math simplify><copySource/>+<copySource fromMapAncestor="2" /></math><math simplify><sourceIndex/>+2<sourceIndex fromMapAncestor="2" /></math></template>
+          <sources><sequence from="1" to="2"/></sources>
+        </map></template>
+      <sources><number>-10</number><number>5</number></sources>
     </map>
     </aslist>
     `}, "*");
@@ -409,23 +396,16 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-      <graph>
+    <template><graph>
         <map>
-          <template>
-            <map>
-              <template>
-                <point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="3"/>, <copyFromSubs fromMapAncestor="2"/>)</coords></point>
-                <point><coords>(<indexFromSubs/>+2*<indexFromSubs fromMapAncestor="3"/>, <indexFromSubs fromMapAncestor="2"/>)</coords></point>
-              </template>
-              <substitutions><sequence from="1" to="2"/></substitutions>
-            </map>
-          </template>
-          <substitutions><sequence from="-5" to="5" step="10"/></substitutions>
+          <template><map>
+              <template><point><coords>(<copySource/>+<copySource fromMapAncestor="3"/>, <copySource fromMapAncestor="2"/>)</coords></point><point><coords>(<sourceIndex/>+2*<sourceIndex fromMapAncestor="3"/>, <sourceIndex fromMapAncestor="2"/>)</coords></point></template>
+              <sources><sequence from="1" to="2"/></sources>
+            </map></template>
+          <sources><sequence from="-5" to="5" step="10"/></sources>
         </map>
-      </graph>
-    </template>
-    <substitutions><sequence from="-10" to="5" step="15"/></substitutions>
+      </graph></template>
+    <sources><sequence from="-10" to="5" step="15"/></sources>
     </map>
     <copy tname="_map1" />
     `}, "*");
@@ -438,7 +418,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
-      let graphs2 = components['/_copy1'].replacements[0].replacements.map(x => x.replacements[0]);
+      let graphs2 = components['/_copy1'].replacements.map(x => x.replacements[0]);
       let graphs2Children = graphs2.map(x => x.activeChildren);
 
       expect(graphs[0].stateValues.graphicalDescendants.length).eq(8);
@@ -523,22 +503,22 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map assignnames="u,v">
-    <template>
+    <template newNamespace>
       <graph>
         <map assignnames="u,v">
-          <template>
+          <template newNamespace>
             <map assignnames="u,v">
-              <template>
-                <point name="A"><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="3"/>, <copyFromSubs fromMapAncestor="2"/>)</coords></point>
+              <template newNamespace>
+                <point name="A"><coords>(<copySource/>+<copySource fromMapAncestor="3"/>, <copySource fromMapAncestor="2"/>)</coords></point>
               </template>
-              <substitutions><sequence from="1" to="2"/></substitutions>
+              <sources><sequence from="1" to="2"/></sources>
             </map>
           </template>
-          <substitutions><sequence from="-5" to="5" step="10"/></substitutions>
+          <sources><sequence from="-5" to="5" step="10"/></sources>
         </map>
       </graph>
     </template>
-    <substitutions><sequence from="-10" to="5" step="15"/></substitutions>
+    <sources><sequence from="-10" to="5" step="15"/></sources>
     </map>
     <copy prop="coords" tname="/u/u/u/A" />
     <copy prop="coords" tname="/u/u/v/A" />
@@ -629,16 +609,14 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-    <graph>
+    <template><graph>
       <map behavior="combination">
-        <template><point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="2" />, <copyFromSubs fromSubstitutions="2" />)</coords></point></template>
-        <substitutions><sequence from="1" to="2"/></substitutions>
-        <substitutions><sequence from="-5" to="5" step="10"/></substitutions>
+        <template><point><coords>(<copySource/>+<copySource fromMapAncestor="2" />, <copySource fromSources="2" />)</coords></point></template>
+        <sources><sequence from="1" to="2"/></sources>
+        <sources><sequence from="-5" to="5" step="10"/></sources>
       </map>
-    </graph>
-    </template>
-    <substitutions><sequence from="-10" to="5" step="15"/></substitutions>
+    </graph></template>
+    <sources><sequence from="-10" to="5" step="15"/></sources>
     </map>
     `}, "*");
     });
@@ -679,14 +657,11 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-      <math simplify>
-        <copyFromSubs name="b"/> + <indexFromSubs name="i"/> + <copy tname="../a" /> 
+    <template newNamespace><math simplify>
+        <copySource name="b"/> + <sourceIndex name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
-      </math>
-      <math>x</math>
-    </template>
-    <substitutions><sequence from="1" to="2"/></substitutions>
+      </math><math>x</math></template>
+    <sources><sequence from="1" to="2"/></sources>
     </map>
     <math name="a">x</math>
     <copy tname="_map1" />
@@ -698,7 +673,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -741,14 +716,11 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-      <math simplify>
-        <copyFromSubs name="b"/> + <indexFromSubs name="i"/> + <copy tname="../a" /> 
+    <template newnamespace><math simplify>
+        <copySource name="b"/> + <sourceIndex name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
-      </math>
-      <math>x</math>
-    </template>
-    <substitutions><sequence from="1"><count><number name="count">1</number></count></sequence></substitutions>
+      </math><math>x</math></template>
+    <sources><sequence from="1"><count><number name="count">1</number></count></sequence></sources>
     </map>
     <math name="a">x</math>
     <copy tname="_map1" />
@@ -765,7 +737,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -794,7 +766,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -834,7 +806,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -898,15 +870,13 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-      <math simplify="full">sin(<indexFromSubs/><copyFromSubs/>)</math>
-    </template>
-    <substitutions><math>x</math><math>y</math></substitutions>
+    <template><math simplify="full">sin(<sourceIndex/><copySource/>)</math></template>
+    <sources><math>x</math><math>y</math></sources>
     </map>
   
     <map>
     <copy tname="_template1" />
-    <substitutions><math>q</math><math>p</math></substitutions>
+    <sources><math>q</math><math>p</math></sources>
     </map>
 
     <copy tname="_map2" />
@@ -920,7 +890,7 @@ describe('Map Tag Tests', function () {
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
       let replacements2 = components['/_map2'].replacements.map(x => x.replacements[0]);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
-      let replacements3 = components['/_copy2'].replacements[0].replacements.map(x => x.replacements[0]);
+      let replacements3 = components['/_copy2'].replacements.map(x => x.replacements[0]);
       let replacementAnchors3 = replacements3.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -945,6 +915,44 @@ describe('Map Tag Tests', function () {
     })
   });
 
+  it('map with new namespace but no new namespace on template', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <map newNamespace>
+    <template><math simplify="full">sin(<sourceIndex/><copySource/>)</math></template>
+    <sources><math>x</math><math>y</math></sources>
+    </map>
+  
+    <copy tname="_map1" />
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let replacementAnchors = replacements.map(x => '#' + x.componentName)
+      let replacements2 = components['/_copy1'].replacements.map(x => x.replacements[0]);
+      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+
+      cy.log('Test values displayed in browser')
+      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('sin(x)');
+      });
+      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('sin(2y)');
+      });
+      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('sin(x)');
+      });
+      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('sin(2y)');
+      });
+    })
+  });
+
   it('graph with new namespace and assignnames', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -956,11 +964,9 @@ describe('Map Tag Tests', function () {
     
     <grapH Name="hi" newNamespace >
     <map assignnames="q, c,s">
-      <template>
-        <point><coords>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />)</coords></point>
-      </template>
-      <substitutions><sequence from="1" to="2"/></substitutions>
-      <substitutions><sequence from="-3" to="-2"/></substitutions>
+      <template newnamespace><point><coords>(<copySource/>, <copySource fromSources="2" />)</coords></point></template>
+      <sources><sequence from="1" to="2"/></sources>
+      <sources><sequence from="-3" to="-2"/></sources>
     </map>
     </graph>
     `}, "*");
@@ -1008,18 +1014,18 @@ describe('Map Tag Tests', function () {
     })
   });
 
-  it('map copying copyFromSubs of other map', () => {
+  it('map copying copySource of other map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <map assignnames="u,v,w">
-      <template><math>(<copyFromSubs/>, <copy tname="../e/_copyfromsubs1" />)</math></template>
-      <substitutions><sequence from="1" to="3"/></substitutions>
+      <template newNamespace><math>(<copySource/>, <copy tname="../e/_copysource1" />)</math></template>
+      <sources><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c,d,e">
-      <template><math>sin(<copyFromSubs/>)</math></template>
-      <substitutions><sequence from="4" to="6"/></substitutions>
+      <template newNamespace><math>sin(<copySource/>)</math></template>
+      <sources><sequence from="4" to="6"/></sources>
     </map>
     `}, "*");
     });
@@ -1047,77 +1053,17 @@ describe('Map Tag Tests', function () {
     });
   });
 
-  // it('map copieding other map via childnumber',() => {
-  //   cy.window().then((win) => { win.postMessage({doenetML: `
-  //   <text>a</text>
-  //   <math>1</math>
-  //   <graph>
-  //   <map>
-  //    <template>
-  //     <point><coords>
-  //       (
-  //       <ref prop="x">
-  //         <childnumber><copyFromSubs/></childnumber>
-  //         _graph2
-  //       </ref>,
-  //       <copyFromSubs/>
-  //       )
-  //     </coords></point>
-  //    </template>
-  //    <substitutions><sequence from="1" to="2"/></substitutions>
-  //   </map>
-  //   </graph>
-
-  //   <graph>
-  //   <map>
-  //    <template>
-  //     <point><coords>(<copyFromSubs/>,<copyFromSubs/>)</coords></point>
-  //    </template>
-  //    <substitutions><sequence from="8" to="9"/></substitutions>
-  //   </map>
-  //   </graph>
-  //   `},"*");
-  //   });
-
-  //   cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
-
-  //   // to wait for page to load
-  //   cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-  //     expect(text.trim()).equal('1')
-  //   })
-
-  //   cy.log('Test internal values are set to the correct values')
-  //   cy.window().then((win) => {
-  //     let components = Object.assign({},win.state.components);
-  //     expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
-  //     expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
-  //     expect(components['/__map1_1/_point1'].stateValues.xs[0].tree).eq(8);
-  //     expect(components['/__map1_1/_point1'].stateValues.xs[1].tree).eq(1);
-  //     expect(components['/_map1[2]/_point1'].stateValues.xs[0].tree).eq(9);
-  //     expect(components['/_map1[2]/_point1'].stateValues.xs[1].tree).eq(2);
-  //     expect(components['/__map2_0_point2'].stateValues.xs[0].tree).eq(8);
-  //     expect(components['/__map2_0_point2'].stateValues.xs[1].tree).eq(8);
-  //     expect(components['/__map2_1_point2'].stateValues.xs[0].tree).eq(9);
-  //     expect(components['/__map2_1_point2'].stateValues.xs[1].tree).eq(9);
-  //   })
-
-  // });
-
   it('map length depending on other map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <map>
-    <template>
-     <map>
-       <template>
-         <math>(<copyFromSubs/>, <copyFromSubs fromMapAncestor="2"/>)</math>
-       </template>
-       <substitutions><sequence from="1"><to><copyFromSubs/></to></sequence></substitutions>
-     </map>
-    </template>
-    <substitutions><sequence from="1" to="3"/></substitutions>
+    <template><map>
+       <template><math>(<copySource/>, <copySource fromMapAncestor="2"/>)</math></template>
+       <sources><sequence from="1"><to><copySource/></to></sequence></sources>
+     </map></template>
+    <sources><sequence from="1" to="3"/></sources>
     </map>
     `}, "*");
     });
@@ -1159,14 +1105,14 @@ describe('Map Tag Tests', function () {
 
     <p>
     <map>
-    <template><math simplify><copyFromSubs/>^2</math><text>,</text></template>
-    <substitutions>
+    <template><math simplify><copySource/>^2</math><text>,</text></template>
+    <sources>
     <sequence>
       <from><copy prop="value" tname="sequenceFrom" /></from>
       <to><copy prop="value" tname="sequenceTo" /></to>
       <count><copy prop="value" tname="sequenceCount" /></count>
     </sequence>
-    </substitutions>
+    </sources>
     </map>
     </p>
 
@@ -1188,9 +1134,9 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let p4 = components['/copymapthroughp'].replacements[0];
       let p4Anchor = cesc('#' + p4.componentName);
-      let p5 = components['/copymapthroughp2'].replacements[0].replacements[0];
+      let p5 = components['/copymapthroughp2'].replacements[0];
       let p5Anchor = cesc('#' + p5.componentName);
-      let p6 = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0];
+      let p6 = components['/copymapthroughp3'].replacements[0];
       let p6Anchor = cesc('#' + p6.componentName);
 
 
@@ -1222,15 +1168,15 @@ describe('Map Tag Tests', function () {
 
         let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements[0].replacements.map(x => x.replacements[0]);
+        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements[0].replacements[0].replacements.map(x => x.replacements[0]);
+        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
         let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1283,15 +1229,15 @@ describe('Map Tag Tests', function () {
 
         let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements[0].replacements.map(x => x.replacements[0]);
+        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements[0].replacements[0].replacements.map(x => x.replacements[0]);
+        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
         let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1342,15 +1288,15 @@ describe('Map Tag Tests', function () {
 
         let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements[0].replacements.map(x => x.replacements[0]);
+        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements[0].replacements[0].replacements.map(x => x.replacements[0]);
+        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
         let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1420,15 +1366,15 @@ describe('Map Tag Tests', function () {
 
         let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements[0].replacements.map(x => x.replacements[0]);
+        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements[0].replacements[0].replacements.map(x => x.replacements[0]);
+        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
         let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1496,19 +1442,16 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <graph>
       <map assignnames="a,b,c">
-        <template>
-          <point>
-            <x><copy tname="../q" /><copyFromSubs/>^2</x>
+        <template newNamespace><point>
+            <x><copy tname="../q" /><copySource/>^2</x>
             <y><copy prop="x" tname="_point2" /></y>
-          </point>
-          <point>
-            <x><copy tname="../r" /><copyFromSubs/></x>
+          </point><point>
+            <x><copy tname="../r" /><copySource/></x>
             <y><copy prop="x" tname="_point1" /></y>
-          </point>
-        </template>
-      <substitutions>
+          </point></template>
+      <sources>
         <sequence>2,4</sequence>
-      </substitutions>
+      </sources>
       </map>
     </graph>
     <math name="q">1</math>
@@ -1715,34 +1658,30 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <graph>
       <map assignnames="a,b,c">
-        <template>
-          <point>
-            <x>-<copyFromSubs/></x>
-            <y><copyFromSubs/><copy prop="x" tname="../q/_point1" /></y>
-          </point>
-        </template>
-      <substitutions>
+        <template newNamespace><point>
+            <x>-<copySource/></x>
+            <y><copySource/><copy prop="x" tname="../q/_point1" /></y>
+          </point></template>
+      <sources>
         <sequence>
           <from><copy prop="value" tname="sequenceFrom" /></from>
           <to><copy prop="value" tname="sequenceTo" /></to>
           <count><copy prop="value" tname="sequenceCount" /></count>
         </sequence>
-      </substitutions>
+      </sources>
       </map>
       <map assignnames="q,r,s">
-        <template>
-          <point>
-            <x><copyFromSubs/></x>
-            <y><copyFromSubs/><copy prop="x" tname="../a/_point1" /></y>
-          </point>
-        </template>
-      <substitutions>
+        <template newNamespace><point>
+            <x><copySource/></x>
+            <y><copySource/><copy prop="x" tname="../a/_point1" /></y>
+          </point></template>
+      <sources>
         <sequence>
           <from><copy prop="value" tname="sequenceFrom" /></from>
           <to><copy prop="value" tname="sequenceTo" /></to>
           <count><copy prop="value" tname="sequenceCount" /></count>
         </sequence>
-      </substitutions>
+      </sources>
       </map>
     </graph>
     
@@ -1802,10 +1741,10 @@ describe('Map Tag Tests', function () {
         expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(2);
         expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
         expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
         expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
         expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", 1, -1]);
       })
@@ -1858,18 +1797,18 @@ describe('Map Tag Tests', function () {
         expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
         expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
         expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
         expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 1, -1]);
         expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -2, 2]);
         expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
         expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -2, 2]);
         expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 2, -2]);
       })
@@ -1908,18 +1847,18 @@ describe('Map Tag Tests', function () {
         expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
         expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
         expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
         expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 3, -9]);
         expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
         expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
         expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -5, 15]);
         expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 5, -15]);
       })
@@ -1981,26 +1920,26 @@ describe('Map Tag Tests', function () {
         expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(6);
         expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
         expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
         expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
         expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 3, -9]);
         expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -4, 12]);
         expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2'].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
         expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -4, 12]);
         expect(components['/graph4'].replacements[0].activeChildren[4].stateValues.coords.tree).eqls(["vector", 4, -12]);
         expect(components['/c/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
         expect(components['/s/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[0].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[0].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(components['/copymap1'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(components['/copymap2'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(components['/copymap1b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(components['/copymap2b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
         expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", -5, 15]);
         expect(components['/graph4'].replacements[0].activeChildren[5].stateValues.coords.tree).eqls(["vector", 5, -15]);
       })
@@ -2019,13 +1958,13 @@ describe('Map Tag Tests', function () {
     
     <math>
       <map>
-        <template><point>(<copyFromSubs/>, sin(<copyFromSubs/>))</point></template>
-        <substitutions>
+        <template><point>(<copySource/>, sin(<copySource/>))</point></template>
+        <sources>
           <sequence from="2">
             <count><copy prop="value" tname="number" /></count>
             <step><copy prop="value" tname="step" /></step>
           </sequence>
-        </substitutions>
+        </sources>
       </map>
     </math>
     `}, "*");
@@ -2109,7 +2048,7 @@ describe('Map Tag Tests', function () {
 
   });
 
-  it('map inside substitutions of map', () => {
+  it('map inside sources of map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2117,21 +2056,21 @@ describe('Map Tag Tests', function () {
     <p>Number of points: <mathinput name="number"/></p>
     
     <map name="m1" assignNames="p1,p2,p3">
-      <template><point name="pt">(<copyFromSubs/>, 2<copyFromSubs/>)</point></template>
-      <substitutions>
+      <template newNamespace><point name="pt">(<copySource/>, 2<copySource/>)</point></template>
+      <sources>
         <sequence>
           <count><copy prop="value" tname="number" /></count>
         </sequence>
-      </substitutions>
+      </sources>
     </map>
 
     <map name="m2" assignNames="q1,q2,q3">
-      <template>
-        <point name="pt">(<copyFromSubs prop="x" />^2, <copyFromSubs prop="y" />^2)</point>
+      <template newNamespace>
+        <point name="pt">(<copySource prop="x" />^2, <copySource prop="y" />^2)</point>
       </template>
-      <substitutions>
+      <sources>
         <copy tname="m1" />
-      </substitutions>
+      </sources>
     </map>
 
     <copy tname="p1" assignNames="p1a" />

@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { createUniqueName } from '../utils/naming';
+import { createUniqueName, getNamespaceFromName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
 
 export default class Answer extends InlineComponent {
@@ -64,11 +64,13 @@ export default class Answer extends InlineComponent {
     let childLogic = super.returnChildLogic(args);
 
 
-    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
+    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues,
+      parentName, parentDoenetAttributes, childLogicName
+    }) {
       // answer where only child is a string (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <[defaultType]input/>
-      // <award><when><copy prop="value" tname="[theinput]"/">=<[type]>[originalString]</[type]></when></award>
+      // <award><when><copy prop="immediatevalue" tName="[theinput]"/">=<[type]>[originalString]</[type]></when></award>
 
       let inputType, typeUsed;
       if (dependencyValues.type === "text") {
@@ -111,13 +113,18 @@ export default class Answer extends InlineComponent {
       let longNameId = parentName + "|sugarReplacement|" + childLogicName;
       let componentName = createUniqueName(inputType, longNameId)
 
+      let namespace;
+      if (parentDoenetAttributes.newNamespace) {
+        namespace = parentName + "/";
+      } else {
+        namespace = getNamespaceFromName(parentName);
+      }
+      componentName = namespace + componentName;
+
       let whenChildren = [
         {
           componentType: 'copy',
-          children: [
-            { componentType: 'tname', state: { targetName: componentName } },
-            { componentType: 'prop', state: { variableName: "immediateValue" } }
-          ],
+          doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
         },
         { componentType: 'string', state: { value: '=' } },
         childrenForEquals[0]
@@ -127,10 +134,8 @@ export default class Answer extends InlineComponent {
         whenChildren.push(...[
           { componentType: 'string', state: { value: ' or ' } },
           {
-            componentType: 'copy', children: [
-              { componentType: 'tname', state: { targetName: componentName } },
-              { componentType: 'prop', state: { variableName: "value" } }
-            ]
+            componentType: 'copy',
+            doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
           },
           { componentType: 'string', state: { value: '=' } },
           child
@@ -139,7 +144,7 @@ export default class Answer extends InlineComponent {
 
       let inputChild = {
         componentType: inputType,
-        doenetAttributes: { componentName: componentName },
+        componentName: componentName,
         children: []
       };
 
@@ -173,7 +178,7 @@ export default class Answer extends InlineComponent {
           variableName: "splitIntoOptions"
         },
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -183,18 +188,28 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
+    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues,
+      parentName, parentDoenetAttributes, childLogicName
+    }) {
       // answer where only child is a math (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <mathinput/>
-      // <award><when><copy prop="value" tname="[themathinput]"/>=[originalMath]</when></award>
+      // <award><when><copy prop="immediatevalue" tName="[themathinput]"/>=[originalMath]</when></award>
 
       let longNameId = parentName + "|sugarReplacement|" + childLogicName;
       let componentName = createUniqueName("mathinput", longNameId)
 
+      let namespace;
+      if (parentDoenetAttributes.newNamespace) {
+        namespace = parentName + "/";
+      } else {
+        namespace = getNamespaceFromName(parentName);
+      }
+      componentName = namespace + componentName;
+
       let inputChild = {
         componentType: 'mathinput',
-        doenetAttributes: { componentName: componentName },
+        componentName: componentName,
         children: []
       };
 
@@ -209,10 +224,7 @@ export default class Answer extends InlineComponent {
                 componentType: 'when', children: [
                   {
                     componentType: 'copy',
-                    children: [
-                      { componentType: 'tname', state: { targetName: componentName } },
-                      { componentType: 'prop', state: { variableName: "immediateValue" } }
-                    ],
+                    doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
                   },
                   { componentType: 'string', state: { value: '=' } },
                   {
@@ -237,18 +249,28 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
+    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues,
+      parentName, parentDoenetAttributes, childLogicName
+    }) {
       // answer where only child is a text (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <textinput/>
-      // <award><when><copy prop="value" tname="[thetextinput]"/>=[originaltext]</when></award>
+      // <award><when><copy prop="immediatevalue" tName="[thetextinput]"/>=[originaltext]</when></award>
 
       let longNameId = parentName + "|sugarReplacement|" + childLogicName;
       let componentName = createUniqueName("textinput", longNameId)
 
+      let namespace;
+      if (parentDoenetAttributes.newNamespace) {
+        namespace = parentName + "/";
+      } else {
+        namespace = getNamespaceFromName(parentName);
+      }
+      componentName = namespace + componentName;
+
       let inputChild = {
         componentType: 'textinput',
-        doenetAttributes: { componentName: componentName },
+        componentName: componentName,
         children: []
       };
 
@@ -263,10 +285,7 @@ export default class Answer extends InlineComponent {
                 componentType: 'when', children: [
                   {
                     componentType: 'copy',
-                    children: [
-                      { componentType: 'tname', state: { targetName: componentName } },
-                      { componentType: 'prop', state: { variableName: "immediateValue" } }
-                    ],
+                    doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
                   },
                   { componentType: 'string', state: { value: '=' } },
                   {
@@ -292,13 +311,15 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromJustChoices = function ({ activeChildrenMatched, parentName, childLogicName }) {
+    let replaceFromJustChoices = function ({ activeChildrenMatched,
+      parentName, parentDoenetAttributes, childLogicName
+    }) {
       // answer where only children are choices (other than activeChildren from properties)
       // wrap choices in a choiceinput
       // and for each choice
       // create an award of the form
       // <award><credit>[creditfromchoice]</credit>
-      //   <when><copy prop="selectedindex" tname="[thechoiceinput]"/>=[indexofchoice]</when>
+      //   <when><copy prop="selectedindex" tName="[thechoiceinput]"/>=[indexofchoice]</when>
       // </award>
       // also determine inline based on inline property of answer
 
@@ -310,9 +331,17 @@ export default class Answer extends InlineComponent {
       let longNameId = parentName + "|sugarReplacement|" + childLogicName;
       let componentName = createUniqueName("choiceinput", longNameId)
 
+      let namespace;
+      if (parentDoenetAttributes.newNamespace) {
+        namespace = parentName + "/";
+      } else {
+        namespace = getNamespaceFromName(parentName);
+      }
+      componentName = namespace + componentName;
+
       let choiceinputComponent = {
         componentType: "choiceinput",
-        doenetAttributes: { componentName: componentName },
+        componentName: componentName,
         children: choiceComponents,
       };
 
@@ -341,11 +370,13 @@ export default class Answer extends InlineComponent {
     // });
 
 
-    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
+    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues,
+      parentName, parentDoenetAttributes, childLogicName
+    }) {
       // answer where only activeChildren (other than from properties) are incomplete awards
       // (meaning awards with a <string> child rather than an <when> child)
       // create an input and replace the <string> child of each award with
-      // <when><copy prop="value" tname="[theinput]"/>=<defaultType>[originalString]</type></when>
+      // <when><copy prop="immediatevalue" tName="[theinput]"/>=<defaultType>[originalString]</type></when>
 
       // if all award have that aren't strings have same incomplete type,
       // use that type
@@ -388,11 +419,19 @@ export default class Answer extends InlineComponent {
       }
 
       let longNameId = parentName + "|sugarReplacement|" + childLogicName;
-      let componentName = createUniqueName(inputType, longNameId)
+      let componentName = createUniqueName(inputType, longNameId);
+
+      let namespace;
+      if (parentDoenetAttributes.newNamespace) {
+        namespace = parentName + "/";
+      } else {
+        namespace = getNamespaceFromName(parentName);
+      }
+      componentName = namespace + componentName;
 
       let inputChild = {
         componentType: inputType,
-        doenetAttributes: { componentName: componentName },
+        componentName: componentName,
         children: []
       };
 
@@ -450,10 +489,7 @@ export default class Answer extends InlineComponent {
         let whenChildren = [
           {
             componentType: 'copy',
-            children: [
-              { componentType: 'tname', state: { targetName: componentName } },
-              { componentType: 'prop', state: { variableName: "immediateValue" } }
-            ],
+            doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
           },
           { componentType: 'string', state: { value: '=' } },
           childrenForEquals[0]
@@ -463,10 +499,8 @@ export default class Answer extends InlineComponent {
           whenChildren.push(...[
             { componentType: 'string', state: { value: ' or ' } },
             {
-              componentType: 'copy', children: [
-                { componentType: 'tname', state: { targetName: componentName } },
-                { componentType: 'prop', state: { variableName: "value" } }
-              ]
+              componentType: 'copy',
+              doenetAttributes: { tName: componentName, fullTName: componentName, propName: "immediateValue" },
             },
             { componentType: 'string', state: { value: '=' } },
             child
@@ -508,7 +542,7 @@ export default class Answer extends InlineComponent {
           variableName: "type",
         },
         incompleteAwards: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneIncompleteAward",
           variableNames: ["incompleteType", "childForIncomplete", "splitIntoOptions"]
         }
@@ -596,7 +630,7 @@ export default class Answer extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         inputChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneInput",
           variableNames: ["valueToRecordOnSubmit", "valueRecordedAtSubmit"],
           variablesOptional: true,
@@ -614,7 +648,7 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.awardInputResponseChildren = {
       returnDependencies: () => ({
         awardInputResponseChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "awardsInputResponses",
         }
       }),
@@ -639,7 +673,7 @@ export default class Answer extends InlineComponent {
             baseComponentType: "award"
           })) {
             dependencies['child' + ind] = {
-              dependencyType: "componentDescendantStateVariables",
+              dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
               variableNames: ["isResponse", "nValues"],
@@ -656,16 +690,16 @@ export default class Answer extends InlineComponent {
             baseComponentType: "_input"
           })) {
             dependencies['childNValues' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "nValues",
-              variableOptional: true,
+              variablesOptional: true,
             }
           } else {
             // considerAsResponses
             dependencies['child' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "childrenWithNValues"
             }
           }
@@ -757,7 +791,7 @@ export default class Answer extends InlineComponent {
             baseComponentType: "award"
           })) {
             globalDependencies['child' + ind] = {
-              dependencyType: "componentDescendantStateVariables",
+              dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
               variableNames: ["isResponse", "value", "values", "componentType"],
@@ -774,28 +808,28 @@ export default class Answer extends InlineComponent {
             baseComponentType: "_input"
           })) {
             globalDependencies['childValue' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "value",
-              variableOptional: true,
+              variablesOptional: true,
             }
             globalDependencies['childValues' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "values",
-              variableOptional: true,
+              variablesOptional: true,
             }
             globalDependencies['childComponentType' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "componentType",
-              variableOptional: true,
+              variablesOptional: true,
             }
           } else {
             // considerAsResponses
             globalDependencies['child' + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: child,
+              dependencyType: "stateVariable",
+              componentName: child.componentName,
               variableName: "childrenAsResponses"
             }
           }
@@ -1048,7 +1082,7 @@ export default class Answer extends InlineComponent {
           variableName: "forceFullCheckworkButton"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
@@ -1095,12 +1129,12 @@ export default class Answer extends InlineComponent {
         "inputUsedIfSubmit"],
       returnDependencies: () => ({
         awardChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroCompleteAwards",
           variableNames: ["credit", "creditAchieved", "fractionSatisfied"]
         },
         inputChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneInput",
           variableNames: ["creditAchievedIfSubmit"],
           variablesOptional: true,
@@ -1283,7 +1317,7 @@ export default class Answer extends InlineComponent {
           variableName: "submitAllAnswersAtAncestor"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: [
             "justSubmittedForSubmitAll",
@@ -1320,12 +1354,12 @@ export default class Answer extends InlineComponent {
       entryPrefixes: ["feedback"],
       returnDependencies: () => ({
         awardChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroCompleteAwards",
           variableNames: ["feedbacks"]
         },
         feedbackComponents: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["_input"],
           variableNames: ["feedbacks"],
           variablesOptional: true,
@@ -1358,7 +1392,7 @@ export default class Answer extends InlineComponent {
           flagName: "showCorrectness"
         },
         showCorrectnessChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneShowCorrectness",
           variableNames: ["value",]
         }
@@ -1377,7 +1411,7 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         inputChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneInput"
         },
       }),
@@ -1498,6 +1532,9 @@ export default class Answer extends InlineComponent {
         responseText.push(response)
       }
     }
+
+    // console.log(`submit instructions`)
+    // console.log(instructions);
 
     this.coreFunctions.requestUpdate({
       updateInstructions: instructions,

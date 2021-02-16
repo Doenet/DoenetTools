@@ -52,7 +52,7 @@ export default class Case extends BaseComponent {
       additionalStateVariablesDefined: ["resultChild"],
       returnDependencies: () => ({
         resultChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneResult",
           variableNames: ["serializedChildren"],
           doNotProxy: true
@@ -75,9 +75,11 @@ export default class Case extends BaseComponent {
     }
 
     stateVariableDefinitions.conditionSatisfied = {
+      public: true,
+      componentType: "boolean",
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneCondition",
           variableNames: ["conditionSatisfied"],
         },

@@ -24,7 +24,7 @@ export default class InlineRenderInlineChildren extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "AtLeastZeroInline",
         },
       }),

@@ -1,7 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 
-export default class Substitutions extends BaseComponent {
-  static componentType = "substitutions";
+export default class Sources extends BaseComponent {
+  static componentType = "sources";
   static rendererType = "container";
 
   static returnChildLogic(args) {
@@ -27,7 +27,7 @@ export default class Substitutions extends BaseComponent {
       additionalStateVariablesDefined: ["childComponentNames", "childIdentities"],
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren",
           requireChildLogicInitiallySatisfied: true,
         },
@@ -48,7 +48,7 @@ export default class Substitutions extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren"
         }
       }),

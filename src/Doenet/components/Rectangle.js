@@ -56,7 +56,7 @@ export default class Rectangle extends Polygon {
 
       returnDependencies: () => ({
         verticesChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneVertices",
           variableNames: ["nPoints"]
         }
@@ -124,7 +124,7 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.haveSpecifiedCenter = {
       returnDependencies: () => ({
         centerChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneCenter"
         }
       }),
@@ -156,7 +156,7 @@ export default class Rectangle extends Polygon {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             centerChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneCenter",
               variableNames: ["x" + varEnding],
             },
@@ -215,7 +215,7 @@ export default class Rectangle extends Polygon {
       returnDependencies() {
         return {
           specifiedWidthChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneWidth",
             variableNames: ["value"]
           },
@@ -224,7 +224,7 @@ export default class Rectangle extends Polygon {
             variableName: "nVerticesSpecified"
           },
           centerChild: {
-            dependencyType: "childIdentity",
+            dependencyType: "child",
             childLogicName: "atMostOneCenter"
           }
         }
@@ -269,7 +269,7 @@ export default class Rectangle extends Polygon {
       returnDependencies() {
         return {
           specifiedHeightChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneHeight",
             variableNames: ["value"],
           },
@@ -278,7 +278,7 @@ export default class Rectangle extends Polygon {
             variableName: "nVerticesSpecified"
           },
           centerChild: {
-            dependencyType: "childIdentity",
+            dependencyType: "child",
             childLogicName: "atMostOneCenter"
           }
         }
@@ -654,7 +654,7 @@ export default class Rectangle extends Polygon {
 
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
-                  dependencyType: "childStateVariables",
+                  dependencyType: "child",
                   childLogicName: "exactlyOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
@@ -677,7 +677,7 @@ export default class Rectangle extends Polygon {
 
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
-                  dependencyType: "childStateVariables",
+                  dependencyType: "child",
                   childLogicName: "exactlyOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
@@ -728,7 +728,7 @@ export default class Rectangle extends Polygon {
 
             dependenciesByKey[arrayKey] = {
               verticesChild: {
-                dependencyType: "childStateVariables",
+                dependencyType: "child",
                 childLogicName: "exactlyOneVertices",
                 variableNames: ["pointX" + varEnding]
               }

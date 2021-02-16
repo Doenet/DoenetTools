@@ -76,7 +76,7 @@ export class M extends InlineComponent {
       defaultValue: "",
       returnDependencies: () => ({
         stringTextMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsTextsAndMaths",
           variableNames: ["latex", "text"],
           variablesOptional: true,
@@ -112,7 +112,7 @@ export class M extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsTextsAndMaths",
           variableNames: ["latex", "text"],
           variablesOptional: true,
@@ -195,7 +195,7 @@ export class M extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         mathinputChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMathinputs"
         },
       }),

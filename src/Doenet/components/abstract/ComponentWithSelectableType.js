@@ -111,7 +111,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
           variableName: "type",
         },
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneString",
           variableNames: ["value"],
         }
@@ -146,7 +146,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
       public: true,
       returnDependencies: () => ({
         atMostOneChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -170,7 +170,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
       componentType: "text",
       returnDependencies: () => ({
         atMostOneChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,

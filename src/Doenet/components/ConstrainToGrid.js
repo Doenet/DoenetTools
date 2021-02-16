@@ -48,7 +48,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
     stateVariableDefinitions.constraintInactive = {
       returnDependencies: () => ({
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneString",
           variableNames: ["value"],
         }
