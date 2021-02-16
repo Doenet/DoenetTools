@@ -61,7 +61,19 @@ export default function DropTargetsProvider({ children }) {
       setActiveDropTargetId(dropTargetId);
       if (dropTargetId) {
         dropTargetsRef.current[dropTargetId]?.onDragOver();
-        console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
+        // console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
+        const dropTargetTopY = dropTargetRef?.offsetTop;
+        const dropTargetHeight = dropTargetRef?.clientHeight;
+        const cursorY = y;
+        const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
+
+        if (cursorArea < 0.3333) {
+          console.log(`>>>Reorder to top of ${dropTargetId}`);
+        } else if (cursorArea < 0.6666) {
+          console.log(`>>>Move into ${dropTargetId}`);
+        } else if (cursorArea < 1.0000) {
+          console.log(`>>>Reorder to bottom of ${dropTargetId}`);
+        }
       }
     },
     [activeDropTargetId, getDropTargetFromCursor]
