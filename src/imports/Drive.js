@@ -623,6 +623,7 @@ export const fetchDrivesSelector = selector({
   },
   set:({get,set},labelTypeDriveIdColorImage)=>{
     let driveData = get(fetchDrivesQuery)
+    // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     let params = {

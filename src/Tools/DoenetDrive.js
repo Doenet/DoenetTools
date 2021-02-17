@@ -753,10 +753,18 @@ let [doenetMLLabel,setDoenetMLLabel] = useState("")
 
 
   return <>
+  <h3>Course</h3>
    {addDrives}
-  <hr width="100"/>
+  {/* <hr width="100"/> */}
   <h3>Folder</h3>
-  <div>
+  <Button text="Add Folder" callback={()=>{
+    setFolderInfo({instructionType:"addItem",
+    label:"Untitled",
+    itemType:"Folder"
+    })
+  }
+  } />
+  {/* <div>
     <label>Label <input size="10" type="text" onChange={(e)=>setFolderLabel(e.target.value)} value={folderLabel}/></label><Button callback={()=>{
      setFolderInfo({instructionType:"addItem",
       label:folderLabel === "" ? "Untitled" : folderLabel,
@@ -764,9 +772,16 @@ let [doenetMLLabel,setDoenetMLLabel] = useState("")
       })
       setFolderLabel("");
     }} text="Add" />
-  </div>
+  </div> */}
   <h3>DoenetML</h3>
-  <div>
+  <Button text="Add DoenetML" callback={()=>{
+    setFolderInfo({instructionType:"addItem",
+    label:"Untitled",
+    itemType:"DoenetML"
+    })
+  }
+  } />
+  {/* <div>
     <label>Label <input size="10" type="text" onChange={(e)=>setDoenetMLLabel(e.target.value)} value={doenetMLLabel}/></label><Button callback={()=>{
       setFolderInfo({instructionType:"addItem",
       label:doenetMLLabel === "" ? "Untitled" : doenetMLLabel,
@@ -774,7 +789,7 @@ let [doenetMLLabel,setDoenetMLLabel] = useState("")
       })
       setDoenetMLLabel("");
       }} text="Add" />
-  </div>
+  </div> */}
   {/* <h3>URL</h3>
   <div>
     <label>Label <input size="10" type="text" onChange={(e)=>setURLLabel(e.target.value)} value={URLLabel} /></label>
