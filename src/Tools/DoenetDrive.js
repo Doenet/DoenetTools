@@ -759,7 +759,7 @@ const DriveCardComponent = (props) => {
         scale: 1
       }),
       update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
-      leave: { xy:[0,0],height: 0, opacity: 0, scale: 0 },
+      leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 500, friction: 100 },
       trail: 25
     });
@@ -877,9 +877,8 @@ const DriveCardComponent = (props) => {
               transform: props.xy.interpolate(
                 (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
               ),
-              ...props,
-              minWidth:'230px',
-            }}
+              ...props
+             }}
           >
             <div
               className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
