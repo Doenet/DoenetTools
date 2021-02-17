@@ -14,7 +14,10 @@ import Drive, {
 } from "../imports/Drive";
 import nanoid from 'nanoid';
 
-import { faChalkboard
+import { 
+  faChalkboard,
+  faCode,
+  faFolder
  } from '@fortawesome/free-solid-svg-icons';
  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -47,9 +50,10 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import crypto from 'crypto';
 import DriveCard from '../imports/DoenetDriveCard';
-import { useTransition, a, useSprings, interpolate } from "react-spring";
+import { useTransition, animated, interpolate } from "react-spring";
 import useMedia from "./useMedia";
 import "../imports/drivecard.css";
+import useMeasure  from "./useMeasure";
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -88,9 +92,12 @@ const selectedInformation = selector({
     //Find information if only one item selected
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
+    const driveInstanceId = globalSelected[0].driveInstanceId;
     let folderInfo = get(folderDictionary({driveId,folderId})); 
     const itemId = globalSelected[0].itemId;
-    let itemInfo = folderInfo.contentsDictionary[itemId];
+    let itemInfo = {...folderInfo.contentsDictionary[itemId]};
+    itemInfo['driveId'] = driveId;
+    itemInfo['driveInstanceId'] = driveInstanceId;
     let versions = [];
     if (itemInfo.itemType === "DoenetML"){
       let branchId = itemInfo.branchId;
@@ -579,20 +586,134 @@ const DriveInfoPanel = function(props){
   </>
 }
 
+const FolderInfoPanel = function(props){
+  const itemInfo = props.itemInfo;
+
+  const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+
+  const [label,setLabel] = useState(itemInfo.label);
+  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
+
+  let fIcon = <FontAwesomeIcon icon={faFolder}/>
+  
+  return <>
+  <h2>{fIcon} {panelLabel}</h2>
+
+  <label>Folder Label<input type="text" 
+  value={label} 
+  onChange={(e)=>setLabel(e.target.value)} 
+  onKeyDown={(e)=>{
+    if (e.keyCode === 13){
+      setPanelLabel(label)
+      setFolder({
+        instructionType:"rename item",
+        itemId:itemInfo.itemId,
+        driveInstanceId:itemInfo.driveInstanceId,
+        itemType:itemInfo.itemType,
+        label
+      })
+    }
+  }}
+  onBlur={()=>{
+    setPanelLabel(label)
+    setFolder({
+      instructionType:"rename item",
+      itemId:itemInfo.itemId,
+      driveInstanceId:itemInfo.driveInstanceId,
+      itemType:itemInfo.itemType,
+      label
+    })
+  }}/></label>
+  <br />
+  <br />
+  <Button text="Delete Folder" callback={()=>{
+    setFolder({
+      instructionType:"delete item",
+      itemId:itemInfo.itemId,
+      driveInstanceId:itemInfo.driveInstanceId
+    })
+  }} />
+  </>
+}
+
+const DoenetMLInfoPanel = function(props){
+  const itemInfo = props.itemInfo;
+
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+
+  const [label,setLabel] = useState(itemInfo.label);
+  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
+
+  let dIcon = <FontAwesomeIcon icon={faCode}/>
+  
+  return <>
+  <h2>{dIcon} {panelLabel}</h2>
+
+  <label>DoenetML Label<input type="text" 
+  value={label} 
+  onChange={(e)=>setLabel(e.target.value)} 
+  onKeyDown={(e)=>{
+    if (e.keyCode === 13){
+      setPanelLabel(label)
+      setFolder({
+        instructionType:"rename item",
+        itemId:itemInfo.itemId,
+        driveInstanceId:itemInfo.driveInstanceId,
+        itemType:itemInfo.itemType,
+        label
+      })
+    }
+  }}
+  onBlur={()=>{
+    setPanelLabel(label)
+    setFolder({
+      instructionType:"rename item",
+      itemId:itemInfo.itemId,
+      driveInstanceId:itemInfo.driveInstanceId,
+      itemType:itemInfo.itemType,
+      label
+    })
+  }}/></label>
+  <br />
+  <br />
+  <Button text="Edit DoenetML" callback={()=>{
+    setOverlayOpen({
+      name: "editor", //to match the prop
+      instructions: { 
+        supportVisble: true,
+        action: "open", 
+        contentId: itemInfo.contentId,
+        branchId: itemInfo.branchId,
+        title: itemInfo.label,
+        isDraft: '1',
+        timestamp: itemInfo.creationDate
+      }
+    });
+  }} />
+  <br />
+  <br />
+  <Button text="Delete DoenetML" callback={()=>{
+    setFolder({
+      instructionType:"delete item",
+      itemId:itemInfo.itemId,
+      driveInstanceId:itemInfo.driveInstanceId
+    })
+  }} />
+  </>
+}
+
+
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   const driveSelections = useRecoilValue(selectedDriveInformation);
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  // const selectedDrive = useRecoilValue(selectedDriveAtom);
 
     if (infoLoad.state === "loading"){ return null;}
     if (infoLoad.state === "hasError"){ 
       console.error(infoLoad.contents)
       return null;}
    
-  // console.log(">>>> driveSelections!!!!!! HERE", driveSelections);
-
       let itemInfo = infoLoad?.contents?.itemInfo;
 
     if (infoLoad.contents?.number > 1){
@@ -603,8 +724,8 @@ const ItemInfo = function (){
       return  <h1>{driveSelections.length} Drives Selected</h1>
 
     }else if (infoLoad.contents?.number < 1 && driveSelections.length < 1){
+      if (!itemInfo) return <h3>No Items Selected</h3>;
 
-    if (!itemInfo) return <h3>No Items Selected</h3>;
     }else if (driveSelections.length === 1){
       const dInfo = driveSelections[0];
 
@@ -618,59 +739,20 @@ const ItemInfo = function (){
 
     }else if (infoLoad.contents?.number === 1){
       if (itemInfo?.itemType === "DoenetML"){
-    
-        return <div
-        style={{height:"100%"}}
-        >
-        <h1>{itemInfo.label}</h1>
-        
-        <button 
-        onClick={()=>setOverlayOpen({
-          name: "editor", //to match the prop
-          instructions: { 
-            supportVisble: true,
-            action: "open", //or "close"
-            // contentId: draftObj.contentId,
-            // branchId: itemInfo.branchId,
-            // title: draftObj.title,
-            // isDraft: draftObj.isDraft,
-            // timestamp: draftObj.timestamp
-          }
-        })}>Edit</button>
-        </div>
-          }
-      
-      
-        return <div
-        style={{height:"100%"}}
-        >
-        <h1>{itemInfo.label}</h1>
-        </div>
+        return <DoenetMLInfoPanel
+        key={`DoenetMLInfoPanel${itemInfo.itemId}`}
+        itemInfo={itemInfo}
+        />
+      }else if (itemInfo?.itemType === "Folder"){
+        return <FolderInfoPanel
+        key={`FolderInfoPanel${itemInfo.itemId}`}
+        itemInfo={itemInfo}
+        />
+      }
+   
     }
-
-  
-
- 
   
 }
-
-// function AddContentDriveButton(props){
-//   const history = useHistory();
-
-//   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
-
-//   return <Button text="Add Content Drive" callback={()=>{
-//     let driveId = null;
-//     let newDriveId = nanoid();
-//     let label = "Untitled";
-//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
-//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-//     let newParams = {...urlParamsObj} 
-//     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-//     newParams['path'] = `:::`
-//     history.push('?'+encodeParams(newParams))
-//   }}/>
-// }
 
 function AddCourseDriveButton(props){
   const history = useHistory();
@@ -708,73 +790,30 @@ function AddMenuPanel(props){
    </Suspense>
    </>
 
-let [folderLabel,setFolderLabel] = useState("")
-let [doenetMLLabel,setDoenetMLLabel] = useState("")
-
   if (driveId === ""){ return <>{addDrives}</>; }
 
 
-
-  // let [URLLabel,setURLLabel] = useState("")
-  // let [URLLink,setURLLink] = useState("")
-  // let [driveLabel,setDriveLabel] = useState("")
-  // let [courseDriveLabel,setCourseDriveLabel] = useState("")
-
-
-
-//   let addDrive =  [<div key="new drive" style={{marginBottom:"10px"}}>
-//   <h3>Content Drive</h3>
-//   <label>Label <input size="10" type="text"  onChange={(e)=>setDriveLabel(e.target.value)} value={driveLabel}/></label><Button callback={()=>{
-//     const label = driveLabel === "" ? "Untitled" : driveLabel;
-//     let newDriveId = nanoid();
-//     setNewDrive({label,type:"new content drive",driveId,newDriveId})
-//     setDriveLabel("")
-//     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-//     let newParams = {...urlParamsObj} 
-//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-//     history.push('?'+encodeParams(newParams))
-//     }} text="New Drive" />
-// </div>]
-
-//   addDrive.push(<div key="course from content drive">
-//   <h3>Make a Course Drive</h3>
-// <label>Label <input size="10" type="text"  onChange={(e)=>setCourseDriveLabel(e.target.value)} value={courseDriveLabel}/></label><Button callback={()=>{
-//   const label = courseDriveLabel === "" ? "Untitled" : courseDriveLabel;
-//   let newDriveId = nanoid();
-//   setNewDrive({label,type:"make course drive from content drive",driveId,newDriveId})
-//   setCourseDriveLabel("")
-//   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-//     let newParams = {...urlParamsObj} 
-//     newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
-//     history.push('?'+encodeParams(newParams))
-//   }} text="Make Course" />
-// </div>)
-
-
-
   return <>
+  <h3>Course</h3>
    {addDrives}
-  <hr width="100"/>
   <h3>Folder</h3>
-  <div>
-    <label>Label <input size="10" type="text" onChange={(e)=>setFolderLabel(e.target.value)} value={folderLabel}/></label><Button callback={()=>{
-     setFolderInfo({instructionType:"addItem",
-      label:folderLabel === "" ? "Untitled" : folderLabel,
-      itemType:"Folder"
-      })
-      setFolderLabel("");
-    }} text="Add" />
-  </div>
+  <Button text="Add Folder" callback={()=>{
+    setFolderInfo({instructionType:"addItem",
+    label:"Untitled",
+    itemType:"Folder"
+    })
+  }
+  } />
+
   <h3>DoenetML</h3>
-  <div>
-    <label>Label <input size="10" type="text" onChange={(e)=>setDoenetMLLabel(e.target.value)} value={doenetMLLabel}/></label><Button callback={()=>{
-      setFolderInfo({instructionType:"addItem",
-      label:doenetMLLabel === "" ? "Untitled" : doenetMLLabel,
-      itemType:"DoenetML"
-      })
-      setDoenetMLLabel("");
-      }} text="Add" />
-  </div>
+  <Button text="Add DoenetML" callback={()=>{
+    setFolderInfo({instructionType:"addItem",
+    label:"Untitled",
+    itemType:"DoenetML"
+    })
+  }
+  } />
+ 
   {/* <h3>URL</h3>
   <div>
     <label>Label <input size="10" type="text" onChange={(e)=>setURLLabel(e.target.value)} value={URLLabel} /></label>
@@ -800,7 +839,8 @@ const EditorTitle = ()=>{
   return <span>{overlayTitle}</span>
 }
 
-const DriveCardComponent = React.memo((props) => {
+const DriveCardComponent = (props) => {
+  const { driveDoubleClickCallback } = props;
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
@@ -819,15 +859,14 @@ const DriveCardComponent = React.memo((props) => {
     1
   );
   let heights = [];
-  // console.log(">>>> props.drivesIds",props.drivesIds );
-  let driveCardItem = props.drivesIds.map((child, i) => {
-    heights = new Array(columns).fill(0);
-    let width = window.innerWidth - 400;
+  // console.log(">>>> props.driveInfo",props.driveInfo );
+  heights = new Array(columns).fill(0);
+  const [bind, { width }] = useMeasure();
+  let driveCardItem = props.driveInfo.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-    const xy = [(width / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: 250, height: 250 };
+    const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
+    return { ...child, xy, width: (width / columns), height: 250};
   });
-  if (props.drivesIds.length > 0) {
     transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
@@ -848,13 +887,12 @@ const DriveCardComponent = React.memo((props) => {
       config: { mass: 5, tension: 500, friction: 100 },
       trail: 25
     });
-  }
 
-  function driveCardSelector(item) {
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
-  }
+  // function driveCardSelector(item) {
+  //   let newParams = {};
+  //   newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+  //   history.push("?" + encodeParams(newParams));
+  // }
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
       let newParams = {};
@@ -864,9 +902,7 @@ const DriveCardComponent = React.memo((props) => {
       history.push("?" + encodeParams(newParams));
     }
   };
-  const [on, toggle] = useState(false);
-  const textUse = useRef();
-  
+  const [on, toggle] = useState(false);  
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
@@ -875,30 +911,39 @@ const DriveCardComponent = React.memo((props) => {
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
-  //  console.log(">>> on click selected $$$$$$$$$",drivecardSelectedValue);
    if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){      // ToDo : range to item 
+  }else if (e.shiftKey && !e.metaKey){      // range to item 
     
     setDrivecardSelection((old) => {
       if(old.length > 0)
       {
-        let initalDriveId = old[0].driveId;
+
+        let finalArray = [];
+        let initalDriveId = '';
+        if(old.length === 1)
+        {
+          initalDriveId = old[0].driveId;
+        }
+        else
+        {
+          finalArray = [...old];
+          initalDriveId = old[old.length-1].driveId;
+        }
         let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
         let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
-
-        // console.log('<<<<<< First index >>> <<< last Index >>', firstDriveId,lastDriveId);
-        let finalArray = [];
         if(firstDriveId > lastDriveId)
         {
-          let sampleArr = transitions.slice(lastDriveId,firstDriveId+1);
-          finalArray = sampleArr.map((l)=>l.item);
+          let slicedArr = transitions.slice(lastDriveId,firstDriveId+1);
+          let filteredArr = slicedArr.map((l)=>l.item);
+          finalArray = [...finalArray,...filteredArr];
         }
         else{
-          let sampleArr = transitions.slice(firstDriveId,lastDriveId+1);
-          finalArray = sampleArr.map((m)=>m.item);
+          let slicedArr = transitions.slice(firstDriveId,lastDriveId+1);
+          let filteredArr = slicedArr.map((m)=>m.item);
+          finalArray = [...finalArray,...filteredArr];
         }
-        // console.log(">>>> final array",finalArray);
+        //  console.log(">>>> final array",finalArray);
         return finalArray;
         
       }
@@ -908,7 +953,7 @@ const DriveCardComponent = React.memo((props) => {
     }); 
   }else if (!e.shiftKey && e.metaKey){   // add item
     setDrivecardSelection((old) =>{
-      console.log(">>>> old", old);
+      // console.log(">>>> old", old);
       let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
       if(alreadyAvaliable.length > 0)
       {
@@ -942,33 +987,36 @@ const DriveCardComponent = React.memo((props) => {
   return avalibleCard.length > 0 ? true : false;
  }
   return (
-    <div className="drivecardContainer">
-      {/* {drivecardSelectedValue.length} */}
+    <div className="drivecardContainer" {...bind} style={{ display:"flex",height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
         return (
-          <a.div
+          <animated.div
             className="adiv"
             key={index}
-            ref={textUse}
             // onMouseOver={() => toggle(props.scale.setValue(1.1))}
             // onMouseLeave={() => toggle(props.scale.setValue(1))}
             style={{
               transform: props.xy.interpolate(
-                (scale) => `scale(${props.scale.value})`
+                (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
               ),
-              ...props,
-            }}
+              ...props
+             }}
           >
             <div
               className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
               tabIndex={index+1}
               // tabIndex={0}
               // onclick scale
-              onClick = {(e) => drivecardselection(e,item)}
+              onClick = {(e) => {drivecardselection(e,item,props);
+                // toggle(props.scale.setValue(0.9))
+              }}
               onKeyDown={(e) => handleKeyDown(e, item)}
-              onDoubleClick={() => driveCardSelector(item)}
+              onDoubleClick={(e) => 
+                {e.preventDefault(); 
+                e.stopPropagation();
+                  if(driveDoubleClickCallback){driveDoubleClickCallback({item})}}}
             >
               <DriveCard
                 driveId={item.driveId}
@@ -977,12 +1025,12 @@ const DriveCardComponent = React.memo((props) => {
                 label={item.label}
               />
             </div>
-           </a.div>
+           </animated.div>
         );
       })}
     </div>
   );
-});
+};
 
 export default function DoenetDriveTool(props) {
   // console.log("=== 💾 Doenet Drive Tool");  
@@ -1051,9 +1099,9 @@ export default function DoenetDriveTool(props) {
   }
 
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
-  let drivesIds = [];
+  let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
-    drivesIds = drivesInfo.contents.driveIdsAndLabels;
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
   }
   // Breadcrumb container
   let breadcrumbContainer = null;
@@ -1061,11 +1109,16 @@ export default function DoenetDriveTool(props) {
     breadcrumbContainer = <BreadcrumbContainer />;
   }
 
+  function driveCardSelector({item}) {
+    let newParams = {};
+    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+    history.push("?" + encodeParams(newParams));
+  }
   // Drive cards component
   let drivecardComponent = null;
-  if (drivesIds && drivesIds.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent style={mainPanelStyle} drivesIds={drivesIds}/>;
-  } else if (drivesIds.length === 0 && routePathDriveId === "") {
+  if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
+  } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
     );

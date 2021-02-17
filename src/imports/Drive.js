@@ -185,6 +185,9 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
+    let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
+    let newFInfo = {...fInfo}
+
     // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
       case "addItem":
@@ -273,10 +276,47 @@ export const folderDictionarySelector = selectorFamily({
         })
 
         break;
+      case "rename item":
+        //Rename Item in folder
+        newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
+        newFInfo["contentsDictionary"][instructions.itemId] = {...fInfo.contentsDictionary[instructions.itemId]};
+        newFInfo["contentsDictionary"][instructions.itemId].label = instructions.label;
+        set(folderDictionary(driveIdFolderId),newFInfo);
+        //If a folder, update the label in the child folder
+        if (instructions.itemType === "Folder"){
+          set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:instructions.itemId}),(old)=>{
+            let newFolderInfo = {...old}
+            newFolderInfo.folderInfo = {...old.folderInfo}
+            newFolderInfo.folderInfo.label = instructions.label;
+            return newFolderInfo;
+          })
+        }
+        //TODO: Rename in selection
+        // if (get(selectedDriveItemsAtom(item))){
+        //   set(selectedDriveItemsAtom(item),false)
+        //   let newGlobalItems = [];
+        //   for(let gItem of get(globalSelectedNodesAtom)){
+        //     if (gItem.itemId !== instructions.itemId){
+        //       newGlobalItems.push(gItem)
+        //     }
+        //   }
+        //   set(globalSelectedNodesAtom,newGlobalItems)
+        // }
+        //Rename in  database
+        const rndata = {
+          instruction:"rename",
+          driveId:driveIdFolderId.driveId,
+          itemId:instructions.itemId,
+          label:instructions.label}
+        
+        const renamepayload = {
+          params: rndata
+        }
+        const { renamedata } = await axios.get("/api/updateItem.php", renamepayload)
+        // .then((resp)=>console.log(">>>resp",resp.data))
+      break;
       case "delete item":
         //Remove from folder
-        let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
-        let newFInfo = {...fInfo}
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
         delete newFInfo["contentsDictionary"][instructions.itemId];
         newFInfo.folderInfo = {...fInfo.folderInfo}
@@ -623,6 +663,7 @@ export const fetchDrivesSelector = selector({
   },
   set:({get,set},labelTypeDriveIdColorImage)=>{
     let driveData = get(fetchDrivesQuery)
+    // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     let params = {
@@ -722,11 +763,9 @@ export const fetchDrivesSelector = selector({
       axios.get("/api/updateDrive.php", payload)
     // .then((resp)=>console.log(">>>updateDrive resp",resp.data))
     }else if (labelTypeDriveIdColorImage.type === "update drive color"){
-      console.log(">>>drive color params:",params)
-     
+    //TODO: implement      
 
     }else if (labelTypeDriveIdColorImage.type === "delete drive"){
-      console.log(">>>delete drive params:",params)
       // set(fetchDrivesQuery,newDriveData)
       //Find matching drive and update label
       for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
@@ -740,7 +779,7 @@ export const fetchDrivesSelector = selector({
         //Save to db
         const payload = { params }
         axios.get("/api/updateDrive.php", payload)
-      .then((resp)=>console.log(">>>updateDrive resp",resp.data))
+      // .then((resp)=>console.log(">>>updateDrive resp",resp.data))
     }
   //   else if (labelTypeDriveIdColorImage.type === "make course drive from content drive"){
   //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
@@ -829,6 +868,7 @@ function Folder(props){
   let history = useHistory();
   
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
+
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost } = useDnDCallbacks();
@@ -856,15 +896,6 @@ function Folder(props){
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
  
   let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
-  let deleteButton = <button
-  style={{backgroundColor: bgcolor, border: "none"}}
-  data-doenet-driveinstanceid={props.driveInstanceId}
-  onClick={(e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    deleteItem(itemId)
-  }}
-  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let openCloseButton = <button 
   style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}
@@ -967,7 +998,7 @@ function Folder(props){
         gridTemplateColumns: '80% 20%',
         gridTemplateRows: '1fr',
         alignContent: 'center'
-      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> {deleteButton}</div></div>
+      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> </div></div>
     
     
     } else if (props.driveObj && props.isNav){
@@ -1359,16 +1390,6 @@ const DoenetML = React.memo((props)=>{
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
   if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
-  let deleteButton = <button
-  style={{backgroundColor: bgcolor, border: "none"}}
-  data-doenet-driveinstanceid={props.driveInstanceId}
-  onClick={(e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    props.deleteItem(props.item.itemId)
-  }}
-  ><FontAwesomeIcon icon={faTrashAlt}/></button>
-
   let label = props.item?.label;
   if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
     label = props.item?.assignment_title;
@@ -1451,7 +1472,7 @@ const DoenetML = React.memo((props)=>{
         gridTemplateRows: '1fr',
         alignItems: 'center'
       }}>
-<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> {date} {published} {assigned} {deleteButton}</div></div>
+<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> {date} {published} {assigned}</div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1503,16 +1524,6 @@ const Url = React.memo((props)=>{
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
   if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
-
-  let deleteButton = <button
-  style={{backgroundColor: bgcolor, border: "none"}}
-  data-doenet-driveinstanceid={props.driveInstanceId}
-  onClick={(e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    props.deleteItem(props.item.itemId)
-  }}
-  ><FontAwesomeIcon icon={faTrashAlt}/></button>
 
   let urlJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
@@ -1584,7 +1595,7 @@ const Url = React.memo((props)=>{
         gridTemplateRows: '1fr',
         alignItems: 'center'
       }}>
-    <div style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faLink}/> {props.item?.label}</div> {date} {published} {assigned}  {deleteButton}</div></div>
+    <div style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faLink}/> {props.item?.label}</div> {date} {published} {assigned}</div></div>
 
   if (!props.isNav) {
     // make URL draggable
