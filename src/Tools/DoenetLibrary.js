@@ -1032,8 +1032,8 @@ const DriveCardComponent = (props) => {
   );
 };
 
-export default function DoenetDriveTool(props) {
-  // console.log("=== 💾 Doenet Drive Tool");  
+export default function DoenetLibraryTool(props) {
+  // console.log("=== 📚 Doenet Library Tool");  
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
   const setOpenMenuPanel = useMenuPanelController();
@@ -1143,7 +1143,7 @@ export default function DoenetDriveTool(props) {
       </div>
       </navPanel>
 
-      <headerPanel title="Drive">
+      <headerPanel title="Library">
         {/* <p>Drive</p> */}
       </headerPanel>
 
