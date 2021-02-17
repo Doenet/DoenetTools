@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { atomFamily, useRecoilState } from "recoil";
-import ResponsiveControlsWrapper from "../Tool/ResponsiveControls";
-import { useStackId } from "./Tool";
-import Switch from "../Switch";
+import ResponsiveControlsWrapper from "./ResponsiveControls";
+import { useStackId } from "../LayerRoot";
+import Switch from "../../Switch";
 
 export const supportVisible = atomFamily({
   key: "supportVisibleAtom",

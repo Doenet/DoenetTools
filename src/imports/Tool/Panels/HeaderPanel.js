@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { SupportVisiblitySwitch } from "./SupportPanel";
-import { openOverlayByName, useStackId } from "./Tool";
-import DoenetHeader from "../../Tools/DoenetHeader";
+import { useLayerControlHelper, useStackId } from "../LayerRoot";
+import DoenetHeader from "../../../Tools/DoenetHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
@@ -41,7 +40,7 @@ const ExitOverlayButton = styled.button`
 `;
 
 export default function HeaderPanel({ title, children }) {
-  const setOpenOverlayName = useSetRecoilState(openOverlayByName);
+  const { close } = useLayerControlHelper();
   const stackId = useStackId();
   //User profile logic
   const [profile, setProfile] = useState({});
@@ -97,11 +96,7 @@ export default function HeaderPanel({ title, children }) {
           // onChange={showCollapseMenu}
         />
       ) : (
-        <ExitOverlayButton
-          onClick={() =>
-            setOpenOverlayName({ instructions: { action: "close" } })
-          }
-        >
+        <ExitOverlayButton onClick={close}>
           <FontAwesomeIcon icon={faTimes} />
         </ExitOverlayButton>
       )}

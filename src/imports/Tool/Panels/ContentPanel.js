@@ -2,8 +2,8 @@ import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
-import { useStackId } from "./Tool";
-import { clearAllSelections } from "../Drive";
+import { useStackId } from "../LayerRoot";
+import { clearAllSelections } from "../../Drive";
 
 const ContentPanelContainer = styled.div`
   grid-area: contentPanel;
