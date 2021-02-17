@@ -716,6 +716,7 @@ const EditorTitle = ()=>{
 }
 
 const DriveCardComponent = (props) => {
+  const { driveDoubleClickCallback } = props;
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
@@ -763,11 +764,11 @@ const DriveCardComponent = (props) => {
       trail: 25
     });
 
-  function driveCardSelector(item) {
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
-  }
+  // function driveCardSelector(item) {
+  //   let newParams = {};
+  //   newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+  //   history.push("?" + encodeParams(newParams));
+  // }
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
       let newParams = {};
@@ -877,6 +878,7 @@ const DriveCardComponent = (props) => {
                 (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
               ),
               ...props,
+              minWidth:'230px',
             }}
           >
             <div
@@ -888,7 +890,10 @@ const DriveCardComponent = (props) => {
                 // toggle(props.scale.setValue(0.9))
               }}
               onKeyDown={(e) => handleKeyDown(e, item)}
-              onDoubleClick={() => driveCardSelector(item)}
+              onDoubleClick={(e) => 
+                {e.preventDefault(); 
+                e.stopPropagation();
+                  if(driveDoubleClickCallback){driveDoubleClickCallback({item})}}}
             >
               <DriveCard
                 driveId={item.driveId}
@@ -979,10 +984,15 @@ export default function DoenetDriveTool(props) {
     breadcrumbContainer = <BreadcrumbContainer />;
   }
 
+  function driveCardSelector({item}) {
+    let newParams = {};
+    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+    history.push("?" + encodeParams(newParams));
+  }
   // Drive cards component
   let drivecardComponent = null;
   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent style={mainPanelStyle} driveInfo={driveInfo}/>;
+    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
   } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
