@@ -18,10 +18,10 @@ export default function DropTargetsProvider({ children }) {
       const dropTargetIds = Object.keys(dropTargetsRef.current);
       for (let dropTargetId of dropTargetIds) {
         if (dropTargetId === ignoreId) continue;
-        const refs = dropTargetsRef.current[dropTargetId]?.refs;
-        for (let ref of refs) {
-          if (underCursor.includes(ref)) return [dropTargetId, ref];
-        } 
+        const dropTargetsObjs = dropTargetsRef.current[dropTargetId];
+        for (let dropTargetObj of dropTargetsObjs) {
+          if (underCursor.includes(dropTargetObj.ref)) return [dropTargetId, dropTargetObj];
+        }
       }
       return null;
     },
@@ -30,14 +30,14 @@ export default function DropTargetsProvider({ children }) {
 
   const registerDropTarget = useCallback(({ id, ref, onDragOver, onDrop }) => {
     let dropTargetObj = dropTargetsRef.current[id];
-    if (!dropTargetObj) {
-      dropTargetObj = {
-        refs: [],
-        onDragOver: onDragOver,
-        onDrop: onDrop
-      };
-    }
-    dropTargetObj.refs.push(ref);
+    if (!dropTargetObj) dropTargetObj = [];
+    
+    const newDropTarget = {
+      ref: ref,
+      onDragOver: onDragOver,
+      onDrop: onDrop
+    };
+    dropTargetObj.push(newDropTarget);
     dropTargetsRef.current[id] = dropTargetObj;
   }, []);
 
@@ -48,8 +48,8 @@ export default function DropTargetsProvider({ children }) {
   const handleDrag = useCallback(
     (x, y, selfId = null) => {
       const dropTarget = getDropTargetFromCursor(x, y, selfId);
-      let dropTargetId = "", dropTargetRef = null;
-      if (dropTarget) [dropTargetId, dropTargetRef] = dropTarget;
+      let dropTargetId = "", dropTargetObj = {};
+      if (dropTarget) [dropTargetId, dropTargetObj] = dropTarget;
       
       // // trigger onDrag once
       // if (activeDropTargetId !== dropTargetId) {
@@ -60,20 +60,8 @@ export default function DropTargetsProvider({ children }) {
 
       setActiveDropTargetId(dropTargetId);
       if (dropTargetId) {
-        dropTargetsRef.current[dropTargetId]?.onDragOver();
+        dropTargetObj.onDragOver({x, y, dropTargetRef: dropTargetObj.ref});
         // console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
-        const dropTargetTopY = dropTargetRef?.offsetTop;
-        const dropTargetHeight = dropTargetRef?.clientHeight;
-        const cursorY = y;
-        const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-
-        if (cursorArea < 0.3333) {
-          console.log(`>>>Reorder to top of ${dropTargetId}`);
-        } else if (cursorArea < 0.6666) {
-          console.log(`>>>Move into ${dropTargetId}`);
-        } else if (cursorArea < 1.0000) {
-          console.log(`>>>Reorder to bottom of ${dropTargetId}`);
-        }
       }
     },
     [activeDropTargetId, getDropTargetFromCursor]
@@ -81,7 +69,7 @@ export default function DropTargetsProvider({ children }) {
 
   const handleDrop = (selfId = null) => {
     if (activeDropTargetId !== null) {
-      dropTargetsRef.current[activeDropTargetId]?.onDrop();
+      dropTargetsRef.current[activeDropTargetId]?.[0]?.onDrop();
     }    
     setActiveDropTargetId(null);
   };
