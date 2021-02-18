@@ -696,6 +696,9 @@ const folderOpenAtom = atomFamily({
 
 const folderOpenSelector = selectorFamily({
   key:"folderOpenSelector",
+  get:(driveInstanceIdItemId)=>({get})=>{
+    return get(folderOpenAtom(driveInstanceIdItemId));
+  },
   set:(driveInstanceIdItemId) => ({get,set})=>{
     const isOpen = get(folderOpenAtom(driveInstanceIdItemId))
     set(folderOpenAtom(driveInstanceIdItemId),!isOpen); 
@@ -712,6 +715,7 @@ function Folder(props){
   //Used to determine range of items in Shift Click
   const isOpen = useRecoilValue(folderOpenAtom({driveInstanceId:props.driveInstanceId,itemId:props.folderId}))
   const toggleOpen = useSetRecoilState(folderOpenSelector({driveInstanceId:props.driveInstanceId,itemId:props.folderId}))
+  const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
 
   let history = useHistory();
   
@@ -739,7 +743,9 @@ function Folder(props){
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
 
-  
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen])
  
   if (folderInfoObj.state === "loading"){ return null;}
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
@@ -771,6 +777,26 @@ function Folder(props){
       sortKey: sortKey
     });
   };
+
+  const onDragOver = ({x, y, dropTargetRef}) => {
+    const dropTargetTopY = dropTargetRef?.offsetTop;
+    const dropTargetHeight = dropTargetRef?.clientHeight;
+    const cursorY = y;
+    const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
+    
+    // open folder if initially closed
+    if (!isOpenRef.current && !props.isNav) {
+      toggleOpen();
+    }
+      
+    if (cursorArea < 0.5) {
+      // insert shadow to top of current dropTarget
+    }else if (cursorArea < 1.0000) {
+      // insert shadow to bottom of current dropTarget
+    }
+
+    onDragOverContainer({ id: props.folderId, driveId: props.driveId });
+  }
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
     return <button
@@ -936,7 +962,7 @@ function Folder(props){
     registerDropTarget={dropActions.registerDropTarget} 
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
-      onDragOver: () => onDragOverContainer({ id: props.folderId, driveId: props.driveId }),
+      onDragOver: onDragOver,
       onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});}
     }}
     >
