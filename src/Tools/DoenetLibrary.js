@@ -9,6 +9,7 @@ import Drive, {
   globalSelectedNodesAtom, 
   folderDictionary, 
   clearAllSelections, 
+  clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams
 } from "../imports/Drive";

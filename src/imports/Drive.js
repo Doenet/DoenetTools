@@ -29,6 +29,7 @@ import Draggable from '../imports/Draggable';
 import getSortOrder from '../imports/LexicographicalRankingSort';
 
 import { BreadcrumbContext } from '../imports/Breadcrumb';
+import { drivecardSelectedNodesAtom } from '../Tools/DoenetLibrary';
 
 import {
   HashRouter as Router,
@@ -881,6 +882,7 @@ function Folder(props){
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const deleteItem = (itemId) =>{setFolderInfo({instructionType:"delete item",driveInstanceId:props.driveInstanceId,itemId})}
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
+  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
@@ -955,6 +957,7 @@ function Folder(props){
         e.preventDefault(); // Folder
         e.stopPropagation();
         if (props.isNav){
+          clearSelections();
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
 
@@ -1029,6 +1032,7 @@ function Folder(props){
         e.preventDefault();
         e.stopPropagation();
         if (props.isNav){
+          clearSelections();
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
           
@@ -1242,6 +1246,24 @@ export const clearAllSelections = selector({
       set(selectedDriveItemsAtom(atomFormat),false)
     }
     set(globalSelectedNodesAtom,[]);
+  }
+})
+
+export const clearDriveAndItemSelections = selector({
+  key:"clearDriveAndItemSelections",
+  set:({get,set})=>{
+    const globalItemsSelected = get(globalSelectedNodesAtom);
+    for (let itemObj of globalItemsSelected){
+      const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
+      set(selectedDriveItemsAtom(atomFormat),false)
+    }
+    if (globalItemsSelected.length > 0){
+      set(globalSelectedNodesAtom,[]);
+    }
+    const globalDrivesSelected = get(drivecardSelectedNodesAtom);
+    if (globalDrivesSelected.length > 0){
+      set(drivecardSelectedNodesAtom,[]);
+    }
   }
 })
 
