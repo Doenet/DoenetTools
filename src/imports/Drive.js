@@ -431,7 +431,8 @@ export const folderDictionarySelector = selectorFamily({
           let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
           if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
           let index = newDefaultOrder.indexOf(driveIdFolderId.folderId);
-          newDefaultOrder.splice(index+1, 0, dragShadowId);
+          if (insertPosition === "afterCurrent") index += 1;
+          newDefaultOrder.splice(index, 0, dragShadowId);
           const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
           newObj.contentIds = defaultOrderObj;
           newObj.contentsDictionary = newContentsDictionary;
@@ -1644,10 +1645,7 @@ function useDnDCallbacks() {
 
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
-    // const numItems = Object.keys(globalSelectedNodesAtom).length;
-    // const numItems = 1;
     const numItems = useRecoilValue(globalSelectedNodesAtom).length;
-    // console.log(numItems)
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
 
