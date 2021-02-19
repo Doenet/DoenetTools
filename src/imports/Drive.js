@@ -1236,19 +1236,6 @@ const selectedDriveItemsAtom = atomFamily({
   default:false
 })
 
-export const clearAllSelections = selector({
-  key:"clearAllSelections",
-  set:({get,set})=>{
-    const globalSelected = get(globalSelectedNodesAtom);
-    for (let itemObj of globalSelected){
-      console.log("ItemObj",itemObj)
-      const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
-      set(selectedDriveItemsAtom(atomFormat),false)
-    }
-    set(globalSelectedNodesAtom,[]);
-  }
-})
-
 export const clearDriveAndItemSelections = selector({
   key:"clearDriveAndItemSelections",
   set:({get,set})=>{
