@@ -58,9 +58,11 @@ const dragStateAtom = atom({
   default: {
     isDragging: false,
     draggedOverDriveId: null,
-    isDraggedOverBreadcrumb: false
+    isDraggedOverBreadcrumb: false,
+    dragShadowParentId: null
   }
 })
+const dragShadowId = "dragShadow";
 
 export default function Drive(props){
   // console.log("=== Drive")
@@ -167,6 +169,7 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
+    const { dragShadowParentId } = get(dragStateAtom);
     // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
       case "addItem":
@@ -387,8 +390,81 @@ export const folderDictionarySelector = selectorFamily({
           return newObj;
         })
         break;
+      case "insertDragShadow":
+        const dragShadow = {
+          assignmentId: null,
+          branchId: null,
+          contentId: null,
+          creationDate: "",
+          isPublished: "0",
+          itemId: dragShadowId,
+          itemType: "DoenetML",
+          label: "",
+          parentFolderId: driveIdFolderId.folderId,
+          url: null,
+          urlDescription: null,
+          urlId: null,
+        }
+        const insertPosition = instructions.position;
+        
+        const dropTargetFolderInfoObj = get(folderDictionarySelector({ driveId: driveIdFolderId.driveId, folderId: driveIdFolderId.folderId}));
+        const dropTargetParentId = dropTargetFolderInfoObj.folderInfo.parentFolderId;
+        const dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}));
+
+        // remove dragShadowId from dragShadowParentId (contentDictionary, contentIds)
+        if (dragShadowParentFolderInfoObj && dragShadowParentId !== dropTargetParentId) {
+          set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
+            let newObj = {...old};
+            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+            newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
+            newObj.contentIds = defaultOrderObj;
+            return newObj;
+          })
+        }
+
+        // insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
+        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
+          let newObj = {...old};
+          let newContentsDictionary = {...old.contentsDictionary};
+          newContentsDictionary[dragShadowId] = dragShadow;
+          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+          if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+          let index = newDefaultOrder.indexOf(driveIdFolderId.folderId);
+          newDefaultOrder.splice(index+1, 0, dragShadowId);
+          const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
+          newObj.contentIds = defaultOrderObj;
+          newObj.contentsDictionary = newContentsDictionary;
+          return newObj;
+        })
+        
+        // update dragStateAtom.dragShadowParentId to dropTargetParentId
+        set(dragStateAtom, (old) => {
+          return {
+            ...old,
+            dragShadowParentId: dropTargetParentId
+          }
+        })
+
+      break;
+      case "removeDragShadow":
+        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
+          let newObj = {...old};
+          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+          newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+          const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
+          newObj.contentIds = defaultOrderObj;
+          return newObj;
+        })
+        set(dragStateAtom, (old) => {
+          return {
+            ...old,
+            dragShadowParentId: null
+          }
+        })
+      break;
       default:
-        console.warn(`Intruction ${instructions.instructionType} not currently handled`)
+        console.warn(`Instruction ${instructions.instructionType} not currently handled`)
     }
     
   }
@@ -791,11 +867,24 @@ function Folder(props){
       
     if (cursorArea < 0.5) {
       // insert shadow to top of current dropTarget
+      setFolderInfo({
+        instructionType:"insertDragShadow",
+        position: "beforeCurrent"
+      });
     }else if (cursorArea < 1.0000) {
       // insert shadow to bottom of current dropTarget
+      setFolderInfo({
+        instructionType:"insertDragShadow",
+        position: "afterCurrent"
+      });
     }
 
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
+  }
+
+  const onDrop = () => {
+    setFolderInfo({instructionType:"removeDragShadow"});
+    setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});
   }
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
@@ -963,7 +1052,7 @@ function Folder(props){
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
       onDragOver: onDragOver,
-      onDrop: () => {setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});}
+      onDrop: onDrop
     }}
     >
     { folder } 
