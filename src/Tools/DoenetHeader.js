@@ -166,7 +166,7 @@ class DoenetHeader extends Component {
     );
 
     if (props.profile.toolAccess) {
-      this.populateMenuToolbox(props.profile.toolAccess);
+      this.populateMenuToolbox(props?.profile?.toolAccess);
       this.profilePicture = this.props.profile.profilePicture;
     } else {
       this.populateMenuToolbox([]);
@@ -194,7 +194,7 @@ class DoenetHeader extends Component {
       });
     }
 
-    this.populateMenuToolbox(props.profile.toolAccess);
+    this.populateMenuToolbox(props?.profile?.toolAccess);
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
   }
@@ -202,9 +202,9 @@ class DoenetHeader extends Component {
   populateMenuToolbox(tools) {
     const toolObjs = {
       chooser: {
-        id: "Drive",
-        label: "Drive",
-        link: "/drive/",
+        id: "Library",
+        label: "Library",
+        link: "/library/",
       },
       course: {
         id: "Course",
@@ -228,8 +228,10 @@ class DoenetHeader extends Component {
       },
     };
     this.menuToolBoxItems = [];
-    for (let tool of tools) {
-      this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
+    if (tools) {
+      for (let tool of tools) {
+        this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
+      }
     }
   }
 
@@ -253,9 +255,9 @@ class DoenetHeader extends Component {
         link: "/dashboard/",
       },
       {
-        id: "Drive",
-        label: "Drive",
-        link: "/drive/",
+        id: "Library",
+        label: "Library",
+        link: "/library/",
       },
       {
         id: "Course",
@@ -444,46 +446,6 @@ class DoenetHeader extends Component {
             )}
           </div>
         )}
-
-        <ExtendedHeader
-          className={sliderClass}
-          ref="extendedHeader"
-          extendedMarginOffTop={extendedMarginOffTop}
-        >
-          {this.props.headingTitle && (
-            <div className="extended-header">
-              <div className="headingTitlePhone">
-                <span>{this.props.headingTitle}</span>
-              </div>
-            </div>
-          )}
-          {!this.props.guestUser && (
-            <div className="extended-header">
-              {isMultipleRoles && (
-                <MenuDropDown
-                  position={"right"}
-                  showThisMenuText={"Instructor"}
-                  options={this.state.myRoles.permissionRoles}
-                />
-              )}
-              {isSingleRole && (
-                <button
-                  style={{
-                    alignItems: "center",
-                    borderRadius: "5px",
-                  }}
-                >
-                  {
-                    this.state.myRoles.permissionRoles[
-                      Object.keys(this.state.myRoles.permissionRoles)[0]
-                    ].showText
-                  }
-                </button>
-              )}
-              {profileMenu}
-            </div>
-          )}
-        </ExtendedHeader>
       </React.Fragment>
     );
   }

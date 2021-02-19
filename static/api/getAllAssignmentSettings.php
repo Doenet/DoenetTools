@@ -59,11 +59,11 @@ if ($result->num_rows > 0){
   ad.showHints AS showHints,
   ad.showCorrectness AS showCorrectness,
   ad.proctorMakesAvailable AS proctorMakesAvailable,
+  ad.contentId AS contentId,
   a.isPublished As isPublishedAssignment,
   dc.isPublished AS isPublished,
   dc.isAssignment As isAssignment,
-  dc.itemId AS itemId,
-  dc.contentId AS contentId
+  dc.itemId AS itemId
   FROM assignment_draft AS ad
   JOIN drive_content AS dc
   ON ad.assignmentId = dc.assignmentId 
@@ -128,10 +128,10 @@ else{
   ad.showHints AS showHints,
   ad.showCorrectness AS showCorrectness,
   ad.proctorMakesAvailable AS proctorMakesAvailable,
+  ad.contentId AS contentId,
   dc.isPublished AS isPublished,
   dc.isAssignment As isAssignment,
-  dc.itemId AS itemId,
-  dc.contentId AS contentId
+  dc.itemId AS itemId
   FROM assignment_draft AS ad
   JOIN drive_content AS dc
   ON ad.assignmentId = dc.assignmentId

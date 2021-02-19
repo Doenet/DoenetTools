@@ -22,9 +22,9 @@ return mysqli_real_escape_string($conn, $branchId);
 $assignmentIds = array_map(function($branchId) use($conn) {
 return mysqli_real_escape_string($conn, $branchId);
 }, $_POST['assignmentIds']);
-var_dump($assignmentIds);
+// var_dump($assignmentIds);
 
-//INSERT assignments INTO assighnment table
+//INSERT assignments INTO assignment table
 for ($i = 0; $i < count($branchIds); $i++){
     $branchId = $branchIds[$i];
     $assignmentId = $assignmentIds[$i];
