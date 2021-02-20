@@ -841,8 +841,6 @@ const EditorTitle = ()=>{
 
 const DriveCardComponent = (props) => {
   const { driveDoubleClickCallback } = props;
-  const widthContent = useRecoilValue(contentPanelWidthAtom);
-  //  console.log(">>>> width content",widthContent );
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
