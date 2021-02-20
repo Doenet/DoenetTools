@@ -850,43 +850,35 @@ const DriveCardComponent = (props) => {
       .join("&");
   let transitions = "";
 
-  const columns = useMedia(
-    [
-      "(min-width: 1500px)",
-      "(min-width: 1200px)", 
-      "(min-width: 800px)",//800
-      "(min-width: 600px)", //600
-      "(min-width: 400px)",
-      "(min-width: 300px)" //400
-    ],
-    [4,3,2,1,1,1],
-    1
-  );
-  const getColumns = (width) => {
-    if(width > 1000)
-    {
-      return 3;
-    }
-    else if(width > 600)
-    {
-      return 2;
-    }
-    else{
-      return 1;
-    }
-  }
+  // const columns = useMedia(
+  //   [
+  //     "(min-width: 1500px)",
+  //     "(min-width: 1200px)", 
+  //     "(min-width: 900px)",//800
+  //     "(min-width: 400px)",
+  //     "(min-width: 300px)", //400
+  //     "(min-width: 200px)" //400
+
+  //   ],
+  //   [4,3,2,2,1,1],
+  //   1
+  // );
+  // const getColumns = (width) => {
+  //   if(width > 1000){return 3;}
+  //   else if(width > 600){return 2;}
+  //   else if(width < 599){return 1;}
+  //   else{return 1;}
+  // }
   
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
-  let wdithColumns = widthContent > 0 ? getColumns(widthContent) : columns;
-  heights = new Array(wdithColumns).fill(0);
-  const [bind, { width }] = useMeasure();
-  let widthCheck = widthContent > 0 ? widthContent : width;
-// console.log(">>>>> width  columns", width , "columns",columns);
+  const [bind, { width},columns] = useMeasure();
+  heights = new Array(columns).fill(0);
+  //  console.log(">>>>> !!!!!!width  ", width,"columns",columns );
   let driveCardItem = props.driveInfo.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
-    const xy = [((widthCheck) / wdithColumns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: (widthCheck / wdithColumns), height: 250};
+    const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
+    return { ...child, xy, width: (width / columns), height: 250};
   });
     transitions = useTransition(driveCardItem, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
@@ -905,15 +897,10 @@ const DriveCardComponent = (props) => {
       }),
       update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
       leave: { height: 0, opacity: 0, scale: 0 },
-      config: { mass: 30, tension: 600, friction: 200 },
+      config: { mass: 30, tension: 500, friction: 250 },
       trail: 25
     });
 
-  // function driveCardSelector(item) {
-  //   let newParams = {};
-  //   newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-  //   history.push("?" + encodeParams(newParams));
-  // }
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
       let newParams = {};
@@ -1005,7 +992,8 @@ const DriveCardComponent = (props) => {
   return avalibleCard.length > 0 ? true : false;
  }
   return (
-    <div className="drivecardContainer" {...bind} style={{ display:"flex",height: Math.max(...heights) }}>
+    <div  {...bind} style={{width:'100%'}} >
+    <div className="drivecardContainer"style={{ display:"flex",height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
         //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
@@ -1033,6 +1021,7 @@ const DriveCardComponent = (props) => {
               onDoubleClick={(e) => 
                 {e.preventDefault(); 
                 e.stopPropagation();
+                setDrivecardSelection([]);
                   if(driveDoubleClickCallback){driveDoubleClickCallback({item})}}}
             >
               <DriveCard
@@ -1045,6 +1034,7 @@ const DriveCardComponent = (props) => {
            </animated.div>
         );
       })}
+    </div>
     </div>
   );
 };
