@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-import { useRecoilValue, useSetRecoilState ,atom} from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
 import { useStackId } from "./Tool";
 import { clearAllSelections } from "../Drive";
@@ -20,28 +20,15 @@ const DragHandle = styled.div`
   cursor: ew-resize;
   background-color: black;
 `;
-export const contentPanelWidthAtom = atom({
-  key: "contentPanelWidthAtom",
-  default: 0,
-});
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   const stackId = useStackId();
   const supportInUse = useRecoilValue(supportVisible(stackId));
   const clearDriveSelections = useSetRecoilState(clearAllSelections);
-  const setContentPanelWidth = useSetRecoilState(contentPanelWidthAtom);
   let isDragging = false;
 
   useEffect(() => {
-    if(supportInUse)
-    {
-      console.log(">>>> cleint width",wrapperRef.current.clientWidth );
-      setContentPanelWidth((wrapperRef.current.clientWidth-3)/2);
-    }else{
-      setContentPanelWidth(0);
-
-    }
     wrapperRef.current.style.gridTemplateColumns = supportInUse
       ? "1fr 3px 1fr"
       : "1fr 0px 0fr";
@@ -58,7 +45,6 @@ export default function ContentPanel({ main, support }) {
       let proportion =
         (event.clientX - wrapperRef.current.offsetLeft) /
         wrapperRef.current.clientWidth;
-        setContentPanelWidth(event.clientX - 237);
       let newColDefn = `${proportion}fr 3px ${1 - proportion}fr`;
       // setProportion((oldprop) => proportion);
       wrapperRef.current.style.gridTemplateColumns = newColDefn;
