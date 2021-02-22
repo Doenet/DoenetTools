@@ -993,7 +993,6 @@ const DriveCardComponent = (props) => {
     <div  {...bind} style={{width:'100%'}} >
     <div className="drivecardContainer"style={{ display:"flex",height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
-        //  console.log(">>>  item props !!!!!!!!", item);
         let selectedCard = getSelectedCard(item);
         return (
           <animated.div
@@ -1005,7 +1004,9 @@ const DriveCardComponent = (props) => {
               transform: props.xy.interpolate(
                 (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
               ),
-              ...props
+              ...props,
+              height:250,
+              opacity:1,
              }}
           >
             <div
