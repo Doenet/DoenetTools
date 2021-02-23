@@ -16,13 +16,7 @@ import {
   useHistory
 } from "react-router-dom";
 import { useMenuPanelController } from "./Tool/MenuPanel";
-
-export const drivecardSelectedNodesAtom = atom({
-  key:'drivecardSelectedNodesAtom',
-  default:[]
-})
-
-
+import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
 const DriveCardContainer = (props) => {
   const { driveDoubleClickCallback } = props;
@@ -31,19 +25,18 @@ const DriveCardContainer = (props) => {
     Object.entries(p)
       .map((kv) => kv.map(encodeURIComponent).join("="))
       .join("&");
-  let transitions = "";
   
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
   const [bind, { width},columns] = useMeasure();
   heights = new Array(columns).fill(0);
   //  console.log(">>>>> !!!!!!width  ", width,"columns",columns );
-  let driveCardItem = props.driveInfo.map((child, i) => {
+   let driveCardItems = props.driveInfo.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: (width / columns), height: 250};
   });
-    transitions = useTransition(driveCardItem, (item) => item.driveId, {
+   const transitions = useTransition(driveCardItems, (item) => item.driveId, {
       from: ({ xy, width, height }) => ({
         xy,
         width,
@@ -60,7 +53,7 @@ const DriveCardContainer = (props) => {
       }),
       update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
       leave: { height: 0, opacity: 0, scale: 0 },
-      config: { mass: 30, tension: 500, friction: 250 },
+      config: { mass: 5, tension: 500, friction: 250 },
       trail: 25
     });
     // console.log(">>>> transitions", transitions);
@@ -159,7 +152,7 @@ const DriveCardContainer = (props) => {
     <div  {...bind} style={{width:'100%'}} >
     <div className="drivecardContainer"style={{ display:"flex",height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
-         console.log(">>>  item props !!!!!!!!", item);
+
         let selectedCard = getSelectedCard(item);
         return (
           <animated.div

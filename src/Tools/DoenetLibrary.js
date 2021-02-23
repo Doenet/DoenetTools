@@ -53,7 +53,7 @@ import DriveCard from '../imports/DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import "../imports/drivecard.css";
 import useMeasure  from "./useMeasure";
-import DriveCardContainer from "../imports/DriveCardComponent";
+import DriveCardComponent from "../imports/DriveCardComponent";
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -849,8 +849,6 @@ export default function DoenetLibraryTool(props) {
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearAllSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
-
-  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -925,7 +923,7 @@ export default function DoenetLibraryTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardContainer driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
+    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
   } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
