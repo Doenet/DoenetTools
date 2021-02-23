@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
-import Drive, { 
+import Drive, {
   fetchDrivesSelector,
 } from "./Drive";
 import {
@@ -17,16 +17,19 @@ import {
 } from "react-router-dom";
 import { useMenuPanelController } from "./Tool/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
+import { Inline } from "../Doenet/components/PropertyComponents";
 
-const DriveCardContainer = (props) => {
+const DriveCardContainer = React.memo((props) => {
   const { driveDoubleClickCallback } = props;
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
       .map((kv) => kv.map(encodeURIComponent).join("="))
       .join("&");
-  
+  // let transitions = "";
+
   let heights = [];
+   driveCardItems = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
   const [bind, { width},columns] = useMeasure();
   heights = new Array(columns).fill(0);
@@ -43,7 +46,7 @@ const DriveCardContainer = (props) => {
         height,
         opacity: 0,
         scale: 1.1
-      }),
+            }),
       enter: ({ xy, width, height }) => ({
         xy,
         width,
@@ -67,19 +70,19 @@ const DriveCardContainer = (props) => {
       history.push("?" + encodeParams(newParams));
     }
   };
-  const [on, toggle] = useState(false);  
+  const [on, toggle] = useState(false);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
-  // Drive selection 
+  // Drive selection
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
    if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){      // range to item 
-    
+  }else if (e.shiftKey && !e.metaKey){      // range to item
+
     setDrivecardSelection((old) => {
       if(old.length > 0)
       {
@@ -110,12 +113,12 @@ const DriveCardContainer = (props) => {
         }
         //  console.log(">>>> final array",finalArray);
         return finalArray;
-        
+
       }
       else{
         return [...old,item];
       }
-    }); 
+    });
   }else if (!e.shiftKey && e.metaKey){   // add item
     setDrivecardSelection((old) =>{
       let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
@@ -149,17 +152,19 @@ const DriveCardContainer = (props) => {
   return avalibleCard.length > 0 ? true : false;
  }
   return (
-    <div  {...bind} style={{width:'100%'}} >
-    <div className="drivecardContainer"style={{ display:"flex",height: Math.max(...heights) }}>
+    <div  {...bind} style={{width:'100%',height:'100%'}} >
+    <div className="drivecardContainer"style={{ position:"relative" ,height: Math.max(...heights) }}>
       {transitions.map(({ item, props }, index) => {
+         console.log(">>>  item !!!!!!!!", item);
+         console.log(">>>   props !!!!!!!!", props);
 
         let selectedCard = getSelectedCard(item);
         return (
           <animated.div
-            className="adiv"
             key={index}
             // onMouseOver={() => toggle(props.scale.setValue(1.1))}
             // onMouseLeave={() => toggle(props.scale.setValue(1))}
+            className={`adiv ${selectedCard ? 'borderselection' : ''}`}
             style={{
               transform: props.xy.interpolate(
                 (x,y) => { return `scale(${ props.scale.value}) translate3d(${x}px,${y}px,0)`}
@@ -167,35 +172,42 @@ const DriveCardContainer = (props) => {
               ...props,
               height:250,
               opacity:1,
+              // position:"absolute",
+              top:0,
+              left:0
+
              }}
           >
-            <div
-              className={`drivecardlist ${selectedCard ? 'borderselection' : ''}`}
+
+          <div style = {{height: "100%"}}
               tabIndex={index+1}
               // onclick scale
-              onClick = {(e) => {drivecardselection(e,item,props);
+              onClick = {(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                drivecardselection(e,item,props);
                 // toggle(props.scale.setValue(0.9))
               }}
               onKeyDown={(e) => handleKeyDown(e, item)}
-              onDoubleClick={(e) => 
-                {e.preventDefault(); 
+              onDoubleClick={(e) =>
+                {e.preventDefault();
                 e.stopPropagation();
                 setDrivecardSelection([]);
-                  if(driveDoubleClickCallback){driveDoubleClickCallback({item})}}}
-            >
-              <DriveCard
+                  if(driveDoubleClickCallback){driveDoubleClickCallback({item})}}}>
+          <DriveCard
                 driveId={item.driveId}
                 image={item.image}
                 color={item.color}
                 label={item.label}
               />
-            </div>
+          </div>
+
            </animated.div>
         );
       })}
     </div>
     </div>
   );
-};
+});
 
 export default DriveCardContainer;

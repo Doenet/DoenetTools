@@ -4,17 +4,17 @@ import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 
-import Drive, { 
-  folderDictionarySelector, 
-  globalSelectedNodesAtom, 
-  folderDictionary, 
-  clearAllSelections, 
+import Drive, {
+  folderDictionarySelector,
+  globalSelectedNodesAtom,
+  folderDictionary,
+  clearAllSelections,
   fetchDrivesSelector,
   encodeParams
 } from "../imports/Drive";
 import nanoid from 'nanoid';
 
-import { 
+import {
   faChalkboard,
   faCode,
   faFolder
@@ -53,7 +53,7 @@ import DriveCard from '../imports/DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import "../imports/drivecard.css";
 import useMeasure  from "./useMeasure";
-import DriveCardComponent from "../imports/DriveCardComponent";
+import DriveCardContainer from "../imports/DriveCardComponent";
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -93,7 +93,7 @@ const selectedInformation = selector({
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({driveId,folderId})); 
+    let folderInfo = get(folderDictionary({driveId,folderId}));
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};
     itemInfo['driveId'] = driveId;
@@ -115,10 +115,10 @@ const fileByContentId = atomFamily({
       if (!contentId){
         return "";
       }
-      return await axios.get(`/media/${contentId}`) 
+      return await axios.get(`/media/${contentId}`)
     }
   })
-  
+
 })
 
 const editorDoenetMLAtom = atom({
@@ -141,7 +141,7 @@ function TextEditor(props){
   const trackMount = useRef("Init");
 
   const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
-  
+
 
   if (cancelAutoSave){
     if (autosavetimeout.current !== null){
@@ -244,7 +244,7 @@ const updateItemHistorySelector = selectorFamily({
   },
   set:(branchId)=> ({get,set},instructions)=>{
     console.log(">>>instructions",instructions.instructions)
-    
+
 
     const doenetML = get(editorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
@@ -268,7 +268,7 @@ const updateItemHistorySelector = selectorFamily({
         title = "draft";
        } else if (instructions.instructions.type === "Autosave"){
         title = "Autosave";
-       } 
+       }
 
 
        if (instructions.instructions.type === "Name Version"){
@@ -300,7 +300,7 @@ const updateItemHistorySelector = selectorFamily({
           isDraft: "0",
           isNamed
         }
-    
+
         if (!draft){
           set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
           set(fileByContentId(contentId),{data:doenetML})
@@ -312,7 +312,7 @@ const updateItemHistorySelector = selectorFamily({
        }
 
 
-    
+
   }
 })
 
@@ -336,7 +336,7 @@ function ReturnToEditingButton(){
   const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
   const [editingContentId,setEditingContentId] = useRecoilState(EditingContentIdAtom);
 
-  if (selectedTimestamp === "" && 
+  if (selectedTimestamp === "" &&
   editingTimestamp === "" &&
   editingContentId === ""
   ){
@@ -361,7 +361,7 @@ function VersionHistoryPanel(props){
   const [editingText,setEditingText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
-  if (versionHistory.state === "hasError"){ 
+  if (versionHistory.state === "hasError"){
     console.error(versionHistory.contents)
     return null;}
 
@@ -391,17 +391,17 @@ function VersionHistoryPanel(props){
         <div><Button text="Use as Current Version" /></div>
         </>
       }
-      let title = <div><b 
+      let title = <div><b
       onClick={()=>{
         if (selectedTimestamp !== ""){
           setEditingText(titleText);
           setEditingTimestamp(version.timestamp)
         }
-      }} 
+      }}
       style={titleStyle}>{titleText}</b></div>
 
       if (editingTimestamp === version.timestamp){
-        title = <div><input 
+        title = <div><input
         autoFocus
         onBlur={()=>{
           setEditingTimestamp("");
@@ -413,7 +413,7 @@ function VersionHistoryPanel(props){
       }
 
       versions.push(<React.Fragment key={`pastVersion${version.timestamp}`}>
-        <div 
+        <div
         onClick={()=>{
           if (version.timestamp !== selectedTimestamp){
             setSelectedTimestamp(version.timestamp)
@@ -437,7 +437,7 @@ function VersionHistoryPanel(props){
   if (versions.length === 0){
     versions = <b>No Saved Versions</b>
   }
-  
+
   return <>
   {versions}
   </>
@@ -455,7 +455,7 @@ function NameCurrentVersionControl(props){
     setCancelAutoSave(true);
     }}>Name Current Version</button>
   </>
-  
+
 }
 
 let overlayTitleAtom = atom({
@@ -484,7 +484,7 @@ function DoenetViewerPanel(){
       assignmentId={assignmentId}
       ignoreDatabase={false}
       requestedVariant={requestedVariant}
-      /> 
+      />
 }
 
 //When contentId changes then set the new loaded info into the editor atoms
@@ -533,9 +533,9 @@ const DriveInfoPanel = function(props){
 
   return <>
   <h2>{dIcon} {panelDriveLabel}</h2>
-  <label>Course Name<input type="text" 
-  value={driveLabel} 
-  onChange={(e)=>setDriveLabel(e.target.value)} 
+  <label>Course Name<input type="text"
+  value={driveLabel}
+  onChange={(e)=>setDriveLabel(e.target.value)}
   onKeyDown={(e)=>{
     if (e.keyCode === 13){
       setPanelDriveLabel(driveLabel)
@@ -560,7 +560,7 @@ const DriveInfoPanel = function(props){
   }}/></label>
   <DoenetDriveCardMenu
   key={`colorMenu${props.driveId}`}
-  colors={driveColors} 
+  colors={driveColors}
   initialValue={props.color}
   callback={(color)=>{
         setDrivesInfo({
@@ -595,13 +595,13 @@ const FolderInfoPanel = function(props){
   const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder}/>
-  
+
   return <>
   <h2>{fIcon} {panelLabel}</h2>
 
-  <label>Folder Label<input type="text" 
-  value={label} 
-  onChange={(e)=>setLabel(e.target.value)} 
+  <label>Folder Label<input type="text"
+  value={label}
+  onChange={(e)=>setLabel(e.target.value)}
   onKeyDown={(e)=>{
     if (e.keyCode === 13){
       setPanelLabel(label)
@@ -646,13 +646,13 @@ const DoenetMLInfoPanel = function(props){
   const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
-  
+
   return <>
   <h2>{dIcon} {panelLabel}</h2>
 
-  <label>DoenetML Label<input type="text" 
-  value={label} 
-  onChange={(e)=>setLabel(e.target.value)} 
+  <label>DoenetML Label<input type="text"
+  value={label}
+  onChange={(e)=>setLabel(e.target.value)}
   onKeyDown={(e)=>{
     if (e.keyCode === 13){
       setPanelLabel(label)
@@ -680,9 +680,9 @@ const DoenetMLInfoPanel = function(props){
   <Button text="Edit DoenetML" callback={()=>{
     setOverlayOpen({
       name: "editor", //to match the prop
-      instructions: { 
+      instructions: {
         supportVisble: true,
-        action: "open", 
+        action: "open",
         contentId: itemInfo.contentId,
         branchId: itemInfo.branchId,
         title: itemInfo.label,
@@ -710,10 +710,10 @@ const ItemInfo = function (){
   const driveSelections = useRecoilValue(selectedDriveInformation);
 
     if (infoLoad.state === "loading"){ return null;}
-    if (infoLoad.state === "hasError"){ 
+    if (infoLoad.state === "hasError"){
       console.error(infoLoad.contents)
       return null;}
-   
+
       let itemInfo = infoLoad?.contents?.itemInfo;
 
     if (infoLoad.contents?.number > 1){
@@ -729,12 +729,12 @@ const ItemInfo = function (){
     }else if (driveSelections.length === 1){
       const dInfo = driveSelections[0];
 
-      return <DriveInfoPanel 
+      return <DriveInfoPanel
       key={`DriveInfoPanel${dInfo.driveId}`}
-      label={dInfo.label} 
+      label={dInfo.label}
       color={dInfo.color}
       image={dInfo.image}
-      driveId={dInfo.driveId} 
+      driveId={dInfo.driveId}
       />
 
     }else if (infoLoad.contents?.number === 1){
@@ -749,9 +749,9 @@ const ItemInfo = function (){
         itemInfo={itemInfo}
         />
       }
-   
+
     }
-  
+
 }
 
 function AddCourseDriveButton(props){
@@ -767,7 +767,7 @@ function AddCourseDriveButton(props){
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
     setNewDrive({label,type:"new course drive",driveId,newDriveId,image,color})
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
+    let newParams = {...urlParamsObj}
     // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
     newParams['path'] = `:::`
     history.push('?'+encodeParams(newParams))
@@ -813,7 +813,7 @@ function AddMenuPanel(props){
     })
   }
   } />
- 
+
   {/* <h3>URL</h3>
   <div>
     <label>Label <input size="10" type="text" onChange={(e)=>setURLLabel(e.target.value)} value={URLLabel} /></label>
@@ -841,7 +841,7 @@ const EditorTitle = ()=>{
 
 
 export default function DoenetLibraryTool(props) {
-  // console.log("=== 📚 Doenet Library Tool");  
+  // console.log("=== 📚 Doenet Library Tool");
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
   const [overlayInfo,setOverlayOpen] = useRecoilState(openOverlayByName);
   const setOpenMenuPanel = useMenuPanelController();
@@ -866,7 +866,7 @@ export default function DoenetLibraryTool(props) {
     }
   },[]);
 
-  
+
   let textEditor = null;
   let doenetViewerEditorControls = null;
   let doenetViewerEditor = null;
@@ -887,7 +887,7 @@ export default function DoenetLibraryTool(props) {
     versionHistory = <VersionHistoryPanel branchId={branchId} />
     returnToEditingButton = <ReturnToEditingButton />
   }
-  
+
   const history = useHistory();
 
   function useOutsideDriveSelector() {
@@ -923,13 +923,13 @@ export default function DoenetLibraryTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
+    drivecardComponent = <DriveCardContainer driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
   } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
       <h2>You have no drives. Add one using the Menu Panel --> </h2>
     );
   }
-  
+
   let mainPanelStyle ={
     height:'100%',
     width:'100%'
@@ -937,13 +937,13 @@ export default function DoenetLibraryTool(props) {
   if(routePathDriveId === ''){
     mainPanelStyle = {}
   }
-  
+
 
   return (
     <Tool>
       <navPanel>
       <GlobalFont/>
-      <div style={{marginBottom:"40px",height:"100vh"}} 
+      <div style={{marginBottom:"40px",height:"100vh"}}
        onClick={useOutsideDriveSelector} >
       <Drive types={['content','course']}  foldersOnly={true} />
       </div>
@@ -956,17 +956,17 @@ export default function DoenetLibraryTool(props) {
       <mainPanel>
 
       {breadcrumbContainer}
-        <div 
+        <div
         onClick={()=>{
           clearSelections()
         }}
         style={mainPanelStyle}
         >
-        <Drive types={['content','course']}  urlClickBehavior="select" 
+        <Drive types={['content','course']}  urlClickBehavior="select"
         doenetMLDoubleClickCallback={(info)=>{
           setOverlayOpen({
             name: "editor", //to match the prop
-            instructions: { 
+            instructions: {
               supportVisble: true,
               action: "open", //or "close"
               contentId: info.item.contentId,
@@ -978,10 +978,10 @@ export default function DoenetLibraryTool(props) {
           });
           }}/>
 
-     
+
         </div>
 
-        <div 
+        <div
         onClick={
           cleardrivecardSelection
         }
@@ -990,8 +990,8 @@ export default function DoenetLibraryTool(props) {
         >
        {drivecardComponent}
         </div>
-        
-          
+
+
         </mainPanel>
       <supportPanel>
       <Drive types={['content','course']}  urlClickBehavior="select" />
@@ -1025,10 +1025,10 @@ export default function DoenetLibraryTool(props) {
         <menuPanel title="Version history">
         {versionHistory}
       </menuPanel>
-  
+
       </overlay>
 
-     
+
     </Tool>
   );
 }
