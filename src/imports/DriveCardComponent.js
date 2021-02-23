@@ -53,7 +53,7 @@ const DriveCardContainer = (props) => {
       }),
       update: ({ xy, width, height }) => ({ xy, width, height, scale: 1 }),
       leave: { height: 0, opacity: 0, scale: 0 },
-      config: { mass: 5, tension: 500, friction: 250 },
+      config: { mass: 5, tension: 5000, friction: 1000 },
       trail: 25
     });
     // console.log(">>>> transitions", transitions);
