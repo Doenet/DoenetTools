@@ -13,8 +13,8 @@ export default function DropTargetsProvider({ children }) {
   const dropTargetsRef = useRef({});
 
   const timerRef = useRef(null);
-  const targetEvent = useRef(null);
-  const [initializingDrag, setInitializingDrag] = useState(false); 
+  const timerDropTargetId = useRef(null);
+  const [initializingDragHover, setInitializingDragHover] = useState(false); 
 
   const getDropTargetFromCursor = useCallback(
     (x, y, ignoreId = null) => {
@@ -64,7 +64,7 @@ export default function DropTargetsProvider({ children }) {
         handleDragExit(activeDropTargetId);
         
         /* Trigger onDragEnter */
-        handleDragEnter(dropTargetId);
+        handleDragEnter({dropTargetId, dropTargetObj});
       }
 
       setActiveDropTargetId(dropTargetId);
@@ -72,16 +72,27 @@ export default function DropTargetsProvider({ children }) {
     [activeDropTargetId, getDropTargetFromCursor]
   );
 
-  const handleDragExit = (dropTargetId) => {
+  const handleDragEnter = ({dropTargetId, dropTargetObj}) => {
+
     // if timer already set for same dropTargetId, ignore
-    console.log(">>>dragExit", dropTargetId);
+    if (timerDropTargetId.current === dropTargetId ) return;
+
+    if (dropTargetId) {
+      setInitializingDragHover(true);
+      timerDropTargetId.current = dropTargetId;
+      timerRef.current = setTimeout(() => {
+        if (dropTargetObj.onDragHover) dropTargetObj.onDragHover();
+        timerRef.current = null;
+      }, 1500);
+    }
   }
 
-  const handleDragEnter = (dropTargetId) => {
-
-    // if no timer set, ignore
-
-    console.log(">>>dragEnter", dropTargetId);
+  const handleDragExit = (dropTargetId) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerDropTargetId.current = null;
+    setInitializingDragHover(false);
   }
 
   const handleDrop = (selfId = null) => {
