@@ -413,7 +413,8 @@ export const folderDictionarySelector = selectorFamily({
         const dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}));
 
         // remove dragShadowId from dragShadowParentId (contentDictionary, contentIds)
-        if (dragShadowParentFolderInfoObj && dragShadowParentId !== dropTargetParentId) {
+        if (dragShadowParentFolderInfoObj) {
+          console.log(">>>Here remove from", dragShadowParentId)
           set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
             let newObj = {...old};
             let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
