@@ -41,8 +41,8 @@ const DriveCardContainer = (props) => {
         xy,
         width,
         height,
-        opacity: 0,
-        scale: 1.1
+        opacity: 1,
+        scale: 1
       }),
       enter: ({ xy, width, height }) => ({
         xy,
