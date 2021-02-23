@@ -399,7 +399,7 @@ export const folderDictionarySelector = selectorFamily({
           creationDate: "",
           isPublished: "0",
           itemId: dragShadowId,
-          itemType: "DoenetML",
+          itemType: "DragShadow",
           label: "",
           parentFolderId: driveIdFolderId.folderId,
           url: null,
@@ -424,30 +424,55 @@ export const folderDictionarySelector = selectorFamily({
           })
         }
 
-        // insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
-        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
-          let newObj = {...old};
-          let newContentsDictionary = {...old.contentsDictionary};
-          newContentsDictionary[dragShadowId] = dragShadow;
-          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-          if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
-          let index = newDefaultOrder.indexOf(driveIdFolderId.folderId);
-          if (insertPosition === "afterCurrent") index += 1;
-          newDefaultOrder.splice(index, 0, dragShadowId);
-          const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
-          newObj.contentIds = defaultOrderObj;
-          newObj.contentsDictionary = newContentsDictionary;
-          return newObj;
-        })
-        
-        // update dragStateAtom.dragShadowParentId to dropTargetParentId
-        set(dragStateAtom, (old) => {
-          return {
-            ...old,
-            dragShadowDriveId: driveIdFolderId.driveId,
-            dragShadowParentId: dropTargetParentId
-          }
-        })
+        if (insertPosition === "intoCurrent") {
+          // insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
+          set(folderDictionary(driveIdFolderId), (old)=>{
+            let newObj = {...old};
+            let newContentsDictionary = {...old.contentsDictionary};
+            newContentsDictionary[dragShadowId] = dragShadow;
+            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+            if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+            newDefaultOrder.splice(0, 0, dragShadowId);
+            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
+            newObj.contentIds = defaultOrderObj;
+            newObj.contentsDictionary = newContentsDictionary;
+            return newObj;
+          })
+
+          // update dragStateAtom.dragShadowParentId to dropTargetParentId
+          set(dragStateAtom, (old) => {
+            return {
+              ...old,
+              dragShadowDriveId: driveIdFolderId.driveId,
+              dragShadowParentId: driveIdFolderId.folderId
+            }
+          })
+        } else {
+          // insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
+          set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
+            let newObj = {...old};
+            let newContentsDictionary = {...old.contentsDictionary};
+            newContentsDictionary[dragShadowId] = dragShadow;
+            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+            if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+            let index = newDefaultOrder.indexOf(driveIdFolderId.folderId);
+            if (insertPosition === "afterCurrent") index += 1;
+            newDefaultOrder.splice(index, 0, dragShadowId);
+            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
+            newObj.contentIds = defaultOrderObj;
+            newObj.contentsDictionary = newContentsDictionary;
+            return newObj;
+          })
+          
+          // update dragStateAtom.dragShadowParentId to dropTargetParentId
+          set(dragStateAtom, (old) => {
+            return {
+              ...old,
+              dragShadowDriveId: driveIdFolderId.driveId,
+              dragShadowParentId: dropTargetParentId
+            }
+          })
+        }
 
       break;
       case "removeDragShadow":
@@ -886,6 +911,13 @@ function Folder(props){
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
   }
 
+  const onDragHover = () => {
+    setFolderInfo({
+      instructionType:"insertDragShadow",
+      position: "intoCurrent"
+    });
+  }
+
   const onDrop = () => {
     setFolderInfo({instructionType:"removeDragShadow"});
     setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});
@@ -1056,6 +1088,7 @@ function Folder(props){
     unregisterDropTarget={dropActions.unregisterDropTarget}
     dropCallbacks={{
       onDragOver: onDragOver,
+      onDragHover: onDragHover,
       onDrop: onDrop
     }}
     >
@@ -1155,6 +1188,10 @@ function Folder(props){
               doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItem}
             />)
+          case "DragShadow":
+            items.push(<DragShadow 
+              key={`item${itemId}${props.driveInstanceId}`} 
+            />)
           break;
           default:
           console.warn(`Item not rendered of type ${item.itemType}`)
@@ -1185,6 +1222,18 @@ const EmptyNode =  React.memo(function Node(props){
     margin: "2px",
   
   }} ><div className="noselect" style={{marginLeft: "50px"}}>EMPTY</div></div>)
+})
+
+const DragShadow =  React.memo(function Node(props){
+
+  return (<div style={{
+    width: "840px",
+    padding: "8px",
+    // border: "1px solid black",
+    backgroundColor: "#8dff45",
+    margin: "2px",
+  
+  }} ><div className="noselect" style={{marginLeft: "50px"}}>Drag shadow</div></div>)
 })
 
 function LogVisible(props){

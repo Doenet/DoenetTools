@@ -32,13 +32,14 @@ export default function DropTargetsProvider({ children }) {
     []
   );
 
-  const registerDropTarget = useCallback(({ id, ref, onDragOver, onDrop }) => {
+  const registerDropTarget = useCallback(({ id, ref, onDragOver, onDragHover, onDrop }) => {
     let dropTargetObj = dropTargetsRef.current[id];
     if (!dropTargetObj) dropTargetObj = [];
     
     const newDropTarget = {
       ref: ref,
       onDragOver: onDragOver,
+      onDragHover: onDragHover,
       onDrop: onDrop
     };
     dropTargetObj.push(newDropTarget);
