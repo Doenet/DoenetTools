@@ -12,6 +12,10 @@ export default function DropTargetsProvider({ children }) {
   const [activeDropTargetId, setActiveDropTargetId] = useState(null);
   const dropTargetsRef = useRef({});
 
+  const timerRef = useRef(null);
+  const targetEvent = useRef(null);
+  const [initializingDrag, setInitializingDrag] = useState(false); 
+
   const getDropTargetFromCursor = useCallback(
     (x, y, ignoreId = null) => {
       const underCursor = document.elementsFromPoint(x, y);
@@ -50,22 +54,35 @@ export default function DropTargetsProvider({ children }) {
       const dropTarget = getDropTargetFromCursor(x, y, selfId);
       let dropTargetId = "", dropTargetObj = {};
       if (dropTarget) [dropTargetId, dropTargetObj] = dropTarget;
-      
-      // // trigger onDrag once
-      // if (activeDropTargetId !== dropTargetId) {
-      //   setActiveDropTargetId(dropTargetId);
-      //   dropTargetsRef.current[dropTargetId]?.onDragOver();
-      //   console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
-      // }
+
+      if (dropTargetId) {
+        dropTargetObj?.onDragOver({x, y, dropTargetRef: dropTargetObj.ref});
+      }
+
+      if (dropTargetId !== activeDropTargetId) {
+        /* Trigger onDragExit */
+        handleDragExit(activeDropTargetId);
+        
+        /* Trigger onDragEnter */
+        handleDragEnter(dropTargetId);
+      }
 
       setActiveDropTargetId(dropTargetId);
-      if (dropTargetId) {
-        dropTargetObj.onDragOver({x, y, dropTargetRef: dropTargetObj.ref});
-        // console.log(dropTargetRef?.offsetTop, dropTargetRef?.clientHeight, y)
-      }
     },
     [activeDropTargetId, getDropTargetFromCursor]
   );
+
+  const handleDragExit = (dropTargetId) => {
+    // if timer already set for same dropTargetId, ignore
+    console.log(">>>dragExit", dropTargetId);
+  }
+
+  const handleDragEnter = (dropTargetId) => {
+
+    // if no timer set, ignore
+
+    console.log(">>>dragEnter", dropTargetId);
+  }
 
   const handleDrop = (selfId = null) => {
     if (activeDropTargetId !== null) {

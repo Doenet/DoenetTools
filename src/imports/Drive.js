@@ -59,6 +59,7 @@ const dragStateAtom = atom({
     isDragging: false,
     draggedOverDriveId: null,
     isDraggedOverBreadcrumb: false,
+    dragShadowDriveId: null,
     dragShadowParentId: null
   }
 })
@@ -443,6 +444,7 @@ export const folderDictionarySelector = selectorFamily({
         set(dragStateAtom, (old) => {
           return {
             ...old,
+            dragShadowDriveId: driveIdFolderId.driveId,
             dragShadowParentId: dropTargetParentId
           }
         })
@@ -460,6 +462,7 @@ export const folderDictionarySelector = selectorFamily({
         set(dragStateAtom, (old) => {
           return {
             ...old,
+            dragShadowDriveId: null,
             dragShadowParentId: null
           }
         })
