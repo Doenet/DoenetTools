@@ -45,7 +45,8 @@ const DriveCardContainer = React.memo((props) => {
         width,
         height,
         opacity: 0,
-        scale: 1.1
+        scale: 1,
+        position:"fixed"
             }),
 
       enter: ({
@@ -54,10 +55,12 @@ const DriveCardContainer = React.memo((props) => {
         width,
         height,
         opacity: 1,
-        scale: 1
+        scale: 1,
+        position:"fixed"
       }),
       update: ({
-         xy, width, height }) => ({ xy, width, height, scale: 1 }),
+         xy, width, height }) => ({ xy, width, height, scale: 1,position:"absolute"
+        }),
       leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 500, friction: 250 },
       trail: 25

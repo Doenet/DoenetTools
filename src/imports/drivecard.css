@@ -22,7 +22,7 @@
   height: 100%;
 }
 .adiv {
-  position: absolute;
+  /* position: absolute; */
   will-change: transform, width, height, opacity;
   padding: 15px;
 }
