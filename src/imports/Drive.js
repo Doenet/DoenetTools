@@ -59,8 +59,7 @@ const fetchDriveUsersQuery = atomFamily({
       const payload = { params: {driveId} };
       const { data } = await  axios.get('/api/loadDriveUsers.php', payload)
     return data
-  },
- 
+  }
   })
 })
 
@@ -70,7 +69,61 @@ export const fetchDriveUsers = selectorFamily({
     return get(fetchDriveUsersQuery(driveId));
   },
   set:(driveId)=>({get,set},instructions)=>{
-    console.log(">>>driveId",driveId,instructions)
+    let payload = { params: {
+      email:instructions.email,
+      type:instructions.type,
+      driveId
+    } };
+   
+    switch(instructions.type){
+      case "Add Owner":
+        axios.get('/api/saveUserToDrive.php', payload)
+        .then((resp)=>{
+          instructions.callback(resp.data);
+        })
+        
+        break;
+      case "Add Owner step 2":
+        set(fetchDriveUsersQuery(driveId),(was)=>{
+          let newDriveUsers = {...was}
+          let newOwners = [...was.owners];
+          newOwners.push({
+            email:instructions.email,
+            isUser:false,
+            screenName:instructions.screenName,
+            userId:instructions.userId
+          })
+          newDriveUsers['owners'] = newOwners;
+          return newDriveUsers;
+        })
+          
+        break;
+      case "Add Admin":
+        axios.get('/api/saveUserToDrive.php', payload)
+        .then((resp)=>{
+          instructions.callback(resp.data);
+        })
+        break;
+      case "Add Admin step 2":
+        set(fetchDriveUsersQuery(driveId),(was)=>{
+          let newDriveUsers = {...was}
+          let newAdmins = [...was.admins];
+          newAdmins.push({
+            email:instructions.email,
+            isUser:false,
+            screenName:instructions.screenName,
+            userId:instructions.userId
+          })
+          newDriveUsers['admins'] = newAdmins;
+          return newDriveUsers;
+        })
+        break;
+      case "Remove User":
+        console.log(">>>Remove Ins",instructions)
+        break;
+      default:
+        console.log(`type ${instructions.type} not handled`)
+    }
   }
 })
 

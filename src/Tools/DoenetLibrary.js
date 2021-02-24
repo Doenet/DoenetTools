@@ -543,19 +543,32 @@ function User(props){
   let containerStyle = {}
     if (props.isSelected){
       if (props.isOwner || props.userRole == "admin"){
-        buttons.push(
-          <div key={`remove${props.userId}`}>
-            <Button 
-            data-doenet-removeButton={props.userId}
-          text="Remove" 
-          callback={(e)=>{
-            console.log("remove")}
-          }/>
-         
-          </div>
-          )
+        if (!(props.userRole === 'owner' && props.numOwners < 2)){
+          //Only show remove if two or more owners
+          buttons.push(
+            <div key={`remove${props.userId}`}>
+              <Button 
+              data-doenet-removeButton={props.userId}
+            text="Remove" 
+            callback={(e)=>{
+              props.setDriveUsers({
+                driveId:props.driveId,
+                type:"Remove User",
+                userId:props.userId,
+                userRole:props.userRole
+              })
+            // props.open(false);
+            
+            }
+            }/>
+           
+            </div>
+            )
+        }
+        
       }
       if (props.isOwner && props.userRole == "admin"){
+        
         buttons.push(
           <div key={`promote${props.userId}`}>
             <Button 
@@ -566,6 +579,8 @@ function User(props){
           )
       }
       if (props.isOwner && props.userRole == "owner"){
+        if (!(props.userRole === 'owner' && props.numOwners < 2)){
+          //Only show demote if two or more owners
         buttons.push(
           <div key={`demote${props.userId}`}>
             <Button 
@@ -574,6 +589,7 @@ function User(props){
             console.log("to admin")}
           }/></div>
           )
+        }
       }
       
       containerStyle = {backgroundColor:"#B8D2EA"}
@@ -602,20 +618,44 @@ function User(props){
     </>
 }
 
+function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+
 function NewUser(props){
   const [email,setEmail] = useState("")
 
+
   function addUser(){
+    if (validateEmail(email)){
       props.setDriveUsers({
-      driveId:props.driveId,
-      type:props.type,
-      email
-    })
-    props.open(false);
+          driveId:props.driveId,
+          type:props.type,
+          email,
+          callback
+        })
+      props.open(false);
+    }else{
+      //Toast invalid email
+      console.log(`Not Added: Invalid email ${email}`)
+    }
+
+    //TODO: when set async available replace this.
+    function callback(resp){
+      props.setDriveUsers({
+        driveId:props.driveId,
+        type:`${props.type} step 2`,
+        email,
+        screenName:resp.screenName,
+        userId:resp.userId
+      })
+    }
+    
   }
 
-  return <div>
-    <label>Enter Email Address<br />
+  return <><div>
+    <label>User&#39;s Email Address<br />
     <input type="text" value={email} 
     onChange={(e)=>{setEmail(e.target.value)}}
     onKeyDown={(e)=>{if (e.keyCode === 13){ 
@@ -625,8 +665,11 @@ function NewUser(props){
       addUser();
     }}
     /></label>
-    {/* <Button text="Add" /> */}
   </div>
+    <Button text="Submit" callback={()=>addUser()}/>
+    <Button text="Cancel" callback={()=>props.open(false)}/>
+    </>
+
 }
 
 const DriveInfoPanel = function(props){
@@ -635,6 +678,7 @@ const DriveInfoPanel = function(props){
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const driveId = props.driveId;
   const [driveUsers,setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
+
   const [selectedUserId,setSelectedUserId] = useState("");
   const [shouldAddOwners,setAddOwners] = useState(false);
   const [shouldAddAdmins,setAddAdmins] = useState(false);
@@ -690,6 +734,7 @@ const DriveInfoPanel = function(props){
       setDriveUsers={setDriveUsers}
       userRole="owner"
       isOwner={isOwner}
+      numOwners={driveUsers.contents.owners.length}
       />)
   }
   for (let admin of driveUsers.contents.admins){
