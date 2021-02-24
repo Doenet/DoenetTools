@@ -14,6 +14,48 @@ export default class NumberList extends InlineComponent {
     return properties;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+
+    let breakStringsIntoNumbersByCommas = function ({ matchedChildren }) {
+
+      // break any string by commas,
+      // removing any empty (white space only) pieces
+      // and wrap pieces with number
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(",")
+              .map(s => s.trim())
+              .filter(s => s)
+              .map(s => ({
+                componentType: "number",
+                children: [{ componentType: "string", state: { value: s } }]
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+    }
+
+
+    sugarInstructions.push({
+      replacementFunction: breakStringsIntoNumbersByCommas
+    });
+
+    return sugarInstructions;
+
+  }
+
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -32,65 +74,12 @@ export default class NumberList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoNumbersByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.stringChildren[0];
-
-      let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim()).filter(x => x != "");
-      let newChildren = [];
-
-      for (let piece of stringPieces) {
-        let number = Number(piece);
-        if (Number.isNaN(number)) {
-          try {
-            number = me.fromText(piece).evaluate_to_constant();
-            if (number === null) {
-              number = NaN;
-            }
-          } catch (e) {
-            number = NaN;
-          }
-        }
-        newChildren.push({
-          componentType: "number",
-          state: { value: number },
-        });
-      }
-
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChildren: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroNumbers"],
-      replacementFunction: breakStringIntoNumbersByCommas,
-    });
-
-    let numberAndNumberLists = childLogic.newOperator({
+    childLogic.newOperator({
       name: "numberAndNumberLists",
       operator: "and",
-      propositions: [atLeastZeroNumbers, atLeastZeroNumberlists]
-    })
-
-    childLogic.newOperator({
-      name: "numbersXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, numberAndNumberLists],
+      propositions: [atLeastZeroNumbers, atLeastZeroNumberlists],
       setAsBase: true,
-    });
+    })
 
     return childLogic;
   }

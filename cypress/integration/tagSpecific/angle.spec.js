@@ -24,14 +24,18 @@ describe('Angle Tag Tests', function () {
   <mathinput prefill="2"/>
 
   <graph>
-  <point>(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /></x>
+    <y><copy prop="value" tname="_mathinput2" /></y>
+  </point>
   <point>(2,4)</point>
   <point>(4,2)</point>
     <angle>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-      <copy tname="_point3" />
+      <through>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+        <copy tname="_point3" />
+      </through>
     </angle>
   </graph>
   `}, "*");
@@ -104,19 +108,29 @@ describe('Angle Tag Tests', function () {
   <mathinput prefill="2"/>
 
   <graph>
-  <point>(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</point>
-  <point>(<copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput3" />),
-    <copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput3" />))</point>
-  <point>(<copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput4" />),
-    <copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput4" />))</point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /></x>
+    <y><copy prop="value" tname="_mathinput2" /></y>
+  </point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput3" />)</x>
+    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput3" />)</y>
+  </point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput4" />)</x>
+    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput4" />)</y>
+    </point>
   <line>
-    <copy tname="_point1" />
-    <copy tname="_point2" />
+    <through>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+    </through>
   </line>
   <line>
-    <copy tname="_point1" />
-    <copy tname="_point3" />
+    <through>
+      <copy tname="_point1" />
+      <copy tname="_point3" />
+    </through>
   </line>
 
   <angle radius="2">
@@ -197,9 +211,18 @@ describe('Angle Tag Tests', function () {
   <copy prop="angle" tname="_angle1" />
 
   <graph>
-  <line>(1,2),(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</line>
-  <line>(6,2),(8,4)</line>
+  <line>
+    <through>
+      <point>(1,2)</point>
+      <point>
+        <xs>
+          <copy prop="value" tname="_mathinput1" />
+          <copy prop="value" tname="_mathinput2" />
+        </xs>
+      </point>
+    </through>
+  </line>
+  <line><through>(6,2),(8,4)</through></line>
 
   <angle>
     <copy tname="_line1" />
@@ -260,9 +283,9 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point>(<math>7cos(1)</math>,<math>7sin(1)</math>)</point>
-    <angle><radius><copy prop="value" tname="_mathinput1" /></radius>
-      <copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" />
+    <point><xs><math>7cos(1)</math><math>7sin(1)</math></xs></point>
+    <angle radius="$_mathinput1">
+      <through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through>
     </angle>
   </graph>
   <copy name="alpha" prop="angle" tname="_angle1" />
@@ -327,13 +350,13 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point>
-      (<math>8cos(<copy prop="value" tname="_mathinput1" />)</math>,
-      <math>8sin(<copy prop="value" tname="_mathinput1" />)</math>)
-    </point>
-    <angle>
+    <point><xs>
+      <math>8cos(<copy prop="value" tname="_mathinput1" />)</math>
+      <math>8sin(<copy prop="value" tname="_mathinput1" />)</math>
+    </xs></point>
+    <angle><through>
       <copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" />
-    </angle>
+    </through></angle>
   </graph>
   <p><copy name="alpha" prop="angle" tname="_angle1" /></p>
   <p><copy name="alphadeg" prop="degrees" tname="_angle1" /></p>

@@ -122,7 +122,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('sugar <through> from string', () => {
+  it.skip('sugar <through> from string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -159,7 +159,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('sugar <through> from strings and maths', () => {
+  it('<through> with points from strings and maths', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -168,7 +168,13 @@ describe('Line Tag Tests', function () {
   <math>2</math>
   <graph>
     <line label='l'>
-      (<copy tname="_math1" />,<copy tname="_math2" />),(<math>4</math>,7)
+      <through>
+        <point>
+          <x><copy tname="_math1" /></x>
+          <y><copy tname="_math2" /></y>
+        </point>
+        <point>(4,7)</point>
+      </through>
     </line>
   </graph>
     `}, "*");
@@ -199,41 +205,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('sugar <through> from <points>', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <math>1</math>
-  <math>2</math>
-  <graph>
-    <line label='l'>
-      <point>(<copy tname="_math1" />,<copy tname="_math2" />)</point>
-      <point>(<math>4</math>,7)</point>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('points are where they should be')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 1, 2])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 7])
-
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-    })
-  })
-
-  it('sugar <point> label as a component', () => {
+  it.skip('sugar <point> label as a component', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -407,7 +379,7 @@ describe('Line Tag Tests', function () {
 
   });
 
-  it('line from sugared equation, multiple pieces', () => {
+  it('line from equation, multiple pieces', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -416,7 +388,9 @@ describe('Line Tag Tests', function () {
   <number>2</number>
   <graph>
     <line>
-      <copy tname="_math1" />-<copy tname="_number1" />y=3
+      <equation>
+        <copy tname="_math1" />-<copy tname="_number1" />y=3
+      </equation>
     </line>
   </graph>
   `}, "*");
@@ -993,7 +967,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line>(1,2),(3,4)</line>
+  <line><through>(1,2),(3,4)</through></line>
   </graph>
   <graph>
   <copy prop="point1" tname="_line1" />
@@ -1174,11 +1148,13 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line>(-1,-2),(-3,-4)</line>
+  <line><through>(-1,-2),(-3,-4)</through></line>
   </graph>
   <graph>
   <line>
-    <copy prop="points" tname="_line1" />
+    <through>
+      <copy prop="points" tname="_line1" />
+    </through>
   </line>
   <copy prop="points" tname="_line1" />
   </graph>
@@ -1318,7 +1294,7 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line>
-      (5,-4),(1,4)
+      <through>(5,-4),(1,4)</through>
     </line>
   </graph>
 
@@ -1391,7 +1367,7 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line>
-      (5,1),(1,5)
+      <through>(5,1),(1,5)</through>
     </line>
   </graph>
   <graph>
@@ -1399,7 +1375,9 @@ describe('Line Tag Tests', function () {
   </graph>
   <graph>
   <line variables="u,v">
-    <copy prop="coeffvar1" tname="_line1" />u + <copy prop="coeffvar2" tname="_line1" />v + <copy prop="coeff0" tname="_line1" /> =0
+    <equation>
+      <copy prop="coeffvar1" tname="_line1" />u + <copy prop="coeffvar2" tname="_line1" />v + <copy prop="coeff0" tname="_line1" /> =0
+    </equation>
   </line>
   </graph>
   `}, "*");
@@ -1470,10 +1448,13 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
   <line>
-    <point>(1,2)</point>
-    <point>
-      (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
-    </point>
+    <through>
+      <point>(1,2)</point>
+      <point>
+        <x><copy prop="y" tname="_point1" /></x>
+        <y><copy prop="x" tname="_point1" /></y>
+      </point>
+    </through>
   </line> 
   <point name="x1">
     <x><extract prop="x"><copy prop="point1" tname="_line1" /></extract></x>
@@ -2732,7 +2713,7 @@ describe('Line Tag Tests', function () {
         </point>
       </template>
       <sources>
-        <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
+        <sequence count="$_mathinput1" />
       </sources>
     </map>
     </through></line>
@@ -3875,10 +3856,10 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point>(<copySource/>, 2<copySource/>)</point>
+        <point><x><copySource/></x><y>2<copySource/></y></point>
       </template>
       <sources>
-        <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
+        <sequence count="$_mathinput1" />
       </sources>
     </map>
     </through></line>
@@ -5750,10 +5731,9 @@ describe('Line Tag Tests', function () {
   <p><booleaninput label="Hide line" name="hidel" prefill="true" /></p>
   <p><booleaninput label="Hide first point" name="hidep" prefill="false" /></p>
   <graph>
-    <line label='l'>
-      <hide><copy prop="value" tname="hidel" /></hide>
+    <line label='l' hide="$hidel">
       <through hide="false">
-        <point><hide><copy prop="value" tname="hidep" /></hide>(1,2)</point>
+        <point hide="$hidep">(1,2)</point>
         <point>(4,7)</point>
       </through>
     </line>
@@ -5761,7 +5741,9 @@ describe('Line Tag Tests', function () {
     `}, "*");
     });
 
-    // TODO: find a way to check if points/lines are actually hidden in renderer
+    // TODO: line never render its children, so point is never shown.
+    // Should we just delete this test?  It never checked the renderers
+    // so the state variables check still work
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 

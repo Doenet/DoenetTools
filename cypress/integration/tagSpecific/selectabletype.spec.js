@@ -173,41 +173,6 @@ describe('Selectable Type Tag Tests', function () {
     })
   });
 
-  it('from with type from originally unresolved copy', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <from>
-      <type><copy tname="_text2" /></type>
-      x^2
-    </from>
-    <copy prop="value" tname="_from1" />
-    <text>math</text>
-    `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathAnchor = cesc("#" + components["/_copy2"].replacements[0].componentName);
-
-      cy.get(mathAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2')
-      })
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("math");
-        expect(components['/_from1'].stateValues.value.tree).eqls(['^', 'x', 2]);
-
-      })
-    })
-
-  });
-
   it('exclude with number string', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -291,47 +256,6 @@ describe('Selectable Type Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components['/_exclude1'].stateValues.selectedType).eq("text");
         expect(components['/_exclude1'].stateValues.values).eqls(['2', 'i']);
-      })
-    })
-
-  });
-
-
-  it('exclude with type from originally unresolved copy', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <exclude>
-      <type><copy tname="_text2" /></type>
-      x^2, b/u
-    </exclude>
-    <copy prop="values" tname="_exclude1" />
-    <text>math</text>
-    `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let math1Anchor = cesc("#" + components["/_copy2"].replacements[0].componentName);
-      let math2Anchor = cesc("#" + components["/_copy2"].replacements[1].componentName);
-
-      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x2')
-      })
-      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('bu')
-      })
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_exclude1'].stateValues.selectedType).eq("math");
-        expect(components['/_exclude1'].stateValues.values[0].tree).eqls(['^', 'x', 2]);
-        expect(components['/_exclude1'].stateValues.values[1].tree).eqls(['/', 'b', 'u']);
-
       })
     })
 

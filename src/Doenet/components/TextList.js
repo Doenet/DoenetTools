@@ -15,6 +15,31 @@ export default class TextList extends InlineComponent {
     return properties;
   }
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let breakStringIntoTextsByCommas = function ({ matchedChildren }) {
+      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
+        componentType: "text",
+        state: { value: x.trim() }
+      }));
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+    }
+
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: breakStringIntoTextsByCommas
+    });
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -32,47 +57,12 @@ export default class TextList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoTextsByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.stringChildren[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
-        componentType: "text",
-        state: { value: x.trim() }
-      }));
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChildren: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroTexts"],
-      replacementFunction: breakStringIntoTextsByCommas,
-    });
-
-    let textAndTextLists = childLogic.newOperator({
+    childLogic.newOperator({
       name: "textAndTextLists",
       operator: "and",
-      propositions: [atLeastZeroTexts, atLeastZeroTextlists]
-    })
-
-    childLogic.newOperator({
-      name: "textsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, textAndTextLists],
+      propositions: [atLeastZeroTexts, atLeastZeroTextlists],
       setAsBase: true,
-    });
+    })
 
     return childLogic;
   }

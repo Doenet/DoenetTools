@@ -42,8 +42,6 @@ export default class CopySource extends Copy {
       stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSources"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
         let sourcesInfo = sharedParameters.sourcesInfo;
-        console.log(`definition of targetSourceName`)
-        console.log(sharedParameters);
 
         if (sourcesInfo === undefined) {
           throw Error(`copySource can only be inside a map template.`);

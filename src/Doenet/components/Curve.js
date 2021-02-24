@@ -317,40 +317,40 @@ export default class Curve extends GraphicalComponent {
 
     }
 
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
+    // let atLeastOneString = childLogic.newLeaf({
+    //   name: "atLeastOneString",
+    //   componentType: 'string',
+    //   comparison: 'atLeast',
+    //   number: 1,
+    // });
 
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
+    // let atLeastOneMath = childLogic.newLeaf({
+    //   name: "atLeastOneMath",
+    //   componentType: 'math',
+    //   comparison: 'atLeast',
+    //   number: 1,
+    // });
 
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "child",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"],
-        },
-        variables: {
-          dependencyType: "stateVariable",
-          variableName: "variables"
-        },
-      }),
-      logicToWaitOnSugar: ["exactlyOneCurve"],
-      replacementFunction: createParametrizationFunctionOrThrough,
-    });
+    // let stringsAndMaths = childLogic.newOperator({
+    //   name: "stringsAndMaths",
+    //   operator: 'or',
+    //   propositions: [atLeastOneString, atLeastOneMath],
+    //   requireConsecutive: true,
+    //   isSugar: true,
+    //   returnSugarDependencies: () => ({
+    //     stringsAndMaths: {
+    //       dependencyType: "child",
+    //       childLogicName: "stringsAndMaths",
+    //       variableNames: ["value"],
+    //     },
+    //     variables: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "variables"
+    //     },
+    //   }),
+    //   logicToWaitOnSugar: ["exactlyOneCurve"],
+    //   replacementFunction: createParametrizationFunctionOrThrough,
+    // });
 
 
     let addThroughAndBezierCurve = function ({ activeChildrenMatched }) {
@@ -371,15 +371,15 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
-    let atLeastOnePoint = childLogic.newLeaf({
-      name: "atLeastOnePoint",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneCurve"],
-      replacementFunction: addThroughAndBezierCurve,
-    });
+    // let atLeastOnePoint = childLogic.newLeaf({
+    //   name: "atLeastOnePoint",
+    //   componentType: 'point',
+    //   comparison: 'atLeast',
+    //   number: 1,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["exactlyOneCurve"],
+    //   replacementFunction: addThroughAndBezierCurve,
+    // });
 
 
     let addBezierCurve = function ({ activeChildrenMatched }) {
@@ -396,14 +396,14 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
-      componentType: 'through',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneCurve"],
-      replacementFunction: addBezierCurve,
-    });
+    // let exactlyOneThrough = childLogic.newLeaf({
+    //   name: "exactlyOneThrough",
+    //   componentType: 'through',
+    //   number: 1,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["exactlyOneCurve"],
+    //   replacementFunction: addBezierCurve,
+    // });
 
 
     let addFunctionCurve = function ({ activeChildrenMatched }) {
@@ -424,14 +424,14 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
-    let exactlyOneFunction = childLogic.newLeaf({
-      name: "exactlyOneFunction",
-      componentType: 'function',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneCurve"],
-      replacementFunction: addFunctionCurve,
-    });
+    // let exactlyOneFunction = childLogic.newLeaf({
+    //   name: "exactlyOneFunction",
+    //   componentType: 'function',
+    //   number: 1,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["exactlyOneCurve"],
+    //   replacementFunction: addFunctionCurve,
+    // });
 
 
     let addParametrizedCurve = function ({ activeChildrenMatched }) {
@@ -453,15 +453,15 @@ export default class Curve extends GraphicalComponent {
     }
 
 
-    let atLeastTwoFunctions = childLogic.newLeaf({
-      name: "atLeastTwoFunctions",
-      componentType: 'function',
-      comparison: 'atLeast',
-      number: 2,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneCurve"],
-      replacementFunction: addParametrizedCurve,
-    });
+    // let atLeastTwoFunctions = childLogic.newLeaf({
+    //   name: "atLeastTwoFunctions",
+    //   componentType: 'function',
+    //   comparison: 'atLeast',
+    //   number: 2,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["exactlyOneCurve"],
+    //   replacementFunction: addParametrizedCurve,
+    // });
 
     let exactlyOneCurve = childLogic.newLeaf({
       name: "exactlyOneCurve",
@@ -469,15 +469,15 @@ export default class Curve extends GraphicalComponent {
       number: 1,
     })
 
-    let curveXorSugar = childLogic.newOperator({
-      name: "curveXorSugar",
-      operator: 'xor',
-      propositions: [
-        stringsAndMaths, atLeastOnePoint, exactlyOneThrough,
-        atLeastTwoFunctions, exactlyOneFunction,
-        exactlyOneCurve
-      ],
-    });
+    // let curveXorSugar = childLogic.newOperator({
+    //   name: "curveXorSugar",
+    //   operator: 'xor',
+    //   propositions: [
+    //     stringsAndMaths, atLeastOnePoint, exactlyOneThrough,
+    //     atLeastTwoFunctions, exactlyOneFunction,
+    //     exactlyOneCurve
+    //   ],
+    // });
 
     let atMostOneVariables = childLogic.newLeaf({
       name: "atMostOneVariables",
@@ -489,7 +489,7 @@ export default class Curve extends GraphicalComponent {
     childLogic.newOperator({
       name: "curveLogic",
       operator: 'and',
-      propositions: [curveXorSugar, atMostOneVariables],
+      propositions: [exactlyOneCurve, atMostOneVariables],
       setAsBase: true,
     });
 

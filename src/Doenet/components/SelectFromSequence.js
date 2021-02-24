@@ -283,7 +283,7 @@ export default class SelectFromSequence extends Sequence {
           for (let grandchild of child.children) {
             if (grandchild.componentType === "string") {
               foundValid = true;
-              if (["true", "t"].includes(grandchild.state.value.trim().toLowerCase())) {
+              if (grandchild.state.value.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -511,8 +511,8 @@ export default class SelectFromSequence extends Sequence {
 
 
 function makeSelection({ dependencyValues }) {
-  console.log(`make selection`)
-  console.log(dependencyValues)
+  // console.log(`make selection`)
+  // console.log(dependencyValues)
 
   // if (dependencyValues.essentialSelectedValues !== null) {
   //   return {

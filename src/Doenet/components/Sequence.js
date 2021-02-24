@@ -6,163 +6,74 @@ import { processAssignNames } from '../utils/serializedStateProcessing';
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
 
+  static acceptType = true;
+
   static assignNamesToReplacements = true;
 
   static modifySharedParameters({ sharedParameters }) {
     sharedParameters.defaultToPrescribedParameters = true;
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.type = { default: null, propagateToDescendants: true };
-    return properties;
-  }
+  // don't actually need to shadow these, as replacements for shadows
+  // ignore state variables
+  // but, shadow them so that state variables are consistent
+  // since propertyChildren aren't copied
+  static get stateVariablesShadowedForReference() {
+    return [
+      "specifiedFrom", "typeOfFrom",
+      "specifiedTo", "typeOfTo",
+      "specifiedCount", "specifiedStep", "specifiedExclude"
+    ]
+  };
 
+ 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
-    let standardComponentClasses = args.standardComponentClasses;
-
-    function fromToAsString({ dependencyValues }) {
-
-      let stringChild = dependencyValues.stringChild[0];
-      let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim());
-
-      if (stringPieces.length > 2) {
-        return { success: false };
-      }
-
-      let newType = dependencyValues.type;
-
-      if (newType === null) {
-        if (/^[a-zA-Z]+$/.test(stringPieces[0])) {
-          newType = "letters";
-        } else if (Number.isFinite(Number(stringPieces[0]))) {
-          newType = "number";
-        } else {
-          newType = "text";
-        }
-      }
-
-      if (!(newType in standardComponentClasses)) {
-        // if didn't get a valid type, sugar fails
-        return { success: false }
-      }
-
-      if (stringPieces.length === 1) {
-        let toComponent = {
-          componentType: "to",
-          children: [{
-            componentType: newType,
-            children: [{
-              createdComponent: true,
-              componentName: stringChild.componentName
-            }]
-          }]
-        };
-        return {
-          success: true,
-          newChildren: [toComponent],
-        }
-      } else {
-        let fromComponent = {
-          componentType: "from",
-          children: [{
-            componentType: newType,
-            children: [{
-              componentType: "string",
-              state: { value: stringPieces[0].trim() }
-            }]
-          }]
-        };
-        let toComponent = {
-          componentType: "to",
-          children: [{
-            componentType: newType,
-            children: [{
-              componentType: "string",
-              state: { value: stringPieces[1].trim() }
-            }]
-          }]
-        };
-        return {
-          success: true,
-          newChildren: [fromComponent, toComponent],
-          toDelete: [stringChild.componentName],
-        }
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        stringChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atMostOneFrom", "atMostOneTo"],
-      replacementFunction: fromToAsString,
-    });
 
     let atMostOneFrom = childLogic.newLeaf({
       name: "atMostOneFrom",
       componentType: 'from',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneTo = childLogic.newLeaf({
       name: "atMostOneTo",
       componentType: 'to',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
-
-    let toFrom = childLogic.newOperator({
-      name: "toFrom",
-      operator: "and",
-      propositions: [atMostOneFrom, atMostOneTo]
-    })
-
-    let sugarXorToFrom = childLogic.newOperator({
-      name: "sugarXorToFrom",
-      operator: "xor",
-      propositions: [exactlyOneString, toFrom]
-    })
 
     let atMostOneStep = childLogic.newLeaf({
       name: "atMostOneStep",
       componentType: 'step',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneCount = childLogic.newLeaf({
       name: "atMostOneCount",
       componentType: 'count',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
-    let atLeastZeroExcludes = childLogic.newLeaf({
-      name: "atLeastZeroExcludes",
+    let atMostOneExclude = childLogic.newLeaf({
+      name: "atMostOneExclude",
       componentType: 'exclude',
-      comparison: "atLeast",
-      number: 0
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
       name: "sequenceLogic",
       operator: 'and',
-      propositions: [sugarXorToFrom, atMostOneStep, atMostOneCount, atLeastZeroExcludes],
+      propositions: [atMostOneFrom, atMostOneTo, atMostOneStep, atMostOneCount, atMostOneExclude],
       setAsBase: true,
     });
 
@@ -260,8 +171,8 @@ export default class Sequence extends CompositeComponent {
     stateVariableDefinitions.selectedType = {
       returnDependencies: () => ({
         type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
+          dependencyType: "doenetAttribute",
+          attributeName: "type",
         },
         typeOfFrom: {
           dependencyType: "stateVariable",
@@ -274,13 +185,13 @@ export default class Sequence extends CompositeComponent {
 
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.type !== null) {
+        if (dependencyValues.type) {
           return { newValues: { selectedType: dependencyValues.type } };
         }
-        if (dependencyValues.typeOfFrom !== null) {
+        if (dependencyValues.typeOfFrom) {
           return { newValues: { selectedType: dependencyValues.typeOfFrom } };
         }
-        if (dependencyValues.typeOfTo !== null) {
+        if (dependencyValues.typeOfTo) {
           return { newValues: { selectedType: dependencyValues.typeOfTo } };
         }
 
@@ -367,7 +278,7 @@ export default class Sequence extends CompositeComponent {
       returnDependencies: () => ({
         excludeChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroExcludes",
+          childLogicName: "atMostOneExclude",
           variableNames: ["values"],
           requireChildLogicInitiallySatisfied: true
         },
@@ -384,7 +295,7 @@ export default class Sequence extends CompositeComponent {
         return {
           newValues: {
             specifiedExclude:
-              dependencyValues.excludeChildren.reduce((a, c) => [...a, ...c.stateValues.values], [])
+              dependencyValues.excludeChildren[0].stateValues.values
           }
         };
       },
@@ -597,16 +508,22 @@ export default class Sequence extends CompositeComponent {
             if (to !== null) {
               if (to instanceof me.class) {
                 to = to.evaluate_to_constant();
+              } else {
+                to = Number(to);
               }
             }
             if (from !== null) {
               if (from instanceof me.class) {
                 from = from.evaluate_to_constant();
+              } else {
+                from = Number(from)
               }
             }
             for (let [index, value] of exclude.entries()) {
               if (value instanceof me.class) {
                 exclude[index] = value.evaluate_to_constant();
+              } else {
+                exclude[index] = Number(value);
               }
             }
           }

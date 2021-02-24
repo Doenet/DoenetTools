@@ -19,58 +19,41 @@ export default class Graph extends BlockComponent {
     return properties;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let addCurve = function ({ activeChildrenMatched, dependencyValues }) {
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addCurve = function ({ matchedChildren }) {
       // add <curve> around strings, as long as they don't have points
-      let curveChildren = [];
-      for (let child of dependencyValues.atLeastOneString) {
-        if (child.stateValues.value.includes(",")) {
-          return { success: false };
-        }
-        curveChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
+      if (matchedChildren[0].state.value.includes(",")) {
+        return { success: false }
       }
       return {
         success: true,
-        newChildren: [{ componentType: "curve", children: curveChildren }],
+        newChildren: [{ componentType: "curve", children: matchedChildren }],
       }
     }
 
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        atLeastOneString: {
-          dependencyType: "child",
-          childLogicName: "atLeastOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroGraphical"],
-      replacementFunction: addCurve,
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: addCurve
     });
 
-    let atLeastZeroGraphical = childLogic.newLeaf({
+    return sugarInstructions;
+
+  }
+
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
       name: "atLeastZeroGraphical",
       componentType: '_graphical',
       comparison: 'atLeast',
       number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "sugarXorGraph",
-      operator: "xor",
-      propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,
-    })
+    });
 
     return childLogic;
   }

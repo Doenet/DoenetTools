@@ -96,11 +96,11 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
-    <point>
-      <label><copy prop="label" tname="_point1" />'</label>
+    <point label="$l'">
       (1,3)
     </point>
   </graph>
+  <copy prop="label" tname="_point1" name="l" hide />
   <copy prop="x2" tname="_point2" />
     `}, "*");
     });
@@ -935,8 +935,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <constrainToGrid/>
-  (1,2)
+    <constraints>
+      <constrainToGrid/>
+    </constraints>
+    <x>1</x><y>2</y>
   </point>
 
   </graph>
@@ -985,9 +987,11 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <constrainToGrid dx="2" dy="2"/>
-  <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
-  (1,3.1)
+    <constraints>
+      <constrainToGrid dx="2" dy="2"/>
+      <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
+    </constraints>
+    <xs>1,3.1</xs>
   </point>
 
   </graph>
@@ -1041,9 +1045,11 @@ describe('Point Tag Tests', function () {
   <graph>
     <point name="original">(1,2)</point>
     <point name="constrained">
-      <constrainToGrid/>
-        (<copy prop="x" tname="original" />+1,
-          <copy prop="y" tname="original" />+1)
+      <constraints>
+        <constrainToGrid/>
+      </constraints>
+      <x><copy prop="x" tname="original" />+1</x>
+      <y><copy prop="y" tname="original" />+1</y>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1168,14 +1174,11 @@ describe('Point Tag Tests', function () {
   <graph>
     <point name="original">(1.2,3.6)</point>
     <point name="constrained">
-    <constrainToGrid>
-      <dx><copy prop="value" tname="dx" /></dx>
-      <dy><copy prop="value" tname="dy" /></dy>
-      <xoffset><copy prop="value" tname="xoffset" /></xoffset>
-      <yoffset><copy prop="value" tname="yoffset" /></yoffset>
-    </constrainToGrid>
-        (<copy prop="x" tname="original" />+1,
-          <copy prop="y" tname="original" />+1)
+      <constraints>
+        <constrainToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" />
+      </constraints>
+      <xs><x><copy prop="x" tname="original" />+1</x>
+        <x><copy prop="y" tname="original" />+1</x></xs>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1328,8 +1331,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <attractToGrid/>
-  (-7.1,8.9)
+    <constraints>
+      <attractToGrid/>
+    </constraints>
+    <xs>-7.1,8.9</xs>
   </point>
 
   </graph>
@@ -1391,8 +1396,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <attractToGrid includeGridlines="true"/>
-  (3.1,-3.4)
+    <constraints>
+      <attractToGrid includeGridlines="true"/>
+    </constraints>
+    <xs>3.1,-3.4</xs>
   </point>
 
   </graph>
@@ -1479,15 +1486,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-    <attractToGrid>
-      <dx><copy prop="value" tname="dx" /></dx>
-      <dy><copy prop="value" tname="dy" /></dy>
-      <xoffset><copy prop="value" tname="xoffset" /></xoffset>
-      <yoffset><copy prop="value" tname="yoffset" /></yoffset>
-      <xthreshold><copy prop="value" tname="xthreshold" /></xthreshold>
-      <ythreshold><copy prop="value" tname="ythreshold" /></ythreshold>
-      </attractToGrid>
-  (-7.1,8.9)
+    <constraints>
+      <attractToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" xthreshold="$xthreshold" ythreshold="$ythreshold" />
+    </constraints>
+    <xs>-7.1,8.9</xs>
   </point>
 
   </graph>
@@ -1583,8 +1585,10 @@ describe('Point Tag Tests', function () {
     </through>
   </line>
   <point name="A">
-    <constrainTo><copy tname="_line1" /></constrainTo>
-    (-1,-5)
+    <constraints>
+      <constrainTo><copy tname="_line1" /></constrainTo>
+    </constraints>
+    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1653,8 +1657,10 @@ describe('Point Tag Tests', function () {
     </through>
   </line>
   <point name="A">
-    <attractTo><copy tname="_line1" /></attractTo>
-    (-1,-5)
+    <constraints>
+      <attractTo><copy tname="_line1" /></attractTo>
+    </constraints>
+    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1724,12 +1730,14 @@ describe('Point Tag Tests', function () {
   </map>
 
   <point>
+    <constraints>
     <constrainTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
       <copy tname="_map1" />
     </constrainTo>
-    (3,2)
+    </constraints>
+    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1799,12 +1807,14 @@ describe('Point Tag Tests', function () {
   </map>
 
   <point>
-    <attractTo threshold="1">
-      <copy tname="_line1" />
-      <copy tname="_line2" />
-      <copy tname="_map1" />
-    </attractTo>
-    (3,2)
+    <constraints>
+      <attractTo threshold="1">
+        <copy tname="_line1" />
+        <copy tname="_line2" />
+        <copy tname="_map1" />
+      </attractTo>
+    </constraints>
+    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1893,13 +1903,15 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constraintUnion>
       <constrainTo><copy tname="_line1" /></constrainTo>
       <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
       <constrainTo><copy tname="_line4" /></constrainTo>
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1973,6 +1985,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constraintToAttractor>
       <constraintUnion>
         <constrainTo><copy tname="_line1" /></constrainTo>
@@ -1981,7 +1994,8 @@ describe('Point Tag Tests', function () {
         <constrainToGrid dx="2" dy="2"/>
       </constraintUnion>
     </constraintToAttractor>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2086,6 +2100,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <attractTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
@@ -2100,7 +2115,8 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2253,6 +2269,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constrainTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
@@ -2267,7 +2284,8 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2469,88 +2487,8 @@ describe('Point Tag Tests', function () {
 
   });
 
-  it('point constrained to grid as a property', () => {
-    // included many properties so that constrainToGrid
-    // is likely to have property children on either side
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point name='A' label="A" constrainToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  <point name="B" label="B" constrainToGrid modifyIndirectly hide="false" draggable>(2,3)</point>
-  <point name="C" label="C" constrainToGrid="false" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  </graph>
-  `}, "*");
-    });
-
-
-    // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-
-    cy.log(`check constraints`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.2, y: 5.1 });
-      components['/B'].movePoint({ x: 4.2, y: 6.1 });
-      components['/C'].movePoint({ x: 5.2, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.2);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-
-  });
-
-  it('point attracted to grid as a property', () => {
-    // included many properties so that constrainToGrid
-    // is likely to have property children on either side
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point name="A" label="A" attractToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  <point name="B" label="B" attractToGrid modifyIndirectly hide="false" draggable>(2,3)</point>
-  <point name="C" label="C" attractToGrid="false" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  </graph>
-  `}, "*");
-    });
-
-    // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-
-    cy.log(`check attraction`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.1, y: 5.1 });
-      components['/B'].movePoint({ x: 4.1, y: 6.1 });
-      components['/C'].movePoint({ x: 5.1, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.1);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-
-    cy.log(`too far to attract`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.3, y: 5.1 });
-      components['/B'].movePoint({ x: 4.3, y: 6.1 });
-      components['/C'].movePoint({ x: 5.3, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3.3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5.1);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4.3);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6.1);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.3);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-  });
-
+  // gap not so relevant any more with new sugar
+  // but doesn't hurt to keep test
   it('sugar coords with defining gap', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -2558,7 +2496,7 @@ describe('Point Tag Tests', function () {
   <mathinput name="n"/>
 
   <graph>
-    <point>(<math>5</math><sequence from="2"><to><copy prop="value" tname="n" /></to></sequence><math>1</math>,4 )</point>
+    <point>(<math>5</math><sequence from="2" to="$n" /><math>1</math>,4 )</point>
   </graph>
 
   <text>a</text>
@@ -3638,13 +3576,13 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <text name="l1" hide><copy prop="x" displaydigits="3" tname="_point1" />, <copy prop="x" displaydigits="3" tname="_point2" /></text>
+  <text name="l2" hide><copy prop="y" displaydigits="3" tname="_point1" />, <copy prop="y" displaydigits="3" tname="_point2" /></text>
   <graph>
-    <point>
-      <label><copy prop="x" displaydigits="3" tname="_point1" />, <copy prop="x" displaydigits="3" tname="_point2" /></label>
+    <point label="$l1">
       (1,2)
     </point>
-    <point>
-      <label><copy prop="y" displaydigits="3" tname="_point1" />, <copy prop="y" displaydigits="3" tname="_point2" /></label>
+    <point label="$l2">
       (3,4)
     </point>
   </graph>
@@ -3754,8 +3692,10 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <graph>
       <point>
-        <attractTo><point>(1,-7)</point></attractTo>
-        (-4,1)
+        <constraints>
+          <attractTo><point>(1,-7)</point></attractTo>
+        </constraints>
+        <x>-4</x><y>1</y>
       </point>
       <point>
         <x><copy prop="x" tname="_point1" /></x>

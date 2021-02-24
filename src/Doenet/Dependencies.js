@@ -209,19 +209,21 @@ export class DependencyHandler {
       if (!(dependencyDefinition.dependencyType in this.dependencyTypes)) {
         throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType} for ${dependencyName} of ${stateVariable} of ${component.componentName}`);
       }
-      new this.dependencyTypes[dependencyDefinition.dependencyType]({
+      let dep = new this.dependencyTypes[dependencyDefinition.dependencyType]({
         component, stateVariable, allStateVariablesAffected,
         dependencyName, dependencyDefinition,
         dependencyHandler: this,
         updatesNeeded, compositesBeingExpanded
       })
+
+      dep.checkForCircular();
     }
 
   }
 
 
   createDetermineDependenciesStateVariable({
-    stateVariable, component, allStateVariablesAffected, componentIsAProperty,
+    stateVariable, component, allStateVariablesAffected,
     updatesNeeded, compositesBeingExpanded
   }) {
 
@@ -647,6 +649,8 @@ export class DependencyHandler {
 
       let dependenciesCouldNotUpdate = [];
 
+      let newlyCreatedDependencies = [];
+
       for (let updateObj of updatesNeeded.componentsToUpdateDependencies) {
 
         let component = this._components[updateObj.componentName];
@@ -728,12 +732,14 @@ export class DependencyHandler {
           }
           let newDependencies = stateVarObj.returnDependencies(returnDepArgs);
 
-          let changedDependency = this.replaceDependenciesIfChanged({
+          let changeResult = this.replaceDependenciesIfChanged({
             component, stateVariable, newDependencies, allStateVariablesAffected,
             updatesNeeded, compositesBeingExpanded
           });
 
-          if (changedDependency || returnDepArgs.changedDependency) {// || arraySizeChanged) {
+          newlyCreatedDependencies.push(...changeResult.newlyCreatedDependencies);
+
+          if (changeResult.changedDependency || returnDepArgs.changedDependency) {// || arraySizeChanged) {
             dependencyChanges.push({
               componentName: component.componentName,
               stateVariable,
@@ -742,6 +748,10 @@ export class DependencyHandler {
           }
 
         }
+      }
+
+      for (let dep of newlyCreatedDependencies) {
+        dep.checkForCircular();
       }
 
       console.log("dependencyChanges")
@@ -886,6 +896,8 @@ export class DependencyHandler {
 
     let changedDependency = false;
 
+    let newlyCreatedDependencies = [];
+
     for (let dependencyName in currentDeps) {
       if (!(dependencyName in newDependencies)) {
         changedDependency = true;
@@ -903,26 +915,30 @@ export class DependencyHandler {
 
           let dependencyDefinition = newDependencies[dependencyName];
 
-          new this.dependencyTypes[dependencyDefinition.dependencyType]({
+          let dep = new this.dependencyTypes[dependencyDefinition.dependencyType]({
             component, stateVariable, allStateVariablesAffected,
             dependencyName, dependencyDefinition,
             dependencyHandler: this,
             updatesNeeded, compositesBeingExpanded
           });
+
+          newlyCreatedDependencies.push(dep);
+
         }
       } else {
         changedDependency = true;
         let dependencyDefinition = newDependencies[dependencyName];
-        new this.dependencyTypes[dependencyDefinition.dependencyType]({
+        let dep = new this.dependencyTypes[dependencyDefinition.dependencyType]({
           component, stateVariable, allStateVariablesAffected,
           dependencyName, dependencyDefinition,
           dependencyHandler: this,
           updatesNeeded, compositesBeingExpanded
         });
+        newlyCreatedDependencies.push(dep);
 
       }
     }
-    return changedDependency;
+    return { changedDependency, newlyCreatedDependencies };
   }
 
   checkForDependenciesOnNewComponent({ componentName, updatesNeeded, compositesBeingExpanded }) {
@@ -968,38 +984,6 @@ export class DependencyHandler {
 
     return variablesChanged;
 
-  }
-
-  deleteSugarShadowDependencies(childName) {
-
-    // TODO: figure out what this does and why
-
-    // delete any targetComponent upstream depedendencies
-    // ignore childstatevariables/identity
-    // as those will be recomputed when children are changed
-    for (let varName in this.upstreamDependencies[childName]) {
-      for (let upDep of this.upstreamDependencies[childName][varName]) {
-        if (upDep.dependencyType !== "childStateVariables" && upDep.dependencyType !== "childIdentity") {
-          // TODO: do we just delete these types of dependencies
-          // or should we delete all?
-          // Not sure why just looking for these.  Just added ones found so far.
-          if (upDep.dependencyName === "targetVariable" || upDep.dependencyName === "targetReadyToExpand"
-            || upDep.dependencyName.slice(0, 17) === "__composites_for_"
-            || upDep.upstreamVariableNames.every(x => x.slice(0, 24) === "__determine_dependencies")
-          ) {
-
-            this.deleteDownstreamDependency({
-              downDeps: this.downstreamDependencies[upDep.upstreamComponentName][upDep.upstreamVariableNames[0]],
-              downDepName: upDep.dependencyName,
-              downstreamComponentName: childName
-            });
-
-          } else {
-            console.warn(`In deleting ${childName} as child of ${component.componentName} via sugar, found an unexpected dependency`)
-          }
-        }
-      }
-    }
   }
 
   getStateVariableDependencyValues({ component, stateVariable }) {
@@ -1189,7 +1173,7 @@ class Dependency {
       updatesNeeded, compositesBeingExpanded
     });
 
-    this.checkForCircular();
+    // this.checkForCircular();
 
   }
 
@@ -1962,9 +1946,6 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
     return { value, changes, usedDefault }
   }
 
-
-
-
 }
 
 dependencyTypeArray.push(StateVariableComponentTypeDependency);
@@ -2324,13 +2305,6 @@ class ChildDependency extends Dependency {
     if (this.childIndices) {
       activeChildrenIndices = activeChildrenIndices
         .filter((x, i) => this.childIndices.includes(i));
-    }
-
-    // TODO: a better way to do this?
-    if (this.definition.markChildrenAsProperties) {
-      for (let childIndex of activeChildrenIndices) {
-        parent.activeChildren[childIndex].componentIsAProperty = true;
-      }
     }
 
     return {
@@ -3180,21 +3154,6 @@ class ValueDependency extends Dependency {
 
 dependencyTypeArray.push(ValueDependency);
 
-class DoenetAttributeDependency extends ValueDependency {
-  static dependencyType = "doenetAttribute";
-
-  setUpParameters() {
-
-    this.attributeName = this.definition.attributeName;
-
-    let component = this.dependencyHandler._components[this.upstreamComponentName];
-    this.value = component.doenetAttributes[this.attributeName];
-
-  }
-}
-
-dependencyTypeArray.push(DoenetAttributeDependency);
-
 
 class FlagDependency extends ValueDependency {
   static dependencyType = "flag";
@@ -3207,6 +3166,51 @@ class FlagDependency extends ValueDependency {
 }
 
 dependencyTypeArray.push(FlagDependency);
+
+
+class DoenetAttributeDependency extends StateVariableDependency {
+  static dependencyType = "doenetAttribute";
+
+  setUpParameters() {
+
+    this.attributeName = this.definition.attributeName;
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+  }
+
+  getValue() {
+
+    let value = null;
+    let changes = {};
+
+    if (this.componentIdentitiesChanged) {
+      changes.componentIdentitiesChanged = true;
+      this.componentIdentitiesChanged = false;
+    }
+
+    if (this.downstreamComponentNames.length === 1) {
+      let depComponent = this.dependencyHandler.components[this.downstreamComponentNames[0]];
+
+      value = depComponent.doenetAttributes[this.attributeName];
+
+    }
+
+    if (!this.doNotProxy && value !== null && typeof value === 'object') {
+      value = new Proxy(value, readOnlyProxyHandler)
+    }
+
+    return { value, changes }
+  }
+
+}
+
+dependencyTypeArray.push(DoenetAttributeDependency);
 
 // class SwitchDependency extends Dependency {
 //   static dependencyType = "switch";

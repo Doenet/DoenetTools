@@ -371,9 +371,12 @@ export default class Copy extends CompositeComponent {
     // };
 
     stateVariableDefinitions.readyToExpand = {
-      returnDependencies() {
+      stateVariablesDeterminingDependencies: [
+        "targetComponent",
+      ],
+      returnDependencies({ stateValues, componentInfoObjects }) {
 
-        return {
+        let dependencies = {
           targetComponent: {
             dependencyType: "stateVariable",
             variableName: "targetComponent"
@@ -390,10 +393,25 @@ export default class Copy extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "propName",
           },
+        };
+        if (stateValues.targetComponent && componentInfoObjects.isStandardComposite(stateValues.targetComponent.componentType)) {
+          dependencies.targetReadyToExpand = {
+            dependencyType: "stateVariable",
+            componentName: stateValues.targetComponent.componentName,
+            variableName: "readyToExpand",
+          }
         }
+        return dependencies;
+
       },
       definition: function ({ dependencyValues }) {
-        return { newValues: { readyToExpand: true } };
+
+        let readyToExpand = true;
+        if (dependencyValues.targetReadyToExpand !== undefined) {
+          readyToExpand = dependencyValues.targetReadyToExpand;
+        }
+
+        return { newValues: { readyToExpand } };
       },
     };
 

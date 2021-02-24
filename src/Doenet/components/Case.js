@@ -81,7 +81,7 @@ export default class Case extends BaseComponent {
         conditionChild: {
           dependencyType: "child",
           childLogicName: "exactlyOneCondition",
-          variableNames: ["conditionSatisfied"],
+          variableNames: ["value"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -90,7 +90,7 @@ export default class Case extends BaseComponent {
         if (dependencyValues.conditionChild.length === 0) {
           conditionSatisfied = false;
         } else {
-          conditionSatisfied = dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
+          conditionSatisfied = dependencyValues.conditionChild[0].stateValues.value;
         }
 
 

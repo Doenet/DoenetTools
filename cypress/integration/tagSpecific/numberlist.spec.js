@@ -121,6 +121,54 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
+  it('numberlist with number and string children', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <numberlist>
+      -1, 8/2
+      <number>5</number>, 9
+      <number>1+1</number>
+    </numberlist>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let numbera = components["/_numberlist1"].activeChildren[0];
+      let numberaAnchor = cesc('#' + numbera.componentName);
+      let numberb = components["/_numberlist1"].activeChildren[1];
+      let numberbAnchor = cesc('#' + numberb.componentName);
+      let numberc = components["/_numberlist1"].activeChildren[3];
+      let numbercAnchor = cesc('#' + numberc.componentName);
+
+
+      cy.log('Test value displayed in browser')
+      cy.get(numberaAnchor).should('have.text', '-1');
+      cy.get(numberbAnchor).should('have.text', '4');
+      cy.get('#\\/_number1').should('have.text', '5')
+      cy.get(numbercAnchor).should('have.text', '9');
+      cy.get('#\\/_number2').should('have.text', '2')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_numberlist1'].activeChildren[0].stateValues.value).eq(-1);
+        expect(components['/_numberlist1'].activeChildren[1].stateValues.value).eq(4);
+        expect(components['/_numberlist1'].activeChildren[2].stateValues.value).eq(5);
+        expect(components['/_numberlist1'].activeChildren[3].stateValues.value).eq(9);
+        expect(components['/_numberlist1'].activeChildren[4].stateValues.value).eq(2);
+        expect(components['/_numberlist1'].stateValues.numbers[0]).eq(-1);
+        expect(components['/_numberlist1'].stateValues.numbers[1]).eq(4);
+        expect(components['/_numberlist1'].stateValues.numbers[2]).eq(5);
+        expect(components['/_numberlist1'].stateValues.numbers[3]).eq(9);
+        expect(components['/_numberlist1'].stateValues.numbers[4]).eq(2);
+      })
+    })
+  })
+
   it('numberlist with math and number children', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -272,6 +320,173 @@ describe('Numberlist Tag Tests', function () {
       cy.get(child2Anchor).should('have.text', '-13');
       cy.get('#\\/_number2').should('have.text', '-14');
       cy.get('#\\/_number3').should('have.text', '-15');
+      cy.get(child5Anchor).should('have.text', '-16');
+      cy.get(child6Anchor).should('have.text', '-17');
+      cy.get(child7Anchor).should('have.text', '-18');
+      cy.get(child8Anchor).should('have.text', '-19');
+
+      cy.get("#\\/_mathinput1_input").should('have.value', '-11')
+      cy.get("#\\/_mathinput2_input").should('have.value', '-12')
+      cy.get("#\\/_mathinput3_input").should('have.value', '-13')
+      cy.get("#\\/_mathinput4_input").should('have.value', '-14')
+      cy.get("#\\/_mathinput5_input").should('have.value', '-15')
+      cy.get("#\\/_mathinput6_input").should('have.value', '-16')
+      cy.get("#\\/_mathinput7_input").should('have.value', '-17')
+      cy.get("#\\/_mathinput8_input").should('have.value', '-18')
+      cy.get("#\\/_mathinput9_input").should('have.value', '-19')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_numberlist1'].stateValues.numbers[0]).eq(-11);
+        expect(components['/_numberlist1'].stateValues.numbers[1]).eq(-12);
+        expect(components['/_numberlist1'].stateValues.numbers[2]).eq(-13);
+        expect(components['/_numberlist1'].stateValues.numbers[3]).eq(-14);
+        expect(components['/_numberlist1'].stateValues.numbers[4]).eq(-15);
+        expect(components['/_numberlist1'].stateValues.numbers[5]).eq(-16);
+        expect(components['/_numberlist1'].stateValues.numbers[6]).eq(-17);
+        expect(components['/_numberlist1'].stateValues.numbers[7]).eq(-18);
+        expect(components['/_numberlist1'].stateValues.numbers[8]).eq(-19);
+        expect(components['/_numberlist2'].stateValues.numbers[0]).eq(-12);
+        expect(components['/_numberlist2'].stateValues.numbers[1]).eq(-13);
+        expect(components['/_numberlist3'].stateValues.numbers[0]).eq(-15);
+        expect(components['/_numberlist3'].stateValues.numbers[1]).eq(-16);
+        expect(components['/_numberlist3'].stateValues.numbers[2]).eq(-17);
+        expect(components['/_numberlist3'].stateValues.numbers[3]).eq(-18);
+        expect(components['/_numberlist3'].stateValues.numbers[4]).eq(-19);
+        expect(components['/_numberlist4'].stateValues.numbers[0]).eq(-15);
+        expect(components['/_numberlist4'].stateValues.numbers[1]).eq(-16);
+        expect(components['/_numberlist4'].stateValues.numbers[2]).eq(-17);
+        expect(components['/_numberlist5'].stateValues.numbers[0]).eq(-16);
+        expect(components['/_numberlist5'].stateValues.numbers[1]).eq(-17);
+        expect(components['/_numberlist6'].stateValues.numbers[0]).eq(-18);
+        expect(components['/_numberlist6'].stateValues.numbers[1]).eq(-19);
+      })
+
+
+    })
+  })
+
+  it('numberlist with numberlist children and sugar, test inverse', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <numberlist>
+      1,
+      <numberlist>2,3</numberlist>,
+      <number>4</number>
+      <numberlist>
+        <numberlist>
+          5
+          <numberlist>6,7</numberlist>
+        </numberlist>
+        <numberlist>8,9</numberlist>
+      </numberlist>
+    </numberlist>
+
+    <mathinput><copy prop="number1" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number2" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number3" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number4" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number5" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number6" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number7" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number8" tname="_numberlist1" /></mathinput>
+    <mathinput><copy prop="number9" tname="_numberlist1" /></mathinput>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let child0Name = components['/_numberlist1'].stateValues.childrenToRender[0];
+      let child0Anchor = cesc('#' + child0Name);
+      let child1Name = components['/_numberlist1'].stateValues.childrenToRender[1];
+      let child1Anchor = cesc('#' + child1Name);
+      let child2Name = components['/_numberlist1'].stateValues.childrenToRender[2];
+      let child2Anchor = cesc('#' + child2Name);
+      let child4Name = components['/_numberlist1'].stateValues.childrenToRender[4];
+      let child4Anchor = cesc('#' + child4Name);
+      let child5Name = components['/_numberlist1'].stateValues.childrenToRender[5];
+      let child5Anchor = cesc('#' + child5Name);
+      let child6Name = components['/_numberlist1'].stateValues.childrenToRender[6];
+      let child6Anchor = cesc('#' + child6Name);
+      let child7Name = components['/_numberlist1'].stateValues.childrenToRender[7];
+      let child7Anchor = cesc('#' + child7Name);
+      let child8Name = components['/_numberlist1'].stateValues.childrenToRender[8];
+      let child8Anchor = cesc('#' + child8Name);
+
+      cy.log('Test value displayed in browser')
+      cy.get(child0Anchor).should('have.text', '1');
+      cy.get(child1Anchor).should('have.text', '2');
+      cy.get(child2Anchor).should('have.text', '3');
+      cy.get('#\\/_number1').should('have.text', '4');
+      cy.get(child4Anchor).should('have.text', '5');
+      cy.get(child5Anchor).should('have.text', '6');
+      cy.get(child6Anchor).should('have.text', '7');
+      cy.get(child7Anchor).should('have.text', '8');
+      cy.get(child8Anchor).should('have.text', '9');
+
+      cy.get("#\\/_mathinput1_input").should('have.value', '1')
+      cy.get("#\\/_mathinput2_input").should('have.value', '2')
+      cy.get("#\\/_mathinput3_input").should('have.value', '3')
+      cy.get("#\\/_mathinput4_input").should('have.value', '4')
+      cy.get("#\\/_mathinput5_input").should('have.value', '5')
+      cy.get("#\\/_mathinput6_input").should('have.value', '6')
+      cy.get("#\\/_mathinput7_input").should('have.value', '7')
+      cy.get("#\\/_mathinput8_input").should('have.value', '8')
+      cy.get("#\\/_mathinput9_input").should('have.value', '9')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_numberlist1'].stateValues.numbers[0]).eq(1);
+        expect(components['/_numberlist1'].stateValues.numbers[1]).eq(2);
+        expect(components['/_numberlist1'].stateValues.numbers[2]).eq(3);
+        expect(components['/_numberlist1'].stateValues.numbers[3]).eq(4);
+        expect(components['/_numberlist1'].stateValues.numbers[4]).eq(5);
+        expect(components['/_numberlist1'].stateValues.numbers[5]).eq(6);
+        expect(components['/_numberlist1'].stateValues.numbers[6]).eq(7);
+        expect(components['/_numberlist1'].stateValues.numbers[7]).eq(8);
+        expect(components['/_numberlist1'].stateValues.numbers[8]).eq(9);
+        expect(components['/_numberlist2'].stateValues.numbers[0]).eq(2);
+        expect(components['/_numberlist2'].stateValues.numbers[1]).eq(3);
+        expect(components['/_numberlist3'].stateValues.numbers[0]).eq(5);
+        expect(components['/_numberlist3'].stateValues.numbers[1]).eq(6);
+        expect(components['/_numberlist3'].stateValues.numbers[2]).eq(7);
+        expect(components['/_numberlist3'].stateValues.numbers[3]).eq(8);
+        expect(components['/_numberlist3'].stateValues.numbers[4]).eq(9);
+        expect(components['/_numberlist4'].stateValues.numbers[0]).eq(5);
+        expect(components['/_numberlist4'].stateValues.numbers[1]).eq(6);
+        expect(components['/_numberlist4'].stateValues.numbers[2]).eq(7);
+        expect(components['/_numberlist5'].stateValues.numbers[0]).eq(6);
+        expect(components['/_numberlist5'].stateValues.numbers[1]).eq(7);
+        expect(components['/_numberlist6'].stateValues.numbers[0]).eq(8);
+        expect(components['/_numberlist6'].stateValues.numbers[1]).eq(9);
+      })
+
+      cy.log('change values')
+
+      cy.get("#\\/_mathinput1_input").clear().type("-11{enter}")
+      cy.get("#\\/_mathinput2_input").clear().type("-12{enter}")
+      cy.get("#\\/_mathinput3_input").clear().type("-13{enter}")
+      cy.get("#\\/_mathinput4_input").clear().type("-14{enter}")
+      cy.get("#\\/_mathinput5_input").clear().type("-15{enter}")
+      cy.get("#\\/_mathinput6_input").clear().type("-16{enter}")
+      cy.get("#\\/_mathinput7_input").clear().type("-17{enter}")
+      cy.get("#\\/_mathinput8_input").clear().type("-18{enter}")
+      cy.get("#\\/_mathinput9_input").clear().type("-19{enter}")
+
+
+      cy.log('Test value displayed in browser')
+      cy.get(child0Anchor).should('have.text', '-11');
+      cy.get(child1Anchor).should('have.text', '-12');
+      cy.get(child2Anchor).should('have.text', '-13');
+      cy.get('#\\/_number1').should('have.text', '-14');
+      cy.get(child4Anchor).should('have.text', '-15');
       cy.get(child5Anchor).should('have.text', '-16');
       cy.get(child6Anchor).should('have.text', '-17');
       cy.get(child7Anchor).should('have.text', '-18');
@@ -519,7 +734,6 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
-
   it('numberlist within numberlists, ignore child hide', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -587,6 +801,5 @@ describe('Numberlist Tag Tests', function () {
     })
 
   })
-
 
 })

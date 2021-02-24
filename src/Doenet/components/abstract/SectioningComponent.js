@@ -6,6 +6,8 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariantIfVariantControlChild = true;
 
+  static get stateVariablesShadowedForReference() { return ["title"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.aggregateScores = { default: false };
@@ -35,6 +37,7 @@ export default class SectioningComponent extends BlockComponent {
       componentType: "title",
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
     })
 
     let anything = childLogic.newLeaf({

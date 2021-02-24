@@ -715,12 +715,13 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <number name="count" hide>1</number>
     <map>
     <template newnamespace><math simplify>
         <copySource name="b"/> + <sourceIndex name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
-    <sources><sequence from="1"><count><number name="count">1</number></count></sequence></sources>
+    <sources><sequence from="1" count="$count"/></sources>
     </map>
     <math name="a">x</math>
     <copy tname="_map1" />
@@ -1061,8 +1062,8 @@ describe('Map Tag Tests', function () {
     <map>
     <template><map>
        <template><math>(<copySource/>, <copySource fromMapAncestor="2"/>)</math></template>
-       <sources><sequence from="1"><to><copySource/></to></sequence></sources>
-     </map></template>
+       <sources><sequence from="1" to="$n" /></sources>
+     </map><copySource hide name="n" /></template>
     <sources><sequence from="1" to="3"/></sources>
     </map>
     `}, "*");
@@ -1107,11 +1108,7 @@ describe('Map Tag Tests', function () {
     <map>
     <template><math simplify><copySource/>^2</math><text>,</text></template>
     <sources>
-    <sequence>
-      <from><copy prop="value" tname="sequenceFrom" /></from>
-      <to><copy prop="value" tname="sequenceTo" /></to>
-      <count><copy prop="value" tname="sequenceCount" /></count>
-    </sequence>
+    <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
     </sources>
     </map>
     </p>
@@ -1450,7 +1447,7 @@ describe('Map Tag Tests', function () {
             <y><copy prop="x" tname="_point1" /></y>
           </point></template>
       <sources>
-        <sequence>2,4</sequence>
+        <sequence from="2" to="4" />
       </sources>
       </map>
     </graph>
@@ -1663,11 +1660,7 @@ describe('Map Tag Tests', function () {
             <y><copySource/><copy prop="x" tname="../q/_point1" /></y>
           </point></template>
       <sources>
-        <sequence>
-          <from><copy prop="value" tname="sequenceFrom" /></from>
-          <to><copy prop="value" tname="sequenceTo" /></to>
-          <count><copy prop="value" tname="sequenceCount" /></count>
-        </sequence>
+        <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
       </sources>
       </map>
       <map assignnames="q,r,s">
@@ -1676,11 +1669,7 @@ describe('Map Tag Tests', function () {
             <y><copySource/><copy prop="x" tname="../a/_point1" /></y>
           </point></template>
       <sources>
-        <sequence>
-          <from><copy prop="value" tname="sequenceFrom" /></from>
-          <to><copy prop="value" tname="sequenceTo" /></to>
-          <count><copy prop="value" tname="sequenceCount" /></count>
-        </sequence>
+        <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
       </sources>
       </map>
     </graph>
@@ -1960,10 +1949,7 @@ describe('Map Tag Tests', function () {
       <map>
         <template><point>(<copySource/>, sin(<copySource/>))</point></template>
         <sources>
-          <sequence from="2">
-            <count><copy prop="value" tname="number" /></count>
-            <step><copy prop="value" tname="step" /></step>
-          </sequence>
+          <sequence from="2" count="$number" step="$step" />
         </sources>
       </map>
     </math>
@@ -2058,9 +2044,7 @@ describe('Map Tag Tests', function () {
     <map name="m1" assignNames="p1,p2,p3">
       <template newNamespace><point name="pt">(<copySource/>, 2<copySource/>)</point></template>
       <sources>
-        <sequence>
-          <count><copy prop="value" tname="number" /></count>
-        </sequence>
+        <sequence count="$number" />
       </sources>
     </map>
 

@@ -5,21 +5,15 @@ export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
   static rendererType = "container";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroPoints = childLogic.newLeaf({
-      name: "atLeastZeroPoints",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 0
-    });
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
 
-    let createPointList = function ({ dependencyValues }) {
+    let createPointList = function ({ matchedChildren }) {
 
       let results = breakEmbeddedStringByCommas({
-        childrenList: dependencyValues.stringsAndMaths,
+        childrenList: matchedChildren,
       });
 
       if (results.success !== true) {
@@ -27,7 +21,6 @@ export default class PointListComponent extends BaseComponent {
       }
 
       let pieces = results.pieces;
-      let toDelete = results.toDelete;
 
       let newChildren = [];
 
@@ -44,12 +37,6 @@ export default class PointListComponent extends BaseComponent {
         }
 
         let vectorComponents = result.vectorComponents;
-
-
-        // since we're actually breaking it up,
-        // add any more strings to delete
-        // that we encountered in the initial breaking into components
-        toDelete = [...toDelete, ...result.toDelete];
 
         let children = vectorComponents.map(x => ({
           componentType: "x",
@@ -71,48 +58,27 @@ export default class PointListComponent extends BaseComponent {
       return {
         success: true,
         newChildren: newChildren,
-        toDelete: toDelete,
       }
 
     }
 
+    sugarInstructions.push({
+      // childrenRegex: /s+(.*s)?/,
+      replacementFunction: createPointList
+    });
 
+    return sugarInstructions;
 
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
+  }
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "atLeastZeroPoints",
+      componentType: 'point',
       comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "child",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroPoints"],
-      replacementFunction: createPointList,
-    });
-
-    childLogic.newOperator({
-      name: "pointsXorSugar",
-      operator: 'xor',
-      propositions: [stringsAndMaths, atLeastZeroPoints],
+      number: 0,
       setAsBase: true,
     });
 

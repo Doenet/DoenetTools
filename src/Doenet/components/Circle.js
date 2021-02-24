@@ -26,51 +26,16 @@ export default class Circle extends Curve {
 
     childLogic.deleteAllLogic();
 
-    let addCenter = function ({ activeChildrenMatched }) {
-      // add <center> around point
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "center",
-          children: [{
-            createdComponent: true,
-            componentName: activeChildrenMatched[0].componentName
-          }],
-        }],
-      }
-    }
-
-    let exactlyOnePoint = childLogic.newLeaf({
-      name: "exactlyOnePoint",
-      componentType: 'point',
-      number: 1,
-      isSugar: true,
-      replacementFunction: addCenter,
-    });
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      replacementFunction: addCenter,
-    });
-
-    let noPoints = childLogic.newLeaf({
-      name: "noPoints",
-      componentType: 'point',
-      number: 0
-    });
-
     let exactlyOneThrough = childLogic.newLeaf({
       name: "exactlyOneThrough",
       componentType: 'through',
       number: 1
     });
 
-    let exactlyOneCenter = childLogic.newLeaf({
-      name: "exactlyOneCenter",
+    let atMostOneCenter = childLogic.newLeaf({
+      name: "atMostOneCenter",
       componentType: 'center',
+      comparison: "atMost",
       number: 1
     });
 
@@ -78,18 +43,13 @@ export default class Circle extends Curve {
       name: "exactlyOneRadius",
       componentType: 'radius',
       number: 1,
-    });
-
-    let centerXorSugar = childLogic.newOperator({
-      name: "centerXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneCenter, exactlyOnePoint, exactlyOneString, noPoints],
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
       name: "radiusCenterOrThrough",
       operator: 'or',
-      propositions: [exactlyOneRadius, exactlyOneThrough, centerXorSugar],
+      propositions: [exactlyOneRadius, exactlyOneThrough, atMostOneCenter],
       setAsBase: true,
     });
 
@@ -336,7 +296,7 @@ export default class Circle extends Curve {
       returnDependencies: () => ({
         centerChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneCenter"
+          childLogicName: "atMostOneCenter"
         },
         centerShadow: {
           dependencyType: "stateVariable",
@@ -380,7 +340,7 @@ export default class Circle extends Curve {
           dependenciesByKey[arrayKey] = {
             centerChild: {
               dependencyType: "child",
-              childLogicName: "exactlyOneCenter",
+              childLogicName: "atMostOneCenter",
               variableNames: ["x" + varEnding],
             },
           }

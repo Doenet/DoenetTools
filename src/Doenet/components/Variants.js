@@ -6,50 +6,39 @@ export default class Variants extends BaseComponent {
 
   static stateVariableForPropertyValue = "variants";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroVariants = childLogic.newLeaf({
-      name: "atLeastZeroVariants",
-      componentType: 'variant',
-      comparison: 'atLeast',
-      number: 0
-    });
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringIntoVariantsByCommas = function ({ dependencyValues }) {
-
-      let stringChild = dependencyValues.stringChild[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
+    let breakStringIntoVariantsByCommas = function ({ matchedChildren }) {
+      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
         componentType: "variant",
         state: { value: x.trim() }
       }));
       return {
         success: true,
         newChildren: newChildren,
-        toDelete: [stringChild.componentName],
       }
     }
 
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroVariants"],
-      replacementFunction: breakStringIntoVariantsByCommas,
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: breakStringIntoVariantsByCommas
     });
 
-    childLogic.newOperator({
-      name: "VariantsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, atLeastZeroVariants],
+    return sugarInstructions;
+
+  }
+
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "atLeastZeroVariants",
+      componentType: 'variant',
+      comparison: 'atLeast',
+      number: 0,
       setAsBase: true,
     });
 

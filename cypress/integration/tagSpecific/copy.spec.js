@@ -415,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence><from>a</from><count><copy prop="value" tname="_mathinput1"/></count></sequence>
+        <sequence from="a" count="$_mathinput1" />
       </aslist>
     </p>
     

@@ -11,9 +11,10 @@ export default class Point extends GraphicalComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["xs", "nDimensions"] };
 
-  // Note: for point, the recommended course of action is not to have
+  // Note: for other components with public point state variables,
+  // the recommended course of action is not to have
   // a public state variable with component type point, which would use coordsShadow
-  // Instead have a array state variable of maths for each component
+  // Instead have a public array state variable of maths for each component
   // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
   static stateVariableForPropertyValue = "coords";
@@ -22,6 +23,47 @@ export default class Point extends GraphicalComponent {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
     return properties;
+  }
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let breakIntoXsByCommas = function ({ matchedChildren }) {
+      let childrenToComponentFunction = x => ({
+        componentType: "x", children: x
+      });
+
+      let mustStripOffOuterParentheses = true;
+      if(matchedChildren.length === 1  && !matchedChildren[0].state.value.includes(",")) {
+        // if have just one string and that string doesn't have a comma,
+        // then don't strip off outer parentheses
+        mustStripOffOuterParentheses = false;
+      }
+
+      let breakFunction = returnBreakStringsSugarFunction({
+        childrenToComponentFunction,
+        mustStripOffOuterParentheses
+      })
+
+      let result = breakFunction({ matchedChildren });
+
+      // wrap xs around the x children
+      result.newChildren = [{
+        componentType: "xs",
+        children: result.newChildren
+      }];
+
+      return result;
+
+    };
+
+    sugarInstructions.push({
+      childrenRegex: /s+(.*s)?/,
+      replacementFunction: breakIntoXsByCommas
+    })
+
+    return sugarInstructions;
+
   }
 
   static returnChildLogic(args) {
@@ -63,62 +105,6 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
-
-    let breakIntoXsByCommas = function (args) {
-      let childrenToComponentFunction = x => ({
-        componentType: "x", children: x
-      });
-
-      let breakFunction = returnBreakStringsSugarFunction({
-        childrenToComponentFunction,
-        dependencyNameWithChildren: "stringsAndMaths",
-        stripOffOuterParentheses: true
-      })
-
-      let result = breakFunction(args);
-
-      // wrap xs around the x children
-      result.newChildren = [{
-        componentType: "xs",
-        children: result.newChildren
-      }];
-
-      return result;
-
-    };
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "child",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["exactlyOneXs"],
-      replacementFunction: breakIntoXsByCommas,
-    });
-
-
     let exactlyOnePoint = childLogic.newLeaf({
       name: "exactlyOnePoint",
       componentType: "point",
@@ -132,42 +118,15 @@ export default class Point extends GraphicalComponent {
       allowSpillover: false,
     });
 
-    let coordsXorSugar = childLogic.newOperator({
-      name: "coordsXorSugar",
+    let coordsCombinations = childLogic.newOperator({
+      name: "coordsCombinations",
       operator: 'xor',
       propositions: [
         coordinatesViaComponents, exactlyOneXs, exactlyOnePoint,
-        exactlyOneCoords, stringsAndMaths, noCoords
+        exactlyOneCoords, noCoords
       ],
     });
 
-
-    let addConstraints = function ({ activeChildrenMatched }) {
-      let constraintsChildren = [];
-      for (let child of activeChildrenMatched) {
-        constraintsChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "constraints", children: constraintsChildren }],
-      }
-    }
-
-
-    let constraintComponents = childLogic.newLeaf({
-      name: "constraintComponents",
-      componentType: "_constraint",
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      requireConsecutive: true,
-      logicToWaitOnSugar: ["atMostOneConstraints"],
-      replacementFunction: addConstraints,
-
-    });
 
     let atMostOneConstraints = childLogic.newLeaf({
       name: "atMostOneConstraints",
@@ -176,16 +135,10 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
-    let constraintsXorConstraintsComponents = childLogic.newOperator({
-      name: "constraintsXorConstraintsComponents",
-      operator: "xor",
-      propositions: [constraintComponents, atMostOneConstraints],
-    });
-
     childLogic.newOperator({
       name: "pointWithConstraints",
       operator: "and",
-      propositions: [coordsXorSugar, constraintsXorConstraintsComponents],
+      propositions: [coordsCombinations, atMostOneConstraints],
       setAsBase: true,
     });
 

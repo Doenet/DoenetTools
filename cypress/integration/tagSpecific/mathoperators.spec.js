@@ -693,11 +693,7 @@ describe('Math Operator Tag Tests', function () {
       <p><text>a</text></p>
 
       <p><math name="m">7</math>
-      <selectFromSequence assignNames='p' hide='true'>
-        <exclude><copy tname="m" /></exclude>
-        <exclude><copy tname="n" /></exclude>
-        -10, 10
-      </selectFromSequence>
+      <selectFromSequence assignNames='p' hide='true' exclude="$m, $n" from="-10" to="10" />
       </p>
 
       <p><convertSetToList><math>{<copy tname="m" />,<copy tname="n" />,<copy tname="p" />, <copy tname="m" />}</math></convertSetToList></p>

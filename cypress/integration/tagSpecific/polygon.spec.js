@@ -5,7 +5,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('Polygon with sugared copied points', () => {
+  it.skip('Polygon with sugared copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -162,7 +162,7 @@ describe('Polygon Tag Tests', function () {
     })
   })
 
-  it('Polygon string points', () => {
+  it.skip('Polygon string points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -316,9 +316,7 @@ describe('Polygon Tag Tests', function () {
   <polygon><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
   </graph>
@@ -443,9 +441,7 @@ describe('Polygon Tag Tests', function () {
   <polygon><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
   </graph>
@@ -501,7 +497,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('dynamic polygon with sugared vertices, initially zero, copied', () => {
+  it.skip('dynamic polygon with sugared vertices, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -699,7 +695,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('dynamic polygon with sugared vertices from copied map, initially zero, copied', () => {
+  it('dynamic polygon with vertices from copied map, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -709,12 +705,10 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <map>
     <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-    <sources><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></sources>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polygon>
-    <copy tname="_map1" />
+    <vertices><copy tname="_map1" /></vertices>
   </polygon>
   </graph>
   
@@ -837,13 +831,11 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <map>
     <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-    <sources><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></sources>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
-  <polygon>
+  <polygon><vertices>
     <copy tname="_map1" />
-  </polygon>
+  </vertices></polygon>
   </graph>
   
   <graph>
@@ -905,11 +897,13 @@ describe('Polygon Tag Tests', function () {
   <mathinput/>
   <graph>
   <polygon>
-    <point>(1,2)</point>
-    <point>(-1,5)</point>
-    <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
-    <point>(3,-5)</point>
-    <point>(-4,-3)</point>
+    <vertices>
+      <point>(1,2)</point>
+      <point>(-1,5)</point>
+      <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
+      <point>(3,-5)</point>
+      <point>(-4,-3)</point>
+    </vertices>
   </polygon>
   </graph>
   
@@ -967,7 +961,7 @@ describe('Polygon Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polygon><vertices hide="false">
+  <polygon><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
       <sources><sequence from="-5" to="5"/></sources>
@@ -1097,7 +1091,7 @@ describe('Polygon Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polygon><vertices hide="false">
+  <polygon><vertices>
     <map>
       <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
       <sources><sequence from="-5" to="5"/></sources>
@@ -1243,7 +1237,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon>(-3,-1),(1,2),(3,4),(6,-2)</polygon>
+  <polygon><vertices>(-3,-1),(1,2),(3,4),(6,-2)</vertices></polygon>
   </graph>
   <graph>
   <copy name="v1" prop="vertex1" tname="_polygon1" />
@@ -1329,11 +1323,13 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon>(-9,6),(-3,7),(4,0),(8,5)</polygon>
+  <polygon><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polygon>
   </graph>
   <graph>
   <polygon>
-    <copy prop="vertices" tname="_polygon1" />
+    <vertices>
+      <copy prop="vertices" tname="_polygon1" />
+    </vertices>
   </polygon>
   </graph>
   `}, "*");
@@ -1456,9 +1452,9 @@ describe('Polygon Tag Tests', function () {
     <mathinput prefill="5" name="transx" />
     <mathinput prefill="7" name="transy" />
     <graph>
-    <polygon>
+    <polygon><vertices>
       (0,0),(3,-4),(1,-6),(-5,-6)
-    </polygon>
+    </vertices></polygon>
     <polygon>
       <vertices>
       <map>
@@ -1601,7 +1597,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <polygon name="parallelogram">
+    <polygon name="parallelogram"><vertices>
       <point name="A">(1,2)</point>
       <point name="B">(3,4)</point>
       <point name="C">(-5,6)</point>
@@ -1609,7 +1605,7 @@ describe('Polygon Tag Tests', function () {
         <x><copy fixed prop="x" tname="A" />+<copy fixed prop="x" tname="C" />-<copy prop="x" tname="B" /></x>
         <y><copy fixed prop="y" tname="A" />+<copy fixed prop="y" tname="C" />-<copy prop="y" tname="B" /></y>
       </point>
-    </polygon>
+    </vertices></polygon>
     </graph>
     `}, "*");
     });
@@ -1688,10 +1684,10 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon>(-9,6),(-3,7),(4,0),(8,5)</polygon>
+  <polygon><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polygon>
   </graph>
   <graph>
-  <polygon>
+  <polygon><vertices>
     <copy prop="vertex1" tname="_polygon1" />
     <point>
       <xs>
@@ -1704,7 +1700,7 @@ describe('Polygon Tag Tests', function () {
       <x><extract prop="y"><copy prop="vertex4" tname="_polygon1" /></extract></x>
       <y><extract prop="x"><copy prop="vertex4" tname="_polygon1" /></extract></y>
     </point>
-  </polygon>
+  </vertices></polygon>
   </graph>
   `}, "*");
     });
@@ -1771,7 +1767,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon>
+  <polygon><vertices>
     <point name="A">(1,2)</point>
     <point name="B">(3,4)</point>
     <point name="C">(-5,6)</point>
@@ -1779,7 +1775,7 @@ describe('Polygon Tag Tests', function () {
       <x><copy fixed prop="x" tname="C" />+<copy fixed prop="x" tname="B" />-<copy prop="x" tname="A" /></x>
       <y><copy fixed prop="y" tname="C" />+<copy fixed prop="y" tname="B" />-<copy prop="y" tname="A" /></y>
     </point>
-  </polygon>
+  </vertices></polygon>
   </graph>
   `}, "*");
     });
@@ -2594,12 +2590,14 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polygon>
+    <polygon><vertices>
       (3,5), (-4,-1),(5,2)
-    </polygon>
+    </vertices></polygon>
     <point>
-      <attractTo><copy tname="_polygon1" /></attractTo>
-      (7,8)
+      <constraints>
+        <attractTo><copy tname="_polygon1" /></attractTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");
@@ -2828,12 +2826,14 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polygon>
+    <polygon><vertices>
       (3,5), (-4,-1),(5,2)
-    </polygon>
+    </vertices></polygon>
     <point>
-      <constrainTo><copy tname="_polygon1" /></constrainTo>
-      (7,8)
+      <constraints>
+        <constrainTo><copy tname="_polygon1" /></constrainTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");

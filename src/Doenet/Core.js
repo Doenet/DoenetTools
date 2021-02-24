@@ -215,7 +215,6 @@ export default class Core {
     });
 
     this.unsatisfiedChildLogic = {};
-    this.childLogicWaitingOnSugar = {};
 
     // console.timeEnd('serialize doenetML');
 
@@ -236,7 +235,6 @@ export default class Core {
     this.addComponents({
       serializedState: serializedState,
       initialAdd: true,
-      applySugar: true,
     })
 
     this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
@@ -313,6 +311,9 @@ export default class Core {
       });
 
       serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
+      serializedState = serializeFunctions.applyMacros(serializedState);
+
+      serializeFunctions.applySugar({ serializedState, componentInfoObjects: this.componentInfoObjects });
 
       serializedStates.push(serializedState);
 
@@ -382,7 +383,7 @@ export default class Core {
 
   }
 
-  addComponents({ serializedState, parent, indexOfDefiningChildren, applySugar = false, initialAdd = false }) {
+  addComponents({ serializedState, parent, indexOfDefiningChildren, initialAdd = false }) {
 
     if (!Array.isArray(serializedState)) {
       serializedState = [serializedState];
@@ -407,8 +408,7 @@ export default class Core {
     // do we need to appropriately set shared parameters? 
 
     let createResult = this.createIsolatedComponents({
-      serializedState, applySugar,
-      ancestors,
+      serializedState, ancestors,
     });
 
     if (createResult.success !== true) {
@@ -688,7 +688,7 @@ export default class Core {
     return componentNames;
   }
 
-  createIsolatedComponents({ serializedState, ancestors, applySugar = false,
+  createIsolatedComponents({ serializedState, ancestors,
     applyAdapters = true, shadow = false, compositesBeingExpanded = [] }
   ) {
 
@@ -723,7 +723,7 @@ export default class Core {
     let createResult = this.createIsolatedComponentsSub({
       serializedState: serializedState,
       ancestors,
-      applySugar, applyAdapters,
+      applyAdapters,
       shadow, updatesNeeded, compositesBeingExpanded,
       namespaceForUnamed
     });
@@ -776,7 +776,7 @@ export default class Core {
 
   }
 
-  createIsolatedComponentsSub({ serializedState, ancestors, applySugar = false,
+  createIsolatedComponentsSub({ serializedState, ancestors,
     applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
     createNameContext = "", namespaceForUnamed = "/",
   }
@@ -795,7 +795,8 @@ export default class Core {
         let newComponent = this._components[serializedComponent.componentName];
         newComponents.push(newComponent);
 
-        // set ancestors, in case component has been moved (e.g., by sugar)
+        // set ancestors, in case component has been moved
+        // TODO: do we still need with since removed sugar?
         this.setAncestors(newComponent, ancestors);
         // skip rest of processing, as they already occured for this component
         continue;
@@ -843,7 +844,7 @@ export default class Core {
         serializedComponent,
         componentName,
         ancestors,
-        componentClass, applySugar,
+        componentClass,
         applyAdapters, shadow, updatesNeeded, compositesBeingExpanded,
         namespaceForUnamed,
       });
@@ -865,7 +866,7 @@ export default class Core {
 
   createChildrenThenComponent({ serializedComponent, componentName,
     ancestors, componentClass,
-    applySugar = false, applyAdapters = true, shadow = false,
+    applyAdapters = true, shadow = false,
     updatesNeeded, compositesBeingExpanded,
     namespaceForUnamed = "/",
   }) {
@@ -952,7 +953,7 @@ export default class Core {
           let childrenResult = this.createIsolatedComponentsSub({
             serializedState: [variantControlChild],
             ancestors: ancestorsForChildren,
-            applySugar, applyAdapters, shadow,
+            applyAdapters, shadow,
             updatesNeeded, compositesBeingExpanded,
             createNameContext: "variantControl",
             namespaceForUnamed,
@@ -975,7 +976,7 @@ export default class Core {
         let childrenResult = this.createIsolatedComponentsSub({
           serializedState: childrenToCreate,
           ancestors: ancestorsForChildren,
-          applySugar, applyAdapters, shadow,
+          applyAdapters, shadow,
           updatesNeeded, compositesBeingExpanded,
           namespaceForUnamed,
         });
@@ -1015,7 +1016,7 @@ export default class Core {
           let childrenResult = this.createIsolatedComponentsSub({
             serializedState: childrenToCreate,
             ancestors: ancestorsForChildren,
-            applySugar, applyAdapters, shadow,
+            applyAdapters, shadow,
             updatesNeeded, compositesBeingExpanded,
             namespaceForUnamed,
           });
@@ -1032,7 +1033,7 @@ export default class Core {
         let childrenResult = this.createIsolatedComponentsSub({
           serializedState: serializedChildren,
           ancestors: ancestorsForChildren,
-          applySugar, applyAdapters, shadow,
+          applyAdapters, shadow,
           updatesNeeded, compositesBeingExpanded,
           namespaceForUnamed,
         });
@@ -1107,7 +1108,6 @@ export default class Core {
       numerics: this.numerics,
       sharedParameters,
       parentSharedParameters,
-      allowSugarForChildren: applySugar,
     });
 
     this.registerComponent(newComponent);
@@ -1146,13 +1146,6 @@ export default class Core {
     this.deriveChildResultsFromDefiningChildren(newComponent, updatesNeeded, compositesBeingExpanded);
 
     this.initializeComponentStateVariables(newComponent);
-
-    // we can ignore result of applySugarOrAddSugarCreationStateVariables
-    // because newComponent doesn't yet have dependencies set up
-    this.applySugarOrAddSugarCreationStateVariables({
-      component: newComponent,
-      updatesNeeded, compositesBeingExpanded
-    });
 
     this.dependencies.setUpComponentDependencies({
       component: newComponent,
@@ -1324,7 +1317,6 @@ export default class Core {
 
     let childLogicResults = this.matchChildrenToChildLogic({
       component,
-      matchSugar: true,
       applyAdapters: true,
       updatesNeeded
     });
@@ -1342,7 +1334,7 @@ export default class Core {
 
   }
 
-  matchChildrenToChildLogic({ component, matchSugar = false, applyAdapters = true, updatesNeeded }) {
+  matchChildrenToChildLogic({ component, applyAdapters = true, updatesNeeded }) {
 
     // determine maximum number of adapters on any child
     let maxNumAdapters = 0;
@@ -1363,7 +1355,6 @@ export default class Core {
 
       let newResult = component.childLogic.applyLogic({
         activeChildren: component.activeChildren,
-        matchSugar,
         maxAdapterNumber: numAdaptersUsed,
       });
 
@@ -1585,7 +1576,6 @@ export default class Core {
     let replacementResult = this.createIsolatedComponentsSub({
       serializedState: serializedReplacements,
       ancestors: component.ancestors,
-      applySugar: true,
       shadow: true,
       updatesNeeded,
       compositesBeingExpanded,
@@ -1768,7 +1758,6 @@ export default class Core {
           }
           let newChildrenResult = this.createIsolatedComponentsSub({
             serializedState: [newSerializedChild],
-            applySugar: false,
             shadow: true,
             ancestors: originalChild.ancestors,
             updatesNeeded,
@@ -1798,409 +1787,6 @@ export default class Core {
     }
 
     // return overallResults;
-
-  }
-
-  replaceChildrenBySugar({ component, childLogicName, dependencyValues,
-    updatesNeeded, compositesBeingExpanded
-  }) {
-
-    // find defining childen indices for the children matched
-    // at the same time, swap out active child for matching defining child
-    // in newChildren
-
-    let childMatches = component.childLogic.returnMatches(childLogicName);
-
-    if (childMatches.length === 0) {
-      return;
-    }
-
-    // set usedSugar on this particular child logic component
-    // so that it won't be applied again
-    component.childLogic.logicComponents[childLogicName].usedSugar = true;
-
-    if (component.childLogic.excludeMultipleSugar) {
-      // if childLogic is marked as excludeMultipleSugar
-      // then also set usedSugar on the childLogic itself,
-      // which will prevent any sugar being applied
-      component.childLogic.usedSugar = true;
-    }
-
-    let childLogicComponent = component.childLogic.logicComponents[childLogicName];
-
-
-    console.log(`about to calc sugar replacements`)
-    console.log(childMatches)
-
-    console.log(childLogicComponent);
-
-    // calculate replacements for sugar
-    let sugarResults = component.childLogic.calculateSugarReplacements({
-      childMatches,
-      activeChildren: component.activeChildren,
-      allChildren: component.allChildren,
-      definingChildren: component.definingChildren,
-      separateSugarInputs: childLogicComponent.separateSugarInputs,
-      replacementFunction: childLogicComponent.replacementFunction,
-      dependencyValues,
-      parentName: component.componentName,
-      parentDoenetAttributes: component.doenetAttributes,
-      childLogicName,
-    });
-
-    console.log(sugarResults)
-
-    if (!sugarResults.success) {
-
-      console.warn(`Applying sugar for ${component.componentName} failed: ${sugarResults.message}`)
-
-      // sugar failed.
-      // rerun child logic, now that we have marked childlogic component
-      // as already having used sugars
-      this.processNewDefiningChildren({ parent: component, updatesNeeded, compositesBeingExpanded })
-
-      if (!component.childLogicSatisfied) {
-        // TODO: handle case where child logic is no longer satisfied
-        console.error(`Child logic of ${component.componentName} is not satisfied after failing to apply sugar`)
-      }
-
-      return;
-
-    }
-
-
-    if (sugarResults.childChanges) {
-
-      for (let childName in sugarResults.childChanges) {
-        let changes = sugarResults.childChanges[childName];
-
-        if (component.allChildren[childName].definingChildrenIndex === undefined) {
-          throw Error("Invalid sugar logic for component of type " + componentType
-            + ": can change only defining children");
-        }
-
-        let child = this._components[childName];
-
-        let result = this.replaceDefiningChildrenBySugar({
-          component: child,
-          sugarResults: changes,
-          updatesNeeded,
-          compositesBeingExpanded
-        });
-
-        // immediately apply sugar to shadows
-        // so that defining indices from changes still apply
-        // (at later sugar changes could add/delete defining changes)
-        if (child.shadowedBy) {
-          for (let shadowingComponent of child.shadowedBy) {
-            if (!shadowingComponent.shadows.propVariable) {
-              let additionalChanges = this.applySugarToShadows(({
-                originalComponent: child,
-                shadowingComponent,
-                changes,
-                componentsShadowingDeleted: result.componentsShadowingDeleted,
-                updatesNeeded,
-                compositesBeingExpanded,
-              }));
-            }
-          }
-        }
-
-        this.processNewDefiningChildren({ parent: child, updatesNeeded, compositesBeingExpanded })
-
-        if (!component.childLogicSatisfied) {
-          // TODO: handle case where child logic is no longer satisfied
-          console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar to children`)
-        }
-
-
-      }
-    }
-
-    for (let changes of sugarResults.baseChanges) {
-      let result = this.replaceDefiningChildrenBySugar({
-        component,
-        sugarResults: changes,
-        updatesNeeded,
-        compositesBeingExpanded
-      });
-
-
-      // immediately apply sugar to shadows
-      // so that defining indices from change still apply
-      // (at later sugar changes could add/delete defining changes)
-      if (component.shadowedBy) {
-        for (let shadowingComponent of component.shadowedBy) {
-          if (!shadowingComponent.shadows.propVariable) {
-            this.applySugarToShadows(({
-              originalComponent: component,
-              shadowingComponent,
-              changes,
-              componentsShadowingDeleted: result.componentsShadowingDeleted,
-              updatesNeeded,
-              compositesBeingExpanded
-            }));
-          }
-        }
-      }
-    }
-
-    this.processNewDefiningChildren({ parent: component, updatesNeeded, compositesBeingExpanded })
-
-    if (!component.childLogicSatisfied) {
-      // TODO: handle case where child logic is no longer satisfied
-      console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
-    }
-
-    return;
-
-  }
-
-  replaceDefiningChildrenBySugar({ component, sugarResults, shadow = false,
-    updatesNeeded, compositesBeingExpanded
-  }) {
-
-    let componentsShadowingDeleted = {};
-
-    // delete the string children specified by childrenToDelete
-    if (sugarResults.childrenToDelete !== undefined) {
-      for (let childName of sugarResults.childrenToDelete) {
-        let child = this._components[childName];
-
-        let childAndDescendants = [childName, ...child.allDescendants]
-
-        for (let name of childAndDescendants) {
-          this.dependencies.deleteAllDownstreamDependencies({ component: this._components[name], updatesNeeded });
-        }
-
-        if (child.shadowedBy) {
-
-          this.dependencies.deleteSugarShadowDependencies(childName);
-
-          componentsShadowingDeleted[childName] = child.shadowedBy;
-        }
-
-
-        // mark all state variables as deleted
-        if (updatesNeeded.deletedStateVariables[childName] === undefined) {
-          updatesNeeded.deletedStateVariables[childName] = [];
-        }
-        for (let varName in child.state) {
-          updatesNeeded.deletedStateVariables[childName].push(varName);
-        }
-
-        updatesNeeded.deletedComponents[childName] = true;
-        delete this.unsatisfiedChildLogic[childName]
-
-
-        for (let cName of childAndDescendants) {
-
-          if (updatesNeeded.unresolvedDependencies[cName]) {
-            for (let varName in updatesNeeded.unresolvedDependencies[cName]) {
-              for (let unRes of updatesNeeded.unresolvedDependencies[cName][varName]) {
-                // delete from updatesNeeded.unresolvedByDependent so don't attempt
-                // to try to resolve this state variable later
-                if (updatesNeeded.unresolvedByDependent[unRes.componentName]) {
-                  let unResBy = updatesNeeded.unresolvedByDependent[unRes.componentName][unRes.stateVariable];
-                  if (unResBy) {
-                    for (let [ind, dep] of unResBy.entries()) {
-                      if (dep.componentName === cName && dep.stateVariable === varName) {
-                        unResBy.splice(ind, 1);
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          delete updatesNeeded.unresolvedDependencies[cName];
-        }
-
-        this.deregisterComponent(this._components[childName]);
-      }
-    }
-
-
-    this.parameterStack.push(component.sharedParameters, false);
-
-    let ancestorsForChildren = [
-      {
-        componentName: component.componentName,
-        componentClass: component.constructor
-      },
-      ...component.ancestors
-    ];
-
-    let namespaceForUnamed;
-    if (component.doenetAttributes.newNamespace) {
-      namespaceForUnamed = component.componentName + "/";
-    } else {
-      namespaceForUnamed = getNamespaceFromName(component.componentName);
-    }
-
-    let childrenResult = this.createIsolatedComponentsSub({
-      serializedState: sugarResults.newChildren,
-      applySugar: true,
-      ancestors: ancestorsForChildren,
-      shadow, updatesNeeded, compositesBeingExpanded,
-      createNameContext: component.componentName + "|sugar",
-      namespaceForUnamed,
-    });
-
-    this.parameterStack.pop();
-
-    // insert the replacements in definingChildren
-    component.definingChildren.splice(sugarResults.firstDefiningIndex,
-      sugarResults.nDefiningIndices, ...childrenResult.components);
-
-    return { createResult: childrenResult, componentsShadowingDeleted }
-
-  }
-
-  applySugarToShadows({ originalComponent, shadowingComponent, changes, componentsShadowingDeleted,
-    updatesNeeded, compositesBeingExpanded
-  }) {
-
-    // recreate sugar results with the following changes
-    // 1. replace childrenToDelete with their shadows from componentsShadowingDeleted
-    // 2. serialized for reference any newly created components
-    //    (don't just use the instructions from the sugar, as additional
-    //    sugar could have been applied when creating those components)
-    // 3. find any "createdComponents" (components that were preserved)
-    //    and replace them with createdComponents referencing their shadows
-
-    let shadowChanges = Object.assign({}, changes)
-
-    let shadowChildrenToDelete = [];
-
-    if (changes.childrenToDelete) {
-      for (let deletedName of changes.childrenToDelete) {
-        let shadowingDeleted = componentsShadowingDeleted[deletedName];
-        if (shadowingDeleted) {
-          for (let comp of shadowingDeleted) {
-            // check if shadowingComponent is ancestor
-            if (comp.ancestors.map(x => x.componentName)
-              .includes(shadowingComponent.componentName)
-            ) {
-              shadowChildrenToDelete.push(comp.componentName);
-            }
-          }
-        }
-      }
-    }
-
-    shadowChanges.childrenToDelete = shadowChildrenToDelete;
-
-
-    let originalChildren = originalComponent.definingChildren.slice(
-      changes.firstDefiningIndex,
-      changes.firstDefiningIndex + changes.newChildren.length
-    )
-
-    let serializedChildren = originalChildren.map(x => x.serialize({ forCopy: true }));
-
-    serializedChildren = postProcessCopy({
-      serializedComponents: serializedChildren,
-      componentName: shadowingComponent.shadows.compositeName
-    })
-
-    // go through the defining children of shadowing component
-    // if they aren't in shadowChanges.childrenToDelete
-    // we should be able to find the component they are shadowing in originalChildren
-    // so that we can modify serializedChildren to be a createComponent
-    // refering to the shadowChild
-
-
-    let definingIndsInSugar = [];
-
-    for (let [childInd, shadowingChild] of shadowingComponent.definingChildren.entries()) {
-      if (shadowChanges.childrenToDelete.includes(shadowingChild.componentName)) {
-        definingIndsInSugar.push(childInd);
-        continue;
-      }
-
-      let shadowedComponentName = shadowingChild.shadows.componentName;
-
-      // Go through serialized children to find shadowedComponentName
-      // and replace it with a createdComponent referring to shadowingChild
-      let shadowedChild = this.findShadowedChildInSerializedComponents({
-        serializedComponents: serializedChildren,
-        shadowedComponentName
-      })
-
-      if (shadowedChild) {
-        for (let key in shadowedChild) {
-          delete shadowedChild[key];
-        }
-        shadowedChild.createdComponent = true;
-        shadowedChild.componentName = shadowingChild.componentName;
-        definingIndsInSugar.push(childInd);
-      } else {
-
-        // check if shadowingChild is shadowing another defining child
-        let shadowedComponentName = shadowingChild.shadows.componentName;
-        if (!originalComponent.definingChildren.map(x => x.componentName).includes(shadowedComponentName)) {
-
-          shadowChanges.childrenToDelete.push(shadowingChild.componentName)
-          definingIndsInSugar.push(childInd);
-
-        }
-      }
-
-    }
-
-    // check if there is a gap in defining inds in sugar
-    for (let i = 1; i < definingIndsInSugar.length; i++) {
-      if (definingIndsInSugar[i] - definingIndsInSugar[i - 1] !== 1) {
-        // this shouldn't happen
-        throw Error('Sugar translated to shadowing components affects non-consecutive defining children');
-      }
-    }
-
-    shadowChanges.newChildren = serializedChildren;
-
-    if (definingIndsInSugar.length > 0) {
-      shadowChanges.firstDefiningIndex = Math.min(...definingIndsInSugar);
-      let lastDefiningIndex = Math.max(...definingIndsInSugar);
-      shadowChanges.nDefiningIndices = lastDefiningIndex - shadowChanges.firstDefiningIndex + 1;
-    } else {
-      shadowChanges.firstDefiningIndex = 0;
-      shadowChanges.nDefiningIndices = 0;
-    }
-
-    let result = this.replaceDefiningChildrenBySugar({
-      component: shadowingComponent,
-      sugarResults: shadowChanges,
-      shadow: true,
-      updatesNeeded,
-      compositesBeingExpanded
-    });
-
-    // recurse if shadowingComponent is shadowed
-    if (shadowingComponent.shadowedBy) {
-      for (let shadowingComponent2 of shadowingComponent.shadowedBy) {
-        if (!shadowingComponent2.shadows.propVariable) {
-          this.applySugarToShadows(({
-            originalComponent: shadowingComponent,
-            shadowingComponent: shadowingComponent2,
-            changes: shadowChanges,
-            componentsShadowingDeleted: result.componentsShadowingDeleted,
-            updatesNeeded,
-            compositesBeingExpanded,
-          }))
-        }
-      }
-    }
-
-    this.processNewDefiningChildren({ parent: shadowingComponent, updatesNeeded, compositesBeingExpanded })
-
-
-    if (!shadowingComponent.childLogicSatisfied) {
-      // TODO: handle case where child logic is no longer satisfied
-      console.error(`Child logic of ${shadowingComponent.componentName} is not satisfied after applying sugar in shadows`)
-    }
 
   }
 
@@ -2323,6 +1909,9 @@ export default class Core {
       }
       // let deleteIfUndefined = defaultValue === undefined && propertySpecification.deleteIfUndefined;
       let propertyClass = this.allComponentClasses[property.toLowerCase()];
+      if (!propertyClass) {
+        throw Error(`Component type ${property} does not exist so cannot create property.`)
+      }
       let stateVariableForPropertyValue = propertyClass.stateVariableForPropertyValue;
       if (stateVariableForPropertyValue === undefined) {
         stateVariableForPropertyValue = "value";
@@ -2345,7 +1934,6 @@ export default class Core {
             dependencyType: "child",
             childLogicName: childLogicName,
             variableNames: [stateVariableForPropertyValue],
-            markChildrenAsProperties: true,
           },
           ancestorProp: {
             dependencyType: "stateVariable",
@@ -2498,7 +2086,6 @@ export default class Core {
             dependencyType: "child",
             childLogicName: childLogicName,
             variableNames: [stateVariableForPropertyValue],
-            markChildrenAsProperties: true,
           },
         };
 
@@ -3373,246 +2960,6 @@ export default class Core {
       }
       return results;
     };
-  }
-
-  applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded, compositesBeingExpanded }) {
-
-    let childLogic = component.childLogic;
-
-
-    if (!childLogic.logicResult.success) {
-      // add action state variable that will apply sugar once child logic
-      // is satisfied
-
-
-      // if already have apply sugar state variable,
-      // there is nothing more to do
-      if (component.state.__apply_sugar) {
-        return {};
-      }
-
-      let core = this;
-
-      component.state.__apply_sugar = {
-        actionOnResolved: true,
-        returnDependencies: () => ({
-          childLogicSatisfied: {
-            dependencyType: "value",
-            requireChildLogicInitiallySatisfied: true,
-          }
-        }),
-        resolvedAction: function ({ updatesNeeded }) {
-
-          let result = core.applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded, compositesBeingExpanded });
-
-          core.dependencies.deleteAllUpstreamDependencies({ component, stateVariables: ["__apply_sugar"], updatesNeeded });
-          core.dependencies.deleteAllDownstreamDependencies({ component, stateVariables: ["__apply_sugar"], updatesNeeded });
-
-          // delete state variable itself
-          delete component.state.__apply_sugar;
-
-          if (!result.varsDeleted) {
-            result.varsDeleted = [];
-          }
-
-          result.varsDeleted.push("__apply_sugar")
-
-          return result;
-
-        }
-      }
-
-      this.initializeStateVariable({ component, stateVariable: "__apply_sugar" });
-
-      return {};
-
-    }
-
-    let varsUnresolved = {};
-
-    for (let childLogicName in childLogic.logicResult.sugarResults) {
-      // we have matched children to sugar
-
-      // if component shadows another component
-      // then we will not apply sugar
-      // instead, the replacements will be made when the component
-      // being shadowed has its sugar processed
-      // i.e., when we applySugarToShadows
-      if (component.shadows) {
-        continue;
-      }
-
-      let childLogicComponent = childLogic.logicComponents[childLogicName];
-
-      if (childLogicComponent.returnSugarDependencies) {
-        // if sugar has dependencies that must be satisfied before it can be applied,
-        // then for each affected childlogic component,
-        // create a state variable that will apply sugar when dependencies are satisfied
-
-        // need access to actual core functions to create child logic variables
-        let core = this;
-
-        // the name of the action state variable that to be created
-        let applySugarStateVariable = `__childLogic_${childLogicName}`;
-
-        // if already created this apply sugar state variable,
-        // there is nothing more to do
-        if (component.state[applySugarStateVariable]) {
-          continue;
-        }
-
-        let childLogicAffected = [];
-        let childLogicWaiting = {};
-
-        if (childLogicComponent.logicToWaitOnSugar) {
-
-          // find all child logic components affected,
-          // not only those listed, but those who depend on those listed
-
-          // first create data structure listing all the child logic components
-          // that are affected by each child logic component
-          // Note: think this is typically not a long loop
-          // and this happens relatively rarely,
-          // so that it isn't worth precomputing this data structure
-          let childLogicDependencies = {};
-          for (let logicName in childLogic.logicComponents) {
-            let logicComponent = childLogic.logicComponents[logicName];
-            if (logicComponent.propositions) {
-              for (let proposition of logicComponent.propositions) {
-                if (childLogicDependencies[proposition.name] === undefined) {
-                  childLogicDependencies[proposition.name] = [];
-                }
-                childLogicDependencies[proposition.name].push(logicName);
-              }
-            }
-          }
-
-          // create an array of all childLogic components that are directly
-          // or indirectly dependent on the components that are listed
-          // as being affected by the sugar
-          childLogicAffected = [...childLogicComponent.logicToWaitOnSugar];
-          let logicToCheck = [...childLogicAffected];
-          let logicName = logicToCheck.pop();
-          while (logicName !== undefined) {
-            let newComponents = childLogicDependencies[logicName];
-            if (newComponents) {
-              for (let comp of newComponents) {
-                if (!childLogicAffected.includes(comp)) {
-                  childLogicAffected.push(comp);
-                  logicToCheck.push(comp);
-                }
-              }
-            }
-            logicName = logicToCheck.pop();
-          }
-
-          // for each childLogic component that is dependent on sugar
-          // add to data structure that lists all child logic components
-          // that are waiting on sugar
-          childLogicWaiting = this.childLogicWaitingOnSugar[component.componentName];
-          if (childLogicWaiting === undefined) {
-            childLogicWaiting = this.childLogicWaitingOnSugar[component.componentName] = {};
-          }
-          for (let affectedName of childLogicAffected) {
-            if (childLogicWaiting[affectedName] === undefined) {
-              childLogicWaiting[affectedName] = [];
-            }
-            childLogicWaiting[affectedName].push(applySugarStateVariable);
-          }
-        }
-
-
-        // create an action state variable that will run when the sugar
-        // dependencies are satisfied to:
-        // - apply sugar
-        // - delete any dependencies of this sugar state variable
-        // - delete the actual action state variable
-
-        component.state[applySugarStateVariable] = {
-          actionOnResolved: true,
-          returnDependencies: childLogicComponent.returnSugarDependencies,
-          resolvedAction: function ({ dependencyValues, updatesNeeded }) {
-
-            core.replaceChildrenBySugar({
-              component,
-              childLogicName,
-              dependencyValues,
-              updatesNeeded,
-              compositesBeingExpanded
-            });
-
-            core.dependencies.deleteAllUpstreamDependencies({ component, stateVariables: [applySugarStateVariable], updatesNeeded });
-            core.dependencies.deleteAllDownstreamDependencies({ component, stateVariables: [applySugarStateVariable], updatesNeeded });
-
-            // delete state variable itself
-            delete component.state[applySugarStateVariable];
-
-            // delete any childLogicWaiting
-            for (let affectedName of childLogicAffected) {
-              if (childLogicWaiting[affectedName] !== undefined) {
-                let index = childLogicWaiting[affectedName].indexOf(applySugarStateVariable);
-                if (index !== -1) {
-                  if (childLogicWaiting[affectedName].length === 1) {
-                    delete childLogicWaiting[affectedName];
-                  } else {
-                    childLogicWaiting[affectedName].splice(index, 1);
-                  }
-                }
-              }
-            }
-
-            if (!updatesNeeded.deletedStateVariables[component.componentName]) {
-              updatesNeeded.deletedStateVariables[component.componentName] = [];
-            }
-            updatesNeeded.deletedStateVariables[component.componentName].push(applySugarStateVariable);
-
-
-            return {}
-
-          }
-        }
-
-        this.initializeStateVariable({ component, stateVariable: applySugarStateVariable });
-
-        // if already set up dependencies for this component
-        // then need to set up new state variable
-        if (this.dependencies.downstreamDependencies[component.componentName]) {
-
-          this.dependencies.setUpStateVariableDependencies({
-            component,
-            stateVariable: applySugarStateVariable,
-            allStateVariablesAffected: [applySugarStateVariable],
-            core: this,
-            updatesNeeded,
-            compositesBeingExpanded
-          });
-
-          let result = this.resolveStateVariables({
-            component,
-            stateVariables: [applySugarStateVariable],
-            updatesNeeded,
-            compositesBeingExpanded
-          });
-
-          Object.assign(varsUnresolved, result.varsUnresolved);
-
-        }
-
-      } else {
-
-        this.replaceChildrenBySugar({
-          component,
-          childLogicName,
-          updatesNeeded,
-          compositesBeingExpanded
-        });
-
-      }
-
-    }
-
-    return { varsUnresolved }
-
   }
 
   initializeComponentStateVariables(component) {
@@ -6328,20 +5675,6 @@ export default class Core {
                     compositesBeingExpanded,
                   });
 
-                  let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
-                    component: this._components[depComponent.parentName],
-                    updatesNeeded,
-                    compositesBeingExpanded
-                  });
-
-                  if (sugarResult.varsUnresolved) {
-                    this.addUnresolvedDependencies({
-                      varsUnresolved: sugarResult.varsUnresolved,
-                      component: this._components[depComponent.parentName],
-                      updatesNeeded
-                    });
-                  }
-
                   // check to see if we can update replacements of any composites
                   if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
                     this.replacementChangesFromCompositesToUpdate({
@@ -6396,12 +5729,6 @@ export default class Core {
 
         this.processNewDefiningChildren({
           parent: this._components[composite.parentName],
-          updatesNeeded,
-          compositesBeingExpanded,
-        });
-
-        this.applySugarOrAddSugarCreationStateVariables({
-          component: this._components[composite.parentName],
           updatesNeeded,
           compositesBeingExpanded,
         });
@@ -7245,16 +6572,6 @@ export default class Core {
       parent, updatesNeeded, compositesBeingExpanded
     });
 
-    let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
-      component: parent,
-      updatesNeeded,
-      compositesBeingExpanded
-    });
-
-    if (sugarResult.varsUnresolved) {
-      throw Error(`need to implement resolving additional state variables in addChildren`)
-    }
-
     let addedComponents = {};
     let deletedComponents = {};
 
@@ -7756,7 +7073,6 @@ export default class Core {
 
           let createResult = this.createIsolatedComponentsSub({
             serializedState: serializedReplacements,
-            applySugar: true,
             ancestors: component.ancestors,
             updatesNeeded,
             compositesBeingExpanded,
@@ -7864,14 +7180,6 @@ export default class Core {
 
             updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
 
-            this.applySugarOrAddSugarCreationStateVariables({
-              component: parent,
-              updatesNeeded,
-              compositesBeingExpanded,
-            });
-
-            // TODO: do we need to do anything if applySugar returns varsUnresolved?
-
           } else {
             // if not top level replacements
 
@@ -7886,14 +7194,6 @@ export default class Core {
             newReplacements.forEach(x => addedComponents[x.componentName] = x);
 
             updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
-
-            this.applySugarOrAddSugarCreationStateVariables({
-              component: parent,
-              updatesNeeded,
-              compositesBeingExpanded,
-            });
-
-            // TODO: do we need to do anything if applySugar returns varsUnresolved?
 
             let newChange = {
               changeType: "addedReplacements",
@@ -8155,7 +7455,6 @@ export default class Core {
     let parent = this._components[component.parentName];
     this.processNewDefiningChildren({
       parent,
-      applySugar: true,
       updatesNeeded,
       compositesBeingExpanded
     });
@@ -8278,7 +7577,6 @@ export default class Core {
 
         let createResult = this.createIsolatedComponentsSub({
           serializedState: newSerializedReplacements,
-          applySugar: true,
           ancestors: shadowingComponent.ancestors,
           updatesNeeded,
           compositesBeingExpanded,

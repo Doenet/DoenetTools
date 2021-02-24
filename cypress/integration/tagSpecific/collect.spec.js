@@ -279,7 +279,7 @@ describe('Collect Tag Tests',function() {
     <graph>
       <map>
         <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
-        <sources><sequence><to><copy prop="value" tname="count" /></to></sequence></sources>
+        <sources><sequence to="$count" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
@@ -650,7 +650,10 @@ describe('Collect Tag Tests',function() {
     <graph>
       <point>(-3,1)</point>
       <point>(-7,4)</point>
-      <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
+      <vector>
+        <tail><copy tname="_point1" /></tail>
+        <head><copy tname="_point2" /></head>
+      </vector>
     </graph>
 
     <graph>
@@ -662,7 +665,10 @@ describe('Collect Tag Tests',function() {
         <x><copy prop="y" tname="_point2" /></x>
         <y><copy prop="x" tname="_point2" /></y>
       </point>
-      <vector><copy tname="_point3" /><copy tname="_point4" /></vector>
+      <vector>
+        <tail><copy tname="_point3" /></tail>
+        <head><copy tname="_point4" /></head>
+      </vector>
     </graph>
     </panel>
 
@@ -769,7 +775,7 @@ describe('Collect Tag Tests',function() {
     <graph>
       <map>
         <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
-        <sources><sequence><to><copy prop="value" tname="count" /></to></sequence></sources>
+        <sources><sequence to="$count" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
@@ -777,18 +783,18 @@ describe('Collect Tag Tests',function() {
     <graph>
       <map>
       <template newNamespace><point>(<extract prop="x"><copySource/></extract>+1, 1.5*<extract prop="y"><copySource/></extract>)</point></template>
-      <sources><collect componentTypes="point" tname="_map1"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect></sources>
+      <sources><collect componentTypes="point" tname="_map1" maximumnumber="$maxnumber" /></sources>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" tname="_panel1"><maximumnumber>2<copy prop="value" tname="maxnumber" /></maximumnumber></collect>
+      <collect componentTypes="point" tname="_panel1" maximumnumber="2$maxnumber" />
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" tname="_graph3"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect>
+      <collect componentTypes="point" prop="y" tname="_graph3" maximumnumber="$maxnumber" />
     </aslist></p>
     `},"*");
     });
@@ -1030,7 +1036,7 @@ describe('Collect Tag Tests',function() {
     <mathinput />
 
     <math>
-      <sequence><to><copy prop="value" tname="_mathinput1" /></to></sequence>
+      <sequence to="$_mathinput1" />
       <math>a</math>
       <math>b</math>
       <math>c</math>
@@ -1130,7 +1136,7 @@ describe('Collect Tag Tests',function() {
         <mathinput />
       </template>
       <sources>
-        <sequence><count><copy prop="value" tname="n" /></count></sequence>
+        <sequence count="$n" />
       </sources>
     </map>
   </p>

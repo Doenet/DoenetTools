@@ -63,6 +63,44 @@ export default class Select extends CompositeComponent {
     return properties;
   }
 
+
+
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    function numbersOrTextsFromString({ matchedChildren }) {
+      let pieces = matchedChildren[0].state.value.split(",").map(x => x.trim());
+
+      let foundNumbers = pieces.every(x => Number.isFinite(Number(x)));
+      if (foundNumbers) {
+        pieces = pieces.map(Number)
+      }
+
+      let componentType = foundNumbers ? "number" : "text";
+
+      return {
+        success: true,
+        newChildren: pieces.map(x => ({
+          componentType: "option",
+          children: [{
+            componentType: componentType,
+            state: { value: x }
+          }]
+        }))
+      };
+
+    }
+
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: numbersOrTextsFromString
+    });
+
+    return sugarInstructions;
+
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -544,8 +582,8 @@ export default class Select extends CompositeComponent {
       componentInfoObjects,
     });
 
-    console.log(`replacements for select`)
-    console.log(deepClone(processResult.serializedComponents));
+    // console.log(`replacements for select`)
+    // console.log(deepClone(processResult.serializedComponents));
 
     return { replacements: processResult.serializedComponents };
 
@@ -617,7 +655,7 @@ export default class Select extends CompositeComponent {
           for (let grandchild of child.children) {
             if (grandchild.componentType === "string") {
               foundValid = true;
-              if (["true", "t"].includes(grandchild.state.value.trim().toLowerCase())) {
+              if (grandchild.state.value.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
@@ -848,25 +886,6 @@ export default class Select extends CompositeComponent {
   }
 
 }
-
-
-function numbersOrTextFromString(s) {
-  let pieces = s.split(",").map(x => x.trim());
-
-  let foundNumbers = pieces.every(x => Number.isFinite(Number(x)));
-  if (foundNumbers) {
-    pieces = pieces.map(Number)
-  }
-
-  let componentType = foundNumbers ? "number" : "text";
-
-  return pieces.map(x => ({
-    componentType: componentType,
-    state: { value: x }
-  }));
-
-}
-
 
 
 // counts the number of options (including permutations)

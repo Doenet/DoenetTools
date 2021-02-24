@@ -2,51 +2,41 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Seeds extends InlineComponent {
   static componentType = "seeds";
+  static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-    let atLeastZeroSeeds = childLogic.newLeaf({
-      name: "atLeastZeroSeeds",
-      componentType: 'seed',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let breakStringIntoSeedsByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.stringChildren[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
+    let breakStringIntoSeedsByCommas = function ({ matchedChildren }) {
+      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
         componentType: "seed",
         state: { value: x.trim() }
       }));
       return {
         success: true,
         newChildren: newChildren,
-        toDelete: [stringChild.componentName],
       }
     }
 
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChildren: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroSeeds"],
-      replacementFunction: breakStringIntoSeedsByCommas,
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: breakStringIntoSeedsByCommas
     });
 
-    childLogic.newOperator({
-      name: "SeedsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, atLeastZeroSeeds],
-      setAsBase: true,
+    return sugarInstructions;
+
+  }
+
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "atLeastZeroSeeds",
+      componentType: 'seed',
+      comparison: 'atLeast',
+      number: 0,
+      setAsBase: true
     });
 
     return childLogic;

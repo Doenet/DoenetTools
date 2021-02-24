@@ -203,7 +203,7 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line>(0,0),(1,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
   </graph>
 
   <copy name="cp1" prop="points" assignNames="b,c" tname="_line1" />
@@ -477,7 +477,7 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line>(0,0),(1,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
   </graph>
 
   <copy name="cp1" prop="point1" assignNames="b" tname="_line1" />
@@ -594,7 +594,7 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line>(0,0),(1,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
   </graph>
 
   <graph>
@@ -701,7 +701,7 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line>(0,0),(1,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
   </graph>
 
   <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />
@@ -1006,7 +1006,7 @@ describe('Basic copy assignName Tests', function () {
 
   <section name="hello" title="Hello" newNamespace >
   <graph>
-    <line>(0,0),(1,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
   </graph>
 
   <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />

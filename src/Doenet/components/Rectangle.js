@@ -29,6 +29,7 @@ export default class Rectangle extends Polygon {
       componentType: 'width',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneHeight = childLogic.newLeaf({
@@ -36,6 +37,7 @@ export default class Rectangle extends Polygon {
       componentType: 'height',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
@@ -57,7 +59,7 @@ export default class Rectangle extends Polygon {
       returnDependencies: () => ({
         verticesChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneVertices",
+          childLogicName: "atMostOneVertices",
           variableNames: ["nPoints"]
         }
       }),
@@ -655,7 +657,7 @@ export default class Rectangle extends Polygon {
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
                   dependencyType: "child",
-                  childLogicName: "exactlyOneVertices",
+                  childLogicName: "atMostOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -678,7 +680,7 @@ export default class Rectangle extends Polygon {
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
                   dependencyType: "child",
-                  childLogicName: "exactlyOneVertices",
+                  childLogicName: "atMostOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -729,7 +731,7 @@ export default class Rectangle extends Polygon {
             dependenciesByKey[arrayKey] = {
               verticesChild: {
                 dependencyType: "child",
-                childLogicName: "exactlyOneVertices",
+                childLogicName: "atMostOneVertices",
                 variableNames: ["pointX" + varEnding]
               }
             };

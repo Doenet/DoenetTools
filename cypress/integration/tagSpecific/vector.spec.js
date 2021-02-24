@@ -15,7 +15,7 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('vector with single sugared point, head/tail/displacement reffed', () => {
+  it('vector with single sugared point, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -49,16 +49,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -94,48 +94,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -151,21 +175,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with single point sugared as head, head/tail/displacement reffed', () => {
+  it('vector with single point, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -199,16 +223,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -244,48 +268,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -301,21 +349,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with single head sugared point, head/tail/displacement reffed', () => {
+  it('vector with just head, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -349,16 +397,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -394,19 +442,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail keeps head fixed')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
       cy.window().then((win) => {
 
         let tailx = -7;
@@ -416,20 +489,20 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
+
 
       cy.log('move displacement')
       cy.window().then((win) => {
@@ -451,21 +524,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with single head point, head/tail/displacement reffed', () => {
+  it('vector with just head containing point, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -492,7 +565,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -500,22 +572,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -546,21 +617,45 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail keeps head fixed')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -569,24 +664,23 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
+
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
@@ -605,21 +699,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with single displacement sugared point, head/tail/displacement reffed', () => {
+  it('vector with just displacement, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -646,7 +740,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -654,22 +747,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -700,50 +792,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -759,21 +873,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with single displacement point, head/tail/displacement reffed', () => {
+  it('vector with just displacement containing point, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -800,7 +914,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -808,22 +921,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -854,50 +966,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -913,21 +1047,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with two sugared points, head/tail/displacement reffed', () => {
+  it.skip('vector with two sugared points, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -962,16 +1096,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -1008,19 +1142,19 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head and tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -1034,16 +1168,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1067,21 +1201,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with two points sugared as head/tail, head/tail/displacement reffed', () => {
+  it.skip('vector with two points, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1116,16 +1250,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -1162,19 +1296,19 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head and tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -1188,16 +1322,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1221,21 +1355,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with sugared head and tail points, head/tail/displacement reffed', () => {
+  it('vector with head and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1262,7 +1396,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1270,22 +1403,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1316,21 +1448,45 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail keeps head fixed')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -1339,24 +1495,23 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
+
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
@@ -1375,21 +1530,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with head and tail points, head/tail/displacement reffed', () => {
+  it('vector with head and tail containing points, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1416,7 +1571,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 4;
         let taily = 1;
         let headx = -4;
@@ -1424,22 +1578,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1470,21 +1623,45 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail keeps head fixed')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
 
         let tailx = -7;
         let taily = 5;
@@ -1493,24 +1670,23 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
+
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailx = -7;
         let taily = 5;
@@ -1529,21 +1705,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with displacement and tail, head/tail/displacement reffed', () => {
+  it('vector with displacement and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1577,16 +1753,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -1622,48 +1798,73 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -1679,29 +1880,203 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
-
-      cy.log('move just head');
     })
+
   })
 
-  it('vector with vector and tail, head/tail/displacement reffed', () => {
+  it('vector with vector and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
   <vector><vector>(-8,1)</vector><tail>(4,1)</tail></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with displacement and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><displacement>(-8,1)</displacement><head>(-4,2)</head></vector>
   </graph>
 
   <graph>
@@ -1730,16 +2105,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -1776,19 +2151,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -1800,26 +2200,25 @@ describe('Vector Tag Tests', function () {
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let headx = -3;
+        let heady = -9;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -1827,29 +2226,29 @@ describe('Vector Tag Tests', function () {
         let displacementx = displacementheadx - displacementtailx;
         let displacementy = displacementheady - displacementtaily;
 
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
 
         displacement.moveVector({
           tailcoords: [displacementtailx, displacementtaily],
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with vector and head, head/tail/displacement reffed', () => {
+  it('vector with vector and head, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1884,16 +2283,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -1930,19 +2329,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -1953,19 +2377,18 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
         tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1989,21 +2412,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with no arguments, head/tail/displacement reffed', () => {
+  it('vector with no arguments, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2038,16 +2461,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -2084,19 +2507,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = 4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head and tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -2108,18 +2556,17 @@ describe('Vector Tag Tests', function () {
         let displacementy = heady - taily;
 
         head.movePoint({ x: headx, y: heady });
-        tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2144,21 +2591,21 @@ describe('Vector Tag Tests', function () {
         });
 
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with just tail, head/tail/displacement reffed', () => {
+  it('vector with just tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2193,16 +2640,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -2239,19 +2686,45 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = 7;
+        let heady = 6;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -2263,18 +2736,17 @@ describe('Vector Tag Tests', function () {
         let displacementy = heady - taily;
 
         head.movePoint({ x: headx, y: heady });
-        tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2299,27 +2771,29 @@ describe('Vector Tag Tests', function () {
         });
 
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with x and y, head/tail/displacement reffed', () => {
+  it('vector with x and y, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector x="-4" y="2"/>
+  <vector>
+    <x>-4</x><y>2</y>
+  </vector>
   </graph>
 
   <graph>
@@ -2340,7 +2814,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -2348,22 +2821,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2394,50 +2866,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -2453,21 +2947,22 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
+
   })
 
-  it('vector with xs, head/tail/displacement reffed', () => {
+  it('vector with xs, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2491,7 +2986,7 @@ describe('Vector Tag Tests', function () {
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
-
+    
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
@@ -2499,7 +2994,6 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
         let tailx = 0;
         let taily = 0;
         let headx = -4;
@@ -2507,22 +3001,21 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -2553,50 +3046,72 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let headx = -3;
-        let heady = -9;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -2612,27 +3127,27 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with x, y and tail, head/tail/displacement reffed', () => {
+  it('vector with x, y and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector x="-8" y="1"><tail>(4,1)</tail></vector>
+  <vector><x>-8</x><y>1</y><tail>(4,1)</tail></vector>
   </graph>
 
   <graph>
@@ -2660,16 +3175,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -2705,48 +3220,73 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -2762,23 +3302,22 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
-
-      cy.log('move just head');
     })
+
   })
 
-  it('vector with xs and tail, head/tail/displacement reffed', () => {
+  it('vector with xs and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2815,16 +3354,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -2860,48 +3399,73 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
         tail.movePoint({ x: tailx, y: taily });
-        head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
       cy.window().then((win) => {
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -2917,29 +3481,28 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
-
-      cy.log('move just head');
     })
+
   })
 
-  it('vector with x, y and head, head/tail/displacement reffed', () => {
+  it('vector with x, y and head, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector x="-8" y="1"><head>(-4,2)</head></vector>
+  <vector><x>-8</x><y>1</y><head>(-4,2)</head></vector>
   </graph>
 
   <graph>
@@ -2968,16 +3531,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -3014,19 +3577,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -3037,19 +3625,18 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
         tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -3073,21 +3660,21 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
 
-  it('vector with xs and head, head/tail/displacement reffed', () => {
+  it('vector with xs and head, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3125,16 +3712,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
       })
 
@@ -3171,19 +3758,44 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move reffed head and tail')
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
@@ -3194,19 +3806,18 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        head.movePoint({ x: headx, y: heady });
         tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -3230,16 +3841,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x=>x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x=>x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
   })
@@ -3251,16 +3862,16 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
     <vector>
-      <point>(-1,2)</point>
-      <point>(-2,3)</point>
+      <tail>(-1,2)</tail>
+      <head>(-2,3)</head>
     </vector>
     <point>(-4,7)</point>
     <point>(3,5)</point>
     <vector>
-      <copy tname="_point3" />
-      <copy tname="_point4" />
+      <tail><copy tname="_point1" /></tail>
+      <head><copy tname="_point2" /></head>
     </vector>
-    <vector>(-9,-1),(-3,6)</vector>
+    <vector><tail>(-9,-1)</tail><head>(-3,6)</head></vector>
   </graph>
 
   <graph>
@@ -3310,16 +3921,16 @@ describe('Vector Tag Tests', function () {
         let v3hy = 6;
 
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
 
       })
@@ -3345,16 +3956,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3379,16 +3990,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3413,16 +4024,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3448,16 +4059,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3483,16 +4094,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3518,16 +4129,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3553,16 +4164,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3588,16 +4199,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3623,16 +4234,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v1tx, v1ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v1hx, v1hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v1tx, v1ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v2tx, v2ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v2hx, v2hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v2tx, v2ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([v3tx, v3ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([v3hx, v3hy]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([v3tx, v3ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([v3hx, v3hy]);
         }
       })
 
@@ -3691,15 +4302,15 @@ describe('Vector Tag Tests', function () {
         let dhead_ys = dtail_ys.map(y => y + displacement_y);
 
         for (let name of vectors) {
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([vector_tx, vector_ty]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([vector_hx, vector_hy]);
-          expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([vector_tx, vector_ty]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([vector_hx, vector_hy]);
+          expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
         }
         for (let i = 0; i < 2; i++) {
           let name = displacements[i];
-          expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([dtail_xs[i], dtail_ys[i]]);
-          expect(components[name].stateValues.head.map(x=>x.tree)).eqls([dhead_xs[i], dhead_ys[i]]);
-          expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+          expect(components[name].stateValues.tail.map(x => x.tree)).eqls([dtail_xs[i], dtail_ys[i]]);
+          expect(components[name].stateValues.head.map(x => x.tree)).eqls([dhead_xs[i], dhead_ys[i]]);
+          expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
         }
 
       })
@@ -3732,15 +4343,15 @@ describe('Vector Tag Tests', function () {
           let dhead_ys = dtail_ys.map(y => y + displacement_y);
 
           for (let name of vectors) {
-            expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([vector_tx, vector_ty]);
-            expect(components[name].stateValues.head.map(x=>x.tree)).eqls([vector_hx, vector_hy]);
-            expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.map(x => x.tree)).eqls([vector_tx, vector_ty]);
+            expect(components[name].stateValues.head.map(x => x.tree)).eqls([vector_hx, vector_hy]);
+            expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
           }
           for (let i = 0; i < 2; i++) {
             let name = displacements[i];
-            expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([dtail_xs[i], dtail_ys[i]]);
-            expect(components[name].stateValues.head.map(x=>x.tree)).eqls([dhead_xs[i], dhead_ys[i]]);
-            expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.map(x => x.tree)).eqls([dtail_xs[i], dtail_ys[i]]);
+            expect(components[name].stateValues.head.map(x => x.tree)).eqls([dhead_xs[i], dhead_ys[i]]);
+            expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
           }
         }
       })
@@ -3776,15 +4387,15 @@ describe('Vector Tag Tests', function () {
           });
 
           for (let name of vectors) {
-            expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([vector_tx, vector_ty]);
-            expect(components[name].stateValues.head.map(x=>x.tree)).eqls([vector_hx, vector_hy]);
-            expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.map(x => x.tree)).eqls([vector_tx, vector_ty]);
+            expect(components[name].stateValues.head.map(x => x.tree)).eqls([vector_hx, vector_hy]);
+            expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
           }
           for (let j = 0; j < 2; j++) {
             let name = displacements[j];
-            expect(components[name].stateValues.tail.map(x=>x.tree)).eqls([dtail_xs[j], dtail_ys[j]]);
-            expect(components[name].stateValues.head.map(x=>x.tree)).eqls([dhead_xs[j], dhead_ys[j]]);
-            expect(components[name].stateValues.displacement.map(x=>x.tree)).eqls([displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.map(x => x.tree)).eqls([dtail_xs[j], dtail_ys[j]]);
+            expect(components[name].stateValues.head.map(x => x.tree)).eqls([dhead_xs[j], dhead_ys[j]]);
+            expect(components[name].stateValues.displacement.map(x => x.tree)).eqls([displacement_x, displacement_y]);
           }
         }
       })
@@ -3799,10 +4410,16 @@ describe('Vector Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
+  <vector>
+    <tail><copy tname="_point1" /></tail>
+    <head><copy tname="_point2" /></head>
+  </vector>
 
-  <point>(-5,2)
-    <constrainTo><copy tname="_vector1" /></constrainTo>
+  <point>
+    <constraints>
+      <constrainTo><copy tname="_vector1" /></constrainTo>
+    </constraints>
+    <x>-5</x><y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -3814,8 +4431,8 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([1, 2]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([3, 4]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([3, 4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2);
     });
@@ -3827,8 +4444,8 @@ describe('Vector Tag Tests', function () {
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([-4, 4]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([4, -4]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([-4, 4]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([4, -4]);
 
       let xorig = -5;
       let yorig = 2;
@@ -3919,10 +4536,16 @@ describe('Vector Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
+  <vector>
+    <tail><copy tname="_point1" /></tail>
+    <head><copy tname="_point2" /></head>
+  </vector>
 
-  <point>(-5,2)
-    <attractTo><copy tname="_vector1" /></attractTo>
+  <point>
+    <constraints>
+      <attractTo><copy tname="_vector1" /></attractTo>
+    </constraints>
+    <x>-5</x><y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -3934,8 +4557,8 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([1, 2]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([3, 4]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([3, 4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(-5);
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2);
     });
@@ -3947,8 +4570,8 @@ describe('Vector Tag Tests', function () {
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([-4, 4]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([4, -4]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([-4, 4]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([4, -4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(-5)
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2)
     });
@@ -4068,10 +4691,10 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/original'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/original'].stateValues.head.map(x=>x.tree)).eqls([1, 3]);
-      expect(components['/multiplied'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/multiplied'].stateValues.head.map(x=>x.tree)).eqls([2, 6]);
+      expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([1, 3]);
+      expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/multiplied'].stateValues.head.map(x => x.tree)).eqls([2, 6]);
     });
 
     cy.log('move original vector')
@@ -4079,10 +4702,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/original'].moveVector({ headcoords: [-5, 1] })
-      expect(components['/original'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/original'].stateValues.head.map(x=>x.tree)).eqls([-5, 1]);
-      expect(components['/multiplied'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/multiplied'].stateValues.head.map(x=>x.tree)).eqls([-10, 2]);
+      expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/multiplied'].stateValues.head.map(x => x.tree)).eqls([-10, 2]);
     });
 
     cy.log('move multiplied vector')
@@ -4090,10 +4713,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/multiplied'].moveVector({ headcoords: [6, -8] })
-      expect(components['/original'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/original'].stateValues.head.map(x=>x.tree)).eqls([3, -4]);
-      expect(components['/multiplied'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/multiplied'].stateValues.head.map(x=>x.tree)).eqls([6, -8]);
+      expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([3, -4]);
+      expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/multiplied'].stateValues.head.map(x => x.tree)).eqls([6, -8]);
     });
 
     cy.log("Change factor");
@@ -4101,10 +4724,10 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/original'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/original'].stateValues.head.map(x=>x.tree)).eqls([3, -4]);
-      expect(components['/multiplied'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/multiplied'].stateValues.head.map(x=>x.tree)).eqls([-9, 12]);
+      expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([3, -4]);
+      expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/multiplied'].stateValues.head.map(x => x.tree)).eqls([-9, 12]);
     });
 
     cy.log('move multiplied vector again')
@@ -4112,10 +4735,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/multiplied'].moveVector({ headcoords: [-6, -3] })
-      expect(components['/original'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/original'].stateValues.head.map(x=>x.tree)).eqls([2, 1]);
-      expect(components['/multiplied'].stateValues.tail.map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/multiplied'].stateValues.head.map(x=>x.tree)).eqls([-6, -3]);
+      expect(components['/original'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/original'].stateValues.head.map(x => x.tree)).eqls([2, 1]);
+      expect(components['/multiplied'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+      expect(components['/multiplied'].stateValues.head.map(x => x.tree)).eqls([-6, -3]);
     });
 
 
@@ -4127,7 +4750,7 @@ describe('Vector Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <vector name="u">(1,1)</vector>
+  <vector name="u"><head>(1,1)</head></vector>
   <vector name="v">
     <tail><copy prop="head" tname="u" /></tail>
     <displacement>(1,3)</displacement>
@@ -4157,15 +4780,15 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving tail of v just moves head of u')
@@ -4180,15 +4803,15 @@ describe('Vector Tag Tests', function () {
 
       v = vHead.map((x, i) => x - vTail[i]);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving head of u keeps v displacement fixed')
@@ -4208,15 +4831,15 @@ describe('Vector Tag Tests', function () {
       wHead = w.map((x, i) => x + wTail[i]);
 
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving tail of u moves tail of w')
@@ -4232,15 +4855,15 @@ describe('Vector Tag Tests', function () {
       w = u.map((x, i) => x + v[i]);
       wTail = uTail;
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving tail of w moves tail of u')
@@ -4256,15 +4879,15 @@ describe('Vector Tag Tests', function () {
       u = uHead.map((x, i) => x - uTail[i]);
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving head of w moves head of v')
@@ -4280,15 +4903,15 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
     cy.log('moving head of v moves head of w')
@@ -4304,15 +4927,15 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
-      expect(components['/w'].stateValues.tail.map(x=>x.tree)).eqls([...wTail]);
-      expect(components['/w'].stateValues.head.map(x=>x.tree)).eqls([...wHead]);
-      expect(components['/w'].stateValues.displacement.map(x=>x.tree)).eqls([...w]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
+      expect(components['/w'].stateValues.tail.map(x => x.tree)).eqls([...wTail]);
+      expect(components['/w'].stateValues.head.map(x => x.tree)).eqls([...wHead]);
+      expect(components['/w'].stateValues.displacement.map(x => x.tree)).eqls([...w]);
     });
 
   });
@@ -4323,14 +4946,14 @@ describe('Vector Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <vector name="u">(1,5),(7,3)</vector>
+  <vector name="u"><tail>(1,5)</tail><head>(7,3)</head></vector>
   </graph>
   <p>x coordinate of u is <copy name="ux" prop="x" tname="u" /></p>
   <p>y coordinate of u is <copy name="uy" prop="y" tname="u" /></p>
   <p>x1 coordinate of u is <copy name="ux1" prop="x1" tname="u" /></p>
   <p>x2 coordinate of u is <copy name="ux2" prop="x2" tname="u" /></p>
 
-  <vector name="v">(9,1,-3),(-3,10,8)</vector>
+  <vector name="v"><tail>(9,1,-3)</tail><head>(-3,10,8)</head></vector>
   <p>x coordinate of v is <copy name="vx" prop="x" tname="v" /></p>
   <p>y coordinate of v is <copy name="vy" prop="y" tname="v" /></p>
   <p>z coordinate of v is <copy name="vz" prop="z" tname="v" /></p>
@@ -4353,12 +4976,12 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/u'].stateValues.tail.map(x=>x.tree)).eqls([...uTail]);
-      expect(components['/u'].stateValues.head.map(x=>x.tree)).eqls([...uHead]);
-      expect(components['/u'].stateValues.displacement.map(x=>x.tree)).eqls([...u]);
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([...vTail]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([...vHead]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([...v]);
+      expect(components['/u'].stateValues.tail.map(x => x.tree)).eqls([...uTail]);
+      expect(components['/u'].stateValues.head.map(x => x.tree)).eqls([...uHead]);
+      expect(components['/u'].stateValues.displacement.map(x => x.tree)).eqls([...u]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([...vTail]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([...vHead]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([...v]);
 
       expect(components['/ux'].replacements[0].stateValues.value.tree).eqls(u[0]);
       expect(components['/uy'].replacements[0].stateValues.value.tree).eqls(u[1]);
@@ -4375,13 +4998,13 @@ describe('Vector Tag Tests', function () {
 
   });
 
-  it('combining displacement components through refs', () => {
+  it('combining displacement components through copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <vector name="v1">(1,2),(3,5)</vector>
+    <vector name="v1"><tail>(1,2)</tail><head>(3,5)</head></vector>
     <copy name="v2" tname="v1" />
     <copy name="v3" prop="displacement" tname="v1" />
     <vector name="v4"><displacement>
@@ -4404,21 +5027,21 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4432,21 +5055,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4462,21 +5085,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4490,21 +5113,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4520,21 +5143,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4548,21 +5171,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t3x;
       y = hy - t3y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4578,21 +5201,21 @@ describe('Vector Tag Tests', function () {
       t3x = tx;
       t3y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4606,21 +5229,21 @@ describe('Vector Tag Tests', function () {
       x = hy - t4y;
       y = hx - t4x;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4636,34 +5259,34 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
 
   })
 
-  it('combining displacement components through refs 2', () => {
+  it('combining displacement components through copies 2', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <vector name="v1">(1,2),(3,5)</vector>
+    <vector name="v1"><tail>(1,2)</tail><head>(3,5)</head></vector>
     <copy name="v2" tname="v1" />
     <copy name="v3" prop="displacement" tname="v1" />
     <vector name="v4"><displacement>
@@ -4701,21 +5324,21 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4729,21 +5352,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4759,21 +5382,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4787,21 +5410,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4817,21 +5440,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4845,21 +5468,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t3x;
       y = hy - t3y;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4875,21 +5498,21 @@ describe('Vector Tag Tests', function () {
       t3x = tx;
       t3y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4903,21 +5526,21 @@ describe('Vector Tag Tests', function () {
       x = hy - t4y;
       y = hx - t4x;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
@@ -4933,34 +5556,34 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      expect(components['/v1'].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v1'].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v1'].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v1'].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.map(x=>x.tree)).eqls([t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.map(x=>x.tree)).eqls([t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.map(x=>x.tree)).eqls([x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.map(x => x.tree)).eqls([t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.map(x => x.tree)).eqls([t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.map(x => x.tree)).eqls([x, y]);
 
-      expect(components['/v4'].stateValues.tail.map(x=>x.tree)).eqls([t4x, t4y]);
-      expect(components['/v4'].stateValues.head.map(x=>x.tree)).eqls([t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.map(x=>x.tree)).eqls([y, x]);
+      expect(components['/v4'].stateValues.tail.map(x => x.tree)).eqls([t4x, t4y]);
+      expect(components['/v4'].stateValues.head.map(x => x.tree)).eqls([t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.map(x => x.tree)).eqls([y, x]);
 
     });
 
 
   })
 
-  it('combining components of head and tail through refs', () => {
+  it('combining components of head and tail through copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector name="v">(1,2),(-2,3)</vector>
+  <vector name="v"><tail>(1,2)</tail><head>(-2,3)</head></vector>
   <copy prop="head" name="vh" tname="v" />
   <copy prop="tail" name="vt" tname="v" />
   <point name="c">
@@ -4984,9 +5607,9 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([tx, ty]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([hx, hy]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([hx - tx, hy - ty]);
 
       expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
       expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
@@ -5002,9 +5625,9 @@ describe('Vector Tag Tests', function () {
 
       components['/v'].moveVector({ headcoords: [hx, hy], tailcoords: [tx, ty] });
 
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([tx, ty]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([hx, hy]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([hx - tx, hy - ty]);
 
       expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
       expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
@@ -5021,9 +5644,9 @@ describe('Vector Tag Tests', function () {
 
       components['/vh'].replacements[0].movePoint({ x: hx, y: hy });
 
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([tx, ty]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([hx, hy]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([hx - tx, hy - ty]);
 
       expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
       expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
@@ -5040,9 +5663,9 @@ describe('Vector Tag Tests', function () {
 
       components['/vt'].replacements[0].movePoint({ x: tx, y: ty });
 
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([tx, ty]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([hx, hy]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([hx - tx, hy - ty]);
 
       expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
       expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
@@ -5059,9 +5682,9 @@ describe('Vector Tag Tests', function () {
 
       components['/c'].movePoint({ x: hx, y: ty });
 
-      expect(components['/v'].stateValues.tail.map(x=>x.tree)).eqls([tx, ty]);
-      expect(components['/v'].stateValues.head.map(x=>x.tree)).eqls([hx, hy]);
-      expect(components['/v'].stateValues.displacement.map(x=>x.tree)).eqls([hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.map(x => x.tree)).eqls([tx, ty]);
+      expect(components['/v'].stateValues.head.map(x => x.tree)).eqls([hx, hy]);
+      expect(components['/v'].stateValues.displacement.map(x => x.tree)).eqls([hx - tx, hy - ty]);
 
       expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
       expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
@@ -5223,101 +5846,101 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
@@ -5357,101 +5980,101 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
@@ -5491,101 +6114,101 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
@@ -5612,53 +6235,53 @@ describe('Vector Tag Tests', function () {
       expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
     });
 
@@ -5685,53 +6308,53 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
@@ -5758,57 +6381,57 @@ describe('Vector Tag Tests', function () {
       expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move tail of each vector through reffed point")
+    cy.log("move tail of each vector through copied point")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -5847,105 +6470,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move head of each vector through reffed point")
+    cy.log("move head of each vector through copied point")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -5983,105 +6606,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("change displacement of each vector through reffed vectors")
+    cy.log("change displacement of each vector through copied vectors")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6119,105 +6742,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move tail of each reffed vector directly")
+    cy.log("move tail of each copied vector directly")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6253,105 +6876,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move head of each reffed vector directly")
+    cy.log("move head of each copied vector directly")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6387,105 +7010,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move tail of each reffed vector through reffed point")
+    cy.log("move tail of each copied vector through copied point")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6524,105 +7147,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("move head of each reffed vector through reffed point")
+    cy.log("move head of each copied vector through copied point")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6660,105 +7283,105 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
-    cy.log("change displacement of each reffed vector through reffed vectors")
+    cy.log("change displacement of each copied vector through copied vectors")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -6796,101 +7419,101 @@ describe('Vector Tag Tests', function () {
       expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
       expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd'].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd'].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd'].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x=>x.simplify().tree)).eqls([...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.map(x=>x.simplify().tree)).eqls([...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.map(x => x.simplify().tree)).eqls([...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.map(x => x.simplify().tree)).eqls([...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
       expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
       expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvt]);
 
       expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
       expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvh]);
 
       expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
       expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvd]);
 
       expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
       expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvth]);
 
       expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
       expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvtd]);
 
       expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
       expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x=>x.simplify().tree)).eqls([...dvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.map(x => x.simplify().tree)).eqls([...dvhd]);
 
     });
 
@@ -6904,7 +7527,7 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <math><copy tname="_vector1" /></math>
   <graph>
-    <vector>(1,2),(3,5)</vector>
+    <vector><tail>(1,2)</tail><head>(3,5)</head></vector>
   </graph>
   `}, "*");
     });
@@ -6918,7 +7541,7 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([2, 3]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([2, 3]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 2, 3]);
     })
 
@@ -6926,7 +7549,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_vector1'].moveVector({ headcoords: [9, 7] })
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([8, 5]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([8, 5]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 8, 5]);
     })
 
@@ -6939,7 +7562,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_vector1'].moveVector({ tailcoords: [-2, 6] })
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([11, 1]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([11, 1]);
       expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 11, 1]);
     })
 
@@ -6981,12 +7604,12 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -6997,12 +7620,12 @@ describe('Vector Tag Tests', function () {
       x2 = 7;
       y2 = -3;
       components['/_head1'].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7013,12 +7636,12 @@ describe('Vector Tag Tests', function () {
       x1 = -1;
       y1 = -4;
       components['/_tail1'].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7029,12 +7652,12 @@ describe('Vector Tag Tests', function () {
       x3 = 9;
       y3 = -8;
       components['/_tail2'].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7045,12 +7668,12 @@ describe('Vector Tag Tests', function () {
       x2 = 3;
       y2 = 2;
       components['/_head2'].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7061,12 +7684,12 @@ describe('Vector Tag Tests', function () {
       x1 = -5;
       y1 = 8;
       components['/_head3'].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7077,12 +7700,150 @@ describe('Vector Tag Tests', function () {
       x3 = 0;
       y3 = -5;
       components['/_tail3'].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_vector3'].stateValues.head.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+  })
+
+  it('three vectors with mutual references, using points', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector>
+    <tail><point>(1,0)</point></tail>
+    <head><copy prop="head" tname="_vector2" /></head>
+  </vector>
+  <vector>
+    <tail><copy prop="tail" tname="_vector3" /></tail>
+    <head><point>(3,2)</point></head>
+  </vector>
+  <vector>
+    <tail><point>(-1,4)</point></tail>
+    <head><copy prop="tail" tname="_vector1" /></head>
+  </vector>
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let x1 = 1, y1 = 0;
+    let x2 = 3, y2 = 2;
+    let x3 = -1, y3 = 4;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move head of vector 1")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x2 = 7;
+      y2 = -3;
+      components['/_vector1'].activeChildren[1].movePoint({ x: x2, y: y2 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move tail of vector 1")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x1 = -1;
+      y1 = -4;
+      components['/_vector1'].activeChildren[0].movePoint({ x: x1, y: y1 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move tail of vector 2")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x3 = 9;
+      y3 = -8;
+      components['/_vector2'].activeChildren[0].movePoint({ x: x3, y: y3 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move head of vector 2")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x2 = 3;
+      y2 = 2;
+      components['/_vector2'].activeChildren[1].movePoint({ x: x2, y: y2 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move head of vector 3")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x1 = -5;
+      y1 = 8;
+      components['/_vector3'].activeChildren[1].movePoint({ x: x1, y: y1 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
+
+    })
+
+    cy.log("move tail of vector 3")
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      x3 = 0;
+      y3 = -5;
+      components['/_vector3'].activeChildren[0].movePoint({ x: x3, y: y3 });
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_vector3'].stateValues.head.map(x => x.tree)).eqls([x1, y1]);
 
     })
 
@@ -7094,7 +7855,10 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <vector>(3,<copy prop="value" tname="b" />),(<copy prop="value" tname="a" />,4)</vector>
+  <vector>
+    <tail><x>3</x><y><copy prop="value" tname="b" /></y></tail>
+    <head><x><copy prop="value" tname="a" /></x><y>4</y></head>
+  </vector>
 
   <copy prop="x" tname="_vector1" />
   <copy prop="y" tname="_vector1" />
@@ -7140,9 +7904,9 @@ describe('Vector Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([3, b]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([a, 4]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([dx, dy]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([3, b]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([a, 4]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([dx, dy]);
         expect(x.stateValues.value.tree).eq(dx)
         expect(y.stateValues.value.tree).eq(dy)
       })
@@ -7175,9 +7939,9 @@ describe('Vector Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([3, b2]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([a2, 4]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([dx2, dy2]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([3, b2]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([a2, 4]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([dx2, dy2]);
         expect(x.stateValues.value.tree).eq(dx2)
         expect(y.stateValues.value.tree).eq(dy2)
       })
@@ -7209,9 +7973,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
     })
 
@@ -7230,9 +7994,9 @@ describe('Vector Tag Tests', function () {
         tailcoords: [tailx, taily],
       });
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
     })
 
 
@@ -7261,9 +8025,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
     })
 
@@ -7282,9 +8046,9 @@ describe('Vector Tag Tests', function () {
         headcoords: [headx, heady],
       });
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
     })
 
 
@@ -7313,9 +8077,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
     })
 
@@ -7334,9 +8098,9 @@ describe('Vector Tag Tests', function () {
         tailcoords: [tailx, taily],
       });
 
-      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
     })
 
 

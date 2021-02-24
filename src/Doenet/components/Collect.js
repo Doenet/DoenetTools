@@ -13,7 +13,7 @@ export default class Collect extends CompositeComponent {
   static acceptTname = true;
   static acceptProp = true;
 
-  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
+  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -27,9 +27,11 @@ export default class Collect extends CompositeComponent {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "exactlyOneComponentTypes",
+      name: "atMostOneComponentTypes",
       componentType: "componentTypes",
+      comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
       setAsBase: true
     })
 
@@ -114,7 +116,7 @@ export default class Collect extends CompositeComponent {
       returnDependencies: () => ({
         componentTypesChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneComponentTypes",
+          childLogicName: "atMostOneComponentTypes",
           variableNames: ["texts"],
         }
       }),
@@ -263,7 +265,7 @@ export default class Collect extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    console.log(`create serialized replacements for ${component.componentName}`)
+    // console.log(`create serialized replacements for ${component.componentName}`)
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -316,7 +318,7 @@ export default class Collect extends CompositeComponent {
   static createReplacementForCollected({ component, components, collectedNum,
     numReplacementsSoFar, uniqueIdentifiersUsed, componentInfoObjects }) {
 
-    console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
+    // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
 
     let collectedObj = component.stateValues.collectedComponents[collectedNum];
@@ -377,9 +379,9 @@ export default class Collect extends CompositeComponent {
   static calculateReplacementChanges({ component, componentChanges, components, workspace,
     componentInfoObjects }) {
 
-    console.log("Calculating replacement changes for " + component.componentName);
-    console.log(component.stateValues.collectedComponents.map(x => x.componentName))
-    console.log(deepClone(workspace));
+    // console.log("Calculating replacement changes for " + component.componentName);
+    // console.log(component.stateValues.collectedComponents.map(x => x.componentName))
+    // console.log(deepClone(workspace));
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;

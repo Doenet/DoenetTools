@@ -253,7 +253,7 @@ describe('Extract Tag Tests', function () {
 
     <p><aslist>
     <extract prop="text">
-      <sequence><count><copy prop="value" tname="n" /></count></sequence>
+      <sequence count="$n" />
     </extract>
     </aslist></p>
     
@@ -361,7 +361,7 @@ describe('Extract Tag Tests', function () {
       <map>
         <template newnamespace><point>(<copySource/>+<copy prop="value" tname="../m" />,0)</point></template>
         <sources>
-          <sequence><count><copy prop="value" tname="n" /></count></sequence>
+          <sequence count="$n" />
         </sources>
       </map>
     </extract>

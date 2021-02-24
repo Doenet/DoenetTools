@@ -256,11 +256,6 @@ export class ColNum extends TextComponent {
   static rendererType = "text";
 }
 
-export class Type extends TextComponent {
-  static componentType = "type";
-  static rendererType = "text";
-}
-
 export class DefaultType extends TextComponent {
   static componentType = "defaulttype";
   static rendererType = "text";
@@ -526,6 +521,11 @@ export class Symbolic extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class Input extends MathList {
+  static componentType = "input";
+  static rendererType = "aslist";
+}
+
 export class X extends MathComponent {
   static componentType = "x";
   static rendererType = "math";
@@ -699,11 +699,6 @@ export class Youtube extends TextComponent {
 export class Geogebra extends TextComponent {
   static componentType = "geogebra";
   static rendererType = "text";
-}
-
-export class SplitIntoOptions extends BooleanComponent {
-  static componentType = "splitintooptions";
-  static rendererType = "boolean";
 }
 
 export class Keyword extends TextComponent {
@@ -921,7 +916,7 @@ export class FromMapAncestor extends NumberComponent {
   static rendererType = "number";
 }
 
-export class Condition extends When {
+export class Condition extends BooleanComponent {
   static componentType = "condition";
 }
 

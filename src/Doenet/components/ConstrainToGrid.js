@@ -39,35 +39,6 @@ export default class ConstrainToGrid extends ConstraintComponent {
       definition: () => ({ newValues: { independentComponentConstraints: true } })
     }
 
-    // Note: constraintInactive allows one to treat constrainToGrid as a property
-    // so that
-    // <component constrainToGrid /> and <component constrainToGrid="true"/>
-    // turn the constraint on (with default parameters), and
-    // <component constrainToGrid="false"/>
-    // leave the constraint off
-    stateVariableDefinitions.constraintInactive = {
-      returnDependencies: () => ({
-        stringChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneString",
-          variableNames: ["value"],
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringChild.length === 1) {
-          let stringValue = dependencyValues.stringChild[0].stateValues.value;
-          if (stringValue === false ||
-            (typeof stringValue === "string" && ["false", "f"].includes(stringValue.trim().toLowerCase()))) {
-            return { newValues: { constraintInactive: true } }
-          }
-        }
-
-        return { newValues: { constraintInactive: false } }
-
-      }
-
-
-    }
 
     // Since state variable independentComponentConstraints is true,
     // expect function applyComponentConstraint to be called with 
@@ -79,10 +50,6 @@ export default class ConstrainToGrid extends ConstraintComponent {
 
     stateVariableDefinitions.applyComponentConstraint = {
       returnDependencies: () => ({
-        constraintInactive: {
-          dependencyType: "stateVariable",
-          variableName: "constraintInactive"
-        },
         dx: {
           dependencyType: "stateVariable",
           variableName: "dx"
@@ -112,10 +79,6 @@ export default class ConstrainToGrid extends ConstraintComponent {
         newValues: {
           applyComponentConstraint: function (variables) {
             
-            if (dependencyValues.constraintInactive) {
-              return {};
-            }
-
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
             if ("x1" in variables) {

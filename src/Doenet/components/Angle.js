@@ -12,90 +12,32 @@ export default class Angle extends GraphicalComponent {
     return properties;
   }
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: ({ matchedChildren }) => ({
+        success: true,
+        newChildren: [{ componentType: "math", children: matchedChildren }],
+      })
+    });
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addThrough = function ({ activeChildrenMatched }) {
-      // add <through> around points
-      let throughChildren = [];
-      for (let child of activeChildrenMatched) {
-        throughChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "through", children: throughChildren }],
-      }
-    }
 
-    let atLeastOnePoint = childLogic.newLeaf({
-      name: "atLeastOnePoint",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      replacementFunction: addThrough,
-    });
-
-    let addMath = function ({ activeChildrenMatched }) {
-      // add <math> around math/strings
-      let mathChildren = [];
-      for (let child of activeChildrenMatched) {
-        mathChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "math", children: mathChildren }],
-      }
-    }
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastZeroMath = childLogic.newLeaf({
-      name: "atLeastZeroMath",
+    let atMostOneMath = childLogic.newLeaf({
+      name: "atMostOneMath",
       componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'and',
-      propositions: [atLeastOneString, atLeastZeroMath],
-      requireConsecutive: true,
-      isSugar: true,
-      replacementFunction: addMath,
-    });
-
-    let atLeastTwoMath = childLogic.newLeaf({
-      name: "atLeastTwoMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 2,
-      isSugar: true,
-      replacementFunction: addMath,
-    });
-
-    let exactlyOneMath = childLogic.newLeaf({
-      name: "exactlyOneMath",
-      componentType: 'math',
+      comparison: "atMost",
       number: 1,
-    });
-
-    let noPoints = childLogic.newLeaf({
-      name: "noPoints",
-      componentType: 'point',
-      number: 0
     });
 
     let exactlyOneThrough = childLogic.newLeaf({
@@ -111,10 +53,10 @@ export default class Angle extends GraphicalComponent {
     });
 
     childLogic.newOperator({
-      name: "throughXorSugar",
+      name: "throughLogic",
       operator: 'xor',
-      propositions: [exactlyOneThrough, atLeastOnePoint, exactlyTwoLines,
-        stringsAndMaths, atLeastTwoMath, exactlyOneMath, noPoints],
+      propositions: [exactlyOneThrough, exactlyTwoLines,
+        atMostOneMath],
       setAsBase: true
     });
 
@@ -156,7 +98,7 @@ export default class Angle extends GraphicalComponent {
       returnArraySizeDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath"
+          childLogicName: "atMostOneMath"
         },
       }),
       returnArraySize({ dependencyValues }) {
@@ -382,7 +324,7 @@ export default class Angle extends GraphicalComponent {
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath",
+          childLogicName: "atMostOneMath",
           variableNames: ["value"]
         },
         points: {
@@ -461,7 +403,7 @@ export default class Angle extends GraphicalComponent {
       returnArraySizeDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath"
+          childLogicName: "atMostOneMath"
         },
       }),
       returnArraySize({ dependencyValues }) {

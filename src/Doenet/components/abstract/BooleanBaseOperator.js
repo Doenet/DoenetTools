@@ -26,6 +26,9 @@ export default class BooleanOperator extends BooleanComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    delete stateVariableDefinitions.parsedExpression;
+    delete stateVariableDefinitions.mathChildrenByCode;
+
     let constructor = this;
 
     stateVariableDefinitions.value = {

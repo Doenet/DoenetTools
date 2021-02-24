@@ -390,7 +390,7 @@ export default class InterpolatedFunction extends Function {
     }
 
 
-    stateVariableDefinitions.returnDerivativesOfNumericalf = {
+    stateVariableDefinitions.returnDerivativesOfF = {
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -407,7 +407,7 @@ export default class InterpolatedFunction extends Function {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          returnDerivativesOfNumericalf: function (order = 1) {
+          returnDerivativesOfF: function (order = 1) {
 
             if (order > 3) {
               return x => 0

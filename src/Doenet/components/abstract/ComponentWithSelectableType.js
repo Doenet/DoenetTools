@@ -14,24 +14,22 @@ export default class ComponentWithSelectableType extends BaseComponent {
     sharedParameters.defaultToPrescribedParameters = false;
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.type = { default: null };
-    return properties;
-  }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    let standardComponentClasses = args.standardComponentClasses;
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-    function addType({ activeChildrenMatched, dependencyValues }) {
+    function addType({ matchedChildren, componentProps, parentProps, componentInfoObjects }) {
 
-      let selectedType = dependencyValues.type;
-      if (selectedType === null) {
-        if (activeChildrenMatched.length === 1) {
-          let child = activeChildrenMatched[0];
+      let selectedType = componentProps.type;
+      if (!selectedType) {
+        selectedType = parentProps.type;
+      }
+
+      if (!selectedType) {
+        if (matchedChildren.length === 1) {
+          let child = matchedChildren[0];
           if (child.componentType === "string") {
-            let s = dependencyValues.stringChildren[0].stateValues.value.trim();
+            let s = child.state.value.trim();
             if (/^[a-zA-Z]+$/.test(s)) {
               selectedType = "letters";
             } else if (Number.isFinite(Number(s))) {
@@ -50,17 +48,16 @@ export default class ComponentWithSelectableType extends BaseComponent {
         }
       }
 
-
       // if already have a single child of the correct type
       // don't match sugar: child will be matched by atMostOneChild.
-      if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === selectedType) {
+      if (matchedChildren.length === 1 && matchedChildren[0].componentType === selectedType) {
         return { success: false }
       }
 
-      if (!(selectedType in standardComponentClasses)) {
+      if (!(selectedType in componentInfoObjects.standardComponentClasses)) {
         // if didn't get a valid type and component is string
         // set to selected type to text
-        if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === "string") {
+        if (matchedChildren.length === 1 && matchedChildren[0].componentType === "string") {
           selectedType = 'text';
         } else {
           // else don't match sugar
@@ -71,69 +68,32 @@ export default class ComponentWithSelectableType extends BaseComponent {
         }
       }
 
-      let typeChildren = [];
-      for (let child of activeChildrenMatched) {
-        typeChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-
       return {
         success: true,
-        newChildren: [{ componentType: selectedType, children: typeChildren }],
+        newChildren: [{ componentType: selectedType, children: matchedChildren }],
       }
     }
 
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: "string",
-      comparison: "atLeast",
-      number: 1
-    });
+    sugarInstructions.push({
+      replacementFunction: addType
+    })
 
-    let atLeastOneNonString = childLogic.newLeaf({
-      name: "atLeastOneNonStrings",
-      componentType: "_base",
-      comparison: "atLeast",
-      excludeComponentTypes: ["_composite", "string"],
-      number: 1
-    });
+    return sugarInstructions;
 
-    let anythingAsSugar = childLogic.newOperator({
-      name: 'anythingAsSugar',
-      operator: "or",
-      propositions: [atLeastOneString, atLeastOneNonString],
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        stringChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastOneString",
-          variableNames: ["value"],
-        }
-      }),
-      logicToWaitOnSugar: ["atMostOneChild"],
-      replacementFunction: addType,
-    });
+  }
 
-    let atMostOneChild = childLogic.newLeaf({
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
       name: 'atMostOneChild',
       componentType: "_base",
       excludeComponentTypes: ["_composite"],
       comparison: 'atMost',
       number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "sugarXorSelectedType",
-      operator: "xor",
-      propositions: [anythingAsSugar, atMostOneChild],
       setAsBase: true,
-    })
+    });
 
     return childLogic;
   }

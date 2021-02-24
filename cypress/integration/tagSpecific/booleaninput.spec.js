@@ -136,13 +136,13 @@ describe('Booleaninput Tag Tests', function () {
     })
   })
 
-  it('reffed boolean input', () => {
+  it('copied boolean input', () => {
 
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><booleaninput prefill="t" label="green"/></p>
+    <p><booleaninput prefill="true" label="green"/></p>
     <p><copy tname="_booleaninput1" /></p>
     <p><copy prop="value" tname="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>

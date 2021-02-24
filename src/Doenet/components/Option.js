@@ -52,8 +52,8 @@ export default class Option extends Template {
   }
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
-    console.log(`create serialized replacements for ${component.componentName}`)
-    console.log(component.stateValues.rendered);
+    // console.log(`create serialized replacements for ${component.componentName}`)
+    // console.log(component.stateValues.rendered);
 
     if (!component.stateValues.rendered) {
       return { replacements: [] };
@@ -77,7 +77,7 @@ export default class Option extends Template {
         parentName: component.componentName,
         parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
         componentInfoObjects,
-        originalNamesAreConsistent: true,
+        originalNamesAreConsistent: component.doenetAttributes.newNamespace || !component.doenetAttributes.assignNames,
       });
 
       return { replacements: processResult.serializedComponents };

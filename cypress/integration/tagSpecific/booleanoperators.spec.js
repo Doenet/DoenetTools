@@ -401,7 +401,7 @@ describe('Boolean Operator Tag Tests', function () {
         doenetML: `
     <booleaninput label="show point"/>
     <graph>
-      <point><hide><not><copy prop="value" tname="_booleaninput1" /></not></hide>
+      <point hide="not $_booleaninput1">
        (1,2)
       </point>
     </graph>

@@ -1050,8 +1050,8 @@ describe('Basic copy assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>(0,0),(1,1)</line>
-    <line>(4,3),(2,1)</line>
+    <line><through>(0,0),(1,1)</through></line>
+    <line><through>(4,3),(2,1)</through></line>
   </graph>
 
   <graph>
@@ -1940,7 +1940,7 @@ describe('Basic copy assignName Tests', function () {
         <point><x><copySource/>+<math>0</math></x><y><sourceIndex/>+<math>0</math></y></point>
       </template>
       <sources>
-        <sequence from="2"><count><copy prop="value" tname="n1" /></count></sequence>
+        <sequence from="2" count="$n1" />
       </sources>
     </map>
     <map>
@@ -1948,7 +1948,7 @@ describe('Basic copy assignName Tests', function () {
         <point><x>-<copySource/>+<math>0</math></x><y>-<sourceIndex/>+<math>0</math></y></point>
       </template>
       <sources>
-        <sequence from="2"><count><copy prop="value" tname="n2" /></count></sequence>
+        <sequence from="2" count="$n2" />
       </sources>
     </map>
   </graph>
@@ -4275,14 +4275,14 @@ describe('Basic copy assignName Tests', function () {
                 <math><copySource fromMapAncestor="2" /><copySource /> + <math>0</math></math>
               </template>
               <sources>
-                <sequence><count><copy prop="value" tname="../nd1" /></count></sequence>
+                <sequence count="$(../nd1)" />
               </sources>
             </map>
           </xs>
         </point>
       </template>
       <sources>
-        <sequence><count><copy prop="value" tname="n1" /></count></sequence>
+        <sequence count="$n1" />
       </sources>
     </map>
     <map assignNames="pb1,pb2,pb3">
@@ -4294,14 +4294,14 @@ describe('Basic copy assignName Tests', function () {
                 <math>-<copySource fromMapAncestor="2" /><copySource /> + <math>0</math></math>
               </template>
               <sources>
-                <sequence><count><copy prop="value" tname="../nd2" /></count></sequence>
+                <sequence count="$(../nd2)" />
               </sources>
             </map>
           </xs>
         </point>
       </template>
       <sources>
-        <sequence><count><copy prop="value" tname="n2" /></count></sequence>
+        <sequence count="$n2" />
       </sources>
     </map>
   </section>

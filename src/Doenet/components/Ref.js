@@ -9,7 +9,7 @@ export default class Ref extends InlineComponent {
     let properties = super.createPropertiesObject(args);
     properties.texttype = { default: "type-global" };
     properties.uri = { default: null, forRenderer: true }
-    properties.type = { default: null, forRenderer: true }
+    // properties.type = { default: null, forRenderer: true }
     return properties;
   }
 

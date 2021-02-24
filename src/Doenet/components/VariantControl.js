@@ -26,6 +26,7 @@ export default class VariantControl extends BaseComponent {
       componentType: 'seeds',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneVariants = childLogic.newLeaf({
@@ -33,6 +34,7 @@ export default class VariantControl extends BaseComponent {
       componentType: 'variants',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({

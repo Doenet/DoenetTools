@@ -48,7 +48,7 @@ export default class ConditionalContent extends CompositeComponent {
         conditionChild: {
           dependencyType: "child",
           childLogicName: "atMostOneCondition",
-          variableNames: ["conditionSatisfied"],
+          variableNames: ["value"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -57,14 +57,14 @@ export default class ConditionalContent extends CompositeComponent {
         if (dependencyValues.conditionChild.length === 0) {
           hide = true;
         } else {
-          hide = !dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
+          hide = !dependencyValues.conditionChild[0].stateValues.value;
         }
 
         return { newValues: { hide } }
       }
     };
 
-    stateVariableDefinitions.replacementClasses = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         hide: {
           dependencyType: "stateVariable",
@@ -73,27 +73,6 @@ export default class ConditionalContent extends CompositeComponent {
         anyChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
-        }
-      }),
-      definition({ dependencyValues, componentInfoObjects }) {
-        let replacementClasses = [];
-
-        if (!dependencyValues.hide) {
-          replacementClasses = dependencyValues.anyChildren.map(
-            x => componentInfoObjects.allComponentClasses[x.componentType]
-          )
-        }
-
-        return { newValues: { replacementClasses } };
-
-      }
-    }
-
-    stateVariableDefinitions.readyToExpand = {
-      returnDependencies: () => ({
-        replacementClasses: {
-          dependencyType: "stateVariable",
-          variableName: "replacementClasses"
         },
         needsReplacementsUpdatedWhenStale: {
           dependencyType: "stateVariable",

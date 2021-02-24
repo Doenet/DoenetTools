@@ -200,8 +200,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
+    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="$n" >
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -209,8 +208,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="(x2), (y2), (z2)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
+    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -218,8 +216,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="(x3), (y3), (z3)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
+    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -227,8 +224,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="(x4), (y4), (z4)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
+    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -236,8 +232,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="(x5), (y5), (z5)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
+    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -493,8 +488,7 @@ describe('Select Tag Tests', function () {
     <p>Third option: <mathinput prefill="c" name="z"/></p>
     <p name="pchoices">
     Selected choices: <aslist>
-    <select name="sample1" withReplacement>
-      <numbertoselect><copy prop="value" tname="numbertoselect" /></numbertoselect>
+    <select name="sample1" withReplacement numbertoselect="$numbertoselect">
       <option><copy prop="value" tname="x" /></option>
       <option><copy prop="value" tname="y" /></option>
       <option><copy prop="value" tname="z" /></option>
@@ -622,9 +616,7 @@ describe('Select Tag Tests', function () {
         </select>
       </template>
       <sources>
-      <sequence>
-        <count><copy prop="value" tname="_mathinput1" /></count>
-      </sequence>
+      <sequence count="$_mathinput1"/>
       </sources>
     </map>
     </aslist></p>
@@ -1610,7 +1602,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <aslist>
-    <select assignnames="w1,w2,w3,w4,w5" numbertoselect="5">
+    <select assignnames="(w1),(w2),(w3),(w4),(w5)" numbertoselect="5">
       Lorem, ipsum ,dolor, sit, amet, consectetur, adipiscing, elit
     </select>
     </aslist>
@@ -1628,7 +1620,7 @@ describe('Select Tag Tests', function () {
       for (let ind = 1; ind <= 5; ind++) {
         let word = components['/w' + ind].stateValues.value;
         expect(["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit"].includes(word)).eq(true);
-        expect([wordsSoFar].includes(word)).eq(false);
+        expect(wordsSoFar.includes(word)).eq(false);
         wordsSoFar.push(word);
       }
     })
@@ -1640,7 +1632,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <aslist>
-    <select assignnames="n1,n2,n3,n4,n5,n6,n7,n8,n9,n10" numbertoselect="10" withReplacement>
+    <select assignnames="(n1),(n2),(n3),(n4),(n5),(n6),(n7),(n8),(n9),(n10)" numbertoselect="10" withReplacement>
       2,3,5,7,11,13,17,19
     </select>
     </aslist>
@@ -1834,9 +1826,9 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select name="original" assignnames="(q),(r),(s),(t),(u),(v),(w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2">a,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><text name="q">z</text><selectfromsequence assignnames="r" numbertoselect="1">u,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><select assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><text name="q">z</text><selectfromsequence assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
       <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
     </select>
 
@@ -1863,7 +1855,6 @@ describe('Select Tag Tests', function () {
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
-
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1894,44 +1885,44 @@ describe('Select Tag Tests', function () {
       let q3s = [
         components['/qq'].replacements[0].stateValues.value,
         components['/qr'].replacements[0].stateValues.value,
-        components['/qq2'].replacements[0].replacements[0].stateValues.value,
-        components['/qr2'].replacements[0].replacements[0].stateValues.value,
+        components['/qq2'].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].stateValues.value,
       ]
       let r3s = [
         components['/rq'].replacements[0].stateValues.value,
         components['/rr'].replacements[0].stateValues.value,
-        components['/rq2'].replacements[0].replacements[0].stateValues.value,
-        components['/rr2'].replacements[0].replacements[0].stateValues.value,
+        components['/rq2'].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].stateValues.value,
       ]
       let s3s = [
         components['/sq'].replacements[0].stateValues.value,
         components['/sr'].replacements[0].stateValues.value,
-        components['/sq2'].replacements[0].replacements[0].stateValues.value,
-        components['/sr2'].replacements[0].replacements[0].stateValues.value,
+        components['/sq2'].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].stateValues.value,
       ]
       let t3s = [
         components['/tq'].replacements[0].stateValues.value,
         components['/tr'].replacements[0].stateValues.value,
-        components['/tq2'].replacements[0].replacements[0].stateValues.value,
-        components['/tr2'].replacements[0].replacements[0].stateValues.value,
+        components['/tq2'].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].stateValues.value,
       ]
       let u3s = [
         components['/uq'].replacements[0].stateValues.value,
         components['/ur'].replacements[0].stateValues.value,
-        components['/uq2'].replacements[0].replacements[0].stateValues.value,
-        components['/ur2'].replacements[0].replacements[0].stateValues.value,
+        components['/uq2'].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].stateValues.value,
       ]
       let v3s = [
         components['/vq'].replacements[0].stateValues.value,
         components['/vr'].replacements[0].stateValues.value,
-        components['/vq2'].replacements[0].replacements[0].stateValues.value,
-        components['/vr2'].replacements[0].replacements[0].stateValues.value,
+        components['/vq2'].replacements[0].stateValues.value,
+        components['/vr2'].replacements[0].stateValues.value,
       ]
       let w3s = [
         components['/wq'].replacements[0].stateValues.value,
         components['/wr'].replacements[0].stateValues.value,
-        components['/wq2'].replacements[0].replacements[0].stateValues.value,
-        components['/wr2'].replacements[0].replacements[0].stateValues.value,
+        components['/wq2'].replacements[0].stateValues.value,
+        components['/wr2'].replacements[0].stateValues.value,
       ]
 
       expect(q3s).eqls(qs);
@@ -1949,11 +1940,11 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
-    <select name="original" assignnames="q,r,s,t,u,v,w" numbertoselect="7" withreplacement>
-      <p><select name="s" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p>
-      <p><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2">a,z</selectfromsequence><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p>
-      <p><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2" withreplacement>u,z</selectfromsequence><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p>
+    <text>a</text>
+    <select name="original" assignnames="(q),(r),(s),(t),(u),(v),(w)" numbertoselect="7" withreplacement>
+      <option><p newNamespace><select name="s" newnamespace assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -1987,12 +1978,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/s\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2020,13 +2006,13 @@ describe('Select Tag Tests', function () {
       expect(v2s).eqls(vs);
       expect(w2s).eqls(ws);
 
-      let q3s = components['/q3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let r3s = components['/r3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let s3s = components['/s3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let t3s = components['/t3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let u3s = components['/u3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let v3s = components['/v3'].replacements[0].replacements.map(x => x.stateValues.value);
-      let w3s = components['/w3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let q3s = components['/q3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let r3s = components['/r3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let s3s = components['/s3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let t3s = components['/t3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let u3s = components['/u3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let v3s = components['/v3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let w3s = components['/w3'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
 
       expect(q3s).eqls(qs.slice(0, 2));
       expect(r3s).eqls(rs.slice(0, 2));
@@ -2039,44 +2025,44 @@ describe('Select Tag Tests', function () {
       let q4s = [
         components['/qq'].replacements[0].stateValues.value,
         components['/qr'].replacements[0].stateValues.value,
-        components['/qq2'].replacements[0].replacements[0].stateValues.value,
-        components['/qr2'].replacements[0].replacements[0].stateValues.value,
+        components['/qq2'].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].stateValues.value,
       ]
       let r4s = [
         components['/rq'].replacements[0].stateValues.value,
         components['/rr'].replacements[0].stateValues.value,
-        components['/rq2'].replacements[0].replacements[0].stateValues.value,
-        components['/rr2'].replacements[0].replacements[0].stateValues.value,
+        components['/rq2'].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].stateValues.value,
       ]
       let s4s = [
         components['/sq'].replacements[0].stateValues.value,
         components['/sr'].replacements[0].stateValues.value,
-        components['/sq2'].replacements[0].replacements[0].stateValues.value,
-        components['/sr2'].replacements[0].replacements[0].stateValues.value,
+        components['/sq2'].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].stateValues.value,
       ]
       let t4s = [
         components['/tq'].replacements[0].stateValues.value,
         components['/tr'].replacements[0].stateValues.value,
-        components['/tq2'].replacements[0].replacements[0].stateValues.value,
-        components['/tr2'].replacements[0].replacements[0].stateValues.value,
+        components['/tq2'].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].stateValues.value,
       ]
       let u4s = [
         components['/uq'].replacements[0].stateValues.value,
         components['/ur'].replacements[0].stateValues.value,
-        components['/uq2'].replacements[0].replacements[0].stateValues.value,
-        components['/ur2'].replacements[0].replacements[0].stateValues.value,
+        components['/uq2'].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].stateValues.value,
       ]
       let v4s = [
         components['/vq'].replacements[0].stateValues.value,
         components['/vr'].replacements[0].stateValues.value,
-        components['/vq2'].replacements[0].replacements[0].stateValues.value,
-        components['/vr2'].replacements[0].replacements[0].stateValues.value,
+        components['/vq2'].replacements[0].stateValues.value,
+        components['/vr2'].replacements[0].stateValues.value,
       ]
       let w4s = [
         components['/wq'].replacements[0].stateValues.value,
         components['/wr'].replacements[0].stateValues.value,
-        components['/wq2'].replacements[0].replacements[0].stateValues.value,
-        components['/wr2'].replacements[0].replacements[0].stateValues.value,
+        components['/wq2'].replacements[0].stateValues.value,
+        components['/wr2'].replacements[0].stateValues.value,
       ]
 
       expect(q4s).eqls(qs);
@@ -2321,10 +2307,10 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
-    <select name="original" assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
-      <select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select>
-      <selectfromsequence assignnames="q,r" numbertoselect="2">a,z</selectfromsequence>
+    <text>a</text>
+    <select name="original" assignnames="(q),(r),(s),(t),(u)" numbertoselect="5" withreplacement>
+      <option><select newNamespace assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select></option>
+      <option><selectfromsequence newNamespace assignnames="q,r" numbertoselect="2" from="a" to="z" /></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -2345,112 +2331,21 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.stateValues.value)
-      let rs = components['/r'].replacements.map(x => x.stateValues.value)
-      let ss = components['/s'].replacements.map(x => x.stateValues.value)
-      let ts = components['/t'].replacements.map(x => x.stateValues.value)
-      let us = components['/u'].replacements.map(x => x.stateValues.value)
+      let qs = components['/q'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
+      let rs = components['/r'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
+      let ss = components['/s'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
+      let ts = components['/t'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
+      let us = components['/u'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value)
 
-      let q2s = components['/q2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let r2s = components['/r2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let s2s = components['/s2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let t2s = components['/t2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let u2s = components['/u2'].replacements[0].replacements.map(x => x.stateValues.value);
-
-      expect(q2s).eqls(qs);
-      expect(r2s).eqls(rs);
-      expect(s2s).eqls(ss);
-      expect(t2s).eqls(ts);
-      expect(u2s).eqls(us);
-
-      let q3s = [
-        components['/qq'].replacements[0].stateValues.value,
-        components['/qr'].replacements[0].stateValues.value,
-      ]
-      let r3s = [
-        components['/rq'].replacements[0].stateValues.value,
-        components['/rr'].replacements[0].stateValues.value,
-      ]
-      let s3s = [
-        components['/sq'].replacements[0].stateValues.value,
-        components['/sr'].replacements[0].stateValues.value,
-      ]
-      let t3s = [
-        components['/tq'].replacements[0].stateValues.value,
-        components['/tr'].replacements[0].stateValues.value,
-      ]
-      let u3s = [
-        components['/uq'].replacements[0].stateValues.value,
-        components['/ur'].replacements[0].stateValues.value,
-      ]
-
-      expect(q3s).eqls(qs);
-      expect(r3s).eqls(rs);
-      expect(s3s).eqls(ss);
-      expect(t3s).eqls(ts);
-      expect(u3s).eqls(us);
-
-    })
-  });
-
-  it('references to select of selects, newnamespaces', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <math>1</math>
-
-    <select name="original" assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
-      <select name="a" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select>
-      <selectfromsequence name="b" newnamespace assignnames="q,r" numbertoselect="2">a,z</selectfromsequence>
-    </select>
-
-    <p>Selected options repeated</p>
-    <p><copy name="q2" tname="q" /></p>
-    <p><copy name="r2" tname="r" /></p>
-    <p><copy name="s2" tname="s" /></p>
-    <p><copy name="t2" tname="t" /></p>
-    <p><copy name="u2" tname="u" /></p>
-
-    <p>Copy x/q and x/r</p>
-    <p><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /></p>
-    <p><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /></p>
-    <p><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /></p>
-    <p><copy name="tq" tname="t/q" /><copy name="tr" tname="t/r" /></p>
-    <p><copy name="uq" tname="u/q" /><copy name="ur" tname="u/r" /></p>
-
-    `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.stateValues.value)
-      let rs = components['/r'].replacements.map(x => x.stateValues.value)
-      let ss = components['/s'].replacements.map(x => x.stateValues.value)
-      let ts = components['/t'].replacements.map(x => x.stateValues.value)
-      let us = components['/u'].replacements.map(x => x.stateValues.value)
-
-      let q2s = components['/q2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let r2s = components['/r2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let s2s = components['/s2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let t2s = components['/t2'].replacements[0].replacements.map(x => x.stateValues.value);
-      let u2s = components['/u2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let q2s = components['/q2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let r2s = components['/r2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let s2s = components['/s2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let t2s = components['/t2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
+      let u2s = components['/u2'].replacements.map(x => x.replacements ? x.replacements[0].stateValues.value : x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2492,110 +2387,59 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
 
     <select assignnames="q,r,s" numbertoselect="3" withreplacement>
-      <select assignnames="q,r,s" numbertoselect="3" withreplacement>
-        <select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select>
-        <selectfromsequence assignnames="q,r" numbertoselect="2">a,j</selectfromsequence>
-      </select>
-      <select assignnames="q,r,s" numbertoselect="3">
-        <select assignnames="q,r" numbertoselect="2">v,w,x,y,z</select>
-        <selectfromsequence assignnames="q,r" numbertoselect="2">k,n</selectfromsequence>
-        <selectfromsequence assignnames="q,r" numbertoselect="2">x,z</selectfromsequence>
-        <select assignnames="q,r" numbertoselect="2">p,d,q</select>
-      </select>
+      <option newNamespace><select assignnames="q,r,s" numbertoselect="3" withreplacement>
+        <option newNamespace><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
+        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
+      </select></option>
+      <option newNamespace><select assignnames="q,r,s" numbertoselect="3">
+        <option newNamespace><select assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
+        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
+        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
+        <option newNamespace><select assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+      </select></option>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" tname="q" /></p>
-    <p><copy name="r2" tname="r" /></p>
-    <p><copy name="s2" tname="s" /></p>
+    <p name="pq2"><copy name="q2" tname="q" /></p>
+    <p name="pr2"><copy name="r2" tname="r" /></p>
+    <p name="ps2"><copy name="s2" tname="s" /></p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /><copy name="qs" tname="q/s" /></p>
-    <p><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /><copy name="rs" tname="r/s" /></p>
-    <p><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /><copy name="ss" tname="s/s" /></p>
+    <p name="pq3"><copy name="qq" tname="q/q" /><copy name="qr" tname="q/r" /><copy name="qs" tname="q/s" /></p>
+    <p name="pr3"><copy name="rq" tname="r/q" /><copy name="rr" tname="r/r" /><copy name="rs" tname="r/s" /></p>
+    <p name="ps3"><copy name="sq" tname="s/q" /><copy name="sr" tname="s/r" /><copy name="ss" tname="s/s" /></p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p><copy name="qqq" tname="q/q/q" /><copy name="qqr" tname="q/q/r" /><copy name="qrq" tname="q/r/q" /><copy name="qrr" tname="q/r/r" /><copy name="qsq" tname="q/s/q" /><copy name="qsr" tname="q/s/r" /></p>
-    <p><copy name="rqq" tname="r/q/q" /><copy name="rqr" tname="r/q/r" /><copy name="rrq" tname="r/r/q" /><copy name="rrr" tname="r/r/r" /><copy name="rsq" tname="r/s/q" /><copy name="rsr" tname="r/s/r" /></p>
-    <p><copy name="sqq" tname="s/q/q" /><copy name="sqr" tname="s/q/r" /><copy name="srq" tname="s/r/q" /><copy name="srr" tname="s/r/r" /><copy name="ssq" tname="s/s/q" /><copy name="ssr" tname="s/s/r" /></p>
+    <p name="pq4"><copy name="qqq" tname="q/q/q" /><copy name="qqr" tname="q/q/r" /><copy name="qrq" tname="q/r/q" /><copy name="qrr" tname="q/r/r" /><copy name="qsq" tname="q/s/q" /><copy name="qsr" tname="q/s/r" /></p>
+    <p name="pr4"><copy name="rqq" tname="r/q/q" /><copy name="rqr" tname="r/q/r" /><copy name="rrq" tname="r/r/q" /><copy name="rrr" tname="r/r/r" /><copy name="rsq" tname="r/s/q" /><copy name="rsr" tname="r/s/r" /></p>
+    <p name="ps4"><copy name="sqq" tname="s/q/q" /><copy name="sqr" tname="s/q/r" /><copy name="srq" tname="s/r/q" /><copy name="srr" tname="s/r/r" /><copy name="ssq" tname="s/s/q" /><copy name="ssr" tname="s/s/r" /></p>
 
     `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/s\\/s\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let rs = components['/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let ss = components['/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let qs = ['/q/q/q','/q/q/r','/q/r/q','/q/r/r','/q/s/q','/q/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let rs = ['/r/q/q','/r/q/r','/r/r/q','/r/r/r','/r/s/q','/r/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let ss = ['/s/q/q','/s/q/r','/s/r/q','/s/r/r','/s/s/q','/s/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
 
-      let q2s = components['/q2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let r2s = components['/r2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let s2s = components['/s2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      cy.get('#\\/pq2').should('have.text', qs.join(""))
+      cy.get('#\\/pr2').should('have.text', rs.join(""))
+      cy.get('#\\/ps2').should('have.text', ss.join(""))
 
-      expect(q2s).eqls(qs);
-      expect(r2s).eqls(rs);
-      expect(s2s).eqls(ss);
+      cy.get('#\\/pq3').should('have.text', qs.join(""))
+      cy.get('#\\/pr3').should('have.text', rs.join(""))
+      cy.get('#\\/ps3').should('have.text', ss.join(""))
 
-      let q3s = [
-        ...components['/qq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/qr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/qs'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-      let r3s = [
-        ...components['/rq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/rr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/rs'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-      let s3s = [
-        ...components['/sq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/sr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/ss'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-
-      expect(q3s).eqls(qs);
-      expect(r3s).eqls(rs);
-      expect(s3s).eqls(ss);
-
-      let q4s = [
-        components['/qqq'].replacements[0].stateValues.value,
-        components['/qqr'].replacements[0].stateValues.value,
-        components['/qrq'].replacements[0].stateValues.value,
-        components['/qrr'].replacements[0].stateValues.value,
-        components['/qsq'].replacements[0].stateValues.value,
-        components['/qsr'].replacements[0].stateValues.value,
-      ];
-      let r4s = [
-        components['/rqq'].replacements[0].stateValues.value,
-        components['/rqr'].replacements[0].stateValues.value,
-        components['/rrq'].replacements[0].stateValues.value,
-        components['/rrr'].replacements[0].stateValues.value,
-        components['/rsq'].replacements[0].stateValues.value,
-        components['/rsr'].replacements[0].stateValues.value,
-      ];
-      let s4s = [
-        components['/sqq'].replacements[0].stateValues.value,
-        components['/sqr'].replacements[0].stateValues.value,
-        components['/srq'].replacements[0].stateValues.value,
-        components['/srr'].replacements[0].stateValues.value,
-        components['/ssq'].replacements[0].stateValues.value,
-        components['/ssr'].replacements[0].stateValues.value,
-      ];
-
-      expect(q4s).eqls(qs);
-      expect(r4s).eqls(rs);
-      expect(s4s).eqls(ss);
-
+      cy.get('#\\/pq4').should('have.text', qs.join(""))
+      cy.get('#\\/pr4').should('have.text', rs.join(""))
+      cy.get('#\\/ps4').should('have.text', ss.join(""))
 
     })
   });
@@ -2604,109 +2448,59 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
 
-    <select name="a" newnamespace assignnames="q,r,s" numbertoselect="3" withreplacement>
-      <select name="b" newnamespace assignnames="q,r,s" numbertoselect="3" withreplacement>
-        <select name="c" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select>
-        <selectfromsequence name="d" newnamespace assignnames="q,r" numbertoselect="2">a,j</selectfromsequence>
-      </select>
-      <select name="e" newnamespace assignnames="q,r,s" numbertoselect="3">
-        <select name="f" newnamespace assignnames="q,r" numbertoselect="2">v,w,x,y,z</select>
-        <selectfromsequence name="g" newnamespace assignnames="q,r" numbertoselect="2">k,n</selectfromsequence>
-        <selectfromsequence name="h" newnamespace assignnames="q,r" numbertoselect="2">x,z</selectfromsequence>
-        <select name="i" newnamespace assignnames="q,r" numbertoselect="2">p,d,q</select>
-      </select>
+    <select name="a" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
+      <option><select name="b" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
+        <option><select name="c" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
+        <option><selectfromsequence name="d" newnamespace assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
+      </select></option>
+      <option><select name="e" newnamespace assignnames="(q),(r),(s)" numbertoselect="3">
+        <option><select name="f" newnamespace assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
+        <option><selectfromsequence name="g" newnamespace assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
+        <option><selectfromsequence name="h" newnamespace assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
+        <option><select name="i" newnamespace assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+      </select></option>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" tname="a/q" /></p>
-    <p><copy name="r2" tname="a/r" /></p>
-    <p><copy name="s2" tname="a/s" /></p>
+    <p name="pq2"><copy name="q2" tname="a/q" /></p>
+    <p name="pr2"><copy name="r2" tname="a/r" /></p>
+    <p name="ps2"><copy name="s2" tname="a/s" /></p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p><copy name="qq" tname="a/q/q" /><copy name="qr" tname="a/q/r" /><copy name="qs" tname="a/q/s" /></p>
-    <p><copy name="rq" tname="a/r/q" /><copy name="rr" tname="a/r/r" /><copy name="rs" tname="a/r/s" /></p>
-    <p><copy name="sq" tname="a/s/q" /><copy name="sr" tname="a/s/r" /><copy name="ss" tname="a/s/s" /></p>
+    <p name="pq3"><copy name="qq" tname="a/q/q" /><copy name="qr" tname="a/q/r" /><copy name="qs" tname="a/q/s" /></p>
+    <p name="pr3"><copy name="rq" tname="a/r/q" /><copy name="rr" tname="a/r/r" /><copy name="rs" tname="a/r/s" /></p>
+    <p name="ps3"><copy name="sq" tname="a/s/q" /><copy name="sr" tname="a/s/r" /><copy name="ss" tname="a/s/s" /></p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p><copy name="qqq" tname="a/q/q/q" /><copy name="qqr" tname="a/q/q/r" /><copy name="qrq" tname="a/q/r/q" /><copy name="qrr" tname="a/q/r/r" /><copy name="qsq" tname="a/q/s/q" /><copy name="qsr" tname="a/q/s/r" /></p>
-    <p><copy name="rqq" tname="a/r/q/q" /><copy name="rqr" tname="a/r/q/r" /><copy name="rrq" tname="a/r/r/q" /><copy name="rrr" tname="a/r/r/r" /><copy name="rsq" tname="a/r/s/q" /><copy name="rsr" tname="a/r/s/r" /></p>
-    <p><copy name="sqq" tname="a/s/q/q" /><copy name="sqr" tname="a/s/q/r" /><copy name="srq" tname="a/s/r/q" /><copy name="srr" tname="a/s/r/r" /><copy name="ssq" tname="a/s/s/q" /><copy name="ssr" tname="a/s/s/r" /></p>
+    <p name="pq4"><copy name="qqq" tname="a/q/q/q" /><copy name="qqr" tname="a/q/q/r" /><copy name="qrq" tname="a/q/r/q" /><copy name="qrr" tname="a/q/r/r" /><copy name="qsq" tname="a/q/s/q" /><copy name="qsr" tname="a/q/s/r" /></p>
+    <p name="pr4"><copy name="rqq" tname="a/r/q/q" /><copy name="rqr" tname="a/r/q/r" /><copy name="rrq" tname="a/r/r/q" /><copy name="rrr" tname="a/r/r/r" /><copy name="rsq" tname="a/r/s/q" /><copy name="rsr" tname="a/r/s/r" /></p>
+    <p name="ps4"><copy name="sqq" tname="a/s/q/q" /><copy name="sqr" tname="a/s/q/r" /><copy name="srq" tname="a/s/r/q" /><copy name="srr" tname="a/s/r/r" /><copy name="ssq" tname="a/s/s/q" /><copy name="ssr" tname="a/s/s/r" /></p>
 
     `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/a\\/s\\/s\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/a/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let rs = components['/a/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let ss = components['/a/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let qs = ['/a/q/q/q','/a/q/q/r','/a/q/r/q','/a/q/r/r','/a/q/s/q','/a/q/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let rs = ['/a/r/q/q','/a/r/q/r','/a/r/r/q','/a/r/r/r','/a/r/s/q','/a/r/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let ss = ['/a/s/q/q','/a/s/q/r','/a/s/r/q','/a/s/r/r','/a/s/s/q','/a/s/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
 
-      let q2s = components['/q2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let r2s = components['/r2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
-      let s2s = components['/s2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      cy.get('#\\/pq2').should('have.text', qs.join(""))
+      cy.get('#\\/pr2').should('have.text', rs.join(""))
+      cy.get('#\\/ps2').should('have.text', ss.join(""))
 
-      expect(q2s).eqls(qs);
-      expect(r2s).eqls(rs);
-      expect(s2s).eqls(ss);
+      cy.get('#\\/pq3').should('have.text', qs.join(""))
+      cy.get('#\\/pr3').should('have.text', rs.join(""))
+      cy.get('#\\/ps3').should('have.text', ss.join(""))
 
-      let q3s = [
-        ...components['/qq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/qr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/qs'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-      let r3s = [
-        ...components['/rq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/rr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/rs'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-      let s3s = [
-        ...components['/sq'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/sr'].replacements[0].replacements.map(x => x.stateValues.value),
-        ...components['/ss'].replacements[0].replacements.map(x => x.stateValues.value),
-      ]
-
-      expect(q3s).eqls(qs);
-      expect(r3s).eqls(rs);
-      expect(s3s).eqls(ss);
-
-      let q4s = [
-        components['/qqq'].replacements[0].stateValues.value,
-        components['/qqr'].replacements[0].stateValues.value,
-        components['/qrq'].replacements[0].stateValues.value,
-        components['/qrr'].replacements[0].stateValues.value,
-        components['/qsq'].replacements[0].stateValues.value,
-        components['/qsr'].replacements[0].stateValues.value,
-      ];
-      let r4s = [
-        components['/rqq'].replacements[0].stateValues.value,
-        components['/rqr'].replacements[0].stateValues.value,
-        components['/rrq'].replacements[0].stateValues.value,
-        components['/rrr'].replacements[0].stateValues.value,
-        components['/rsq'].replacements[0].stateValues.value,
-        components['/rsr'].replacements[0].stateValues.value,
-      ];
-      let s4s = [
-        components['/sqq'].replacements[0].stateValues.value,
-        components['/sqr'].replacements[0].stateValues.value,
-        components['/srq'].replacements[0].stateValues.value,
-        components['/srr'].replacements[0].stateValues.value,
-        components['/ssq'].replacements[0].stateValues.value,
-        components['/ssr'].replacements[0].stateValues.value,
-      ];
-
-      expect(q4s).eqls(qs);
-      expect(r4s).eqls(rs);
-      expect(s4s).eqls(ss);
+      cy.get('#\\/pq4').should('have.text', qs.join(""))
+      cy.get('#\\/pr4').should('have.text', rs.join(""))
+      cy.get('#\\/ps4').should('have.text', ss.join(""))
 
 
     })
@@ -2768,7 +2562,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let chosenChildren = components['/_select1'].replacements[0].replacements.map((v,i) => i < 2 ? v: v.replacements[0])
+      let chosenChildren = components['/_select1'].replacements[0].replacements.map((v, i) => i < 2 ? v : v.replacements[0])
       let option = options[components['/_select1'].stateValues.selectedIndices[0]];
 
       expect(chosenChildren[0].stateValues.value.toString()).eq(option.a)
@@ -2940,81 +2734,6 @@ describe('Select Tag Tests', function () {
       let theList4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].stateValues.value.toString());
 
       expect(theList4).eqls(theList1);
-
-    })
-  });
-
-  it('two selects with mutual dependence, numbertoselect initially unresolved', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p><aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)" >
-      <withReplacement>true</withReplacement>
-      <numberToSelect><copy tname="_numbertoselect2" /></numberToSelect>
-      <option><math>x</math></option>
-      <option><math>y</math></option>
-      <option><math>z</math></option>
-    </select>
-  </aslist></p>
-  
-  <p><aslist>
-    <select name="s2" assignnames="(x2), (y2), (z2)">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <withReplacement><copy tname="withreplacement1" /</withReplacement>
-      <option><math>u</math></option>
-      <option><math>v</math></option>
-      <option><math>w</math></option>
-    </select>
-  </aslist></p>
-  
-  <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
-  
-  <p> 
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1"><copy tname="n2" />+<copy tname="num2" /></math>
-    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
-    <number name="num3">1</number>
-  </p>
-    `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].stateValues.value.tree;
-      let y1 = components['/y1'].stateValues.value.tree;
-      let z1 = components['/z1'].stateValues.value.tree;
-      let x2 = components['/x2'].stateValues.value.tree;
-      let y2 = components['/y2'].stateValues.value.tree;
-      let z2 = components['/z2'].stateValues.value.tree;
-
-      expect(["x", "y", "z"].includes(x1)).eq(true);
-      expect(["x", "y", "z"].includes(y1)).eq(true);
-      expect(["x", "y", "z"].includes(z1)).eq(true);
-      expect(["u", "v", "w"].includes(x2)).eq(true);
-      expect(["u", "v", "w"].includes(y2)).eq(true);
-      expect(["u", "v", "w"].includes(z2)).eq(true);
-
-      let x1a = components['/x1a'].replacements[0].stateValues.value.tree;
-      let y1a = components['/y1a'].replacements[0].stateValues.value.tree;
-      let z1a = components['/z1a'].replacements[0].stateValues.value.tree;
-      let x2a = components['/x2a'].replacements[0].stateValues.value.tree;
-      let y2a = components['/y2a'].replacements[0].stateValues.value.tree;
-      let z2a = components['/z2a'].replacements[0].stateValues.value.tree;
-
-      expect(x1a).eq(x1);
-      expect(y1a).eq(y1);
-      expect(z1a).eq(z1);
-      expect(x2a).eq(x2);
-      expect(y2a).eq(y2);
-      expect(z2a).eq(z2);
 
     })
   });

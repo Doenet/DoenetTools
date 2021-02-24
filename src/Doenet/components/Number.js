@@ -16,6 +16,23 @@ export default class NumberComponent extends InlineComponent {
     return properties;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    // add math around multiple children
+    // math will be adapted to a number
+    sugarInstructions.push({
+      childrenRegex: /..+/,
+      replacementFunction: ({ matchedChildren }) => ({
+        success: true,
+        newChildren: [{ componentType: "math", children: matchedChildren }],
+      })
+    });
+
+    return sugarInstructions;
+
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -31,49 +48,10 @@ export default class NumberComponent extends InlineComponent {
       number: 1,
     });
 
-    ;
-
-    let addMath = function ({ activeChildrenMatched }) {
-      // Note: math will get adapted into a number
-      let mathChildren = [];
-      for (let child of activeChildrenMatched) {
-        mathChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "math", children: mathChildren }],
-      }
-    }
-
-
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      replacementFunction: addMath
-    });
-
     childLogic.newOperator({
       name: "stringXorNumberXorSugar",
       operator: 'xor',
-      propositions: [exactlyOneNumber, stringsAndMaths, atMostOneString],
+      propositions: [exactlyOneNumber, atMostOneString],
       setAsBase: true,
     })
 

@@ -85,7 +85,7 @@ export default class Booleaninput extends Input {
               value: {
                 variablesToCheck: "value",
                 get defaultValue() {
-                  return ["true", "t"].includes(dependencyValues.prefill.trim().toLowerCase());
+                  return dependencyValues.prefill.trim().toLowerCase() === "true";
                 }
               }
             }

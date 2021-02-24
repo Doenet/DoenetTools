@@ -29,7 +29,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
     if (includeNonActiveChildren && definingChildrenFirst) {
       // add defining children in order
       for (let child of ancestor.definingChildren) {
-        if (includePropertyChildren || !child.componentIsAProperty) {
+        if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
           childrenToCheck.push(child);
         }
       }
@@ -39,7 +39,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
     // first add active children in order
     if (ancestor.activeChildren) {
       for (let child of ancestor.activeChildren) {
-        if (includePropertyChildren || !child.componentIsAProperty) {
+        if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
           if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
             childrenToCheck.push(child);
           }
@@ -51,7 +51,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
       if (!definingChildrenFirst) {
         // add any non-active defining children in order
         for (let child of ancestor.definingChildren) {
-          if (includePropertyChildren || !child.componentIsAProperty) {
+          if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
             if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
               childrenToCheck.push(child);
             }
@@ -65,7 +65,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
           let childObj = ancestor.allChildren[childName];
           if (childObj.definingChildrenIndex === undefined && childObj.activeChildrenIndex === undefined) {
             let child = childObj.component;
-            if (includePropertyChildren || !child.componentIsAProperty) {
+            if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
               childrenToCheck.push(child);
             }
           }

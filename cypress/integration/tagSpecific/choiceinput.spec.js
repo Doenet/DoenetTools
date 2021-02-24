@@ -463,7 +463,7 @@ describe('Choiceinput Tag Tests', function () {
     <choiceinput>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
-      <choice>The sequence is <aslist><sequence>1,5</sequence></aslist>.</choice>
+      <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
       <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
     </choiceinput>
 

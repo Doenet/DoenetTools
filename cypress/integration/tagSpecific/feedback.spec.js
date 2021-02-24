@@ -104,7 +104,7 @@ describe('Feedback Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p><answer><award>x+y</award><award credit="0.5">x</award></answer></p>
+  <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <section>
   <feedback><condition><copy tname="_award1" /></condition>
   <p>You got award 1.</p>
@@ -187,11 +187,11 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 1</condition></award>
-    <award><condition><copy prop="immediateValue" tname="_mathinput1" /> > 10</condition></award>
-    <award credit="0.2"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 2</condition></award>
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</condition></award>
-    <award credit="0"><condition><copy prop="immediateValue" tname="_mathinput1" /> < 0</condition></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 1</when></award>
+    <award><when><copy prop="immediateValue" tname="_mathinput1" /> > 10</when></award>
+    <award credit="0.2"><when><copy prop="immediateValue" tname="_mathinput1" /> > 2</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</when></award>
+    <award credit="0"><when><copy prop="immediateValue" tname="_mathinput1" /> < 0</when></award>
   </answer></p>
   <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   <section>
@@ -479,9 +479,9 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>
-    <award feedbackcodes="goodjob">sin(pi x)</award>
-    <award credit="0.7" feedbacktext="Close, but wrong trignometric function">cos(pi x)</award>
-    <award credit="0.3" feedbacktext="You lost pi">sin(x)</award>
+    <award feedbackcodes="goodjob"><math>sin(pi x)</math></award>
+    <award credit="0.7" feedbacktext="Close, but wrong trignometric function"><math>cos(pi x)</math></award>
+    <award credit="0.3" feedbacktext="You lost pi"><math>sin(x)</math></award>
   </answer></p>
 
   <p>Award 1 feedback:</p>

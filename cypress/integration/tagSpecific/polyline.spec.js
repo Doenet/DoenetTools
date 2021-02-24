@@ -5,7 +5,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('Polyline with sugared reffed points', () => {
+  it.skip('Polyline with sugared copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -84,7 +84,7 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('Polyline vertices and reffed points', () => {
+  it('Polyline vertices and copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -162,7 +162,7 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('Polyline string points', () => {
+  it.skip('Polyline string points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -306,7 +306,7 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('dynamic polyline, initially zero, reffed', () => {
+  it('dynamic polyline, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -316,11 +316,9 @@ describe('Polyline Tag Tests', function () {
   <polyline><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
-    </vertices></polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -443,9 +441,7 @@ describe('Polyline Tag Tests', function () {
   <polyline><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polyline>
   </graph>
@@ -501,7 +497,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('dynamic polyline with sugared vertices, initially zero, reffed', () => {
+  it.skip('dynamic polyline with sugared vertices, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -699,7 +695,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('dynamic polyline with sugared vertices from reffed map, initially zero, reffed', () => {
+  it('dynamic polyline with vertices from copied map, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -709,13 +705,11 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <map>
     <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-    <sources><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></sources>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
-  <polyline>
+  <polyline><vertices>
     <copy tname="_map1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -837,13 +831,11 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <map>
     <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
-    <sources><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></sources>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
-  <polyline>
+  <polyline><vertices>
     <copy tname="_map1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -904,13 +896,13 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
   <mathinput/>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <point>(1,2)</point>
     <point>(-1,5)</point>
     <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
     <point>(3,-5)</point>
     <point>(-4,-3)</point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -967,7 +959,7 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polyline><vertices hide="false">
+  <polyline><vertices>
     <map>
       <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
       <sources><sequence from="-5" to="5"/></sources>
@@ -1097,7 +1089,7 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polyline><vertices hide="false">
+  <polyline><vertices>
     <map>
       <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
       <sources><sequence from="-5" to="5"/></sources>
@@ -1237,13 +1229,13 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('ref vertices of polyline', () => {
+  it('copy vertices of polyline', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-3,-1),(1,2),(3,4),(6,-2)</polyline>
+  <polyline><vertices>(-3,-1),(1,2),(3,4),(6,-2)</vertices></polyline>
   </graph>
   <graph>
   <copy name="v1" prop="vertex1" tname="_polyline1" />
@@ -1285,7 +1277,7 @@ describe('Polyline Tag Tests', function () {
         }
       })
 
-      cy.log('move individually reffed vertices');
+      cy.log('move individually copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-5, 3], [-2, 7], [0, -8], [9, -6]];
@@ -1303,7 +1295,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.log('move array-reffed vertices');
+      cy.log('move array-copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-7, -1], [-3, 5], [2, 4], [6, 0]];
@@ -1323,18 +1315,18 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('new polyline from reffed vertices of polyline', () => {
+  it('new polyline from copied vertices of polyline', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
+  <polyline><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polyline>
   </graph>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <copy prop="vertices" tname="_polyline1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -1448,16 +1440,16 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('new polyline from reffed vertices, some flipped', () => {
+  it('new polyline from copied vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
+  <polyline><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polyline>
   </graph>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <copy prop="vertex1" tname="_polyline1" />
     <point>
       <xs>
@@ -1470,7 +1462,7 @@ describe('Polyline Tag Tests', function () {
       <x><extract prop="y"><copy prop="vertex4" tname="_polyline1" /></extract></x>
       <y><extract prop="x"><copy prop="vertex4" tname="_polyline1" /></extract></y>
     </point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -1537,7 +1529,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <point name="A">(1,2)</point>
     <point name="B">(3,4)</point>
     <point name="C">(-5,6)</point>
@@ -1545,7 +1537,7 @@ describe('Polyline Tag Tests', function () {
       <x><copy fixed prop="x" tname="C" />+<copy fixed prop="x" tname="B" />-<copy prop="x" tname="A" /></x>
       <y><copy fixed prop="y" tname="C" />+<copy fixed prop="y" tname="B" />-<copy prop="y" tname="A" /></y>
     </point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -2358,12 +2350,14 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polyline>
+    <polyline><vertices>
       (3,5), (-4,-1),(5,2)
-    </polyline>
+    </vertices></polyline>
     <point>
-      <attractTo><copy tname="_polyline1" /></attractTo>
-      (7,8)
+      <constraints>
+        <attractTo><copy tname="_polyline1" /></attractTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");
@@ -2593,12 +2587,14 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polyline>
+    <polyline><vertices>
       (3,5), (-4,-1),(5,2)
-    </polyline>
+    </vertices></polyline>
     <point>
-      <constrainTo><copy tname="_polyline1" /></constrainTo>
-      (7,8)
+      <constraints>
+        <constrainTo><copy tname="_polyline1" /></constrainTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");

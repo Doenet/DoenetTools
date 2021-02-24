@@ -16,7 +16,6 @@ export default class BaseComponent {
     flags,
     shadow,
     numerics, parentSharedParameters, sharedParameters,
-    allowSugarForChildren,
   }) {
 
     this.numerics = numerics;
@@ -29,9 +28,6 @@ export default class BaseComponent {
     this.componentInfoObjects = componentInfoObjects;
     this.coreFunctions = coreFunctions;
     this.flags = flags;
-
-    this.componentIsAProperty = false;
-    this.allowSugarForChildren = allowSugarForChildren;
 
     if (shadow === true) {
       this.isShadow = true;
@@ -169,6 +165,10 @@ export default class BaseComponent {
       styleNumber: { default: 1, propagateToDescendants: true },
       isResponse: { default: false },
     };
+  }
+
+  static returnSugarInstructions() {
+    return [];
   }
 
   static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties, flags }) {
@@ -471,8 +471,8 @@ export default class BaseComponent {
     if (includePropertyChildren || includeOtherDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        if ((includePropertyChildren && child.componentIsAProperty) ||
-          (includeOtherDefiningChildren && !child.componentIsAProperty)) {
+        if ((includePropertyChildren && child.doenetAttributes.isPropertyChild) ||
+          (includeOtherDefiningChildren && !child.doenetAttributes.isPropertyChild)) {
 
           serializedChildren.push(child.serialize(parameters));
         }
@@ -521,7 +521,6 @@ export default class BaseComponent {
       }
 
       let doenetAttributes = Object.assign({}, this.doenetAttributes);
-      delete doenetAttributes.createdFromProperty;
       if (Object.keys(doenetAttributes).length > 0) {
         serializedState.doenetAttributes = doenetAttributes;
       }
