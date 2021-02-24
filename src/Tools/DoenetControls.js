@@ -227,8 +227,8 @@ export default function attempt() {
         <h1>Features of A Standard Doenet Component</h1>
         <p>These are the guidelines for creating components for user input on Doenet. 
           They are guidelines -- you can break them (and should if something looks ridiculous), 
-          but make sure you have a reason why you need to. 
-          Once you’ve created or fixed a component, update the component spreadsheet 
+          but make sure you have a reason why you need to and that you can convince someone else of that reason. 
+          Once you’ve created or fixed a component, add the documentation for it to this file ../src/Tools/DoenetControls.js and update the component spreadsheet 
           <a href='https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing' target='_blank'> here</a>. </p>
           <hr/>
 
@@ -242,7 +242,8 @@ export default function attempt() {
         <h2>Standard Props (* denotes required)</h2>
           <p>*<i>aria-label</i> = built in HTML accessibility requirement</p>
           <p><i>value</i> = information expected to be shown on component (text on Button)</p>
-          <p><i>icon</i> = small image that can be displayed, if it can show text - it can have an icon</p>
+          <p><i>icon</i> = small image that can be displayed, if it can show text - it can have an icon. More info
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.lsq5rugnowwg' target='_blank'> here</a></p>
           <p><i>placeholder</i> = default shown before user input, use light gray (#e2e2e2) font</p>
           <p><i>size</i> = small, medium, large as shown 
           <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.1q2bsnet5j1p' target='_blank'> here </a>
@@ -260,7 +261,7 @@ export default function attempt() {
 
         <h2>Comments on Styling</h2>
           <p>Only use the colors found on the 
-          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb' target='_blank'> Style Guide!! </a> (Unless Kevin says otherwise…)</p>
+          <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb' target='_blank'> Style Guide!! </a> (Unless you've talked to Clara or Kevin about it...)</p>
           <p>Give it a border or a color, as shown 
           <a href='https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.53fu07uoic4t' target='_blank'> here </a></p>
           <p>Don’t apply the font to the component, fonts will be called in the Tool that loads it</p>
