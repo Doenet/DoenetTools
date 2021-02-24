@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
 import { useStackId } from "./Tool";
-import { clearAllSelections } from "../Drive";
+import { clearDriveAndItemSelections} from "../Drive";
 
 const ContentPanelContainer = styled.div`
   grid-area: contentPanel;
@@ -25,7 +25,7 @@ export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   const stackId = useStackId();
   const supportInUse = useRecoilValue(supportVisible(stackId));
-  const clearDriveSelections = useSetRecoilState(clearAllSelections);
+  const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
   let isDragging = false;
 
   useEffect(() => {

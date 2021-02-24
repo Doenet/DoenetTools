@@ -8,7 +8,7 @@ import Drive, {
   folderDictionarySelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
-  clearAllSelections, 
+  clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams
 } from "../imports/Drive";
@@ -1039,7 +1039,7 @@ export default function DoenetLibraryTool(props) {
   const setOpenMenuPanel = useMenuPanelController();
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
-  const clearSelections = useSetRecoilState(clearAllSelections);
+  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
