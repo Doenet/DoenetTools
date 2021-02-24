@@ -20,7 +20,6 @@ $results_arr = array();
 
   $sql = "
   SELECT 
-  du.tempShareWithEmail AS tempShareWithEmail,
   du.canDeleteDrive AS owner,
   u.screenName AS screenName,
   u.email AS email,
@@ -41,9 +40,7 @@ if ($result->num_rows > 0){
   while($row = $result->fetch_assoc()){ 
     
     $email = $row['email'];
-    if ($email == NULL || $email == ""){
-      $email = $row['tempShareWithEmail'];
-    }
+  
     $isUser = FALSE;
     if ($row['userId'] == $userId){
       $isUser = TRUE;

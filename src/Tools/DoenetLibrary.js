@@ -574,7 +574,13 @@ function User(props){
             <Button 
           data-doenet-removeButton={props.userId}
           text="Promote to Owner" callback={(e)=>{
-            console.log("to Owner")}
+            props.setDriveUsers({
+              driveId:props.driveId,
+              type:"To Owner",
+              userId:props.userId,
+              userRole:props.userRole
+            })
+          }
           } /></div>
           )
       }

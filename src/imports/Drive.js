@@ -72,9 +72,10 @@ export const fetchDriveUsers = selectorFamily({
     let payload = { params: {
       email:instructions.email,
       type:instructions.type,
-      driveId
+      driveId,
+      userId:instructions.userId
     } };
-   
+
     switch(instructions.type){
       case "Add Owner":
         axios.get('/api/saveUserToDrive.php', payload)
@@ -119,7 +120,65 @@ export const fetchDriveUsers = selectorFamily({
         })
         break;
       case "Remove User":
-        console.log(">>>Remove Ins",instructions)
+        set(fetchDriveUsersQuery(driveId),(was)=>{
+          let newDriveUsers = {...was}
+        if (instructions.userRole === "owner"){
+          let newOwners = [...was.owners];
+          for (let [i,owner] of newOwners.entries()){
+            if (owner.userId === instructions.userId){
+              newOwners.splice(i,1);
+              break;
+            }
+          }
+          newDriveUsers['owners'] = newOwners;
+        }
+        if (instructions.userRole === "admin"){
+          let newAdmins = [...was.admins];
+          for (let [i,admin] of newAdmins.entries()){
+            if (admin.userId === instructions.userId){
+              newAdmins.splice(i,1);
+              break;
+            }
+          }
+            newDriveUsers['admins'] = newAdmins;
+        }
+          return newDriveUsers;
+        })
+
+        axios.get('/api/saveUserToDrive.php', payload)
+        // .then((resp)=>{console.log(">>>resp",resp.data) })
+
+        break;
+        case "To Owner":
+          console.log(">>>to owner")
+        // set(fetchDriveUsersQuery(driveId),(was)=>{
+        //   let newDriveUsers = {...was}
+        // if (instructions.userRole === "owner"){
+        //   let newOwners = [...was.owners];
+        //   for (let [i,owner] of newOwners.entries()){
+        //     if (owner.userId === instructions.userId){
+        //       newOwners.splice(i,1);
+        //       break;
+        //     }
+        //   }
+        //   newDriveUsers['owners'] = newOwners;
+        // }
+        // if (instructions.userRole === "admin"){
+        //   let newAdmins = [...was.admins];
+        //   for (let [i,admin] of newAdmins.entries()){
+        //     if (admin.userId === instructions.userId){
+        //       newAdmins.splice(i,1);
+        //       break;
+        //     }
+        //   }
+        //     newDriveUsers['admins'] = newAdmins;
+        // }
+        //   return newDriveUsers;
+        // })
+
+        // axios.get('/api/saveUserToDrive.php', payload)
+        // .then((resp)=>{console.log(">>>resp",resp.data) })
+
         break;
       default:
         console.log(`type ${instructions.type} not handled`)
