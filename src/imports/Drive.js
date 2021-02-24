@@ -51,6 +51,29 @@ import {
   useRecoilValue
 } from 'recoil';
 
+const fetchDriveUsersQuery = atomFamily({
+  key:"fetchDriveUsersQuery",
+  default: selectorFamily({
+    key:"fetchDriveUsersQuery/Default",
+    get: (driveId) => async ()=>{
+      const payload = { params: {driveId} };
+      const { data } = await  axios.get('/api/loadDriveUsers.php', payload)
+    return data
+  },
+ 
+  })
+})
+
+export const fetchDriveUsers = selectorFamily({
+  key:"fetchDriveUsers",
+  get:(driveId)=>({get})=>{
+    return get(fetchDriveUsersQuery(driveId));
+  },
+  set:(driveId)=>({get,set},instructions)=>{
+    console.log(">>>driveId",driveId,instructions)
+  }
+})
+
 const sortOptions = Object.freeze({
   "DEFAULT": "defaultOrder",
   "LABEL_ASC": "label ascending",

@@ -3,6 +3,7 @@ import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
+import './util.css';
 
 import Drive, { 
   folderDictionarySelector, 
@@ -10,14 +11,16 @@ import Drive, {
   folderDictionary, 
   clearDriveAndItemSelections,
   fetchDrivesSelector,
-  encodeParams
+  encodeParams,
+  fetchDriveUsers
 } from "../imports/Drive";
 import nanoid from 'nanoid';
 
 import { 
   faChalkboard,
   faCode,
-  faFolder
+  faFolder,
+  faUserCircle
  } from '@fortawesome/free-solid-svg-icons';
  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -523,13 +526,193 @@ console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
 return null;
 }
 
+
+
+
+function User(props){
+  let emailAddress = null;
+  let emailStyle = {}
+  let buttons = [];
+  let star = null;
+  let screenName = props.screenName;
+  if (screenName === "" || screenName === null){ screenName = "Unknown" }
+  if (props.isUser){
+    star = <FontAwesomeIcon icon={faUserCircle}/>;
+  }
+    emailAddress = <span style={emailStyle}>{props.email}</span>;
+  let containerStyle = {}
+    if (props.isSelected){
+      if (props.isOwner || props.userRole == "admin"){
+        buttons.push(
+          <div key={`remove${props.userId}`}>
+            <Button 
+            data-doenet-removeButton={props.userId}
+          text="Remove" 
+          callback={(e)=>{
+            console.log("remove")}
+          }/>
+         
+          </div>
+          )
+      }
+      if (props.isOwner && props.userRole == "admin"){
+        buttons.push(
+          <div key={`promote${props.userId}`}>
+            <Button 
+          data-doenet-removeButton={props.userId}
+          text="Promote to Owner" callback={(e)=>{
+            console.log("to Owner")}
+          } /></div>
+          )
+      }
+      if (props.isOwner && props.userRole == "owner"){
+        buttons.push(
+          <div key={`demote${props.userId}`}>
+            <Button 
+          data-doenet-removeButton={props.userId}
+          text="Demote to Admin" callback={(e)=>{
+            console.log("to admin")}
+          }/></div>
+          )
+      }
+      
+      containerStyle = {backgroundColor:"#B8D2EA"}
+      emailStyle = {border:"solid 1px black"}
+  }
+  let onClick = props.onClick;
+  if (!onClick){onClick = ()=>{}}
+  return <>
+    <div 
+    tabIndex={0}
+    className="noselect nooutline" 
+    onClick={()=>onClick(props.userId)}
+    onBlur={(e)=>{
+      if (e.relatedTarget?.dataset?.doenetRemovebutton !== props.userId){
+      // setTimeout(()=>onClick(""),500);
+      onClick("")
+      }
+    }}
+    >
+      <div style={containerStyle} >
+      <div>{star}{screenName}</div>
+      <div>{emailAddress}</div>
+      </div>
+      {buttons}
+    </div>
+    </>
+}
+
+function NewUser(props){
+  const [email,setEmail] = useState("")
+
+  function addUser(){
+      props.setDriveUsers({
+      driveId:props.driveId,
+      type:props.type,
+      email
+    })
+    props.open(false);
+  }
+
+  return <div>
+    <label>Enter Email Address<br />
+    <input type="text" value={email} 
+    onChange={(e)=>{setEmail(e.target.value)}}
+    onKeyDown={(e)=>{if (e.keyCode === 13){ 
+      addUser();
+    }}}
+    onBlur={()=>{
+      addUser();
+    }}
+    /></label>
+    {/* <Button text="Add" /> */}
+  </div>
+}
+
 const DriveInfoPanel = function(props){
   const [driveLabel,setDriveLabel] = useState(props.label);
   const [panelDriveLabel,setPanelDriveLabel] = useState(props.label);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
+  const driveId = props.driveId;
+  const [driveUsers,setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
+  const [selectedUserId,setSelectedUserId] = useState("");
+  const [shouldAddOwners,setAddOwners] = useState(false);
+  const [shouldAddAdmins,setAddAdmins] = useState(false);
 
+  if (driveUsers.state === "loading"){ return null;}
+    if (driveUsers.state === "hasError"){ 
+      console.error(driveUsers.contents)
+      return null;}
 
   let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
+
+  let admins = [];
+  let owners = [];
+
+  let addOwners = null;
+  let addOwnersButton = <Button text="+ Add Owner" callback={()=>{
+    setAddOwners(true);
+    }} />
+
+  if (shouldAddOwners){ 
+    addOwners = <NewUser open={setAddOwners} driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers}/>
+    addOwnersButton = null;
+  }
+  let addAdmins = null;
+  let addAdminsButton = <Button text="+ Add Administrator" callback={()=>{
+    setAddAdmins(true);
+  }} />
+  if (shouldAddAdmins){
+    addAdmins = <NewUser open={setAddAdmins} driveId={driveId} type="Add Admin" setDriveUsers={setDriveUsers}/>
+    addAdminsButton = null;
+  }
+
+
+
+  let isOwner = false;
+  if (driveUsers.contents.usersRole === "Owner"){
+    isOwner = true;
+  }
+  for (let owner of driveUsers.contents.owners){
+    let isSelected = false;
+    if (owner.userId === selectedUserId){
+      isSelected = true;
+    }
+    owners.push(<User 
+      key={`User${owner.userId}`} 
+      isSelected={isSelected}
+      onClick={setSelectedUserId}
+      userId={owner.userId} 
+      driveId={driveId} 
+      email={owner.email} 
+      isUser={owner.isUser} 
+      screenName={owner.screenName}
+      setDriveUsers={setDriveUsers}
+      userRole="owner"
+      isOwner={isOwner}
+      />)
+  }
+  for (let admin of driveUsers.contents.admins){
+    let isSelected = false;
+    if (admin.userId === selectedUserId){
+      isSelected = true;
+    }
+    
+    admins.push(<User 
+      key={`User${admin.userId}`} 
+      isSelected={isSelected}
+      onClick={setSelectedUserId}
+      userId={admin.userId} 
+      driveId={driveId} 
+      email={admin.email} 
+      isUser={admin.isUser} 
+      screenName={admin.screenName}
+      setDriveUsers={setDriveUsers}
+      userRole="admin"
+      isOwner={isOwner}
+      />)
+
+  }
 
   return <>
   <h2>{dIcon} {panelDriveLabel}</h2>
@@ -558,6 +741,8 @@ const DriveInfoPanel = function(props){
       type:"update drive label",
     })
   }}/></label>
+  <br />
+  <br />
   <DoenetDriveCardMenu
   key={`colorMenu${props.driveId}`}
   colors={driveColors} 
@@ -572,6 +757,8 @@ const DriveInfoPanel = function(props){
         })
   }}
   />
+  <br />
+  <br />
   <Button text="Delete Course" callback={()=>{
     // alert("Delete Drive")
     setDrivesInfo({
@@ -582,6 +769,18 @@ const DriveInfoPanel = function(props){
       type:"delete drive"
     })
   }} />
+  <br />
+  <br />
+  
+  
+  <h3>Owners</h3>
+  {owners}
+  {addOwners}
+  {addOwnersButton}
+  <h3>Admins</h3>
+  {admins}
+  {addAdmins}
+  {addAdminsButton}
 
   </>
 }
