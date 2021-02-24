@@ -1,132 +1,180 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faWaveSquare, faDatabase, faServer
-} from "@fortawesome/free-solid-svg-icons";
-import Tool from "../imports/Tool/Tool";
-import NavPanel from "../imports/Tool/NavPanel";
-import MainPanel from "../imports/Tool/MainPanel";
-import SupportPanel from "../imports/Tool/SupportPanel";
-import MenuPanel from '../imports/Tool/MenuPanel';
-import HeaderMenuPanelButton from '../imports/Tool/HeaderMenuPanelButton';
-import ResponsiveControls from '../imports/Tool/ResponsiveControls';
-import Overlay from "../imports/Tool/Overlay";
-const alphabet =
-  "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
+import React from "react";
+import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+import Drive from "../imports/Drive";
+import AddItem from "../imports/AddItem";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
 
-const finalIcon1 = <FontAwesomeIcon
-  icon={faServer}
-  style={{
-    width: "10px",
-    padding: "2px",
-    backgroundColor: "#e2e2e2",
-    alignSelf: "center",
-    fontSize: '16px',
-    color: 'grey'
-  }} />;
-const finalIcon2 = <FontAwesomeIcon
-  icon={faDatabase}
-  style={{
-    width: "10px",
-    padding: "2px",
-    backgroundColor: "#e2e2e2",
-    alignSelf: "center",
-    fontSize: '16px',
-    color: 'grey'
-  }} />;
-const finalIcon3 = <FontAwesomeIcon
-  icon={faWaveSquare}
-  style={{
-    width: "10px",
-    padding: "2px",
-    backgroundColor: "#e2e2e2",
-    alignSelf: "center",
-    fontSize: '16px',
-    color: 'grey'
-  }} />;
-
- 
-export default function DoenetExampleTool(props) {
-const [showHideNewOverLay, setShowHideNewOverLay]=useState(false);
-
-const showHideOverNewOverlayOnClick = () =>{
-  setShowHideNewOverLay(!showHideNewOverLay);
-}
+//example data acessing
+function OverlayDataViwer() {
+  const overlayData = useRecoilValue(openOverlayByName);
 
   return (
-
-<>
-
-{!showHideNewOverLay ? 
-    <Tool
-      onUndo={() => { console.log(">>>undo clicked") }}
-      onRedo={() => { console.log(">>>redo clicked") }}
-      title={"My Doc"}
-      // responsiveControls={[]}
-      headerMenuPanels={[
-        <HeaderMenuPanelButton buttonText="Add">{"content 1"}</HeaderMenuPanelButton>, <HeaderMenuPanelButton buttonText="Save">{"content 2"}</HeaderMenuPanelButton>
-      ]}
-    >
-
-
-   <NavPanel>
-     Nav Panel
-   </NavPanel>
-
-      <MainPanel setShowHideNewOverLay= {setShowHideNewOverLay}
-        // responsiveControls={[]}
-      >
-        <div onClick={()=> {showHideOverNewOverlayOnClick()}}>Click for Overlay</div>
-
-        <h3> This is Main Panel</h3>
-        <p>click Switch button in header to see support panel</p>
-        <p>Define responsiveControls to see for standard components section which are responsive and collapses according the width available</p>
-
-        <h2>Header Menu Panels </h2>
-        <p>Click add and save to see header menu panels section </p>
-      </MainPanel>
-
-      <SupportPanel
-        // responsiveControls={[]}
-      >
-        <h3>Support Panel Content</h3>
-
-        <p>Define responsiveControls to see for standard components section which are responsive and collapses according the width available</p>
-
-      
-      </SupportPanel>
-      <MenuPanel title="edit">
-        <h3>This is Menu Panel and can be switched to title="style" menu panel</h3>
-  
-      </MenuPanel>
-      <MenuPanel title="style">
-        Menu Panel Style Content
-  
-      </MenuPanel>
-    </Tool>
-    :
-
-        <Overlay
-          isOpen={showHideNewOverLay}
-          onUndo={()=>{}}
-          onRedo={()=>{}}
-          title={"my doc"}
-          onClose={() => { setShowHideNewOverLay(false) }}
-
-          // responsiveControls={[<ResponsiveControls/>]}  
-          headerMenuPanels={[]}
-        >
-          <MainPanel responsiveControls={[]}>
-            Overlay Main panel
-    </MainPanel>
-          <SupportPanel responsiveControls={[]}>
-            Overlay Support
-     </SupportPanel>
-        </Overlay> 
-    }
-</>
+    <div>
+      <h2>Data</h2>
+      <ul>
+        <li> name: {overlayData.name} </li>
+        <li> action: {overlayData.instructions.action} </li>
+        <li> supportVisble: {overlayData.supportVisble} </li>
+        <li> courseId: {overlayData.instructions.courseId} </li>
+        <li> branchId: {overlayData.instructions.branchId} </li>
+      </ul>
+    </div>
   );
 }
 
+export default function DoenetExampleTool() {
+  // console.log("=== DoenetExampleTool");
 
+  const setOverlayOpen = useSetRecoilState(openOverlayByName);
+  const setOpenMenuPanel = useMenuPanelController();
+  setOpenMenuPanel(1); //array ID index of the desired panel
+
+  return (
+    <Tool>
+      <navPanel>
+        <div>DEMO!</div>
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+      </navPanel>
+
+      <headerPanel title="my title"></headerPanel>
+
+      <mainPanel>
+        <BreadcrumbContainer />
+        <AddItem />
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
+        <div
+          style={{ width: "80px", height: "2000px", backgroundColor: "red" }}
+        />
+      </mainPanel>
+
+      <supportPanel width="40%">
+        <p>Support Panel</p>
+      </supportPanel>
+
+      <menuPanel title="edit">
+        <button
+          onClick={() => {
+            setOverlayOpen({
+              name: "editor",
+              instructions: {
+                action: "open",
+                supportVisble: true,
+                courseId: "c1",
+                branchId: "b1",
+              },
+            });
+          }}
+        >
+          Go to Overlay
+        </button>
+        <p>control important stuff</p>
+      </menuPanel>
+
+      <menuPanel title="other">
+        <p>control more important stuff</p>
+      </menuPanel>
+
+      <overlay name="editor">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>Editor</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="control">
+          <p>control important stuff</p>
+          <div>
+            <button
+              onClick={() => {
+                setOverlayOpen({
+                  name: "cal",
+                  instructions: {
+                    action: "open",
+                    supportVisble: false,
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel title="extras">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <p>control important stuff</p>
+          <div>
+            <button
+              onClick={() => {
+                setOverlayOpen({
+                  name: "cal2",
+                  instructions: {
+                    action: "open",
+                    supportVisble: false,
+                    courseId: "d1",
+                    branchId: "e1",
+                  },
+                });
+              }}
+            >
+              Go to cal
+            </button>
+          </div>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+
+      <overlay name="cal2">
+        <headerPanel title="my title"></headerPanel>
+
+        <mainPanel>
+          <h1>calender</h1>
+          <h2>Data</h2>
+          <OverlayDataViwer />
+        </mainPanel>
+
+        <supportPanel width="40%">
+          <p>Support Panel</p>
+        </supportPanel>
+
+        <menuPanel title="edit">
+          <p>control important stuff</p>
+        </menuPanel>
+
+        <menuPanel title="other">
+          <p>control more important stuff</p>
+        </menuPanel>
+      </overlay>
+    </Tool>
+  );
+}

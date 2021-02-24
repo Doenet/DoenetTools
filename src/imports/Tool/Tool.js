@@ -1,84 +1,193 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { animated, useTransition } from "react-spring";
+import { atom, selector, useRecoilValue, useRecoilCallback } from "recoil";
+import NavPanel from "./NavPanel";
+import HeaderPanel from "./HeaderPanel";
+import ContentPanel from "./ContentPanel";
+import MainPanel from "./MainPanel";
+import SupportPanel, { supportVisible } from "./SupportPanel";
+import MenuPanel from "./MenuPanel";
+
+const ToolContainer = styled(animated.div)`
+  display: grid;
+  grid-template:
+    "navPanel headerPanel menuPanel" 60px
+    "navPanel contentPanel menuPanel" 1fr
+    / auto 1fr auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f6f8ff;
+`;
+
+export const overlayStack = atom({
+  key: "activeOverlayNameAtom",
+  default: [],
+});
+
+export const openOverlayByName = selector({
+  key: "openOverlayByNameSelector",
+  get: ({ get }) => {
+    const currentElement = get(overlayStack);
+    return currentElement.length === 0
+      ? currentElement
+      : currentElement[currentElement.length - 1];
+  },
+
+  set: ({ get, set }, newValue) => {
+    if (newValue.instructions.action === "open") {
+      const stackDepth = get(overlayStack).length + 1;
+      set(overlayStack, (old) => [...old, newValue]);
+      set(
+        supportVisible(stackDepth),
+        newValue?.instructions?.supportVisble ?? false
+      );
+    } else if (newValue.instructions.action === "close") {
+      set(overlayStack, (old) => {
+        let newArray = [...old];
+        newArray.pop();
+        return newArray;
+      });
+    }
+  },
+});
+
+export const useStackId = () => {
+  const getId = useRecoilCallback(({ snapshot }) => () => {
+    const currentId = snapshot.getLoadable(overlayStack);
+    return currentId.getValue().length;
+  });
+  const [stackId] = useState(() => getId());
+  return stackId;
+};
 
 export default function Tool(props) {
-    //console.log(props.responsiveControls, "props.responsiveControls in tool");
-    const [panelDataIndex, setPanelDataIndex] = React.useState(-1);
-    const [supportPanelObj,setSupportPanelObj] = React.useState({});
-    const [navPanelObj, setNavPanelObj] = React.useState(null);
-    const [showHideNavPanel, setShowHideNavPanel] = React.useState(false);
+  // console.log("=== Tool (only once)");
+  const stackId = useStackId();
+  const openOverlayObj = useRecoilValue(openOverlayByName);
 
-    const showHideMenuPanelContent = (index) => {
-        setPanelDataIndex(index);
-    }
+  const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
+    from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
+    enter: { top: 0 },
+    leave: { top: 100 },
+    unique: true,
+    reset: true,
+  });
 
-    const hideNavPanel = (showHideNavPanelFlag) => {
-        if(showHideNavPanelFlag !== undefined){
-            setShowHideNavPanel(showHideNavPanelFlag);
+  //lowercase names logic
+  var toolParts = {};
+
+  const implementedToolParts = [
+    "navPanel",
+    "headerPanel",
+    "mainPanel",
+    "supportPanel",
+    "menuPanel",
+    "overlay",
+  ];
+
+  if (props.children) {
+    if (Array.isArray(props.children)) {
+      //populate toolParts dictionary from the lowercase Tool children
+      for (let child of props.children) {
+        if (implementedToolParts.includes(child.type)) {
+          let newProps = { ...child.props };
+          delete newProps.children;
+          if (child.type === "menuPanel") {
+            if (!toolParts.menuPanel) {
+              toolParts["menuPanel"] = [];
+            }
+            toolParts.menuPanel.push({
+              children: child.props.children,
+              props: newProps,
+            });
+          } else if (child.type === "overlay") {
+            if (!toolParts.overlay) {
+              toolParts["overlay"] = {};
+            }
+            toolParts.overlay[child.props.name] = (
+              <Tool key={child.props.name}>{child.props.children}</Tool>
+            );
+          } else {
+            toolParts[child.type] = {
+              children: child.props.children,
+              props: newProps,
+            };
+          }
         }
+      }
+    } else {
+      //Only one child
+      if (implementedToolParts.includes(props.children.type)) {
+        let newProps = { ...props.children.props };
+        delete newProps.children;
+        toolParts[props.children.type] = {
+          children: props.children.props.children,
+          props: newProps,
+        };
+      }
     }
-    React.useEffect(()=> {
-        if(props.children && Array.isArray(props.children)) {
-            props.children.map((obj,index)=> {
-                if(obj && obj.type && typeof(obj.type) === "function" && obj.type.name === "MenuPanel") {
-                    if(panelDataIndex === -1){
-                        setPanelDataIndex(prevState=> {
-                            //console.log(prevState);
-                            let oldIndex = prevState;
-                            if(oldIndex === -1) {
-                                return index;
-                            }
-                            return oldIndex;
-                        })
-                    }
-                }
-                if(obj && obj.type && typeof(obj.type) === "function" && obj.type.name === "SupportPanel") {
-                    console.log(obj.props.children, "obj.props support panel");
-                    setSupportPanelObj(React.cloneElement(obj, {responsiveControls: obj.props.responsiveControls}));
-                }
-                if(obj && obj.type && typeof(obj.type) === "function" && obj.type.name === "NavPanel") {
-                    console.log(obj.props.children, "obj.props nav panel");   
-                    setNavPanelObj(React.cloneElement(obj,{hideNavPanel:hideNavPanel}));
-                }
-            })
-        }
-    },[])
+  }
 
-    const showNewOverlay = () =>{
-		props.setShowHideNewOverLay(true);
-	}
+  let navPanel = null;
+  let headerPanel = null;
+  let mainPanel = null;
+  let supportPanel = null;
+  let menuPanel = null;
+  let overlay = null;
 
-    return (
-        <div style={{display: "flex" , height:"100vh"}}>
-            {navPanelObj ? !showHideNavPanel ? navPanelObj : "" : ""}
-            {props.children && Array.isArray(props.children) && props.children.map(obj=> {
-                return (
-                    obj && obj.type && typeof(obj.type) === "function" && obj.type.name !== "NavPanel" && obj.type.name !== "MenuPanel" && obj.type.name !== "SupportPanel" && (
-                        <>
-                            {obj.type.name === "MainPanel" ? 
-                                React.cloneElement(obj,{onClick:()=>{props.setShowHideNewOverLay(true)},responsiveControlsFromTools: props.responsiveControls,responsiveControls: obj.props.responsiveControls,hideNavPanel:hideNavPanel, showHideNavPanel: showHideNavPanel, onUndo: props.onUndo, onRedo: props.onRedo,title:props.title,
-                                     navPanelObj:navPanelObj,supportPanelObj:supportPanelObj, headerMenuPanels: props.headerMenuPanels}) : obj}
-                        </>
-                ))
-            })}
-            <div style={{width: "240px", height: "100vh",borderLeft:"1px solid black"}}>
-                <div style={{height: "50px", display: "flex"}}>
-                    {props.children && Array.isArray(props.children) && props.children.map((obj,index)=> {
-                        return (
-                            obj && obj.type && typeof(obj.type) === "function" && obj.type.name === "MenuPanel" && (
-                                <div style={{width: "100%", borderBottom: "1px solid #3d3d3d", borderRight:"1px solid #3d3d3d"}}>
-                                    <div style={{height:"50px",textAlign:"center"}}>
-                                    <button style={{border:"none",backgroundColor:index === panelDataIndex ? "blue" : "white", width:"100%",height:"50px"}} onClick={()=> {showHideMenuPanelContent(index)}}>{obj.props.title}</button>
-                                     </div>
-                                </div>
-                            )
-                    )})}
-                </div>
+  if (toolParts?.navPanel) {
+    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
+  }
 
-                <div style={{height:"calc(100vh - 50px)", overflow:"scroll"}}>
-                    {panelDataIndex !== -1 ? props.children[panelDataIndex].props.children : ""}
-                </div>
-            </div>
-        </div>
-    )
+  if (toolParts?.headerPanel) {
+    headerPanel = (
+      <HeaderPanel title={toolParts.headerPanel.props.title}>
+        {toolParts.headerPanel.children}
+      </HeaderPanel>
+    );
+  }
 
+  if (toolParts?.mainPanel) {
+    mainPanel = <MainPanel>{toolParts.mainPanel.children}</MainPanel>;
+  }
+
+  if (toolParts?.supportPanel) {
+    supportPanel = (
+      <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
+    );
+  }
+
+  if (toolParts?.menuPanel) {
+    menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
+  }
+  if (stackId === 0 && openOverlayObj?.name && toolParts?.overlay) {
+    overlay = toolParts.overlay[openOverlayObj.name];
+  }
+
+  return (
+    <>
+      {transition.map(
+        ({ item, key, props }) =>
+          item && (
+            <animated.div
+              key={key}
+              style={{ ...props, top: props.top.interpolate((h) => `${h}vh`) }}
+            >
+              {overlay}
+            </animated.div>
+          )
+      )}
+      <ToolContainer
+        // style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
+        $isoverlay={stackId > 0 ?? false}
+      >
+        {navPanel}
+        {headerPanel}
+        <ContentPanel main={mainPanel} support={supportPanel} />
+        {menuPanel}
+        {/* <ReactQueryDevtools /> */}
+      </ToolContainer>
+    </>
+  );
 }

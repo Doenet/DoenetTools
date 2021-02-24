@@ -6,7 +6,6 @@ import DoenetViewer from './DoenetViewer';
 import "./editor.css";
 import allComponents from '../../docs/complete-docs.json';
 import ErrorBoundary from './ErrorBoundary';
-import MonacoEditor from 'react-monaco-editor';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 

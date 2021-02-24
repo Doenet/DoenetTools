@@ -1,25 +1,83 @@
 import React from 'react';
-import SearchBar from "../imports/PanelHeaderComponents/SearchBar.js";
-import Textfield from "../imports/PanelHeaderComponents/Textfield.js";
-import VerticalDivider from "../imports/PanelHeaderComponents/VerticalDivider.js";
-import Button from "../imports/PanelHeaderComponents/Button.js";
-import ActionButton from "../imports/PanelHeaderComponents/ActionButton.js";
-// import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
-import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton.js";
-import ProgressBar from "../imports/PanelHeaderComponents/ProgressBar.js";
-import styled, { ThemeProvider } from 'styled-components';
-import ActionButtonGroup from "../imports/PanelHeaderComponents/ActionButtonGroup.js";
-import UnitMenu from "../imports/PanelHeaderComponents/UnitMenu.js";
+// import Date from '../imports/PanelHeaderComponents/Date.js';
+import GlobalFont from '../fonts/GlobalFont.js';
+import {driveColors} from '../imports/Util';
+import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 
-export default function attempt() {
+//   // var timeout;
+//   // var timeout, promise,cancel;
+//   var latestDoenetML = doenetML;
+//   // console.log({timeout})
+
+export default function App() {
 return (
 <>
-<ActionButtonGroup>
-  <ActionButton text='X'></ActionButton>
-  <ActionButton text='Y'></ActionButton>
-  <ActionButton text='Z'></ActionButton>
-</ActionButtonGroup>
+<GlobalFont/>
+{/* <Date/> */}
+<div>
+<DoenetDriveCardMenu
+      data={driveColors} 
+      driveId = {'34XeNDOlpUtNIng4jsCKH'} 
+      // updateDriveColor = {updateDriveColor}
+      />
+</div>
 </>
 );
-};
+}
 
+  // return {promise,
+  //         cancel}
+// }
+
+// let doenetMLAtom = atom({
+//   key:"doenetMLAtom",
+//   default:""
+// })
+
+
+// let saveSelector = selector({
+//   key:"saveSelector",
+//   set: ({get,set})=>{
+//     const doenetML = get(doenetMLAtom);
+//     console.log(">>>doenetML",doenetML)
+//   }
+// })
+
+function Temp() {
+
+  // let delaySave = delaySaveDraft("Done!")
+  const [doenetML,setDoenetML] = useRecoilState(doenetMLAtom)
+  const setSave = useSetRecoilState(saveSelector);
+  const timeout = useRef(null);
+
+
+  return <><textarea value={doenetML} onChange={(e)=>{
+    setDoenetML(e.target.value);
+    if (timeout.current === null){
+      timeout.current = setTimeout(function(){
+        setSave()
+        timeout.current = null;
+      },3000)
+    }
+  }}
+    onBlur={()=>{
+      if (timeout.current !== null){
+        clearTimeout(timeout.current)
+        timeout.current = null;
+        setSave();
+      }
+    }}
+  />
+  {/* <button onClick={()=>{
+    // delaySaveDraft(doenetML,timeout)
+    delaySaveDraft();
+    // delaySave.promise.then((result)=>{
+      // alert(result)
+    // })
+  }}>Create Promise</button>
+  <button onClick={()=>{
+    // delaySave.cancel();
+  }}>Cancel</button> */}
+  </>
+  
+}

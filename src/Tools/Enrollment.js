@@ -4,6 +4,7 @@ import {useDropzone} from 'react-dropzone';
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import parse from 'csv-parse';
 import nanoid from 'nanoid';
+import Button from "../imports/PanelHeaderComponents/Button";
 
 
 
@@ -51,7 +52,7 @@ export default function Enrollment(params){
     }
   },[courseId])
   if (!params.selectedCourse){
-    return (<ToolLayoutPanel panelName="Enrollment"> <p>Loading...</p> </ToolLayoutPanel>)
+    return (<mainPanel > <p>Loading...</p> </mainPanel>)
   }else{
     if (courseId === ""){
       setCourseId(params.selectedCourse.courseId);
@@ -111,13 +112,13 @@ export default function Enrollment(params){
     }
 
     if (!foundId){
-    return (<ToolLayoutPanel panelName="Enrollment"> 
+    return (<mainPanel > 
     <div style={{flexDirection: "row",display: "flex"}} >
       <p>Data Needs to have a heading marked "id"</p>
       <p>No Data Imported</p>
-      <button onClick={()=>setProcess("Display Enrollment")}>OK</button>
+      <Button callback={()=>setProcess("Display Enrollment")} text="OK" />
     </div>
-    </ToolLayoutPanel>)
+    </mainPanel>)
   }else{
     let importHeads = []
     let mergeHeads = [];
@@ -191,30 +192,35 @@ export default function Enrollment(params){
       importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>)
     }
 
-    return (<ToolLayoutPanel panelHeaderControls={[
-    <button key='merge' onClick={()=>{
-      const payload = { 
-        courseId,
-        mergeHeads,
-        mergeId,
-        mergeFirstName,
-        mergeLastName,
-        mergeEmail,
-        mergeSection,
-        mergeDropped,
-        userIds
-      }
-      axios.post('/api/mergeEnrollmentData.php', payload)
-        .then(resp => {
-          const enrollmentArray = resp.data.enrollmentArray;
-          if (enrollmentArray){
-            setEnrollmentTableData(enrollmentArray)
-          }
-          setProcess("Display Enrollment") 
-        });
-    }}>Merge</button>,
-    <button key='cancel' onClick={()=>setProcess("Display Enrollment")}>Cancel</button>
-    ]} panelName="Enrollment"> 
+    return (
+    <mainPanel>
+        <>
+          <Button text="Merge" key='merge' callback={() => {
+            const payload = {
+              courseId,
+              mergeHeads,
+              mergeId,
+              mergeFirstName,
+              mergeLastName,
+              mergeEmail,
+              mergeSection,
+              mergeDropped,
+              userIds
+            }
+            axios.post('/api/mergeEnrollmentData.php', payload)
+              .then(resp => {
+                const enrollmentArray = resp.data.enrollmentArray;
+                if (enrollmentArray) {
+                  setEnrollmentTableData(enrollmentArray)
+                }
+                setProcess("Display Enrollment")
+              });
+          }}></Button>
+
+          <Button key='cancel' callback={() => setProcess("Display Enrollment")} text="Cancel"></Button>
+        </>
+    
+     
     <div style={{flexDirection: "row",display: "flex"}} >
     {/* <p>Choose Columns to Merge</p> */}
     <table>
@@ -227,25 +233,36 @@ export default function Enrollment(params){
     </table>
     
     </div>
-    </ToolLayoutPanel>)
+    </mainPanel>)
   }
     
   }
 
   return (
-  
-    <ToolLayoutPanel
-    panelHeaderControls={[<div key="drop" {...getRootProps()}>
-      <input {...getInputProps()}/>
-      {
+    <mainPanel>
+      <div key="drop" {...getRootProps()}>
+        <input {...getInputProps()} />
+        {
           isDragActive ?
-          <p>Drop the files here</p> :
-          <button>Enroll Learners</button>
-      }
-  </div>]}
-            panelName="Enrollment">
-              {enrollmentTable}
-          </ToolLayoutPanel>
+            <p>Drop the files here</p> :
+            <Button text="Enroll Learners"></Button>
+        }
+      </div>
+      {enrollmentTable}
+    </mainPanel>
+      )
+    }
+  
+  //   <mainPanel
+  //   panelHeaderControls={[<div key="drop" {...getRootProps()}>
+  //     <input {...getInputProps()}/>
+  //     {
+  //         isDragActive ?
+  //         <p>Drop the files here</p> :
+  //         <button>Enroll Learners</button>
+  //     }
+  // </div>]}
+  //           panelName="Enrollment">
+  //             {enrollmentTable}
+  //         </mainPanel>
  
-  )
-}

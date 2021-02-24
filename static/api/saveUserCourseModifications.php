@@ -35,7 +35,7 @@ if ($userId == ""){
             $positionflag = false;
         }
     }
-    var_dump($positionflag);
+    // var_dump($positionflag);
     // $_POST = array(
     //     array(
     //         "courseId" => 'uTMfKhSmcNtLDaK8oJ3U',
@@ -93,7 +93,7 @@ if ($userId == ""){
                 WHERE courseId = '$courseId'
                 AND userId = '$userId'
                 ";
-                var_dump($sql);
+                // var_dump($sql);
                 $result = $conn->query($sql);
 
             } 

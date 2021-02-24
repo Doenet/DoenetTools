@@ -45,7 +45,6 @@ if ($branchId == ""){
 			array_push($content_id_array,$row["contentId"]);
 		}
 	} //This in the right spot?
-
 	//SECURITY
 	//1 - test if branch is public
 	$sql = "SELECT public
