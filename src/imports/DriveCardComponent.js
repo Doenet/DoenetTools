@@ -41,22 +41,21 @@ const DriveCardContainer = React.memo((props) => {
    const transitions = useTransition(driveCardItems, (item) => item.driveId, {
       from: ({ 
         xy, width, height }) => ({
-        xy,
+        xy:[0,0],
         width,
         height,
         opacity: 0,
         scale: 1,
-        position:"fixed"
+        position:"absolute"
             }),
 
       enter: ({
          xy, width, height }) => ({
-        xy,
+        xy:[width,0],
         width,
         height,
         opacity: 1,
         scale: 1,
-        position:"fixed"
       }),
       update: ({
          xy, width, height }) => ({ xy, width, height, scale: 1,position:"absolute"
