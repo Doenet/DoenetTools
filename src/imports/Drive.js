@@ -150,33 +150,53 @@ export const fetchDriveUsers = selectorFamily({
 
         break;
         case "To Owner":
-          console.log(">>>to owner")
-        // set(fetchDriveUsersQuery(driveId),(was)=>{
-        //   let newDriveUsers = {...was}
-        // if (instructions.userRole === "owner"){
-        //   let newOwners = [...was.owners];
-        //   for (let [i,owner] of newOwners.entries()){
-        //     if (owner.userId === instructions.userId){
-        //       newOwners.splice(i,1);
-        //       break;
-        //     }
-        //   }
-        //   newDriveUsers['owners'] = newOwners;
-        // }
-        // if (instructions.userRole === "admin"){
-        //   let newAdmins = [...was.admins];
-        //   for (let [i,admin] of newAdmins.entries()){
-        //     if (admin.userId === instructions.userId){
-        //       newAdmins.splice(i,1);
-        //       break;
-        //     }
-        //   }
-        //     newDriveUsers['admins'] = newAdmins;
-        // }
-        //   return newDriveUsers;
-        // })
+        set(fetchDriveUsersQuery(driveId),(was)=>{
+          let newDriveUsers = {...was}
+          let userEntry = {};
+          let newAdmins = [...was.admins];
+          for (let [i,admin] of newAdmins.entries()){
+            if (admin.userId === instructions.userId){
+              userEntry = admin;
+              newAdmins.splice(i,1);
+              break;
+            }
+          }
+            newDriveUsers['admins'] = newAdmins;
+        
+          let newOwners = [...was.owners];
+          newOwners.push(userEntry);
+          newDriveUsers['owners'] = newOwners;
 
-        // axios.get('/api/saveUserToDrive.php', payload)
+          return newDriveUsers;
+        })
+
+        axios.get('/api/saveUserToDrive.php', payload)
+        // .then((resp)=>{console.log(">>>resp",resp.data) })
+
+        break;
+        case "To Admin":
+        set(fetchDriveUsersQuery(driveId),(was)=>{
+          let newDriveUsers = {...was}
+          let userEntry = {};
+
+          let newOwners = [...was.owners];
+          for (let [i,owner] of newOwners.entries()){
+            if (owner.userId === instructions.userId){
+              userEntry = owner;
+              newOwners.splice(i,1);
+              break;
+            }
+          }
+          newDriveUsers['owners'] = newOwners;
+    
+          let newAdmins = [...was.admins];
+          newAdmins.push(userEntry);
+          newDriveUsers['admins'] = newAdmins;
+        
+          return newDriveUsers;
+        })
+
+        axios.get('/api/saveUserToDrive.php', payload)
         // .then((resp)=>{console.log(">>>resp",resp.data) })
 
         break;

@@ -530,6 +530,8 @@ return null;
 
 
 function User(props){
+  let onClick = props.onClick;
+  if (!onClick){onClick = ()=>{}}
   let emailAddress = null;
   let emailStyle = {}
   let buttons = [];
@@ -557,7 +559,7 @@ function User(props){
                 userId:props.userId,
                 userRole:props.userRole
               })
-            // props.open(false);
+            
             
             }
             }/>
@@ -572,7 +574,7 @@ function User(props){
         buttons.push(
           <div key={`promote${props.userId}`}>
             <Button 
-          data-doenet-removeButton={props.userId}
+          data-doenet-removebutton={props.userId}
           text="Promote to Owner" callback={(e)=>{
             props.setDriveUsers({
               driveId:props.driveId,
@@ -580,6 +582,8 @@ function User(props){
               userId:props.userId,
               userRole:props.userRole
             })
+            
+
           }
           } /></div>
           )
@@ -590,9 +594,17 @@ function User(props){
         buttons.push(
           <div key={`demote${props.userId}`}>
             <Button 
-          data-doenet-removeButton={props.userId}
+          data-doenet-removebutton={props.userId}
           text="Demote to Admin" callback={(e)=>{
-            console.log("to admin")}
+            props.setDriveUsers({
+              driveId:props.driveId,
+              type:"To Admin",
+              userId:props.userId,
+              userRole:props.userRole
+            })
+            
+
+          }
           }/></div>
           )
         }
@@ -601,8 +613,7 @@ function User(props){
       containerStyle = {backgroundColor:"#B8D2EA"}
       emailStyle = {border:"solid 1px black"}
   }
-  let onClick = props.onClick;
-  if (!onClick){onClick = ()=>{}}
+  
   return <>
     <div 
     tabIndex={0}
@@ -723,6 +734,7 @@ const DriveInfoPanel = function(props){
   if (driveUsers.contents.usersRole === "Owner"){
     isOwner = true;
   }
+
   for (let owner of driveUsers.contents.owners){
     let isSelected = false;
     if (owner.userId === selectedUserId){

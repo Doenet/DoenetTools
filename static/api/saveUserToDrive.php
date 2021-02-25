@@ -33,6 +33,28 @@ if ($type === "Remove User"){
     $response_arr = array(
       "success"=>TRUE
     );
+  }else if ($type === "To Owner"){
+    $sql = "
+    UPDATE drive_user
+    SET canDeleteDrive='1', canChangeAllDriveSettings= '1'
+    WHERE userId = '$selected_userId'
+    AND driveId = '$driveId'
+    ";
+    $result = $conn->query($sql); 
+    $response_arr = array(
+      "success"=>TRUE
+    );
+  }else if ($type === "To Admin"){
+    $sql = "
+    UPDATE drive_user
+    SET canDeleteDrive='0', canChangeAllDriveSettings= '0'
+    WHERE userId = '$selected_userId'
+    AND driveId = '$driveId'
+    ";
+    $result = $conn->query($sql); 
+    $response_arr = array(
+      "success"=>TRUE
+    );
 }else{
 
   $sql = "
