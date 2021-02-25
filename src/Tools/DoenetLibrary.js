@@ -553,6 +553,9 @@ function User(props){
               data-doenet-removeButton={props.userId}
             text="Remove" 
             callback={(e)=>{
+              e.preventDefault();
+              e.stopPropagation();
+              onClick("")
               props.setDriveUsers({
                 driveId:props.driveId,
                 type:"Remove User",
@@ -576,14 +579,15 @@ function User(props){
             <Button 
           data-doenet-removebutton={props.userId}
           text="Promote to Owner" callback={(e)=>{
-            props.setDriveUsers({
+            e.preventDefault();
+            e.stopPropagation();
+            onClick("")
+          props.setDriveUsers({
               driveId:props.driveId,
               type:"To Owner",
               userId:props.userId,
               userRole:props.userRole
             })
-            
-
           }
           } /></div>
           )
@@ -596,14 +600,15 @@ function User(props){
             <Button 
           data-doenet-removebutton={props.userId}
           text="Demote to Admin" callback={(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            onClick("")
             props.setDriveUsers({
               driveId:props.driveId,
               type:"To Admin",
               userId:props.userId,
               userRole:props.userRole
             })
-            
-
           }
           }/></div>
           )
