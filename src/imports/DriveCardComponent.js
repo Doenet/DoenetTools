@@ -18,7 +18,7 @@ import {
 import { useMenuPanelController } from "./Tool/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
-const DriveCardContainer = React.memo((props) => {
+const DriveCardComponent = React.memo((props) => {
   const { driveDoubleClickCallback } = props;
   const history = useHistory();
   let encodeParams = (p) =>
@@ -223,4 +223,4 @@ const DriveCardContainer = React.memo((props) => {
   );
 });
 
-export default DriveCardContainer;
+export default DriveCardComponent;
