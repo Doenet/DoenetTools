@@ -18,7 +18,7 @@ module.exports = {
     ],
   },
   plugins: ["react", "import", "jsx-a11y", "react-hooks"],
-  parser: "babel-eslint",
+  parser: "@babel/eslint-parse",
   parserOptions: {
     ecmaVersion: 11,
     sourceType: "module",
