@@ -246,7 +246,7 @@ const updateItemHistorySelector = selectorFamily({
     return get(itemHistoryAtom(branchId))
   },
   set:(branchId)=> ({get,set},instructions)=>{
-    console.log(">>>instructions",instructions.instructions)
+    // console.log(">>>instructions",instructions.instructions)
     
 
     const doenetML = get(editorDoenetMLAtom);
@@ -420,7 +420,7 @@ function VersionHistoryPanel(props){
         onClick={()=>{
           if (version.timestamp !== selectedTimestamp){
             setSelectedTimestamp(version.timestamp)
-            console.log(">>>version.contentId",version.contentId)
+            // console.log(">>>version.contentId",version.contentId)
             setEditingContentId(version.contentId)
           }
         }}
@@ -496,8 +496,8 @@ function SetEditorDoenetMLandTitle(props){
   if (props.isDraft){ contentId = props.branchId;}
   const editingContentId = useRecoilValue(EditingContentIdAtom);
   if (editingContentId !== ""){ contentId = editingContentId}
-console.log(">>>SetEditorDoenetMLandTitle editingContentId",editingContentId)
-console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
+// console.log(">>>SetEditorDoenetMLandTitle editingContentId",editingContentId)
+// console.log(">>>SetEditorDoenetMLandTitle contentId",contentId)
   const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
@@ -714,8 +714,6 @@ const DriveInfoPanel = function(props){
   if (driveUsers.contents.usersRole === "Owner"){
     isOwner = true;
   }
-  console.log(">>>isOwner",isOwner);
-  console.log(">>>driveUsers.contents.usersRole",driveUsers.contents.usersRole)
   let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
   let admins = [];
