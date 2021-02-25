@@ -176,7 +176,7 @@ function TextEditor(props){
         autosavetimeout.current = setTimeout(function(){
           setVersion({instructions:{type:"Autosave"}})
           autosavetimeout.current = null;
-        },5000) //TODO: Make 5 minutes 300000
+        },60000) //TODO: Make 1 minute 60000
       }
   }
   }}
@@ -525,9 +525,6 @@ function SetEditorDoenetMLandTitle(props){
 
 return null;
 }
-
-
-
 
 function User(props){
   let onClick = props.onClick;
@@ -980,7 +977,6 @@ const DoenetMLInfoPanel = function(props){
   }} />
   </>
 }
-
 
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
