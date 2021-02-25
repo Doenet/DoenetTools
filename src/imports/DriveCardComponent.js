@@ -62,7 +62,7 @@ const DriveCardContainer = React.memo((props) => {
          xy, width, height }) => ({ xy, width, height, scale: 1,position:"absolute"
         }),
       leave: { height: 0, opacity: 0, scale: 0 },
-      config: { mass: 5, tension: 500, friction: 250 },
+      config: { mass: 5, tension: 5000, friction: 1000 },
       trail: 25
     });
     // console.log(">>>> transitions", transitions);
@@ -179,7 +179,9 @@ const DriveCardContainer = React.memo((props) => {
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
                 transform: props.xy.interpolate((x, y) => {
-                  return `scale(${props.scale.value}) translate3d(${x}px,${y}px,0)`;
+                  return `translate(${x}px,${y}px) scale(${
+                    selectedCard ? 1.1 : props.scale.value
+                  })`;
                 }),
                 ...props,
                 height: 250,
@@ -194,7 +196,6 @@ const DriveCardContainer = React.memo((props) => {
                   e.preventDefault();
                   e.stopPropagation();
                   drivecardselection(e, item, props);
-                  // toggle(props.scale.setValue(0.9))
                 }}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onDoubleClick={(e) => {
