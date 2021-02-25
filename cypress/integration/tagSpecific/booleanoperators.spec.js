@@ -41,6 +41,57 @@ describe('Boolean Operator Tag Tests', function () {
 
   })
 
+  it('not when', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <mathinput />
+    <not><when><copy prop="value" tname="_mathinput1" /> > 1</when></not>
+    `}, "*");
+    });
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/_not1').should('have.text', "true");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq('\uff3f');
+      expect(components["/_copy1"].replacements[0].stateValues.value.tree).eq('\uff3f');
+      expect(components['/_not1'].stateValues.value).eq(true);
+    });
+
+    cy.log('enter 2')
+    cy.get('#\\/_mathinput1_input').type('2{enter}');
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/_not1').should('have.text', "false");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq(2);
+      expect(components["/_copy1"].replacements[0].stateValues.value.tree).eq(2);
+      expect(components['/_not1'].stateValues.value).eq(false);
+    });
+
+    cy.log('enter 1')
+    cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/_not1').should('have.text', "true");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq(1);
+      expect(components["/_copy1"].replacements[0].stateValues.value.tree).eq(1);
+      expect(components['/_not1'].stateValues.value).eq(true);
+    });
+
+  })
+
   it('and', () => {
 
     cy.window().then((win) => {
@@ -350,7 +401,7 @@ describe('Boolean Operator Tag Tests', function () {
         doenetML: `
     <booleaninput label="show point"/>
     <graph>
-      <point><hide><not><copy prop="value" tname="_booleaninput1" /></not></hide>
+      <point hide="not $_booleaninput1">
        (1,2)
       </point>
     </graph>

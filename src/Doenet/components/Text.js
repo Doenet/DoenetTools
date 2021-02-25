@@ -48,7 +48,7 @@ export default class Text extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringTextChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndTexts",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,

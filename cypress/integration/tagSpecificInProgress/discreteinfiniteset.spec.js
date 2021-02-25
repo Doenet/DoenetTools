@@ -620,9 +620,9 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
         <template>
           <mathinput />
         </template>
-        <substitutions>
+        <sources>
           <sequence><count><copy prop="submittedResponse" tname="number_offsets" /></count></sequence>
-        </substitutions>
+        </sources>
       </map>
     </p>
     

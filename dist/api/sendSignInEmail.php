@@ -76,7 +76,7 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 $headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n";
 
 //SEND EMAIL WITH CODE HERE
-mail($emailaddress,"Doenet Signin","Your code is: $signInCode on device $deviceName.");
+mail($emailaddress,$subject,$htmlContent, $headers);
 
 $response_arr = array(
     "success" => 1,

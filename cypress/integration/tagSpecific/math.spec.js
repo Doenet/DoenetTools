@@ -173,7 +173,7 @@ describe('Math Tag Tests', function () {
     })
   })
 
-  it('ref latex property', () => {
+  it('copy latex property', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -201,7 +201,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('math with internal and external refs', () => {
+  it('math with internal and external copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -337,22 +337,21 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>q</text>
-  <p><math name="a" simplify>
-    <format><copy prop="value" tname="_textinput1" /></format>
+  <p><math name="a" simplify format="$_textinput1">
     \\sin(y)
-    <math name="c">
-      <format><copy prop="format" tname="b" /></format>
+    <math name="c" format="$cbf">
       sin(x)
     </math>
   </math></p>
-  <p><math name="b" simplify>
-    <format><copy prop="value" tname="_textinput2" /></format>
+  <p><math name="b" simplify format="$_textinput2">
     sin(u)
-    <math name="d">
-      <format><copy prop="format" tname="a" /></format>
+    <math name="d" format="$caf">
       \\sin(v)
     </math>
   </math></p>
+
+  <copy prop="format" tname="a" name="caf" hide />
+  <copy prop="format" tname="b" name="cbf" hide />
   
   <p name="formata"><copy prop="format" tname="a" /></p>
   <p name="formatb"><copy prop="format" tname="b" /></p>

@@ -28,7 +28,7 @@ export default class TextOrInline extends InlineComponent {
       componentType: this.componentType,
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline",
           variableNames: ["text"],
           variablesOptional: true,
@@ -63,7 +63,7 @@ export default class TextOrInline extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline"
         }
       }),

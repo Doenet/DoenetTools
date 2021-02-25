@@ -67,7 +67,7 @@ export default class IntervalInput extends BlockComponent {
 
       returnDependencies: () => ({
         pointChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
           variableNames: ["x"],
         },
@@ -148,7 +148,7 @@ export default class IntervalInput extends BlockComponent {
 
       returnDependencies: () => ({
         intervalChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroIntervals",
           variableNames: ["value"],
         },

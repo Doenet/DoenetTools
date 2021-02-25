@@ -47,9 +47,9 @@ export default class Feedback extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
-          variableNames: ["conditionSatisfied"],
+          variableNames: ["value"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -58,7 +58,7 @@ export default class Feedback extends BlockComponent {
         if (dependencyValues.conditionChild.length === 0) {
           hide = false;
         } else {
-          hide = !dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
+          hide = !dependencyValues.conditionChild[0].stateValues.value;
         }
 
         return { newValues: { hide } }
@@ -80,7 +80,7 @@ export default class Feedback extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
         }
       }),

@@ -30,7 +30,7 @@ export default class TextFromSingleStringChild extends Text {
       componentType: this.componentType,
       returnDependencies: () => ({
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneString",
           variableNames: ["value"],
         },

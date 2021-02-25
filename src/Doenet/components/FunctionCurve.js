@@ -76,7 +76,7 @@ export default class FunctionCurve extends Curve {
       returnArrayDependenciesByKey() {
         let globalDependencies = {
           variablesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneVariables",
             variableNames: ["variables"],
           },
@@ -112,7 +112,7 @@ export default class FunctionCurve extends Curve {
       forRenderer: true,
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneFunction",
           variableNames: ["numericalf"]
         },

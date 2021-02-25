@@ -24,7 +24,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that mean: <copy tname="meanPrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Mean of numbers from 1 to 100: <mean name="mean100"><sequence>100</sequence></mean></p>
+    <p name="p100">Mean of numbers from 1 to 100: <mean name="mean100"><sequence to="100" /></mean></p>
     <p>Copying that mean: <copy tname="mean100" /></p>
     <copy tname="p100" />
     `}, "*");
@@ -69,7 +69,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that variance: <copy tname="variancePrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence>100</sequence></variance></p>
+    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy tname="variance100" /></p>
     <copy tname="p100" />
     `}, "*");
@@ -115,7 +115,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that variance: <copy tname="variancePrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100" unbiased><sequence>100</sequence></variance></p>
+    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100" unbiased><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy tname="variance100" /></p>
     <copy tname="p100" />
     `}, "*");
@@ -167,7 +167,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence>100</sequence></standarddeviation></p>
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
     <copy tname="p100" />
     `}, "*");
@@ -220,7 +220,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100" unbiased><sequence>100</sequence></standarddeviation></p>
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100" unbiased><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
     <copy tname="p100" />
     `}, "*");
@@ -273,7 +273,7 @@ describe('Number Operator Tag Tests', function () {
     <p>Copying that count: <copy tname="countPrime" /></p>
     <copy tname="pPrime" />
 
-    <p name="p100">Count of numbers from 1 to 100: <count name="count100"><sequence>100</sequence></count></p>
+    <p name="p100">Count of numbers from 1 to 100: <count name="count100"><sequence to="100" /></count></p>
     <p>Copying that count: <copy tname="count100" /></p>
     <copy tname="p100" />
     `}, "*");

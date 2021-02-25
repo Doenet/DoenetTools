@@ -5,12 +5,6 @@ export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
   static rendererType = "container";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
-  }
-
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -56,7 +50,7 @@ export default class VectorListComponent extends BaseComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
@@ -83,7 +77,7 @@ export default class VectorListComponent extends BaseComponent {
     stateVariableDefinitions.nVectors = {
       returnDependencies: () => ({
         vectorChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
         }
       }),
@@ -112,7 +106,7 @@ export default class VectorListComponent extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             vectorChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroVectors",
               variableNames: ["displacement"],
               childIndices: [arrayKey],
@@ -174,7 +168,7 @@ export default class VectorListComponent extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         vectorChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
         }
       }),

@@ -1,16 +1,18 @@
-import CompositeComponent from './abstract/CompositeComponent';
-// import {postProcessCopy, processChangesForReplacements} from './Ref';
-import { postProcessCopy} from '../utils/copy';
+import BaseComponent from './abstract/BaseComponent';
+import { deepClone } from '../utils/deepFunctions';
 
-export default class Group extends CompositeComponent {
+export default class Group extends BaseComponent {
   static componentType = "group";
 
-  static returnChildLogic (args) {
+  static rendererType = "container";
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: 'anything',
+      name: 'anyNonString',
       componentType: '_base',
+      excludeComponentTypes: ["string"],
       comparison: 'atLeast',
       number: 0,
       setAsBase: true,
@@ -20,55 +22,27 @@ export default class Group extends CompositeComponent {
   }
 
 
-
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.readyToExpand = {
-      returnDependencies: () => ({}),
-      definition: function () {
-        return { newValues: { readyToExpand: true } };
-      },
-    };
-
-    return stateVariableDefinitions;
-  }
-
-  static createSerializedReplacements({component}) {
-
-    let serializedChildrenCopy = component.activeChildren.map(
-      x => x.serialize({forCopy: true})
-    );
-
-    if(component.stateValues.hide) {
-      for(let child of serializedChildrenCopy) {
-        if(child.state === undefined) {
-          child.state = {};
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "child",
+          childLogicName: "anyNonString"
         }
-        child.state.hide = true;
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.children.map(x => x.componentName)
+          }
+        };
       }
     }
 
-    return {replacements: postProcessCopy({serializedComponents: serializedChildrenCopy, componentName: component.componentName}) };
-
+    return stateVariableDefinitions;
   }
-
-  static calculateReplacementChanges({component, componentChanges, components}) {
-
-    return [];
-
-    let replacementChanges = processChangesForReplacements({
-      componentChanges: componentChanges,
-      componentName: component.componentName,
-      downstreamDependencies: component.downstreamDependencies,
-      components
-    })
-    // console.log(`replacementChanges for group ${component.componentName}`);
-    // console.log(replacementChanges);
-    return replacementChanges;
-  }
-
-  static includeBlankStringChildren = true;
 
 }

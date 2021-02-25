@@ -31,7 +31,7 @@ export default class Row extends BaseComponent {
     stateVariableDefinitions.prescribedCellsWithColNum = {
       returnDependencies: () => ({
         cellChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroCells",
           variableNames: ["colNum"]
         }
@@ -55,7 +55,7 @@ export default class Row extends BaseComponent {
     //     if (arrayKeys === undefined) {
     //       return {
     //         cellChildren: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["math"],
     //         }
@@ -65,7 +65,7 @@ export default class Row extends BaseComponent {
 
     //       return {
     //         cellChild: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["math"],
     //           childIndices: [arrayKey]
@@ -241,7 +241,7 @@ export default class Row extends BaseComponent {
     //     if (arrayKeys === undefined) {
     //       return {
     //         cellChildren: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["number"],
     //         }
@@ -251,7 +251,7 @@ export default class Row extends BaseComponent {
 
     //       return {
     //         cellChild: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["number"],
     //           childIndices: [arrayKey]
@@ -427,7 +427,7 @@ export default class Row extends BaseComponent {
     //     if (arrayKeys === undefined) {
     //       return {
     //         cellChildren: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["text"],
     //         }
@@ -437,7 +437,7 @@ export default class Row extends BaseComponent {
 
     //       return {
     //         cellChild: {
-    //           dependencyType: "childStateVariables",
+    //           dependencyType: "child",
     //           childLogicName: "atLeastZeroCells",
     //           variableNames: ["text"],
     //           childIndices: [arrayKey]
@@ -606,7 +606,7 @@ export default class Row extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroCells"
         }
       }),
