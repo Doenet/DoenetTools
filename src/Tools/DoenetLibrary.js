@@ -714,7 +714,8 @@ const DriveInfoPanel = function(props){
   if (driveUsers.contents.usersRole === "Owner"){
     isOwner = true;
   }
-
+  console.log(">>>isOwner",isOwner);
+  console.log(">>>driveUsers.contents.usersRole",driveUsers.contents.usersRole)
   let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
   let admins = [];

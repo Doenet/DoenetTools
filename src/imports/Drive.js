@@ -182,6 +182,9 @@ export const fetchDriveUsers = selectorFamily({
           let newOwners = [...was.owners];
           for (let [i,owner] of newOwners.entries()){
             if (owner.userId === instructions.userId){
+              if (owner.isUser){
+                newDriveUsers.usersRole = "admin";
+              }
               userEntry = owner;
               newOwners.splice(i,1);
               break;
@@ -192,7 +195,7 @@ export const fetchDriveUsers = selectorFamily({
           let newAdmins = [...was.admins];
           newAdmins.push(userEntry);
           newDriveUsers['admins'] = newAdmins;
-        
+
           return newDriveUsers;
         })
 
