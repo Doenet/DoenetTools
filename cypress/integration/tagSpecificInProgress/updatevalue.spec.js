@@ -16,17 +16,17 @@ describe('UpdateValue Tag Tests',function() {
     <template>
     <linesegment>
       <endpoints>
-      <point><coords>(<copyFromSubs/>, sin(<copyFromSubs/>))</coords></point>
-      <point><coords>(<copyFromSubs/>+<copy tname="step" />, sin(<copyFromSubs/>+<copy tname="step" />))</coords></point>
+      <point><coords>(<copySource/>, sin(<copySource/>))</coords></point>
+      <point><coords>(<copySource/>+<copy tname="step" />, sin(<copySource/>+<copy tname="step" />))</coords></point>
       </endpoints>
     </linesegment>
     </template>
-    <substitutions>
+    <sources>
     <sequence from="-10">
       <to><number>10-<copy tname="step" /></number></to>
       <count><number name="count">2</number></count>
     </sequence>
-    </substitutions>
+    </sources>
     </map>
     </graph>
     <p></p>

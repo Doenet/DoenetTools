@@ -89,7 +89,7 @@ export default class Table extends BaseComponent {
       additionalStateVariablesDefined: ["cellNamesByRowCol"],
       returnDependencies: () => ({
         cellRelatedChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "cellsRowsColumnsBlocks",
           variableNames: [
             "rowNum",

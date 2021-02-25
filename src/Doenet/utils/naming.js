@@ -35,15 +35,11 @@ export function getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifi
 
 }
 
-// from https://stackoverflow.com/a/7616484
-function hashStringToInteger(s) {
-  var hash = 0, i, chr;
-  if (s.length === 0)
-    return hash;
-  for (i = 0; i < s.length; i++) {
-    chr = s.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash >>>= 0; // Convert to 32bit unsigned integer
+export function getNamespaceFromName(componentName) {
+  let lastSlash = componentName.lastIndexOf("/");
+  if (lastSlash === -1) {
+    throw Error(`Encountered name ${componentName} that doesn't include a slash`);
   }
-  return hash;
-};
+  return componentName.slice(0, lastSlash + 1);
+
+}

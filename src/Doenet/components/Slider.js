@@ -80,11 +80,11 @@ export default class Slider extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         textChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastOneTexts",
         },
         numberChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroNumbers",
         },
       }),
@@ -107,12 +107,12 @@ export default class Slider extends BaseComponent {
       entireArrayAtOnce: true,
       returnDependencies: () => ({
         textChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneTexts",
           variableNames: ["value"]
         },
         numberChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroNumbers",
           variableNames: ["value"]
         },
@@ -261,7 +261,7 @@ export default class Slider extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         markersChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneMarkers",
           variableNames: ["markerType", "markers"]
         },

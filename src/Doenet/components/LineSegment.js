@@ -21,71 +21,31 @@ export default class LineSegment extends GraphicalComponent {
     return properties;
   }
 
+
+  // static returnSugarInstructions() {
+  //   let sugarInstructions = super.returnSugarInstructions();
+
+  //   sugarInstructions.push({
+  //     childrenRegex: /s/,
+  //     replacementFunction: ({ matchedChildren }) => ({
+  //       success: true,
+  //       newChildren: [{ componentType: "endpoints", children: matchedChildren }],
+  //     })
+  //   });
+
+  //   return sugarInstructions;
+
+  // }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addEndpoints = function ({ activeChildrenMatched }) {
-      // add <endpoints> around points
-      let endpointChildren = [];
-      for (let child of activeChildrenMatched) {
-        endpointChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "endpoints", children: endpointChildren }],
-      }
-    }
-
-    let exactlyTwoPoints = childLogic.newLeaf({
-      name: "exactlyTwoPoints",
-      componentType: 'point',
-      number: 2,
-      isSugar: true,
-      replacementFunction: addEndpoints,
-    });
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      replacementFunction: addEndpoints,
-    });
-
-    let noPoints = childLogic.newLeaf({
-      name: "noPoints",
-      componentType: 'point',
-      number: 0
-    });
-
-    let exactlyOneEndpoints = childLogic.newLeaf({
-      name: "exactlyOneEndpoints",
+    childLogic.newLeaf({
+      name: "atMostOneEndpoints",
       componentType: 'endpoints',
-      number: 1
-    });
-
-    childLogic.newOperator({
-      name: "endpointsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneEndpoints, exactlyTwoPoints, stringsAndMaths, noPoints],
+      comparison: "atMost",
+      number: 1,
       setAsBase: true
     });
 
@@ -120,7 +80,7 @@ export default class LineSegment extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        lineDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: lineDescription } };
       }
@@ -132,8 +92,8 @@ export default class LineSegment extends GraphicalComponent {
       componentType: "number",
       returnDependencies: () => ({
         endpointsChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneEndpoints",
+          dependencyType: "child",
+          childLogicName: "atMostOneEndpoints",
           variableNames: ["nDimensions"],
         }
       }),
@@ -225,8 +185,8 @@ export default class LineSegment extends GraphicalComponent {
 
           dependenciesByKey[arrayKey] = {
             endpointsChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneEndpoints",
+              dependencyType: "child",
+              childLogicName: "atMostOneEndpoints",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -380,28 +340,6 @@ export default class LineSegment extends GraphicalComponent {
         }
 
         return { newValues: { numericalEndpoints } }
-      }
-    }
-
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        endpointsChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneEndpoints"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.endpointsChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.endpointsChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
       }
     }
 

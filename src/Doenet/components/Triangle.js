@@ -24,9 +24,9 @@ export default class Triangle extends Polygon {
 
     stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({ dependencyValuesByKey, arrayKeys }) {
 
-      console.log('array definition of triangle vertices');
-      console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
-      console.log(arrayKeys);
+      // console.log('array definition of triangle vertices');
+      // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+      // console.log(arrayKeys);
 
       let vertices = {};
       let useEssential = {};
@@ -67,11 +67,11 @@ export default class Triangle extends Polygon {
         }
       }
 
-      console.log({
-        newValues: { vertices },
-        useEssentialOrDefaultValue: { vertices: useEssential }
+      // console.log({
+      //   newValues: { vertices },
+      //   useEssentialOrDefaultValue: { vertices: useEssential }
 
-      })
+      // })
 
       return {
         newValues: { vertices },

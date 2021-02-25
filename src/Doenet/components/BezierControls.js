@@ -138,7 +138,7 @@ export default class BezierControls extends BaseComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         },
@@ -214,7 +214,7 @@ export default class BezierControls extends BaseComponent {
         if (arrayKeys === undefined) {
           return {
             controlChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastOneControlvector",
               variableNames: ["direction"],
             }
@@ -222,7 +222,7 @@ export default class BezierControls extends BaseComponent {
         } else {
           return {
             controlChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastOneControlvector",
               variableNames: ["direction"],
               childIndices: [arrayKeys[0]]
@@ -407,7 +407,7 @@ export default class BezierControls extends BaseComponent {
         if (arrayKeys === undefined) {
           return {
             controlChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastOneControlvector",
               variableNames: ["direction", "vector1", "vector2"],
             },
@@ -424,7 +424,7 @@ export default class BezierControls extends BaseComponent {
             if (arrayIndices[1] === 0) {
               if (specifiedDirection !== "next" && specifiedDirection !== "none") {
                 dependencies['controlChild' + jointVarEnding] = {
-                  dependencyType: "childStateVariables",
+                  dependencyType: "child",
                   childLogicName: "atLeastOneControlvector",
                   variableNames: ["direction", "vector1"],
                   childIndices: [arrayIndices[0]],
@@ -433,14 +433,14 @@ export default class BezierControls extends BaseComponent {
             } else if (arrayIndices[1] === 1) {
               if (specifiedDirection === "both") {
                 dependencies['controlChild' + jointVarEnding] = {
-                  dependencyType: "childStateVariables",
+                  dependencyType: "child",
                   childLogicName: "atLeastOneControlvector",
                   variableNames: ["direction", "vector2"],
                   childIndices: [arrayIndices[0]],
                 }
               } else if (specifiedDirection === "next") {
                 dependencies['controlChild' + jointVarEnding] = {
-                  dependencyType: "childStateVariables",
+                  dependencyType: "child",
                   childLogicName: "atLeastOneControlvector",
                   variableNames: ["direction", "vector1"],
                   childIndices: [arrayIndices[0]],
@@ -761,7 +761,7 @@ export default class BezierControls extends BaseComponent {
     stateVariableDefinitions.pointIndMap = {
       returnDependencies: () => ({
         controlChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneControlvector",
           variableNames: ["pointNumber"],
         }

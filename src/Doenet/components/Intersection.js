@@ -27,7 +27,7 @@ export default class Intersection extends CompositeComponent {
     stateVariableDefinitions.lineChildren = {
       returnDependencies: () => ({
         lineChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroLines",
           variableNames: [
             "numericalCoeff0",

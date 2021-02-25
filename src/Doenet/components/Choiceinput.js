@@ -78,7 +78,7 @@ export default class Choiceinput extends Input {
       componentType: "number",
       returnDependencies: () => ({
         choiceChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
         },
       }),
@@ -90,7 +90,7 @@ export default class Choiceinput extends Input {
     stateVariableDefinitions.choiceOrder = {
       returnDependencies: ({ sharedParameters }) => ({
         choiceChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
           variableNames: ["text"]
         },
@@ -167,7 +167,7 @@ export default class Choiceinput extends Input {
           variableName: "fixedOrder"
         },
         variantDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
@@ -224,7 +224,7 @@ export default class Choiceinput extends Input {
           variableName: "choiceOrder"
         },
         choiceChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
           // variableNames: ["text", "selected", "submitted", "credit"]
         },
@@ -264,7 +264,7 @@ export default class Choiceinput extends Input {
             variableName: "choiceOrder"
           },
           choiceChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroChoices",
             variableNames: ["text"]
           },
@@ -306,7 +306,7 @@ export default class Choiceinput extends Input {
             variableName: "choiceOrder"
           },
           choiceChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroChoices",
             variableNames: ["selected"]
           },
@@ -408,7 +408,7 @@ export default class Choiceinput extends Input {
     stateVariableDefinitions.creditAchievedIfSubmit = {
       returnDependencies: () => ({
         choiceChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
           variableNames: ["selected", "credit"]
         },
@@ -477,7 +477,7 @@ export default class Choiceinput extends Input {
           variableName: "choiceOrder"
         },
         choiceChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
           variableNames: ["submitted"]
         },
@@ -533,7 +533,7 @@ export default class Choiceinput extends Input {
           variableName: "choiceOrder"
         },
         choiceChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChoices",
           variableNames: ["feedbacks"]
         },

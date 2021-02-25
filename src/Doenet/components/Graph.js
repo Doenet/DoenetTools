@@ -11,64 +11,49 @@ export default class Graph extends BlockComponent {
     properties.ymax = { default: 10, forRenderer: true };
     properties.width = { default: 300 };
     properties.height = { default: 300 };
-    properties.displayAxes = { default: true, forRenderer: true };
+    properties.displayXAxis = { default: true, forRenderer: true };
+    properties.displayYAxis = { default: true, forRenderer: true };
     properties.xlabel = { default: "", forRenderer: true };
     properties.ylabel = { default: "", forRenderer: true };
+    properties.showNavigation = { default: true, forRenderer: true };
     return properties;
   }
+
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addCurve = function ({ matchedChildren }) {
+      // add <curve> around strings, as long as they don't have points
+      if (matchedChildren[0].state.value.includes(",")) {
+        return { success: false }
+      }
+      return {
+        success: true,
+        newChildren: [{ componentType: "curve", children: matchedChildren }],
+      }
+    }
+
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: addCurve
+    });
+
+    return sugarInstructions;
+
+  }
+
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addCurve = function ({ activeChildrenMatched, dependencyValues }) {
-      // add <curve> around strings, as long as they don't have points
-      let curveChildren = [];
-      for (let child of dependencyValues.atLeastOneString) {
-        if (child.stateValues.value.includes(",")) {
-          return { success: false };
-        }
-        curveChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "curve", children: curveChildren }],
-      }
-    }
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        atLeastOneString: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroGraphical"],
-      replacementFunction: addCurve,
-    });
-
-    let atLeastZeroGraphical = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atLeastZeroGraphical",
       componentType: '_graphical',
       comparison: 'atLeast',
       number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "sugarXorGraph",
-      operator: "xor",
-      propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,
-    })
+    });
 
     return childLogic;
   }
@@ -81,7 +66,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         graphicalDescendants: {
-          dependencyType: "descendantIdentity",
+          dependencyType: "descendant",
           componentTypes: ["_graphical"]
         },
       }),
@@ -123,7 +108,7 @@ export default class Graph extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroGraphical"
         }
       }),

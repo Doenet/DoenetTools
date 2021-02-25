@@ -38,7 +38,7 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
     for (let key of entriesInArrays) {
       if (result[key]) {
         let ind = result[key].indexOf(oldName);
-        if(ind !== -1) {
+        if (ind !== -1) {
           result[key][ind] = newName
         }
       }
@@ -47,18 +47,28 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
     return result;
   }
 
-  // fourth, wrap inverse definition to change desired state variable value
+  // fourth, wrap inverse definition to change 
+  // desiredStateVariableValues and setStateVarible
   // from new name to old name
 
   let originalInverseDefinition = stateVarDef.inverseDefinition;
 
   stateVarDef.inverseDefinition = function (args) {
     let desiredStateVariableValues = args.desiredStateVariableValues;
-
     desiredStateVariableValues[oldName] = desiredStateVariableValues[newName];
     delete desiredStateVariableValues[newName];
 
-    return originalInverseDefinition(args);
+    let results = originalInverseDefinition(args);
+
+    if(results.success) {
+      for(let instruction of results.instructions) {
+        if(instruction.setStateVariable === oldName) {
+          instruction.setStateVariable = newName
+        }
+      }
+    }
+
+    return results;
 
   }
 

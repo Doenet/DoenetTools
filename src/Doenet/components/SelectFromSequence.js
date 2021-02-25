@@ -2,6 +2,7 @@ import Sequence from './Sequence';
 import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { numberToLetters, lettersToNumber } from './Sequence';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectfromsequence";
@@ -48,7 +49,7 @@ export default class SelectFromSequence extends Sequence {
     stateVariableDefinitions.excludedCombinations = {
       returnDependencies: () => ({
         excludeCombinationChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroExcludeCombinations",
           variableNames: ["values"]
         }
@@ -182,23 +183,11 @@ export default class SelectFromSequence extends Sequence {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component }) {
+  static createSerializedReplacements({ component, componentInfoObjects }) {
 
-    let replacementsWithInstructions = [];
+    let replacements = [];
 
-    let assignNames = component.doenetAttributes.assignNames;
-
-    for (let [ind, value] of component.stateValues.selectedValues.entries()) {
-
-      let name;
-      if (assignNames !== undefined) {
-        name = assignNames[ind];
-      }
-      let instruction = {
-        operation: "assignName",
-        name,
-        uniqueIdentifier: ind.toString()
-      }
+    for (let value of component.stateValues.selectedValues) {
 
       // if selectfromsequence is specified to be hidden
       // then replacements should be hidden as well
@@ -207,20 +196,22 @@ export default class SelectFromSequence extends Sequence {
         state.hide = true;
       }
 
-      let serializedReplacement = {
+      replacements.push({
         componentType: component.stateValues.selectedType,
         state
-      };
-
-
-      replacementsWithInstructions.push({
-        instructions: [instruction],
-        replacements: [serializedReplacement]
       });
 
     }
 
-    return { replacementsWithInstructions };
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: replacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    return { replacements: processResult.serializedComponents };
 
   }
 
@@ -292,7 +283,7 @@ export default class SelectFromSequence extends Sequence {
           for (let grandchild of child.children) {
             if (grandchild.componentType === "string") {
               foundValid = true;
-              if (["true", "t"].includes(grandchild.state.value.trim().toLowerCase())) {
+              if (grandchild.state.value.trim().toLowerCase() === "true") {
                 withReplacement = true;
               } else {
                 withReplacement = false;
