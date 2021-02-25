@@ -705,6 +705,11 @@ const DriveInfoPanel = function(props){
       console.error(driveUsers.contents)
       return null;}
 
+  let isOwner = false;
+  if (driveUsers.contents.usersRole === "Owner"){
+    isOwner = true;
+  }
+
   let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
   let admins = [];
@@ -730,10 +735,7 @@ const DriveInfoPanel = function(props){
 
 
 
-  let isOwner = false;
-  if (driveUsers.contents.usersRole === "Owner"){
-    isOwner = true;
-  }
+  
 
   for (let owner of driveUsers.contents.owners){
     let isSelected = false;
@@ -775,6 +777,23 @@ const DriveInfoPanel = function(props){
       isOwner={isOwner}
       />)
 
+  }
+  let deleteCourseButton = null;
+  if (isOwner){
+    deleteCourseButton = <>
+    <Button text="Delete Course" callback={()=>{
+    // alert("Delete Drive")
+    setDrivesInfo({
+      color:props.color,
+      label:driveLabel,
+      image:props.image,
+      newDriveId:props.driveId,
+      type:"delete drive"
+    })
+  }} />
+  <br />
+  <br />
+    </>
   }
 
   return <>
@@ -822,20 +841,7 @@ const DriveInfoPanel = function(props){
   />
   <br />
   <br />
-  <Button text="Delete Course" callback={()=>{
-    // alert("Delete Drive")
-    setDrivesInfo({
-      color:props.color,
-      label:driveLabel,
-      image:props.image,
-      newDriveId:props.driveId,
-      type:"delete drive"
-    })
-  }} />
-  <br />
-  <br />
-  
-  
+  {deleteCourseButton}
   <h3>Owners</h3>
   {owners}
   {addOwners}
