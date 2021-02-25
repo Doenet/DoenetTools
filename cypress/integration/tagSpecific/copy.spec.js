@@ -39,13 +39,13 @@ describe('Copy Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
       expect(components['/a'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/b'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/b'].replacements[0].stateValues.modifyIndirectly).eq(false);
       expect(components['/_math2'].stateValues.modifyIndirectly).eq(true);
       expect(components['/c'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/d'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/d'].replacements[0].stateValues.modifyIndirectly).eq(true);
       expect(components['/_point1'].stateValues.label).eq("A");
       expect(components['/e'].replacements[0].stateValues.label).eq("A");
-      expect(components['/f'].replacements[0].replacements[0].stateValues.label).eq("A");
+      expect(components['/f'].replacements[0].stateValues.label).eq("A");
 
     })
 
@@ -81,17 +81,17 @@ describe('Copy Tag Tests', function () {
       expect(components['/_math1'].stateValues.modifyIndirectly).eq(false);
       expect(components['/r1'].replacements[0].stateValues.modifyIndirectly).eq(false);
       expect(components['/r2'].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r3'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r4'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r5'].replacements[0].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(true);
-      expect(components['/r6'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/r7'].replacements[0].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/r3'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r4'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r5'].replacements[0].stateValues.modifyIndirectly).eq(true);
+      expect(components['/r6'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/r7'].replacements[0].stateValues.modifyIndirectly).eq(false);
 
       expect(components['/A'].stateValues.label).eq("A");
       expect(components['/A2'].replacements[0].stateValues.label).eq("A");
       expect(components['/B'].replacements[0].stateValues.label).eq("B");
-      expect(components['/C'].replacements[0].replacements[0].stateValues.label).eq("C");
-      expect(components['/C2'].replacements[0].replacements[0].replacements[0].stateValues.label).eq("C");
+      expect(components['/C'].replacements[0].stateValues.label).eq("C");
+      expect(components['/C2'].replacements[0].stateValues.label).eq("C");
 
     })
   });
@@ -148,9 +148,9 @@ describe('Copy Tag Tests', function () {
       expect(components['/frmt2'].replacements[0].stateValues.value).eq("text");
 
       // all attributes copied when don't use prop
-      expect(components['/frmt3'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/frmt3'].replacements[0].replacements[0].stateValues.value).eq("text");
-      expect(components['/frmt3'].replacements[0].replacements[0].stateValues.hide).eq(true);
+      expect(components['/frmt3'].replacements[0].stateValues.modifyIndirectly).eq(false);
+      expect(components['/frmt3'].replacements[0].stateValues.value).eq("text");
+      expect(components['/frmt3'].replacements[0].stateValues.hide).eq(true);
 
       expect(components['/A'].stateValues.label).eq("A");
       expect(components['/cA'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
@@ -176,7 +176,10 @@ describe('Copy Tag Tests', function () {
     
     <graph>
       <copy name="p2" tname="_point1"/>
-      <point>(<copy prop="y" tname="p2"/>, <copy prop="x1" tname="p2"/>)</point>
+      <point>
+        <x><copy prop="y" tname="p2"/></x>
+        <y><copy prop="x1" tname="p2"/></y>
+      </point>
     </graph>
     `}, "*");
     });
@@ -283,7 +286,7 @@ describe('Copy Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let vector2 = components["/d1"].replacements[0];
-      let vector3 = components["/d2"].replacements[0].replacements[0];
+      let vector3 = components["/d2"].replacements[0];
 
       cy.log(`initial positions`);
       cy.window().then((win) => {
@@ -412,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence><from>a</from><count><copy prop="value" tname="_mathinput1"/></count></sequence>
+        <sequence from="a" count="$_mathinput1" />
       </aslist>
     </p>
     
@@ -432,7 +435,7 @@ describe('Copy Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let p2Anchor = cesc("#" + components["/p2"].replacements[0].componentName);
-      let p3Anchor = cesc("#" + components["/p3"].replacements[0].replacements[0].componentName);
+      let p3Anchor = cesc("#" + components["/p3"].replacements[0].componentName);
 
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('')

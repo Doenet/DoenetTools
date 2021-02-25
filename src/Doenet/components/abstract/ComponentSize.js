@@ -63,17 +63,17 @@ export default class ComponentSize extends BaseComponent {
       additionalStateVariablesDefined: ["isAbsolute"],
       returnDependencies: () => ({
         componentSizeChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneComponentSize",
           variableNames: ["value", "isAbsolute"]
         },
         numberChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneNumber",
           variableNames: ["value"]
         },
         stringChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneString",
           variableNames: ["value"]
         }

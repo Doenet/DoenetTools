@@ -56,7 +56,7 @@ export class StyleDefinition extends BaseComponent {
 
         let dependencies = {
           styleNumberChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneStyleNumber",
             variableNames: ["value"]
           },
@@ -64,7 +64,7 @@ export class StyleDefinition extends BaseComponent {
 
         for (let styleComponent of styleComponents) {
           dependencies[`${styleComponent}Child`] = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: `atMostOne${styleComponent}`,
             variableNames: ["value"]
           }
@@ -127,7 +127,7 @@ export class StyleDefinitions extends BaseComponent {
     stateVariableDefinitions.nDefinitions = {
       returnDependencies: () => ({
         styleDefinitionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroStyleDefinitions",
         },
       }),
@@ -155,7 +155,7 @@ export class StyleDefinitions extends BaseComponent {
 
         for (let arrayKey of arrayKeys) {
           dependenciesByKey.styleDefinitionChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroStyleDefinitions",
             variableNames: ["value"],
             childIndices: [arrayKey]

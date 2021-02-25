@@ -263,7 +263,7 @@ describe('Choiceinput Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
       let choice3Anchor = cesc('#' + components["/copy2"].replacements[0].componentName);
-      let choice4Anchor = cesc('#' + components["/copy3"].replacements[0].replacements[0].componentName);
+      let choice4Anchor = cesc('#' + components["/copy3"].replacements[0].componentName);
 
       let choices;
       cy.window().then((win) => {
@@ -293,7 +293,7 @@ describe('Choiceinput Tag Tests', function () {
         expect(choices[5]).not.eq(choices[4]);
         expect(components['/copy'].replacements[0].stateValues.choiceTexts).eqls(choices);
         expect(components['/copy2'].replacements[0].stateValues.choiceTexts).eqls(choices);
-        expect(components['/copy3'].replacements[0].replacements[0].stateValues.choiceTexts).eqls(choices);
+        expect(components['/copy3'].replacements[0].stateValues.choiceTexts).eqls(choices);
 
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
@@ -304,9 +304,9 @@ describe('Choiceinput Tag Tests', function () {
         expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([])
         expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([])
         // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([])
-        expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedValues).eqls([])
-        expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedIndices).eqls([])
-        // expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedoriginalindices).eqls([])
+        expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([])
+        expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([])
+        // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([])
 
         expect(components['/_choiceinput1'].stateValues.inline).eq(true);
         expect(components['/_choiceinput1'].stateValues.fixedOrder).eq(false);
@@ -314,8 +314,8 @@ describe('Choiceinput Tag Tests', function () {
         expect(components['/copy'].replacements[0].stateValues.fixedOrder).eq(false);
         expect(components['/copy2'].replacements[0].stateValues.inline).eq(false);
         expect(components['/copy2'].replacements[0].stateValues.fixedOrder).eq(false);
-        expect(components['/copy3'].replacements[0].replacements[0].stateValues.inline).eq(false);
-        expect(components['/copy3'].replacements[0].replacements[0].stateValues.fixedOrder).eq(false);
+        expect(components['/copy3'].replacements[0].stateValues.inline).eq(false);
+        expect(components['/copy3'].replacements[0].stateValues.fixedOrder).eq(false);
       });
 
 
@@ -345,9 +345,9 @@ describe('Choiceinput Tag Tests', function () {
           expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
           expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
           // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
 
         });
       }
@@ -378,9 +378,9 @@ describe('Choiceinput Tag Tests', function () {
           expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
           expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
           // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
 
         });
       }
@@ -411,9 +411,9 @@ describe('Choiceinput Tag Tests', function () {
           expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
           expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
           // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
 
         });
       }
@@ -443,10 +443,10 @@ describe('Choiceinput Tag Tests', function () {
           // expect(components['/copy'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
           expect(components['/copy2'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
           expect(components['/copy2'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy2'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedValues).eqls([choices[i]])
-          expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedIndices).eqls([i + 1])
-          // expect(components['/copy3'].replacements[0].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
+          // expect(components['/copy2'].replacements[0].stateVsalues.selectedoriginalindices).eqls([origInd])
+          expect(components['/copy3'].replacements[0].stateValues.selectedValues).eqls([choices[i]])
+          expect(components['/copy3'].replacements[0].stateValues.selectedIndices).eqls([i + 1])
+          // expect(components['/copy3'].replacements[0].stateValues.selectedoriginalindices).eqls([origInd])
 
         });
       }
@@ -463,7 +463,7 @@ describe('Choiceinput Tag Tests', function () {
     <choiceinput>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy tname="lambda2" />+<copy tname="twice" /></math>.</choice>
-      <choice>The sequence is <aslist><sequence>1,5</sequence></aslist>.</choice>
+      <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
       <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
     </choiceinput>
 

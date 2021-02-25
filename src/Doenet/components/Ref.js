@@ -3,31 +3,13 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Ref extends InlineComponent {
   static componentType = "ref";
 
-  static includeBlankStringChildren = true;
-
-  // static previewSerializedComponent({ serializedComponent, sharedParameters, components }) {
-  //   if (serializedComponent.children === undefined) {
-  //     return;
-  //   }
-
-  //   // TODO: what is this for?  Do we need to keep it?
-  //   for (let child of serializedComponent.children) {
-  //     if (child.componentType === "text") {
-  //       if (child.doenetAttributes !== undefined && child.doenetAttributes.createdFromProperty) {
-  //         // found a text that was given as a property
-  //         // change it to a texttype
-  //         child.componentType = "texttype";
-  //       }
-  //       break;
-  //     }
-  //   }
-  // }
+  static acceptTname = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.texttype = { default: "type-global" };
     properties.uri = { default: null, forRenderer: true }
-    properties.type = { default: null, forRenderer: true }
+    // properties.type = { default: null, forRenderer: true }
     return properties;
   }
 
@@ -35,25 +17,13 @@ export default class Ref extends InlineComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atMostOneTname = childLogic.newLeaf({
-      name: 'atMostOneTname',
-      componentType: 'tname',
-      comparison: "atMost",
-      number: 1,
-    });
-
-    let atLeastZeroAnything = childLogic.newLeaf({
+    // for the link text
+    childLogic.newLeaf({
       name: "atLeastZeroAnything",
       componentType: '_base',
       comparison: 'atLeast',
       number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "tnameAndText",
-      operator: "and",
-      propositions: [atMostOneTname, atLeastZeroAnything],
-      setAsBase: true
+      setAsBase: true,
     });
 
     return childLogic;
@@ -66,22 +36,41 @@ export default class Ref extends InlineComponent {
 
     stateVariableDefinitions.targetComponent = {
       returnDependencies: () => ({
-        tnameChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneTname",
-          variableNames: ["targetComponent"],
+        targetComponent: {
+          dependencyType: "targetComponent",
         },
       }),
-      defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.tnameChild.length === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              targetComponent: { variablesToCheck: "targetComponent" }
-            }
+        return {
+          newValues: {
+            targetComponent: dependencyValues.targetComponent
           }
         }
-        return { newValues: { targetComponent: dependencyValues.tnameChild[0].stateValues.targetComponent } }
+      },
+    };
+    
+
+    stateVariableDefinitions.targetInactive = {
+      stateVariablesDeterminingDependencies: ["targetComponent"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.targetComponent) {
+          return {
+            targetIsInactiveCompositeReplacement: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.targetComponent.componentName,
+              variableName: "isInactiveCompositeReplacement"
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
+          }
+        }
       },
     };
 
@@ -143,7 +132,7 @@ export default class Ref extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything",
           variableNames: ["text"],
           variablesOptional: true
@@ -174,7 +163,7 @@ export default class Ref extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
         }
       }),

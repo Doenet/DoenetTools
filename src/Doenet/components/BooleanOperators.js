@@ -1,14 +1,11 @@
 import BooleanBaseOperator from './abstract/BooleanBaseOperator';
+import BooleanBaseOperatorOneInput from './abstract/BooleanBaseOperatorOneInput';
 
-export class Not extends BooleanBaseOperator {
+export class Not extends BooleanBaseOperatorOneInput {
   static componentType = "not";
 
-  static applyBooleanOperator(values) {
-    if(values.length !== 1) {
-      console.warn("Not requires exactly one boolean child")
-      return null;
-    }
-    return !values[0];
+  static applyBooleanOperator(value) {
+    return !value;
   }
 }
 

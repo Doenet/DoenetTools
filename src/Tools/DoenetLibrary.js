@@ -665,13 +665,19 @@ function NewUser(props){
 
     //TODO: when set async available replace this.
     function callback(resp){
-      props.setDriveUsers({
-        driveId:props.driveId,
-        type:`${props.type} step 2`,
-        email,
-        screenName:resp.screenName,
-        userId:resp.userId
-      })
+
+      if (resp.success){
+        props.setDriveUsers({
+          driveId:props.driveId,
+          type:`${props.type} step 2`,
+          email,
+          screenName:resp.screenName,
+          userId:resp.userId
+        })
+      }else{
+        console.log(">>>Toast ",resp.message)
+      }
+     
     }
     
   }

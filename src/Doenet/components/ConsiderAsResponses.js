@@ -26,7 +26,7 @@ export default class ConsiderAsResponses extends BlockComponent {
     stateVariableDefinitions.childrenWithNValues = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "anything",
           variableNames: ["nValues"],
           variablesOptional: true,
@@ -40,7 +40,7 @@ export default class ConsiderAsResponses extends BlockComponent {
     stateVariableDefinitions.childrenAsResponses = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "anything",
           variableNames: ["value", "values", "componentType"],
           variablesOptional: true,

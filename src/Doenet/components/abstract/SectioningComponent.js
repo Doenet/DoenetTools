@@ -6,6 +6,8 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariantIfVariantControlChild = true;
 
+  static get stateVariablesShadowedForReference() { return ["title"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.aggregateScores = { default: false };
@@ -35,6 +37,7 @@ export default class SectioningComponent extends BlockComponent {
       componentType: "title",
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
     })
 
     let anything = childLogic.newLeaf({
@@ -66,7 +69,7 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "countAmongSiblingsOfSameType"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: ["enumeration"]
         }
@@ -94,7 +97,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
         },
       }),
@@ -113,7 +116,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
           variableNames: ["text"],
         },
@@ -173,7 +176,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["_sectioningcomponent", "answer"],
           variableNames: [
             "scoredDescendants",
@@ -204,7 +207,7 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendantIdentity",
+          dependencyType: "descendant",
           componentTypes: ["answer"],
           recurseToMatchedChildren: false,
         }
@@ -218,7 +221,7 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["answer"],
           variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
@@ -284,8 +287,8 @@ export default class SectioningComponent extends BlockComponent {
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: descendant,
+              dependencyType: "stateVariable",
+              componentName: descendant.componentName,
               variableName: "creditAchieved"
             }
           }
@@ -337,8 +340,8 @@ export default class SectioningComponent extends BlockComponent {
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchievedIfSubmit" + ind] = {
-              dependencyType: "componentStateVariable",
-              componentIdentity: descendant,
+              dependencyType: "stateVariable",
+              componentName: descendant.componentName,
               variableName: "creditAchievedIfSubmit"
             }
           }
@@ -376,12 +379,12 @@ export default class SectioningComponent extends BlockComponent {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneVariantControl",
           variableNames: ["selectedVariantNumber"]
         },
         variantDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
@@ -420,14 +423,50 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.collapsible = {
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition() {
+        return { newValues: { collapsible: false } }
+      }
+    }
+
+    stateVariableDefinitions.open = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: true,
+      returnDependencies: () => ({}),
+      definition() {
+        return {
+          useEssentialOrDefaultValue: {
+            open: {
+              variablesToCheck: ["open"]
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "open",
+            value: desiredStateVariableValues.open
+          }]
+        }
+      }
+    }
+
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle"
         },
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anything"
         }
       }),
@@ -475,7 +514,7 @@ export default class SectioningComponent extends BlockComponent {
           } else {
             let chosenAnswer = null;
             if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
-              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber-1];
+              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber - 1];
             } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
               let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
               chosenAnswer = dependencyValues.answerDescendants[answerInd];
@@ -517,7 +556,7 @@ export default class SectioningComponent extends BlockComponent {
           variableName: "creditAchieved"
         },
         sectionAncestor: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           componentType: "_sectioningcomponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
@@ -567,7 +606,9 @@ export default class SectioningComponent extends BlockComponent {
   }
 
   actions = {
-    submitAllAnswers: this.submitAllAnswers.bind(this)
+    submitAllAnswers: this.submitAllAnswers.bind(this),
+    revealSection: this.revealSection.bind(this),
+    closeSection: this.closeSection.bind(this),
   }
 
   submitAllAnswers() {
@@ -589,6 +630,44 @@ export default class SectioningComponent extends BlockComponent {
         actionName: "submitAnswer"
       })
     }
+  }
+
+  revealSection() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: true
+      }],
+      event: {
+        verb: "viewed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
+  }
+
+  closeSection() {
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "open",
+        value: false
+      }],
+      event: {
+        verb: "closed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
+    })
   }
 
   static setUpVariant({

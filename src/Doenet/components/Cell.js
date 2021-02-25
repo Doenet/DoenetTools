@@ -64,7 +64,7 @@ export default class Cell extends BaseComponent {
     stateVariableDefinitions.onlyMathChild = {
       returnDependencies: () => ({
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "oneMathAndNothingElse"
         },
       }),
@@ -81,7 +81,7 @@ export default class Cell extends BaseComponent {
       defaultValue: "",
       returnDependencies: () => ({
         children: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathXorAnything",
           variableNames: ["text"],
           variablesOptional: true,
@@ -143,7 +143,7 @@ export default class Cell extends BaseComponent {
         if (stateValues.onlyMathChild) {
           return {
             mathChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "oneMathAndNothingElse",
               variableNames: ["value"],
             },
@@ -224,7 +224,7 @@ export default class Cell extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "mathXorAnything"
         }
       }),

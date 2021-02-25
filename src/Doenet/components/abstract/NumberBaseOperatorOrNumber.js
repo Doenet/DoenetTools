@@ -18,6 +18,30 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
   }
 
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
+
+    let breakStringIntoNumbersByCommas = function ({ matchedChildren }) {
+      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
+        componentType: "number",
+        state: { value: Number(x) }
+      }));
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+    }
+
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: breakStringIntoNumbersByCommas
+    });
+
+    return sugarInstructions;
+
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -29,48 +53,14 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
 
     childLogic.deleteAllLogic();
 
-    let breakStringIntoNumbersByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.exactlyOneString[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
-        componentType: "number",
-        state: { value: Number(x) }
-      }));
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        exactlyOneString: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroNumbers"],
-      replacementFunction: breakStringIntoNumbersByCommas,
-    });
-
-    let atLeastZeroNumbers = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atLeastZeroNumbers",
       componentType: 'number',
       comparison: "atLeast",
       number: 0,
+      setAsBase: true,
     });
 
-    childLogic.newOperator({
-      name: "SugarXorNumbers",
-      operator: "xor",
-      propositions: [exactlyOneString, atLeastZeroNumbers],
-      setAsBase: true,
-    })
     return childLogic;
   }
 
@@ -89,7 +79,7 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
       } else {
         return {
           atLeastZeroNumbers: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroNumbers",
             variableNames: ["value"],
           },

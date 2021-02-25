@@ -27,26 +27,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../original" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace>$$(../original)(<copySource/>)</template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../clamp01" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copySource/></input></evaluate></template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../clampn35" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace>$$(../clampn35)(<copySource/>)</template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -62,15 +56,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements;
+      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements;
+      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements;
+      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements[0].replacements;
+      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements[0].replacements;
+      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
@@ -123,26 +117,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../original" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace>$$(../original)(<copySource/>)</template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../wrap01" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copySource/></input></evaluate></template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template>
-        <evaluate><copy tname="../wrapn23" /><copyFromSubs/></evaluate>
-      </template>
-      <substitutions><sequence step="0.2">-2,2</sequence></substitutions>
+      <template newNamespace>$$(../wrapn23)(<copySource/>)</template>
+      <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -158,15 +146,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements;
+      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements;
+      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements;
+      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements[0].replacements;
+      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements[0].replacements;
+      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
@@ -217,30 +205,33 @@ describe('Function Operator Tag Tests', function () {
     <p><m>c =</m> <mathinput name="c" prefill="1" /></p>
     <p><m>x =</m> <mathinput name="x" prefill="x" /></p>
 
-    <p><m>f(<copy prop="value" tname="x"/>) =
-    <function name="f">
-      <variable><copy prop="value" tname="x" /></variable>
+    <p><m>f($x) =
+    <function name="f" variable="$x">
       <formula simplify>
         <copy prop="value" tname="a"/>
-         sin(<copy prop="value" tname="b"/><copy prop="value" tname="x"/> + <copy prop="value" tname="c"/>)
+         sin(<copy prop="value" tname="b"/>$x + <copy prop="value" tname="c"/>)
       </formula>
     </function>
     </m></p>
 
-    <p><m>f'(<copy prop="value" tname="x"/>) =
-    <derivative name="g"><copy tname="f"/></derivative>
+    <p><m>f'($x) =
+    <derivative name="g">$$f</derivative>
     </m></p>
 
     <graph>
-      <copy tname="f"/>
-      <copy tname="g"/>
+      $$f
+      $$g
       <point>
-        <constrainTo><copy tname="f" /></constrainTo>
-        (3,4)
+        <constraints>
+          <constrainTo>$$f</constrainTo>
+        </constraints>
+        <x>3</x><y>4</y>
       </point>
       <point>
-        <constrainTo><copy tname="g" /></constrainTo>
-        (3,4)
+        <constraints>
+          <constrainTo>$$g</constrainTo>
+        </constraints>
+        <x>3</x><y>4</y>
       </point>
     </graph>
 
@@ -349,10 +340,10 @@ describe('Function Operator Tag Tests', function () {
       <function name="f2" variable="y">e^(2y)</function>
       <function name="f3">xyz</function>
       <function name="f4" variable="z">xyz</function>
-      <derivative name="d1">x^2</derivative>
-      <derivative name="d2"><math>x^2</math></derivative>
-      <derivative name="d3">x^2sin(z)</derivative>
-      <derivative variable="z" name="d4">x^2sin(z)</derivative>
+      <derivative name="d1"><function>x^2</function></derivative>
+      <derivative name="d2"><formula><math>x^2</math></formula></derivative>
+      <derivative name="d3"><function><formula>x^2sin(z)</formula></function></derivative>
+      <derivative name="d4" variable="z">x^2sin(z)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
       <derivative name="d6"><copy tname="f2" /></derivative>
       <derivative name="d7"><copy tname="f3" /></derivative>
@@ -384,8 +375,8 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  // check to make sure fixed bug where wasn't displaying inside <m>
   it('derivative displayed inside <m>', () => {
-    // check to make fixed bug where wasn't displaying inside <m>
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
