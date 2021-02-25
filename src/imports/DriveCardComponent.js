@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
-import Drive, {
+import Drive, { 
   fetchDrivesSelector,
 } from "./Drive";
 import {
@@ -75,19 +75,19 @@ const DriveCardContainer = React.memo((props) => {
       history.push("?" + encodeParams(newParams));
     }
   };
-  const [on, toggle] = useState(false);
+  const [on, toggle] = useState(false);  
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
-  // Drive selection
+  // Drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
    if (!e.shiftKey && !e.metaKey){          // one item
     setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){      // range to item
-
+  }else if (e.shiftKey && !e.metaKey){      // range to item 
+    
     setDrivecardSelection((old) => {
       if(old.length > 0)
       {
@@ -118,12 +118,12 @@ const DriveCardContainer = React.memo((props) => {
         }
         //  console.log(">>>> final array",finalArray);
         return finalArray;
-
+        
       }
       else{
         return [...old,item];
       }
-    });
+    }); 
   }else if (!e.shiftKey && e.metaKey){   // add item
     setDrivecardSelection((old) =>{
       let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
