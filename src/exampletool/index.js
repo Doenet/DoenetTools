@@ -6,7 +6,7 @@ import { BreadcrumbProvider } from "../imports/Breadcrumb";
 import { RecoilRoot } from "recoil";
 
 import DoenetExampleTool from "../Tools/DoenetExampleTool";
-import LayerRoot from "../imports/Tool/LayerRoot";
+import ToolRoot from "../imports/Tool/ToolRoot";
 
 ReactDOM.render(
   <DropTargetsProvider>
@@ -17,9 +17,9 @@ ReactDOM.render(
             <Route
               path="/"
               render={(routeprops) => (
-                <LayerRoot
+                <ToolRoot
                   route={{ ...routeprops }}
-                  baseLayer={<DoenetExampleTool key={"BaseLayer"} />}
+                  tool={<DoenetExampleTool key={"BaseTool"} />}
                 />
               )}
             />

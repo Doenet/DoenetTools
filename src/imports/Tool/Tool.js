@@ -14,7 +14,7 @@ import ContentPanel from "./Panels/ContentPanel";
 import MainPanel from "./Panels/MainPanel";
 import SupportPanel from "./Panels/SupportPanel";
 import MenuPanel from "./Panels/MenuPanel";
-import { useStackId } from "./LayerRoot";
+import { useStackId } from "./ToolRoot";
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -37,12 +37,14 @@ const implementedToolParts = [
   "menuPanel",
 ];
 
-export const useLayerStack = (children) => {
+export default function Tool({ children, isOverlay }) {
   const stackId = useStackId();
   const [panels, setPanels] = useState({});
 
   useEffect(() => {
     console.log(">>>Generating elemnts: ", stackId);
+
+    //lowercase names logic
     var toolParts = {};
 
     if (children) {
@@ -133,15 +135,6 @@ export const useLayerStack = (children) => {
     setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
   }, []);
 
-  return [panels, stackId];
-};
-
-export default function Tool({ children, isOverlay }) {
-  const [
-    { headerPanel, navPanel, mainPanel, supportPanel, menuPanel },
-    stackId,
-  ] = useLayerStack(children);
-
   // console.log(">>>Tool refresh", children, stackId);
 
   // const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
@@ -151,8 +144,6 @@ export default function Tool({ children, isOverlay }) {
   //   unique: true,
   //   reset: true,
   // });
-
-  //lowercase names logic
 
   return (
     <ToolContainer $isOverlay={isOverlay ?? false}>

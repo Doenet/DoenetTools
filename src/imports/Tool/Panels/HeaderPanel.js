@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { SupportVisiblitySwitch } from "./SupportPanel";
-import { useLayerControlHelper, useStackId } from "../LayerRoot";
+import { useToolControlHelper, useStackId } from "../ToolRoot";
 import DoenetHeader from "../../../Tools/DoenetHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +40,7 @@ const ExitOverlayButton = styled.button`
 `;
 
 export default function HeaderPanel({ title, children }) {
-  const { close } = useLayerControlHelper();
+  const { close } = useToolControlHelper();
   const stackId = useStackId();
   //User profile logic
   const [profile, setProfile] = useState({});

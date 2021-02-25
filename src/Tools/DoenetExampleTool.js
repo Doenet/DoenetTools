@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Tool from "../imports/Tool/Tool";
-import { useLayerControlHelper } from "../imports/Tool/LayerRoot";
+import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 import Drive from "../imports/Drive";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 // import { useRecoilValue } from "recoil";
@@ -26,7 +26,7 @@ import { BreadcrumbContainer } from "../imports/Breadcrumb";
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
 
-  const { open } = useLayerControlHelper();
+  const { open } = useToolControlHelper();
 
   return (
     <Tool>

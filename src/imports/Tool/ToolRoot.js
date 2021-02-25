@@ -16,7 +16,7 @@ const layerStackAtom = atom({
   default: [],
 });
 
-export const useLayerControlHelper = () => {
+export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
   const open = (name, branchId, courseId, assignmentId) => {
     switch (name.toLowerCase()) {
@@ -86,12 +86,12 @@ export const useStackId = () => {
   return stackId;
 };
 
-export default function LayerRoot({ baseLayer }) {
+export default function LayerRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
 
   return (
     <>
-      {baseLayer}
+      {tool}
       {overlays.map((layer) => layer)}
     </>
   );

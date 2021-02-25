@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Tool from "../Tool";
-import { useLayerControlHelper } from "../LayerRoot";
+import { useToolControlHelper } from "../ToolRoot";
 
 export default function Editor({ contentId, branchId }) {
   const [state, setState] = useState(0);
-  const { open } = useLayerControlHelper();
+  const { open } = useToolControlHelper();
   console.log(">>>editor");
   // useEffect((contentId, branchId) => {
   //   // init code

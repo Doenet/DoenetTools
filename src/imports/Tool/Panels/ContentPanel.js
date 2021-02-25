@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { supportVisible } from "./SupportPanel";
-import { useStackId } from "../LayerRoot";
+import { useStackId } from "../ToolRoot";
 import { clearAllSelections } from "../../Drive";
 
 const ContentPanelContainer = styled.div`
