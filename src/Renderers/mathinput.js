@@ -32,14 +32,14 @@ export default class MathInput extends DoenetRenderer {
   constructor(props) {
     super(props);
 
-    this.state = {latex: ""};
+    this.state = { latex: "" };
     // const [latex, setLatex] = useState("");
     // const config = {
     //   autoCommands: "sqrt pi theta",
     //   autoOperatorNames: "cos sin"
     // };
 
-    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handlePressEnter = this.handlePressEnter.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
@@ -49,19 +49,19 @@ export default class MathInput extends DoenetRenderer {
     // this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.value;
-    this.textValue = this.doenetSvData.value.toString();
+    this.latexValue = stripLatex(this.doenetSvData.value.toLatex());
 
     // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     // this.inputRef = React.createRef();
     // this.mathInputRef = React.createRef();
-    
+
 
     this.valueToRevertTo = this.mathExpression;
-    this.textValueToRevertTo = this.textValue;
+    this.latexValueToRevertTo = this.latexValue;
     // this.previewValue = "";
 
     //Remove __ value so it doesn't show
-    if (this.textValue === '\uFF3F') { this.textValue = ""; }
+    if (this.latexValue === '\uFF3F') { this.latexValue = ""; }
 
   }
 
@@ -88,7 +88,7 @@ export default class MathInput extends DoenetRenderer {
   }
 
   updateImmediateValueFromLatex(text) {
-    this.textValue = text;
+    this.latexValue = text;
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
     if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
       this.mathExpression = newMathExpression;
@@ -97,21 +97,21 @@ export default class MathInput extends DoenetRenderer {
       });
     }
 
-      // //evalute math expression
-      //   let nextPreviewValue = newMathExpression.toLatex();
+    // //evalute math expression
+    //   let nextPreviewValue = newMathExpression.toLatex();
 
-      //   if (nextPreviewValue === "＿"){
-      //     //Error
-      //     clearTimeout(this.timer)
-      //     this.timer = setTimeout(()=>{
-      //       this.previewValue = "Err";
-      //       this.forceUpdate();
-      //     },1000)
-      //   }else{
-      //     //No Error
-      //     clearTimeout(this.timer)
-      //     this.previewValue = nextPreviewValue;
-      //   }
+    //   if (nextPreviewValue === "＿"){
+    //     //Error
+    //     clearTimeout(this.timer)
+    //     this.timer = setTimeout(()=>{
+    //       this.previewValue = "Err";
+    //       this.forceUpdate();
+    //     },1000)
+    //   }else{
+    //     //No Error
+    //     clearTimeout(this.timer)
+    //     this.previewValue = nextPreviewValue;
+    //   }
 
 
   }
@@ -153,24 +153,21 @@ export default class MathInput extends DoenetRenderer {
   //   })
   // }
 
-  handleKeyPress(e) {
-    if (e.key === "Enter") {
-      this.valueToRevertTo = this.doenetSvData.immediateValue;
-      this.textValueToRevertTo = this.textValue;
-      if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-        this.actions.updateValue();
-      }
-      if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        this.actions.submitAnswer();
-      }
-      this.forceUpdate();
+  handlePressEnter(e) {
+    this.valueToRevertTo = this.doenetSvData.immediateValue;
+    this.latexValueToRevertTo = this.latexValue;
+    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+      this.actions.updateValue();
     }
+    if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
+      this.actions.submitAnswer();
+    }
+    this.forceUpdate();
   }
 
   handleKeyDown(e) {
     if (e.key === "Escape") {
       if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
-        this.textValue = this.textValueToRevertTo;
         this.mathExpression = this.valueToRevertTo;
         this.actions.updateImmediateValue({
           mathExpression: this.valueToRevertTo
@@ -188,7 +185,7 @@ export default class MathInput extends DoenetRenderer {
   handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.textValueToRevertTo = this.textValue;
+    this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
     }
@@ -219,14 +216,14 @@ export default class MathInput extends DoenetRenderer {
 
     if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
       this.mathExpression = this.doenetSvData.value;
-      this.textValue = this.mathExpression.toString();
-      if (this.textValue === '\uFF3F') {
-        this.textValue = "";
+      this.latexValue = stripLatex(this.mathExpression.toLatex());
+      if (this.latexValue === '\uFF3F') {
+        this.latexValue = "";
       }
       this.valueToRevertTo = this.doenetSvData.value;
-      this.textValueToRevertTo = this.textValue;
+      this.latexValueToRevertTo = this.latexValue;
 
-    } 
+    }
 
     let checkWorkStyle = {
       position: "relative",
@@ -241,78 +238,78 @@ export default class MathInput extends DoenetRenderer {
       padding: "2px",
       zIndex: "0",
     }
-  //Assume we don't have a check work button
-  let checkWorkButton = null;
-  if (this.doenetSvData.includeCheckWork) {
+    //Assume we don't have a check work button
+    let checkWorkButton = null;
+    if (this.doenetSvData.includeCheckWork) {
 
-    if (this.validationState === "unvalidated") {
-      checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-      checkWorkButton = <button
-        id={this.componentName + '_submit'}
-        tabIndex="0"
-        ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-        style={checkWorkStyle}
-        onClick={this.actions.submitAnswer}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            this.actions.submitAnswer();
+      if (this.validationState === "unvalidated") {
+        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkButton = <button
+          id={this.componentName + '_submit'}
+          tabIndex="0"
+          ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          style={checkWorkStyle}
+          onClick={this.actions.submitAnswer}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              this.actions.submitAnswer();
+            }
+          }}
+        >
+          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        </button>
+      } else {
+        if (this.doenetSvData.showCorrectness) {
+          if (this.validationState === "correct") {
+            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+            checkWorkButton = <span
+              id={this.componentName + '_correct'}
+              style={checkWorkStyle}
+              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </span>
+          } else if (this.validationState === "partialcorrect") {
+            //partial credit
+
+            let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+            let partialCreditContents = `${percent} %`;
+            checkWorkStyle.width = "50px";
+
+            checkWorkStyle.backgroundColor = "#efab34";
+            checkWorkButton = <span
+              id={this.componentName + '_partial'}
+              style={checkWorkStyle}
+              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+            >{partialCreditContents}</span>
+          } else {
+            //incorrect
+            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+            checkWorkButton = <span
+              id={this.componentName + '_incorrect'}
+              style={checkWorkStyle}
+              ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+            ><FontAwesomeIcon icon={faTimes} /></span>
+
           }
-        }}
-      >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
-    } else {
-      if (this.doenetSvData.showCorrectness) {
-        if (this.validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = <span
-            id={this.componentName + '_correct'}
-            style={checkWorkStyle}
-            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </span>
-        } else if (this.validationState === "partialcorrect") {
-          //partial credit
-
-          let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
-          let partialCreditContents = `${percent} %`;
-          checkWorkStyle.width = "50px";
-
-          checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
-            id={this.componentName + '_partial'}
-            style={checkWorkStyle}
-            ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          >{partialCreditContents}</span>
         } else {
-          //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          // showCorrectness is false
+          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkWorkButton = <span
-            id={this.componentName + '_incorrect'}
+            id={this.componentName + '_saved'}
             style={checkWorkStyle}
             ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-          ><FontAwesomeIcon icon={faTimes} /></span>
+          ><FontAwesomeIcon icon={faCloud} /></span>
 
         }
-      } else {
-        // showCorrectness is false
-        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
-          id={this.componentName + '_saved'}
-          style={checkWorkStyle}
-          ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-        ><FontAwesomeIcon icon={faCloud} /></span>
-
       }
     }
-  }
-  return <React.Fragment>
-    <a name={this.componentName} />
-    
-    
-      <span className="textInputSurroundingBox"  id={this.componentName}>
-      {/* <input
+    return <React.Fragment>
+      <a name={this.componentName} />
+
+
+      <span className="textInputSurroundingBox" id={this.componentName}>
+        {/* <input
         key={inputKey}
         id={inputKey}
         ref = {this.inputRef}
@@ -333,18 +330,25 @@ export default class MathInput extends DoenetRenderer {
           // position: "absolute",
         }}
       /> */}
-      <span style = {{margin: "10px"}}>
-        <EditableMathField
-          latex={""}
-          config={{autoCommands: "sqrt pi theta integral"}}//more commands go here
-          onChange={(mathField) => {
-            this.onChangeHandler(mathField.latex())
-          }}
-        />
-        {/* <p>{this.mathExpression.toLatex()}</p> */}
-      </span>
-      {checkWorkButton}
-      {/* {this.textValue ? 
+        <span style={{ margin: "10px" }}>
+          <EditableMathField
+            latex={this.latexValue}
+            config={{
+              autoCommands: "sqrt pi theta integral",
+              handlers: {
+                enter: this.handlePressEnter
+              }
+            }}//more commands go here
+            onChange={(mathField) => {
+              this.onChangeHandler(mathField.latex())
+            }}
+            onBlur={this.handleBlur}
+            onFocus={this.handleFocus}
+          />
+          {/* <p>{this.mathExpression.toLatex()}</p> */}
+        </span>
+        {checkWorkButton}
+        {/* {this.textValue ? 
       <Prev style = {{top: this.state.previewTopOffset+"px", left: this.state.previewLeftOffset+"px"}} onMouseDown = {this.handleDragEnter} onMouseMove = {this.handleDragThrough} onMouseUp = {this.handleDragExit} onMouseLeave = {this.handleDragExit}>
         <div>
           <MathJax.Context input='tex'>
@@ -356,12 +360,20 @@ export default class MathInput extends DoenetRenderer {
       </Prev> : 
       null} */}
       </span>
-      
-    
-  
-  </React.Fragment>
+
+
+
+    </React.Fragment>
 
   }
+}
+
+
+function stripLatex(latex) {
+  let s = latex.replaceAll(`\\,`, '');
+
+  return s;
+
 }
 
 
@@ -372,7 +384,7 @@ export default class MathInput extends DoenetRenderer {
     //   console.log(`for ${this.componentName}`)
     //   console.log(`math expression: ${this.mathExpression.toString()}`)
     //   console.log(`immediateValue: ${this.doenetSvData.immediateValue.toString()}`)
-  
+
     //   this.mathExpression = this.doenetSvData.value;
     //   this.textValue = this.mathExpression.toString();
     //   if (this.textValue === '\uFF3F') {

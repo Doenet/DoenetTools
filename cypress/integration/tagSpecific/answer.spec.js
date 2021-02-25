@@ -31,7 +31,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -41,7 +41,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -60,10 +60,11 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -84,7 +85,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, {force: true});
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -92,7 +93,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -113,10 +114,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, {force: true}).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -138,7 +139,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -307,7 +308,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -317,7 +318,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -336,10 +337,10 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -360,7 +361,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, {force:true});
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -368,7 +369,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -388,10 +389,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force: true}).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -413,7 +414,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -460,7 +461,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy2'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -470,7 +471,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -489,10 +490,10 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -513,7 +514,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, {force:true});
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -521,7 +522,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -541,10 +542,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force:true}).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -566,7 +567,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -871,7 +872,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -881,7 +882,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -901,10 +902,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -925,7 +926,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, {force: true});
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -933,7 +934,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -953,10 +954,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter partially correct answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force:true}).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -979,7 +980,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1000,10 +1001,11 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter incorrect answer")
-        cy.get(mathinputAnchor).clear().type(`y`).blur();
+        // cy.get(mathinputAnchor);
+        cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1023,10 +1025,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Submit answer")
-        cy.get(mathinputAnchor).type(`{enter}`);
+        cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1074,7 +1076,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy3'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -1084,7 +1086,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -1104,10 +1106,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1128,7 +1130,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -1136,7 +1138,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -1156,10 +1158,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter partially correct answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1182,7 +1184,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1203,10 +1205,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter incorrect answer")
-        cy.get(mathinputAnchor).clear().type(`y`).blur();
+        cy.get(mathinputAnchor).type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1226,10 +1228,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Submit answer")
-        cy.get(mathinputAnchor).type(`{enter}`);
+        cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1605,7 +1607,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/s/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/s/_copy1'].replacements[0];
       let math1Anchor = cesc('#' + math1.componentName);
@@ -1615,7 +1617,7 @@ describe('Answer Tag Tests', function () {
       let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -1635,10 +1637,10 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`).blur();
+      cy.get(mathinputAnchor).type(`x+y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
@@ -1659,7 +1661,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`);
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -1667,7 +1669,7 @@ describe('Answer Tag Tests', function () {
         math2Anchor = cesc('#' + math2.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x+y');
+        // cy.get(mathinputAnchor).should('have.value', 'x+y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
         });
@@ -1687,10 +1689,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter partially correct answer")
-        cy.get(mathinputAnchor).clear().type(`x`).blur();
+        cy.get(mathinputAnchor).type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1713,7 +1715,7 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinputSubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'x');
+        // cy.get(mathinputAnchor).should('have.value', 'x');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         });
@@ -1734,10 +1736,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter incorrect answer")
-        cy.get(mathinputAnchor).clear().type(`y`).blur();
+        cy.get(mathinputAnchor).type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1757,10 +1759,10 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Submit answer")
-        cy.get(mathinputAnchor).type(`{enter}`);
+        cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinputAnchor).should('have.value', 'y');
+        // cy.get(mathinputAnchor).should('have.value', 'y');
         cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         });
@@ -1832,8 +1834,8 @@ describe('Answer Tag Tests', function () {
       let caAnchor = cesc('#' + ca.componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '');
-      cy.get('#\\/_mathinput2_input').should('have.value', '');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '');
 
       cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -1894,12 +1896,12 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Enter a correct answer in")
-      cy.get('#\\/_mathinput1_input').type(`x+y`).blur();
-      cy.get('#\\/_mathinput2_input').type(`2x-y`).blur();
+      cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-      cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+      // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
 
       cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
@@ -1977,8 +1979,8 @@ describe('Answer Tag Tests', function () {
         let srsbAnchor = cesc('#' + srsb.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-        cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
 
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x+y')
@@ -2040,12 +2042,12 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter partially correct answer")
-        cy.get('#\\/_mathinput1_input').clear().type(`x`).blur();
-        cy.get('#\\/_mathinput2_input').clear().type(`3-x`).blur();
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+        cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-        cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
@@ -2110,8 +2112,8 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log('Test value displayed in browser')
-        cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-        cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
@@ -2173,11 +2175,11 @@ describe('Answer Tag Tests', function () {
         });
 
         cy.log("Enter incorrect answer")
-        cy.get('#\\/_mathinput1_input').clear().type(`y`).blur();
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-        cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
@@ -2242,8 +2244,8 @@ describe('Answer Tag Tests', function () {
         cy.get('#\\/_answer1_submit').click();
 
         cy.log('Test value displayed in browser')
-        cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-        cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
 
         cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
@@ -2905,7 +2907,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get('#\\/_mathinput1_input').should('have.value', '');
 
     cy.log('Test initial values')
     cy.window().then((win) => {
@@ -2914,7 +2916,7 @@ describe('Answer Tag Tests', function () {
     });
 
     cy.log("Submit a correct answer")
-    cy.get('#\\/_mathinput1_input').type(`6`);
+    cy.get('#\\/_mathinput1 textarea').type(`6`, { force: true });
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2923,7 +2925,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit an incorrect answer")
-    cy.get('#\\/_mathinput1_input').clear().type(`5`);
+    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}5`, { force: true });
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2932,7 +2934,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit a different correct answer")
-    cy.get('#\\/_mathinput1_input').clear().type(`-3`);
+    cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}-3`, { force: true });
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2941,7 +2943,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit a correct answer that must be simplified")
-    cy.get('#\\/_mathinput1_input').clear().type(`5xy-5xy+9`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}5xy-5xy+9`, { force: true });
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2950,7 +2952,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit a non-numerical answer")
-    cy.get('#\\/_mathinput1_input').clear().type(`5xy-5xyz+9`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{leftarrow}{leftarrow}z`, { force: true });
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -2974,12 +2976,12 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get('#\\/_mathinput1_input').should('have.value', '');
 
     let answers1 = { "1": 1, "-1": 1, "0.5": 1, "1.1": 0, "-2": 0, "x-x": 1, "x": 0 }
 
     for (let answerString in answers1) {
-      cy.get('#\\/_mathinput1_input').clear().type(answerString, { delay: 0 });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2997,11 +2999,11 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get('#\\/_mathinput1_input').should('have.value', '');
 
     let answers2 = { "1": 0, "-1": 0, "0.5": 1, "0.99": 1, "-2": 0, "x-x": 1, "x": 0 }
     for (let answerString in answers2) {
-      cy.get('#\\/_mathinput1_input').clear().type(answerString, { delay: 0 });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3019,12 +3021,12 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get('#\\/_mathinput1_input').should('have.value', '');
 
     let answers3 = { "1": 0, "-1": 1, "0.5": 1, "0.99": 1, "-2": 0, "x-x": 1, "x": 0 }
 
     for (let answerString in answers3) {
-      cy.get('#\\/_mathinput1_input').clear().type(answerString, { delay: 0 });
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 0, force: true });
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3056,16 +3058,16 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
+    // cy.get('#\\/_mathinput1_input').should('have.value', '');
 
     let answers1 = [[1, "x", "z", "6"], [0, "x", "x", "6"], [0, "x", "z", "5"],
     [1, "y", "y", "7"], [0, "y", "z", "7"], [0, "y", "q", "7"], [1, "y", "y^2", "7"],
     [0, "y", "y", "a"]];
 
     for (let answer of answers1) {
-      cy.get('#\\/_mathinput1_input').clear().type(answer[1], { delay: 0 }).blur();
-      cy.get('#\\/_mathinput2_input').clear().type(answer[2], { delay: 0 }).blur();
-      cy.get('#\\/_mathinput3_input').clear().type(answer[3], { delay: 0 }).blur();
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[1], { delay: 0, force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[2], { delay: 0, force: true }).blur();
+      cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}{backspace}{backspace}" + answer[3], { delay: 0, force: true }).blur();
       cy.get('#\\/_answer1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3100,7 +3102,7 @@ describe('Answer Tag Tests', function () {
       let answer1 = components['/_map1'].replacements[0].replacements[1].activeChildren[3];
       let mathinput1Name = answer1.stateValues.inputChild.componentName;
       let mathinput1 = components[mathinput1Name]
-      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
       let ca1 = components['/_map1'].replacements[0].replacements[3].activeChildren[1];
       let ca1Anchor = cesc('#' + ca1.componentName);
@@ -3112,7 +3114,7 @@ describe('Answer Tag Tests', function () {
       let answer2 = components['/_map1'].replacements[1].replacements[1].activeChildren[3];
       let mathinput2Name = answer2.stateValues.inputChild.componentName;
       let mathinput2 = components[mathinput2Name]
-      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let ca2 = components['/_map1'].replacements[1].replacements[3].activeChildren[1];
       let ca2Anchor = cesc('#' + ca2.componentName);
@@ -3124,7 +3126,7 @@ describe('Answer Tag Tests', function () {
       let answer3 = components['/_map1'].replacements[2].replacements[1].activeChildren[3];
       let mathinput3Name = answer3.stateValues.inputChild.componentName;
       let mathinput3 = components[mathinput3Name]
-      let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let ca3 = components['/_map1'].replacements[2].replacements[3].activeChildren[1];
       let ca3Anchor = cesc('#' + ca3.componentName);
@@ -3135,9 +3137,9 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinput1Anchor).should('have.value', '');
-      cy.get(mathinput2Anchor).should('have.value', '');
-      cy.get(mathinput3Anchor).should('have.value', '');
+      // cy.get(mathinput1Anchor).should('have.value', '');
+      // cy.get(mathinput2Anchor).should('have.value', '');
+      // cy.get(mathinput3Anchor).should('have.value', '');
       cy.get(ca1Anchor).should('have.text', '0');
       cy.get(ca2Anchor).should('have.text', '0');
       cy.get(ca3Anchor).should('have.text', '0');
@@ -3180,14 +3182,14 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Enter correct answer in all three blanks")
-      cy.get(mathinput1Anchor).type(`x`).blur();
-      cy.get(mathinput2Anchor).type(`x^2`).blur();
-      cy.get(mathinput3Anchor).type(`x^3`).blur();
+      cy.get(mathinput1Anchor).type(`x`, { force: true }).blur();
+      cy.get(mathinput2Anchor).type(`x^2`, { force: true }).blur();
+      cy.get(mathinput3Anchor).type(`x^3`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinput1Anchor).should('have.value', 'x');
-      cy.get(mathinput2Anchor).should('have.value', 'x^2');
-      cy.get(mathinput3Anchor).should('have.value', 'x^3');
+      // cy.get(mathinput1Anchor).should('have.value', 'x');
+      // cy.get(mathinput2Anchor).should('have.value', 'x^2');
+      // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
       cy.get(ca1Anchor).should('have.text', '0');
       cy.get(ca2Anchor).should('have.text', '0');
@@ -3246,9 +3248,9 @@ describe('Answer Tag Tests', function () {
         sr3Anchor = cesc('#' + sr3.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'x');
-        cy.get(mathinput2Anchor).should('have.value', 'x^2');
-        cy.get(mathinput3Anchor).should('have.value', 'x^3');
+        // cy.get(mathinput1Anchor).should('have.value', 'x');
+        // cy.get(mathinput2Anchor).should('have.value', 'x^2');
+        // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
         cy.get(ca1Anchor).should('have.text', '1');
         cy.get(ca2Anchor).should('have.text', '1');
@@ -3293,14 +3295,14 @@ describe('Answer Tag Tests', function () {
         });
 
         cy.log("Enter wrong answers")
-        cy.get(mathinput1Anchor).clear().type(`u`).blur();
-        cy.get(mathinput2Anchor).clear().type(`v`).blur();
-        cy.get(mathinput3Anchor).clear().type(`w`).blur();
+        cy.get(mathinput1Anchor).type(`{end}{backspace}u`, { force: true }).blur();
+        cy.get(mathinput2Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}v`, { force: true }).blur();
+        cy.get(mathinput3Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}w`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'u');
-        cy.get(mathinput2Anchor).should('have.value', 'v');
-        cy.get(mathinput3Anchor).should('have.value', 'w');
+        // cy.get(mathinput1Anchor).should('have.value', 'u');
+        // cy.get(mathinput2Anchor).should('have.value', 'v');
+        // cy.get(mathinput3Anchor).should('have.value', 'w');
 
         cy.get(ca1Anchor).should('have.text', '1');
         cy.get(ca2Anchor).should('have.text', '1');
@@ -3352,9 +3354,9 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinput3SubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'u');
-        cy.get(mathinput2Anchor).should('have.value', 'v');
-        cy.get(mathinput3Anchor).should('have.value', 'w');
+        // cy.get(mathinput1Anchor).should('have.value', 'u');
+        // cy.get(mathinput2Anchor).should('have.value', 'v');
+        // cy.get(mathinput3Anchor).should('have.value', 'w');
 
         cy.get(ca1Anchor).should('have.text', '0');
         cy.get(ca2Anchor).should('have.text', '0');
@@ -3427,7 +3429,7 @@ describe('Answer Tag Tests', function () {
       let answer1 = components['/a/_answer1'];
       let mathinput1Name = answer1.stateValues.inputChild.componentName;
       let mathinput1 = components[mathinput1Name]
-      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
       let ca1 = components['/a/ca'];
       let ca1Anchor = cesc('#' + ca1.componentName);
@@ -3439,7 +3441,7 @@ describe('Answer Tag Tests', function () {
       let answer2 = components['/b/_answer1'];
       let mathinput2Name = answer2.stateValues.inputChild.componentName;
       let mathinput2 = components[mathinput2Name]
-      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let ca2 = components['/b/ca'];
       let ca2Anchor = cesc('#' + ca2.componentName);
@@ -3451,7 +3453,7 @@ describe('Answer Tag Tests', function () {
       let answer3 = components['/c/_answer1'];
       let mathinput3Name = answer3.stateValues.inputChild.componentName;
       let mathinput3 = components[mathinput3Name]
-      let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let ca3 = components['/c/ca'];
       let ca3Anchor = cesc('#' + ca3.componentName);
@@ -3462,9 +3464,9 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinput1Anchor).should('have.value', '');
-      cy.get(mathinput2Anchor).should('have.value', '');
-      cy.get(mathinput3Anchor).should('have.value', '');
+      // cy.get(mathinput1Anchor).should('have.value', '');
+      // cy.get(mathinput2Anchor).should('have.value', '');
+      // cy.get(mathinput3Anchor).should('have.value', '');
       cy.get(ca1Anchor).should('have.text', '0');
       cy.get(ca2Anchor).should('have.text', '0');
       cy.get(ca3Anchor).should('have.text', '0');
@@ -3507,14 +3509,14 @@ describe('Answer Tag Tests', function () {
       });
 
       cy.log("Enter correct answer in all three blanks")
-      cy.get(mathinput1Anchor).type(`x`).blur();
-      cy.get(mathinput2Anchor).type(`x^2`).blur();
-      cy.get(mathinput3Anchor).type(`x^3`).blur();
+      cy.get(mathinput1Anchor).type(`x`, { force: true }).blur();
+      cy.get(mathinput2Anchor).type(`x^2`, { force: true }).blur();
+      cy.get(mathinput3Anchor).type(`x^3`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinput1Anchor).should('have.value', 'x');
-      cy.get(mathinput2Anchor).should('have.value', 'x^2');
-      cy.get(mathinput3Anchor).should('have.value', 'x^3');
+      // cy.get(mathinput1Anchor).should('have.value', 'x');
+      // cy.get(mathinput2Anchor).should('have.value', 'x^2');
+      // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
       cy.get(ca1Anchor).should('have.text', '0');
       cy.get(ca2Anchor).should('have.text', '0');
@@ -3573,9 +3575,9 @@ describe('Answer Tag Tests', function () {
         sr3Anchor = cesc('#' + sr3.componentName);
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'x');
-        cy.get(mathinput2Anchor).should('have.value', 'x^2');
-        cy.get(mathinput3Anchor).should('have.value', 'x^3');
+        // cy.get(mathinput1Anchor).should('have.value', 'x');
+        // cy.get(mathinput2Anchor).should('have.value', 'x^2');
+        // cy.get(mathinput3Anchor).should('have.value', 'x^3');
 
         cy.get(ca1Anchor).should('have.text', '1');
         cy.get(ca2Anchor).should('have.text', '1');
@@ -3620,14 +3622,14 @@ describe('Answer Tag Tests', function () {
         });
 
         cy.log("Enter wrong answers")
-        cy.get(mathinput1Anchor).clear().type(`u`).blur();
-        cy.get(mathinput2Anchor).clear().type(`v`).blur();
-        cy.get(mathinput3Anchor).clear().type(`w`).blur();
+        cy.get(mathinput1Anchor).type(`{end}{backspace}u`, { force: true }).blur();
+        cy.get(mathinput2Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}v`, { force: true }).blur();
+        cy.get(mathinput3Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}w`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'u');
-        cy.get(mathinput2Anchor).should('have.value', 'v');
-        cy.get(mathinput3Anchor).should('have.value', 'w');
+        // cy.get(mathinput1Anchor).should('have.value', 'u');
+        // cy.get(mathinput2Anchor).should('have.value', 'v');
+        // cy.get(mathinput3Anchor).should('have.value', 'w');
 
         cy.get(ca1Anchor).should('have.text', '1');
         cy.get(ca2Anchor).should('have.text', '1');
@@ -3679,9 +3681,9 @@ describe('Answer Tag Tests', function () {
         cy.get(mathinput3SubmitAnchor).click();
 
         cy.log('Test value displayed in browser')
-        cy.get(mathinput1Anchor).should('have.value', 'u');
-        cy.get(mathinput2Anchor).should('have.value', 'v');
-        cy.get(mathinput3Anchor).should('have.value', 'w');
+        // cy.get(mathinput1Anchor).should('have.value', 'u');
+        // cy.get(mathinput2Anchor).should('have.value', 'v');
+        // cy.get(mathinput3Anchor).should('have.value', 'w');
 
         cy.get(ca1Anchor).should('have.text', '0');
         cy.get(ca2Anchor).should('have.text', '0');
@@ -3729,7 +3731,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it.skip('integrated submit buttons', () => {
+  it('integrated submit buttons', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3747,92 +3749,69 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
-      let mathinputPreviewAnchor = cesc('#' + mathinputName + '_input_preview');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
-      cy.get(mathinputAnchor).should('have.value', '');
-      cy.get(mathinputPreviewAnchor).should('not.be.visible')
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`);
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+y')
-      })
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Press enter")
-      cy.get(mathinputAnchor).type(`{enter}`);
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+y')
-      })
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Add letter")
-      cy.get(mathinputAnchor).type(`z`);
-      cy.get(mathinputAnchor).should('have.value', 'x+yz');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+yz')
-      })
+      cy.get(mathinputAnchor).type(`{end}z`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+yz');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete letter")
-      cy.get(mathinputAnchor).type(`{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+y')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete more")
-      cy.get(mathinputAnchor).type(`{backspace}{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Back to correct")
-      cy.get(mathinputAnchor).type(`+y`);
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+y')
-      })
+      cy.get(mathinputAnchor).type(`{end}+y`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete again")
-      cy.get(mathinputAnchor).type(`{backspace}{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
@@ -3840,39 +3819,31 @@ describe('Answer Tag Tests', function () {
 
       cy.log("Press enter on submit button")
       cy.get(mathinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).should('not.be.visible')
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Add letter")
-      cy.get(mathinputAnchor).type(`a`);
-      cy.get(mathinputAnchor).should('have.value', 'xa');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('xa')
-      })
+      cy.get(mathinputAnchor).type(`{end}a`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'xa');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete letter")
-      cy.get(mathinputAnchor).type(`{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete all")
-      cy.get(mathinputAnchor).type(`{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', '');
-      cy.get(mathinputPreviewAnchor).should('not.be.visible')
+      cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
@@ -3880,22 +3851,16 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Restore incorrect submitted answer")
-      cy.get(mathinputAnchor).type(`x`);
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
+      cy.get(mathinputAnchor).type(`x`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Enter partially correct answer")
-      cy.get(mathinputAnchor).type(`+z`);
-      cy.get(mathinputAnchor).should('have.value', 'x+z');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+z')
-      })
+      cy.get(mathinputAnchor).type(`{end}+z`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
@@ -3903,52 +3868,39 @@ describe('Answer Tag Tests', function () {
 
       cy.log("Click submit button")
       cy.get(mathinputSubmitAnchor).click();
-      cy.get(mathinputAnchor).should('have.value', 'x+z');
-      cy.get(mathinputPreviewAnchor).should('not.be.visible')
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '32 %');
 
       cy.log("Add letter")
-      cy.get(mathinputAnchor).type(`z`);
-      cy.get(mathinputAnchor).should('have.value', 'x+zz');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+zz')
-      })
+      cy.get(mathinputAnchor).type(`{end}z`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+zz');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete letter")
-      cy.get(mathinputAnchor).type(`{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x+z');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+z')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '32 %');
 
       cy.log("Delete more")
-      cy.get(mathinputAnchor).type(`{backspace}{backspace}`);
-      cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Back to partial")
-      cy.get(mathinputAnchor).type(`+z`);
-      cy.get(mathinputAnchor).should('have.value', 'x+z');
-      cy.get(mathinputPreviewAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+z')
-      })
+      cy.get(mathinputAnchor).type(`{end}+z`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
@@ -4132,7 +4084,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it.skip('submit buttons with two answer blanks', () => {
+  it('submit buttons with two answer blanks', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -4142,16 +4094,15 @@ describe('Answer Tag Tests', function () {
   <award><when><math><copy prop="immediateValue" tname="_mathinput1" isResponse />+<copy prop="immediateValue" tname="_mathinput2" isResponse /></math> = <math>3x</math></when></award>
   <award credit="0.5"><when><math><copy prop="immediateValue" tname="_mathinput1" />+<copy prop="immediateValue" tname="_mathinput2" /></math> = <math>3</math></when></award>
   </answer></p>
+
+  <p><copy prop="immediateValue" tname="_mathinput1" /></p>
+  <p><copy prop="immediateValue" tname="_mathinput2" /></p>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
-    cy.get('#\\/_mathinput2_input').should('have.value', '');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4160,25 +4111,9 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Enter first part of a correct answer")
-    cy.get('#\\/_mathinput1_input').type(`x+y`);
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '');
-    cy.get('#\\/_mathinput1_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    })
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
-
-
-    cy.log("Enter second part of a correct answer")
-    cy.get('#\\/_mathinput1_input').blur();
-    cy.get('#\\/_mathinput2_input').type(`2x-y`)
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x−y')
-    })
+    cy.log("Enter correct answer")
+    cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true });
+    cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true })
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4188,12 +4123,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    cy.get('#\\/_mathinput2_input').blur();
+    cy.get('#\\/_mathinput2 textarea').blur();
     cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -4203,13 +4134,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_mathinput1_input').type('z');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+yz');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+yz')
-    })
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
+    cy.get('#\\/_mathinput1 textarea').type('{end}z', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4218,13 +4143,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Delete letter")
-    cy.get('#\\/_mathinput1_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    })
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -4234,14 +4153,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_mathinput1_input').blur();
-    cy.get('#\\/_mathinput2_input').type('q');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-yq');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x−yq')
-    })
+    cy.get('#\\/_mathinput1 textarea').blur();
+    cy.get('#\\/_mathinput2 textarea').type('{end}q', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4250,30 +4163,17 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Delete letter")
-    cy.get('#\\/_mathinput2_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x−y')
-    })
+    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
     })
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
-
 
 
     cy.log("Type letter in input1")
-    cy.get('#\\/_mathinput1_input').type('z');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+yz');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+yz')
-    })
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
+    cy.get('#\\/_mathinput1 textarea').type('{end}z', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4282,14 +4182,8 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Type letter in input2")
-    cy.get('#\\/_mathinput1_input').blur();
-    cy.get('#\\/_mathinput2_input').type('q');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+yz');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-yq');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x−yq')
-    })
+    cy.get('#\\/_mathinput1 textarea').blur();
+    cy.get('#\\/_mathinput2 textarea').type('{end}q', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4298,13 +4192,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Delete letter in input1")
-    cy.get('#\\/_mathinput1_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-yq');
-    cy.get('#\\/_mathinput1_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    })
-    cy.get('#\\/_mathinput2_input_preview').should('not.be.visible')
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4314,14 +4202,11 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Don't lose track this is correct answer")
-    cy.get('#\\/_mathinput1_input').blur();
-    cy.get('#\\/_mathinput2_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
-    cy.get('#\\/_mathinput1_input_preview').should('not.be.visible')
-    cy.get('#\\/_mathinput2_input_preview .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x−y')
-    })
+    cy.get('#\\/_mathinput1 textarea').blur();
+    // ideally, this was supposed to work without blurring mathinput2,
+    // but it now requires blur because we need value as well as immediateValue of mathinput2
+    // to change back to correct answer (as value is now a dependency of immediateValue)
+    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true }).blur();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -4330,21 +4215,14 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1_input').clear().type(`x`).blur();
-    cy.get('#\\/_mathinput2_input').clear().type(`3-x`).blur();
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
-    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+    cy.get('#\\/_mathinput2 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
     cy.get('#\\/_answer1_submit').click();
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
@@ -4354,9 +4232,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Delete letter in input1")
-    cy.get('#\\/_mathinput1_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', '');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4366,9 +4242,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Add letter back")
-    cy.get('#\\/_mathinput1_input').type('x');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'x');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    cy.get('#\\/_mathinput1 textarea').type('{end}x', { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
@@ -4377,11 +4251,8 @@ describe('Answer Tag Tests', function () {
     })
 
 
-
     cy.log("Enter incorrect answer")
-    cy.get('#\\/_mathinput1_input').clear().type(`y`).blur();
-    cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}y`, { force: true }).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     });
@@ -4392,8 +4263,6 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Submit answer")
     cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
-    cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
@@ -4403,9 +4272,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Delete letter in input2")
-    cy.get('#\\/_mathinput2_input').type('{backspace}');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-');
+    cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -4415,9 +4282,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Add letter back")
-    cy.get('#\\/_mathinput2_input').type('x');
-    cy.get('#\\/_mathinput1_input').should('have.value', 'y');
-    cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+    cy.get('#\\/_mathinput2 textarea').type('{end}x', { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
@@ -4563,19 +4428,19 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    // Note: this currently doesn't work
-    // Do we add additional complexity to get this to work?
-
-    // cy.log("Don't lose track this is correct answer")
-    cy.get('#\\/_textinput2_input').type('{backspace}');
-    // cy.get('#\\/_textinput1_input').should('have.value', 'rain');
-    // cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    // cy.get('#\\/_answer1_submit').should('not.exist');
-    // cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
-    //   expect(text.trim().toLowerCase()).equal('correct')
-    // })
-    // cy.get('#\\/_answer1_incorrect').should('not.exist');
-    // cy.get('#\\/_answer1_partial').should('not.exist');
+    cy.log("Don't lose track this is correct answer")
+    // ideally, this was supposed to work without blurring textinput2,
+    // but it now requires blur because we need value as well as immediateValue of textinput2
+    // to change back to correct answer (as value is now a dependency of immediateValue)
+    cy.get('#\\/_textinput2_input').type('{backspace}').blur();
+    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
+    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get('#\\/_answer1_submit').should('not.exist');
+    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('correct')
+    })
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
 
 
     cy.log("Enter partially correct answer")
@@ -4693,42 +4558,42 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/var_input').should('have.value', 'x');
-    cy.get('#\\/var2_input').should('have.value', 'y');
-    cy.get('#\\/ans_input').should('have.value', '');
+    // cy.get('#\\/var textarea').should('have.value', 'x');
+    // cy.get('#\\/var2 textarea').should('have.value', 'y');
+    // cy.get('#\\/ans textarea').should('have.value', '');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Type correct answer in")
-    cy.get('#\\/ans_input').type(`x`);
-    cy.get('#\\/ans_input').should('have.value', 'x');
+    cy.get('#\\/ans textarea').type(`x`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'x');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'x');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'x');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('be.visible');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Change correct answer");
-    cy.get('#\\/var_input').clear().type(`u{enter}`);
-    cy.get('#\\/var_input').should('have.value', 'u');
-    cy.get('#\\/ans_input').should('have.value', 'x');
+    cy.get('#\\/var textarea').type(`{end}{backspace}u{enter}`, { force: true });
+    // cy.get('#\\/var textarea').should('have.value', 'u');
+    // cy.get('#\\/ans textarea').should('have.value', 'x');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'x');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'x');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('be.visible');
@@ -4736,34 +4601,34 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Change to new correct answer")
-    cy.get('#\\/ans_input').clear().type(`u`);
-    cy.get('#\\/ans_input').should('have.value', 'u');
+    cy.get('#\\/ans textarea').type(`{end}{backspace}u`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'u');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'u');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'u');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('be.visible');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Change partial credit answer");
-    cy.get('#\\/var2_input').clear().type(`v{enter}`);
-    cy.get('#\\/var2_input').should('have.value', 'v');
-    cy.get('#\\/var_input').should('have.value', 'u');
-    cy.get('#\\/ans_input').should('have.value', 'u');
+    cy.get('#\\/var2 textarea').type(`{end}{backspace}v{enter}`, { force: true });
+    // cy.get('#\\/var2 textarea').should('have.value', 'v');
+    // cy.get('#\\/var textarea').should('have.value', 'u');
+    // cy.get('#\\/ans textarea').should('have.value', 'u');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'u');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'u');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('be.visible');
     cy.get('#\\/ans_incorrect').should('not.exist');
@@ -4771,16 +4636,16 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Change to new partial correct answer")
-    cy.get('#\\/ans_input').clear().type(`v`);
-    cy.get('#\\/ans_input').should('have.value', 'v');
+    cy.get('#\\/ans textarea').type(`{end}{backspace}v`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'v');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'v');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'v');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
@@ -4788,18 +4653,18 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Change correct answer");
-    cy.get('#\\/var_input').clear().type(`w{enter}`);
-    cy.get('#\\/var_input').should('have.value', 'w');
-    cy.get('#\\/ans_input').should('have.value', 'v');
-    cy.get('#\\/var2_input').should('have.value', 'v');
+    cy.get('#\\/var textarea').type(`{end}{backspace}w{enter}`, { force: true });
+    // cy.get('#\\/var textarea').should('have.value', 'w');
+    // cy.get('#\\/ans textarea').should('have.value', 'v');
+    // cy.get('#\\/var2 textarea').should('have.value', 'v');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'v');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'v');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
@@ -4807,16 +4672,16 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Change to new correct answer")
-    cy.get('#\\/ans_input').clear().type(`w`);
-    cy.get('#\\/ans_input').should('have.value', 'w');
+    cy.get('#\\/ans textarea').type(`{end}{backspace}w`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'w');
     cy.get('#\\/ans_submit').should('be.visible');
     cy.get('#\\/ans_correct').should('not.exist');
     cy.get('#\\/ans_incorrect').should('not.exist');
     cy.get('#\\/ans_partial').should('not.exist');
 
     cy.log("Press enter")
-    cy.get('#\\/ans_input').type(`{enter}`);
-    cy.get('#\\/ans_input').should('have.value', 'w');
+    cy.get('#\\/ans textarea').type(`{enter}`, { force: true });
+    // cy.get('#\\/ans textarea').should('have.value', 'w');
     cy.get('#\\/ans_submit').should('not.exist');
     cy.get('#\\/ans_correct').should('be.visible');
     cy.get('#\\/ans_incorrect').should('not.exist');
@@ -6356,7 +6221,7 @@ describe('Answer Tag Tests', function () {
     })
 
     cy.log("add another choice");
-    cy.get("#\\/num_input").clear().type("4{enter}");
+    cy.get("#\\/num textarea").type("{end}{backspace}4{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -6445,7 +6310,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("go back to 3 choices")
-    cy.get("#\\/num_input").clear().type("3{enter}");
+    cy.get("#\\/num textarea").type("{end}{backspace}3{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -6516,7 +6381,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("create 6 choices");
-    cy.get("#\\/num_input").clear().type("6{enter}");
+    cy.get("#\\/num textarea").type("{end}{backspace}6{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -6698,7 +6563,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.log('Change partial credit for cat')
-      cy.get('#\\/catcredit_input').clear().type('0.4{enter}')
+      cy.get("#\\/catcredit textarea").type("{end}{backspace}4{enter}", { force: true });
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -6753,7 +6618,7 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.log('Change partial credit for cat')
-      cy.get('#\\/catcredit_input').clear().type('0.2{enter}')
+      cy.get("#\\/catcredit textarea").type("{end}{backspace}2{enter}", { force: true });
       cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('check work')
       })
@@ -7240,23 +7105,23 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/userx_input_input').should('have.value', '');
+    // cy.get('#\\/userx_input_input').should('have.value', '');
     cy.get('#\\/userx_input_submit').should('be.visible');
 
     cy.log("Enter a letter")
-    cy.get('#\\/userx_input_input').clear().type(`a{enter}`);
+    cy.get("#\\/userx_input textarea").type("a{enter}", { force: true });
     cy.get('#\\/userx_input_correct').should('be.visible');
 
     cy.log("Enter letter combination")
-    cy.get('#\\/userx_input_input').clear().type(`c,d{enter}`);
+    cy.get("#\\/userx_input textarea").type("{end}{backspace}c,d{enter}", { force: true });
     cy.get('#\\/userx_input_incorrect').should('be.visible');
 
     cy.log("Enter another letter")
-    cy.get('#\\/userx_input_input').clear().type(`q{enter}`);
+    cy.get("#\\/userx_input textarea").type("{end}{backspace}{backspace}{backspace}q{enter}", { force: true });
     cy.get('#\\/userx_input_correct').should('be.visible');
 
     cy.log("Enter a number")
-    cy.get('#\\/userx_input_input').clear().type(`1{enter}`);
+    cy.get("#\\/userx_input textarea").type("{end}{backspace}1{enter}", { force: true });
     cy.get('#\\/userx_input_incorrect').should('be.visible');
   });
 
@@ -7280,50 +7145,50 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/element_input').should('have.value', '');
-    cy.get('#\\/set_input').should('have.value', '{ 1, 2, 3 }');
+    // cy.get('#\\/element_input').should('have.value', '');
+    // cy.get('#\\/set_input').should('have.value', '{ 1, 2, 3 }');
     cy.get('#\\/element_submit').should('be.visible');
 
     cy.log("Enter a number from set")
-    cy.get('#\\/element_input').clear().type(`2{enter}`);
+    cy.get("#\\/element textarea").type("2{enter}", { force: true });
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter all numbers from set")
-    cy.get('#\\/element_input').clear().type(`1,2,3{enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}1,2,3{enter}", { force: true });
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Enter a letter")
-    cy.get('#\\/element_input').clear().type(`c{enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}c{enter}", { force: true });
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Change set to letters")
-    cy.get('#\\/set_input').clear().type(`{{}a,b,c,d,e,f,g}{enter}`);
+    cy.get("#\\/set textarea").type("{end}{leftarrow}{backspace}{backspace}{backspace}{backspace}{backspace}a,b,c,d,e,f,g{enter}", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter another letter")
-    cy.get('#\\/element_input').clear().type(`g{enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}g{enter}", { force: true });
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter a number")
-    cy.get('#\\/element_input').clear().type(`2{enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Change set to mathematical expressions")
-    cy.get('#\\/set_input').clear().type(`{{} (x+y)/2, e^(x^2 + y), (1,2,3)}{enter}`);
+    cy.get("#\\/set textarea").type("{end}{leftarrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(x+y)/2{rightarrow}, e^(x^2{rightarrow} + y){rightArrow}, (1,2,3){enter}", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Enter one of the expressions")
-    cy.get('#\\/element_input').clear().type(`(1,2,3){enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}(1,2,3){enter}", { force: true });
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter another of the expressions")
-    cy.get('#\\/element_input').clear().type(`e^(x^2)e^(y){enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}e^(x^2{rightarrow} + y){enter}", { force: true });
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter third expression")
-    cy.get('#\\/element_input').clear().type(`x+2y-x/2-3y/2{enter}`);
+    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x+2y-x/2{rightarrow}-3y/2{enter}", { force: true });
     cy.get('#\\/element_correct').should('be.visible');
 
 
@@ -7368,7 +7233,7 @@ describe('Answer Tag Tests', function () {
       });
       cy.get(caAnchor).should('have.text', '0')
 
-      cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+      cy.get("#\\/_mathinput1 textarea").type("2{enter}", { force: true });
       cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
@@ -7404,7 +7269,7 @@ describe('Answer Tag Tests', function () {
         cy.get(sr2Anchor).should('have.text', 'hello')
         cy.get(caAnchor).should('have.text', '1')
 
-        cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+        cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}0{enter}", { force: true });
         cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('2')
         });
@@ -7484,7 +7349,7 @@ describe('Answer Tag Tests', function () {
           });
           cy.get(caAnchor).should('have.text', '1');
 
-          cy.get('#\\/_mathinput1_input').clear().type(`4{enter}`);
+          cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}4{enter}", { force: true });
           cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal('3')
           });
