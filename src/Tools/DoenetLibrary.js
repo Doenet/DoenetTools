@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+import { useMenuPanelController } from "../imports/Tool/Panels/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 import './util.css';
