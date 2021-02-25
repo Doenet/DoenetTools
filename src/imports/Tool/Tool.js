@@ -37,7 +37,7 @@ const implementedToolParts = [
   "menuPanel",
 ];
 
-export default function Tool({ children, isOverlay }) {
+export default function Tool({ children }) {
   const stackId = useStackId();
   const [panels, setPanels] = useState({});
 
@@ -131,30 +131,26 @@ export default function Tool({ children, isOverlay }) {
         </MenuPanel>
       );
     }
-    console.log(panels?.headerPanel?.key === headerPanel.key ?? false);
     setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
-  }, []);
-
-  // console.log(">>>Tool refresh", children, stackId);
-
-  // const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
-  //   from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
-  //   enter: { top: 0 },
-  //   leave: { top: 100 },
-  //   unique: true,
-  //   reset: true,
-  // });
+  }, [children]);
 
   return (
-    <ToolContainer $isOverlay={isOverlay ?? false}>
-      {navPanel}
-      {headerPanel}
-      <ContentPanel main={mainPanel} support={supportPanel} />
-      {menuPanel}
+    <ToolContainer $isOverlay={stackId > 0}>
+      {panels.navPanel}
+      {panels.headerPanel}
+      <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
+      {panels.menuPanel}
       {/* <ReactQueryDevtools /> */}
     </ToolContainer>
   );
 }
+// const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
+//   from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
+//   enter: { top: 0 },
+//   leave: { top: 100 },
+//   unique: true,
+//   reset: true,
+// });
 // {/* {transition.map(
 //   ({ item, key, props }) =>
 //     item && (

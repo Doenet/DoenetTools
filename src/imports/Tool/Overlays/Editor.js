@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from "react";
 import Tool from "../Tool";
 import { useToolControlHelper } from "../ToolRoot";
+import { useRecoilValue, atom, useSetRecoilState } from "recoil";
+
+const stateTest = atom({
+  key: "stateTest",
+  default: 0,
+});
+
+function Consumer() {
+  const state = useRecoilValue(stateTest);
+  return <div>{state}</div>;
+}
 
 export default function Editor({ contentId, branchId }) {
-  const [state, setState] = useState(0);
+  const setState = useSetRecoilState(stateTest);
   const { open } = useToolControlHelper();
-  console.log(">>>editor");
-  // useEffect((contentId, branchId) => {
-  //   // init code
-  //   return null; //cleanup code
-  // }, []);
+
+  useEffect(() => {
+    //init code here
+    console.log(">>>Editor Init");
+    return () => {
+      console.log(">>>Editor exit");
+      setState(0);
+    }; //cleanup code here
+  }, []);
+
   return (
-    <Tool isOverlay>
+    <Tool>
       <headerPanel></headerPanel>
 
       <mainPanel>
-        {state}
+        <Consumer />
         This is the editor on branch: {branchId} with content: {contentId}
       </mainPanel>
 

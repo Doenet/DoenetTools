@@ -29,6 +29,7 @@ export function SupportVisiblitySwitch() {
 
 const SupportPanelContainer = styled.div`
   overflow: auto;
+  grid-area: supportPanel;
 `;
 
 const ResponsiveControlsContainer = styled.div`

@@ -9,6 +9,7 @@ import Assignment from "./Overlays/Assignment";
 import Editor from "./Overlays/Editor";
 import Calendar from "./Overlays/Calendar";
 import Image from "./Overlays/Image";
+import { useMenuPanelController } from "./Panels/MenuPanel";
 import "./temp.css";
 
 const layerStackAtom = atom({
@@ -18,6 +19,7 @@ const layerStackAtom = atom({
 
 export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
+  const setMenuPanel = useMenuPanelController();
   const open = (name, branchId, courseId, assignmentId) => {
     switch (name.toLowerCase()) {
       case "editor":
@@ -74,7 +76,8 @@ export const useToolControlHelper = () => {
       return newArray;
     });
   };
-  return { open, close };
+
+  return { open, close, setMenuPanel };
 };
 
 export const useStackId = () => {
@@ -92,7 +95,9 @@ export default function LayerRoot({ tool }) {
   return (
     <>
       {tool}
-      {overlays.map((layer) => layer)}
+      {overlays.map((layer, idx) =>
+        idx == overlays.length - 1 ? layer : null
+      )}
     </>
   );
 }
