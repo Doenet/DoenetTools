@@ -170,8 +170,9 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
-    const { dragShadowParentId } = get(dragStateAtom);
-    // console.log(">>>finfo",fInfo)
+    const { dragShadowDriveId, dragShadowParentId } = get(dragStateAtom);
+    let dragShadowParentFolderInfoObj = null;
+    
     switch(instructions.instructionType){
       case "addItem":
         const dt = new Date();
@@ -300,27 +301,38 @@ export const folderDictionarySelector = selectorFamily({
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let sourcesByParentFolderId = {};
+          const insertIndex = instructions.index ?? 0;
 
           for(let gItem of globalSelectedItems){
             //Deselect Item
             let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
             set(selectedDriveItemsAtom(selecteditem),false)
 
-            //Prepare to Add to destination
             const oldSourceFInfo = get(folderDictionary({driveId:instructions.driveId,folderId:gItem.parentFolderId}));
-            newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...oldSourceFInfo["contentsDictionary"][gItem.itemId]}
-            newDestinationFolderObj["contentIds"]["defaultOrder"].push(gItem.itemId)
-
-            //Prepare to Remove from source
+            // get parentInfo from edited cache or derive from oldSource
             let newSourceFInfo = sourcesByParentFolderId[gItem.parentFolderId];
-            if (!newSourceFInfo){
-              newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
+            if (!newSourceFInfo) newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
+
+            if (gItem.parentFolderId !== instructions.itemId) {  
+              // item must be removed from parent, add to edited cache
               sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
-            }
-            let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
-              newSourceFInfo["contentIds"]["defaultOrder"].splice(index,1)
+
+              // remove item from original parent contentIds
+              let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
+              newSourceFInfo["contentIds"]["defaultOrder"].splice(index, 1)
+
+              // add item to destination dictionary
+              newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]}
+
+              // remove item from original dictionary
               delete newSourceFInfo["contentsDictionary"][gItem.itemId];
+            } else {
+              // make sure item not duplicated in destination contentIds
+              newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
+            }
             
+            // insert item into contentIds of destination
+            newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
           }
           //Add all to destination
           set(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}),newDestinationFolderObj);
@@ -410,11 +422,10 @@ export const folderDictionarySelector = selectorFamily({
         
         const dropTargetFolderInfoObj = get(folderDictionarySelector({ driveId: driveIdFolderId.driveId, folderId: driveIdFolderId.folderId}));
         const dropTargetParentId = dropTargetFolderInfoObj.folderInfo.parentFolderId;
-        const dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}));
+        dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
 
         // remove dragShadowId from dragShadowParentId (contentDictionary, contentIds)
         if (dragShadowParentFolderInfoObj) {
-          console.log(">>>Here remove from", dragShadowParentId)
           set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
             let newObj = {...old};
             let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
@@ -492,6 +503,21 @@ export const folderDictionarySelector = selectorFamily({
             dragShadowParentId: null
           }
         })
+      break;
+      case "replaceDragShadow":
+        dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+        let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj.contentIds[sortOptions.DEFAULT];
+        let insertIndex = dragShadowParentDefaultOrder.indexOf(dragShadowId);
+
+        if (insertIndex >= 0) {
+          const instructions = {
+            instructionType: "move items",
+            driveId: dragShadowDriveId,
+            itemId: dragShadowParentId,
+            index: insertIndex
+          }
+          set(folderDictionarySelector(driveIdFolderId), instructions);
+        }
       break;
       default:
         console.warn(`Instruction ${instructions.instructionType} not currently handled`)
@@ -920,8 +946,14 @@ function Folder(props){
   }
 
   const onDrop = () => {
+    // setFolderInfo({instructionType:"removeDragShadow"});
+    // setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});
+  }
+
+  const onDragEndCb = () => {
+    setFolderInfo({instructionType:"replaceDragShadow"});
     setFolderInfo({instructionType:"removeDragShadow"});
-    setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});
+    onDragEnd();
   }
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
@@ -1074,7 +1106,7 @@ function Folder(props){
       className={draggableClassName}
       onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId, onDragStartCallback })}
       onDrag={onDrag}
-      onDragEnd={onDragEnd}
+      onDragEnd={onDragEndCb}
       ghostElement={renderDragGhost(props.folderId, folder)}
       >
       { folder } 
