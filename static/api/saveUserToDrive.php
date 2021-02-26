@@ -56,6 +56,7 @@ if ($type === "Remove User"){
       "success"=>TRUE
     );
 }else{
+  //Attempt to add user
 
   $sql = "
   SELECT 
@@ -70,13 +71,31 @@ if ($type === "Remove User"){
   if ($result->num_rows > 0){
     $row = $result->fetch_assoc();
 
-    
-      
+    $newUserId = $row['userId'];
+    $newScreenName = $row['screenName'];
+
+  //Test if they have already been added
+  $sql = "
+  SELECT userId
+  FROM drive_user
+  WHERE userId = '$newUserId'
+  AND driveId = '$driveId'
+  ";
+  $result = $conn->query($sql); 
+
+  if ($result->num_rows > 0){
+    //Already have this user
+    $response_arr = array(
+    "success"=>FALSE,
+    "message"=>"Already have user $newScreenName $email"
+    );
+  }else{
+
       $response_arr = array(
       "success"=>TRUE,
-      "userId"=>$row['userId'],
-      "screenName"=>$row['screenName'],
-      "email"=>$row['email']
+      "userId"=>$newUserId,
+      "screenName"=>$newScreenName,
+      "email"=>$email
       );
 
       $canDeleteDrive = '0';
@@ -84,26 +103,18 @@ if ($type === "Remove User"){
         $canDeleteDrive = '1';
       }
 
-      $newUserId = $row['userId'];
-
       $sql = "
       INSERT INTO drive_user
-      (userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,
-      canMoveItemsAndFolders,canRenameItemsAndFolders,canPublishItemsAndFolders, canChangeAllDriveSettings)
+      (userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,canDeleteItemsAndFolders,
+      canMoveItemsAndFolders,canRenameItemsAndFolders,canPublishItemsAndFolders,canViewUnpublishItemsAndFolders,canChangeAllDriveSettings)
       VALUES
-      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1',$canDeleteDrive)
+      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1','1','1',$canDeleteDrive)
       ";
-    
       $result = $conn->query($sql); 
     }
+  }
     
   }
-
-
-
-
-
-
 
 
 // set response code - 200 OK
