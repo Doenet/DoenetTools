@@ -18,7 +18,7 @@ import {
 import { useMenuPanelController } from "./Tool/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
-const DriveCardComponent = React.memo((props) => {
+const DriveCardComponent = (props) => {
   const { driveDoubleClickCallback } = props;
   const history = useHistory();
   let encodeParams = (p) =>
@@ -28,7 +28,6 @@ const DriveCardComponent = React.memo((props) => {
   // let transitions = "";
   let driveCardItems =[];
   let heights = [];
-   driveCardItems = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
   const [bind, { width },columns] = useMeasure();
   heights = new Array(columns).fill(0);
@@ -41,7 +40,7 @@ const DriveCardComponent = React.memo((props) => {
    const transitions = useTransition(driveCardItems, (item) => item.driveId, {
       from: ({ 
         xy, width, height }) => ({
-        xy:[0,0],
+        xy,
         width,
         height,
         opacity: 0,
@@ -51,7 +50,7 @@ const DriveCardComponent = React.memo((props) => {
 
       enter: ({
          xy, width, height }) => ({
-        xy:[width,0],
+        xy,
         width,
         height,
         opacity: 1,
@@ -66,6 +65,13 @@ const DriveCardComponent = React.memo((props) => {
     });
     // console.log(">>>> transitions", transitions);
 
+ 
+  const [on, toggle] = useState(false);  
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
+  const setOpenMenuPanel = useMenuPanelController();
+
+
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
       let newParams = {};
@@ -75,10 +81,21 @@ const DriveCardComponent = React.memo((props) => {
       history.push("?" + encodeParams(newParams));
     }
   };
-  const [on, toggle] = useState(false);  
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
-  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  const setOpenMenuPanel = useMenuPanelController();
+
+  const handleKeyUp = (e, item) => {
+    if(e.key === "Tab"){
+      setDrivecardSelection([item]);
+    }
+  };
+  const handleKeyBlur = ( e , item) =>{
+    if(e.type === "blur"){
+      console.log("!!!!!!!!!!!!");
+      setDrivecardSelection([]);
+
+    }
+  }
+  
+  
   // Drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
@@ -172,9 +189,6 @@ const DriveCardComponent = React.memo((props) => {
           return (
             <animated.div
               key={index}
-              // onMouseOver={() => toggle(props.scale.setValue(1.1))}
-              // onMouseLeave={() => toggle(props.scale.setValue(1))}
-              // className="adiv"
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
                 transform: props.xy.interpolate((x, y) => {
@@ -185,6 +199,7 @@ const DriveCardComponent = React.memo((props) => {
                 ...props,
                 height: 250,
                 opacity: 1,
+                zIndex:selectedCard ? 999 : 0,
               }}
             >
               <div
@@ -197,6 +212,8 @@ const DriveCardComponent = React.memo((props) => {
                   drivecardselection(e, item, props);
                 }}
                 onKeyDown={(e) => handleKeyDown(e, item)}
+                onKeyUp={(e) => handleKeyUp(e, item)}
+                onBlur={(e)=> handleKeyBlur(e,item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -221,6 +238,6 @@ const DriveCardComponent = React.memo((props) => {
       </div>
     // </div>
   );
-});
+};
 
 export default DriveCardComponent;
