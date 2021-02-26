@@ -15,6 +15,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $sourceDriveId = mysqli_real_escape_string($conn,$_POST["sourceDriveId"]); 
 $destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationDriveId"]); 
 $destinationItemId = mysqli_real_escape_string($conn,$_POST["destinationItemId"]); 
+$newSortOrder = mysqli_real_escape_string($conn,$_POST["newSortOrder"]); 
 
 $success = FALSE;
 $sql = "
@@ -54,16 +55,18 @@ $number_items = count($_POST["selectedItemIds"]);
 $new_values = "";
 for ($i = 0; $i < $number_items; $i++) {
   $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemIds"][$i]);
-  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId'),";
+  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId','$newSortOrder),";
 }
 $new_values = rtrim($new_values,",");
 
-$sql = "INSERT INTO drive_content (driveId,parentFolderId,itemId)
+$sql = "INSERT INTO drive_content (driveId,parentFolderId,itemId,sortOrder)
         VALUES ";
 $sql = $sql . $new_values;
 $sql = $sql . " ON DUPLICATE KEY UPDATE 
 driveId = VALUES(driveId),
-parentFolderId = VALUES(parentFolderId) ";
+parentFolderId = VALUES(parentFolderId),
+sortOrder = VALUES(sortOrder)
+";
 $result = $conn->query($sql); 
 }else{
   $success = FALSE;
