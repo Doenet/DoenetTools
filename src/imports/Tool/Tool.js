@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { animated, useTransition } from "react-spring";
-import {
-  atom,
-  selector,
-  useRecoilValue,
-  useRecoilCallback,
-  useRecoilState,
-} from "recoil";
 import NavPanel from "./Panels/NavPanel";
 import HeaderPanel from "./Panels/HeaderPanel";
 import ContentPanel from "./Panels/ContentPanel";

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { SupportVisiblitySwitch } from "./SupportPanel";
 import { useToolControlHelper, useStackId } from "../ToolRoot";
 import DoenetHeader from "../../../Tools/DoenetHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -82,7 +81,6 @@ export default function HeaderPanel({ title, children }) {
         <p>{title}</p>
         {children}
       </HeaderControlsContainer>
-      <SupportVisiblitySwitch />
       {!(stackId > 0 ?? false) ? (
         <DoenetHeader
           profile={profile}
