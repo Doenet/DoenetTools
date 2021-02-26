@@ -26,7 +26,8 @@ const ToolContainer = styled(animated.div)`
   height: 100vh;
   background-color: #f6f8ff;
   position: fixed;
-  z-index: ${({ $isOverlay }) => ($isOverlay ? 3 : 0)};
+  top: 0;
+  left: 0;
 `;
 
 const implementedToolParts = [
