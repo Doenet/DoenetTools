@@ -1,50 +1,39 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { postProcessCopy } from '../utils/copy';
-import { flattenLevels, flattenDeep } from '../utils/array';
-import { getUniqueIdentifierFromBase } from '../utils/naming';
+import { processAssignNames } from '../utils/serializedStateProcessing';
+import { replacementFromProp } from './Copy';
+import { deepClone } from '../utils/deepFunctions';
 
 
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
+  static assignNamesToReplacements = true;
+
+  static acceptTname = true;
+  static acceptProp = true;
+
+  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.maximumNumber = { default: undefined };
+    properties.maximumNumber = { default: null };
+    properties.componentIndex = { default: null };
+    properties.propIndex = { default: null };
     return properties;
   }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneTname = childLogic.newLeaf({
-      name: 'exactlyOneTname',
-      componentType: 'tname',
-      number: 1,
-    });
-
-    let exactlyOneComponentTypes = childLogic.newLeaf({
-      name: "exactlyOneComponentTypes",
+    childLogic.newLeaf({
+      name: "atMostOneComponentTypes",
       componentType: "componentTypes",
+      comparison: "atMost",
       number: 1,
-    })
-
-    let atMostOneProp = childLogic.newLeaf({
-      name: "atMostOneProp",
-      componentType: 'prop',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let tnameWithOptionalProp = childLogic.newOperator({
-      name: "tnameWithOptionalProp",
-      operator: "and",
-      propositions: [
-        exactlyOneTname,
-        atMostOneProp,
-        exactlyOneComponentTypes,
-      ],
+      takePropertyChildren: true,
       setAsBase: true
-    });
+    })
 
     return childLogic;
   }
@@ -56,24 +45,43 @@ export default class Collect extends CompositeComponent {
 
     stateVariableDefinitions.targetComponent = {
       returnDependencies: () => ({
-        tnameChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneTname",
-          variableNames: ["targetComponent"],
+        targetComponent: {
+          dependencyType: "targetComponent",
         },
       }),
-      defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.tnameChild.length === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              targetComponent: { variablesToCheck: "targetComponent" }
-            }
+        return {
+          newValues: {
+            targetComponent: dependencyValues.targetComponent
           }
         }
-        return { newValues: { targetComponent: dependencyValues.tnameChild[0].stateValues.targetComponent } }
       },
     };
+
+    stateVariableDefinitions.targetInactive = {
+      stateVariablesDeterminingDependencies: ["targetComponent"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.targetComponent) {
+          return {
+            targetIsInactiveCompositeReplacement: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.targetComponent.componentName,
+              variableName: "isInactiveCompositeReplacement"
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
+          }
+        }
+      },
+    };
+
 
     stateVariableDefinitions.targetName = {
       returnDependencies: () => ({
@@ -91,35 +99,24 @@ export default class Collect extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.useProp = {
+    stateVariableDefinitions.propName = {
       returnDependencies: () => ({
-        propChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneProp",
+        propName: {
+          dependencyType: "doenetAttribute",
+          attributeName: "propName"
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.propChild.length === 0) {
-          return {
-            newValues: {
-              useProp: false,
-            }
-          };
-        } else {
-          return {
-            newValues: {
-              useProp: true,
-            }
-          };
-        }
+        return { newValues: { propName: dependencyValues.propName } }
       }
     }
+
 
     stateVariableDefinitions.componentTypesToCollect = {
       returnDependencies: () => ({
         componentTypesChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneComponentTypes",
+          dependencyType: "child",
+          childLogicName: "atMostOneComponentTypes",
           variableNames: ["texts"],
         }
       }),
@@ -166,20 +163,35 @@ export default class Collect extends CompositeComponent {
     }
 
     stateVariableDefinitions.collectedComponents = {
-      stateVariablesDeterminingDependencies: ["componentTypesToCollect", "targetName"],
+      stateVariablesDeterminingDependencies: [
+        "componentTypesToCollect", "targetName", "propName", "componentIndex", "propIndex"
+      ],
       returnDependencies: function ({ stateValues }) {
         if (!stateValues.targetName) {
           return {};
         }
+
+        let descendants = {
+          dependencyType: "descendant",
+          ancestorName: stateValues.targetName,
+          componentTypes: stateValues.componentTypesToCollect,
+          useReplacementsForComposites: true,
+          includeNonActiveChildren: true,
+          recurseToMatchedChildren: false,
+          componentIndex: stateValues.componentIndex,
+        }
+
+        if (stateValues.propName) {
+          descendants.variableNames = [stateValues.propName];
+          descendants.variablesOptional = true;
+          descendants.componentIndex = stateValues.componentIndex;
+          descendants.propIndex = stateValues.propIndex;
+          descendants.publicCaseInsensitiveVariableMatch = true;
+          descendants.useMappedVariableNames = true;
+        }
+
         return {
-          descendants: {
-            dependencyType: "componentDescendantIdentity",
-            ancestorName: stateValues.targetName,
-            componentTypes: stateValues.componentTypesToCollect,
-            useReplacementsForComposites: true,
-            includeNonActiveChildren: true,
-            recurseToMatchedChildren: false,
-          },
+          descendants,
           maximumNumber: {
             dependencyType: "stateVariable",
             variableName: "maximumNumber"
@@ -209,337 +221,31 @@ export default class Collect extends CompositeComponent {
     }
 
 
-
-    stateVariableDefinitions.effectiveTargetClasses = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         collectedComponents: {
           dependencyType: "stateVariable",
-          variableName: "collectedComponents",
-        }
-      }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        let effectiveTargetClasses = dependencyValues.collectedComponents
-          .map(x => componentInfoObjects.allComponentClasses[x.componentType]);
-        return {
-          newValues: { effectiveTargetClasses }
-        };
-      },
-    };
-
-
-    stateVariableDefinitions.propVariableObjs = {
-      returnDependencies: () => ({
-        propChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneProp",
-          variableNames: ["propVariableObjs"],
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.propChild.length === 0) {
-          return {
-            newValues: {
-              propVariableObjs: null
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              propVariableObjs: dependencyValues.propChild[0].stateValues.propVariableObjs
-            }
-          }
-        }
-      }
-    }
-
-    // If there is no prop, replacementClasses are the effectiveTargetClasses
-    // If there is a prop, replacement classes are determined by componentType
-    // of propVariableObjs
-    // Except that, if propVariableObjs doesn't have componentType specified,
-    // then the componentType is determined by the actual statevariable of collected components
-    // We also track potentialReplacementClasses, which is all possible
-    // replacementClasses this copy might return if array parameters change
-    // (needed to load potential renderers)
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: [
-        "stateVariablesRequested", "validProp", "componentTypeByCollected",
-        "potentialReplacementClasses",
-        "propDependenciesSetUp"
-      ],
-      stateVariablesDeterminingDependencies: [
-        "propVariableObjs", "collectedComponents",
-      ],
-      returnDependencies: function ({ stateValues }) {
-        let dependencies = {
-          effectiveTargetClasses: {
-            dependencyType: "stateVariable",
-            variableName: "effectiveTargetClasses",
-          },
-          collectedComponents: {
-            dependencyType: "stateVariable",
-            variableName: "collectedComponents",
-          },
-          useProp: {
-            dependencyType: "stateVariable",
-            variableName: "useProp",
-          },
-          propVariableObjs: {
-            dependencyType: "stateVariable",
-            variableName: "propVariableObjs",
-          },
-        }
-
-
-        // if have a prop variable where couldn't determine componentType
-        // from just the component class, we will get 
-        // componentType of the actual statevariable
-        // of the collected component
-        // Also, get size for arrays and
-        // actual statevariable for array entries (so that can determine their size)
-        if (stateValues.propVariableObjs !== null) {
-          for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
-            if (!propVariableObj.componentType) {
-              dependencies[`replacementComponentType${ind}`] = {
-                dependencyType: "componentStateVariableComponentType",
-                componentIdentity: stateValues.collectedComponents[ind],
-                variableName: propVariableObj.varName,
-              }
-            }
-            if (propVariableObj.isArrayEntry) {
-              dependencies[`targetArray${ind}`] = {
-                dependencyType: "componentStateVariable",
-                variableName: propVariableObj.varName,
-                componentIdentity: stateValues.collectedComponents[ind],
-              }
-            } else if (propVariableObj.isArray) {
-              dependencies[`targetArraySize${ind}`] = {
-                dependencyType: "componentStateVariableArraySize",
-                componentIdentity: stateValues.collectedComponents[ind],
-                variableName: propVariableObj.varName,
-              }
-            }
-          }
-        }
-        return dependencies;
-      },
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        if (!dependencyValues.useProp) {
-          return {
-            newValues: {
-              replacementClasses: dependencyValues.effectiveTargetClasses,
-              stateVariablesRequested: null,
-              validProp: null,
-              propDependenciesSetUp: true,
-              componentTypeByCollected: null,
-              potentialReplacementClasses: dependencyValues.effectiveTargetClasses,
-            }
-          };
-        }
-
-        if (dependencyValues.propVariableObjs === null) {
-          return {
-            newValues: {
-              replacementClasses: [],
-              stateVariablesRequested: null,
-              validProp: false,
-              propDependenciesSetUp: true,
-              componentTypeByCollected: null,
-              potentialReplacementClasses: [],
-            }
-          };
-        }
-
-
-        let replacementClasses = [];
-        let stateVariablesRequested = [];
-        let componentTypeByCollected = [];
-        let potentialReplacementClasses = [];
-        let propDependenciesSetUp = true;
-
-        for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
-          let componentType = propVariableObj.componentType;
-          if (!componentType) {
-            componentType = dependencyValues[`replacementComponentType${ind}`];
-            if (!componentType) {
-              continue;
-            }
-          }
-
-          if (Array.isArray(componentType)) {
-            // remove undefined componentType entries
-            // (It might be possible to have as it has happened with copy)
-            componentType = componentType.filter(x => x);
-
-            replacementClasses.push(...componentType.map(x =>
-              componentInfoObjects.allComponentClasses[x])
-            );
-            potentialReplacementClasses.push(...componentType.map(x =>
-              componentInfoObjects.allComponentClasses[x])
-            )
-          } else if (propVariableObj.isArray) {
-            if (dependencyValues[`targetArraySize${ind}`] === undefined) {
-              propDependenciesSetUp = false;
-              continue;
-            }
-
-            // let arrayLength;
-            let arraySize = dependencyValues[`targetArraySize${ind}`];
-            let numWrappingComponents = propVariableObj.wrappingComponents.length;
-            let arrayLength = 1;
-
-            // console.log(`arraySize: ${arraySize}`)
-
-            if (numWrappingComponents === 0) {
-              // array size is total number of entries in array
-              if (propVariableObj.nDimensions === 1) {
-                // This is the most common case
-                arrayLength = arraySize[0];
-              } else {
-                arrayLength = arraySize.reduce((a, c) => a * c); // product of entries
-              }
-            } else if (numWrappingComponents < propVariableObj.nDimensions) {
-              // if had an outer wrapping component, would just have a single component
-              // so skip that case
-
-              // product of array size entries after excluding the first
-              // numWrappingComponents dimensions
-              arrayLength = arraySize.slice(numWrappingComponents).reduce((a, c) => a * c, 1);
-
-            }
-
-            let componentClass = componentInfoObjects.allComponentClasses[componentType];
-            replacementClasses.push(...Array(arrayLength).fill(componentClass));
-            componentType = Array(arrayLength).fill(componentType);
-            potentialReplacementClasses.push(componentClass)
-
-
-          } else if (propVariableObj.isArrayEntry) {
-
-            let arrayLength = 1;
-            if (!(`targetArray${ind}` in dependencyValues)) {
-              propDependenciesSetUp = false;
-              continue;
-            }
-            let targetArrayEntry = dependencyValues[`targetArray${ind}`];
-            if (Array.isArray(targetArrayEntry)) {
-              let numWrappingComponents = propVariableObj.wrappingComponents.length;
-
-              if (numWrappingComponents === 0) {
-                // with no wrapping components, will just output
-                // one component for each component of the array
-                arrayLength = flattenDeep(targetArrayEntry).length;
-              } else if (numWrappingComponents < propVariableObj.nDimensions) {
-                // if had an outer wrapping component, would just have a single component
-                // so skip that case
-                if (numWrappingComponents === propVariableObj.nDimensions - 1) {
-                  // if the second from outer dimension is wrapped
-                  // then just count the number of entries in the original array
-                  arrayLength = targetArrayEntry.length;
-                } else {
-                  // if have at least two unwrapped dimensions,
-                  // flatten the array so that the entries counted are the outermost wrapped
-                  // Note: we need to create a 3D array entry to access this,
-                  // so this code is so far untested
-                  let nLevelsToFlatten = propVariableObj.nDimensions - numWrappingComponents - 1;
-                  arrayLength = flattenLevels(targetArrayEntry, nLevelsToFlatten).length;
-                }
-              }
-            } else if (targetArrayEntry === undefined) {
-              arrayLength = 0;
-            }
-
-            // console.log(`arrayLength for ${propVariableObj.varName}: ${arrayLength}`)
-            let componentClass = componentInfoObjects.allComponentClasses[componentType];
-            replacementClasses.push(...Array(arrayLength).fill(componentClass));
-            componentType = Array(arrayLength).fill(componentType);
-            potentialReplacementClasses.push(componentClass)
-          } else {
-            replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
-            potentialReplacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
-          }
-
-          componentTypeByCollected.push(componentType);
-
-          stateVariablesRequested.push({
-            componentOrReplacementOf: dependencyValues.collectedComponents[ind].componentName,
-            stateVariable: propVariableObj.varName,
-          })
-        }
-
-        return {
-          newValues: {
-            replacementClasses,
-            stateVariablesRequested,
-            validProp: true,
-            propDependenciesSetUp,
-            componentTypeByCollected,
-            potentialReplacementClasses,
-          }
-        };
-
-      }
-    }
-
-
-
-    stateVariableDefinitions.readyToExpand = {
-      returnDependencies: () => ({
-        replacementClasses: {
-          dependencyType: "stateVariable",
-          variableName: "replacementClasses"
+          variableName: "collectedComponents"
         },
         needsReplacementsUpdatedWhenStale: {
           dependencyType: "stateVariable",
           variableName: "needsReplacementsUpdatedWhenStale"
         },
-        propDependenciesSetUp: {
-          dependencyType: "stateVariable",
-          variableName: "propDependenciesSetUp"
-        }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { readyToExpand: dependencyValues.propDependenciesSetUp }
+      definition: () => ({
+        newValues: { readyToExpand: true }
       })
     }
 
 
-    // similar to collectedComponents state variable
-    // but include prop variable if have a prop
-    // Note: this collects components a second time when have a prop
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
-      stateVariablesDeterminingDependencies: [
-        "componentTypesToCollect", "targetName", "propVariableObjs"
-      ],
-      returnDependencies: function ({ stateValues }) {
-        let dependencies = {
-          maximumNumber: {
-            dependencyType: "stateVariable",
-            variableName: "maximumNumber"
-          }
-        }
-
-        if (stateValues.propVariableObjs === null) {
-          dependencies.collectedComponents = {
+      returnDependencies() {
+        return {
+          collectedComponents: {
             dependencyType: "stateVariable",
             variableName: "collectedComponents"
           }
-        } else {
-          dependencies.descendantsWithProp = {
-            dependencyType: "componentDescendantStateVariables",
-            variableNames: [stateValues.propVariableObjs[0].varName],
-            ancestorName: stateValues.targetName,
-            componentTypes: stateValues.componentTypesToCollect,
-            useReplacementsForComposites: true,
-            includeNonActiveChildren: true,
-            recurseToMatchedChildren: false,
-          }
-          dependencies.replacementClasses = {
-            dependencyType: "stateVariable",
-            variableName: "replacementClasses"
-          }
         }
-
-        return dependencies;
       },
       // the whole point of this state variable is to return updateReplacements
       // on mark stale
@@ -557,14 +263,14 @@ export default class Collect extends CompositeComponent {
 
 
 
-  static createSerializedReplacements({ component, components, workspace }) {
+  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
-    if (component.stateValues.targetComponent === undefined) {
+    if (!component.stateValues.targetComponent) {
       return { replacements: [] };
     }
 
@@ -578,7 +284,7 @@ export default class Collect extends CompositeComponent {
     workspace.uniqueIdentifiersUsedByCollected = {};
 
     for (let collectedNum = 0; collectedNum < component.stateValues.collectedComponents.length; collectedNum++) {
-      if (component.stateValues.collectedComponents[collectedNum] !== undefined) {
+      if (component.stateValues.collectedComponents[collectedNum]) {
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
         let results = this.createReplacementForCollected({
           component,
@@ -586,6 +292,7 @@ export default class Collect extends CompositeComponent {
           components,
           numReplacementsSoFar,
           uniqueIdentifiersUsed,
+          componentInfoObjects
         });
 
         workspace.propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
@@ -608,39 +315,18 @@ export default class Collect extends CompositeComponent {
 
 
 
-  static createReplacementForCollected({ component, components, collectedNum, numReplacementsSoFar, uniqueIdentifiersUsed }) {
+  static createReplacementForCollected({ component, components, collectedNum,
+    numReplacementsSoFar, uniqueIdentifiersUsed, componentInfoObjects }) {
 
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
-    if (!component.stateValues.useProp) {
 
-      let target = components[component.stateValues.collectedComponents[collectedNum].componentName];
-
-      let serializedCopy = [target.serialize({ forCopy: true })];
-
-      return {
-        serializedReplacements: postProcessCopy({
-          serializedComponents: serializedCopy,
-          componentName: component.componentName,
-          uniqueIdentifiersUsed, identifierPrefix: collectedNum + "|"
-        })
-      };
-    }
+    let collectedObj = component.stateValues.collectedComponents[collectedNum];
+    let collectedName = collectedObj.componentName;
+    let collectedComponent = components[collectedName];
 
     let serializedReplacements = [];
     let propVariablesCopiedByReplacement = [];
-
-    let replacementInd = numReplacementsSoFar - 1;
-    let propVariableObj = component.stateValues.propVariableObjs[collectedNum];
-    let componentTypes = component.stateValues.componentTypeByCollected[collectedNum];
-
-    let numReplacementsForCollected = 1;
-    if (Array.isArray(componentTypes)) {
-      numReplacementsForCollected = componentTypes.length;
-    }
-
-    let collectedName = component.stateValues.collectedComponents[collectedNum].componentName;
-    let collectedComponent = components[collectedName];
 
     // since we delayed recalculating descendants,
     // it's possible that a collectedComponent no longer exists
@@ -650,405 +336,55 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
-    let stateVarObj = collectedComponent.state[propVariableObj.varName];
-
-    if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
-
-      let arrayStateVarObj, unflattenedArrayKeys;
-      if (stateVarObj.isArray) {
-        arrayStateVarObj = stateVarObj;
-        unflattenedArrayKeys = stateVarObj.getAllArrayKeys(stateVarObj.arraySize, false);
-      } else {
-        arrayStateVarObj = collectedComponent.state[stateVarObj.arrayStateVariable];
-        unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
-      }
-
-      let wrappingComponents = stateVarObj.wrappingComponents;
-      let numWrappingComponents = wrappingComponents.length;
-
-      if (numWrappingComponents === 0) {
-        // return flattened entries
-
-        let flattenedArrayKeys = flattenDeep(unflattenedArrayKeys);
-
-        for (let ind = 0; ind < numReplacementsForCollected; ind++) {
-          replacementInd++;
-
-          let propVariablesCopied = propVariablesCopiedByReplacement[ind] = [];
-
-          let replacementClass = component.stateValues.replacementClasses[replacementInd];
-
-          let componentType = replacementClass.componentType
-
-          let arrayKey = flattenedArrayKeys[ind];
-
-          if (arrayKey) {
-
-            let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-
-            propVariablesCopied.push(propVariable);
-
-            if (propVariableObj.containsComponentNamesToCopy) {
-
-              let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-              let componentToCopy = components[componentNameToCopy];
-
-              if (componentToCopy) {
-                while (componentToCopy.replacementOf
-                  && componentToCopy.replacementOf.replacements.length === 1
-                ) {
-                  componentToCopy = componentToCopy.replacementOf;
-                }
-
-                let stateForReplacementCopy;
-                if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
-                  stateForReplacementCopy = {
-                    targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
-                  }
-                }
-
-                // use collectedNum in unique identifier
-                // as we have separate uniqueIdentifiersUsed for each source
-                let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                serializedReplacements.push({
-                  componentType: "copy",
-                  children: [{
-                    componentType: "tname",
-                    state: { targetName: componentToCopy.componentName },
-                  }],
-                  state: stateForReplacementCopy,
-                  uniqueIdentifier,
-                });
-
-                propVariablesCopied.push(componentToCopy.componentName)
-
-              } else {
-                // just give an empty component of componentType
-                // use collectedNum in unique identifier
-                // as we have separate uniqueIdentifiersUsed for each source
-                let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                serializedReplacements.push({
-                  componentType,
-                  uniqueIdentifier,
-                })
-                propVariablesCopied.push(null)
-
-              }
-
-            } else {
-
-              // don't need to use collectedNum in unique identifier
-              // even though we have separate uniqueIdentifiersUsed for each source
-              // as collectedName will be unique
-              let uniqueIdentifierBase = collectedName + "|shadow|" + propVariable;
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              serializedReplacements.push({
-                componentType,
-                downstreamDependencies: {
-                  [collectedName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
-                },
-                uniqueIdentifier
-              })
-            }
-          } else {
-            // didn't match an array key, so just add an empty component of componentType
-            // use collectedNum in unique identifier
-            // as we have separate uniqueIdentifiersUsed for each source
-            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier,
-            })
-
-          }
-        }
-      } else {
-
-        let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
-
-          let pieces = [];
-          let propVariablesCopiedByPiece = [];
-
-          if (nDimensionsLeft > 1) {
-            // since nDimensionsLeft > 1, each component of subArray should be an array
-            for (let subSubArrayKeys of subArrayKeys) {
-              // recurse down to previous dimension
-              let result = createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1);
-              pieces.push(...result.pieces);
-              propVariablesCopiedByPiece.push(...result.propVariablesCopiedByPiece);
-            }
-
-          } else {
-            // down to last piece
-            for (let arrayKey of subArrayKeys) {
-              let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-              let propVariablesCopiedForThisPiece = [propVariable];
-
-              if (propVariableObj.containsComponentNamesToCopy) {
-
-                let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-                let componentToCopy = components[componentNameToCopy];
-
-                if (componentToCopy) {
-                  while (componentToCopy.replacementOf
-                    && componentToCopy.replacementOf.replacements.length === 1
-                  ) {
-                    componentToCopy = componentToCopy.replacementOf;
-                  }
-
-                  let stateForReplacementCopy;
-                  if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
-                    stateForReplacementCopy = {
-                      targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
-                    }
-                  }
-
-                  // use collectedNum in unique identifier
-                  // as we have separate uniqueIdentifiersUsed for each source
-                  let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
-                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                  pieces.push({
-                    componentType: "copy",
-                    children: [{
-                      componentType: "tname",
-                      state: { targetName: componentToCopy.componentName },
-                    }],
-                    state: stateForReplacementCopy,
-                    uniqueIdentifier
-                  });
-                  propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
-
-                } else {
-                  // just give an empty component of componentType
-                  // use collectedNum in unique identifier
-                  // as we have separate uniqueIdentifiersUsed for each source
-                  let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
-                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                  pieces.push({
-                    componentType: arrayStateVarObj.componentType,
-                    uniqueIdentifier,
-                  })
-                  propVariablesCopiedForThisPiece.push(null)
-
-                }
-
-              } else {
-
-                // don't need to use collectedNum in unique identifier
-                // even though we have separate uniqueIdentifiersUsed for each source
-                // as collectedName will be unique
-                let uniqueIdentifierBase = collectedName + "|shadow|" + propVariable;
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                pieces.push({
-                  componentType: arrayStateVarObj.componentType,
-                  downstreamDependencies: {
-                    [collectedName]: [{
-                      dependencyType: "referenceShadow",
-                      compositeName: component.componentName,
-                      propVariable
-                    }]
-                  },
-                  uniqueIdentifier
-                })
-              }
-              propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
-
-            }
-          }
-
-          // we wrap this dimension if have corresponding wrapping components
-          let wrapCs = wrappingComponents[nDimensionsLeft - 1];
-          if (wrapCs && wrapCs.length > 0) {
-            for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
-
-              // use collectedNum in unique identifier
-              // as we have separate uniqueIdentifiersUsed for each source
-              let uniqueIdentifierBase = wrapCs[ind] + "|" + collectedNum + "|wrapper";
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              pieces = [{
-                componentType: wrapCs[ind],
-                children: pieces,
-                uniqueIdentifier
-              }]
-            }
-            propVariablesCopiedByPiece = [flattenDeep(propVariablesCopiedByPiece)];
-
-          }
-
-          return { pieces, propVariablesCopiedByPiece };
-
-        }
-
-        let result = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
-
-        let newReplacements = result.pieces;
-        propVariablesCopiedByReplacement = result.propVariablesCopiedByPiece;
-
-        // add downstream dependencies to top level replacements
-        // (which are wrappers, so didn't get downstream dependencies originally)
-        for (let replacement of newReplacements) {
-          replacement.downstreamDependencies = {
-            [collectedName]: [{
-              dependencyType: "referenceShadow",
-              compositeName: component.componentName,
-              propVariable: propVariableObj.varName,
-              ignorePrimaryStateVariable: true,
-            }]
-          }
-        }
-
-        replacementInd += newReplacements.length;
-
-        serializedReplacements.push(...newReplacements);
-
-        if (newReplacements.length < numReplacementsForCollected) {
-          // we didn't create enough replacements,
-          // (not sure if could happen since we don't have includeUndefinedArrayEntries for collect)
-
-          // just create additional replacements,
-          // even though they won't yet refer to the right dependencies
-
-          for (let ind = newReplacements.length; ind < numReplacementsForCollected; ind++) {
-            replacementInd++;
-            propVariablesCopiedByReplacement[ind] = [];
-
-            let replacementClass = component.stateValues.replacementClasses[replacementInd];
-            let componentType = replacementClass.componentType.toLowerCase();
-
-            // just add an empty component of componentType
-            // use collectedNum in unique identifier
-            // as we have separate uniqueIdentifiersUsed for each source
-            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier
-            })
-          }
-
-        } else if (newReplacements > numReplacementsForCollected) {
-          throw Error(`Something went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
-        }
-
-      }
+    if (component.stateValues.propName) {
+
+      let results = replacementFromProp({
+        component, components,
+        replacementSources: [collectedObj],
+        numReplacementsSoFar,
+        uniqueIdentifiersUsed,
+      })
+
+      serializedReplacements = results.serializedReplacements;
+      propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
     } else {
-      // if not array or array entry
 
-      for (let ind = 0; ind < numReplacementsForCollected; ind++) {
-        replacementInd++;
-        let propVariablesCopied = propVariablesCopiedByReplacement[ind] = [];
+      let serializedCopy = [collectedComponent.serialize({ forCopy: true })];
 
-        let replacementClass = component.stateValues.replacementClasses[replacementInd];
+      serializedReplacements = postProcessCopy({
+        serializedComponents: serializedCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed, identifierPrefix: collectedNum + "|"
+      });
 
-        let componentType = replacementClass.componentType
-
-        propVariablesCopied.push(propVariableObj.varName);
-
-        if (propVariableObj.containsComponentNamesToCopy) {
-
-          let componentNameToCopy = sourceComponent.state[propVariableObj.varName].value
-          let componentToCopy = components[componentNameToCopy];
-
-          if (componentToCopy) {
-            while (componentToCopy.replacementOf
-              && componentToCopy.replacementOf.replacements.length === 1
-            ) {
-              componentToCopy = componentToCopy.replacementOf;
-            }
-
-            if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
-              stateForReplacementCopy = {
-                targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
-              }
-            }
-
-            // use collectedNum in unique identifier
-            // as we have separate uniqueIdentifiersUsed for each source
-            let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType: "copy",
-              children: [{
-                componentType: "tname",
-                state: { targetName: componentToCopy.componentName },
-              }],
-              uniqueIdentifier
-            });
-
-            propVariablesCopied.push(componentToCopy.componentName);
-
-          } else {
-            // just give an empty component of componentType
-            // use collectedNum in unique identifier
-            // as we have separate uniqueIdentifiersUsed for each source
-            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-            serializedReplacements.push({
-              componentType,
-              uniqueIdentifier,
-            })
-
-            propVariablesCopied.push(null);
-
-          }
-
-        } else {
-
-          // don't need to use collectedNum in unique identifier
-          // even though we have separate uniqueIdentifiersUsed for each source
-          // as collectedName will be unique
-          let uniqueIdentifierBase = collectedName + "|shadow|" + propVariableObj.varName;
-          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [collectedName]: [{
-                dependencyType: "referenceShadow",
-                compositeName: component.componentName,
-                propVariable: propVariableObj.varName,
-              }]
-            },
-            uniqueIdentifier
-          })
-        }
-      }
     }
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: serializedReplacements,
+      parentName: component.componentName,
+      indOffset: numReplacementsSoFar,
+      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      componentInfoObjects,
+    });
+
+    serializedReplacements = processResult.serializedComponents;
 
     return { serializedReplacements, propVariablesCopiedByReplacement };
 
   }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
+  static calculateReplacementChanges({ component, componentChanges, components, workspace,
+    componentInfoObjects }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
+    // console.log(component.stateValues.collectedComponents.map(x => x.componentName))
+    // console.log(deepClone(workspace));
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
-
-    if (!component.stateValues.propDependenciesSetUp) {
-      return [];
-    }
 
     let replacementChanges = [];
 
@@ -1057,33 +393,47 @@ export default class Collect extends CompositeComponent {
     let numReplacementsByCollected = [];
     let propVariablesCopiedByCollected = [];
 
-    // // cumulative sum: https://stackoverflow.com/a/44081700
-    // let replacementIndexByCollected = [0, ...workspace.numReplacementsByCollected];
-    // replacementIndexByCollected = replacementIndexByCollected.reduce(
-    //   (a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-
-
     let maxCollectedLength = Math.max(component.stateValues.collectedComponents.length, workspace.numReplacementsByCollected.length);
+
+    let recreateRemaining = false;
 
     for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
       let collected = component.stateValues.collectedComponents[collectedNum];
       if (collected === undefined) {
         if (workspace.numReplacementsByCollected[collectedNum] > 0) {
-          let replacementInstruction = {
-            changeType: "delete",
-            changeTopLevelReplacements: true,
-            firstReplacementInd: numReplacementsSoFar,
-            numberReplacementsToDelete: workspace.numReplacementsByCollected[collectedNum],
+
+          if (!recreateRemaining) {
+            // since deleting replacement will shift the remaining replacements
+            // and change resulting names,
+            // delete all remaining and mark to be recreated
+
+            let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+              .reduce((a, c) => a + c, 0);
+
+            if (numberReplacementsLeft > 0) {
+              let replacementInstruction = {
+                changeType: "delete",
+                changeTopLevelReplacements: true,
+                firstReplacementInd: numReplacementsSoFar,
+                numberReplacementsToDelete: numberReplacementsLeft,
+              }
+              replacementChanges.push(replacementInstruction);
+            }
+
+            recreateRemaining = true;
+
+            // since deleted remaining, change in workspace
+            // so that don't attempt to delete again
+            workspace.numReplacementsByCollected.slice(collectedNum)
+              .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
+
           }
 
-          replacementChanges.push(replacementInstruction);
-
-          numReplacementsByCollected[collectedNum] = 0;
-
-          delete workspace.uniqueIdentifiersUsedByCollected[collectedNum];
+          workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
 
         }
 
+        numReplacementsByCollected[collectedNum] = 0;
         propVariablesCopiedByCollected.push([]);
 
         continue;
@@ -1092,21 +442,30 @@ export default class Collect extends CompositeComponent {
       let prevCollectedName = workspace.collectedNames[collectedNum];
 
       // check if collected has changed
-      if (prevCollectedName === undefined || collected.componentName !== prevCollectedName) {
+      if (prevCollectedName === undefined || collected.componentName !== prevCollectedName
+        || recreateRemaining
+      ) {
 
         let prevNumReplacements = 0;
         if (prevCollectedName !== undefined) {
           prevNumReplacements = workspace.numReplacementsByCollected[collectedNum];
         }
+
+        let numReplacementsToDelete = prevNumReplacements;
+        if (recreateRemaining) {
+          // already deleted old replacements
+          numReplacementsToDelete = 0;
+        }
+
         let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
         let results = this.recreateReplacements({
           component,
           collectedNum,
           numReplacementsSoFar,
-          prevNumReplacements,
-          replacementChanges,
+          numReplacementsToDelete,
           components,
-          uniqueIdentifiersUsed
+          uniqueIdentifiersUsed,
+          componentInfoObjects
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -1115,10 +474,35 @@ export default class Collect extends CompositeComponent {
 
         propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
 
+        let replacementInstruction = results.replacementInstruction;
+
+        if (!recreateRemaining) {
+          if (results.numReplacements !== prevNumReplacements) {
+            // we changed the number of replacements which shifts remaining ones
+            // since names won't match, we need to delete 
+            // all the remaining replacements and recreate them
+
+            let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+              .reduce((a, c) => a + c, 0);
+
+            replacementInstruction.numberReplacementsToReplace = numberReplacementsLeft;
+
+            recreateRemaining = true;
+
+            // since deleted remaining, change in workspace
+            // so that don't attempt to delete again
+            workspace.numReplacementsByCollected.slice(collectedNum)
+              .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
+
+          }
+        }
+
+        replacementChanges.push(replacementInstruction);
+
         continue;
       }
 
-      if (!component.stateValues.useProp) {
+      if (!component.stateValues.propName) {
         numReplacementsSoFar += workspace.numReplacementsByCollected[collectedNum];
         numReplacementsByCollected[collectedNum] = workspace.numReplacementsByCollected[collectedNum];
         continue;
@@ -1135,6 +519,7 @@ export default class Collect extends CompositeComponent {
         components,
         numReplacementsSoFar,
         uniqueIdentifiersUsed,
+        componentInfoObjects
       });
 
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -1144,41 +529,53 @@ export default class Collect extends CompositeComponent {
       let nNewReplacements = newSerializedReplacements.length;
       let nOldReplacements = workspace.numReplacementsByCollected[collectedNum];
 
-      for (let ind = 0; ind < Math.min(nNewReplacements, nOldReplacements); ind++) {
-        if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByCollected[collectedNum][ind].length ||
-          workspace.propVariablesCopiedByCollected[collectedNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
-        ) {
+      if (nNewReplacements !== nOldReplacements) {
+        // changing the number of replacements will shift the remaining replacements
+        // and change resulting names,
+        // delete all remaining and mark to be recreated
 
-          let replacementInstruction = {
-            changeType: "add",
-            changeTopLevelReplacements: true,
-            firstReplacementInd: numReplacementsSoFar + ind,
-            numberReplacementsToReplace: 1,
-            serializedReplacements: [newSerializedReplacements[ind]],
-          };
-          replacementChanges.push(replacementInstruction);
-        }
-      }
+        let numberReplacementsLeft = workspace.numReplacementsByCollected.slice(collectedNum)
+          .reduce((a, c) => a + c, 0);
 
-      if (nNewReplacements > nOldReplacements) {
         let replacementInstruction = {
           changeType: "add",
           changeTopLevelReplacements: true,
-          firstReplacementInd: numReplacementsSoFar + nOldReplacements,
-          numberReplacementsToReplace: 0,
-          serializedReplacements: newSerializedReplacements.slice(nOldReplacements),
+          firstReplacementInd: numReplacementsSoFar,
+          numberReplacementsToReplace: numberReplacementsLeft,
+          serializedReplacements: newSerializedReplacements,
+          assignNamesOffset: numReplacementsSoFar,
         };
-        replacementChanges.push(replacementInstruction);
-      } else if (nNewReplacements < nOldReplacements) {
-        let replacementInstruction = {
-          changeType: "delete",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: numReplacementsSoFar + nNewReplacements,
-          numberReplacementsToDelete: nOldReplacements - nNewReplacements,
-        }
 
         replacementChanges.push(replacementInstruction);
+
+        recreateRemaining = true;
+
+        // since deleted remaining, change in workspace
+        // so that don't attempt to delete again
+        workspace.numReplacementsByCollected.slice(collectedNum)
+          .forEach((v, i) => workspace.numReplacementsByCollected[i] = 0)
+
+
+      } else {
+
+        for (let ind = 0; ind < nNewReplacements; ind++) {
+          if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByCollected[collectedNum][ind].length ||
+            workspace.propVariablesCopiedByCollected[collectedNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
+          ) {
+
+            let replacementInstruction = {
+              changeType: "add",
+              changeTopLevelReplacements: true,
+              firstReplacementInd: numReplacementsSoFar + ind,
+              numberReplacementsToReplace: 1,
+              serializedReplacements: [newSerializedReplacements[ind]],
+              assignNamesOffset: numReplacementsSoFar + ind,
+            };
+            replacementChanges.push(replacementInstruction);
+          }
+        }
       }
+
 
       numReplacementsSoFar += nNewReplacements;
 
@@ -1197,31 +594,22 @@ export default class Collect extends CompositeComponent {
 
   }
 
-  // getReferenceFromCollected(component) {
-  //   let collectedDeps = {};
-
-  //   let thisDep = this.downstreamDependencies[component.componentName];
-  //   if (thisDep === undefined) {
-  //     return {};
-  //   }
-
-  //   collectedDeps[component.componentName] = thisDep;
-
-  //   if (!(component instanceof this.componentInfoObjects.allComponentClasses['_composite'])) {
-  //     for (let child of component.definingChildren) {
-  //       Object.assign(collectedDeps, this.getReferenceFromCollected(child));
-  //     }
-  //   }
-
-  //   return collectedDeps;
-  // }
+  static deleteRemainingReplacements({ collectedNum, numReplacementsSoFar }) {
 
 
-  static recreateReplacements({ component, collectedNum, numReplacementsSoFar, prevNumReplacements,
-    replacementChanges, uniqueIdentifiersUsed, components }) {
+    return replacementInstruction;
+
+  }
+
+
+  static recreateReplacements({ component, collectedNum, numReplacementsSoFar,
+    numReplacementsToDelete,
+    uniqueIdentifiersUsed, components, componentInfoObjects
+  }) {
 
     let results = this.createReplacementForCollected({
-      component, collectedNum, components, numReplacementsSoFar, uniqueIdentifiersUsed
+      component, collectedNum, components, numReplacementsSoFar, uniqueIdentifiersUsed,
+      componentInfoObjects
     });
 
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -1232,12 +620,16 @@ export default class Collect extends CompositeComponent {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: numReplacementsSoFar,
-      numberReplacementsToReplace: prevNumReplacements,
+      numberReplacementsToReplace: numReplacementsToDelete,
       serializedReplacements: newSerializedChildren,
+      assignNamesOffset: numReplacementsSoFar,
     };
-    replacementChanges.push(replacementInstruction);
 
-    return { numReplacements: newSerializedChildren.length, propVariablesCopiedByReplacement }
+    return {
+      numReplacements: newSerializedChildren.length,
+      propVariablesCopiedByReplacement,
+      replacementInstruction
+    }
   }
 
 }

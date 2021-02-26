@@ -499,11 +499,13 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
     <triangle>
-      (0,0),(6,0),(0,6)
+      <vertices>(0,0),(6,0),(0,6)</vertices>
     </triangle>
     <point>
-      (10,10)
+      <constraints>
       <constrainTo><copy tname="_triangle1" /></constrainTo>
+      </constraints>
+      <x>10</x><y>10</y>
     </point>
   </graph>
   `}, "*");
@@ -586,10 +588,10 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle>(1,2),(3,4),(-5,6)</triangle>
+  <triangle><vertices>(1,2),(3,4),(-5,6)</vertices></triangle>
 
   <triangle>
-    <point>
+    <vertices><point>
       <x>
         <extract prop="y"><copy prop="vertex1" tname="_triangle1" /></extract>
       </x>
@@ -602,6 +604,7 @@ describe('Triangle Tag Tests', function () {
       <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
     </point>
     <copy tname="flip3" />
+    </vertices>
   </triangle>
   </graph>
 
@@ -686,9 +689,10 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle>(1,2)</triangle>
+  <triangle><vertices>(1,2)</vertices></triangle>
 
   <triangle>
+    <vertices>
     <point>
       <x>
         <extract prop="y"><copy prop="vertex1" tname="_triangle1" /></extract>
@@ -702,6 +706,7 @@ describe('Triangle Tag Tests', function () {
       <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
     </point>
     <copy tname="flip3" />
+    </vertices>
   </triangle>
   </graph>
 
@@ -787,12 +792,14 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
   <triangle>
+    <vertices>
     <point name="A">
       <x><copy prop="y" tname="B" /></x>
       <y><copy prop="x" tname="B" /></y>
     </point>
     <point name="B">(3,5)</point>
     <point name="C">(-5,2)</point>
+    </vertices>
   </triangle>
   </graph>
   `}, "*");
@@ -842,12 +849,14 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
   <triangle>
+    <vertices>
     <point>
       <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
       <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
     </point>
     <point>(3,5)</point>
     <point>(-5,2)</point>
+    </vertices>
   </triangle>
   </graph>
   `}, "*");
@@ -897,10 +906,12 @@ describe('Triangle Tag Tests', function () {
   <text>a</text>
   <graph>
   <triangle>
+    <vertices>
     <point>
       <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
       <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
     </point>
+    </vertices>
   </triangle>
   </graph>
   `}, "*");

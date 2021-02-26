@@ -1,53 +1,44 @@
-import InlineComponent from './abstract/InlineComponent';
+import BaseComponent from './abstract/BaseComponent';
 
-export default class Variants extends InlineComponent {
+export default class Variants extends BaseComponent {
   static componentType = "variants";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static stateVariableForPropertyValue = "variants";
 
-    let atLeastZeroVariants = childLogic.newLeaf({
-      name: "atLeastZeroVariants",
-      componentType: 'variant',
-      comparison: 'atLeast',
-      number: 0
-    });
 
-    let breakStringIntoVariantsByCommas = function ({ dependencyValues }) {
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-      let stringChild = dependencyValues.stringChild[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
+    let breakStringIntoVariantsByCommas = function ({ matchedChildren }) {
+      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
         componentType: "variant",
         state: { value: x.trim() }
       }));
       return {
         success: true,
         newChildren: newChildren,
-        toDelete: [stringChild.componentName],
       }
     }
 
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroVariants"],
-      replacementFunction: breakStringIntoVariantsByCommas,
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: breakStringIntoVariantsByCommas
     });
 
-    childLogic.newOperator({
-      name: "VariantsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, atLeastZeroVariants],
+    return sugarInstructions;
+
+  }
+
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: "atLeastZeroVariants",
+      componentType: 'variant',
+      comparison: 'atLeast',
+      number: 0,
       setAsBase: true,
     });
 
@@ -64,7 +55,7 @@ export default class Variants extends InlineComponent {
       componentType: "number",
       returnDependencies: () => ({
         variantChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVariants",
         }
       }),
@@ -92,7 +83,7 @@ export default class Variants extends InlineComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             variantChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroVariants",
               variableNames: ["value"],
               childIndices: [arrayKey]

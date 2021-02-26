@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.12.10",
-    "@blueprintjs/datetime": "^3.18.3",
+    "@blueprintjs/datetime": "^3.20.5",
     "@codemirror/next": "^0.10.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^5.15.1",
@@ -14,7 +14,7 @@
     "brace": "^0.11.1",
     "codemirror": "^5.59.2",
     "compromise": "~12.3.0",
-    "compromise-numbers": "^1.0.0",
+    "compromise-numbers": "^1.2.0",
     "crypto": "^1.0.1",
     "csv-parse": "^4.14.1",
     "csv-parser": "^2.3.5",
@@ -32,6 +32,7 @@
     "react-draggable": "3.0.5",
     "react-dropzone": "^11.2.4",
     "react-indexed-db": "^1.0.12",
+    "react-is": "^17.0.1",
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
     "react-router": "^5.2.0",
@@ -94,10 +95,10 @@
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.7",
     "url-loader": "^1.1.2",
-    "wait-on": "^5.2.0",
+    "wait-on": "^5.2.1",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.2"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.2"

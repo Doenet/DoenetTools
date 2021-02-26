@@ -171,14 +171,14 @@ describe('Group Tag Tests',function() {
     Number list:
     <aslist>
     <map>
-    <template><math simplify><copyFromSubs/>^2</math></template>
-    <substitutions>
+    <template><math simplify><copySource/>^2</math></template>
+    <sources>
     <sequence>
       <from><copy prop="value" tname="from" /></from>
       <to><copy prop="value" tname="to" /></to>
       <count><copy prop="value" tname="count" /></count>
     </sequence>
-    </substitutions>
+    </sources>
     </map>
     </aslist>
     </group>

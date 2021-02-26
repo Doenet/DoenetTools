@@ -56,7 +56,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <lineSegment>(3,-8)</lineSegment>
+    <lineSegment><endpoints>(3,-8)</endpoints></lineSegment>
   </graph>
   `}, "*");
     });
@@ -96,7 +96,7 @@ describe('LineSegment Tag Tests', function () {
 
   })
 
-  it('lineSegment with sugared copied points', () => {
+  it('lineSegment with copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -105,8 +105,10 @@ describe('LineSegment Tag Tests', function () {
   <point label='P'>(3,5)</point>
   <point label='Q'>(-4,-1)</point>
     <lineSegment>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
+      <endpoints>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+      </endpoints>
     </lineSegment>
   </graph>
   `}, "*");
@@ -171,13 +173,13 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with sugared string', () => {
+  it('lineSegment with endpoints containing sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <lineSegment>(3,5),(-4,9)</lineSegment>
+    <lineSegment><endpoints>(3,5),(-4,9)</endpoints></lineSegment>
   </graph>
   `}, "*");
     });
@@ -246,7 +248,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with sugared strings and copies', () => {
+  it('lineSegment with strings and copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -255,8 +257,16 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(-2,1)</point>
   <linesegment>
-  (<copy tname="_number1" />, <copy prop="x" tname="_point1" />),
-  (<copy prop="y" tname="_point1" />, 5)
+    <endpoints>
+      <point>
+        <x><copy tname="_number1" /></x>
+        <y><copy prop="x" tname="_point1" /></y>
+      </point>
+      <point>
+        <x><copy prop="y" tname="_point1" /></x>
+        <y>5</y>
+      </point>
+    </endpoints>
   </linesegment>
   </graph>
   `}, "*");
@@ -316,150 +326,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with endpoints containing sugared strings and copies', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <number>3</number>
-  <graph>
-  <point>(-2,1)</point>
-  <linesegment><endpoints>
-  (<copy tname="_number1" />, <copy prop="x" tname="_point1" />),
-  (<copy prop="y" tname="_point1" />, 5)
-  </endpoints></linesegment>
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('Test location')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x=>x.tree)).eqls([3, -2]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x=>x.tree)).eqls([1, 5]);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-2);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(1);
-      expect(components['/_number1'].stateValues.value).eq(3);
-
-    })
-
-    cy.log('move both ends of line segement')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let point1coords = [
-        components['/_linesegment1'].stateValues.endpoints[0][0],
-        components['/_linesegment1'].stateValues.endpoints[0][1],
-      ];
-      let point2coords = [
-        components['/_linesegment1'].stateValues.endpoints[1][0],
-        components['/_linesegment1'].stateValues.endpoints[1][1],
-      ];
-
-      let moveX = 3;
-      let moveY = -2;
-
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-
-      moveX = -5;
-      moveY = 1;
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
-
-      components['/_linesegment1'].moveLineSegment({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
-
-      let p1x = point1coords[0].simplify().tree;
-      let p1y = point1coords[1].simplify().tree;
-      let p2x = point2coords[0].simplify().tree;
-      let p2y = point2coords[1].simplify().tree;
-
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x=>x.tree)).eqls([p1x, p1y]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x=>x.tree)).eqls([p2x, p2y]);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(p1y);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(p2x);
-      expect(components['/_number1'].stateValues.value).eq(p1x);
-
-    })
-  })
-
-  it('lineSegment with sugared points containing sugared strings and copies', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <number>3</number>
-  <graph>
-  <point>(-2,1)</point>
-  <linesegment>
-  <point>(<copy tname="_number1" />, <copy prop="x" tname="_point1" />)</point>
-  <point>(<copy prop="y" tname="_point1" />, 5)</point>
-  </linesegment>
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('Test location')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x=>x.tree)).eqls([3, -2]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x=>x.tree)).eqls([1, 5]);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-2);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(1);
-      expect(components['/_number1'].stateValues.value).eq(3);
-    })
-
-    cy.log('move both ends of line segement')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let point1coords = [
-        components['/_linesegment1'].stateValues.endpoints[0][0],
-        components['/_linesegment1'].stateValues.endpoints[0][1],
-      ];
-      let point2coords = [
-        components['/_linesegment1'].stateValues.endpoints[1][0],
-        components['/_linesegment1'].stateValues.endpoints[1][1],
-      ];
-
-      let moveX = -1;
-      let moveY = 4;
-
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-
-      moveX = 2;
-      moveY = -6;
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
-
-      components['/_linesegment1'].moveLineSegment({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
-
-      let p1x = point1coords[0].simplify().tree;
-      let p1y = point1coords[1].simplify().tree;
-      let p2x = point2coords[0].simplify().tree;
-      let p2y = point2coords[1].simplify().tree;
-
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x=>x.tree)).eqls([p1x, p1y]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x=>x.tree)).eqls([p2x, p2y]);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(p1y);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(p2x);
-      expect(components['/_number1'].stateValues.value).eq(p1x);
-
-    })
-  })
-
-  it('lineSegment with no sugar', () => {
+  it('lineSegment with point based on sugared strings', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -536,7 +403,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with multiple layers of copied points in sugar', () => {
+  it('lineSegment with multiple layers of copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -552,8 +419,10 @@ describe('LineSegment Tag Tests', function () {
   
   <graph>
     <lineSegment>
-      <copy tname="_copy5" />
-      <copy tname="_copy6" />
+      <endpoints>
+        <copy tname="_copy5" />
+        <copy tname="_copy6" />
+      </endpoints>
     </lineSegment>
   </graph>
   <copy prop="y" tname="_point1" />
@@ -636,10 +505,12 @@ describe('LineSegment Tag Tests', function () {
     <point>(-4,7)</point>
     <point>(3,5)</point>
     <linesegment>
-      <copy tname="_point3" />
-      <copy tname="_point4" />
+      <endpoints>
+        <copy tname="_point3" />
+        <copy tname="_point4" />
+      </endpoints>
     </linesegment>
-    <linesegment>(-9,-1),(-3,6)</linesegment>
+    <linesegment><endpoints>(-9,-1),(-3,6)</endpoints></linesegment>
   </graph>
 
   <graph>
@@ -1021,8 +892,10 @@ describe('LineSegment Tag Tests', function () {
   <mathinput name="x" prefill="q"/>
   <graph>
     <lineSegment>
-      <point>(<copy prop="value" tname="x" />,2)</point>
-      <point>(-2,3)</point>
+      <endpoints>
+        <point><coords>(<copy prop="value" tname="x" />,2)</coords></point>
+        <point>(-2,3)</point>
+      </endpoints>
     </lineSegment>
   </graph>
   `}, "*");
@@ -1057,10 +930,18 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment><copy tname="_point1" /><copy tname="_point2" /></linesegment>
+  <linesegment>
+    <endpoints>
+      <copy tname="_point1" /><copy tname="_point2" />
+    </endpoints>
+  </linesegment>
 
-  <point>(-5,2)
-    <constrainTo><copy tname="_linesegment1" /></constrainTo>
+  <point>
+    <constraints>
+      <constrainTo><copy tname="_linesegment1" /></constrainTo>
+    </constraints>
+    <x>-5</x>
+    <y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -1176,10 +1057,18 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment><copy tname="_point1" /><copy tname="_point2" /></linesegment>
+  <linesegment>
+    <endpoints>
+      <copy tname="_point1" /><copy tname="_point2" />
+    </endpoints>
+  </linesegment>
 
-  <point>(-5,2)
-    <attractTo><copy tname="_linesegment1" /></attractTo>
+  <point>
+    <constraints>
+      <attractTo><copy tname="_linesegment1" /></attractTo>
+    </constraints>
+    <x>-5</x>
+    <y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -1293,7 +1182,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment>(1,2),(3,4)</linesegment>
+  <linesegment><endpoints>(1,2),(3,4)</endpoints></linesegment>
   </graph>
   <graph>
   <copy prop="endpoint1" name="point3" tname="_linesegment1" />
@@ -1475,11 +1364,13 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment>(-1,-2),(-3,-4)</linesegment>
+  <linesegment><endpoints>(-1,-2),(-3,-4)</endpoints></linesegment>
   </graph>
   <graph>
   <linesegment>
-    <copy prop="endpoints" name="points34" tname="_linesegment1" />
+    <endpoints>
+      <copy prop="endpoints" name="points34" tname="_linesegment1" />
+    </endpoints>
   </linesegment>
   </graph>
   `}, "*");
@@ -1621,10 +1512,12 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <graph>
   <linesegment>
+    <endpoints>
     <point>(1,2)</point>
-    <point>
+    <point><coords>
       (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
-    </point>
+    </coords></point>
+    </endpoints>
   </linesegment> 
   <point name="x1">
     <x><extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract></x>

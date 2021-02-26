@@ -41,12 +41,12 @@ export class FeedbackDefinition extends BaseComponent {
     stateVariableDefinitions.value = {
       returnDependencies: () => ({
         feedbackCodeChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFeedbackCode",
           variableNames: ["value"]
         },
         feedbackTextChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFeedbackText",
           variableNames: ["value"]
         }
@@ -99,7 +99,7 @@ export class FeedbackDefinitions extends BaseComponent {
     stateVariableDefinitions.nDefinitions = {
       returnDependencies: () => ({
         feedbackDefinitionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroFeedbackDefinitions",
         },
       }),
@@ -127,7 +127,7 @@ export class FeedbackDefinitions extends BaseComponent {
 
         for (let arrayKey of arrayKeys) {
           dependenciesByKey.feedbackDefinitionChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroFeedbackDefinitions",
             variableNames: ["value"],
             childIndices: [arrayKey]

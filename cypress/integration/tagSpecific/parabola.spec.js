@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Parabola Tag Tests', function () {
 
@@ -39,7 +48,7 @@ describe('Parabola Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let equationAnchor = "#" + components["/e2"].replacements[0].componentName;
+      let equationAnchor = cesc("#" + components["/e2"].replacements[0].componentName);
       let parabola3 = components["/g3"].replacements[0].activeChildren[0];
       let vertex3 = components["/g3"].replacements[0].activeChildren[1];
 
@@ -92,8 +101,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -158,8 +167,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -225,8 +234,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -291,8 +300,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -357,8 +366,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -423,8 +432,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -489,8 +498,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -555,8 +564,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -573,7 +582,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -621,8 +630,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -687,8 +696,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -738,7 +747,7 @@ describe('Parabola Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let equationAnchor = "#" + components["/e2"].replacements[0].componentName;
+      let equationAnchor = cesc("#" + components["/e2"].replacements[0].componentName);
       let parabola3 = components["/g3"].replacements[0].activeChildren[0];
       let vertex3 = components["/g3"].replacements[0].activeChildren[1];
 
@@ -791,8 +800,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -857,8 +866,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -924,8 +933,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -990,8 +999,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1056,8 +1065,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1122,8 +1131,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1188,8 +1197,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1254,8 +1263,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1272,7 +1281,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -1320,8 +1329,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1386,8 +1395,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1488,8 +1497,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1553,8 +1562,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1619,8 +1628,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1684,8 +1693,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1749,8 +1758,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1814,8 +1823,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1879,8 +1888,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1947,8 +1956,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -1967,7 +1976,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -2015,8 +2024,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2085,8 +2094,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2196,8 +2205,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2276,8 +2285,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2357,8 +2366,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2429,8 +2438,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2501,8 +2510,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2573,8 +2582,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2645,8 +2654,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2720,8 +2729,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2742,7 +2751,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -2795,8 +2804,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2872,8 +2881,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2947,8 +2956,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -2996,8 +3005,8 @@ describe('Parabola Tag Tests', function () {
           assert.isNaN(components['/p2'].replacements[0].stateValues.b);
           assert.isNaN(components['/p2'].replacements[0].stateValues.c);
           expect(components['/p2'].replacements[0].stateValues.vertex.map(x => x.tree)).eqls(["\uff3f", "\uff3f"]);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
           assert.isNaN(parabola3.stateValues.a);
           assert.isNaN(parabola3.stateValues.b);
           assert.isNaN(parabola3.stateValues.c);
@@ -3068,8 +3077,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3191,8 +3200,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq('\uff3f');
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq('\uff3f');
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq('\uff3f');
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq('\uff3f');
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq('\uff3f');
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq('\uff3f');
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3289,8 +3298,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3387,8 +3396,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3462,8 +3471,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3537,8 +3546,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3612,8 +3621,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3687,8 +3696,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3765,8 +3774,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3789,7 +3798,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -3843,8 +3852,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -3935,8 +3944,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4013,8 +4022,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4090,8 +4099,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4167,8 +4176,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4245,8 +4254,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4297,8 +4306,8 @@ describe('Parabola Tag Tests', function () {
           assert.isNaN(components['/p2'].replacements[0].stateValues.b);
           assert.isNaN(components['/p2'].replacements[0].stateValues.c);
           expect(components['/p2'].replacements[0].stateValues.vertex.map(x => x.tree)).eqls(["\uff3f", "\uff3f"]);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
           assert.isNaN(parabola3.stateValues.a);
           assert.isNaN(parabola3.stateValues.b);
           assert.isNaN(parabola3.stateValues.c);
@@ -4385,8 +4394,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4422,11 +4431,11 @@ describe('Parabola Tag Tests', function () {
     <parabola><through hide="false">
       <map>
         <template>
-          <point>(<indexFromSubs/>+<math>0</math>, <copyFromSubs/>+<math>0</math>)</point>
+          <point>(<sourceIndex/>+<math>0</math>, <copySource/>+<math>0</math>)</point>
         </template>
-        <substitutions>
+        <sources>
           <sequence step="2"><count><copy prop="value" tname="n" /></count></sequence>
-        </substitutions>
+        </sources>
       </map>
     </through></parabola>
     <copy prop="vertex" name="v" tname="_parabola1" />
@@ -4495,8 +4504,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.c).closeTo(c, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq(vertex_x);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq(vertex_y);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
           expect(parabola3.stateValues.c).closeTo(c, 1E-12);
@@ -4552,8 +4561,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.c).closeTo(c, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq(vertex_x);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq(vertex_y);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
           expect(parabola3.stateValues.c).closeTo(c, 1E-12);
@@ -4608,8 +4617,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.c).closeTo(c, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq(vertex_x);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq(vertex_y);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
           expect(parabola3.stateValues.c).closeTo(c, 1E-12);
@@ -4669,8 +4678,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.c).closeTo(c, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq(vertex_x);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq(vertex_y);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
           expect(parabola3.stateValues.c).closeTo(c, 1E-12);
@@ -4733,8 +4742,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.c).closeTo(c, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].tree).eq(vertex_x);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].tree).eq(vertex_y);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq(vertex_x);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq(vertex_y);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
           expect(parabola3.stateValues.c).closeTo(c, 1E-12);
@@ -4821,8 +4830,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4919,8 +4928,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -4994,8 +5003,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5069,8 +5078,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5144,8 +5153,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5219,8 +5228,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5297,8 +5306,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5321,7 +5330,7 @@ describe('Parabola Tag Tests', function () {
       cy.log("move vertex2");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/v2'].replacements[0].replacements[0].movePoint({ x: 5, y: -6 })
+        components['/v2'].replacements[0].movePoint({ x: 5, y: -6 })
 
         let a = 0.2;
 
@@ -5375,8 +5384,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5467,8 +5476,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5545,8 +5554,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5622,8 +5631,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5699,8 +5708,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5777,8 +5786,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);
@@ -5829,8 +5838,8 @@ describe('Parabola Tag Tests', function () {
           assert.isNaN(components['/p2'].replacements[0].stateValues.b);
           assert.isNaN(components['/p2'].replacements[0].stateValues.c);
           expect(components['/p2'].replacements[0].stateValues.vertex.map(x => x.tree)).eqls(["\uff3f", "\uff3f"]);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[0].tree).eq("\uff3f");
+          expect(components['/v2'].replacements[0].stateValues.xs[1].tree).eq("\uff3f");
           assert.isNaN(parabola3.stateValues.a);
           assert.isNaN(parabola3.stateValues.b);
           assert.isNaN(parabola3.stateValues.c);
@@ -5917,8 +5926,8 @@ describe('Parabola Tag Tests', function () {
           expect(components['/p2'].replacements[0].stateValues.equation.equals(equationExpression)).eq(true);
           expect(components['/p2'].replacements[0].stateValues.vertex[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
           expect(components['/p2'].replacements[0].stateValues.vertex[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
-          expect(components['/v2'].replacements[0].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[0].evaluate_numbers().tree).closeTo(vertex_x, 1E-12);
+          expect(components['/v2'].replacements[0].stateValues.xs[1].evaluate_numbers().tree).closeTo(vertex_y, 1E-12);
           expect(components['/e2'].replacements[0].stateValues.value.equals(equationExpression)).eq(true);
           expect(parabola3.stateValues.a).closeTo(a, 1E-12);
           expect(parabola3.stateValues.b).closeTo(b, 1E-12);

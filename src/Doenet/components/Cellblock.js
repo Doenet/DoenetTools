@@ -5,8 +5,6 @@ export default class Cellblock extends BaseComponent {
   static componentType = "cellblock";
   static rendererType = "container";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
@@ -63,7 +61,7 @@ export default class Cellblock extends BaseComponent {
     stateVariableDefinitions.prescribedCellsRowsColumnsBlocks = {
       returnDependencies: () => ({
         cellRelatedChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "cellsRowsColumnsBlocks",
           variableNames: [
             "rowNum",

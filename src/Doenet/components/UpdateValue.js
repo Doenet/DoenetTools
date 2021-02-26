@@ -1,6 +1,6 @@
-import BlockComponent from './abstract/BlockComponent';
+import InlineComponent from './abstract/InlineComponent';
 
-export default class UpdateValue extends BlockComponent {
+export default class UpdateValue extends InlineComponent {
   constructor(args) {
     super(args);
     this.updateValue = this.updateValue.bind(
@@ -57,7 +57,7 @@ export default class UpdateValue extends BlockComponent {
     stateVariableDefinitions.targetedMathName = {
       returnDependencies: () => ({
         mathTarget: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneMathTarget",
           variableNames: ["mathChildName"]
         },
@@ -74,7 +74,7 @@ export default class UpdateValue extends BlockComponent {
     stateVariableDefinitions.newMathValue = {
       returnDependencies: () => ({
         newMathValueChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneNewMathValue",
           variableNames: ["value"]
         },

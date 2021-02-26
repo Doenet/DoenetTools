@@ -1,6 +1,6 @@
 import { flattenDeep } from "./utils/array";
 
-export default class childLogic {
+export default class ChildLogic {
   constructor({ properties, parentComponentType,
     allComponentClasses, standardComponentClasses, components }) {
     this.logicComponents = {};
@@ -23,7 +23,7 @@ export default class childLogic {
     let propertyPropositions = [];
 
     for (let property of propertyKeys) {
-      let propertySpecification = properties[property];
+      // let propertySpecification = properties[property];
       let name = '_property_' + property;
 
       let leaf;
@@ -50,6 +50,7 @@ export default class childLogic {
         number: 1,
         allowSpillover: false,
         excludeCompositeReplacements: true,
+        takePropertyChildren: true,
         parentComponentType: this.parentComponentType,
         allComponentClasses: this.allComponentClasses,
         standardComponentClasses: this.standardComponentClasses,
@@ -110,8 +111,8 @@ export default class childLogic {
   }
 
   newLeaf({ name, componentType, getComponentType, comparison, number, requireConsecutive,
-    condition, isSugar, repeatSugar, replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
-    allowSpillover, excludeComponentTypes, excludeCompositeReplacements,
+    condition,
+    allowSpillover, excludeComponentTypes, excludeCompositeReplacements, takePropertyChildren,
     setAsBase = false, ...invalidArguments
   }) {
 
@@ -136,10 +137,10 @@ export default class childLogic {
       name,
       componentType, getComponentType, excludeComponentTypes,
       excludeCompositeReplacements,
+      takePropertyChildren,
       comparison, number,
       requireConsecutive, condition,
-      isSugar, repeatSugar, returnSugarDependencies, logicToWaitOnSugar,
-      replacementFunction, allowSpillover,
+      allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
       standardComponentClasses: this.standardComponentClasses,
@@ -157,8 +158,7 @@ export default class childLogic {
   }
 
   newOperator({ name, operator, propositions, sequenceMatters, requireConsecutive,
-    isSugar, repeatSugar, separateSugarInputs, replacementFunction, returnSugarDependencies,
-    logicToWaitOnSugar, allowSpillover,
+    allowSpillover,
     setAsBase = false, ...invalidArguments
   }) {
 
@@ -184,8 +184,6 @@ export default class childLogic {
       name,
       operator, propositions,
       sequenceMatters, requireConsecutive,
-      isSugar, repeatSugar,
-      separateSugarInputs, replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
       allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
@@ -207,13 +205,7 @@ export default class childLogic {
     return this.logicComponents[name];
   }
 
-  applyLogic({ activeChildren,
-    matchSugar = true, maxAdapterNumber = 0
-  }) {
-
-    if (this.usedSugar) {
-      matchSugar = false;
-    }
+  applyLogic({ activeChildren, maxAdapterNumber = 0 }) {
 
     if (this.propertyAndBaseLogic === undefined) {
       // OK to have no child logic if have no activeChildren
@@ -228,7 +220,6 @@ export default class childLogic {
     try {
       this.logicResult = this.propertyAndBaseLogic.applyLogic({
         activeChildren,
-        matchSugar,
         maxAdapterNumber: maxAdapterNumber,
       });
     } catch (e) {
@@ -295,573 +286,6 @@ export default class childLogic {
 
   }
 
-  calculateSugarReplacements({ childMatches, activeChildren, allChildren, definingChildren,
-    separateSugarInputs, replacementFunction, dependencyValues, parentName, childLogicName }
-  ) {
-
-    let flattenedMatches = flattenDeep(childMatches);
-    flattenedMatches.sort((a, b) => a - b);
-
-    let activeChildrenMatched = flattenedMatches.map(x => activeChildren[x]);
-
-    let activeChildrenPieces = [];
-    let replacementResults = [];
-    let gatheredChildChanges = {};
-
-    if (separateSugarInputs === true) {
-      for (let cm of childMatches) {
-        let flattenedMatches = flattenDeep(cm);
-        flattenedMatches.sort((a, b) => a - b);
-        activeChildrenPieces.push(flattenedMatches.map(x => activeChildren[x]));
-      }
-
-      let activeChildrenPiecesBasicInfoOnly = activeChildrenPieces.map(x => ({
-        componentType: x.componentType,
-        componentName: x.componentName
-      }))
-
-      let result = replacementFunction({
-        activeChildrenPieces: activeChildrenPiecesBasicInfoOnly,
-        components: this.components,
-        dependencyValues,
-        allComponentClasses: this.allComponentClasses,
-        parentName, childLogicName
-      });
-      if (result.success !== true) {
-        return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
-      }
-      replacementResults = result.resultsByPiece;
-
-      // gather child changes requested
-      // throw error if same child twice
-      for (let piece of replacementResults) {
-        if (piece.childChanges !== undefined) {
-          for (let childName in piece.childChanges) {
-            if (childName in gatheredChildChanges) {
-              return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed due to duplicate child changes." }
-            }
-            gatheredChildChanges[childName] = piece.childChanges[childName];
-          }
-        }
-      }
-    } else {
-
-      activeChildrenPieces.push(activeChildrenMatched);
-
-      let activeChildrenMatchedBasicInfoOnly = activeChildrenMatched.map(x => ({
-        componentType: x.componentType,
-        componentName: x.componentName
-      }))
-
-      let result = replacementFunction({
-        activeChildrenMatched: activeChildrenMatchedBasicInfoOnly,
-        components: this.components,
-        dependencyValues,
-        allComponentClasses: this.allComponentClasses,
-        parentName, childLogicName
-      });
-      if (result.success !== true) {
-        return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
-      }
-      replacementResults.push(result);
-      gatheredChildChanges = result.childChanges;
-
-    }
-
-    let baseChanges = [];
-
-    for (let ind in activeChildrenPieces) {
-
-      // verify that 
-      // -- only string children are set to be deleted
-      // -- all children are either to be deleted or appear once in newChildren
-      let verifyResult = this.verifySugar({
-        activeChildrenMatched: activeChildrenPieces[ind],
-        toDelete: replacementResults[ind].toDelete,
-        newChildren: replacementResults[ind].newChildren,
-        allChildren: allChildren,
-        definingChildren: definingChildren
-      });
-
-      if (verifyResult.success !== true) {
-        return verifyResult;
-      }
-
-      baseChanges.push(verifyResult);
-    }
-
-
-    if (gatheredChildChanges === undefined || Object.keys(gatheredChildChanges).length === 0) {
-      return {
-        success: true,
-        baseChanges: baseChanges,
-      }
-    }
-
-    let childChanges = {};
-
-    let activeChildrenMatchedNameSet = new Set([]);
-    activeChildrenMatched.forEach(x => {
-      activeChildrenMatchedNameSet.add(x.componentName)
-    });
-
-    for (let childName in gatheredChildChanges) {
-
-      let changes = gatheredChildChanges[childName];
-
-      let child = allChildren[childName].component;
-
-      if (!activeChildrenMatchedNameSet.has(child.componentName)) {
-        throw Error("Invalid sugar for " + this.parentComponentType
-          + ". Can't change child than logic didn't match");
-      }
-
-      let activeGrandchildrenMatched = [];
-
-      for (let grandChildIdentity of changes.activeChildrenMatched) {
-        // grandChildIdentity isn't actual component,
-        // as we don't give actual components to replacement functions
-        // Find actual component from child's children
-        activeGrandchildrenMatched.push(child.allChildren[grandChildIdentity.componentName].component)
-      }
-
-      let activeGrandchildrenIndices = [];
-      // verify that activeGrandchildrenMatched contains valid components
-      for (let grandChild of activeGrandchildrenMatched) {
-        let name = grandChild.componentName;
-        if (child.allChildren[name] === undefined ||
-          child.allChildren[name].activeChildrenIndex === undefined) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Specified component isn't an active grandchild");
-        }
-        activeGrandchildrenIndices.push(child.allChildren[name].activeChildrenIndex)
-      }
-      activeGrandchildrenIndices.sort((a, b) => a - b);
-
-      for (let ind = 1; ind < activeGrandchildrenIndices.length; ind++) {
-        if (activeGrandchildrenIndices[ind - 1] !== activeGrandchildrenIndices[ind] - 1) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Must specify sequential active grandchildren");
-
-        }
-      }
-
-      let verifyGrandchildrenResult = this.verifySugar({
-        activeChildrenMatched: activeGrandchildrenMatched,
-        toDelete: changes.toDelete,
-        newChildren: changes.newChildren,
-        allChildren: child.allChildren,
-        definingChildren: child.definingChildren
-      });
-
-      if (verifyGrandchildrenResult.success !== true) {
-        return verifyGrandchildrenResult;
-      }
-
-      childChanges[childName] = verifyGrandchildrenResult;
-
-    }
-
-    return {
-      success: true,
-      baseChanges: baseChanges,
-      childChanges: childChanges,
-    }
-  }
-
-  verifySugar({ activeChildrenMatched, toDelete, newChildren, allChildren, definingChildren }) {
-
-    // all newly created components in newChildren must be of known types
-    if (this.verifyHaveKnownComponentTypes({ components: newChildren }) !== true) {
-      return { success: false, message: "Sugar for " + this.parentComponentType + " included undefined component types." }
-    }
-
-    let childrenAddressed = {};
-    let childrenToDelete = [];
-    let activeChildrenMatchedObj = {};
-
-    activeChildrenMatched.forEach(x => activeChildrenMatchedObj[x.componentName] = x);
-
-    if (toDelete !== undefined) {
-      for (let childName of toDelete) {
-        if (!(childName in activeChildrenMatchedObj)) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Can't delete child than logic didn't match");
-        }
-
-        let child = allChildren[childName].component;
-        if (child.componentType !== "string") {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Can delete only string children.");
-        }
-        if (childName in childrenAddressed) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Cannot delete same child twice.");
-        }
-        childrenAddressed[childName] = "delete";
-        childrenToDelete.push(childName);
-      }
-    }
-
-    this.gatherChildrenAddressed({
-      components: newChildren,
-      activeChildrenMatchedObj: activeChildrenMatchedObj,
-      childrenAddressed: childrenAddressed
-    });
-
-    // check if each child was addressed 
-    for (let child of activeChildrenMatched) {
-      if (!(child.componentName in childrenAddressed)) {
-        throw Error("Invalid sugar for " + this.parentComponentType
-          + ". Some children do not appear in results.");
-      }
-    }
-
-    let definingChildrenIndices = [];
-    let compositesFound = {};
-    let definingIndexForActiveChild = {};
-    let activeChildrenForDefiningIndex = {};
-
-    for (let component of activeChildrenMatched) {
-
-      let potentialDefiningChild = component;
-      let definingChildIndex = allChildren[potentialDefiningChild.componentName].definingChildrenIndex;
-      while (definingChildIndex === undefined) {
-        // try to find what child is a replacement or adapter for
-        let foundNewPotentialDefiningChild = false;
-        if (potentialDefiningChild.adaptedFrom) {
-          foundNewPotentialDefiningChild = true;
-          potentialDefiningChild = potentialDefiningChild.adaptedFrom;
-          definingChildIndex = allChildren[potentialDefiningChild.componentName].definingChildrenIndex;
-        } else if (potentialDefiningChild.replacementOf) {
-          let composite = potentialDefiningChild.replacementOf;
-          if (compositesFound[composite.componentName] === undefined) {
-            compositesFound[composite.componentName] =
-              { replacementsFound: new Set([]) };
-          }
-          compositesFound[composite.componentName].composite = composite;
-          compositesFound[composite.componentName].replacementsFound.add(
-            potentialDefiningChild.componentName)
-          potentialDefiningChild = composite;
-          definingChildIndex = allChildren[potentialDefiningChild.componentName].definingChildrenIndex;
-          foundNewPotentialDefiningChild = true;
-        }
-        if (!foundNewPotentialDefiningChild) {
-          break;
-        }
-      }
-
-      if (definingChildIndex === undefined) {
-        return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
-      }
-
-      definingIndexForActiveChild[component.componentName] = definingChildIndex;
-      let lastIndex = definingChildrenIndices[definingChildrenIndices.length - 1];
-      if (lastIndex === undefined || definingChildIndex !== lastIndex) {
-        definingChildrenIndices.push(definingChildIndex)
-        activeChildrenForDefiningIndex[definingChildIndex] = [component];
-      } else {
-        activeChildrenForDefiningIndex[definingChildIndex].push(component);
-      }
-    }
-
-    // to be valid,
-    //  -definingChildrenIndices must be consecutive, unless missing indices
-    //   correspond to composites with no replacements
-    //  -all composites matched must have all replacements matched
-    //  -immediately preceeding and following defining children, if exist,
-    //   must not be composites with no replacements
-    //   (as in that case we wouldn't know if they should be included)
-
-    let definingGaps = [];
-    for (let i = 1; i < definingChildrenIndices.length; i++) {
-      let inda = definingChildrenIndices[i - 1];
-      let indb = definingChildrenIndices[i];
-
-      if (indb === inda + 1) {
-        continue;
-      }
-      if (indb < inda) {
-        throw Error("Something went wrong in sugar for " + this.parentComponentType
-          + ": children out of order");
-      }
-
-      // found a gap in defining children
-      // check if missing children are composites with no replacements
-      for (let indc = inda + 1; indc < indb; indc++) {
-        let definingChild = definingChildren[indc];
-        if (!(definingChild instanceof this.allComponentClasses['_composite'] &&
-          definingChild.replacements.length === 0)) {
-          return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed: children not consecutive" };
-        }
-      }
-
-      // merge consecutive gaps
-      if (definingGaps.length > 0) {
-        let lastGap = definingGaps[definingGaps.length - 1];
-        if (lastGap[1] === inda) {
-          definingGaps[definingGaps.length - 1] = [...lastGap, indb];
-          continue;
-        }
-      }
-
-      definingGaps.push([inda, indb]);
-    }
-
-    for (let compositeName in compositesFound) {
-      let composite = compositesFound[compositeName].composite;
-      let replacementsFound = compositesFound[compositeName].replacementsFound;
-      for (let replacement of composite.replacements) {
-        if (!(replacementsFound.has(replacement.componentName))) {
-          return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
-        }
-      }
-    }
-
-    let compositeHasReplacement = function (composite) {
-      if (composite.replacements.length === 0) {
-        return false;
-      }
-      for (let replacement of composite.replacements) {
-        if (!(replacement instanceof this.allComponentClasses['_composite'])) {
-          return true;
-        }
-        if (compositeHasReplacement(replacement)) {
-          return true;
-        }
-      }
-      return false;
-    }.bind(this);
-
-    let firstDefiningIndex = definingChildrenIndices[0];
-    let lastDefiningIndex = definingChildrenIndices[definingChildrenIndices.length - 1];
-    let nDefiningIndices = lastDefiningIndex - firstDefiningIndex + 1;
-
-    let adjacentIndices = [];
-    if (firstDefiningIndex > 0) {
-      adjacentIndices.push(firstDefiningIndex - 1);
-    }
-    if (lastDefiningIndex < definingChildren.length - 1) {
-      adjacentIndices.push(lastDefiningIndex + 1)
-    }
-
-    for (let ind of adjacentIndices) {
-      let definingChild = definingChildren[ind];
-      if (definingChild instanceof this.allComponentClasses['_composite']) {
-        if (!compositeHasReplacement(definingChild)) {
-          return {
-            success: false, message: "Sugar for " + this.parentComponentType +
-              " did not succeed as matches were adjacent to a composite with no replacements."
-          }
-        }
-      }
-    }
-
-    // replace activeChildren with definingChildren 
-    // In two cases, the activeChildren must be consecutive in newChildren 
-    // 1. If more than one activeChild map to the same definingChild,
-    //    all must be replaced with the single definingChild
-    // 2. If there is a gap in defining index, the components
-    //    on either side must be consecutive, as the gap indices 
-    //    must be replaced with them
-
-    let activeToDefiningSubstitutions = {};
-    let activeUsed = new Set([]);
-
-    // first add gaps
-    for (let gap of definingGaps) {
-      let firstActiveName = activeChildrenForDefiningIndex[gap[0]][0].componentName;
-      let activeNames = [];
-      for (let ind = 0; ind < gap.length; ind++) {
-        activeNames = [...activeNames,
-        ...activeChildrenForDefiningIndex[gap[ind]].map(x => x.componentName)];
-      }
-      let definingIndices = [];
-      for (let ind = gap[0]; ind <= gap[gap.length - 1]; ind++) {
-        definingIndices.push(ind);
-      }
-      activeToDefiningSubstitutions[firstActiveName] = {
-        activeNames: activeNames,
-        definingIndices: definingIndices
-      }
-      for (let name of activeNames) {
-        activeUsed.add(name);
-      }
-    }
-
-    // next add any that aren't in gap
-    for (let activeChild of activeChildrenMatched) {
-
-      // if already addressed in gap or a previous group, skip
-      if (activeUsed.has(activeChild.componentName)) {
-        continue;
-      }
-
-      let definingIndex = definingIndexForActiveChild[activeChild.componentName];
-      let activeNames = activeChildrenForDefiningIndex[definingIndex].map(x => x.componentName);
-
-      let firstActiveName = activeNames[0];
-      activeToDefiningSubstitutions[firstActiveName] = {
-        activeNames: activeNames,
-        definingIndices: [definingIndex],
-      }
-      for (let name of activeNames) {
-        activeUsed.add(name);
-      }
-
-    }
-
-    // loop through all activeChildren found in newChildren
-    // and use activeToDefiningSubstitutions to replace with definingChildren
-    // if activeToDefiningSubstitutions includes more than one activeName
-    // then make sure they are all consecutive and replace whole group as one
-    activeUsed = new Set([]);
-
-    for (let activeName in childrenAddressed) {
-
-      if (activeUsed.has(activeName)) {
-        continue;
-      }
-
-      let newChildrenStructure = childrenAddressed[activeName];
-      let substitutions = activeToDefiningSubstitutions[activeName];
-      if (newChildrenStructure === "delete") {
-        if (substitutions && substitutions.definingIndices.length > 1) {
-          return {
-            success: false, message: "Sugar for " + this.parentComponentType +
-              " did not succeed as cannot delete components adjacent to a composite with no replacements."
-          }
-        }
-        continue;
-      }
-
-      let activeNames = substitutions.activeNames;
-      let childContainer = newChildrenStructure.newSiblings
-
-      let replaceInd;
-      if (activeNames.length === 1) {
-        for (let ind = 0; ind < childContainer.length; ind++) {
-          let comp = childContainer[ind];
-          if (comp.createdComponent === true && comp.componentName === activeName) {
-            replaceInd = ind;
-            break;
-          }
-        }
-        activeUsed.add(activeName);
-      } else {
-        // more than one name, must find them consecutive within siblings
-        let siblingStructure = newChildrenStructure.newSiblings;
-        let firstActiveName = activeNames[0];
-
-        for (let ind in siblingStructure) {
-          let serializedComponent = siblingStructure[ind];
-          if (serializedComponent.createdComponent === true &&
-            serializedComponent.componentName === firstActiveName) {
-
-            // see if remaining indices match activeNames
-            let matched = true;
-            for (let i = 1; i < activeNames.length; i++) {
-              let comp = siblingStructure[Number(ind) + i];
-              if (!(comp.createdComponent === true &&
-                comp.componentName === activeNames[i])) {
-                matched = false;
-                break;
-              }
-            }
-            if (!matched) {
-              return {
-                success: false, message: "Sugar for " + this.parentComponentType +
-                  " did not succeed as it didn't keep required groups adjacent"
-              }
-            }
-
-            replaceInd = ind;
-            break;
-          }
-        }
-
-        if (replaceInd === undefined) {
-          return {
-            success: false, message: "Sugar for " + this.parentComponentType +
-              " did not succeed as it didn't keep required groups adjacent"
-          }
-        }
-        for (let name of activeNames) {
-          activeUsed.add(name);
-        }
-      }
-
-      let newDefiningChildren = substitutions.definingIndices.map(x => ({
-        createdComponent: true,
-        componentName: definingChildren[x].componentName,
-      }))
-
-      childContainer.splice(replaceInd, activeNames.length, ...newDefiningChildren);
-
-    }
-
-    return {
-      success: true,
-      newChildren: newChildren,
-      childrenToDelete: childrenToDelete,
-      firstDefiningIndex: firstDefiningIndex,
-      nDefiningIndices: nDefiningIndices,
-    }
-
-  }
-
-  gatherChildrenAddressed({ components, activeChildrenMatchedObj,
-    childrenAddressed
-  }) {
-    for (let component of components) {
-      if (component.createdComponent === true) {
-        if (!(component.componentName in activeChildrenMatchedObj)) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Can't include child that logic didn't match");
-        }
-        if (component.componentName in childrenAddressed) {
-          throw Error("Invalid sugar for " + this.parentComponentType
-            + ". Same child cannot appear in results twice.");
-        }
-        childrenAddressed[component.componentName] = {
-          newChild: component,
-          newSiblings: components,
-        };
-      }
-      else if (component.children !== undefined) {
-        // recurse
-        this.gatherChildrenAddressed({
-          components: component.children,
-          activeChildrenMatchedObj: activeChildrenMatchedObj,
-          childrenAddressed: childrenAddressed
-        });
-      }
-    }
-  };
-
-  verifyHaveKnownComponentTypes({ components }) {
-    for (let component of components) {
-      if (component.createdComponent === true) {
-        continue;
-      }
-      if (component.componentType === undefined) {
-        return false;
-      }
-      if (this.standardComponentClasses[component.componentType.toLowerCase()] === undefined) {
-        return false;
-      }
-      if (component.children !== undefined) {
-        // recurse
-        let result = this.verifyHaveKnownComponentTypes({
-          components: component.children
-        });
-        if (result !== true) {
-          return false;
-        }
-      }
-    }
-    return true;
-  };
 }
 
 class ChildLogicBase {
@@ -890,9 +314,9 @@ class ChildLogicBase {
 class ChildLogicLeaf extends ChildLogicBase {
   constructor({ name, componentType, getComponentType, excludeComponentTypes,
     excludeCompositeReplacements = false,
+    takePropertyChildren = false,
     comparison = "exactly", number = 1,
-    requireConsecutive = false, condition, isSugar = false, repeatSugar = false,
-    replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
+    requireConsecutive = false, condition,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -915,16 +339,12 @@ class ChildLogicLeaf extends ChildLogicBase {
     }
     this.excludeComponentTypes = excludeComponentTypes;
     this.excludeCompositeReplacements = excludeCompositeReplacements;
+    this.takePropertyChildren = takePropertyChildren;
 
     this.comparison = comparison;
     this.number = number;
     this.requireConsecutive = requireConsecutive;
     this.condition = condition;
-    this.isSugar = isSugar;
-    this.repeatSugar = repeatSugar;
-    this.replacementFunction = replacementFunction;
-    this.returnSugarDependencies = returnSugarDependencies;
-    this.logicToWaitOnSugar = logicToWaitOnSugar;
     this.allowSpillover = allowSpillover;
 
 
@@ -935,10 +355,6 @@ class ChildLogicLeaf extends ChildLogicBase {
     if (!(Number.isInteger(number) && number >= 0)) {
       throw Error("Error in leaf " + name + " from child logic of " + this.parentComponentType
         + ": number must be a non-negative integer");
-    }
-    if (isSugar === true && replacementFunction === undefined) {
-      throw Error("Error in leaf " + name + " from child logic of " + this.parentComponentType
-        + ": replacementFunction must be defined when is sugar");
     }
 
     this.maxMatches = Infinity;
@@ -962,22 +378,14 @@ class ChildLogicLeaf extends ChildLogicBase {
   }
 
   applyLogic({ activeChildren,
-    matchSugar, previouslyMatched = [],
+    previouslyMatched = [],
     maxAdapterNumber
   }) {
-
-    if (this.usedSugar) {
-      matchSugar = false;
-    }
 
     // Note: it is OK if componentType is not a valid component type
     // In this case, componentClass will be undefined,
     // and we will return no matches with this leaf
     this.componentClass = this.allComponentClasses[this.componentType];
-
-    if (matchSugar === false && this.isSugar === true) {
-      return { success: false, message: "Sugar not allowed." };
-    }
 
     let childMatches = [];
     let adapterResults = {};
@@ -988,11 +396,6 @@ class ChildLogicLeaf extends ChildLogicBase {
           continue;
         }
         let child = activeChildren[childNum];
-
-        // // if child is a shadow, cannot match with sugar
-        // if(child.isShadow === true && this.isSugar === true) {
-        //   continue;
-        // }
 
         let matched = false;
 
@@ -1010,6 +413,10 @@ class ChildLogicLeaf extends ChildLogicBase {
           }
           if (matched && this.excludeCompositeReplacements && child.replacementOf) {
             matched = false;
+          }
+          if (matched) {
+            matched = (this.takePropertyChildren && child.doenetAttributes.isPropertyChild)
+              || (!this.takePropertyChildren && !child.doenetAttributes.isPropertyChild)
           }
         }
 
@@ -1082,15 +489,7 @@ class ChildLogicLeaf extends ChildLogicBase {
 
     // found a valid match
 
-    if (matchSugar && this.isSugar) {
-      let sugarResults = { [this.name]: true };
-      return {
-        success: true, childMatches: childMatches, adapterResults: adapterResults,
-        sugarResults: sugarResults, repeatSugar: this.repeatSugar
-      };
-    } else {
-      return { success: true, childMatches: childMatches, adapterResults: adapterResults, };
-    }
+    return { success: true, childMatches: childMatches, adapterResults: adapterResults, };
 
   }
 
@@ -1112,8 +511,6 @@ class ChildLogicLeaf extends ChildLogicBase {
 class ChildLogicOperator extends ChildLogicBase {
   constructor({ name, operator, propositions = [],
     sequenceMatters = false, requireConsecutive = false,
-    isSugar = false, repeatSugar = false, separateSugarInputs = false,
-    replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -1133,12 +530,6 @@ class ChildLogicOperator extends ChildLogicBase {
     this.propositions = propositions;
     this.sequenceMatters = sequenceMatters;
     this.requireConsecutive = requireConsecutive;
-    this.isSugar = isSugar;
-    this.repeatSugar = repeatSugar;
-    this.separateSugarInputs = separateSugarInputs;
-    this.replacementFunction = replacementFunction;
-    this.returnSugarDependencies = returnSugarDependencies;
-    this.logicToWaitOnSugar = logicToWaitOnSugar;
     this.allowSpillover = allowSpillover;
 
     for (let proposition of propositions) {
@@ -1150,11 +541,6 @@ class ChildLogicOperator extends ChildLogicBase {
         throw Error("Error in operator " + name + " from child logic of " + this.parentComponentType
           + ": operator must be 'and', 'or', or 'xor'");
       }
-    }
-
-    if (isSugar === true && replacementFunction === undefined) {
-      throw Error("Error in operator " + name + " from child logic of " + this.parentComponentType
-        + ": replacementFunction must be defined when is sugar");
     }
 
     this.setIndicesFromNames();
@@ -1177,32 +563,20 @@ class ChildLogicOperator extends ChildLogicBase {
   }
 
   applyLogic({ activeChildren,
-    matchSugar, previouslyMatched = [],
+    previouslyMatched = [],
     maxAdapterNumber }) {
-
-    if (this.usedSugar) {
-      matchSugar = false;
-    }
-
-    if (matchSugar === false && this.isSugar === true) {
-      return { success: false, message: "Sugar not allowed." };
-    }
 
     // check if each proposition is satisfied
     let childMatches = [];
     let adapterResults = {};
     let numSuccess = 0;
     let allResults = [];
-    let sugarResults = {};
-    let repeatSugar = false;
-    let foundSugarResults = false;
     let newPreviouslyMatched = previouslyMatched.slice(0); // copy
-    let sugarsMatchedByPropositionName = {};
+
     for (let proposition of this.propositions) {
       // recurse
       let result = proposition.applyLogic({
         activeChildren,
-        matchSugar,
         previouslyMatched: newPreviouslyMatched,
         maxAdapterNumber: maxAdapterNumber,
       });
@@ -1222,16 +596,6 @@ class ChildLogicOperator extends ChildLogicBase {
           return { success: false, message: result.message };
         }
         childMatches.push([]);
-      }
-
-      // keep track of any sugarResults
-      if (result.sugarResults !== undefined) {
-        foundSugarResults = true;
-        Object.assign(sugarResults, result.sugarResults);
-        if (result.repeatSugar === true) {
-          repeatSugar = true;
-        }
-        sugarsMatchedByPropositionName[proposition.name] = result.sugarResults;
       }
 
     }
@@ -1289,20 +653,9 @@ class ChildLogicOperator extends ChildLogicBase {
         // and there is nothing to do here
 
         if (propositionOfMinIndex !== undefined) {
-
-        // chose just the sugar from the proposition chosen
-        let nameofMinIndex = allResults[propositionOfMinIndex].name;
-        if (sugarsMatchedByPropositionName[nameofMinIndex]) {
-          foundSugarResults = true;
-          sugarResults = sugarsMatchedByPropositionName[nameofMinIndex];
-        } else {
-          foundSugarResults = false;
-          sugarResults = {};
-        }
-
-        // reset adapterResults
-        // to correspond to the one proposition chosen
-        adapterResults = allResults[propositionOfMinIndex].adapterResults;
+          // reset adapterResults
+          // to correspond to the one proposition chosen
+          adapterResults = allResults[propositionOfMinIndex].adapterResults;
         }
       }
     }
@@ -1335,30 +688,8 @@ class ChildLogicOperator extends ChildLogicBase {
       }
     }
 
-    // if sugar, 
-    if (matchSugar && this.isSugar) {
-      if (foundSugarResults) {
-        // can't have nested sugars
-        throw Error("Error in operator " + this.name + " from child logic of " + this.parentComponentType
-          + ": cannot have nested sugars");
-      } else {
+    return { success: true, childMatches: childMatches, adapterResults: adapterResults, };
 
-        sugarResults = { [this.name]: true };
-        return {
-          success: true, childMatches: childMatches, adapterResults: adapterResults,
-          sugarResults: sugarResults, repeatSugar: this.repeatSugar
-        };
-      }
-    } else {
-      if (foundSugarResults) {
-        return {
-          success: true, childMatches: childMatches, adapterResults: adapterResults,
-          sugarResults: sugarResults, repeatSugar: repeatSugar
-        };
-      } else {
-        return { success: true, childMatches: childMatches, adapterResults: adapterResults, };
-      }
-    }
   }
 
   checkIfChildInLogic(child, allowInheritance) {

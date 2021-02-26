@@ -3,19 +3,20 @@ import Styled from "styled-components";
 import Menu from "../Tools/DoenetCourseCardMenu";
 
 const DriveCardContainer = Styled.div`
-  position: relative;
-  background-size: cover;
-  background-position: center center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-size: 10px;
-  line-height: 12px;
-  border-radius: 4px;
-  display: flex; /*added*/
-  flex-direction: column; /*added*/
-  background-image: url(${(props) => props.url});
-  background-color: ${(props) => `#${props.color}`};
+position: relative;
+background-size: cover;
+background-position: center center;
+width: 100%;
+height: 100%;
+overflow: hidden;
+font-size: 10px;
+line-height: 12px;
+border-radius: 4px;
+box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 20%);
+display: flex; /*added*/
+flex-direction: column; /*added*/
+background-image: url(${(props) => props.url});
+background-color: ${(props) => `#${props.color}`};
 `;
 
 const Image = Styled.div`
@@ -51,13 +52,13 @@ const LabelContainer = Styled.p`
 
 const DriveCard = props => {
   // console.log(">>> Drive Card", props)
+  let imageURL = `/media/${props.image}`
+  
 return(
   <DriveCardContainer  
-  url={`/course_pictures/math1242.jpg`} 
+  url={imageURL} 
   color={props.color}>
-  <Menu
-  data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} driveId = {props.driveId} />
-  <Image url={`/course_pictures/${props.image}`} color={'#8f8f4c'} />
+  <Image url={imageURL} color={props.color} />
   <Info>
     <LabelContainer><b>{props.label}</b></LabelContainer>
   </Info>

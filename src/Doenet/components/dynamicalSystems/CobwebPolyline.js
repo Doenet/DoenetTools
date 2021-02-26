@@ -71,7 +71,7 @@ export default class CobwebPolyline extends Polyline {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             initialPointChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneInitialPoint",
               variableNames: ["x" + varEnding]
             }
@@ -131,7 +131,7 @@ export default class CobwebPolyline extends Polyline {
       forRenderer: true,
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFunction",
           variableNames: ["numericalf"]
         }

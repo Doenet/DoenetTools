@@ -25,7 +25,7 @@ export default class AsList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline"
         }
       }),
@@ -42,7 +42,7 @@ export default class AsList extends InlineComponent {
       componentType: "text",
       returnDependencies: () => ({
         inlineChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline",
           variableNames: ["text"],
           variablesOptional: true,

@@ -45,7 +45,7 @@ export default class MathOperator extends MathComponent {
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value"],
         },

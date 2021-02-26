@@ -195,7 +195,7 @@ CREATE TABLE `content` (
   `public` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `contentId` (`contentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -510,11 +510,12 @@ CREATE TABLE `drive` (
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
+  `isDeleted` tinyint(1) DEFAULT '0',
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -523,7 +524,6 @@ CREATE TABLE `drive` (
 
 LOCK TABLES `drive` WRITE;
 /*!40000 ALTER TABLE `drive` DISABLE KEYS */;
-INSERT INTO `drive` VALUES (2,'jbOb7Xsx7bqvBXI3CtOxU','drive 1','content',0,NULL,'math1242','8f8f4c');
 /*!40000 ALTER TABLE `drive` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -551,7 +551,7 @@ CREATE TABLE `drive_content` (
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -586,7 +586,7 @@ CREATE TABLE `drive_user` (
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -595,7 +595,6 @@ CREATE TABLE `drive_user` (
 
 LOCK TABLES `drive_user` WRITE;
 /*!40000 ALTER TABLE `drive_user` DISABLE KEYS */;
-INSERT INTO `drive_user` VALUES (2,'3oN5gDY3392zexHopijG6','jbOb7Xsx7bqvBXI3CtOxU',1,1,1,1,1,1,1,1,1,1);
 /*!40000 ALTER TABLE `drive_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1247,4 +1246,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-10 21:27:16
+-- Dump completed on 2021-02-16 23:38:54

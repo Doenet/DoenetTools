@@ -3,155 +3,149 @@ import ComponentWithSelectableType from './ComponentWithSelectableType';
 export default class ComponentListWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentlistwithselectabletype";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    let standardComponentClasses = args.standardComponentClasses;
 
-    childLogic.deleteAllLogic();
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
 
-    function breakIntoTypesByCommas({ activeChildrenMatched, dependencyValues }) {
-      let stringChild = dependencyValues.stringChild[0];
-      let stringPieces = stringChild.stateValues.value.split(",").map(s => s.trim());
+    // function breakIntoTypesByCommas({ matchedChildren, componentProps, parentProps }) {
+    //   let stringPieces = matchedChildren[0].state.value.split(",").map(s => s.trim());
 
-      let selectedType = dependencyValues.type;
-      if (selectedType === null) {
-        if (stringPieces.every(s => /^[a-zA-Z]+$/.test(s))) {
-          selectedType = "letters";
-        } else if (stringPieces.every(s => Number.isFinite(Number(s)))) {
-          selectedType = "number";
+    //   let selectedType = componentProps.type;
+    //   if (!selectedType) {
+    //     selectedType = parentProps.type;
+    //   }
+
+    //   if (!selectedType) {
+    //     if (stringPieces.every(s => /^[a-zA-Z]+$/.test(s))) {
+    //       selectedType = "letters";
+    //     } else if (stringPieces.every(s => Number.isFinite(Number(s)))) {
+    //       selectedType = "number";
+    //     } else {
+    //       selectedType = "text";
+    //     }
+    //   }
+
+    //   let newChildren = stringPieces.map(x => ({
+    //     componentType: selectedType,
+    //     children: [{
+    //       componentType: "string",
+    //       state: { value: x.trim() }
+    //     }]
+    //   }));
+
+    //   return {
+    //     success: true,
+    //     newChildren: newChildren,
+    //   }
+    // }
+
+    // sugarInstructions.push({
+    //   childrenRegex: "s",
+    //   replacementFunction: breakIntoTypesByCommas
+    // })
+
+
+    function breakIntoTypesByCommasAndAddType({ matchedChildren, componentProps, parentProps, componentInfoObjects }) {
+
+      // first, break any string by commas
+
+      matchedChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(",")
+              .map(s => s.trim())
+              .filter(s => s)
+              .map(s => ({ componentType: "string", state: { value: s } }))
+          ]
         } else {
+          return [...a, c]
+        }
+      }, []);
+
+      console.log(matchedChildren);
+
+      let selectedType = componentProps.type;
+      if (!selectedType) {
+        selectedType = parentProps.type;
+      }
+
+      if (!selectedType) {
+        if (matchedChildren.every(c =>
+          c.componentType === "letters" ||
+          (c.componentType === "string" && /^[a-zA-Z]+$/.test(c.state.value))
+        )) {
+          selectedType = "letters";
+        } else if (matchedChildren.every(c =>
+          c.componentType === "number" ||
+          (c.componentType === "string" && Number.isFinite(Number(c.state.value)))
+        )) {
+          selectedType = "number";
+        } else if (matchedChildren.every(c =>
+          c.componentType === "text" || c.componentType === "string"
+        )) {
           selectedType = "text";
-        }
-      }
-
-      let newChildren = stringPieces.map(x => ({
-        componentType: selectedType,
-        children: [{
-          componentType: "string",
-          state: { value: x.trim() }
-        }]
-      }));
-
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: 'exactlyOneString',
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"],
-        }
-      }),
-      logicToWaitOnSugar: ["anythingForSelectedType"],
-      replacementFunction: breakIntoTypesByCommas,
-    });
-
-    function addType({ activeChildrenMatched, dependencyValues }) {
-
-      let selectedType = dependencyValues.type;
-      if (selectedType === null) {
-        if (activeChildrenMatched.length === 1) {
-          let child = activeChildrenMatched[0];
-          if (child.componentType === "string") {
-            let s = child.stateValues.value.trim();
-            if (/^[a-zA-Z]+$/.test(s)) {
-              selectedType = "letters";
-            } else if (Number.isFinite(Number(s))) {
-              selectedType = "number";
-            } else {
-              selectedType = "text";
-            }
-          } else {
-            // have a single non-string child.
-            // Don't match sugar: child will be matched by anythingForSelectedType.
-            return { success: false };
-          }
         } else {
           // have more than one child, but don't know what type to create
-          return { success: false }
+          // selectedType will be determined by first child
+          return {
+            success: true,
+            newChildren: matchedChildren
+          }
         }
       }
 
-      // if already have a single child of the correct type, don't match sugar
-      // the one child will be matched by anythingForSelectedType
-      if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === selectedType) {
-        return { success: false }
+      // if all children already are of the correct type, don't add type
+      // the children will be matched by anythingForSelectedType
+      if (matchedChildren.every(x => x.componentType === selectedType)) {
+        return {
+          success: true,
+          newChildren: matchedChildren
+        }
       }
 
-      if (!(selectedType in standardComponentClasses)) {
+      if (!(selectedType in componentInfoObjects.standardComponentClasses)) {
         // if didn't get a valid type and component is string
         // set to selected type to text
-        if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === "string") {
+        if (matchedChildren.length === 1 && matchedChildren[0].componentType === "string") {
           selectedType = 'text';
         } else {
-          // else don't match sugar
-          // which means
-          // - if there is only one component, that will become the type
-          // - if there are more than one component, child logic will fail
-          return { success: false }
+          //  the first component will determine the type
+          return {
+            success: true,
+            newChildren: matchedChildren
+          }
         }
       }
 
-      let typeChildren = [];
-      for (let child of activeChildrenMatched) {
-        typeChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-
+      // wrap components with selectedType if they aren't that type already
       return {
         success: true,
-        newChildren: [{ componentType: selectedType, children: typeChildren }],
+        newChildren: matchedChildren.map(x => x.componentType === selectedType ? x : ({ componentType: selectedType, children: [x] })),
       }
     }
 
-    let anythingAsSugar = childLogic.newLeaf({
-      name: 'anythingAsSugar',
-      componentType: '_base',
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        }
-      }),
-      logicToWaitOnSugar: ["anythingForSelectedType"],
-      replacementFunction: addType,
-    });
+    sugarInstructions.push({
+      replacementFunction: breakIntoTypesByCommasAndAddType
+    })
 
-    let anythingForSelectedType = childLogic.newLeaf({
+
+    return sugarInstructions;
+
+  }
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+    childLogic.deleteAllLogic();
+
+    childLogic.newLeaf({
       name: 'anythingForSelectedType',
       componentType: "_base",
       excludeComponentTypes: ["_composite"],
       comparison: 'atLeast',
       number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "sugarXorNot",
-      operator: "xor",
-      propositions: [exactlyOneString, anythingAsSugar, anythingForSelectedType],
       setAsBase: true,
-    })
-
-    childLogic.excludeMultipleSugar = true;
+    });
 
     return childLogic;
   }
@@ -169,7 +163,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       componentType: "text",
       returnDependencies: () => ({
         anythingForSelectedType: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anythingForSelectedType",
         },
       }),
@@ -190,7 +184,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
     stateVariableDefinitions.nValues = {
       returnDependencies: () => ({
         anythingForSelectedType: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anythingForSelectedType",
         },
       }),
@@ -224,7 +218,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "anythingForSelectedType",
               variableNames: ["value"],
               childIndices: [arrayKey]
@@ -259,6 +253,10 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       }
     }
 
+    stateVariableDefinitions.value = {
+      isAlias: true,
+      targetVariableName: "values"
+    };
 
     return stateVariableDefinitions;
   }

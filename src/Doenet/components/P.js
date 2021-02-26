@@ -25,7 +25,7 @@ export default class P extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline"
         }
       }),

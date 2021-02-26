@@ -141,6 +141,54 @@ describe('Mathlist Tag Tests', function () {
     })
   })
 
+  it('mathlist with math and string children', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist>
+      <math>a</math>, q, <math>1+1</math> h
+    </mathlist>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let matha = components["/_mathlist1"].activeChildren[1];
+      let mathaAnchor = cesc('#' + matha.componentName);
+      let mathb = components["/_mathlist1"].activeChildren[3];
+      let mathbAnchor = cesc('#' + mathb.componentName);
+    
+
+      cy.log('Test value displayed in browser')
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      })
+      cy.get(mathaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('q')
+      })
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+1')
+      })
+      cy.get(mathbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('h')
+      })
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
+        expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eq('q');
+        expect(components['/_mathlist1'].activeChildren[2].stateValues.value.tree).eqls(['+', 1, 1]);
+        expect(components['/_mathlist1'].activeChildren[3].stateValues.value.tree).eq('h');
+        expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+        expect(components['/_mathlist1'].stateValues.maths[1].tree).eq('q');
+        expect(components['/_mathlist1'].stateValues.maths[2].tree).eqls(['+', 1, 1]);
+        expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('h');
+      })
+    })
+  })
+
   it('mathlist with math and number children', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -175,47 +223,6 @@ describe('Mathlist Tag Tests', function () {
         expect(components['/_mathlist1'].activeChildren[1].stateValues.number).eq(2);
         expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
         expect(components['/_mathlist1'].stateValues.maths[1].tree).eq(2);
-      })
-    })
-  })
-
-  it('mathlist originally gets blank string children from group', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <mathlist>
-      <group>
-        <math>a</math>
-        <math>1+1</math>
-      </group>
-    </mathlist>
-    ` }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = cesc('#' + child2Name);
-
-      cy.log('Test value displayed in browser')
-      cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('a')
-      })
-      cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1+1')
-      })
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
-        expect(components['/_mathlist1'].stateValues.maths[1].tree).eqls(['+', 1, 1]);
       })
     })
   })
@@ -362,6 +369,209 @@ describe('Mathlist Tag Tests', function () {
         expect(text.trim()).equal('4')
       })
       cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      })
+      cy.get(child5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get(child6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('7')
+      })
+      cy.get(child7Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('8')
+      })
+      cy.get(child8Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9')
+      })
+
+      cy.get("#\\/_mathinput1_input").should('have.value', '1')
+      cy.get("#\\/_mathinput2_input").should('have.value', '2')
+      cy.get("#\\/_mathinput3_input").should('have.value', '3')
+      cy.get("#\\/_mathinput4_input").should('have.value', '4')
+      cy.get("#\\/_mathinput5_input").should('have.value', '5')
+      cy.get("#\\/_mathinput6_input").should('have.value', '6')
+      cy.get("#\\/_mathinput7_input").should('have.value', '7')
+      cy.get("#\\/_mathinput8_input").should('have.value', '8')
+      cy.get("#\\/_mathinput9_input").should('have.value', '9')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathlist1'].stateValues.maths[0].tree).eq(1);
+        expect(components['/_mathlist1'].stateValues.maths[1].tree).eq(2);
+        expect(components['/_mathlist1'].stateValues.maths[2].tree).eq(3);
+        expect(components['/_mathlist1'].stateValues.maths[3].tree).eq(4);
+        expect(components['/_mathlist1'].stateValues.maths[4].tree).eq(5);
+        expect(components['/_mathlist1'].stateValues.maths[5].tree).eq(6);
+        expect(components['/_mathlist1'].stateValues.maths[6].tree).eq(7);
+        expect(components['/_mathlist1'].stateValues.maths[7].tree).eq(8);
+        expect(components['/_mathlist1'].stateValues.maths[8].tree).eq(9);
+        expect(components['/_mathlist2'].stateValues.maths[0].tree).eq(2);
+        expect(components['/_mathlist2'].stateValues.maths[1].tree).eq(3);
+        expect(components['/_mathlist3'].stateValues.maths[0].tree).eq(5);
+        expect(components['/_mathlist3'].stateValues.maths[1].tree).eq(6);
+        expect(components['/_mathlist3'].stateValues.maths[2].tree).eq(7);
+        expect(components['/_mathlist3'].stateValues.maths[3].tree).eq(8);
+        expect(components['/_mathlist3'].stateValues.maths[4].tree).eq(9);
+        expect(components['/_mathlist4'].stateValues.maths[0].tree).eq(5);
+        expect(components['/_mathlist4'].stateValues.maths[1].tree).eq(6);
+        expect(components['/_mathlist4'].stateValues.maths[2].tree).eq(7);
+        expect(components['/_mathlist5'].stateValues.maths[0].tree).eq(6);
+        expect(components['/_mathlist5'].stateValues.maths[1].tree).eq(7);
+        expect(components['/_mathlist6'].stateValues.maths[0].tree).eq(8);
+        expect(components['/_mathlist6'].stateValues.maths[1].tree).eq(9);
+      })
+
+
+    })
+  })
+
+  it('mathlist with mathlist children and sugar, test inverse', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist>
+      a,
+      <mathlist>q,r</mathlist>, 
+      <math>h</math>
+      <mathlist>
+        <mathlist>
+          b
+          <mathlist>u,v</mathlist>
+        </mathlist>
+        <mathlist>i,j</mathlist>
+      </mathlist>
+    </mathlist>
+
+    <mathinput><copy prop="math1" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math2" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math3" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math4" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math5" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math6" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math7" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math8" tname="_mathlist1" /></mathinput>
+    <mathinput><copy prop="math9" tname="_mathlist1" /></mathinput>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let child0Name = components['/_mathlist1'].stateValues.childrenToRender[0];
+      let child0Anchor = cesc('#' + child0Name);
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child1Anchor = cesc('#' + child1Name);
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
+      let child2Anchor = cesc('#' + child2Name);
+      let child4Name = components['/_mathlist1'].stateValues.childrenToRender[4];
+      let child4Anchor = cesc('#' + child4Name);
+      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
+      let child5Anchor = cesc('#' + child5Name);
+      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
+      let child6Anchor = cesc('#' + child6Name);
+      let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
+      let child7Anchor = cesc('#' + child7Name);
+      let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
+      let child8Anchor = cesc('#' + child8Name);
+
+      cy.log('Test value displayed in browser')
+      cy.get(child0Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('a')
+      })
+      cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('q')
+      })
+      cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('r')
+      })
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('h')
+      })
+      cy.get(child4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('b')
+      })
+      cy.get(child5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('u')
+      })
+      cy.get(child6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('v')
+      })
+      cy.get(child7Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('i')
+      })
+      cy.get(child8Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('j')
+      })
+
+      cy.get("#\\/_mathinput1_input").should('have.value', 'a')
+      cy.get("#\\/_mathinput2_input").should('have.value', 'q')
+      cy.get("#\\/_mathinput3_input").should('have.value', 'r')
+      cy.get("#\\/_mathinput4_input").should('have.value', 'h')
+      cy.get("#\\/_mathinput5_input").should('have.value', 'b')
+      cy.get("#\\/_mathinput6_input").should('have.value', 'u')
+      cy.get("#\\/_mathinput7_input").should('have.value', 'v')
+      cy.get("#\\/_mathinput8_input").should('have.value', 'i')
+      cy.get("#\\/_mathinput9_input").should('have.value', 'j')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+        expect(components['/_mathlist1'].stateValues.maths[1].tree).eq('q');
+        expect(components['/_mathlist1'].stateValues.maths[2].tree).eq('r');
+        expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('h');
+        expect(components['/_mathlist1'].stateValues.maths[4].tree).eq('b');
+        expect(components['/_mathlist1'].stateValues.maths[5].tree).eq('u');
+        expect(components['/_mathlist1'].stateValues.maths[6].tree).eq('v');
+        expect(components['/_mathlist1'].stateValues.maths[7].tree).eq('i');
+        expect(components['/_mathlist1'].stateValues.maths[8].tree).eq('j');
+        expect(components['/_mathlist2'].stateValues.maths[0].tree).eq('q');
+        expect(components['/_mathlist2'].stateValues.maths[1].tree).eq('r');
+        expect(components['/_mathlist3'].stateValues.maths[0].tree).eq('b');
+        expect(components['/_mathlist3'].stateValues.maths[1].tree).eq('u');
+        expect(components['/_mathlist3'].stateValues.maths[2].tree).eq('v');
+        expect(components['/_mathlist3'].stateValues.maths[3].tree).eq('i');
+        expect(components['/_mathlist3'].stateValues.maths[4].tree).eq('j');
+        expect(components['/_mathlist4'].stateValues.maths[0].tree).eq('b');
+        expect(components['/_mathlist4'].stateValues.maths[1].tree).eq('u');
+        expect(components['/_mathlist4'].stateValues.maths[2].tree).eq('v');
+        expect(components['/_mathlist5'].stateValues.maths[0].tree).eq('u');
+        expect(components['/_mathlist5'].stateValues.maths[1].tree).eq('v');
+        expect(components['/_mathlist6'].stateValues.maths[0].tree).eq('i');
+        expect(components['/_mathlist6'].stateValues.maths[1].tree).eq('j');
+      })
+
+      cy.log('change values')
+
+      cy.get("#\\/_mathinput1_input").clear().type("1{enter}")
+      cy.get("#\\/_mathinput2_input").clear().type("2{enter}")
+      cy.get("#\\/_mathinput3_input").clear().type("3{enter}")
+      cy.get("#\\/_mathinput4_input").clear().type("4{enter}")
+      cy.get("#\\/_mathinput5_input").clear().type("5{enter}")
+      cy.get("#\\/_mathinput6_input").clear().type("6{enter}")
+      cy.get("#\\/_mathinput7_input").clear().type("7{enter}")
+      cy.get("#\\/_mathinput8_input").clear().type("8{enter}")
+      cy.get("#\\/_mathinput9_input").clear().type("9{enter}")
+
+
+      cy.log('Test value displayed in browser')
+      cy.get(child0Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      })
+      cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      })
+      cy.get(child4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
       cy.get(child5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -671,16 +881,16 @@ describe('Mathlist Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let childNames = components['/_mathlist1'].stateValues.childrenToRender;
-      let childAnchors = childNames.map(x => '#' + x);
+      let childAnchors = childNames.map(x => cesc('#' + x));
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -745,13 +955,13 @@ describe('Mathlist Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('a+a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -818,13 +1028,13 @@ describe('Mathlist Tag Tests', function () {
 
 
       cy.log('Test value displayed in browser')
-      cy.get(cesc(childAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2a')
       })
-      cy.get(cesc(childAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('b+b')
       })
-      cy.get(cesc(childAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(childAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2c')
       })
       cy.get(childAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -893,8 +1103,7 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>
-      <mergeMathLists><copy prop="value" tname="_booleaninput1" /></mergeMathLists>
+    <mathlist mergeMathLists="$_booleaninput1">
       <math>a</math>
       <math>b,c,d</math>
       <math>e,f</math>

@@ -20,76 +20,18 @@ export default class Polyline extends GraphicalComponent {
     return properties;
   }
 
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addVertices = function ({ activeChildrenMatched }) {
-      // add <vertices> around points
-      let verticesChildren = [];
-      for (let child of activeChildrenMatched) {
-        verticesChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "vertices", children: verticesChildren }],
-      }
-    }
-
-
-    let atLeastOnePoint = childLogic.newLeaf({
-      name: "atLeastOnePoint",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneVertices"],
-      replacementFunction: addVertices,
-    });
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      replacementFunction: addVertices,
-    });
-
-    let noPoints = childLogic.newLeaf({
-      name: "noPoints",
-      componentType: 'point',
-      number: 0
-    });
-
-    let exactlyOneVertices = childLogic.newLeaf({
-      name: "exactlyOneVertices",
+    childLogic.newLeaf({
+      name: "atMostOneVertices",
       componentType: 'vertices',
-      number: 1
+      comparison: "atMost",
+      number: 1,
+      setAsBase: true,
     });
 
-    childLogic.newOperator({
-      name: "verticesXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneVertices, atLeastOnePoint, stringsAndMaths, noPoints],
-      setAsBase: true
-    });
 
     return childLogic;
   }
@@ -123,7 +65,7 @@ export default class Polyline extends GraphicalComponent {
           styleDescription += "dotted ";
         }
 
-        styleDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        styleDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription } };
       }
@@ -135,8 +77,8 @@ export default class Polyline extends GraphicalComponent {
       forRenderer: true,
       returnDependencies: () => ({
         verticesChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneVertices",
+          dependencyType: "child",
+          childLogicName: "atMostOneVertices",
           variableNames: ["nPoints"]
         }
       }),
@@ -156,8 +98,8 @@ export default class Polyline extends GraphicalComponent {
       returnDependencies() {
         return {
           verticesChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneVertices",
+            dependencyType: "child",
+            childLogicName: "atMostOneVertices",
             variableNames: ["nDimensions"],
           }
         }
@@ -252,8 +194,8 @@ export default class Polyline extends GraphicalComponent {
 
           dependenciesByKey[arrayKey] = {
             verticesChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneVertices",
+              dependencyType: "child",
+              childLogicName: "atMostOneVertices",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -372,27 +314,6 @@ export default class Polyline extends GraphicalComponent {
         }
 
         return { newValues: { numericalVertices } }
-      }
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        verticesChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneVertices"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.verticesChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.verticesChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
       }
     }
 

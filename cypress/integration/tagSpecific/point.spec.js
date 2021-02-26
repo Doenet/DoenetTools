@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Point Tag Tests', function () {
 
@@ -87,11 +96,11 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
-    <point>
-      <label><copy prop="label" tname="_point1" />'</label>
+    <point label="$l'">
       (1,3)
     </point>
   </graph>
+  <copy prop="label" tname="_point1" name="l" hide />
   <copy prop="x2" tname="_point2" />
     `}, "*");
     });
@@ -926,8 +935,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <constrainToGrid/>
-  (1,2)
+    <constraints>
+      <constrainToGrid/>
+    </constraints>
+    <x>1</x><y>2</y>
   </point>
 
   </graph>
@@ -976,9 +987,11 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <constrainToGrid dx="2" dy="2"/>
-  <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
-  (1,3.1)
+    <constraints>
+      <constrainToGrid dx="2" dy="2"/>
+      <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
+    </constraints>
+    <xs>1,3.1</xs>
   </point>
 
   </graph>
@@ -1032,9 +1045,11 @@ describe('Point Tag Tests', function () {
   <graph>
     <point name="original">(1,2)</point>
     <point name="constrained">
-      <constrainToGrid/>
-        (<copy prop="x" tname="original" />+1,
-          <copy prop="y" tname="original" />+1)
+      <constraints>
+        <constrainToGrid/>
+      </constraints>
+      <x><copy prop="x" tname="original" />+1</x>
+      <y><copy prop="y" tname="original" />+1</y>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1159,14 +1174,11 @@ describe('Point Tag Tests', function () {
   <graph>
     <point name="original">(1.2,3.6)</point>
     <point name="constrained">
-    <constrainToGrid>
-      <dx><copy prop="value" tname="dx" /></dx>
-      <dy><copy prop="value" tname="dy" /></dy>
-      <xoffset><copy prop="value" tname="xoffset" /></xoffset>
-      <yoffset><copy prop="value" tname="yoffset" /></yoffset>
-    </constrainToGrid>
-        (<copy prop="x" tname="original" />+1,
-          <copy prop="y" tname="original" />+1)
+      <constraints>
+        <constrainToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" />
+      </constraints>
+      <xs><x><copy prop="x" tname="original" />+1</x>
+        <x><copy prop="y" tname="original" />+1</x></xs>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1319,8 +1331,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <attractToGrid/>
-  (-7.1,8.9)
+    <constraints>
+      <attractToGrid/>
+    </constraints>
+    <xs>-7.1,8.9</xs>
   </point>
 
   </graph>
@@ -1382,8 +1396,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-  <attractToGrid includeGridlines="true"/>
-  (3.1,-3.4)
+    <constraints>
+      <attractToGrid includeGridlines="true"/>
+    </constraints>
+    <xs>3.1,-3.4</xs>
   </point>
 
   </graph>
@@ -1470,15 +1486,10 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point>
-    <attractToGrid>
-      <dx><copy prop="value" tname="dx" /></dx>
-      <dy><copy prop="value" tname="dy" /></dy>
-      <xoffset><copy prop="value" tname="xoffset" /></xoffset>
-      <yoffset><copy prop="value" tname="yoffset" /></yoffset>
-      <xthreshold><copy prop="value" tname="xthreshold" /></xthreshold>
-      <ythreshold><copy prop="value" tname="ythreshold" /></ythreshold>
-      </attractToGrid>
-  (-7.1,8.9)
+    <constraints>
+      <attractToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" xthreshold="$xthreshold" ythreshold="$ythreshold" />
+    </constraints>
+    <xs>-7.1,8.9</xs>
   </point>
 
   </graph>
@@ -1574,8 +1585,10 @@ describe('Point Tag Tests', function () {
     </through>
   </line>
   <point name="A">
-    <constrainTo><copy tname="_line1" /></constrainTo>
-    (-1,-5)
+    <constraints>
+      <constrainTo><copy tname="_line1" /></constrainTo>
+    </constraints>
+    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1588,7 +1601,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
       cy.window().then((win) => {
@@ -1644,8 +1657,10 @@ describe('Point Tag Tests', function () {
     </through>
   </line>
   <point name="A">
-    <attractTo><copy tname="_line1" /></attractTo>
-    (-1,-5)
+    <constraints>
+      <attractTo><copy tname="_line1" /></attractTo>
+    </constraints>
+    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1658,7 +1673,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is not on line`);
       cy.window().then((win) => {
@@ -1708,19 +1723,21 @@ describe('Point Tag Tests', function () {
   <line hide>y = x + 7</line>
   <line hide>y = x - 3</line>
   <map>
-    <template>
-      <point hide>(<copyFromSubs/>,<copyFromSubs/>+2)</point>
+    <template newNamespace>
+      <point hide>(<copySource/>,<copySource/>+2)</point>
     </template>
-    <substitutions><sequence from="-10" to="10"/></substitutions>
+    <sources><sequence from="-10" to="10"/></sources>
   </map>
 
   <point>
+    <constraints>
     <constrainTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
       <copy tname="_map1" />
     </constrainTo>
-    (3,2)
+    </constraints>
+    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1734,7 +1751,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
       cy.window().then((win) => {
@@ -1783,19 +1800,21 @@ describe('Point Tag Tests', function () {
   <line hide>y = x + 7</line>
   <line hide>y = x - 3</line>
   <map>
-    <template>
-      <point hide>(<copyFromSubs/>,<copyFromSubs/>+2)</point>
+    <template newNamespace>
+      <point hide>(<copySource/>,<copySource/>+2)</point>
     </template>
-    <substitutions><sequence from="-10" to="10"/></substitutions>
+    <sources><sequence from="-10" to="10"/></sources>
   </map>
 
   <point>
-    <attractTo threshold="1">
-      <copy tname="_line1" />
-      <copy tname="_line2" />
-      <copy tname="_map1" />
-    </attractTo>
-    (3,2)
+    <constraints>
+      <attractTo threshold="1">
+        <copy tname="_line1" />
+        <copy tname="_line2" />
+        <copy tname="_map1" />
+      </attractTo>
+    </constraints>
+    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1809,7 +1828,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is in original location`);
       cy.window().then((win) => {
@@ -1884,13 +1903,15 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constraintUnion>
       <constrainTo><copy tname="_line1" /></constrainTo>
       <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
       <constrainTo><copy tname="_line4" /></constrainTo>
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1904,7 +1925,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point on grid`);
       cy.window().then((win) => {
@@ -1964,6 +1985,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constraintToAttractor>
       <constraintUnion>
         <constrainTo><copy tname="_line1" /></constrainTo>
@@ -1972,7 +1994,8 @@ describe('Point Tag Tests', function () {
         <constrainToGrid dx="2" dy="2"/>
       </constraintUnion>
     </constraintToAttractor>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1986,7 +2009,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
       cy.window().then((win) => {
@@ -2077,6 +2100,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <attractTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
@@ -2091,7 +2115,8 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2105,7 +2130,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
       cy.window().then((win) => {
@@ -2244,6 +2269,7 @@ describe('Point Tag Tests', function () {
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
   <point name="A">
+    <constraints>
     <constrainTo>
       <copy tname="_line1" />
       <copy tname="_line2" />
@@ -2258,7 +2284,8 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line2" /><copy tname="_line4" /></intersection>
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
-    (7,3)
+    </constraints>
+    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2272,7 +2299,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`on x=y`);
       cy.window().then((win) => {
@@ -2460,88 +2487,8 @@ describe('Point Tag Tests', function () {
 
   });
 
-  it('point constrained to grid as a property', () => {
-    // included many properties so that constrainToGrid
-    // is likely to have property children on either side
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point name='A' label="A" constrainToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  <point name="B" label="B" constrainToGrid modifyIndirectly hide="false" draggable>(2,3)</point>
-  <point name="C" label="C" constrainToGrid="false" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  </graph>
-  `}, "*");
-    });
-
-
-    // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-
-    cy.log(`check constraints`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.2, y: 5.1 });
-      components['/B'].movePoint({ x: 4.2, y: 6.1 });
-      components['/C'].movePoint({ x: 5.2, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.2);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-
-  });
-
-  it('point attracted to grid as a property', () => {
-    // included many properties so that constrainToGrid
-    // is likely to have property children on either side
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point name="A" label="A" attractToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  <point name="B" label="B" attractToGrid modifyIndirectly hide="false" draggable>(2,3)</point>
-  <point name="C" label="C" attractToGrid="false" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
-  </graph>
-  `}, "*");
-    });
-
-    // use this to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-
-    cy.log(`check attraction`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.1, y: 5.1 });
-      components['/B'].movePoint({ x: 4.1, y: 6.1 });
-      components['/C'].movePoint({ x: 5.1, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.1);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-
-    cy.log(`too far to attract`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/A'].movePoint({ x: 3.3, y: 5.1 });
-      components['/B'].movePoint({ x: 4.3, y: 6.1 });
-      components['/C'].movePoint({ x: 5.3, y: 7.1 });
-      expect(components['/A'].stateValues.xs[0].tree).eq(3.3);
-      expect(components['/A'].stateValues.xs[1].tree).eq(5.1);
-      expect(components['/B'].stateValues.xs[0].tree).eq(4.3);
-      expect(components['/B'].stateValues.xs[1].tree).eq(6.1);
-      expect(components['/C'].stateValues.xs[0].tree).eq(5.3);
-      expect(components['/C'].stateValues.xs[1].tree).eq(7.1);
-    })
-  });
-
+  // gap not so relevant any more with new sugar
+  // but doesn't hurt to keep test
   it('sugar coords with defining gap', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -2549,7 +2496,7 @@ describe('Point Tag Tests', function () {
   <mathinput name="n"/>
 
   <graph>
-    <point>(<math>5</math><sequence from="2"><to><copy prop="value" tname="n" /></to></sequence><math>1</math>,4 )</point>
+    <point>(<math>5</math><sequence from="2" to="$n" /><math>1</math>,4 )</point>
   </graph>
 
   <text>a</text>
@@ -2661,7 +2608,7 @@ describe('Point Tag Tests', function () {
         '/_point1', '/_point2', '/_point3', '/_point4', '/_point5',
         components['/_copy1'].replacements[0].componentName,
         components['/_copy2'].replacements[0].componentName,
-        components['/_copy3'].replacements[0].replacements[0].componentName,
+        components['/_copy3'].replacements[0].componentName,
       ];
       let xs = [-10, 6, -4, 2, -9, -5, -2, 4];
       let ys = [8, 3, -3, -2, -6, 5, -9, 0];
@@ -2701,7 +2648,10 @@ describe('Point Tag Tests', function () {
     <point>(1,2)</point>
     <copy tname="_point1" />
     <copy tname="_point1" />
-    <point>(<copy prop="y" tname="_copy1" />,<copy prop="x" tname="_copy2" />)</point>
+    <point>
+      <x><copy prop="y" tname="_copy1" /></x>
+      <y><copy prop="x" tname="_copy2" /></y>
+    </point>
   </graph>
   `}, "*");
     });
@@ -2947,8 +2897,8 @@ describe('Point Tag Tests', function () {
       expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
       expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
+      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
 
     });
 
@@ -2966,8 +2916,8 @@ describe('Point Tag Tests', function () {
       expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
       expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
+      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
 
     });
 
@@ -2985,8 +2935,8 @@ describe('Point Tag Tests', function () {
       expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
       expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
+      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
 
     });
 
@@ -2997,7 +2947,7 @@ describe('Point Tag Tests', function () {
       let x = -4;
       let y = 0;
 
-      components['/p1b'].replacements[0].replacements[0].movePoint({ x: x, y: y });
+      components['/p1b'].replacements[0].movePoint({ x: x, y: y });
 
       expect(components['/p1'].stateValues.xs[0].tree).eq(x);
       expect(components['/p1'].stateValues.xs[1].tree).eq(y);
@@ -3005,8 +2955,8 @@ describe('Point Tag Tests', function () {
       expect(components['/p1a'].replacements[0].stateValues.xs[0].tree).eq(x);
       expect(components['/p1a'].replacements[0].stateValues.xs[1].tree).eq(y);
 
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[0].tree).eq(x);
-      expect(components['/p1b'].replacements[0].replacements[0].stateValues.xs[1].tree).eq(y);
+      expect(components['/p1b'].replacements[0].stateValues.xs[0].tree).eq(x);
+      expect(components['/p1b'].replacements[0].stateValues.xs[1].tree).eq(y);
 
     });
 
@@ -3626,13 +3576,13 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <text name="l1" hide><copy prop="x" displaydigits="3" tname="_point1" />, <copy prop="x" displaydigits="3" tname="_point2" /></text>
+  <text name="l2" hide><copy prop="y" displaydigits="3" tname="_point1" />, <copy prop="y" displaydigits="3" tname="_point2" /></text>
   <graph>
-    <point>
-      <label><copy prop="x" displaydigits="3" tname="_point1" />, <copy prop="x" displaydigits="3" tname="_point2" /></label>
+    <point label="$l1">
       (1,2)
     </point>
-    <point>
-      <label><copy prop="y" displaydigits="3" tname="_point1" />, <copy prop="y" displaydigits="3" tname="_point2" /></label>
+    <point label="$l2">
       (3,4)
     </point>
   </graph>
@@ -3742,8 +3692,10 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <graph>
       <point>
-        <attractTo><point>(1,-7)</point></attractTo>
-        (-4,1)
+        <constraints>
+          <attractTo><point>(1,-7)</point></attractTo>
+        </constraints>
+        <x>-4</x><y>1</y>
       </point>
       <point>
         <x><copy prop="x" tname="_point1" /></x>
@@ -3902,22 +3854,22 @@ describe('Point Tag Tests', function () {
     <section title="For point 1">
     <p>Change coords: <mathinput name="coords1b"><copy prop="coords" tname="_point1"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point1x1b"><copy prop="x1" tname="_point1"/></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point1x2b"><copy prop="x2" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point1x3b"><copy prop="x3" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>    
+    <p>Change y-coordinate: <mathinput name="point1x2b"><copy prop="x2" tname="_point1" includeUndefinedObjects/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point1x3b"><copy prop="x3" tname="_point1" includeUndefinedObjects/></mathinput></p>    
     </section>
 
     <section title="For point 2">
     <p>Change coords: <mathinput name="coords2b"><copy prop="coords" tname="point2"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point2x1b"><copy prop="x1" tname="point2"/></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point2x2b"><copy prop="x2" tname="point2" includeUndefinedArrayEntries/></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point2x3b"><copy prop="x3" tname="point2" includeUndefinedArrayEntries/></mathinput></p>    
+    <p>Change y-coordinate: <mathinput name="point2x2b"><copy prop="x2" tname="point2" includeUndefinedObjects/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point2x3b"><copy prop="x3" tname="point2" includeUndefinedObjects/></mathinput></p>    
     </section>
 
     <section title="For point 3">
     <p>Change coords: <mathinput name="coords3b"><copy prop="coords" tname="point3"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point3x1b"><copy prop="x1" tname="point3"/></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point3x2b"><copy prop="x2" tname="point3" includeUndefinedArrayEntries/></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point3x3b"><copy prop="x3" tname="point3" includeUndefinedArrayEntries/></mathinput></p>    
+    <p>Change y-coordinate: <mathinput name="point3x2b"><copy prop="x2" tname="point3" includeUndefinedObjects/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point3x3b"><copy prop="x3" tname="point3" includeUndefinedObjects/></mathinput></p>    
     </section>
 
     <section title="collecting">
@@ -3944,24 +3896,24 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1Anchor = '#' + components["/_point1"].adapterUsed.componentName;
+      let point1Anchor = cesc('#' + components["/_point1"].adapterUsed.componentName);
       let point2 = components["/point2"].replacements[0];
-      let point2Anchor = '#' + point2.adapterUsed.componentName;
-      let point3 = components["/point3"].replacements[0].replacements[0];
-      let point3Anchor = '#' + point3.adapterUsed.componentName;
-      let nDimensions1Anchor = "#" + components["/nDimensions1"].replacements[0].componentName;
-      let nDimensions2Anchor = "#" + components["/nDimensions2"].replacements[0].componentName;
-      let nDimensions3Anchor = "#" + components["/nDimensions3"].replacements[0].componentName;
-      let point1x1Anchor = "#" + components["/point1x1"].replacements[0].componentName;
-      let point2x1Anchor = "#" + components["/point2x1"].replacements[0].componentName;
-      let point3x1Anchor = "#" + components["/point3x1"].replacements[0].componentName;
-      let point3x1eAnchor = "#" + components["/point3x1e"].replacements[0].componentName;
-      let pointallx1Anchors = components["/pointallx1"].replacements.map(x => "#" + x.componentName);
-      let coords1Anchor = "#" + components["/coords1"].replacements[0].componentName;
-      let coords2Anchor = "#" + components["/coords2"].replacements[0].componentName;
-      let coords3Anchor = "#" + components["/coords3"].replacements[0].componentName;
-      let coords3eAnchor = "#" + components["/coords3e"].replacements[0].componentName;
-      let coordsallAnchors = components["/coordsall"].replacements.map(x => "#" + x.componentName);
+      let point2Anchor = cesc('#' + point2.adapterUsed.componentName);
+      let point3 = components["/point3"].replacements[0];
+      let point3Anchor = cesc('#' + point3.adapterUsed.componentName);
+      let nDimensions1Anchor = cesc("#" + components["/nDimensions1"].replacements[0].componentName);
+      let nDimensions2Anchor = cesc("#" + components["/nDimensions2"].replacements[0].componentName);
+      let nDimensions3Anchor = cesc("#" + components["/nDimensions3"].replacements[0].componentName);
+      let point1x1Anchor = cesc("#" + components["/point1x1"].replacements[0].componentName);
+      let point2x1Anchor = cesc("#" + components["/point2x1"].replacements[0].componentName);
+      let point3x1Anchor = cesc("#" + components["/point3x1"].replacements[0].componentName);
+      let point3x1eAnchor = cesc("#" + components["/point3x1e"].replacements[0].componentName);
+      let pointallx1Anchors = components["/pointallx1"].replacements.map(x => cesc("#" + x.componentName));
+      let coords1Anchor = cesc("#" + components["/coords1"].replacements[0].componentName);
+      let coords2Anchor = cesc("#" + components["/coords2"].replacements[0].componentName);
+      let coords3Anchor = cesc("#" + components["/coords3"].replacements[0].componentName);
+      let coords3eAnchor = cesc("#" + components["/coords3e"].replacements[0].componentName);
+      let coordsallAnchors = components["/coordsall"].replacements.map(x => cesc("#" + x.componentName));
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -4099,11 +4051,11 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
-        let point3x2eAnchor = "#" + components["/point3x2e"].replacements[0].componentName;
-        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
+        let point3x2eAnchor = cesc("#" + components["/point3x2e"].replacements[0].componentName);
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => cesc("#" + x.componentName));
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
@@ -4439,16 +4391,16 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
-        let point3x2eAnchor = "#" + components["/point3x2"].replacements[0].componentName;
-        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
-        let point1x3Anchor = "#" + components["/point1x3"].replacements[0].componentName;
-        let point2x3Anchor = "#" + components["/point2x3"].replacements[0].componentName;
-        let point3x3Anchor = "#" + components["/point3x3"].replacements[0].componentName;
-        let point3x3eAnchor = "#" + components["/point3x3"].replacements[0].componentName;
-        let pointallx3Anchors = components["/pointallx3"].replacements.map(x => "#" + x.componentName);
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
+        let point3x2eAnchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => cesc("#" + x.componentName));
+        let point1x3Anchor = cesc("#" + components["/point1x3"].replacements[0].componentName);
+        let point2x3Anchor = cesc("#" + components["/point2x3"].replacements[0].componentName);
+        let point3x3Anchor = cesc("#" + components["/point3x3"].replacements[0].componentName);
+        let point3x3eAnchor = cesc("#" + components["/point3x3"].replacements[0].componentName);
+        let pointallx3Anchors = components["/pointallx3"].replacements.map(x => cesc("#" + x.componentName));
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
@@ -6564,11 +6516,11 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
-        let point3x2eAnchor = "#" + components["/point3x2e"].replacements[0].componentName;
-        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
+        let point3x2eAnchor = cesc("#" + components["/point3x2e"].replacements[0].componentName);
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => cesc("#" + x.componentName));
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(p,q)')
@@ -7316,11 +7268,11 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1Anchor = '#' + components["/_point1"].adapterUsed.componentName;
+      let point1Anchor = cesc('#' + components["/_point1"].adapterUsed.componentName);
       let point2 = components["/point2"].replacements[0];
-      let point2Anchor = '#' + point2.adapterUsed.componentName;
-      let point3 = components["/point3"].replacements[0].replacements[0];
-      let point3Anchor = '#' + point3.adapterUsed.componentName;
+      let point2Anchor = cesc('#' + point2.adapterUsed.componentName);
+      let point3 = components["/point3"].replacements[0];
+      let point3Anchor = cesc('#' + point3.adapterUsed.componentName);
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -7355,7 +7307,7 @@ describe('Point Tag Tests', function () {
 
       });
 
-      cy.log('Create 2D point')
+      cy.log('Create 2D point 2')
       cy.get('#\\/originalCoords_input').type('(a,b){enter}')
 
       cy.window().then((win) => {
@@ -7488,7 +7440,7 @@ describe('Point Tag Tests', function () {
 
 
 
-      cy.log('Back to 2D point')
+      cy.log('Back to 2D point 2')
       cy.get('#\\/originalCoords_input').clear().type('(p,q){enter}')
 
       cy.window().then((win) => {

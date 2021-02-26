@@ -446,7 +446,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('number sequence, sugar to', () => {
+  it.skip('number sequence, sugar to', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -467,7 +467,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('number sequence, sugar from and to', () => {
+  it.skip('number sequence, sugar from and to', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -488,7 +488,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('number sequence, step with sugar from and to', () => {
+  it.skip('number sequence, step with sugar from and to', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -537,7 +537,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('letters sequence, sugar to', () => {
+  it.skip('letters sequence, sugar to', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -560,7 +560,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('letters sequence, sugar from and to, explicit type', () => {
+  it.skip('letters sequence, sugar from and to, explicit type', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -584,7 +584,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('letters sequence, sugar from and to', () => {
+  it.skip('letters sequence, sugar from and to', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -635,10 +635,8 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence from="1" count="10">
-    <exclude><copy prop="value" tname="exclude2" /></exclude>
-    <exclude>2,6</exclude>
-    </sequence></aslist>
+    <aslist><sequence from="1" count="10" exclude="$exclude2, 2,6" />
+    </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
     `}, "*");
     });
@@ -748,11 +746,9 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence type="letters" count="10">
-    <exclude><copy prop="value" tname="_textinput1" /></exclude>
-    <exclude>b,f</exclude>
-    </sequence></aslist>
-    <p>Also exclude: <textinput /></p>
+    <aslist><sequence type="letters" count="10" exclude="$e, b,f" />
+    </aslist>
+    <p>Also exclude: <textinput name="e" /></p>
     `}, "*");
     });
 
@@ -773,7 +769,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude i")
-    cy.get('#\\/_textinput1_input').clear().type(`i{enter}`);
+    cy.get('#\\/e_input').clear().type(`i{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -789,7 +785,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude f twice")
-    cy.get('#\\/_textinput1_input').clear().type(`f{enter}`);
+    cy.get('#\\/e_input').clear().type(`f{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -805,7 +801,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude l")
-    cy.get('#\\/_textinput1_input').clear().type(`l{enter}`);
+    cy.get('#\\/e_input').clear().type(`l{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -822,7 +818,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("also exclude C")
-    cy.get('#\\/_textinput1_input').clear().type(`C{enter}`);
+    cy.get('#\\/e_input').clear().type(`C{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -839,7 +835,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("don't exclude anything else")
-    cy.get('#\\/_textinput1_input').clear().type(`{enter}`);
+    cy.get('#\\/e_input').clear().type(`{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -861,11 +857,10 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence type="math" count="10" from="x" step="x">
-    <exclude><copy prop="value" tname="_mathinput1" /></exclude>
-    <exclude>2x,6x</exclude>
-    </sequence></aslist>
-    <p>Also exclude: <mathinput /></p>
+    <aslist>
+      <sequence type="math" count="10" from="x" step="x" exclude="2x,6x, $e" />
+    </aslist>
+    <p>Also exclude: <mathinput name="e" /></p>
     `}, "*");
     });
 
@@ -887,7 +882,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 9x")
-    cy.get('#\\/_mathinput1_input').clear().type(`9x{enter}`);
+    cy.get('#\\/e_input').clear().type(`9x{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -903,7 +898,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 6x twice")
-    cy.get('#\\/_mathinput1_input').clear().type(`6x{enter}`);
+    cy.get('#\\/e_input').clear().type(`6x{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -919,7 +914,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 12x")
-    cy.get('#\\/_mathinput1_input').clear().type(`12x{enter}`);
+    cy.get('#\\/e_input').clear().type(`12x{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -936,7 +931,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("also exclude 3x")
-    cy.get('#\\/_mathinput1_input').clear().type(`3x{enter}`);
+    cy.get('#\\/e_input').clear().type(`3x{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -953,7 +948,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("don't exclude anything else")
-    cy.get('#\\/_mathinput1_input').clear().type(`{enter}`);
+    cy.get('#\\/e_input').clear().type(`{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -975,7 +970,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence step="0.1" >0,1</sequence></aslist>
+    <aslist><sequence step="0.1" from="0" to="1" /></aslist>
     `}, "*");
     });
 
@@ -1011,10 +1006,15 @@ describe('Sequence Tag Tests', function () {
     <text>a</text>
     <math name="n">5</math>
     <number name="m">10</number>
-    <aslist><sequence>
-      <from><min><copy tname="n" /><number>11</number></min></from>
-      <to><max><math><copy tname="m" />+3</math><number>11</number></max></to>
-    </sequence></aslist>
+    <aslist>
+      <sequence from="$min" to="$max"/>
+    </aslist>
+    <number name="min">
+      <min><copy tname="n" /><number>11</number></min>
+    </number>
+    <number name="max">
+      <max><math><copy tname="m" />+3</math><number>11</number></max>
+    </number>
     `}, "*");
     });
 
@@ -1044,7 +1044,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <mathinput name="n"/>
-  <aslist><sequence from="2"><to><copy prop="value" tname="n" /></to></sequence></aslist>
+  <aslist><sequence from="2" to="$n" /></aslist>
     `}, "*");
     });
 
