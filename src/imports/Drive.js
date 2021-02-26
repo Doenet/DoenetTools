@@ -528,6 +528,7 @@ export const folderDictionarySelector = selectorFamily({
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let sourcesByParentFolderId = {};
           const insertIndex = instructions.index ?? 0;
+          let newSortOrder = "";
 
           for(let gItem of globalSelectedItems){
             //Deselect Item
@@ -556,7 +557,16 @@ export const folderDictionarySelector = selectorFamily({
               // make sure item not duplicated in destination contentIds
               newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
             }
-            
+
+            /* generate and update sortOrder */
+            const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
+            newSortOrder = getLexicographicOrder({
+              index: insertIndex, 
+              nodeObjs: newDestinationFolderObj.contentsDictionary, 
+              defaultFolderChildrenIds: cleanDefaultOrder 
+            });
+            newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
+
             // insert item into contentIds of destination
             newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
           }
@@ -579,7 +589,8 @@ export const folderDictionarySelector = selectorFamily({
             selectedItemIds, 
             destinationItemId:instructions.itemId,
             destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
-            destinationDriveId:driveIdFolderId.driveId
+            destinationDriveId:driveIdFolderId.driveId,
+            newSortOrder,
           }
           axios.post("/api/moveItems.php", payload)
           .then((resp)=>{
@@ -856,17 +867,16 @@ const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] })
   if (defaultFolderChildrenIds.length !== 0) {
     if (index <= 0) {
       nextItemId = defaultFolderChildrenIds[0];
-    } else if (index >= defaultFolderChildrenIds.length - 1) {
+    } else if (index >= defaultFolderChildrenIds.length) {
       prevItemId = defaultFolderChildrenIds[defaultFolderChildrenIds.length - 1];
     } else {
-      nextItemId = defaultFolderChildrenIds[index];
       prevItemId = defaultFolderChildrenIds[index - 1];
+      nextItemId = defaultFolderChildrenIds[index];
     }
     
     if (nodeObjs[prevItemId]) prevItemOrder = nodeObjs?.[prevItemId]?.sortOrder ?? "";
     if (nodeObjs[nextItemId]) nextItemOrder = nodeObjs?.[nextItemId]?.sortOrder ?? "";
   }
-
   const sortOrder = getSortOrder(prevItemOrder, nextItemOrder);
   return sortOrder;
 }

@@ -55,7 +55,7 @@ $number_items = count($_POST["selectedItemIds"]);
 $new_values = "";
 for ($i = 0; $i < $number_items; $i++) {
   $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemIds"][$i]);
-  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId','$newSortOrder),";
+  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId','$newSortOrder'),";
 }
 $new_values = rtrim($new_values,",");
 
