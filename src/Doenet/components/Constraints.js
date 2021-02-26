@@ -35,7 +35,7 @@ export default class Constraints extends BaseComponent {
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({
         constraintChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroConstraints",
           variableNames: ["independentComponentConstraints"]
         }
@@ -120,7 +120,7 @@ export default class Constraints extends BaseComponent {
 
         let globalDependencies = {
           constraintChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atLeastZeroConstraints",
             variableNames: ["applyConstraint", "applyComponentConstraint"],
             variablesOptional: true,

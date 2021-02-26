@@ -538,13 +538,13 @@ describe('Curve Tag Tests', function () {
     <curve>
       <through>
       <map>
-        <template><point>(<copyFromSubs/>, sin(<copyFromSubs/>))</point></template>
-        <substitutions>
+        <template><point>(<copySource/>, sin(<copySource/>))</point></template>
+        <sources>
           <sequence from="0">
             <count><copy prop="value" tname="_mathinput1" /></count>
             <step><copy prop="value" tname="_mathinput2" /></step>
           </sequence>
-        </substitutions>
+        </sources>
       </map>
       </through>
     </curve>

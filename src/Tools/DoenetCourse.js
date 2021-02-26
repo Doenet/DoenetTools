@@ -9,14 +9,14 @@ import LearnerGradesAttempts from "./LearnerGradesAttempts";
 import {
   CourseAssignments,
   CourseAssignmentControls,
-} from "./courseAssignments";
+} from "./CourseAssignments";
 import LearnerAssignment from "./LearnerAssignment";
 import Tool, { openOverlayByName } from "../imports/Tool/Tool";
 import CollapseSection from "../imports/CollapseSection";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
 import Button from "../imports/PanelHeaderComponents/Button";
 import ToggleButton from "../imports/PanelHeaderComponents/ToggleButton";
-import TextField from "../imports/PanelHeaderComponents/TextField";
+import Textfield from "../imports/PanelHeaderComponents/Textfield";
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";

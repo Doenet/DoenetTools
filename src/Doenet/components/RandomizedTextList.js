@@ -51,7 +51,7 @@ export default class TextList extends InlineComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
@@ -88,7 +88,7 @@ export default class TextList extends InlineComponent {
       entryPrefixes: ["text"],
       returnDependencies: () => ({
         textAndTextlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "textAndTextLists",
           variableNames: ["value", "texts"],
           variablesOptional: true,
@@ -152,7 +152,7 @@ export default class TextList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: ({ sharedParameters }) => ({
         textAndTextlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "textAndTextLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

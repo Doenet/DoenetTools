@@ -32,7 +32,7 @@ describe('Booleaninput Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let boolean1 = components['/_copy1'].replacements[0];
       let boolean1Anchor = cesc('#' + boolean1.componentName);
-      let boolean2 = components['/_copy2'].replacements[0].replacements[0];
+      let boolean2 = components['/_copy2'].replacements[0];
       let boolean2Anchor = cesc('#' + boolean2.componentName);
 
       cy.log('Test values displayed in browser')
@@ -136,13 +136,13 @@ describe('Booleaninput Tag Tests', function () {
     })
   })
 
-  it('reffed boolean input', () => {
+  it('copied boolean input', () => {
 
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><booleaninput prefill="t" label="green"/></p>
+    <p><booleaninput prefill="true" label="green"/></p>
     <p><copy tname="_booleaninput1" /></p>
     <p><copy prop="value" tname="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>

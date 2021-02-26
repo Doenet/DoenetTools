@@ -24,7 +24,7 @@ export default class CollaborateGroupSetup extends BaseComponent {
     stateVariableDefinitions.possibleNumberOfGroups = {
       returnDependencies: () => ({
         pngChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOnePossibleNumberOfGroups",
           variableNames: ["numbers"]
         },

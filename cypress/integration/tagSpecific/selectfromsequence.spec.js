@@ -63,36 +63,36 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence name="sample1">6</selectfromsequence>
-    <selectfromsequence name="sample2">6</selectfromsequence>
-    <selectfromsequence name="sample3">6</selectfromsequence>
-    <selectfromsequence name="sample4">6</selectfromsequence>
-    <selectfromsequence name="sample5">6</selectfromsequence>
-    <selectfromsequence name="sample6">6</selectfromsequence>
-    <selectfromsequence name="sample7">6</selectfromsequence>
-    <selectfromsequence name="sample8">6</selectfromsequence>
-    <selectfromsequence name="sample9">6</selectfromsequence>
-    <selectfromsequence name="sample10">6</selectfromsequence>
-    <selectfromsequence name="sample11">6</selectfromsequence>
-    <selectfromsequence name="sample12">6</selectfromsequence>
-    <selectfromsequence name="sample13">6</selectfromsequence>
-    <selectfromsequence name="sample14">6</selectfromsequence>
-    <selectfromsequence name="sample15">6</selectfromsequence>
-    <selectfromsequence name="sample16">6</selectfromsequence>
-    <selectfromsequence name="sample17">6</selectfromsequence>
-    <selectfromsequence name="sample18">6</selectfromsequence>
-    <selectfromsequence name="sample19">6</selectfromsequence>
-    <selectfromsequence name="sample20">6</selectfromsequence>
-    <selectfromsequence name="sample21">6</selectfromsequence>
-    <selectfromsequence name="sample22">6</selectfromsequence>
-    <selectfromsequence name="sample23">6</selectfromsequence>
-    <selectfromsequence name="sample24">6</selectfromsequence>
-    <selectfromsequence name="sample25">6</selectfromsequence>
-    <selectfromsequence name="sample26">6</selectfromsequence>
-    <selectfromsequence name="sample27">6</selectfromsequence>
-    <selectfromsequence name="sample28">6</selectfromsequence>
-    <selectfromsequence name="sample29">6</selectfromsequence>
-    <selectfromsequence name="sample30">6</selectfromsequence>
+    <selectfromsequence name="sample1" to="6" />
+    <selectfromsequence name="sample2" to="6" />
+    <selectfromsequence name="sample3" to="6" />
+    <selectfromsequence name="sample4" to="6" />
+    <selectfromsequence name="sample5" to="6" />
+    <selectfromsequence name="sample6" to="6" />
+    <selectfromsequence name="sample7" to="6" />
+    <selectfromsequence name="sample8" to="6" />
+    <selectfromsequence name="sample9" to="6" />
+    <selectfromsequence name="sample10" to="6" />
+    <selectfromsequence name="sample11" to="6" />
+    <selectfromsequence name="sample12" to="6" />
+    <selectfromsequence name="sample13" to="6" />
+    <selectfromsequence name="sample14" to="6" />
+    <selectfromsequence name="sample15" to="6" />
+    <selectfromsequence name="sample16" to="6" />
+    <selectfromsequence name="sample17" to="6" />
+    <selectfromsequence name="sample18" to="6" />
+    <selectfromsequence name="sample19" to="6" />
+    <selectfromsequence name="sample20" to="6" />
+    <selectfromsequence name="sample21" to="6" />
+    <selectfromsequence name="sample22" to="6" />
+    <selectfromsequence name="sample23" to="6" />
+    <selectfromsequence name="sample24" to="6" />
+    <selectfromsequence name="sample25" to="6" />
+    <selectfromsequence name="sample26" to="6" />
+    <selectfromsequence name="sample27" to="6" />
+    <selectfromsequence name="sample28" to="6" />
+    <selectfromsequence name="sample29" to="6" />
+    <selectfromsequence name="sample30" to="6" />
     </aslist>
     `},"*");
     });
@@ -115,36 +115,36 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence name="sample1">-3,5</selectfromsequence>
-    <selectfromsequence name="sample2">-3,5</selectfromsequence>
-    <selectfromsequence name="sample3">-3,5</selectfromsequence>
-    <selectfromsequence name="sample4">-3,5</selectfromsequence>
-    <selectfromsequence name="sample5">-3,5</selectfromsequence>
-    <selectfromsequence name="sample6">-3,5</selectfromsequence>
-    <selectfromsequence name="sample7">-3,5</selectfromsequence>
-    <selectfromsequence name="sample8">-3,5</selectfromsequence>
-    <selectfromsequence name="sample9">-3,5</selectfromsequence>
-    <selectfromsequence name="sample10">-3,5</selectfromsequence>
-    <selectfromsequence name="sample11">-3,5</selectfromsequence>
-    <selectfromsequence name="sample12">-3,5</selectfromsequence>
-    <selectfromsequence name="sample13">-3,5</selectfromsequence>
-    <selectfromsequence name="sample14">-3,5</selectfromsequence>
-    <selectfromsequence name="sample15">-3,5</selectfromsequence>
-    <selectfromsequence name="sample16">-3,5</selectfromsequence>
-    <selectfromsequence name="sample17">-3,5</selectfromsequence>
-    <selectfromsequence name="sample18">-3,5</selectfromsequence>
-    <selectfromsequence name="sample19">-3,5</selectfromsequence>
-    <selectfromsequence name="sample20">-3,5</selectfromsequence>
-    <selectfromsequence name="sample21">-3,5</selectfromsequence>
-    <selectfromsequence name="sample22">-3,5</selectfromsequence>
-    <selectfromsequence name="sample23">-3,5</selectfromsequence>
-    <selectfromsequence name="sample24">-3,5</selectfromsequence>
-    <selectfromsequence name="sample25">-3,5</selectfromsequence>
-    <selectfromsequence name="sample26">-3,5</selectfromsequence>
-    <selectfromsequence name="sample27">-3,5</selectfromsequence>
-    <selectfromsequence name="sample28">-3,5</selectfromsequence>
-    <selectfromsequence name="sample29">-3,5</selectfromsequence>
-    <selectfromsequence name="sample30">-3,5</selectfromsequence>
+    <selectfromsequence name="sample1" from="-3" to="5" />
+    <selectfromsequence name="sample2" from="-3" to="5" />
+    <selectfromsequence name="sample3" from="-3" to="5" />
+    <selectfromsequence name="sample4" from="-3" to="5" />
+    <selectfromsequence name="sample5" from="-3" to="5" />
+    <selectfromsequence name="sample6" from="-3" to="5" />
+    <selectfromsequence name="sample7" from="-3" to="5" />
+    <selectfromsequence name="sample8" from="-3" to="5" />
+    <selectfromsequence name="sample9" from="-3" to="5" />
+    <selectfromsequence name="sample10" from="-3" to="5" />
+    <selectfromsequence name="sample11" from="-3" to="5" />
+    <selectfromsequence name="sample12" from="-3" to="5" />
+    <selectfromsequence name="sample13" from="-3" to="5" />
+    <selectfromsequence name="sample14" from="-3" to="5" />
+    <selectfromsequence name="sample15" from="-3" to="5" />
+    <selectfromsequence name="sample16" from="-3" to="5" />
+    <selectfromsequence name="sample17" from="-3" to="5" />
+    <selectfromsequence name="sample18" from="-3" to="5" />
+    <selectfromsequence name="sample19" from="-3" to="5" />
+    <selectfromsequence name="sample20" from="-3" to="5" />
+    <selectfromsequence name="sample21" from="-3" to="5" />
+    <selectfromsequence name="sample22" from="-3" to="5" />
+    <selectfromsequence name="sample23" from="-3" to="5" />
+    <selectfromsequence name="sample24" from="-3" to="5" />
+    <selectfromsequence name="sample25" from="-3" to="5" />
+    <selectfromsequence name="sample26" from="-3" to="5" />
+    <selectfromsequence name="sample27" from="-3" to="5" />
+    <selectfromsequence name="sample28" from="-3" to="5" />
+    <selectfromsequence name="sample29" from="-3" to="5" />
+    <selectfromsequence name="sample30" from="-3" to="5" />
     </aslist>
     `},"*");
     });
@@ -167,36 +167,36 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence exclude="0" name="sample1">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample2">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample3">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample4">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample5">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample6">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample7">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample8">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample9">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample10">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample11">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample12">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample13">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample14">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample15">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample16">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample17">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample18">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample19">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample20">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample21">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample22">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample23">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample24">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample25">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample26">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample27">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample28">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample29">-3,5</selectfromsequence>
-    <selectfromsequence exclude="0" name="sample30">-3,5</selectfromsequence>
+    <selectfromsequence exclude="0" name="sample1" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample2" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample3" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample4" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample5" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample6" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample7" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample8" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample9" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample10" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample11" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample12" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample13" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample14" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample15" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample16" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample17" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample18" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample19" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample20" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample21" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample22" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample23" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample24" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample25" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample26" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample27" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample28" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample29" from="-3" to="5" />
+    <selectfromsequence exclude="0" name="sample30" from="-3" to="5" />
     </aslist>
     `},"*");
     });
@@ -219,36 +219,36 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" name="sample1">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample2">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample3">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample4">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample5">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample6">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample7">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample8">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample9">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample10">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample11">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample12">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample13">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample14">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample15">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample16">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample17">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample18">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample19">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample20">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample21">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample22">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample23">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample24">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample25">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample26">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample27">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample28">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample29">-3,5</selectfromsequence>
-    <selectfromsequence step="2" name="sample30">-3,5</selectfromsequence>
+    <selectfromsequence step="2" name="sample1" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample2" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample3" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample4" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample5" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample6" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample7" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample8" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample9" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample10" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample11" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample12" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample13" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample14" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample15" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample16" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample17" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample18" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample19" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample20" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample21" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample22" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample23" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample24" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample25" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample26" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample27" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample28" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample29" from="-3" to="5" />
+    <selectfromsequence step="2" name="sample30" from="-3" to="5" />
     </aslist>
     `},"*");
     });
@@ -271,36 +271,36 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence name="sample1">c,h</selectfromsequence>
-    <selectfromsequence name="sample2">c,h</selectfromsequence>
-    <selectfromsequence name="sample3">c,h</selectfromsequence>
-    <selectfromsequence name="sample4">c,h</selectfromsequence>
-    <selectfromsequence name="sample5">c,h</selectfromsequence>
-    <selectfromsequence name="sample6">c,h</selectfromsequence>
-    <selectfromsequence name="sample7">c,h</selectfromsequence>
-    <selectfromsequence name="sample8">c,h</selectfromsequence>
-    <selectfromsequence name="sample9">c,h</selectfromsequence>
-    <selectfromsequence name="sample10">c,h</selectfromsequence>
-    <selectfromsequence name="sample11">c,h</selectfromsequence>
-    <selectfromsequence name="sample12">c,h</selectfromsequence>
-    <selectfromsequence name="sample13">c,h</selectfromsequence>
-    <selectfromsequence name="sample14">c,h</selectfromsequence>
-    <selectfromsequence name="sample15">c,h</selectfromsequence>
-    <selectfromsequence name="sample16">c,h</selectfromsequence>
-    <selectfromsequence name="sample17">c,h</selectfromsequence>
-    <selectfromsequence name="sample18">c,h</selectfromsequence>
-    <selectfromsequence name="sample19">c,h</selectfromsequence>
-    <selectfromsequence name="sample20">c,h</selectfromsequence>
-    <selectfromsequence name="sample21">c,h</selectfromsequence>
-    <selectfromsequence name="sample22">c,h</selectfromsequence>
-    <selectfromsequence name="sample23">c,h</selectfromsequence>
-    <selectfromsequence name="sample24">c,h</selectfromsequence>
-    <selectfromsequence name="sample25">c,h</selectfromsequence>
-    <selectfromsequence name="sample26">c,h</selectfromsequence>
-    <selectfromsequence name="sample27">c,h</selectfromsequence>
-    <selectfromsequence name="sample28">c,h</selectfromsequence>
-    <selectfromsequence name="sample29">c,h</selectfromsequence>
-    <selectfromsequence name="sample30">c,h</selectfromsequence>
+    <selectfromsequence name="sample1" from="c" to="h" />
+    <selectfromsequence name="sample2" from="c" to="h" />
+    <selectfromsequence name="sample3" from="c" to="h" />
+    <selectfromsequence name="sample4" from="c" to="h" />
+    <selectfromsequence name="sample5" from="c" to="h" />
+    <selectfromsequence name="sample6" from="c" to="h" />
+    <selectfromsequence name="sample7" from="c" to="h" />
+    <selectfromsequence name="sample8" from="c" to="h" />
+    <selectfromsequence name="sample9" from="c" to="h" />
+    <selectfromsequence name="sample10" from="c" to="h" />
+    <selectfromsequence name="sample11" from="c" to="h" />
+    <selectfromsequence name="sample12" from="c" to="h" />
+    <selectfromsequence name="sample13" from="c" to="h" />
+    <selectfromsequence name="sample14" from="c" to="h" />
+    <selectfromsequence name="sample15" from="c" to="h" />
+    <selectfromsequence name="sample16" from="c" to="h" />
+    <selectfromsequence name="sample17" from="c" to="h" />
+    <selectfromsequence name="sample18" from="c" to="h" />
+    <selectfromsequence name="sample19" from="c" to="h" />
+    <selectfromsequence name="sample20" from="c" to="h" />
+    <selectfromsequence name="sample21" from="c" to="h" />
+    <selectfromsequence name="sample22" from="c" to="h" />
+    <selectfromsequence name="sample23" from="c" to="h" />
+    <selectfromsequence name="sample24" from="c" to="h" />
+    <selectfromsequence name="sample25" from="c" to="h" />
+    <selectfromsequence name="sample26" from="c" to="h" />
+    <selectfromsequence name="sample27" from="c" to="h" />
+    <selectfromsequence name="sample28" from="c" to="h" />
+    <selectfromsequence name="sample29" from="c" to="h" />
+    <selectfromsequence name="sample30" from="c" to="h" />
     </aslist>
     `},"*");
     });
@@ -323,26 +323,26 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20">-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="4" />
     </aslist>
     `},"*");
     });
@@ -367,26 +367,26 @@ describe('SelectFromSequence Tag Tests',function() {
   it('select two even numbers from -4 to 2, excluding 0 and combinations',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
     `},"*");
     });
 
@@ -409,26 +409,26 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample1">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample2">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample3">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample4">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample5">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample6">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample7">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample8">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample9">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample10">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample11">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample12">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample13">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample14">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample15">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample16">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample17">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample18">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample19">-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample20">-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample1" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample2" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample3" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample4" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample5" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample6" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample7" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample8" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample9" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample10" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample11" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample12" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample13" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample14" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample15" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample16" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample17" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample18" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample19" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample20" from="-4" to="4" />
     </aslist>
     `},"*");
     });
@@ -457,28 +457,28 @@ describe('SelectFromSequence Tag Tests',function() {
 
   it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample1"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample2"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample3"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample4"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample5"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample6"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample7"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample8"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample9"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample10"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample11"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample12"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample13"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample14"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample15"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample16"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample17"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample18"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample19"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample20"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample1" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample2" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample3" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample4" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample5" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample6" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample7" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample8" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample9" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample10" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample11" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample12" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample13" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample14" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample15" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample16" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample17" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample18" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample19" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample20" numbertoselect="$n" from="-4" to="4" />
     </aslist>
     <copy name="n2" tname="n3" />
     <copy name="n" tname="num1" />
@@ -489,11 +489,7 @@ describe('SelectFromSequence Tag Tests',function() {
     `},"*");
     });
 
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
@@ -516,8 +512,8 @@ describe('SelectFromSequence Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
-    <selectfromsequence name="sample1">100</selectfromsequence>
-    <selectfromsequence name="sample2">100</selectfromsequence>
+    <selectfromsequence name="sample1" to="100" />
+    <selectfromsequence name="sample2" to="100" />
     </aslist></p>
 
     <p><aslist>
@@ -547,20 +543,20 @@ describe('SelectFromSequence Tag Tests',function() {
       let num2 = components['/sample2'].replacements[0].stateValues.value;
       expect(Number.isInteger(num1) && num1>=1 && num1 <=100).eq(true);
       expect(Number.isInteger(num2) && num2>=1 && num2 <=100).eq(true);
-      expect(components['/noresample1'].replacements[0].replacements[0].stateValues.value).eq(num1);
-      expect(components['/noresample2'].replacements[0].replacements[0].stateValues.value).eq(num2);
-      expect(components['/noreresample1'].replacements[0].replacements[0].replacements[0].stateValues.value).eq(num1);
-      expect(components['/noreresample2'].replacements[0].replacements[0].replacements[0].stateValues.value).eq(num2);
+      expect(components['/noresample1'].replacements[0].stateValues.value).eq(num1);
+      expect(components['/noresample2'].replacements[0].stateValues.value).eq(num2);
+      expect(components['/noreresample1'].replacements[0].stateValues.value).eq(num1);
+      expect(components['/noreresample2'].replacements[0].stateValues.value).eq(num2);
 
       expect(components['/noresamplelist'].replacements[0].activeChildren[0].stateValues.value).eq(num1);
       expect(components['/noresamplelist'].replacements[0].activeChildren[1].stateValues.value).eq(num2);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[1].stateValues.value).eq(num2);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[0].stateValues.value).eq(num1);
+      expect(components['/noreresamplelist'].replacements[0].activeChildren[1].stateValues.value).eq(num2);
 
       expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[0].stateValues.value).eq(num1);
       expect(components['/noresamplep'].replacements[0].activeChildren[0].activeChildren[1].stateValues.value).eq(num2);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[0].activeChildren[0].stateValues.value).eq(num1);
-      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[0].activeChildren[1].stateValues.value).eq(num2);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[0].activeChildren[0].stateValues.value).eq(num1);
+      expect(components['/noreresamplep'].replacements[0].activeChildren[0].activeChildren[1].stateValues.value).eq(num2);
 
     })
   });
@@ -571,19 +567,13 @@ describe('SelectFromSequence Tag Tests',function() {
     <mathinput prefill="5" name="numbertoselect"/>
     <mathinput prefill="3" name="maxnum"/>
     <p><aslist>
-    <selectfromsequence name="sample1" withReplacement>
-      <count><copy prop="value" tname="maxnum" /></count>
-      <numbertoselect><copy prop="value" tname="numbertoselect" /></numbertoselect>
-    </selectfromsequence>
+    <selectfromsequence name="sample1" withReplacement count="$maxnum" numbertoselect="$numbertoselect" />
     </aslist></p>
 
     <mathinput prefill="2" name="numbertoselect2"/>
     <mathinput prefill="10" name="maxnum2"/>
     <p><aslist>
-    <selectfromsequence name="sample2" withReplacement>
-      <count><copy prop="value" tname="maxnum2" /></count>
-      <numbertoselect><copy prop="value" tname="numbertoselect2" /></numbertoselect>
-    </selectfromsequence>
+    <selectfromsequence name="sample2" withReplacement count="$maxnum2" numbertoselect="$numbertoselect2" />
     </aslist></p>
     `},"*");
     });
@@ -636,15 +626,13 @@ describe('SelectFromSequence Tag Tests',function() {
     <text>a</text>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
-    <map assignnamespaces="a,b,c,d,e,f">
-      <template>
-        <selectfromsequence assignnames="n">100</selectfromsequence>
+    <map assignnames="a,b,c,d,e,f">
+      <template newNamespace>
+        <selectfromsequence assignnames="n" to="100" />
       </template>
-      <substitutions>
-      <sequence>
-        <count><copy prop="value" tname="_mathinput1" /></count>
-      </sequence>
-      </substitutions>
+      <sources>
+      <sequence count="$_mathinput1" />
+      </sources>
     </map>
     </aslist></p>
     
@@ -675,9 +663,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("sample one number");
@@ -692,9 +680,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       for(let ind=0; ind<1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -702,9 +690,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -718,9 +706,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get same number back");
@@ -735,9 +723,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
       for(let ind=0; ind<1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -746,9 +734,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -768,9 +756,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       for(let ind=0; ind<3; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -778,9 +766,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
      }
     })
 
@@ -794,9 +782,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
 
@@ -814,9 +802,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
       for(let ind=0; ind<2; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -825,9 +813,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -853,9 +841,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for(let ind=0; ind<6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -863,9 +851,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -879,9 +867,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get all six back");
@@ -906,9 +894,9 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for(let ind=0; ind<6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -916,9 +904,9 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -927,7 +915,7 @@ describe('SelectFromSequence Tag Tests',function() {
 
   it('select single math, assign name',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
-    <math>1</math>
+    <text>a</text>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="u"/></p>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="v"/></p>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="w"/></p>
@@ -938,9 +926,7 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     let options = [
       me.fromText("x"),
@@ -1081,85 +1067,12 @@ describe('SelectFromSequence Tag Tests',function() {
     
   });
 
-  it('two selects with mutual dependence, numbertoselect initially unresolved',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
-  <p><aslist>
-    <selectfromsequence name="s1" assignnames="x1, y1, z1" withReplacement>
-      <numberToSelect><copy prop="numberToSelect" tname="s2" /></numberToSelect>
-      1,5
-    </selectfromsequence>
-  </aslist></p>
-  
-  <p><aslist>
-    <selectfromsequence name="s2" assignnames="x2, y2, z2">
-      <numberToSelect><copy tname="n" /></numberToSelect>
-      <withReplacement><copy prop="withReplacement" tname="s1" /></withReplacement>
-      6,10
-    </selectfromsequence>
-  </aslist></p>
-  
-  <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
-  
-  <p> 
-    <copy name="n2" tname="n3" />
-    <copy name="n" tname="num1" />
-    <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
-    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
-    <copy name="n3" tname="num3" />
-    <number name="num3">1</number>
-  </p>  
-    `},"*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
- 
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      let x1 = components['/x1'].stateValues.value;
-      let y1 = components['/y1'].stateValues.value;
-      let z1 = components['/z1'].stateValues.value;
-      let x2 = components['/x2'].stateValues.value;
-      let y2 = components['/y2'].stateValues.value;
-      let z2 = components['/z2'].stateValues.value;
-
-      expect(Number.isInteger(x1) && x1>=1 && x1 <= 5).eq(true);
-      expect(Number.isInteger(y1) && y1>=1 && y1 <= 5).eq(true);
-      expect(Number.isInteger(z1) && z1>=1 && z1 <= 5).eq(true);
-      expect(Number.isInteger(x2) && x2>=6 && x2 <= 10).eq(true);
-      expect(Number.isInteger(y2) && y2>=6 && y2 <= 10).eq(true);
-      expect(Number.isInteger(z2) && z2>=6 && z2 <= 10).eq(true);
-
-      let x1a = components['/x1a'].replacements[0].stateValues.value;
-      let y1a = components['/y1a'].replacements[0].stateValues.value;
-      let z1a = components['/z1a'].replacements[0].stateValues.value;
-      let x2a = components['/x2a'].replacements[0].stateValues.value;
-      let y2a = components['/y2a'].replacements[0].stateValues.value;
-      let z2a = components['/z2a'].replacements[0].stateValues.value;
-
-      expect(x1a).eq(x1);
-      expect(y1a).eq(y1);
-      expect(z1a).eq(z1);
-      expect(x2a).eq(x2);
-      expect(y2a).eq(y2);
-      expect(z2a).eq(z2);
-
-    })
-  });
-
   it('selectfromsequence with hide will hide replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
       <p>Selectfromsequences and hide</p>
-      <p><selectfromsequence assignnames="c">
-        a,e
-      </selectfromsequence>, <selectfromsequence assignnames="d" hide>
-        a,e
-      </selectfromsequence></p>
+      <p><selectfromsequence assignnames="c" from="a" to="e" />, <selectfromsequence assignnames="d" from="a" to="e" hide /></p>
       <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
     `}, "*");
     });
@@ -1183,26 +1096,26 @@ describe('SelectFromSequence Tag Tests',function() {
   it('select multiple maths with excludes and excludecombinations',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample3" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample4" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample5" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample6" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample7" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample8" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample9" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample10" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample11" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample12" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample13" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample14" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample15" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample16" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample17" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample18" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample19" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample20" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample2"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample3"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample4"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample5"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample6"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample7"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample8"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample9"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample10"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample11"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample12"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample13"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample14"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample15"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample16"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample17"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample18"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample19"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample20"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     `},"*");
     });
 
@@ -1224,26 +1137,26 @@ describe('SelectFromSequence Tag Tests',function() {
   it('select multiple letters with excludes and excludecombinations',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample2" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample3" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample4" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample5" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample6" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample7" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample8" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample9" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample10" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample11" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample12" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample13" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample14" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample15" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample16" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample17" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample18" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample19" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample20" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample2" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample3" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample4" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample5" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample6" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample7" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample8" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample9" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample10" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample11" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample12" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample13" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample14" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample15" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample16" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample17" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample18" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample19" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample20" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     `},"*");
     });
 
@@ -1265,7 +1178,7 @@ describe('SelectFromSequence Tag Tests',function() {
   it('select numbers and sort',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true">-20,20</selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true" from="-20" to="20" /></aslist></p>
 
     <p><copy tname="_aslist1" /></p>
     <copy tname="_p1" />
@@ -1297,7 +1210,7 @@ describe('SelectFromSequence Tag Tests',function() {
   it('select letters and sort',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numbertoselect="40" sortresults="true" withreplacement="true">a,bz</selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence numbertoselect="40" sortresults="true" withreplacement="true" from="a" to="bz" /></aslist></p>
 
     <p><copy tname="_aslist1" /></p>
     <copy tname="_p1" />
@@ -1326,7 +1239,6 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
   });
-
 
 
 })

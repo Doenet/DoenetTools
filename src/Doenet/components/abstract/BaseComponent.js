@@ -1,7 +1,8 @@
 import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
-import { mapDeep } from '../../utils/array';
+import { flattenDeep, mapDeep } from '../../utils/array';
+import { deepClone } from '../../utils/deepFunctions';
 
 export default class BaseComponent {
   constructor({
@@ -15,7 +16,6 @@ export default class BaseComponent {
     flags,
     shadow,
     numerics, parentSharedParameters, sharedParameters,
-    allowSugarForChildren,
   }) {
 
     this.numerics = numerics;
@@ -28,9 +28,6 @@ export default class BaseComponent {
     this.componentInfoObjects = componentInfoObjects;
     this.coreFunctions = coreFunctions;
     this.flags = flags;
-
-    this.componentIsAProperty = false;
-    this.allowSugarForChildren = allowSugarForChildren;
 
     if (shadow === true) {
       this.isShadow = true;
@@ -75,7 +72,7 @@ export default class BaseComponent {
   }
 
   get componentType() {
-    return this.constructor.componentType;
+    return this.constructor.componentType.toLowerCase();
   }
 
   get rendererType() {
@@ -92,10 +89,15 @@ export default class BaseComponent {
     // include any potential renderer type that could be
     // created from a public state variable
     for (let varName in this.state) {
-      if (this.state[varName].public) {
-        let componentTypes = this.state[varName].componentType;
+      let stateVarObj = this.state[varName];
+      if (stateVarObj.public) {
+
+        let componentTypes = stateVarObj.componentType;
         if (!Array.isArray(componentTypes)) {
           componentTypes = [componentTypes]
+        }
+        if(stateVarObj.wrappingComponents) {
+          componentTypes.push(...flattenDeep(stateVarObj.wrappingComponents));
         }
         for (let componentType of componentTypes) {
           let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
@@ -165,6 +167,10 @@ export default class BaseComponent {
     };
   }
 
+  static returnSugarInstructions() {
+    return [];
+  }
+
   static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties, flags }) {
     let childLogic = new ChildLogicClass({
       parentComponentType: this.componentType,
@@ -196,7 +202,7 @@ export default class BaseComponent {
         hide: {
           dependencyType: "stateVariable",
           variableName: "hide",
-          variableOptional: true,
+          variablesOptional: true,
         },
         parentHidden: {
           dependencyType: "parentStateVariable",
@@ -209,11 +215,34 @@ export default class BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          hidden:
-            dependencyValues.parentHidden === true // check === true so null gives false
-            || (dependencyValues.hide && !dependencyValues.parentOverrideChildHide)
+          hidden:  // check === true so null gives false
+            dependencyValues.parentHidden === true
+            || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
         }
       })
+    }
+
+    stateVariableDefinitions.isInactiveCompositeReplacement = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          isInactiveCompositeReplacement: {
+            variablesToCheck: ["isInactiveCompositeReplacement"]
+          }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: {
+              variableName: "isInactiveCompositeReplacement",
+              value: desiredStateVariableValues.isInactiveCompositeReplacement
+            }
+          }]
+        }
+      }
     }
 
     return stateVariableDefinitions;
@@ -421,7 +450,7 @@ export default class BaseComponent {
 
     if (parameters.forCopy) {
       includePropertyChildren = false;
-      includeOtherDefiningChildren = this.constructor.useChildrenForReference;
+      includeOtherDefiningChildren = true;//this.constructor.useChildrenForReference;
     } else {
       let instructions = this.returnSerializeInstructions();
       if (instructions.skipChildren) {
@@ -442,8 +471,8 @@ export default class BaseComponent {
     if (includePropertyChildren || includeOtherDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        if ((includePropertyChildren && child.componentIsAProperty) ||
-          (includeOtherDefiningChildren && !child.componentIsAProperty)) {
+        if ((includePropertyChildren && child.doenetAttributes.isPropertyChild) ||
+          (includeOtherDefiningChildren && !child.doenetAttributes.isPropertyChild)) {
 
           serializedChildren.push(child.serialize(parameters));
         }
@@ -466,7 +495,12 @@ export default class BaseComponent {
 
 
     if (parameters.forCopy) {
-      serializedState.preserializedName = this.componentName;
+      serializedState.originalName = this.componentName;
+      serializedState.originalDoenetAttributes = deepClone(this.doenetAttributes);
+      serializedState.doenetAttributes = deepClone(this.doenetAttributes);
+      delete serializedState.doenetAttributes.prescribedName;
+      delete serializedState.doenetAttributes.assignNames;
+
     } else {
       console.warn('serializing a component without forCopy set is not yet converted!!!!')
       let additionalState = {};
@@ -487,7 +521,6 @@ export default class BaseComponent {
       }
 
       let doenetAttributes = Object.assign({}, this.doenetAttributes);
-      delete doenetAttributes.createdFromProperty;
       if (Object.keys(doenetAttributes).length > 0) {
         serializedState.doenetAttributes = doenetAttributes;
       }
@@ -511,6 +544,8 @@ export default class BaseComponent {
 
     let serializedState = {
       componentType: serializedComponent.componentType,
+      originalName: serializedComponent.componentName,
+      originalNameFromSerializedComponent: true,
       children: serializedChildren,
       state: {},
       doenetAttributes: {},
@@ -518,8 +553,11 @@ export default class BaseComponent {
 
     if (//parameters.forCopy !== true &&
       serializedComponent.doenetAttributes !== undefined) {
-      // shallow copy of doenetAttributes
-      Object.assign(serializedState.doenetAttributes, serializedComponent.doenetAttributes);
+      serializedState.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
+      serializedState.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
+      delete serializedState.doenetAttributes.prescribedName;
+      delete serializedState.doenetAttributes.assignNames;
+
     }
 
     if (serializedComponent.state !== undefined) {

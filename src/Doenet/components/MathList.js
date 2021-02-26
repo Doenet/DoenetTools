@@ -25,6 +25,48 @@ export default class MathList extends InlineComponent {
   }
 
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let breakStringsIntoMathsByCommas = function ({ matchedChildren }) {
+
+      // break any string by commas,
+      // removing any empty (white space only) pieces
+      // and wrap pieces with math
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(",")
+              .map(s => s.trim())
+              .filter(s => s)
+              .map(s => ({
+                componentType: "math",
+                children: [{ componentType: "string", state: { value: s } }]
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+    }
+
+
+    sugarInstructions.push({
+      replacementFunction: breakStringsIntoMathsByCommas
+    });
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -42,61 +84,12 @@ export default class MathList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoMathsByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.stringChildren[0];
-
-      let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim()).filter(x => x != "");
-      let newChildren = [];
-
-      for (let piece of stringPieces) {
-        let mathExpr;
-        try {
-          mathExpr = me.fromText(piece);
-        } catch (e) {
-          console.warn(`Invalid string piece in mathlist: ${piece}`);
-          mathExpr = me.fromAst('\uFF3F');
-        }
-        newChildren.push({
-          componentType: "math",
-          state: { value: mathExpr },
-        });
-      }
-
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroMaths"],
-      replacementFunction: breakStringIntoMathsByCommas,
-    });
-
-    let mathAndMathLists = childLogic.newOperator({
+    childLogic.newOperator({
       name: "mathAndMathLists",
       operator: "and",
-      propositions: [atLeastZeroMaths, atLeastZeroMathlists]
-    })
-
-    childLogic.newOperator({
-      name: "mathsXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, mathAndMathLists],
+      propositions: [atLeastZeroMaths, atLeastZeroMathlists],
       setAsBase: true,
-    });
+    })
 
     return childLogic;
   }
@@ -134,14 +127,14 @@ export default class MathList extends InlineComponent {
 
         if (stateValues.mergeMathLists) {
           dependencies.mathAndMathlistChildren = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "mathAndMathLists",
             variableNames: ["value", "nComponents"],
             variablesOptional: true,
           };
         } else {
           dependencies.mathAndMathlistChildren = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "mathAndMathLists",
             variableNames: ["nComponents"],
             variablesOptional: true,
@@ -237,7 +230,7 @@ export default class MathList extends InlineComponent {
           }
           dependenciesByKey[arrayKey] = {
             mathAndMathlistChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "mathAndMathLists",
               variableNames: ["value", "math" + mathIndex],
               variablesOptional: true,
@@ -337,7 +330,7 @@ export default class MathList extends InlineComponent {
       componentType: "text",
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["valueForDisplay", "latex", "latexs"],
           variablesOptional: true,
@@ -393,7 +386,7 @@ export default class MathList extends InlineComponent {
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
@@ -444,7 +437,7 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         mathAndMathlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "mathAndMathLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

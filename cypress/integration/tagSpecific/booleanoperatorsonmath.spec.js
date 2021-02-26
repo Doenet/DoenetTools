@@ -4,7 +4,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('iisinteger', () => {
+  it('isinteger', () => {
 
     cy.window().then((win) => {
       win.postMessage({

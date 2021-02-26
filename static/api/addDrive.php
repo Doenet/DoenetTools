@@ -32,7 +32,7 @@ INSERT INTO drive
 VALUES
 ('$driveId','$label','$contentOrCourse','0',null,'$image','$color')
 ";
-echo $sql;
+
 $result = $conn->query($sql); 
 
 $sql = "

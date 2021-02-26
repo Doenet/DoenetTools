@@ -157,7 +157,7 @@ describe('Conditional Content Tag Tests', function () {
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
     <choiceinput inline="true"><choice>stable</choice><choice>unstable</choice></choiceinput>
-    <award><condition>
+    <award><when>
       <copy prop="selectedvalue" tname="_choiceinput1" />
       =
       <text>
@@ -168,7 +168,7 @@ describe('Conditional Content Tag Tests', function () {
           unstable
         </conditionalcontent>
       </text>
-    </condition></award>
+    </when></award>
   </answer>
   </p>
   `}, "*");
@@ -238,7 +238,7 @@ describe('Conditional Content Tag Tests', function () {
   <p>Condition on <m>x</m>:
   <answer>
     <mathinput />
-    <award><condition>
+    <award><when>
       <copy prop="immediateValue" tname="_mathinput1" />
       =
       <math>
@@ -249,7 +249,7 @@ describe('Conditional Content Tag Tests', function () {
           x < 0
         </conditionalcontent>
       </math>
-    </condition></award>
+    </when></award>
   </answer>
   </p>
   `}, "*");

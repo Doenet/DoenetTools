@@ -31,19 +31,13 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.numericalf;
+      let f = components['/_function1'].stateValues.f;
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
       expect(f(-1)).closeTo(0, 1E-12);
       expect(f(-2)).closeTo(0, 1E-12);
 
-      f = components['/_function1'].stateValues.f;
-      expect(f(0).tree).closeTo(0, 1E-12);
-      expect(f(1).tree).closeTo(0, 1E-12);
-      expect(f(2).tree).closeTo(0, 1E-12);
-      expect(f(-1).tree).closeTo(0, 1E-12);
-      expect(f(-2).tree).closeTo(0, 1E-12);
 
     })
 
@@ -2091,7 +2085,7 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it('shadowed sugar works correctly with initially unresolved', () => {
+  it('shadowed works correctly with initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2099,10 +2093,11 @@ describe('Function Tag Tests', function () {
     <mathinput />
     <mathinput />
     
-    <function>
-    <xscale><copy prop="value" tname="_mathinput1" /></xscale>
-    <copy prop="value" tname="_mathinput2" />x^3
-    +1
+    <function xscale="$_mathinput1">
+      <formula>
+        <copy prop="value" tname="_mathinput2" />x^3
+        +1
+      </formula>
     </function>
     
     <graph>
@@ -2129,7 +2124,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.numericalf(-2)).eq(2 * (-2) ** 3 + 1)
+      expect(components["/_function1"].stateValues.f(-2)).eq(2 * (-2) ** 3 + 1)
     });
 
 
@@ -2142,7 +2137,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.numericalf(-2)).eq(4 * (-2) ** 3 + 1)
+      expect(components["/_function1"].stateValues.f(-2)).eq(4 * (-2) ** 3 + 1)
     });
 
   });
@@ -2157,10 +2152,12 @@ describe('Function Tag Tests', function () {
     <mathinput prefill="-2" />
     
     <function>
-    <copy prop="value" tname="_mathinput1" />x^4
-    +<copy prop="value" tname="_mathinput2" />x^3
-    +<copy prop="value" tname="_mathinput3" />x^2
-    + 1
+      <formula>
+        <copy prop="value" tname="_mathinput1" />x^4
+        +<copy prop="value" tname="_mathinput2" />x^3
+        +<copy prop="value" tname="_mathinput3" />x^2
+        + 1
+      </formula>
     </function>
     
     <graph>

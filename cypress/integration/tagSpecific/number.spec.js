@@ -104,7 +104,7 @@ describe('Number Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({ doenetML: `
       <text>a</text>
-      <number>5+<math>3</math></number>
+      <number><math>5+<math>3</math></math></number>
       ` }, "*");
     })
 
@@ -116,8 +116,9 @@ describe('Number Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).to.eq(3);
-      expect(components['/_number1'].stateValues.value).to.eq(8);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 5, 3]);
+      expect(components['/_math2'].stateValues.value.tree).eq(3);
+      expect(components['/_number1'].stateValues.value).eq(8);
     })
   });
 

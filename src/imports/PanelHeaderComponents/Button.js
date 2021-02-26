@@ -26,12 +26,12 @@ export default function Button(props) {
   if (props.value) {
       button.value = props.value;
   };
-  function handleClick() {
-    if (props.callback) props.callback()
+  function handleClick(e) {
+    if (props.callback) props.callback(e)
   }
     return (
         <>
-            <button style={button} onClick={() => { handleClick() }}>{button.value}</button>
+            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{button.text}</button>
         </>
     )
 }
