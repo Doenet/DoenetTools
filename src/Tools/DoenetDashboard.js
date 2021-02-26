@@ -25,7 +25,6 @@ import  {
   encodeParams
   
 } from "../imports/Drive";
-import driveCardSelector from "./DoenetLibrary";
 
 const Button = styled.button`
   width: 60px;
@@ -281,7 +280,9 @@ const alphabet =
     function driveCardSelector({item}) {
       let newParams = {};
       newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-      history.push("/course?" + encodeParams(newParams));
+      newParams["courseId"] = `${item.courseId}`
+      // history.push("/course?" + encodeParams(newParams));
+      window.location = "/course/#/?" + encodeParams(newParams);
     }
     // Drive cards component
     let drivecardComponent = null;
@@ -290,7 +291,7 @@ const alphabet =
       driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} driveInfo={driveInfo}/>;
     } else if (driveInfo.length === 0 && routePathDriveId === "") {
       drivecardComponent = (
-        <h2>You have no drives. Add one using the Menu Panel --> </h2>
+        <h2>You have no courses</h2>
       );
     }
     
