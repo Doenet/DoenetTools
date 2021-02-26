@@ -10,17 +10,17 @@ export default function Textfield(props) {
         fontFamily: 'Arial',
         borderRadius: '5px',
         color: '#000',
-        text: 'Enter text here'
+        value: 'Enter text here'
       }
   if (props.size === "medium") {
     textfield.height = '36px'
   }
-  if (props.text) {
-    textfield.text = props.text;
+  if (props.value) {
+    textfield.value = props.value;
 }
     return (
         <>
-            <textarea defaultValue={textfield.text} style={textfield}></textarea>
+            <textarea defaultValue={textfield.value} style={textfield}></textarea>
         </>
     )
 }

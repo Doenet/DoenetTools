@@ -24,7 +24,7 @@ export default class ConstrainTo extends ConstraintComponent {
     stateVariableDefinitions.nearestPointFunctions = {
       returnDependencies: () => ({
         graphicalChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneGraphical",
           variableNames: ["nearestPoint"],
           variablesOptional: true

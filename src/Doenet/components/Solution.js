@@ -65,7 +65,7 @@ export default class Solution extends BlockComponent {
       defaultValue: false,
       returnDependencies: () => ({
         hideChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneHide",
           variableNames: ["value"]
         },
@@ -206,7 +206,7 @@ export default class Solution extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "inlineOrBlock"
         },
       }),

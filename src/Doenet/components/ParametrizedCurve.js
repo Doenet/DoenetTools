@@ -57,7 +57,7 @@ export default class ParametrizedCurve extends Curve {
     stateVariableDefinitions.nVariables = {
       returnDependencies: () => ({
         functionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastOneFunction"
         }
       }),
@@ -85,7 +85,7 @@ export default class ParametrizedCurve extends Curve {
       returnArrayDependenciesByKey() {
         let globalDependencies = {
           variablesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneVariables",
             variableNames: ["variables"],
           },
@@ -134,7 +134,7 @@ export default class ParametrizedCurve extends Curve {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             functionChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastOneFunction",
               variableNames: ["numericalf"],
               childIndices: [arrayKey]

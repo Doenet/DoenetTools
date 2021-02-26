@@ -30,7 +30,7 @@ export default class Div extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anything"
         }
       }),

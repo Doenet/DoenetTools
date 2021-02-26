@@ -38,7 +38,7 @@ export class Ol extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         liChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroLis"
         }
       }),
@@ -127,7 +127,7 @@ export class Li extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "inlineOrBlock"
         }
       }),

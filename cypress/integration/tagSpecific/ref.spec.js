@@ -173,8 +173,9 @@ describe('ref Tag Tests', function () {
   <p>Repeat url: <copy tname="_ref1" />.</p>
   <p>The link address is: <copy prop="uri" tname="_ref1" />.</p>
   <p>The text linked is: <copy prop="linktext" tname="_ref1" />.</p>
-  <p>Recreate from pieces: <ref>
-     <uri><copy prop="uri" tname="_ref1" /></uri><copy prop="linktext" tname="_ref1" /></ref>.</p>
+  <p>Recreate from pieces: <ref uri="$uri" >
+     <copy prop="linktext" tname="_ref1" /></ref>.</p>
+  <text name="uri" hide><copy prop="uri" tname="_ref1" /></text>
   `}, "*");
     });
 

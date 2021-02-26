@@ -84,7 +84,7 @@ export default class Document extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
         },
       }),
@@ -103,7 +103,7 @@ export default class Document extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle",
           variableNames: ["text"],
         }
@@ -124,7 +124,7 @@ export default class Document extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         descriptionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneDescription",
           variableNames: ["text"],
         }
@@ -166,7 +166,7 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: ["_sectioningcomponent", "answer"],
           variableNames: [
             "scoredDescendants",
@@ -233,8 +233,8 @@ export default class Document extends BaseComponent {
           if (descendant) {
             dependenciesByKey[arrayKey] = {
               creditAchieved: {
-                dependencyType: "componentStateVariable",
-                componentIdentity: descendant,
+                dependencyType: "stateVariable",
+                componentName: descendant.componentName,
                 variableName: "creditAchieved"
               }
             }
@@ -337,7 +337,7 @@ export default class Document extends BaseComponent {
           value: sharedParameters.variantNumber,
         },
         variantDescendants: {
-          dependencyType: "descendantStateVariables",
+          dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
@@ -374,11 +374,11 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         titleChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneTitle"
         },
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anything"
         }
       }),

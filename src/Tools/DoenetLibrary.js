@@ -176,7 +176,7 @@ function TextEditor(props){
         autosavetimeout.current = setTimeout(function(){
           setVersion({instructions:{type:"Autosave"}})
           autosavetimeout.current = null;
-        },5000) //TODO: Make 5 minutes 300000
+        },60000) //TODO: Make 1 minute 60000
       }
   }
   }}
@@ -389,9 +389,9 @@ function VersionHistoryPanel(props){
         titleStyle = {border: "1px solid black", padding: "1px"}
         drawer = <>
         {/* <div>{nameItButton}</div> */}
-        <div><Button text="Make a copy" /></div>
-        <div><Button text="Delete Version" /></div>
-        <div><Button text="Use as Current Version" /></div>
+        <div><Button value="Make a copy" /></div>
+        <div><Button value="Delete Version" /></div>
+        <div><Button value="Use as Current Version" /></div>
         </>
       }
       let title = <div><b
@@ -526,9 +526,6 @@ function SetEditorDoenetMLandTitle(props){
 return null;
 }
 
-
-
-
 function User(props){
   let onClick = props.onClick;
   if (!onClick){onClick = ()=>{}}
@@ -551,7 +548,7 @@ function User(props){
             <div key={`remove${props.userId}`}>
               <Button 
               data-doenet-removeButton={props.userId}
-            text="Remove" 
+            value="Remove" 
             callback={(e)=>{
               e.preventDefault();
               e.stopPropagation();
@@ -578,7 +575,7 @@ function User(props){
           <div key={`promote${props.userId}`}>
             <Button 
           data-doenet-removebutton={props.userId}
-          text="Promote to Owner" callback={(e)=>{
+          value="Promote to Owner" callback={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -599,7 +596,7 @@ function User(props){
           <div key={`demote${props.userId}`}>
             <Button 
           data-doenet-removebutton={props.userId}
-          text="Demote to Admin" callback={(e)=>{
+          value="Demote to Admin" callback={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -665,13 +662,19 @@ function NewUser(props){
 
     //TODO: when set async available replace this.
     function callback(resp){
-      props.setDriveUsers({
-        driveId:props.driveId,
-        type:`${props.type} step 2`,
-        email,
-        screenName:resp.screenName,
-        userId:resp.userId
-      })
+
+      if (resp.success){
+        props.setDriveUsers({
+          driveId:props.driveId,
+          type:`${props.type} step 2`,
+          email,
+          screenName:resp.screenName,
+          userId:resp.userId
+        })
+      }else{
+        console.log(">>>Toast ",resp.message)
+      }
+     
     }
     
   }
@@ -688,8 +691,8 @@ function NewUser(props){
     }}
     /></label>
   </div>
-    <Button text="Submit" callback={()=>addUser()}/>
-    <Button text="Cancel" callback={()=>props.open(false)}/>
+    <Button value="Submit" callback={()=>addUser()}/>
+    <Button value="Cancel" callback={()=>props.open(false)}/>
     </>
 
 }
@@ -720,7 +723,7 @@ const DriveInfoPanel = function(props){
   let owners = [];
 
   let addOwners = null;
-  let addOwnersButton = <Button text="+ Add Owner" callback={()=>{
+  let addOwnersButton = <Button value="+ Add Owner" callback={()=>{
     setAddOwners(true);
     }} />
 
@@ -729,7 +732,7 @@ const DriveInfoPanel = function(props){
     addOwnersButton = null;
   }
   let addAdmins = null;
-  let addAdminsButton = <Button text="+ Add Administrator" callback={()=>{
+  let addAdminsButton = <Button value="+ Add Administrator" callback={()=>{
     setAddAdmins(true);
   }} />
   if (shouldAddAdmins){
@@ -785,7 +788,7 @@ const DriveInfoPanel = function(props){
   let deleteCourseButton = null;
   if (isOwner){
     deleteCourseButton = <>
-    <Button text="Delete Course" callback={()=>{
+    <Button value="Delete Course" callback={()=>{
     // alert("Delete Drive")
     setDrivesInfo({
       color:props.color,
@@ -898,7 +901,7 @@ const FolderInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button text="Delete Folder" callback={()=>{
+  <Button value="Delete Folder" callback={()=>{
     setFolder({
       instructionType:"delete item",
       itemId:itemInfo.itemId,
@@ -949,7 +952,7 @@ const DoenetMLInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button text="Edit DoenetML" callback={()=>{
+  <Button value="Edit DoenetML" callback={()=>{
     setOverlayOpen({
       name: "editor", //to match the prop
       instructions: {
@@ -965,7 +968,7 @@ const DoenetMLInfoPanel = function(props){
   }} />
   <br />
   <br />
-  <Button text="Delete DoenetML" callback={()=>{
+  <Button value="Delete DoenetML" callback={()=>{
     setFolder({
       instructionType:"delete item",
       itemId:itemInfo.itemId,
@@ -974,7 +977,6 @@ const DoenetMLInfoPanel = function(props){
   }} />
   </>
 }
-
 
 const ItemInfo = function (){
   // console.log("=== 🧐 Item Info")
@@ -1031,7 +1033,7 @@ function AddCourseDriveButton(props){
 
   const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
 
-  return <Button text="Create a New Course" callback={()=>{
+  return <Button value="Create a New Course" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
@@ -1069,7 +1071,7 @@ function AddMenuPanel(props){
   <h3>Course</h3>
    {addDrives}
   <h3>Folder</h3>
-  <Button text="Add Folder" callback={()=>{
+  <Button value="Add Folder" callback={()=>{
     setFolderInfo({instructionType:"addItem",
     label:"Untitled",
     itemType:"Folder"
@@ -1078,7 +1080,7 @@ function AddMenuPanel(props){
   } />
 
   <h3>DoenetML</h3>
-  <Button text="Add DoenetML" callback={()=>{
+  <Button value="Add DoenetML" callback={()=>{
     setFolderInfo({instructionType:"addItem",
     label:"Untitled",
     itemType:"DoenetML"
@@ -1099,7 +1101,7 @@ function AddMenuPanel(props){
     itemType:"url"
     })
     setURLLink("");
-  }} text="Add" />
+  }} value="Add" />
 
   </div> */}
 

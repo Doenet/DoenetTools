@@ -227,12 +227,12 @@ export class Extremum extends BaseComponent {
       isSugar: true,
       returnSugarDependencies: () => ({
         stringsAndMaths: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         },
         variables: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "variablesForSugar",
           variableNames: ["nComponents", "maths"]
         }
@@ -307,17 +307,17 @@ export class Extremum extends BaseComponent {
       }],
       returnDependencies: () => ({
         pointChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOnePoint",
           variableNames: ["nDimensions", "xs"]
         },
         locationChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneLocation",
           variableNames: ["value"]
         },
         valueChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneValue",
           variableNames: ["value"]
         },

@@ -63,11 +63,11 @@ export default class Markers extends BaseComponent {
       componentType: "text",
       returnDependencies: () => ({
         textChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastOneTexts",
         },
         numberChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastOneNumbers",
         },
       }),
@@ -94,12 +94,12 @@ export default class Markers extends BaseComponent {
           variableName: "markerType"
         },
         textChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneTexts",
           variableNames: ["value"]
         },
         numberChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneNumbers",
           variableNames: ["value"],
         },

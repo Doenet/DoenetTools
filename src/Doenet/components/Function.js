@@ -5,8 +5,11 @@ export default class Function extends InlineComponent {
   static componentType = "function";
   static rendererType = "math";
 
+  static get stateVariablesShadowedForReference() { return ["variable"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
+    properties.symbolic = { default: false };
     properties.xscale = { default: 1, propagateToDescendants: true };
     properties.yscale = { default: 1, propagateToDescendants: true };
     // include properties of graphical components
@@ -17,68 +20,29 @@ export default class Function extends InlineComponent {
     return properties;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: ({ matchedChildren }) => ({
+        success: true,
+        newChildren: [{ componentType: "formula", children: matchedChildren }],
+      })
+    });
+
+    return sugarInstructions;
+
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
-
-    let addFormula = function ({ activeChildrenMatched }) {
-      // add <formula> around math
-      let formulaChildren = [];
-      for (let child of activeChildrenMatched) {
-        formulaChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "formula", children: formulaChildren }],
-      }
-    }
-
-    let atLeastOneStrings = childLogic.newLeaf({
-      name: "atLeastOneStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-    let atLeastOneMaths = childLogic.newLeaf({
-      name: "atLeastOneMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneStrings, atLeastOneMaths],
-      requireConsecutive: true,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneFormula"],
-      replacementFunction: addFormula,
-    });
 
     let exactlyOneFormula = childLogic.newLeaf({
       name: "exactlyOneFormula",
       componentType: "formula",
       number: 1,
     })
-
-
-
-    let addInterpolatedFunction = function ({ activeChildrenMatched }) {
-      // add <interpolatedfunction> around criteria
-      let children = [];
-      for (let child of activeChildrenMatched) {
-        children.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "interpolatedfunction", children }],
-      }
-    }
 
     let atLeastOneMaximum = childLogic.newLeaf({
       name: "atLeastOneMaximum",
@@ -112,29 +76,20 @@ export default class Function extends InlineComponent {
       name: "throughCriteria",
       operator: "or",
       propositions: [atLeastOneMaximum, atLeastOneMinimum, atLeastOneExtremum, atLeastOneThrough],
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneFunction"],
-      replacementFunction: addInterpolatedFunction,
     })
 
-    let exactlyOneFunction = childLogic.newLeaf({
-      name: "exactlyOneFunction",
+    let atMostOneFunction = childLogic.newLeaf({
+      name: "atMostOneFunction",
       componentType: "function",
-      comparison: 'exactly',
+      comparison: 'atMost',
       number: 1,
     })
 
-    let noFunctions = childLogic.newLeaf({
-      name: "noFunctions",
-      componentType: "function",
-      comparison: 'exactly',
-      number: 0,
-    })
 
     let functionFormulaXorSugar = childLogic.newOperator({
       name: "functionFormulaXorSugar",
       operator: 'xor',
-      propositions: [exactlyOneFunction, exactlyOneFormula, throughCriteria, stringsAndMaths, noFunctions],
+      propositions: [atMostOneFunction, exactlyOneFormula, throughCriteria],
     })
 
 
@@ -143,6 +98,7 @@ export default class Function extends InlineComponent {
       componentType: "variable",
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
     })
 
     childLogic.newOperator({
@@ -169,7 +125,7 @@ export default class Function extends InlineComponent {
           variableName: "styleNumber",
         },
         ancestorWithStyle: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         }
       }),
@@ -195,7 +151,6 @@ export default class Function extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.styleDescription = {
       public: true,
       componentType: "text",
@@ -219,7 +174,7 @@ export default class Function extends InlineComponent {
           curveDescription += "dotted ";
         }
 
-        curveDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        curveDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: curveDescription } };
       }
@@ -231,13 +186,13 @@ export default class Function extends InlineComponent {
       defaultValue: me.fromAst("x"),
       returnDependencies: () => ({
         variableChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneVariable",
           variableNames: ["value"],
         },
         functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
           variableNames: ["variable"],
         }
       }),
@@ -265,13 +220,13 @@ export default class Function extends InlineComponent {
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
         formulaChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneFormula",
           variableNames: ["value"]
         },
         functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
           variableNames: ["formula"],
         }
       }),
@@ -304,6 +259,10 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.f = {
       returnDependencies: () => ({
+        symbolic: {
+          dependencyType: "stateVariable",
+          variableName: "symbolic",
+        },
         formula: {
           dependencyType: "stateVariable",
           variableName: "formula",
@@ -313,8 +272,8 @@ export default class Function extends InlineComponent {
           variableName: "variable"
         },
         functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
           variableNames: ["f"],
         }
       }),
@@ -326,59 +285,36 @@ export default class Function extends InlineComponent {
             }
           }
         } else {
-          let formula = dependencyValues.formula;
-          let varString = dependencyValues.variable.tree;
-          return {
-            newValues: {
-              f: (x) => formula.substitute({ [varString]: x })
-            }
-          }
 
-        }
-      }
-    }
-
-    stateVariableDefinitions.numericalf = {
-      returnDependencies: () => ({
-        formula: {
-          dependencyType: "stateVariable",
-          variableName: "formula",
-        },
-        variable: {
-          dependencyType: "stateVariable",
-          variableName: "variable"
-        },
-        functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
-          variableNames: ["numericalf"],
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
-          return {
-            newValues: {
-              numericalf: dependencyValues.functionChild[0].stateValues.numericalf
+          if (dependencyValues.symbolic) {
+            let formula = dependencyValues.formula;
+            let varString = dependencyValues.variable.tree;
+            return {
+              newValues: {
+                f: (x) => formula.substitute({ [varString]: x })
+              }
             }
-          }
-        } else {
-          let formula_f;
-          try {
-            formula_f = dependencyValues.formula.f();
-          } catch (e) {
-            formula_f = () => NaN;
-          }
-          let varString = dependencyValues.variable.tree;
-          return {
-            newValues: {
-              numericalf: function (x) {
-                try {
-                  return formula_f({ [varString]: x });
-                } catch (e) {
-                  return NaN;
+          } else {
+
+            let formula_f;
+            try {
+              formula_f = dependencyValues.formula.f();
+            } catch (e) {
+              formula_f = () => NaN;
+            }
+            let varString = dependencyValues.variable.tree;
+            return {
+              newValues: {
+                f: function (x) {
+                  try {
+                    return formula_f({ [varString]: x });
+                  } catch (e) {
+                    return NaN;
+                  }
                 }
               }
             }
+
           }
 
         }
@@ -388,7 +324,6 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         formula: {
           dependencyType: "stateVariable",
@@ -399,6 +334,20 @@ export default class Function extends InlineComponent {
         return { newValues: { latex: dependencyValues.formula.toLatex() } };
       }
     }
+
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+      }
+    }
+
 
     stateVariableDefinitions.minima = {
       public: true,
@@ -471,17 +420,21 @@ export default class Function extends InlineComponent {
       },
       returnDependencies: function () {
         return {
-          numericalf: {
+          symbolic: {
             dependencyType: "stateVariable",
-            variableName: "numericalf",
+            variableName: "symbolic",
+          },
+          f: {
+            dependencyType: "stateVariable",
+            variableName: "f",
           },
           xscale: {
             dependencyType: "stateVariable",
             variableName: "xscale"
           },
           functionChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneFunction",
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
             variableNames: ["minima"],
           }
         }
@@ -505,7 +458,14 @@ export default class Function extends InlineComponent {
 
         // no function child
 
-        let f = dependencyValues.numericalf;
+        if (dependencyValues.symbolic) {
+          // haven't implemented minima for symbolic functions
+          return {
+            newValues: { minima: [] }
+          }
+        }
+
+        let f = dependencyValues.f;
 
         // for now, look for minima in interval -100*xscale to 100*xscale
         // dividing interval into 1000 subintervals
@@ -631,17 +591,21 @@ export default class Function extends InlineComponent {
       },
       returnDependencies: function () {
         return {
-          numericalf: {
+          symbolic: {
             dependencyType: "stateVariable",
-            variableName: "numericalf",
+            variableName: "symbolic",
+          },
+          f: {
+            dependencyType: "stateVariable",
+            variableName: "f",
           },
           xscale: {
             dependencyType: "stateVariable",
             variableName: "xscale"
           },
           functionChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneFunction",
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
             variableNames: ["maxima"],
           }
         }
@@ -661,7 +625,14 @@ export default class Function extends InlineComponent {
 
         // no function child
 
-        let f = (x) => -dependencyValues.numericalf(x);
+        if (dependencyValues.symbolic) {
+          // haven't implemented maxima for symbolic functions
+          return {
+            newValues: { maxima: [] }
+          }
+        }
+
+        let f = (x) => -dependencyValues.f(x);
 
         // for now, look for maxima in interval -100*xscale to 100*xscale
         // dividing interval into 1000 subintervals
@@ -723,8 +694,8 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.functionChild = {
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneFunction"
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -889,23 +860,23 @@ export default class Function extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.returnDerivativesOfNumericalf = {
+    stateVariableDefinitions.returnDerivativesOfF = {
       returnDependencies: () => ({
         functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
-          variableNames: ["returnDerivativesOfNumericalf"],
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["returnDerivativesOfF"],
         }
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.functionChild.length === 1 &&
-          dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf
+          dependencyValues.functionChild[0].stateValues.returnDerivativesOfF
         ) {
           return {
-            newValues: { returnDerivativesOfNumericalf: dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf }
+            newValues: { returnDerivativesOfF: dependencyValues.functionChild[0].stateValues.returnDerivativesOfF }
           }
         } else {
-          return { newValues: { returnDerivativesOfNumericalf: null } }
+          return { newValues: { returnDerivativesOfF: null } }
         }
       }
 
@@ -916,7 +887,7 @@ export default class Function extends InlineComponent {
   }
 
   adapters = [{
-    stateVariable: "numericalf",
+    stateVariable: "f",
     componentType: "functioncurve"
   },
   {

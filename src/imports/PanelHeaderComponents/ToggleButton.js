@@ -12,14 +12,14 @@ export default function ToggleButton(props) {
         color: `${doenetMainBlue}`,
         backgroundColor: '#FFF',
         borderRadius: '5px',
-        text: 'Toggle Button',
+        value: 'Toggle Button',
         padding: '0px 10px 0px 10px',
         cursor: 'pointer',
         fontSize: '12px',
         textAlign: 'center'
       }
     var label ={
-        text: 'Label:',
+        value: 'Label:',
         fontSize: '12px',
         display: `${labelVisible}`
     }
@@ -29,24 +29,24 @@ export default function ToggleButton(props) {
         toggleButton.fontSize = '18px',
         label.fontSize = '18px'
     }
-    if (props.text || props.icon){
-        if (props.text && props.icon){
+    if (props.value || props.icon){
+        if (props.value && props.icon){
             icon = props.icon;
-            toggleButton.text = props.text
+            toggleButton.value = props.value
         }
-        else if (props.text){
-            toggleButton.text = props.text
+        else if (props.value){
+            toggleButton.value = props.value
         }
         else if (props.icon){
             icon = props.icon;
-            toggleButton.text = ''
+            toggleButton.value = ''
         }
     }
     if (isSelected === true) {
         toggleButton.backgroundColor = `${doenetMainBlue}`;
         toggleButton.color = '#FFF';
         toggleButton.border = '2px solid #FFF';
-        if (props.switch_text) toggleButton.text = props.switch_text
+        if (props.switch_value) toggleButton.value = props.switch_value
     }
     function handleClick() {
         if (isSelected === false) {
@@ -57,12 +57,12 @@ export default function ToggleButton(props) {
         if (props.callback) props.callback();
     }
     if (props.label) {
-        label.text = props.label
+        label.value = props.label
     }
     return (
         <>
-            <p style={label}>{label.text}</p>
-            <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{icon}{' '}{toggleButton.text}</button>
+            <p style={label}>{label.value}</p>
+            <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{icon}{' '}{toggleButton.value}</button>
         </>
     )
 }

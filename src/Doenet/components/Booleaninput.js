@@ -68,7 +68,7 @@ export default class Booleaninput extends Input {
       forRenderer: true,
       returnDependencies: () => ({
         booleanChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneBoolean",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -85,7 +85,7 @@ export default class Booleaninput extends Input {
               value: {
                 variablesToCheck: "value",
                 get defaultValue() {
-                  return ["true", "t"].includes(dependencyValues.prefill.trim().toLowerCase());
+                  return dependencyValues.prefill.trim().toLowerCase() === "true";
                 }
               }
             }

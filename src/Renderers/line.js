@@ -48,14 +48,26 @@ export default class Line extends DoenetRenderer {
 
     this.lineJXG = this.props.board.create('line', through, jsxLineAttributes);
 
-    this.lineJXG.on('drag', function () {
+    this.lineJXG.on('drag', function (e) {
+      this.dragged = true;
+
       //board.suspendUpdate();
-      this.onDragHandler(true);
+      this.onDragHandler(e, true);
       //board.unsuspendUpdate();
     }.bind(this));
 
-    this.lineJXG.on('up', function () {
-      this.onDragHandler(false);
+    this.lineJXG.on('up', function (e) {
+      this.onDragHandler(e, false);
+    }.bind(this));
+
+    this.lineJXG.on('down', function (e) {
+      this.dragged = false;
+      this.pointerAtDown = [e.x, e.y];
+      this.pointsAtDown = [
+        [...this.lineJXG.point1.coords.scrCoords],
+        [...this.lineJXG.point2.coords.scrCoords]
+      ]
+
     }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
@@ -145,12 +157,33 @@ export default class Line extends DoenetRenderer {
 
   }
 
-  onDragHandler(transient) {
-    this.actions.moveLine({
-      point1coords: [this.lineJXG.point1.X(), this.lineJXG.point1.Y()],
-      point2coords: [this.lineJXG.point2.X(), this.lineJXG.point2.Y()],
-      transient
-    });
+  onDragHandler(e, transient) {
+
+    if (this.dragged) {
+      let pointCoords = this.calculatePointPositions(e);
+
+      this.actions.moveLine({
+        point1coords: pointCoords[0],
+        point2coords: pointCoords[1],
+        transient
+      });
+    }
+  }
+
+  calculatePointPositions(e) {
+    var o = this.props.board.origin.scrCoords;
+
+    let pointCoords = []
+
+    for (let i = 0; i < 2; i++) {
+      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0]
+        - o[1]) / this.props.board.unitX;
+      let calculatedY = (o[2] -
+        (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1]))
+        / this.props.board.unitY;
+      pointCoords.push([calculatedX, calculatedY]);
+    }
+    return pointCoords;
   }
 
   componentDidMount() {

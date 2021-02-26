@@ -51,36 +51,6 @@ export default class AttractToGrid extends ConstraintComponent {
       })
     }
 
-    // Note: constraintInactive allows one to treat attractToGrid as a property
-    // so that
-    // <component attractToGrid /> and <component attractToGrid="true"/>
-    // turn the constraint on (with default parameters), and
-    // <component attractToGrid="false"/>
-    // leave the constraint off
-    stateVariableDefinitions.constraintInactive = {
-      returnDependencies: () => ({
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneString",
-          variableNames: ["value"],
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringChild.length === 1) {
-          let stringValue = dependencyValues.stringChild[0].stateValues.value;
-          if (stringValue === false ||
-            (typeof stringValue === "string" && ["false", "f"].includes(stringValue.trim().toLowerCase()))) {
-            return { newValues: { constraintInactive: true } }
-          }
-        }
-
-        return { newValues: { constraintInactive: false } }
-
-      }
-
-
-    }
-
 
     // Since state variable independentComponentConstraints maybe true,
     // expect function applyComponentConstraint to be called with 
@@ -91,10 +61,6 @@ export default class AttractToGrid extends ConstraintComponent {
     // use x,y,z for properties so that authors can use the more familar tag names
     stateVariableDefinitions.applyComponentConstraint = {
       returnDependencies: () => ({
-        constraintInactive: {
-          dependencyType: "stateVariable",
-          variableName: "constraintInactive"
-        },
         dx: {
           dependencyType: "stateVariable",
           variableName: "dx"
@@ -135,10 +101,6 @@ export default class AttractToGrid extends ConstraintComponent {
       definition: ({ dependencyValues }) => ({
         newValues: {
           applyComponentConstraint: function (variables) {
-
-            if (dependencyValues.constraintInactive) {
-              return {};
-            }
 
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
@@ -227,10 +189,6 @@ export default class AttractToGrid extends ConstraintComponent {
 
     stateVariableDefinitions.applyConstraint = {
       returnDependencies: () => ({
-        constraintInactive: {
-          dependencyType: "stateVariable",
-          variableName: "constraintInactive"
-        },
         dx: {
           dependencyType: "stateVariable",
           variableName: "dx"
@@ -279,10 +237,6 @@ export default class AttractToGrid extends ConstraintComponent {
       definition: ({ dependencyValues }) => ({
         newValues: {
           applyConstraint: function (variables) {
-
-            if (dependencyValues.constraintInactive) {
-              return {};
-            }
 
             let newVariables = {};
             let constrained = false;

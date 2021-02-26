@@ -69,7 +69,7 @@ export default class Textinput extends Input {
       forRenderer: true,
       returnDependencies: () => ({
         textChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneText",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
