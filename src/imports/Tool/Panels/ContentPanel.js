@@ -33,7 +33,8 @@ export default function ContentPanel({ main, support }) {
   let handleClicked = false;
   let handleDragged = false;
 
-  const onMouseDown = () => {
+  const onMouseDown = (event) => {
+    event.preventDefault();
     handleClicked = true;
   };
 
@@ -45,6 +46,7 @@ export default function ContentPanel({ main, support }) {
       let proportion =
         (event.clientX - wrapperRef.current.offsetLeft) /
         wrapperRef.current.clientWidth;
+      //use the ref to save on
       wrapperRef.current.style.gridTemplateColumns = `${proportion}fr 11px ${
         1 - proportion
       }fr`;
@@ -52,6 +54,7 @@ export default function ContentPanel({ main, support }) {
   };
 
   const onMouseUp = () => {
+    //Only updates the proportions on mouse up
     if (handleClicked) {
       handleClicked = false;
       if (handleDragged) {

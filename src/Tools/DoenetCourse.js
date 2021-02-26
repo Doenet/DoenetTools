@@ -555,8 +555,8 @@ const AssignmentForm = (props) => {
           </div>
           <div>
             <ToggleButton
-              text="Publish"
-              switch_text="publish changes"
+              value="Publish"
+              switch_value="publish changes"
               callback={handleSubmit}
               type="submit"
             ></ToggleButton>
@@ -718,8 +718,8 @@ const ContentInfoPanel = (props) => {
       {role === "Instructor" &&
         assignmentInfo?.assignment_isPublished !== "1" && (
           <ToggleButton
-            text="Publish Content"
-            switch_text="Published"
+            value="Publish Content"
+            switch_value="Published"
             callback={handlePublishContent}
           />
         )}
@@ -727,7 +727,7 @@ const ContentInfoPanel = (props) => {
       {role === "Instructor" &&
       (assignmentId === "" || assignmentId === undefined) &&
       itemType === "DoenetML" ? (
-        <ToggleButton text="Make Assignment" callback={handleMakeAssignment} />
+        <ToggleButton value="Make Assignment" callback={handleMakeAssignment} />
       ) : null}
       <br />
       {assignmentId && assignmentInfo?.isAssignment == "1" && (
@@ -743,13 +743,13 @@ const ContentInfoPanel = (props) => {
       )}
 
       {role === "Instructor" && assignmentInfo?.isAssignment == "1" && (
-        <ToggleButton text="Make Content" callback={handleMakeContent} />
+        <ToggleButton value="Make Content" callback={handleMakeContent} />
       )}
 
       {role === "Instructor" &&
       assignmentId &&
       assignmentInfo?.isAssignment == "0" ? (
-        <ToggleButton text="Make Assignment" callback={loadBackAssignment} />
+        <ToggleButton value="Make Assignment" callback={loadBackAssignment} />
       ) : null}
     </div>
   );
@@ -829,7 +829,7 @@ function DoenetCourseRouted({ props }) {
         <br />
         {role === "Instructor" && courseId && (
           <Button
-            text="Course Enrollment"
+            value="Course Enrollment"
             callback={() => {
               setEnrollmentView(!openEnrollment);
             }}
