@@ -1,8 +1,6 @@
-import React, { useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { supportVisible } from "./SupportPanel";
-import { useStackId } from "../ToolRoot";
+import { useSetRecoilState } from "recoil";
 import { clearDriveAndItemSelections } from "../../Drive";
 
 const ContentPanelContainer = styled.div`
@@ -12,7 +10,7 @@ const ContentPanelContainer = styled.div`
     "mainPanel . supportPanel" 1.5fr
     "mainPanel handle supportPanel" 1fr
     "mainPanel . supportPanel" 1.5fr
-    / 1fr 7px 0fr;
+    / ${({ $proportion }) => $proportion};
   border-left: 1px solid black;
   overflow-x: hidden;
   overflow-y: auto;
@@ -22,62 +20,63 @@ const DragHandle = styled.div`
   grid-area: handle;
   padding: 0;
   cursor: ew-resize;
-  background-color: darkgrey;
-  border-radius: 4px;
+  background-color: #1a5a99;
+  border-radius: 2px;
+  margin: 2px;
 `;
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
-  const stackId = useStackId();
-  const [supportInUse, setSupportInUse] = useRecoilState(
-    supportVisible(stackId)
-  );
+  const [panelProportion, setPanelProportion] = useState("1fr 11px 0fr");
   const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
-  let isDragging = false;
 
-  useEffect(() => {
-    wrapperRef.current.style.gridTemplateColumns = `1fr 7px ${
-      supportInUse ? "1fr" : "0fr"
-    }`;
-  }, [supportInUse]);
+  let handleClicked = false;
+  let handleDragged = false;
 
-  const handleMouseDown = () => {
-    isDragging = true;
+  const onMouseDown = () => {
+    handleClicked = true;
   };
 
-  const handleMouseMove = (event) => {
-    // Don't do anything if dragging flag is false
-    if (isDragging) {
+  const onMouseMove = (event) => {
+    // Only activate if handle was clicked
+    if (handleClicked) {
       event.preventDefault();
+      handleDragged = true;
       let proportion =
         (event.clientX - wrapperRef.current.offsetLeft) /
         wrapperRef.current.clientWidth;
-      let newColDefn = `${proportion}fr 7px ${1 - proportion}fr`;
-      // setProportion((oldprop) => proportion);
-      wrapperRef.current.style.gridTemplateColumns = newColDefn;
+      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr 11px ${
+        1 - proportion
+      }fr`;
     }
   };
 
-  const handleMouseUp = () => {
-    if (isDragging) {
-      isDragging = false;
+  const onMouseUp = () => {
+    if (handleClicked) {
+      handleClicked = false;
+      if (handleDragged) {
+        handleDragged = false;
+        setPanelProportion(wrapperRef.current.style.gridTemplateColumns);
+        wrapperRef.current.style.gridTemplateColumns = null;
+      } else {
+        setPanelProportion((old) =>
+          old === "1fr 11px 0fr" ? "1fr 11px 1fr" : "1fr 11px 0fr"
+        );
+      }
     }
   };
 
   return (
     <ContentPanelContainer
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseUp}
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseUp}
       ref={wrapperRef}
-      supportInUse={supportInUse}
       onClick={clearDriveSelections}
+      $proportion={panelProportion}
     >
       {main}
-      <DragHandle
-        onMouseDown={handleMouseDown}
-        onClick={() => setSupportInUse(!supportInUse)}
-      />
+      {support ? <DragHandle onMouseDown={onMouseDown} /> : null}
       {support}
     </ContentPanelContainer>
   );

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { animated, useTransition } from "react-spring";
-import {
-  atom,
-  selector,
-  useRecoilValue,
-  useRecoilCallback,
-  useRecoilState,
-} from "recoil";
 import NavPanel from "./Panels/NavPanel";
 import HeaderPanel from "./Panels/HeaderPanel";
 import ContentPanel from "./Panels/ContentPanel";
@@ -26,7 +19,8 @@ const ToolContainer = styled(animated.div)`
   height: 100vh;
   background-color: #f6f8ff;
   position: fixed;
-  z-index: ${({ $isOverlay }) => ($isOverlay ? 3 : 0)};
+  top: 0;
+  left: 0;
 `;
 
 const implementedToolParts = [
