@@ -16,6 +16,8 @@ export default class Copy extends CompositeComponent {
 
   static acceptTname = true;
   static acceptProp = true;
+  static acceptFromMapAncestor = true;
+  static acceptFromSources = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
 
@@ -86,17 +88,220 @@ export default class Copy extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.targetComponent = {
+    stateVariableDefinitions.fromMapAncestor = {
       returnDependencies: () => ({
-        targetComponent: {
-          dependencyType: "targetComponent",
-        },
+        fromMapAncestor: {
+          dependencyType: "doenetAttribute",
+          attributeName: "fromMapAncestor"
+        }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: ({ dependencyValues }) => ({
+        newValues: { fromMapAncestor: dependencyValues.fromMapAncestor }
+      })
+    }
+
+    stateVariableDefinitions.fromSources = {
+      returnDependencies: () => ({
+        fromSources: {
+          dependencyType: "doenetAttribute",
+          attributeName: "fromSources"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { fromSources: dependencyValues.fromSources }
+      })
+    }
+
+    stateVariableDefinitions.tName = {
+      returnDependencies: () => ({
+        tName: {
+          dependencyType: "doenetAttribute",
+          attributeName: "tName"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { tName: dependencyValues.tName }
+      })
+    }
+
+    stateVariableDefinitions.targetSourcesName = {
+      additionalStateVariablesDefined: ["sourcesChildNumber"],
+      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSources", "tName"],
+      returnDependencies: function ({ stateValues, sharedParameters }) {
+
+        if (stateValues.tName !== "_source") {
+          return {};
+        }
+
+        let sourcesInfo = sharedParameters.sourcesInfo;
+
+        console.log(`sourcesInfo`)
+        console.log(sourcesInfo)
+
+        console.log(stateValues)
+
+        if (sourcesInfo === undefined) {
+          console.error(`Cannot copy _source when not inside a map template.`);
+          return {};
+        }
+
+        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
+        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
+
+        let level = sourcesInfo.length - fromMapAncestor;
+        let infoForLevel = sourcesInfo[level];
+        if (infoForLevel === undefined) {
+          console.error(`For copy of _source, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
+          return {};
+        }
+        let infoForSources = infoForLevel[fromSources - 1];
+        if (infoForSources === undefined) {
+          console.error(`For copy of _source, invalid value of fromSources: ${stateValues.fromSources}`);
+          return {};
+        };
+
         return {
-          newValues: {
-            targetComponent: dependencyValues.targetComponent
+          targetSourcesName: {
+            dependencyType: "value",
+            value: infoForSources.name,
+          },
+          sourcesChildNumber: {
+            dependencyType: "value",
+            value: infoForSources.childNumber
           }
+        }
+
+      },
+      definition: function ({ dependencyValues }) {
+        let targetSourcesName = dependencyValues.targetSourcesName;
+        let sourcesChildNumber = dependencyValues.sourcesChildNumber;
+        if (!targetSourcesName) {
+          targetSourcesName = null;
+          sourcesChildNumber = null;
+        }
+        return {
+          newValues: { targetSourcesName, sourcesChildNumber },
+          makeEssential: ["targetSourcesName", "sourcesChildNumber"],
+        }
+      },
+    };
+
+    stateVariableDefinitions.targetSources = {
+      stateVariablesDeterminingDependencies: ["targetSourcesName"],
+      returnDependencies({ stateValues }) {
+        if (!stateValues.targetSourcesName) {
+          return {};
+        }
+        return {
+          targetSourcesComponent: {
+            dependencyType: "componentIdentity",
+            componentName: stateValues.targetSourcesName,
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+        let targetSources = dependencyValues.targetSourcesComponent;
+        if (!targetSources) {
+          targetSources = null;
+        }
+        return { newValues: { targetSources } }
+      },
+    };
+
+
+    stateVariableDefinitions.sourceIndex = {
+      stateVariablesDeterminingDependencies: ["tName", "fromMapAncestor", "fromSources"],
+      returnDependencies: function ({ stateValues, sharedParameters }) {
+        if (stateValues.tName !== "_sourceindex") {
+          return {};
+        }
+
+        let sourcesChildIndices = sharedParameters.sourcesChildIndices;
+
+        if (sourcesChildIndices === undefined) {
+          console.error(`Cannot copy _sourceindex when not inside a map template.`);
+          return {};
+        }
+
+        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
+        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
+
+        let level = sourcesChildIndices.length - fromMapAncestor;
+        let childIndices = sourcesChildIndices[level];
+        if (childIndices === undefined) {
+          console.error(`For copy of _sourceindex, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
+          return {};
+        }
+        let childIndex = childIndices[fromSources - 1];
+        if (childIndex === undefined) {
+          console.error(`For copy of _sourceindex, invalid value of fromSources: ${stateValues.fromSources}`);
+          return {};
+        };
+
+        return {
+          sourceIndex: {
+            dependencyType: "value",
+            value: childIndex,
+          }
+
+        }
+
+      },
+      definition: function ({ dependencyValues }) {
+        let sourceIndex = dependencyValues.sourceIndex;
+        if (sourceIndex === undefined) {
+          sourceIndex = null;
+        }
+        return {
+          newValues: { sourceIndex },
+          makeEssential: ["sourceIndex"]
+        }
+      },
+    };
+
+
+    stateVariableDefinitions.targetComponent = {
+      stateVariablesDeterminingDependencies: ["targetSources", "sourceIndex"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.sourceIndex !== null) {
+          return {};
+        }
+
+        if (stateValues.targetSources !== null) {
+          return {
+            targetSourcesChildren: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.targetSources.componentName,
+              variableName: "childIdentities"
+            },
+            sourcesChildNumber: {
+              dependencyType: "stateVariable",
+              variableName: "sourcesChildNumber"
+            }
+
+          }
+        }
+
+        return {
+          targetComponent: {
+            dependencyType: "targetComponent",
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        let targetComponent = null;
+        if (dependencyValues.targetSourcesChildren) {
+          targetComponent = dependencyValues.targetSourcesChildren[dependencyValues.sourcesChildNumber]
+          if (!targetComponent) {
+            targetComponent = null;
+          }
+        } else if (dependencyValues.targetComponent) {
+          targetComponent = dependencyValues.targetComponent
+        }
+
+        return {
+          newValues: { targetComponent }
         }
       },
     };
@@ -712,6 +917,23 @@ export default class Copy extends CompositeComponent {
 
     let assignNames = component.doenetAttributes.assignNames;
 
+    if (component.stateValues.sourceIndex !== null) {
+      let replacements = [{
+        componentType: "number",
+        state: { value: component.stateValues.sourceIndex, fixed: true },
+      }];
+
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: replacements,
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        componentInfoObjects,
+      });
+
+      return { replacements: processResult.serializedComponents };
+    }
+
 
     if (!component.stateValues.targetComponent || !component.stateValues.replacementSources) {
       return { replacements: [] };
@@ -793,6 +1015,10 @@ export default class Copy extends CompositeComponent {
   }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
+
+    if (component.stateValues.sourceIndex !== null) {
+      return [];
+    }
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;

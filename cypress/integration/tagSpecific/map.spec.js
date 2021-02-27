@@ -21,7 +21,7 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map>
-      <template><math>sin(2<copySource/>) + <sourceIndex/></math></template>
+      <template><math>sin(2<copy tname="_source"/>) + <copy tname="_sourceindex"/></math></template>
       <sources>
         <math>x</math>
         <math>y</math>
@@ -63,7 +63,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map >
-      <template><text>You are a <copySource/>!</text> </template>
+      <template><text>You are a <copy tname="_source"/>!</text> </template>
       <sources><text>squirrel</text><text>bat</text></sources>
     </map>
     `}, "*");
@@ -96,7 +96,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-      <template><math simplify><copySource/>^2</math> </template>
+      <template><math simplify><copy tname="_source"/>^2</math> </template>
       <sources><sequence from="1" to="5"/></sources>
     </map>
     `}, "*");
@@ -145,7 +145,7 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map behavior="parallel">
-      <template><math>(<copySource/>, <copySource fromSources="2" />, <copySource fromSources="3" />)</math><math>(<sourceIndex/>, <sourceIndex fromSources="2" />, <sourceIndex fromSources="3" />)</math></template>
+      <template><math>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />, <copy tname="_source" fromSources="3" />)</math><math>(<copy tname="_sourceindex"/>, <copy tname="_sourceindex" fromSources="2" />, <copy tname="_sourceindex" fromSources="3" />)</math></template>
       <sources><sequence from="1" to="5"/></sources>
       <sources><sequence from="21" to="23"/></sources>
       <sources><sequence from="-5" to="-21" step="-3"/></sources>
@@ -201,7 +201,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map behavior="combination">
-      <template><math>(<copySource/>, <copySource fromSources="2" />, <copySource fromSources="3" />)</math><math>(<sourceIndex/>, <sourceIndex fromSources="2" />, <sourceIndex fromSources="3" />)</math></template>
+      <template><math>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />, <copy tname="_source" fromSources="3" />)</math><math>(<copy tname="_sourceindex"/>, <copy tname="_sourceindex" fromSources="2" />, <copy tname="_sourceindex" fromSources="3" />)</math></template>
       <sources><sequence from="1" to="3"/></sources>
       <sources><sequence from="21" to="23" step="2"/></sources>
       <sources><sequence from="-5" to="-8" step="-3"/></sources>
@@ -329,7 +329,7 @@ describe('Map Tag Tests', function () {
     <aslist>
     <map>
       <template><map>
-          <template><math simplify><copySource/>+<copySource fromMapAncestor="2" /></math><math simplify><sourceIndex/>+2<sourceIndex fromMapAncestor="2" /></math></template>
+          <template><math simplify><copy tname="_source" />+<copy tname="_source" fromMapAncestor="2" /></math><math simplify><copy tname="_sourceindex"/>+2<copy tname="_sourceindex" fromMapAncestor="2" /></math></template>
           <sources><sequence from="1" to="2"/></sources>
         </map></template>
       <sources><number>-10</number><number>5</number></sources>
@@ -399,7 +399,7 @@ describe('Map Tag Tests', function () {
     <template><graph>
         <map>
           <template><map>
-              <template><point><coords>(<copySource/>+<copySource fromMapAncestor="3"/>, <copySource fromMapAncestor="2"/>)</coords></point><point><coords>(<sourceIndex/>+2*<sourceIndex fromMapAncestor="3"/>, <sourceIndex fromMapAncestor="2"/>)</coords></point></template>
+              <template><point><coords>(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="3"/>, <copy tname="_source" fromMapAncestor="2"/>)</coords></point><point><coords>(<copy tname="_sourceindex"/>+2*<copy tname="_sourceindex" fromMapAncestor="3"/>, <copy tname="_sourceindex" fromMapAncestor="2"/>)</coords></point></template>
               <sources><sequence from="1" to="2"/></sources>
             </map></template>
           <sources><sequence from="-5" to="5" step="10"/></sources>
@@ -407,7 +407,7 @@ describe('Map Tag Tests', function () {
       </graph></template>
     <sources><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy tname="_map1" />
+    <copy name="mapcopy" tname="_map1" />
     `}, "*");
     });
 
@@ -418,7 +418,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
-      let graphs2 = components['/_copy1'].replacements.map(x => x.replacements[0]);
+      let graphs2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
       let graphs2Children = graphs2.map(x => x.activeChildren);
 
       expect(graphs[0].stateValues.graphicalDescendants.length).eq(8);
@@ -509,7 +509,7 @@ describe('Map Tag Tests', function () {
           <template newNamespace>
             <map assignnames="u,v">
               <template newNamespace>
-                <point name="A"><coords>(<copySource/>+<copySource fromMapAncestor="3"/>, <copySource fromMapAncestor="2"/>)</coords></point>
+                <point name="A"><coords>(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="3"/>, <copy tname="_source" fromMapAncestor="2"/>)</coords></point>
               </template>
               <sources><sequence from="1" to="2"/></sources>
             </map>
@@ -520,35 +520,35 @@ describe('Map Tag Tests', function () {
     </template>
     <sources><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy prop="coords" tname="/u/u/u/A" />
-    <copy prop="coords" tname="/u/u/v/A" />
-    <copy prop="coords" tname="/u/v/u/A" />
-    <copy prop="coords" tname="/u/v/v/A" />
-    <copy prop="coords" tname="/v/u/u/A" />
-    <copy prop="coords" tname="/v/u/v/A" />
-    <copy prop="coords" tname="/v/v/u/A" />
-    <copy prop="coords" tname="/v/v/v/A" />
+    <copy name="c1" prop="coords" tname="/u/u/u/A" />
+    <copy name="c2" prop="coords" tname="/u/u/v/A" />
+    <copy name="c3" prop="coords" tname="/u/v/u/A" />
+    <copy name="c4" prop="coords" tname="/u/v/v/A" />
+    <copy name="c5" prop="coords" tname="/v/u/u/A" />
+    <copy name="c6" prop="coords" tname="/v/u/v/A" />
+    <copy name="c7" prop="coords" tname="/v/v/u/A" />
+    <copy name="c8" prop="coords" tname="/v/v/v/A" />
     `}, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coords1 = components['/_copy1'].replacements[0];
+      let coords1 = components['/c1'].replacements[0];
       let coords1Anchor = cesc('#' + coords1.componentName);
-      let coords2 = components['/_copy2'].replacements[0];
+      let coords2 = components['/c2'].replacements[0];
       let coords2Anchor = cesc('#' + coords2.componentName);
-      let coords3 = components['/_copy3'].replacements[0];
+      let coords3 = components['/c3'].replacements[0];
       let coords3Anchor = cesc('#' + coords3.componentName);
-      let coords4 = components['/_copy4'].replacements[0];
+      let coords4 = components['/c4'].replacements[0];
       let coords4Anchor = cesc('#' + coords4.componentName);
-      let coords5 = components['/_copy5'].replacements[0];
+      let coords5 = components['/c5'].replacements[0];
       let coords5Anchor = cesc('#' + coords5.componentName);
-      let coords6 = components['/_copy6'].replacements[0];
+      let coords6 = components['/c6'].replacements[0];
       let coords6Anchor = cesc('#' + coords6.componentName);
-      let coords7 = components['/_copy7'].replacements[0];
+      let coords7 = components['/c7'].replacements[0];
       let coords7Anchor = cesc('#' + coords7.componentName);
-      let coords8 = components['/_copy8'].replacements[0];
+      let coords8 = components['/c8'].replacements[0];
       let coords8Anchor = cesc('#' + coords8.componentName);
 
       cy.log('Test values displayed in browser')
@@ -611,7 +611,7 @@ describe('Map Tag Tests', function () {
     <map>
     <template><graph>
       <map behavior="combination">
-        <template><point><coords>(<copySource/>+<copySource fromMapAncestor="2" />, <copySource fromSources="2" />)</coords></point></template>
+        <template><point><coords>(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="2" />, <copy tname="_source" fromSources="2" />)</coords></point></template>
         <sources><sequence from="1" to="2"/></sources>
         <sources><sequence from="-5" to="5" step="10"/></sources>
       </map>
@@ -658,13 +658,13 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map>
     <template newNamespace><math simplify>
-        <copySource name="b"/> + <sourceIndex name="i"/> + <copy tname="../a" /> 
+        <copy tname="_source" name="b"/> + <copy tname="_sourceindex" name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
     <sources><sequence from="1" to="2"/></sources>
     </map>
     <math name="a">x</math>
-    <copy tname="_map1" />
+    <copy name="mapcopy" tname="_map1" />
     `}, "*");
     });
 
@@ -673,7 +673,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -718,13 +718,13 @@ describe('Map Tag Tests', function () {
     <number name="count" hide>1</number>
     <map>
     <template newnamespace><math simplify>
-        <copySource name="b"/> + <sourceIndex name="i"/> + <copy tname="../a" /> 
+        <copy tname="_source" name="b"/> + <copy tname="_sourceindex" name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
     <sources><sequence from="1" count="$count"/></sources>
     </map>
     <math name="a">x</math>
-    <copy tname="_map1" />
+    <copy name="mapcopy" tname="_map1" />
 
     <updatevalue label="double">
       <mathtarget><copy tname="count" /></mathtarget>
@@ -738,7 +738,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -767,7 +767,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -807,7 +807,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -871,7 +871,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template><math simplify="full">sin(<sourceIndex/><copySource/>)</math></template>
+    <template><math simplify="full">sin(<copy tname="_sourceindex"/><copy tname="_source"/>)</math></template>
     <sources><math>x</math><math>y</math></sources>
     </map>
   
@@ -880,7 +880,7 @@ describe('Map Tag Tests', function () {
     <sources><math>q</math><math>p</math></sources>
     </map>
 
-    <copy tname="_map2" />
+    <copy name="mapcopy" tname="_map2" />
     `}, "*");
     });
 
@@ -891,7 +891,7 @@ describe('Map Tag Tests', function () {
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
       let replacements2 = components['/_map2'].replacements.map(x => x.replacements[0]);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
-      let replacements3 = components['/_copy2'].replacements.map(x => x.replacements[0]);
+      let replacements3 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
       let replacementAnchors3 = replacements3.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -922,11 +922,11 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map newNamespace>
-    <template><math simplify="full">sin(<sourceIndex/><copySource/>)</math></template>
+    <template><math simplify="full">sin(<copy tname="_sourceindex"/><copy tname="_source"/>)</math></template>
     <sources><math>x</math><math>y</math></sources>
     </map>
   
-    <copy tname="_map1" />
+    <copy name="mapcopy" tname="_map1" />
     `}, "*");
     });
 
@@ -935,7 +935,7 @@ describe('Map Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_copy1'].replacements.map(x => x.replacements[0]);
+      let replacements2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -965,7 +965,7 @@ describe('Map Tag Tests', function () {
     
     <grapH Name="hi" newNamespace >
     <map assignnames="q, c,s">
-      <template newnamespace><point><coords>(<copySource/>, <copySource fromSources="2" />)</coords></point></template>
+      <template newnamespace><point><coords>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />)</coords></point></template>
       <sources><sequence from="1" to="2"/></sources>
       <sources><sequence from="-3" to="-2"/></sources>
     </map>
@@ -1015,17 +1015,17 @@ describe('Map Tag Tests', function () {
     })
   });
 
-  it('map copying copySource of other map', () => {
+  it('map copying _source of other map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <map assignnames="u,v,w">
-      <template newNamespace><math>(<copySource/>, <copy tname="../e/_copysource1" />)</math></template>
+      <template newNamespace><math>(<copy tname="_source"/>, <copy tname="../e/_copy1" />)</math></template>
       <sources><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c,d,e">
-      <template newNamespace><math>sin(<copySource/>)</math></template>
+      <template newNamespace><math>sin(<copy tname="_source"/>)</math></template>
       <sources><sequence from="4" to="6"/></sources>
     </map>
     `}, "*");
@@ -1061,9 +1061,9 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map>
     <template><map>
-       <template><math>(<copySource/>, <copySource fromMapAncestor="2"/>)</math></template>
+       <template><math>(<copy tname="_source"/>, <copy tname="_source" fromMapAncestor="2"/>)</math></template>
        <sources><sequence from="1" to="$n" /></sources>
-     </map><copySource hide name="n" /></template>
+     </map><copy tname="_source" hide name="n" /></template>
     <sources><sequence from="1" to="3"/></sources>
     </map>
     `}, "*");
@@ -1106,7 +1106,7 @@ describe('Map Tag Tests', function () {
 
     <p>
     <map>
-    <template><math simplify><copySource/>^2</math><text>,</text></template>
+    <template><math simplify><copy tname="_source"/>^2</math><text>,</text></template>
     <sources>
     <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
     </sources>
@@ -1440,10 +1440,10 @@ describe('Map Tag Tests', function () {
     <graph>
       <map assignnames="a,b,c">
         <template newNamespace><point>
-            <x><copy tname="../q" /><copySource/>^2</x>
+            <x><copy tname="../q" /><copy tname="_source"/>^2</x>
             <y><copy prop="x" tname="_point2" /></y>
           </point><point>
-            <x><copy tname="../r" /><copySource/></x>
+            <x><copy tname="../r" /><copy tname="_source"/></x>
             <y><copy prop="x" tname="_point1" /></y>
           </point></template>
       <sources>
@@ -1656,8 +1656,8 @@ describe('Map Tag Tests', function () {
     <graph>
       <map assignnames="a,b,c">
         <template newNamespace><point>
-            <x>-<copySource/></x>
-            <y><copySource/><copy prop="x" tname="../q/_point1" /></y>
+            <x>-<copy tname="_source"/></x>
+            <y><copy tname="_source"/><copy prop="x" tname="../q/_point1" /></y>
           </point></template>
       <sources>
         <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
@@ -1665,8 +1665,8 @@ describe('Map Tag Tests', function () {
       </map>
       <map assignnames="q,r,s">
         <template newNamespace><point>
-            <x><copySource/></x>
-            <y><copySource/><copy prop="x" tname="../a/_point1" /></y>
+            <x><copy tname="_source"/></x>
+            <y><copy tname="_source"/><copy prop="x" tname="../a/_point1" /></y>
           </point></template>
       <sources>
         <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
@@ -1947,7 +1947,7 @@ describe('Map Tag Tests', function () {
     
     <math>
       <map>
-        <template><point>(<copySource/>, sin(<copySource/>))</point></template>
+        <template><point>(<copy tname="_source"/>, sin(<copy tname="_source"/>))</point></template>
         <sources>
           <sequence from="2" count="$number" step="$step" />
         </sources>
@@ -2042,7 +2042,7 @@ describe('Map Tag Tests', function () {
     <p>Number of points: <mathinput name="number"/></p>
     
     <map name="m1" assignNames="p1,p2,p3">
-      <template newNamespace><point name="pt">(<copySource/>, 2<copySource/>)</point></template>
+      <template newNamespace><point name="pt">(<copy tname="_source"/>, 2<copy tname="_source"/>)</point></template>
       <sources>
         <sequence count="$number" />
       </sources>
@@ -2050,7 +2050,7 @@ describe('Map Tag Tests', function () {
 
     <map name="m2" assignNames="q1,q2,q3">
       <template newNamespace>
-        <point name="pt">(<copySource prop="x" />^2, <copySource prop="y" />^2)</point>
+        <point name="pt">(<copy tname="_source" prop="x" />^2, <copy tname="_source" prop="y" />^2)</point>
       </template>
       <sources>
         <copy tname="m1" />

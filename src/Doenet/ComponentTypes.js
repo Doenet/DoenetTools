@@ -74,8 +74,6 @@ import Option from './components/Option';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
 import Sources from './components/Sources';
-import CopySource from './components/CopySource';
-import SourceIndex from './components/SourceIndex';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
@@ -221,7 +219,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Sources, CopySource, SourceIndex,
+  Map, Sources,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,

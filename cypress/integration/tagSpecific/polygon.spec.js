@@ -315,7 +315,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
@@ -440,7 +440,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
@@ -506,7 +506,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -635,7 +635,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -704,7 +704,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polygon>
@@ -830,7 +830,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polygon><vertices>
@@ -963,7 +963,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polygon>
@@ -1093,7 +1093,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
+      <template><point>(<copy tname="_source" /> + <math>0</math>, 5sin(<copy tname="_source" />) + <math>0</math>)</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polygon>
@@ -1459,9 +1459,9 @@ describe('Polygon Tag Tests', function () {
       <vertices>
       <map>
         <template newNamespace>
-          <point>(<extract prop="x"><copySource fixed="false"/></extract>+
+          <point>(<extract prop="x"><copy tname="_source"  fixed="false"/></extract>+
             <copy prop="value" modifyIndirectly="false" tname="../transx" />,
-           <extract prop="y"><copySource fixed="false" /></extract>+
+           <extract prop="y"><copy tname="_source"  fixed="false" /></extract>+
            <copy prop="value" modifyIndirectly="false" tname="../transy" />)
           </point>
         </template>

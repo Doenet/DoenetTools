@@ -2598,10 +2598,10 @@ describe('Select Tag Tests', function () {
     <option><map assignnames="a,b" newNamespace>
       <template newNamespace>
         <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <option><math><copySource/>^2</math><math><copySource/>^6</math></option>
-          <option><math><copySource/>^3</math><math><copySource/>^7</math></option>
-          <option><math><copySource/>^4</math><math><copySource/>^8</math></option>
-          <option><math><copySource/>^5</math><math><copySource/>^9</math></option>
+          <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
+          <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
+          <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
+          <option><math><copy tname="_source" />^5</math><math><copy tname="_source" />^9</math></option>
         </select>
       </template>
       <sources>
@@ -2611,10 +2611,10 @@ describe('Select Tag Tests', function () {
     <option><map assignnames="a,b" newNamespace>
       <template newNamespace>
         <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <option><math><copySource/>2</math><math><copySource/>6</math></option>
-          <option><math><copySource/>3</math><math><copySource/>7</math></option>
-          <option><math><copySource/>4</math><math><copySource/>8</math></option>
-          <option><math><copySource/>5</math><math><copySource/>9</math></option>
+          <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
+          <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
+          <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
+          <option><math><copy tname="_source" />5</math><math><copy tname="_source" />9</math></option>
         </select>
       </template>
       <sources>
@@ -2673,10 +2673,10 @@ describe('Select Tag Tests', function () {
     <option><map name="m" newnamespace assignnames="a,b">
       <template newnamespace>
         <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
-          <option><math><copySource/>^2</math><math><copySource/>^6</math></option>
-          <option><math><copySource/>^3</math><math><copySource/>^7</math></option>
-          <option><math><copySource/>^4</math><math><copySource/>^8</math></option>
-          <option><math><copySource/>^5</math><math><copySource/>^9</math></option>
+          <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
+          <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
+          <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
+          <option><math><copy tname="_source" />^5</math><math><copy tname="_source" />^9</math></option>
         </select>
       </template>
       <sources>
@@ -2686,10 +2686,10 @@ describe('Select Tag Tests', function () {
     <option><map name="n" newnamespace assignnames="a,b">
       <template newnamespace>
         <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
-          <option><math><copySource/>2</math><math><copySource/>6</math></option>
-          <option><math><copySource/>3</math><math><copySource/>7</math></option>
-          <option><math><copySource/>4</math><math><copySource/>8</math></option>
-          <option><math><copySource/>5</math><math><copySource/>9</math></option>
+          <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
+          <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
+          <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
+          <option><math><copy tname="_source" />5</math><math><copy tname="_source" />9</math></option>
         </select>
       </template>
       <sources>

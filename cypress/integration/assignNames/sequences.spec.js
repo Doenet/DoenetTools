@@ -567,7 +567,7 @@ describe('sequence and map assignName Tests', function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map assignNames="a,b">
-    <template newNamespace>Letter <sourceIndex name="n" /> is <copySource name="v" />. </template>
+    <template newNamespace>Letter <copy tname="_sourceindex" name="n" /> is <copy tname="_source" name="v" />. </template>
     <sources>
       <sequence type="letters" count="$n" />
    </sources>
@@ -1509,14 +1509,14 @@ describe('sequence and map assignName Tests', function () {
 
   })
 
-  it('copySource and sourceIndex assign names', () => {
+  it('copy _source and _sourceindex assign names', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map assignNames="a,b">
-    <template newNamespace>Letter <sourceIndex assignNames="n1,n2" /> is <copySource assignnames="v1, v2" />. </template>
+    <template newNamespace>Letter <copy tname="_sourceindex" assignNames="n1,n2" /> is <copy tname="_source" assignnames="v1, v2" />. </template>
     <sources>
       <sequence type="letters" count="$n" />
    </sources>

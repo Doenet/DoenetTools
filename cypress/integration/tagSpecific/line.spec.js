@@ -2708,8 +2708,8 @@ describe('Line Tag Tests', function () {
     <map>
       <template>
         <point>
-          <x><copySource/> + <math>0</math></x>
-          <y>2<copySource/> + <math>0</math></y>
+          <x><copy tname="_source" /> + <math>0</math></x>
+          <y>2<copy tname="_source" /> + <math>0</math></y>
         </point>
       </template>
       <sources>
@@ -3856,7 +3856,7 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point><x><copySource/></x><y>2<copySource/></y></point>
+        <point><x><copy tname="_source" /></x><y>2<copy tname="_source" /></y></point>
       </template>
       <sources>
         <sequence count="$_mathinput1" />

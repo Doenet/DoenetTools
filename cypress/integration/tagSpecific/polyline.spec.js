@@ -315,7 +315,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
   </vertices></polyline>
@@ -440,7 +440,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polyline>
@@ -506,7 +506,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -635,7 +635,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -704,7 +704,7 @@ describe('Polyline Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polyline><vertices>
@@ -830,7 +830,7 @@ describe('Polyline Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polyline><vertices>
@@ -961,7 +961,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polyline>
@@ -1091,7 +1091,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
+      <template><point>(<copy tname="_source" /> + <math>0</math>, 5sin(<copy tname="_source" />) + <math>0</math>)</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polyline>

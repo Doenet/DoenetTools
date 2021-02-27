@@ -382,7 +382,7 @@ export function createComponentsFromProps(serializedComponents, standardComponen
           }
           newChildren.push(newComponent);
           delete component.props[prop];
-        } else if (!["name", "assignnames", "newnamespace", "tname", "prop", "type"].includes(propLower)) {
+        } else if (!["name", "assignnames", "newnamespace", "tname", "prop", "type", "frommapancestor", "fromsources"].includes(propLower)) {
           throw Error("Invalid property: " + prop);
         }
       }
@@ -471,7 +471,11 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           // no additional attributes, so no need to reparse
 
           let doenetAttributes = { tName: result.targetName, createdFromMacro: true };
-          if (nDollarSigns === 1) {
+
+          // check here if additionalAttributes is undefined
+          // (even though know it is falsy)
+          // so that an empty string removes the default prop="value"
+          if (nDollarSigns === 1 && result.additionalAttributes === undefined) {
             doenetAttributes.propName = "value";
           }
 
@@ -1294,6 +1298,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     let tName = doenetAttributes.tName;
     let propName = doenetAttributes.propName;
     let type = doenetAttributes.type;
+    let fromMapAncestor = doenetAttributes.fromMapAncestor;
+    let fromSources = doenetAttributes.fromSources;
 
     let mustCreateUniqueName =
       componentType === "string"
@@ -1355,7 +1361,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             tName = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define tname twice for a component");
+            throw Error("Cannot define tName twice for a component");
           }
         } else if (lowercaseKey === "prop") {
           if (propName === undefined) {
@@ -1370,6 +1376,20 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             delete props[key];
           } else {
             throw Error("Cannot define type twice for a component");
+          }
+        } else if (lowercaseKey === "frommapancestor") {
+          if (fromMapAncestor === undefined) {
+            fromMapAncestor = props[key].toLowerCase();
+            delete props[key];
+          } else {
+            throw Error("Cannot define fromMapAncestor twice for a component");
+          }
+        } else if (lowercaseKey === "fromsources") {
+          if (fromSources === undefined) {
+            fromSources = props[key].toLowerCase();
+            delete props[key];
+          } else {
+            throw Error("Cannot define fromSources twice for a component");
           }
         }
       }
@@ -1531,6 +1551,20 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       doenetAttributes.type = type;
     } else if (componentClass.acceptType && componentClass.defaultType) {
       doenetAttributes.type = componentClass.defaultType;
+    }
+
+    if (fromMapAncestor) {
+      if (!componentClass.acceptFromMapAncestor) {
+        throw Error(`Component type ${componentType} does not accept a fromMapAncestor property`);
+      }
+      doenetAttributes.fromMapAncestor = fromMapAncestor
+    }
+
+    if (fromSources) {
+      if (!componentClass.acceptFromSources) {
+        throw Error(`Component type ${componentType} does not accept a fromSources property`);
+      }
+      doenetAttributes.fromSources = fromSources
     }
 
     if (serializedComponent.children !== undefined) {

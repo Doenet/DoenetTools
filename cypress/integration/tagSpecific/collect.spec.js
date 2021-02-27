@@ -282,7 +282,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
+        <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
         <sources><sequence to="$count" /></sources>
       </map>
       <line>y=x/3</line>
@@ -290,7 +290,7 @@ describe('Collect Tag Tests', function () {
 
     <graph>
       <map>
-      <template newNamespace><point>(<extract prop="x"><copySource/></extract>+1, 1.5*<extract prop="y"><copySource/></extract>)</point></template>
+      <template newNamespace><point>(<extract prop="x"><copy tname="_source" /></extract>+1, 1.5*<extract prop="y"><copy tname="_source" /></extract>)</point></template>
       <sources><collect componentTypes="point" tname="_map1"/></sources>
     </map>
 
@@ -786,7 +786,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>(<copySource/>, <copy prop="value" tname="../mult" /><copySource/>)</point></template>
+        <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
         <sources><sequence to="$count" /></sources>
       </map>
       <line>y=x/3</line>
@@ -794,7 +794,7 @@ describe('Collect Tag Tests', function () {
 
     <graph>
       <map>
-      <template newNamespace><point>(<extract prop="x"><copySource/></extract>+1, 1.5*<extract prop="y"><copySource/></extract>)</point></template>
+      <template newNamespace><point>(<extract prop="x"><copy tname="_source" /></extract>+1, 1.5*<extract prop="y"><copy tname="_source" /></extract>)</point></template>
       <sources><collect componentTypes="point" tname="_map1" maximumnumber="$maxnumber" /></sources>
     </map>
 

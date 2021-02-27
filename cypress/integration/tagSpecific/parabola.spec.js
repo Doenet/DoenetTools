@@ -3342,7 +3342,7 @@ describe('Parabola Tag Tests', function () {
     <parabola><through hide="false">
       <map>
         <template>
-          <point>(<sourceIndex/>+<math>0</math>, <copySource/>+<math>0</math>)</point>
+          <point>(<copy tname="_sourceindex" />+<math>0</math>, <copy tname="_source" />+<math>0</math>)</point>
         </template>
         <sources>
           <sequence step="2"><count><copy prop="value" tname="n" /></count></sequence>

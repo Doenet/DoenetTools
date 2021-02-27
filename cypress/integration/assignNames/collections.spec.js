@@ -1937,7 +1937,7 @@ describe('Basic copy assignName Tests', function () {
   <graph>
     <map>
       <template>
-        <point><x><copySource/>+<math>0</math></x><y><sourceIndex/>+<math>0</math></y></point>
+        <point><x><copy tname="_source" />+<math>0</math></x><y><copy tname="_sourceindex" />+<math>0</math></y></point>
       </template>
       <sources>
         <sequence from="2" count="$n1" />
@@ -1945,7 +1945,7 @@ describe('Basic copy assignName Tests', function () {
     </map>
     <map>
       <template>
-        <point><x>-<copySource/>+<math>0</math></x><y>-<sourceIndex/>+<math>0</math></y></point>
+        <point><x>-<copy tname="_source" />+<math>0</math></x><y>-<copy tname="_sourceindex" />+<math>0</math></y></point>
       </template>
       <sources>
         <sequence from="2" count="$n2" />
@@ -4272,7 +4272,7 @@ describe('Basic copy assignName Tests', function () {
           <xs>
             <map>
               <template>
-                <math><copySource fromMapAncestor="2" /><copySource /> + <math>0</math></math>
+                <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
               </template>
               <sources>
                 <sequence count="$(../nd1)" />
@@ -4291,7 +4291,7 @@ describe('Basic copy assignName Tests', function () {
           <xs>
             <map>
               <template>
-                <math>-<copySource fromMapAncestor="2" /><copySource /> + <math>0</math></math>
+                <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
               </template>
               <sources>
                 <sequence count="$(../nd2)" />
