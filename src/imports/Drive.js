@@ -885,7 +885,7 @@ function Folder(props){
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px";
-  let marginSize = "2.5vw";
+  let marginSize = "0";
   let widthSize = "60vw";
   if (props.isNav) {marginSize = "0px"; widthSize = "224px"};
   if (isSelected) { bgcolor = "hsl(209,54%,82%)";  }
@@ -1217,11 +1217,10 @@ const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
     width: "840px",
     padding: "8px",
-    // border: "1px solid black",
     backgroundColor: "#f6f8ff",
-    margin: "2px",
+    marginLeft: '47.5%',
   
-  }} ><div className="noselect" style={{marginLeft: "50px"}}>EMPTY</div></div>)
+  }} ><div className="noselect" style={{justifyContent: "center"}}>EMPTY</div></div>)
 })
 
 function LogVisible(props){
@@ -1382,7 +1381,7 @@ const DoenetML = React.memo((props)=>{
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
-  let marginSize = "2.5vw";
+  let marginSize = "0";
   let date = props.item.creationDate.slice(0,10)
   let published = <FontAwesomeIcon icon={faUsersSlash}/>
   let assigned = '-'
@@ -1517,7 +1516,7 @@ const Url = React.memo((props)=>{
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
-  let marginSize = "2.5vw";
+  let marginSize = "0";
   let date = props.item.creationDate.slice(0,10);
   let published = <FontAwesomeIcon icon={faUsersSlash}/>
   let assigned = '-'
