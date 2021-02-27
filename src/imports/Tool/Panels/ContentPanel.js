@@ -1,7 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState, atomFamily } from "recoil";
 import { clearDriveAndItemSelections } from "../../Drive";
+import { supportPanelControl } from "./SupportPanel";
+import { useStackId } from "../ToolRoot";
 
 const ContentPanelContainer = styled.div`
   grid-area: contentPanel;
@@ -25,9 +27,17 @@ const DragHandle = styled.div`
   margin: 2px;
 `;
 
+export const panelProportion = atomFamily({
+  key: "panelProportionAtom",
+  default: "1fr 11px 1fr",
+});
+
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
-  const [panelProportion, setPanelProportion] = useState("1fr 11px 0fr");
+  const stackId = useStackId();
+  const [supportController, setSupportController] = useRecoilState(
+    supportPanelControl(stackId)
+  );
   const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   let handleClicked = false;
@@ -59,12 +69,10 @@ export default function ContentPanel({ main, support }) {
       handleClicked = false;
       if (handleDragged) {
         handleDragged = false;
-        setPanelProportion(wrapperRef.current.style.gridTemplateColumns);
+        setSupportController(wrapperRef.current.style.gridTemplateColumns);
         wrapperRef.current.style.gridTemplateColumns = null;
       } else {
-        setPanelProportion((old) =>
-          old === "1fr 11px 0fr" ? "1fr 11px 1fr" : "1fr 11px 0fr"
-        );
+        setSupportController();
       }
     }
   };
@@ -76,7 +84,7 @@ export default function ContentPanel({ main, support }) {
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
       onClick={clearDriveSelections}
-      $proportion={panelProportion}
+      $proportion={supportController}
     >
       {main}
       {support ? <DragHandle onMouseDown={onMouseDown} /> : null}

@@ -7,10 +7,10 @@ import { BreadcrumbContainer } from "../imports/Breadcrumb";
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
 
-  const { open, setMenuPanel } = useToolControlHelper();
+  const { open, activateMenuPanel } = useToolControlHelper();
 
   useEffect(() => {
-    setMenuPanel(1);
+    activateMenuPanel(1);
   }, []);
 
   return (
