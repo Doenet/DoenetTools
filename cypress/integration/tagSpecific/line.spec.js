@@ -2965,7 +2965,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('add first through point')
-      cy.get('#\\/_mathinput1_input').clear().type("1{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
 
       cy.window().then((win) => {
         x1 = 1;
@@ -3186,7 +3186,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('add second through point')
-      cy.get('#\\/_mathinput1_input').clear().type("2{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}2{enter}", { force: true })
 
       cy.window().then((win) => {
         x2 = 2;
@@ -3407,7 +3407,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('remove second through point')
-      cy.get('#\\/_mathinput1_input').clear().type("1{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
 
       cy.window().then((win) => {
 
@@ -3626,7 +3626,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('remove first through point')
-      cy.get('#\\/_mathinput1_input').clear().type("0{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}0{enter}", { force: true })
 
       cy.window().then((win) => {
 
@@ -4111,7 +4111,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('add first through point')
-      cy.get('#\\/_mathinput1_input').clear().type("1{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
 
       cy.window().then((win) => {
         x1 = 1;
@@ -4320,7 +4320,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('add second through point')
-      cy.get('#\\/_mathinput1_input').clear().type("2{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}2{enter}", { force: true })
 
       cy.window().then((win) => {
         x2 = 2;
@@ -4517,7 +4517,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('remove second through point')
-      cy.get('#\\/_mathinput1_input').clear().type("1{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true })
 
       cy.window().then((win) => {
 
@@ -4724,7 +4724,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.log('remove first through point')
-      cy.get('#\\/_mathinput1_input').clear().type("0{enter}")
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}0{enter}", { force: true })
 
       cy.window().then((win) => {
 

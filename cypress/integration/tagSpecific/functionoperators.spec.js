@@ -56,15 +56,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map1Replacements = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map2Replacements = components["/_map2"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map3Replacements = components["/_map3"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map4Replacements = components["/m4"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map5Replacements = components["/m5"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
@@ -146,15 +146,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map1Replacements = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map2Replacements = components["/_map2"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map3Replacements = components["/_map3"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map4Replacements = components["/m4"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map5Replacements = components["/m5"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
@@ -282,10 +282,10 @@ describe('Function Operator Tag Tests', function () {
     })
 
 
-    cy.get(cesc('#/a_input')).clear().type(`2`);
-    cy.get(cesc('#/b_input')).clear().type(`pi`);
-    cy.get(cesc('#/c_input')).clear().type(`e`);
-    cy.get(cesc('#/x_input')).clear().type(`q`).blur();
+    cy.get(cesc('#/a') + ' textarea').type(`{end}{backspace}2`, { force: true });
+    cy.get(cesc('#/b') + ' textarea').type(`{end}{backspace}pi`, { force: true });
+    cy.get(cesc('#/c') + ' textarea').type(`{end}{backspace}e`, { force: true });
+    cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}q`, { force: true }).blur();
 
 
     cy.get(cesc('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

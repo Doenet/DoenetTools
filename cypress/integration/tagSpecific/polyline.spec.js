@@ -338,7 +338,7 @@ describe('Polyline Tag Tests', function () {
         expect(polyline2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -353,7 +353,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -368,7 +368,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -383,7 +383,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -399,7 +399,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -414,7 +414,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -464,7 +464,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -479,7 +479,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -532,7 +532,7 @@ describe('Polyline Tag Tests', function () {
         expect(polyline2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -547,7 +547,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -562,7 +562,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -577,7 +577,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -593,7 +593,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -608,7 +608,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -662,7 +662,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -677,7 +677,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -729,7 +729,7 @@ describe('Polyline Tag Tests', function () {
         expect(polyline2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -744,7 +744,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -759,7 +759,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -774,7 +774,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -790,7 +790,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -805,7 +805,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -856,7 +856,7 @@ describe('Polyline Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -871,7 +871,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -933,7 +933,7 @@ describe('Polyline Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type("-2{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-2{enter}", { force: true });
       cy.window().then((win) => {
         for (let polyline of polylines) {
           expect(polyline.stateValues.nVertices).eq(5);

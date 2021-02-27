@@ -2099,8 +2099,8 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('Create 1 and 2 points');
-    cy.get('#\\/n1_input').clear().type('1{enter}')
-    cy.get('#\\/n2_input').clear().type('2{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
     // add window just so can collapse section
     cy.window().then(() => {
@@ -2451,8 +2451,8 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('2 and 4 points');
-    cy.get('#\\/n1_input').clear().type('2{enter}')
-    cy.get('#\\/n2_input').clear().type('4{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}4{enter}', { force: true })
 
     cy.window().then(() => {
 
@@ -2910,8 +2910,8 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('Down to 1 and 3 points');
-    cy.get('#\\/n1_input').clear().type('1{enter}')
-    cy.get('#\\/n2_input').clear().type('3{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then((win) => {
 
@@ -3335,8 +3335,8 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('4 and 2 points, remembers old 2nd value');
-    cy.get('#\\/n1_input').clear().type('4{enter}')
-    cy.get('#\\/n2_input').clear().type('2{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}4{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.window().then((win) => {
 
@@ -3832,8 +3832,8 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('0 and 3 points, remembers old 3rd value');
-    cy.get('#\\/n1_input').clear().type('0{enter}')
-    cy.get('#\\/n2_input').clear().type('3{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}0{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then((win) => {
 
@@ -4023,7 +4023,7 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('3 and 3 points');
-    cy.get('#\\/n1_input').clear().type('3{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then((win) => {
 
@@ -4505,8 +4505,8 @@ describe('Basic copy assignName Tests', function () {
     checkValues(points1, points2)
 
     cy.log('Create 1 and 2 points');
-    cy.get('#\\/n1_input').clear().type('1{enter}')
-    cy.get('#\\/n2_input').clear().type('2{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
     points1 = [[1, 2]];
     points2 = [[-1, -2, -3], [-2, -4, -6]];
@@ -4530,8 +4530,8 @@ describe('Basic copy assignName Tests', function () {
     })
 
     cy.log('Change dimensions to 3 and 2');
-    cy.get('#\\/nd1_input').clear().type('3{enter}')
-    cy.get('#\\/nd2_input').clear().type('2{enter}')
+    cy.get('#\\/nd1 textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.get('#\\/nd2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
 
     points1 = [[3, 9, 3]];
@@ -4555,8 +4555,8 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('Change to 2 and 1 points');
-    cy.get('#\\/n1_input').clear().type('2{enter}')
-    cy.get('#\\/n2_input').clear().type('1{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}1{enter}', { force: true })
 
     points1 = [[-1, 7, -9], [2, 4, 6]];
     points2 = [[5, 4]];
@@ -4580,8 +4580,8 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('Change dimensions to 2 and 1');
-    cy.get('#\\/nd1_input').clear().type('2{enter}')
-    cy.get('#\\/nd2_input').clear().type('1{enter}')
+    cy.get('#\\/nd1 textarea').type('{end}{backspace}2{enter}', { force: true })
+    cy.get('#\\/nd2 textarea').type('{end}{backspace}1{enter}', { force: true })
 
     points1 = [[9, -8], [-6, 5]];
     points2 = [[3]];
@@ -4590,8 +4590,8 @@ describe('Basic copy assignName Tests', function () {
 
 
     cy.log('Change to 1 and 3 points');
-    cy.get('#\\/n1_input').clear().type('1{enter}')
-    cy.get('#\\/n2_input').clear().type('3{enter}')
+    cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
     points1 = [[9, -8]];
     points2 = [[3], [3], [-3]];

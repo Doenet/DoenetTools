@@ -1159,7 +1159,7 @@ describe('Map Tag Tests', function () {
 
 
       cy.log('make sequence length 1');
-      cy.get(cesc('#/sequenceCount_input')).clear().type('1{enter}');
+      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
 
       cy.window().then(() => {
 
@@ -1198,7 +1198,7 @@ describe('Map Tag Tests', function () {
       })
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
+      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1220,7 +1220,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 2');
-      cy.get(cesc('#/sequenceCount_input')).clear().type('2{enter}');
+      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
 
       cy.window().then(() => {
 
@@ -1277,8 +1277,8 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('change limits');
-      cy.get(cesc('#/sequenceFrom_input')).clear().type('3{enter}');
-      cy.get(cesc('#/sequenceTo_input')).clear().type('5{enter}');
+      cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+      cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
 
 
       cy.window().then(() => {
@@ -1335,7 +1335,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
+      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1357,7 +1357,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 3');
-      cy.get(cesc('#/sequenceCount_input')).clear().type('3{enter}');
+      cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
 
       cy.window().then(() => {
 
@@ -1708,7 +1708,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 1');
-    cy.get(cesc('#/sequenceCount_input')).clear().type('1{enter}');
+    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1740,7 +1740,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
+    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
@@ -1756,7 +1756,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('make sequence length 2');
-    cy.get(cesc('#/sequenceCount_input')).clear().type('2{enter}');
+    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1805,8 +1805,8 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('change limits');
-    cy.get(cesc('#/sequenceFrom_input')).clear().type('3{enter}');
-    cy.get(cesc('#/sequenceTo_input')).clear().type('5{enter}');
+    cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1854,7 +1854,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
+    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
@@ -1869,7 +1869,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 3');
-    cy.get(cesc('#/sequenceCount_input')).clear().type('3{enter}');
+    cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1963,13 +1963,13 @@ describe('Map Tag Tests', function () {
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/number_input")).clear().type("10{enter}");
+    cy.get(cesc("#/number") + " textarea").type("10{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/step_input")).clear().type("1{enter}");
+    cy.get(cesc("#/step") + " textarea").type("1{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(10);
@@ -1979,7 +1979,7 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/number_input")).clear().type("20{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1990,7 +1990,7 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/step_input")).clear().type("0.5{enter}");
+    cy.get(cesc("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(20);
@@ -2000,7 +2000,7 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/number_input")).clear().type("10{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(10);
@@ -2010,19 +2010,19 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/step_input")).clear().type("{enter}");
+    cy.get(cesc("#/step") + " textarea").type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/number_input")).clear().type("5{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(0);
     })
 
-    cy.get(cesc("#/step_input")).clear().type("-3{enter}");
+    cy.get(cesc("#/step") + " textarea").type("-3{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].activeChildren.length).eq(5);
@@ -2099,7 +2099,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('set number to be 2');
-    cy.get(cesc("#/number_input")).clear().type("2{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}2{enter}", { force: true });
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2152,7 +2152,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('set number to be 1');
-    cy.get(cesc("#/number_input")).clear().type("1{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2191,7 +2191,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('set number to be 3');
-    cy.get(cesc("#/number_input")).clear().type("3{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}3{enter}", { force: true });
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2256,7 +2256,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('set number back to zero');
-    cy.get(cesc("#/number_input")).clear().type("0{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}0{enter}", { force: true });
 
     cy.get(cesc('#/p1/pt')).should('not.exist');
     cy.get(cesc('#/p1a/pt')).should('not.exist');
@@ -2280,7 +2280,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('set number back to 1');
-    cy.get(cesc("#/number_input")).clear().type("1{enter}");
+    cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')

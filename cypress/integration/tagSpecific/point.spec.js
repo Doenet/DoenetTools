@@ -1218,10 +1218,10 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`constrain x and y to integers`);
-    cy.get('#\\/dx_input').clear().type('1');
-    cy.get('#\\/dy_input').clear().type('1');
-    cy.get('#\\/xoffset_input').clear().type('0');
-    cy.get('#\\/yoffset_input').clear().type('0').blur();
+    cy.get('#\\/dx textarea').type('1', { force: true });
+    cy.get('#\\/dy textarea').type('1', { force: true });
+    cy.get('#\\/xoffset textarea').type('0', { force: true });
+    cy.get('#\\/yoffset textarea').type('0', { force: true }).blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
@@ -1270,10 +1270,11 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`change constraints`);
-    cy.get('#\\/dx_input').clear().type('3');
-    cy.get('#\\/dy_input').clear().type('0.5');
-    cy.get('#\\/xoffset_input').clear().type('1');
-    cy.get('#\\/yoffset_input').clear().type('0.1').blur();
+    cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
+    cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
+    cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
+    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1', { force: true }).
+      blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.xs[0].tree).eq(4);
@@ -1517,12 +1518,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "false")
 
     cy.log(`constrain x and y to integers`);
-    cy.get('#\\/dx_input').clear().type('1');
-    cy.get('#\\/dy_input').clear().type('1');
-    cy.get('#\\/xoffset_input').clear().type('0');
-    cy.get('#\\/yoffset_input').clear().type('0');
-    cy.get('#\\/xthreshold_input').clear().type('0.2');
-    cy.get('#\\/ythreshold_input').clear().type('0.2').blur();
+    cy.get('#\\/dx textarea').type('1', { force: true });
+    cy.get('#\\/dy textarea').type('1', { force: true });
+    cy.get('#\\/xoffset textarea').type('0', { force: true });
+    cy.get('#\\/yoffset textarea').type('0', { force: true });
+    cy.get('#\\/xthreshold textarea').type('0.2', { force: true });
+    cy.get('#\\/ythreshold textarea').type('0.2', { force: true }).
+      blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
@@ -1536,10 +1538,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
 
     cy.log(`change constraints`);
-    cy.get('#\\/dx_input').clear().type('3');
-    cy.get('#\\/dy_input').clear().type('0.5');
-    cy.get('#\\/xoffset_input').clear().type('1');
-    cy.get('#\\/yoffset_input').clear().type('0.1').blur();
+    cy.get('#\\/dx textarea').type('{end}{backspace}3', { force: true });
+    cy.get('#\\/dy textarea').type('{end}{backspace}0.5', { force: true });
+    cy.get('#\\/xoffset textarea').type('{end}{backspace}1', { force: true });
+    cy.get('#\\/yoffset textarea').type('{end}{backspace}0.1', { force: true }).
+      blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7.1);
@@ -1552,8 +1555,9 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "false")
 
-    cy.get('#\\/xthreshold_input').clear().type('1.0');
-    cy.get('#\\/ythreshold_input').clear().type('0.3').blur();
+    cy.get('#\\/xthreshold textarea').type('{end}{backspace}{backspace}{backspace}1.0', { force: true });
+    cy.get('#\\/ythreshold textarea').type('{end}{backspace}{backspace}{backspace}0.3', { force: true }).
+      blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-8);
@@ -2523,7 +2527,8 @@ describe('Point Tag Tests', function () {
         expect(components['/_point1'].stateValues.xs[1].tree).eq(4)
       })
 
-      cy.get('#\\/n_input').clear().type("2{enter}").blur();
+      cy.get('#\\/n textarea').type("2{enter}", { force: true }).
+        blur();
 
       cy.window().then((win) => {
         let math3 = components['/_sequence1'].replacements[0].adapterUsed;
@@ -3811,7 +3816,7 @@ describe('Point Tag Tests', function () {
     });
   })
 
-  it('change point dimensions', () => {
+  it.only('change point dimensions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -4010,19 +4015,6 @@ describe('Point Tag Tests', function () {
       })
 
 
-      cy.get("#\\/coords1b_input").should('have.value', '')
-      cy.get("#\\/coords2b_input").should('have.value', '')
-      cy.get("#\\/coords3b_input").should('have.value', '')
-      cy.get("#\\/point1x1b_input").should('have.value', '')
-      cy.get("#\\/point2x1b_input").should('have.value', '')
-      cy.get("#\\/point3x1b_input").should('have.value', '')
-      cy.get("#\\/point1x2b_input").should('have.value', '')
-      cy.get("#\\/point2x2b_input").should('have.value', '')
-      cy.get("#\\/point3x2b_input").should('have.value', '')
-      cy.get("#\\/point1x3b_input").should('have.value', '')
-      cy.get("#\\/point2x3b_input").should('have.value', '')
-      cy.get("#\\/point3x3b_input").should('have.value', '')
-
       cy.window().then((win) => {
 
         expect(components['/_point1'].stateValues.nDimensions).eq(1);
@@ -4047,7 +4039,7 @@ describe('Point Tag Tests', function () {
       });
 
       cy.log('Create 2D point')
-      cy.get('#\\/originalCoords_input').type('(a,b){enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}(a,b){enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -4193,19 +4185,6 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
 
-        cy.get("#\\/coords1b_input").should('have.value', '( a, b )')
-        cy.get("#\\/coords2b_input").should('have.value', '( a, b )')
-        cy.get("#\\/coords3b_input").should('have.value', '( a, b )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'a')
-        cy.get("#\\/point2x1b_input").should('have.value', 'a')
-        cy.get("#\\/point3x1b_input").should('have.value', 'a')
-        cy.get("#\\/point1x2b_input").should('have.value', 'b')
-        cy.get("#\\/point2x2b_input").should('have.value', 'b')
-        cy.get("#\\/point3x2b_input").should('have.value', 'b')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
-
         cy.window().then((win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
@@ -4236,7 +4215,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Back to 1D point')
-      cy.get('#\\/originalCoords_input').clear().type('q{enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -4347,18 +4326,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
-        cy.get("#\\/coords1b_input").should('have.value', 'q')
-        cy.get("#\\/coords2b_input").should('have.value', 'q')
-        cy.get("#\\/coords3b_input").should('have.value', 'q')
-        cy.get("#\\/point1x1b_input").should('have.value', 'q')
-        cy.get("#\\/point2x1b_input").should('have.value', 'q')
-        cy.get("#\\/point3x1b_input").should('have.value', 'q')
-        cy.get("#\\/point1x2b_input").should('have.value', '')
-        cy.get("#\\/point2x2b_input").should('have.value', '')
-        cy.get("#\\/point3x2b_input").should('have.value', '')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
 
         cy.window().then((win) => {
 
@@ -4387,7 +4354,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Create 3D point')
-      cy.get('#\\/originalCoords_input').clear().type('(2x,u/v,w^2){enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}(2x,u/v{rightarrow},w^2{rightarrow}){enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -4565,19 +4532,6 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
 
-        cy.get("#\\/coords1b_input").should('have.value', '( 2 x, u/v, w^2 )')
-        cy.get("#\\/coords2b_input").should('have.value', '( 2 x, u/v, w^2 )')
-        cy.get("#\\/coords3b_input").should('have.value', '( 2 x, u/v, w^2 )')
-        cy.get("#\\/point1x1b_input").should('have.value', '2 x')
-        cy.get("#\\/point2x1b_input").should('have.value', '2 x')
-        cy.get("#\\/point3x1b_input").should('have.value', '2 x')
-        cy.get("#\\/point1x2b_input").should('have.value', 'u/v')
-        cy.get("#\\/point2x2b_input").should('have.value', 'u/v')
-        cy.get("#\\/point3x2b_input").should('have.value', 'u/v')
-        cy.get("#\\/point1x3b_input").should('have.value', 'w^2')
-        cy.get("#\\/point2x3b_input").should('have.value', 'w^2')
-        cy.get("#\\/point3x3b_input").should('have.value', 'w^2')
-
         cy.window().then((win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
@@ -4609,7 +4563,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 1 coords')
-        cy.get("#\\/coords1b_input").clear().type('(7,8,9){enter}')
+        cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(7,8,9){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(7,8,9)')
@@ -4773,19 +4727,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(7,8,9)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( 7, 8, 9 )')
-        cy.get("#\\/coords2b_input").should('have.value', '( 7, 8, 9 )')
-        cy.get("#\\/coords3b_input").should('have.value', '( 7, 8, 9 )')
-        cy.get("#\\/point1x1b_input").should('have.value', '7')
-        cy.get("#\\/point2x1b_input").should('have.value', '7')
-        cy.get("#\\/point3x1b_input").should('have.value', '7')
-        cy.get("#\\/point1x2b_input").should('have.value', '8')
-        cy.get("#\\/point2x2b_input").should('have.value', '8')
-        cy.get("#\\/point3x2b_input").should('have.value', '8')
-        cy.get("#\\/point1x3b_input").should('have.value', '9')
-        cy.get("#\\/point2x3b_input").should('have.value', '9')
-        cy.get("#\\/point3x3b_input").should('have.value', '9')
 
         cy.window().then((win) => {
 
@@ -4818,7 +4759,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 2 coords')
-        cy.get("#\\/coords2b_input").clear().type('(i,j,k){enter}')
+        cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(i,j,k){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(i,j,k)')
@@ -4982,19 +4923,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(i,j,k)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( i, j, k )')
-        cy.get("#\\/coords2b_input").should('have.value', '( i, j, k )')
-        cy.get("#\\/coords3b_input").should('have.value', '( i, j, k )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'i')
-        cy.get("#\\/point2x1b_input").should('have.value', 'i')
-        cy.get("#\\/point3x1b_input").should('have.value', 'i')
-        cy.get("#\\/point1x2b_input").should('have.value', 'j')
-        cy.get("#\\/point2x2b_input").should('have.value', 'j')
-        cy.get("#\\/point3x2b_input").should('have.value', 'j')
-        cy.get("#\\/point1x3b_input").should('have.value', 'k')
-        cy.get("#\\/point2x3b_input").should('have.value', 'k')
-        cy.get("#\\/point3x3b_input").should('have.value', 'k')
 
         cy.window().then((win) => {
 
@@ -5028,7 +4956,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 3 coords')
-        cy.get("#\\/coords3b_input").clear().type('(l,m,n){enter}')
+        cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(l,m,n){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(l,m,n)')
@@ -5192,19 +5120,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(l,m,n)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( l, m, n )')
-        cy.get("#\\/coords2b_input").should('have.value', '( l, m, n )')
-        cy.get("#\\/coords3b_input").should('have.value', '( l, m, n )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'l')
-        cy.get("#\\/point2x1b_input").should('have.value', 'l')
-        cy.get("#\\/point3x1b_input").should('have.value', 'l')
-        cy.get("#\\/point1x2b_input").should('have.value', 'm')
-        cy.get("#\\/point2x2b_input").should('have.value', 'm')
-        cy.get("#\\/point3x2b_input").should('have.value', 'm')
-        cy.get("#\\/point1x3b_input").should('have.value', 'n')
-        cy.get("#\\/point2x3b_input").should('have.value', 'n')
-        cy.get("#\\/point3x3b_input").should('have.value', 'n')
 
         cy.window().then((win) => {
 
@@ -5238,9 +5153,9 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 1 individual components')
-        cy.get("#\\/point1x1b_input").clear().type('r{enter}')
-        cy.get("#\\/point1x2b_input").clear().type('s{enter}')
-        cy.get("#\\/point1x3b_input").clear().type('t{enter}')
+        cy.get("#\\/point1x1b textarea").type('{end}{backspace}r{enter}', { force: true });
+        cy.get("#\\/point1x2b textarea").type('{end}{backspace}s{enter}', { force: true });
+        cy.get("#\\/point1x3b textarea").type('{end}{backspace}t{enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(r,s,t)')
@@ -5405,19 +5320,6 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(r,s,t)')
         })
 
-        cy.get("#\\/coords1b_input").should('have.value', '( r, s, t )')
-        cy.get("#\\/coords2b_input").should('have.value', '( r, s, t )')
-        cy.get("#\\/coords3b_input").should('have.value', '( r, s, t )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'r')
-        cy.get("#\\/point2x1b_input").should('have.value', 'r')
-        cy.get("#\\/point3x1b_input").should('have.value', 'r')
-        cy.get("#\\/point1x2b_input").should('have.value', 's')
-        cy.get("#\\/point2x2b_input").should('have.value', 's')
-        cy.get("#\\/point3x2b_input").should('have.value', 's')
-        cy.get("#\\/point1x3b_input").should('have.value', 't')
-        cy.get("#\\/point2x3b_input").should('have.value', 't')
-        cy.get("#\\/point3x3b_input").should('have.value', 't')
-
         cy.window().then((win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
@@ -5450,9 +5352,9 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 2 individual components')
-        cy.get("#\\/point2x1b_input").clear().type('f{enter}')
-        cy.get("#\\/point2x2b_input").clear().type('g{enter}')
-        cy.get("#\\/point2x3b_input").clear().type('h{enter}')
+        cy.get("#\\/point2x1b textarea").type('{end}{backspace}f{enter}', { force: true });
+        cy.get("#\\/point2x2b textarea").type('{end}{backspace}g{enter}', { force: true });
+        cy.get("#\\/point2x3b textarea").type('{end}{backspace}h{enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(f,g,h)')
@@ -5620,19 +5522,6 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(f,g,h)')
         })
 
-        cy.get("#\\/coords1b_input").should('have.value', '( f, g, h )')
-        cy.get("#\\/coords2b_input").should('have.value', '( f, g, h )')
-        cy.get("#\\/coords3b_input").should('have.value', '( f, g, h )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'f')
-        cy.get("#\\/point2x1b_input").should('have.value', 'f')
-        cy.get("#\\/point3x1b_input").should('have.value', 'f')
-        cy.get("#\\/point1x2b_input").should('have.value', 'g')
-        cy.get("#\\/point2x2b_input").should('have.value', 'g')
-        cy.get("#\\/point3x2b_input").should('have.value', 'g')
-        cy.get("#\\/point1x3b_input").should('have.value', 'h')
-        cy.get("#\\/point2x3b_input").should('have.value', 'h')
-        cy.get("#\\/point3x3b_input").should('have.value', 'h')
-
         cy.window().then((win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(3);
@@ -5665,9 +5554,9 @@ describe('Point Tag Tests', function () {
 
 
         cy.log('change the coordinates from point 3 individual components')
-        cy.get("#\\/point3x1b_input").clear().type('x{enter}')
-        cy.get("#\\/point3x2b_input").clear().type('y{enter}')
-        cy.get("#\\/point3x3b_input").clear().type('z{enter}')
+        cy.get("#\\/point3x1b textarea").type('{end}{backspace}x{enter}', { force: true });
+        cy.get("#\\/point3x2b textarea").type('{end}{backspace}y{enter}', { force: true });
+        cy.get("#\\/point3x3b textarea").type('{end}{backspace}z{enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(x,y,z)')
@@ -5831,19 +5720,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(x,y,z)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( x, y, z )')
-        cy.get("#\\/coords2b_input").should('have.value', '( x, y, z )')
-        cy.get("#\\/coords3b_input").should('have.value', '( x, y, z )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'x')
-        cy.get("#\\/point2x1b_input").should('have.value', 'x')
-        cy.get("#\\/point3x1b_input").should('have.value', 'x')
-        cy.get("#\\/point1x2b_input").should('have.value', 'y')
-        cy.get("#\\/point2x2b_input").should('have.value', 'y')
-        cy.get("#\\/point3x2b_input").should('have.value', 'y')
-        cy.get("#\\/point1x3b_input").should('have.value', 'z')
-        cy.get("#\\/point2x3b_input").should('have.value', 'z')
-        cy.get("#\\/point3x3b_input").should('have.value', 'z')
 
         cy.window().then((win) => {
 
@@ -5877,7 +5753,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't decrease dimension from inverse direction 1`)
-        cy.get("#\\/coords1b_input").clear().type('(u,v){enter}')
+        cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(u,v){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(u,v,z)')
@@ -6042,19 +5918,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(u,v,z)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( u, v, z )')
-        cy.get("#\\/coords2b_input").should('have.value', '( u, v, z )')
-        cy.get("#\\/coords3b_input").should('have.value', '( u, v, z )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'u')
-        cy.get("#\\/point2x1b_input").should('have.value', 'u')
-        cy.get("#\\/point3x1b_input").should('have.value', 'u')
-        cy.get("#\\/point1x2b_input").should('have.value', 'v')
-        cy.get("#\\/point2x2b_input").should('have.value', 'v')
-        cy.get("#\\/point3x2b_input").should('have.value', 'v')
-        cy.get("#\\/point1x3b_input").should('have.value', 'z')
-        cy.get("#\\/point2x3b_input").should('have.value', 'z')
-        cy.get("#\\/point3x3b_input").should('have.value', 'z')
 
         cy.window().then((win) => {
 
@@ -6088,7 +5951,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't decrease dimension from inverse direction 2`)
-        cy.get("#\\/coords2b_input").clear().type('(s,t){enter}')
+        cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(s,t){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(s,t,z)')
@@ -6253,19 +6116,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(s,t,z)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( s, t, z )')
-        cy.get("#\\/coords2b_input").should('have.value', '( s, t, z )')
-        cy.get("#\\/coords3b_input").should('have.value', '( s, t, z )')
-        cy.get("#\\/point1x1b_input").should('have.value', 's')
-        cy.get("#\\/point2x1b_input").should('have.value', 's')
-        cy.get("#\\/point3x1b_input").should('have.value', 's')
-        cy.get("#\\/point1x2b_input").should('have.value', 't')
-        cy.get("#\\/point2x2b_input").should('have.value', 't')
-        cy.get("#\\/point3x2b_input").should('have.value', 't')
-        cy.get("#\\/point1x3b_input").should('have.value', 'z')
-        cy.get("#\\/point2x3b_input").should('have.value', 'z')
-        cy.get("#\\/point3x3b_input").should('have.value', 'z')
 
         cy.window().then((win) => {
 
@@ -6298,7 +6148,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't decrease dimension from inverse direction 3`)
-        cy.get("#\\/coords3b_input").clear().type('(q,r){enter}')
+        cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(q,r){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(q,r,z)')
@@ -6462,19 +6312,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(q,r,z)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( q, r, z )')
-        cy.get("#\\/coords2b_input").should('have.value', '( q, r, z )')
-        cy.get("#\\/coords3b_input").should('have.value', '( q, r, z )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'q')
-        cy.get("#\\/point2x1b_input").should('have.value', 'q')
-        cy.get("#\\/point3x1b_input").should('have.value', 'q')
-        cy.get("#\\/point1x2b_input").should('have.value', 'r')
-        cy.get("#\\/point2x2b_input").should('have.value', 'r')
-        cy.get("#\\/point3x2b_input").should('have.value', 'r')
-        cy.get("#\\/point1x3b_input").should('have.value', 'z')
-        cy.get("#\\/point2x3b_input").should('have.value', 'z')
-        cy.get("#\\/point3x3b_input").should('have.value', 'z')
 
         cy.window().then((win) => {
 
@@ -6512,7 +6349,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Back to 2D point')
-      cy.get('#\\/originalCoords_input').clear().type('(p,q){enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -6658,19 +6495,6 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(p,q)')
         })
 
-        cy.get("#\\/coords1b_input").should('have.value', '( p, q )')
-        cy.get("#\\/coords2b_input").should('have.value', '( p, q )')
-        cy.get("#\\/coords3b_input").should('have.value', '( p, q )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'p')
-        cy.get("#\\/point2x1b_input").should('have.value', 'p')
-        cy.get("#\\/point3x1b_input").should('have.value', 'p')
-        cy.get("#\\/point1x2b_input").should('have.value', 'q')
-        cy.get("#\\/point2x2b_input").should('have.value', 'q')
-        cy.get("#\\/point3x2b_input").should('have.value', 'q')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
-
         cy.window().then((win) => {
 
           expect(components['/_point1'].stateValues.nDimensions).eq(2);
@@ -6699,7 +6523,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't increase dimension from inverse direction 1`)
-        cy.get("#\\/coords1b_input").clear().type('(a,b,c){enter}')
+        cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(a,b,c){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
@@ -6836,19 +6660,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( a, b )')
-        cy.get("#\\/coords2b_input").should('have.value', '( a, b )')
-        cy.get("#\\/coords3b_input").should('have.value', '( a, b )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'a')
-        cy.get("#\\/point2x1b_input").should('have.value', 'a')
-        cy.get("#\\/point3x1b_input").should('have.value', 'a')
-        cy.get("#\\/point1x2b_input").should('have.value', 'b')
-        cy.get("#\\/point2x2b_input").should('have.value', 'b')
-        cy.get("#\\/point3x2b_input").should('have.value', 'b')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
 
         cy.window().then((win) => {
 
@@ -6879,7 +6690,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't increase dimension from inverse direction 2`)
-        cy.get("#\\/coords2b_input").clear().type('(d,e,f){enter}')
+        cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(d,e,f){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(d,e)')
@@ -7016,19 +6827,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(d,e)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( d, e )')
-        cy.get("#\\/coords2b_input").should('have.value', '( d, e )')
-        cy.get("#\\/coords3b_input").should('have.value', '( d, e )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'd')
-        cy.get("#\\/point2x1b_input").should('have.value', 'd')
-        cy.get("#\\/point3x1b_input").should('have.value', 'd')
-        cy.get("#\\/point1x2b_input").should('have.value', 'e')
-        cy.get("#\\/point2x2b_input").should('have.value', 'e')
-        cy.get("#\\/point3x2b_input").should('have.value', 'e')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
 
         cy.window().then((win) => {
 
@@ -7058,7 +6856,7 @@ describe('Point Tag Tests', function () {
 
 
         cy.log(`can't increase dimension from inverse direction 3`)
-        cy.get("#\\/coords3b_input").clear().type('(g,h,i){enter}')
+        cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(g,h,i){enter}', { force: true });
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(g,h)')
@@ -7195,19 +6993,6 @@ describe('Point Tag Tests', function () {
         cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(g,h)')
         })
-
-        cy.get("#\\/coords1b_input").should('have.value', '( g, h )')
-        cy.get("#\\/coords2b_input").should('have.value', '( g, h )')
-        cy.get("#\\/coords3b_input").should('have.value', '( g, h )')
-        cy.get("#\\/point1x1b_input").should('have.value', 'g')
-        cy.get("#\\/point2x1b_input").should('have.value', 'g')
-        cy.get("#\\/point3x1b_input").should('have.value', 'g')
-        cy.get("#\\/point1x2b_input").should('have.value', 'h')
-        cy.get("#\\/point2x2b_input").should('have.value', 'h')
-        cy.get("#\\/point3x2b_input").should('have.value', 'h')
-        cy.get("#\\/point1x3b_input").should('have.value', '')
-        cy.get("#\\/point2x3b_input").should('have.value', '')
-        cy.get("#\\/point3x3b_input").should('have.value', '')
 
         cy.window().then((win) => {
 
@@ -7308,7 +7093,7 @@ describe('Point Tag Tests', function () {
       });
 
       cy.log('Create 2D point 2')
-      cy.get('#\\/originalCoords_input').type('(a,b){enter}')
+      cy.get('#\\/originalCoords textarea').type('(a,b){enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -7352,7 +7137,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Back to 1D point')
-      cy.get('#\\/originalCoords_input').clear().type('q{enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -7393,7 +7178,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Create 3D point')
-      cy.get('#\\/originalCoords_input').clear().type('(2x,u/v,w^2){enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}(2x,u/v{rightarrow},w^2{rightarrow}){enter}', { force: true });
 
       cy.window().then((win) => {
 
@@ -7441,7 +7226,7 @@ describe('Point Tag Tests', function () {
 
 
       cy.log('Back to 2D point 2')
-      cy.get('#\\/originalCoords_input').clear().type('(p,q){enter}')
+      cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
 
       cy.window().then((win) => {
 

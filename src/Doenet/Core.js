@@ -134,13 +134,13 @@ export default class Core {
     this.setUpRng();
 
 
-    let serializedState;
+    let serializedComponents;
 
     if (doenetState) {
-      serializedState = doenetState;
+      serializedComponents = doenetState;
       let contentId;
-      if (serializedState[0].doenetAttributes) {
-        contentId = serializedState[0].doenetAttributes.contentId;
+      if (serializedComponents[0].doenetAttributes) {
+        contentId = serializedComponents[0].doenetAttributes.contentId;
       }
       if (contentId === undefined) {
         contentId = "";
@@ -148,7 +148,7 @@ export default class Core {
       console.log(`contentId from doenetState: ${contentId}`)
       this.finishCoreConstruction({
         contentIds: [contentId],
-        fullSerializedStates: [serializedState],
+        fullSerializedStates: [serializedComponents],
         finishSerializedStateProcessing: false
       });
     } else {
@@ -172,32 +172,32 @@ export default class Core {
 
     this.contentId = contentIds[0];
 
-    let serializedState = fullSerializedStates[0];
+    let serializedComponents = fullSerializedStates[0];
 
-    serializeFunctions.addDocumentIfItsMissing(serializedState);
+    serializeFunctions.addDocumentIfItsMissing(serializedComponents);
 
     if (finishSerializedStateProcessing) {
 
       serializeFunctions.createComponentNames({
-        serializedState,
+        serializedComponents,
         componentInfoObjects: this.componentInfoObjects,
       });
     } else {
-      if (serializedState[0].doenetAttributes === undefined) {
-        serializedState[0].doenetAttributes = {};
+      if (serializedComponents[0].doenetAttributes === undefined) {
+        serializedComponents[0].doenetAttributes = {};
       }
 
       // TODO: why are we hard coding a document name here?
       // Seems like a bad idea, author could have named document something esle
-      // serializedState[0].componentName = "/_document1";
+      // serializedComponents[0].componentName = "/_document1";
     }
 
-    console.log(`serialized state at the beginning`)
-    console.log(deepClone(serializedState));
+    console.log(`serialized components at the beginning`)
+    console.log(deepClone(serializedComponents));
 
 
-    this.documentName = serializedState[0].componentName;
-    serializedState[0].doenetAttributes.contentId = this.contentId;
+    this.documentName = serializedComponents[0].componentName;
+    serializedComponents[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
     this.renderedComponentInstructions = {};
@@ -218,7 +218,7 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    this.setUpVariants(serializedState);
+    this.setUpVariants(serializedComponents);
 
     //Make these variables available for cypress
     window.state = {
@@ -233,7 +233,7 @@ export default class Core {
     this.changedStateVariables = {};
 
     this.addComponents({
-      serializedState: serializedState,
+      serializedComponents,
       initialAdd: true,
     })
 
@@ -244,7 +244,7 @@ export default class Core {
     // and can detect changes when it is marked stale
     this.document.stateValues.itemCreditAchieved;
 
-    // console.log(serializedState)
+    // console.log(serializedComponents)
     // console.timeEnd('start up time');
     console.log("** components at the end of the core constructor **");
     console.log(this._components);
@@ -257,10 +257,10 @@ export default class Core {
 
   }
 
-  setUpVariants(serializedState) {
+  setUpVariants(serializedComponents) {
 
     let variantComponents = serializeFunctions.gatherVariantComponents({
-      serializedState,
+      serializedComponents,
       componentTypesCreatingVariants: this.componentTypesCreatingVariants,
       allComponentClasses: this.allComponentClasses,
     });
@@ -304,20 +304,24 @@ export default class Core {
 
     for (let doenetML of doenetMLs) {
 
-      let serializedState = serializeFunctions.doenetMLToSerializedState({
+      let serializedComponents = serializeFunctions.doenetMLToSerializedComponents({
         doenetML,
         standardComponentClasses: this.standardComponentClasses,
         allComponentClasses: this.allComponentClasses,
       });
 
-      serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
-      serializedState = serializeFunctions.applyMacros(serializedState);
+      serializeFunctions.createComponentsFromProps(serializedComponents, this.standardComponentClasses);
 
-      serializeFunctions.applySugar({ serializedState, componentInfoObjects: this.componentInfoObjects });
+      // console.log('before macros')
+      // console.log(deepClone(serializedComponents));
 
-      serializedStates.push(serializedState);
+      serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects);
 
-      let newContentIdComponents = serializeFunctions.findContentIdRefs({ serializedState });
+      serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
+
+      serializedStates.push(serializedComponents);
+
+      let newContentIdComponents = serializeFunctions.findContentIdRefs({ serializedComponents });
 
       for (let contentId in newContentIdComponents) {
         if (contentIdComponents[contentId] === undefined) {
@@ -346,7 +350,7 @@ export default class Core {
         }
 
         // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedState
-        // so we call it with the contentIds and serializedState from that context
+        // so we call it with the contentIds and serializedComponents from that context
         callBack({
           contentIds,
           fullSerializedStates: serializedStates,
@@ -383,10 +387,10 @@ export default class Core {
 
   }
 
-  addComponents({ serializedState, parent, indexOfDefiningChildren, initialAdd = false }) {
+  addComponents({ serializedComponents, parent, indexOfDefiningChildren, initialAdd = false }) {
 
-    if (!Array.isArray(serializedState)) {
-      serializedState = [serializedState];
+    if (!Array.isArray(serializedComponents)) {
+      serializedComponents = [serializedComponents];
     }
 
     let parentName;
@@ -408,7 +412,7 @@ export default class Core {
     // do we need to appropriately set shared parameters? 
 
     let createResult = this.createIsolatedComponents({
-      serializedState, ancestors,
+      serializedComponents, ancestors,
     });
 
     if (createResult.success !== true) {
@@ -688,7 +692,7 @@ export default class Core {
     return componentNames;
   }
 
-  createIsolatedComponents({ serializedState, ancestors,
+  createIsolatedComponents({ serializedComponents, ancestors,
     applyAdapters = true, shadow = false, compositesBeingExpanded = [] }
   ) {
 
@@ -721,7 +725,7 @@ export default class Core {
     }
 
     let createResult = this.createIsolatedComponentsSub({
-      serializedState: serializedState,
+      serializedComponents,
       ancestors,
       applyAdapters,
       shadow, updatesNeeded, compositesBeingExpanded,
@@ -776,7 +780,7 @@ export default class Core {
 
   }
 
-  createIsolatedComponentsSub({ serializedState, ancestors,
+  createIsolatedComponentsSub({ serializedComponents, ancestors,
     applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
     createNameContext = "", namespaceForUnamed = "/",
   }
@@ -787,7 +791,7 @@ export default class Core {
     //TODO: last message
     let lastMessage = "";
 
-    for (let [componentInd, serializedComponent] of serializedState.entries()) {
+    for (let [componentInd, serializedComponent] of serializedComponents.entries()) {
 
       // if already corresponds to a created component
       // add to array
@@ -951,7 +955,7 @@ export default class Core {
 
           // create variant control child
           let childrenResult = this.createIsolatedComponentsSub({
-            serializedState: [variantControlChild],
+            serializedComponents: [variantControlChild],
             ancestors: ancestorsForChildren,
             applyAdapters, shadow,
             updatesNeeded, compositesBeingExpanded,
@@ -974,7 +978,7 @@ export default class Core {
         let childrenToCreate = serializedChildren.filter((v, i) => i !== variantControlInd);
 
         let childrenResult = this.createIsolatedComponentsSub({
-          serializedState: childrenToCreate,
+          serializedComponents: childrenToCreate,
           ancestors: ancestorsForChildren,
           applyAdapters, shadow,
           updatesNeeded, compositesBeingExpanded,
@@ -1014,7 +1018,7 @@ export default class Core {
 
         if (childrenToCreate.length > 0) {
           let childrenResult = this.createIsolatedComponentsSub({
-            serializedState: childrenToCreate,
+            serializedComponents: childrenToCreate,
             ancestors: ancestorsForChildren,
             applyAdapters, shadow,
             updatesNeeded, compositesBeingExpanded,
@@ -1031,7 +1035,7 @@ export default class Core {
         //create all children
 
         let childrenResult = this.createIsolatedComponentsSub({
-          serializedState: serializedChildren,
+          serializedComponents: serializedChildren,
           ancestors: ancestorsForChildren,
           applyAdapters, shadow,
           updatesNeeded, compositesBeingExpanded,
@@ -1100,7 +1104,7 @@ export default class Core {
       childLogic,
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
-      serializedState: serializedComponent,
+      serializedComponent,
       componentInfoObjects: this.componentInfoObjects,
       coreFunctions: this.coreFunctions,
       flags: this.flags,
@@ -1574,7 +1578,7 @@ export default class Core {
     }
 
     let replacementResult = this.createIsolatedComponentsSub({
-      serializedState: serializedReplacements,
+      serializedComponents: serializedReplacements,
       ancestors: component.ancestors,
       shadow: true,
       updatesNeeded,
@@ -1757,7 +1761,7 @@ export default class Core {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
           }
           let newChildrenResult = this.createIsolatedComponentsSub({
-            serializedState: [newSerializedChild],
+            serializedComponents: [newSerializedChild],
             shadow: true,
             ancestors: originalChild.ancestors,
             updatesNeeded,
@@ -7072,7 +7076,7 @@ export default class Core {
           }
 
           let createResult = this.createIsolatedComponentsSub({
-            serializedState: serializedReplacements,
+            serializedComponents: serializedReplacements,
             ancestors: component.ancestors,
             updatesNeeded,
             compositesBeingExpanded,
@@ -7576,7 +7580,7 @@ export default class Core {
         }
 
         let createResult = this.createIsolatedComponentsSub({
-          serializedState: newSerializedReplacements,
+          serializedComponents: newSerializedReplacements,
           ancestors: shadowingComponent.ancestors,
           updatesNeeded,
           compositesBeingExpanded,

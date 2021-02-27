@@ -665,9 +665,9 @@ export default class Copy extends CompositeComponent {
 
   }
 
-  componentNameToPreserializedName(serializedState, componentTypesTakingComponentNames) {
+  componentNameToPreserializedName(serializedComponents, componentTypesTakingComponentNames) {
 
-    for (let serializedComponent of serializedState) {
+    for (let serializedComponent of serializedComponents) {
       let componentName = serializedComponent.componentName;
       if (componentName !== undefined) {
         serializedComponent.componentName = this.componentName + componentName;

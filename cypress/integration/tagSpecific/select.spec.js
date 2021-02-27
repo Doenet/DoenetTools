@@ -534,7 +534,7 @@ describe('Select Tag Tests', function () {
 
 
     cy.log("Nothing changes when change number to select");
-    cy.get('#\\/numbertoselect_input').clear().type(`7{enter}`);
+    cy.get('#\\/numbertoselect textarea').type(`{end}{backspace}7{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -564,9 +564,9 @@ describe('Select Tag Tests', function () {
       b: "r",
       c: "s"
     }
-    cy.get('#\\/x_input').clear().type(newvalues.a + `{enter}`);
-    cy.get('#\\/y_input').clear().type(newvalues.b + `{enter}`);
-    cy.get('#\\/z_input').clear().type(newvalues.c + `{enter}`);
+    cy.get('#\\/x textarea').type("{end}{backspace}" + newvalues.a + `{enter}`, { force: true });
+    cy.get('#\\/y textarea').type("{end}{backspace}" + newvalues.b + `{enter}`, { force: true });
+    cy.get('#\\/z textarea').type("{end}{backspace}" + newvalues.c + `{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -653,7 +653,7 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("sample one variable");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -681,7 +681,7 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
@@ -696,7 +696,7 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("get same number back");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -725,7 +725,7 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("get two more samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`3{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -757,7 +757,7 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
@@ -773,7 +773,7 @@ describe('Select Tag Tests', function () {
 
 
     cy.log("get first two numbers back");
-    cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}2{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -804,7 +804,7 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("get six total samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -842,7 +842,7 @@ describe('Select Tag Tests', function () {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
@@ -857,7 +857,7 @@ describe('Select Tag Tests', function () {
     });
 
     cy.log("get all six back");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value.tree;
@@ -2425,9 +2425,9 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = ['/q/q/q','/q/q/r','/q/r/q','/q/r/r','/q/s/q','/q/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
-      let rs = ['/r/q/q','/r/q/r','/r/r/q','/r/r/r','/r/s/q','/r/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
-      let ss = ['/s/q/q','/s/q/r','/s/r/q','/s/r/r','/s/s/q','/s/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let qs = ['/q/q/q', '/q/q/r', '/q/r/q', '/q/r/r', '/q/s/q', '/q/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
+      let rs = ['/r/q/q', '/r/q/r', '/r/r/q', '/r/r/r', '/r/s/q', '/r/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
+      let ss = ['/s/q/q', '/s/q/r', '/s/r/q', '/s/r/r', '/s/s/q', '/s/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
 
       cy.get('#\\/pq2').should('have.text', qs.join(""))
       cy.get('#\\/pr2').should('have.text', rs.join(""))
@@ -2486,9 +2486,9 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = ['/a/q/q/q','/a/q/q/r','/a/q/r/q','/a/q/r/r','/a/q/s/q','/a/q/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
-      let rs = ['/a/r/q/q','/a/r/q/r','/a/r/r/q','/a/r/r/r','/a/r/s/q','/a/r/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
-      let ss = ['/a/s/q/q','/a/s/q/r','/a/s/r/q','/a/s/r/r','/a/s/s/q','/a/s/s/r'].map(x=>components[x].replacements? components[x].replacements[0].stateValues.value: components[x].stateValues.value)
+      let qs = ['/a/q/q/q', '/a/q/q/r', '/a/q/r/q', '/a/q/r/r', '/a/q/s/q', '/a/q/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
+      let rs = ['/a/r/q/q', '/a/r/q/r', '/a/r/r/q', '/a/r/r/r', '/a/r/s/q', '/a/r/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
+      let ss = ['/a/s/q/q', '/a/s/q/r', '/a/s/r/q', '/a/s/r/r', '/a/s/s/q', '/a/s/s/r'].map(x => components[x].replacements ? components[x].replacements[0].stateValues.value : components[x].stateValues.value)
 
       cy.get('#\\/pq2').should('have.text', qs.join(""))
       cy.get('#\\/pr2').should('have.text', rs.join(""))
