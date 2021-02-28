@@ -34,7 +34,7 @@ export default class Point extends GraphicalComponent {
       });
 
       let mustStripOffOuterParentheses = true;
-      if(matchedChildren.length === 1  && !matchedChildren[0].state.value.includes(",")) {
+      if (matchedChildren.length === 1 && !matchedChildren[0].state.value.includes(",")) {
         // if have just one string and that string doesn't have a comma,
         // then don't strip off outer parentheses
         mustStripOffOuterParentheses = false;
@@ -47,11 +47,13 @@ export default class Point extends GraphicalComponent {
 
       let result = breakFunction({ matchedChildren });
 
-      // wrap xs around the x children
-      result.newChildren = [{
-        componentType: "xs",
-        children: result.newChildren
-      }];
+      if (result.success) {
+        // wrap xs around the x children
+        result.newChildren = [{
+          componentType: "xs",
+          children: result.newChildren
+        }];
+      }
 
       return result;
 

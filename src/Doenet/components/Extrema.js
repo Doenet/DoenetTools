@@ -1,245 +1,87 @@
 import BaseComponent from './abstract/BaseComponent';
 import {
   breakEmbeddedStringByCommas, breakIntoVectorComponents,
-  breakPiecesByEquals
+  breakPiecesByEquals,
+  returnBreakStringsSugarFunction
 } from './commonsugar/breakstrings';
 
 export class Extremum extends BaseComponent {
   static componentType = "extremum";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let getVarName = function (piece) {
-      if (piece.length > 1) {
-        return;
-      }
-      let varName = piece[0]._string;
-      if (varName !== undefined) {
-        return varName.trim();
-      }
-    }
 
-    let createLocationValueFromSugar = function ({ dependencyValues }) {
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-      let results = breakEmbeddedStringByCommas({
-        childrenList: dependencyValues.stringsAndMaths,
+    let breakIntoLocationValueByCommas = function ({ matchedChildren }) {
+      let childrenToComponentFunction = x => ({
+        componentType: "x", children: x
       });
 
-      if (results.success !== true) {
-        return { success: false }
+      let mustStripOffOuterParentheses = true;
+      if (matchedChildren.length === 1 && !matchedChildren[0].state.value.includes(",")) {
+        // if have just one string and that string doesn't have a comma,
+        // then don't strip off outer parentheses
+        mustStripOffOuterParentheses = false;
       }
 
-      let pieces = results.pieces;
-      let toDelete = results.toDelete;
+      let breakFunction = returnBreakStringsSugarFunction({
+        childrenToComponentFunction,
+        mustStripOffOuterParentheses
+      })
 
-      let variablesChild = dependencyValues.variables[0];
+      let result = breakFunction({ matchedChildren });
 
-      results = breakPiecesByEquals(pieces, true);
+      if (result.success) {
+        if (result.newChildren.length === 1) {
+          // one component is a value
+          result.newChildren[0].componentType = "value";
+        } else if (result.newChildren.length === 2) {
+          // two components is a location and value
+          result.newChildren[0].componentType = "location";
+          result.newChildren[1].componentType = "value";
 
-      if (results.success !== true) {
-        return { success: false }
-      }
-
-      toDelete = [...toDelete, ...results.toDelete];
-
-      let lhsByPiece = results.lhsByPiece;
-      let rhsByPiece = results.rhsByPiece;
-
-
-      let initialDefaultVars = ["x", "y", "z"];
-      let variableNames = [];
-      let newChildren = [];
-
-      let nVariablesInChild = 0;
-      let nVariablesNeeded = Math.max(lhsByPiece.length, 2);
-      if (variablesChild !== undefined) {
-        nVariablesInChild = variablesChild.stateValues.nComponents;
-        newChildren.push({
-          createdComponent: true,
-          componentName: variablesChild.componentName
-        });
-      }
-      for (let i = 0; i < Math.min(nVariablesInChild, nVariablesNeeded); i++) {
-        variableNames.push(variablesChild.stateValues.maths[i].tree);
-      }
-      for (let i = nVariablesInChild; i < nVariablesNeeded; i++) {
-        // if have more pieces that variables
-        // make the variable be x, y, z, x4, x5, x6...
-        if (i < 3) {
-          variableNames.push(initialDefaultVars[i]);
-        } else {
-          variableNames.push("x" + (i + 1));
-        }
-      }
-
-      // we accept the following cases:
-      // - a single equation (e.g., x=1), i.e., a single lhs and a single rhs
-      //   one must match either variable 1 (in which case it is a location)
-      //   or match variable 2 (in which case it is a value)
-      // - two equations (e.g., x=1, y=3), i.e., two lhs and two rhs
-      //   one equation must variable 1 and the other variable 2
-      //   giving both a location and a value
-      // - a single component with that is a 2D vector (e.g., (1,3))
-      //   first vector component is a location, the second a value
-      // - a single component with no equation (e.g., 3)
-      //   the component is a value
-      // - two components with no equation (e.g., 1, 3)
-      //   the first is a location, the second is a value
-
-      let locationChildren = [];
-      let valueChildren = [];
-
-      if (lhsByPiece.length === 1) {
-        if (rhsByPiece.length === 0) {
-          let vectorResult = breakIntoVectorComponents(lhsByPiece[0]);
-          if (vectorResult.foundVector === true && vectorResult.vectorComponents.length === 2) {
-            locationChildren = vectorResult.vectorComponents[0];
-            valueChildren = vectorResult.vectorComponents[1];
-            toDelete = [...toDelete, ...vectorResult.toDelete];
-          } else {
-            valueChildren = lhsByPiece[0];
+          // remove components that are empty
+          if (result.newChildren[1].children.length === 0 ||
+            (
+              result.newChildren[1].children.length === 1 &&
+              result.newChildren[1].children[0].componentType === "string" &&
+              result.newChildren[1].children[0].state.value.trim() === ""
+            )
+          ) {
+            result.newChildren.splice(1, 1)
           }
-        } else if (rhsByPiece.length !== 1) {
+          if (result.newChildren[0].children.length === 0 ||
+            (
+              result.newChildren[0].children.length === 1 &&
+              result.newChildren[0].children[0].componentType === "string" &&
+              result.newChildren[0].children[0].state.value.trim() === ""
+            )
+          ) {
+            result.newChildren.splice(0, 1)
+          }
+        } else {
           return { success: false }
-        } else {
-          if (getVarName(lhsByPiece[0]) === variableNames[1]) {
-            valueChildren = rhsByPiece[0];
-          } else if (getVarName(rhsByPiece[0]) === variableNames[1]) {
-            valueChildren = lhsByPiece[0];
-          } else if (getVarName(lhsByPiece[0]) === variableNames[0]) {
-            locationChildren = rhsByPiece[0];
-          } else if (getVarName(rhsByPiece[0]) === variableNames[0]) {
-            locationChildren = lhsByPiece[0];
-          } else {
-            return { success: false };
-          }
-        }
-      } else if (lhsByPiece.length !== 2) {
-        return { success: false };
-      } else {
-
-        if (rhsByPiece.length === 0) {
-          locationChildren = lhsByPiece[0];
-          valueChildren = lhsByPiece[1];
-        } else if (rhsByPiece.length !== 2) {
-          return { success: false };
-        } else {
-
-          let side;
-          if (getVarName(lhsByPiece[0]) === variableNames[1]) {
-            side = "l";
-          } else if (getVarName(rhsByPiece[0]) === variableNames[1]) {
-            side = "r";
-          }
-          if (side !== undefined) {
-            if (side === "l") {
-              valueChildren = rhsByPiece[0];
-            } else {
-              valueChildren = lhsByPiece[0];
-            }
-            if (getVarName(lhsByPiece[1]) === variableNames[0]) {
-              locationChildren = rhsByPiece[1];
-            } else if (getVarName(rhsByPiece[1]) === variableNames[0]) {
-              locationChildren = lhsByPiece[1];
-            } else {
-              return { success: false }
-            }
-          } else {
-            if (getVarName(lhsByPiece[1]) === variableNames[1]) {
-              side = "l";
-            } else if (getVarName(rhsByPiece[1]) === variableNames[1]) {
-              side = "r";
-            }
-            if (side === undefined) {
-              return { success: false };
-            }
-            if (side === "l") {
-              valueChildren = rhsByPiece[1];
-            } else {
-              valueChildren = lhsByPiece[1];
-            }
-            if (getVarName(lhsByPiece[0]) === variableNames[0]) {
-              locationChildren = rhsByPiece[0];
-            } else if (getVarName(rhsByPiece[0]) === variableNames[0]) {
-              locationChildren = lhsByPiece[0];
-            } else {
-              return { success: false };
-            }
-          }
         }
       }
 
-      if (locationChildren.length > 0) {
-        newChildren.push({
-          componentType: "location",
-          children: locationChildren,
-        })
-      }
-      if (valueChildren.length > 0) {
-        newChildren.push({
-          componentType: "value",
-          children: valueChildren,
-        })
-      }
+      return result;
 
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: toDelete,
-      }
+    };
 
-    }
+    sugarInstructions.push({
+      childrenRegex: /s+(.*s)?/,
+      replacementFunction: breakIntoLocationValueByCommas
+    })
 
-    let variablesForSugar = childLogic.newLeaf({
-      name: "variablesForSugar",
-      componentType: 'variables',
-      comparison: 'atMost',
-      number: 1,
-    });
+    return sugarInstructions;
 
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
+  }
 
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
 
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-    });
-
-    let stringsAndMathsSugar = childLogic.newOperator({
-      name: "stringsAndMathsSugar",
-      operator: 'and',
-      propositions: [variablesForSugar, stringsAndMaths],
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "child",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        },
-        variables: {
-          dependencyType: "child",
-          childLogicName: "variablesForSugar",
-          variableNames: ["nComponents", "maths"]
-        }
-      }),
-      logicToWaitOnSugar: ["exactlyOneLocation", "exactlyOneValue"],
-      replacementFunction: createLocationValueFromSugar,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
     let exactlyOneLocation = childLogic.newLeaf({
       name: "exactlyOneLocation",
@@ -259,29 +101,17 @@ export class Extremum extends BaseComponent {
       propositions: [exactlyOneLocation, exactlyOneValue],
     });
 
-    let variables = childLogic.newLeaf({
-      name: "variables",
-      componentType: 'variables',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let locationValueVariables = childLogic.newOperator({
-      name: "locationValueVariables",
-      operator: 'and',
-      propositions: [locationOrValue, variables],
-    });
-
-    let exactlyOnePoint = childLogic.newLeaf({
-      name: "exactlyOnePoint",
+    let atMostOnePoint = childLogic.newLeaf({
+      name: "atMostOnePoint",
       componentType: "point",
+      comparison: "atMost",
       number: 1,
     });
 
     childLogic.newOperator({
-      name: "SugarXorLocationValue",
+      name: "locationValueXorPoint",
       operator: 'xor',
-      propositions: [locationValueVariables, exactlyOnePoint, stringsAndMathsSugar],
+      propositions: [locationOrValue, atMostOnePoint],
       setAsBase: true,
     });
 
@@ -308,7 +138,7 @@ export class Extremum extends BaseComponent {
       returnDependencies: () => ({
         pointChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOnePoint",
+          childLogicName: "atMostOnePoint",
           variableNames: ["nDimensions", "xs"]
         },
         locationChild: {

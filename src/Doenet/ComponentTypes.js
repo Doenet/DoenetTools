@@ -68,7 +68,6 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
-import InterpolatedFunction from './components/InterpolatedFunction';
 import Template from './components/Template';
 import Option from './components/Option';
 import Sequence from './components/Sequence';
@@ -207,7 +206,6 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
-  InterpolatedFunction,
   Template, Option,
   Sequence,
   Slider,

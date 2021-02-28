@@ -114,7 +114,7 @@ export default class FunctionCurve extends Curve {
         functionChild: {
           dependencyType: "child",
           childLogicName: "atMostOneFunction",
-          variableNames: ["numericalf"]
+          variableNames: ["f"]
         },
       }),
       defaultValue: () => 0,
@@ -122,13 +122,13 @@ export default class FunctionCurve extends Curve {
         if (dependencyValues.functionChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              numericalf: { variablesToCheck: ["numericalf"] }
+              f: { variablesToCheck: ["f"] }
             }
           }
         } else {
           return {
             newValues: {
-              f: dependencyValues.functionChild[0].stateValues.numericalf
+              f: dependencyValues.functionChild[0].stateValues.f
             }
           }
         }
