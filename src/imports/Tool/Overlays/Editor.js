@@ -8,10 +8,13 @@ import {
   atomFamily,
   selectorFamily,
   useSetRecoilState,
+  useRecoilState,
   useRecoilValueLoadable 
 } from "recoil";
 import DoenetViewer from '../../../Tools/DoenetViewer';
-
+import {Controlled as CodeMirror} from 'react-codemirror2'
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
 
 
 const fileByContentId = atomFamily({
@@ -63,19 +66,82 @@ function DoenetViewerPanel(){
       /> 
 }
 
-// function DoenetViewerUpdateButton(){
-//   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
-//   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
-//   const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
-//   if (selectedTimestamp !== "") {return null;}
 
-//   return <button onClick={()=>{setViewerDoenetML((old)=>{
-//     let newInfo = {...old};
-//     newInfo.doenetML = editorDoenetML;
-//     newInfo.updateNumber = old.updateNumber+1;
-//     return newInfo;
-//   })}}>Update</button>
-// }
+function TextEditor(props){
+  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  // const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
+  // const [cancelAutoSave,setCancelAutoSave] = useRecoilState(cancelAutoSaveAtom);
+
+  // const timeout = useRef(null);
+  // const autosavetimeout = useRef(null);
+  // const trackMount = useRef("Init");
+
+  // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  
+
+  // if (cancelAutoSave){
+  //   if (autosavetimeout.current !== null){
+  //     clearTimeout(autosavetimeout.current)
+  //   }
+  //   setCancelAutoSave(false);
+  // }
+
+  //Used to work around second mount of codemirror with the same value it doesn't display value
+  let value = editorDoenetML;
+  // if (trackMount.current === "Init"){
+  //   value = "";
+  // }
+
+  return <CodeMirror
+  // editorDidMount={()=>trackMount.current = "Mount"}
+  value={value}
+  // options={options}
+  onBeforeChange={(editor, data, value) => {
+      setEditorDoenetML(value)
+      // if (selectedTimestamp === "") { //Only update if an inactive version history
+      // setEditorDoenetML(value)
+      // if (timeout.current === null){
+      //   timeout.current = setTimeout(function(){
+      //     setVersion({instructions:{type:"Save Draft"}})
+      //     timeout.current = null;
+      //   },3000)
+      // }
+      // if (autosavetimeout.current === null){
+      //   autosavetimeout.current = setTimeout(function(){
+      //     setVersion({instructions:{type:"Autosave"}})
+      //     autosavetimeout.current = null;
+      //   },60000) //TODO: Make 1 minute 60000
+      // }
+  // }
+  }}
+  // onChange={(editor, data, value) => {
+  // }}
+  // onBlur={()=>{
+  //   if (timeout.current !== null){
+  //     clearTimeout(timeout.current)
+  //     timeout.current = null;
+  //     setVersion({instructions:{type:"Save Draft"}})
+  //   }
+  //   if (autosavetimeout.current !== null){
+  //     clearTimeout(autosavetimeout.current)
+  //   }
+  // }}
+/>
+}
+
+function DoenetViewerUpdateButton(){
+  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
+  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+  // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  // if (selectedTimestamp !== "") {return null;}
+
+  return <button onClick={()=>{setViewerDoenetML((old)=>{
+    let newInfo = {...old};
+    newInfo.doenetML = editorDoenetML;
+    newInfo.updateNumber = old.updateNumber+1;
+    return newInfo;
+  })}}>Update</button>
+}
 
 export default function Editor({ contentId, branchId }) {
   console.log("===Editor!");
@@ -85,10 +151,7 @@ export default function Editor({ contentId, branchId }) {
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
   // const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
   useEffect(() => {
-    //init code here
-
     if (doenetML !== undefined){
-    console.log(">>>Editor Init!!!!!!!",doenetML);
     setEditorDoenetML(doenetML);
     setViewerDoenetML({updateNumber:1,doenetML});
     }
@@ -109,13 +172,16 @@ export default function Editor({ contentId, branchId }) {
 
       <mainPanel>
         This is the editor on branch: {branchId} with content: {contentId}
-        {/* <div><DoenetViewerUpdateButton  /></div> */}
+        <div><DoenetViewerUpdateButton  /></div>
         <DoenetViewerPanel />
 
       </mainPanel>
 
       <supportPanel>
-        <p>Stuff</p>
+        <div>
+          {/* <NameCurrentVersionControl branchId={branchId} /> */}
+          <TextEditor  branchId={branchId}/>
+          </div>
       </supportPanel>
 
       <menuPanel title={"test"}>

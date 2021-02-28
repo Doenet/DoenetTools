@@ -4,14 +4,14 @@ import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 import Drive from "../imports/Drive";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 
-export default function DoenetExampleTool() {
+export default function DoenetTemp() {
   // console.log("=== DoenetExampleTool");
 
   const { open, setMenuPanel } = useToolControlHelper();
 
-  useEffect(() => {
-    setMenuPanel(1);
-  }, []);
+  // useEffect(() => {
+  //   setMenuPanel(1);
+  // }, []);
 
   return (
     <Tool>
