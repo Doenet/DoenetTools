@@ -85,7 +85,7 @@ export default function UnitMenu(props) {
       listOfOptions = listOfUnits.concat(listOfDefaults);
     }
     const labelVisible = props.label ? "True" : "False";
-    var labelText = "Label: ";
+    var labelvalue = "Label: ";
     const [unitIndex, setUnitIndex] = useState(-1);
     const [currentUnit, setCurrentUnit] = useState("-");
     const [currentValue, setCurrentValue] = useState('');
@@ -179,7 +179,7 @@ export default function UnitMenu(props) {
     }
   
     if (props.label) {
-      labelText = props.label;
+      labelvalue = props.label;
     }
   
     var unitComponents = [];
@@ -208,7 +208,7 @@ export default function UnitMenu(props) {
           }}
           className='noselect'
         >
-          {labelText}
+          {labelvalue}
         </Label>
         <Textfield
           id="text"

@@ -116,7 +116,7 @@ export default function Enrollment(params){
     <div style={{flexDirection: "row",display: "flex"}} >
       <p>Data Needs to have a heading marked "id"</p>
       <p>No Data Imported</p>
-      <Button callback={()=>setProcess("Display Enrollment")} text="OK" />
+      <Button callback={()=>setProcess("Display Enrollment")} value="OK" />
     </div>
     </mainPanel>)
   }else{
@@ -195,7 +195,7 @@ export default function Enrollment(params){
     return (
     <mainPanel>
         <>
-          <Button text="Merge" key='merge' callback={() => {
+          <Button value="Merge" key='merge' callback={() => {
             const payload = {
               courseId,
               mergeHeads,
@@ -217,7 +217,7 @@ export default function Enrollment(params){
               });
           }}></Button>
 
-          <Button key='cancel' callback={() => setProcess("Display Enrollment")} text="Cancel"></Button>
+          <Button key='cancel' callback={() => setProcess("Display Enrollment")} value="Cancel"></Button>
         </>
     
      
@@ -245,7 +245,7 @@ export default function Enrollment(params){
         {
           isDragActive ?
             <p>Drop the files here</p> :
-            <Button text="Enroll Learners"></Button>
+            <Button value="Enroll Learners"></Button>
         }
       </div>
       {enrollmentTable}

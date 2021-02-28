@@ -28,14 +28,14 @@ Button.defaultProps = {
 export default function ActionButton(props) {
   //Assume small
   var actionButton = {
-        text: 'Action Button',
+        value: 'Action Button',
       };
   if (props.size === "medium") {
     actionButton.height = '36px',
     actionButton.fontSize = '18px'
   };
-  if (props.text) {
-      actionButton.text = props.text;
+  if (props.value) {
+      actionButton.value = props.value;
   };
   if (props.num === 'first') {
     actionButton.borderRadius = '5px 0px 0px 5px'
@@ -49,7 +49,7 @@ export default function ActionButton(props) {
   //TODO handleClick() is not defined
     return (
         <>
-            <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{actionButton.text}</Button>
+            <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{actionButton.value}</Button>
         </>
     )
 }
