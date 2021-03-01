@@ -25,7 +25,7 @@ export default function DoenetTemp() {
       <mainPanel>
       <button
           onClick={() => {
-            open("editor", "ku_n7AXkAlEkZqNEvX_Vo", "6At01-MZM8nUjAFpBqquZ");
+            open("editor", "ku_n7AXkAlEkZqNEvX_Vo", ""); //Current working version when contentId is blank
           }}
         >
           Open Editor with Main Example
