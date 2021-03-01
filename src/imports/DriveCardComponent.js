@@ -221,14 +221,12 @@ const DriveCardComponent = (props) => {
                   }
                 }}
               >
-                {/* <a href="#" style={{ textDecoration: "none" }}> */}
                   <DriveCard
                     driveId={item.driveId}
                     image={item.image}
                     color={item.color}
                     label={item.label}
                   />
-                {/* </a> */}
               </div>
             </animated.div>
           );
