@@ -17,7 +17,10 @@ export default function Textfield(props) {
   }
   if (props.text) {
     textfield.text = props.text;
-}
+  }
+  if (props.alert) {
+    textfield.border = '2px solid #C1292E'
+  }
     return (
         <>
             <textarea defaultValue={textfield.text} style={textfield}></textarea>

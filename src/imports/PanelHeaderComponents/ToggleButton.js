@@ -42,11 +42,19 @@ export default function ToggleButton(props) {
             toggleButton.text = ''
         }
     }
+    if (props.alert) {
+        toggleButton.border = '2px solid #C1292E';
+        toggleButton.color = '#C1292E'
+    }
     if (isSelected === true) {
         toggleButton.backgroundColor = `${doenetMainBlue}`;
-        toggleButton.color = '#FFF';
-        toggleButton.border = '2px solid #FFF';
+        toggleButton.color = '#f6f8ff';
+        toggleButton.border = '2px solid #f6f8ff';
         if (props.switch_text) toggleButton.text = props.switch_text
+        if (props.alert) {
+            toggleButton.backgroundColor = '#C1292E';
+        }
+        
     }
     function handleClick() {
         if (isSelected === false) {

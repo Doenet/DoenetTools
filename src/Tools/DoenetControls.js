@@ -77,7 +77,11 @@ export default function attempt() {
           {name: 'Text',
           propPreview: '<ActionButton text="Edit"/>',
           propCode: {text: 'Edit'},
-          description: 'Changes the text'}
+          description: 'Changes the text'},
+          {name: 'Alert',
+          propPreview: '<ActionButton alert/>',
+          propCode: {alert},
+          description: 'Changes to alert mode (border is red)'},
       ]
     },
     {
@@ -105,7 +109,11 @@ export default function attempt() {
           {name: 'Text',
           propPreview: '<Button text="This button is amazing!"/>',
           propCode: {text: 'This button is amazing!'},
-          description: 'Changes the text'}
+          description: 'Changes the text'},
+          {name: 'Alert',
+          propPreview: '<Button alert/>',
+          propCode: {alert},
+          description: 'Changes to alert mode (color is red)'},
       ]
     },
     {
@@ -134,6 +142,10 @@ export default function attempt() {
       propPreview: '<Textfield text="Enter cat names"/>',
       propCode: {text: 'Enter cat names'},
       description: 'Changes the text'},
+      {name: 'Alert',
+      propPreview: '<Textfield alert/>',
+      propCode: {alert},
+      description: 'Changes to alert mode (border is red)'},
       ]
     },
     {
@@ -168,7 +180,11 @@ export default function attempt() {
         {name: 'Icon',
         propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}}/>',
         propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
-        description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'}
+        description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
+        {name: 'Alert',
+        propPreview: '<ToggleButton alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (main coloring is red)'},
       ]
     },
     {
