@@ -147,7 +147,7 @@ export default class BezierCurve extends Curve {
         if (arrayKey === undefined) {
           return ({
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneThrough",
               variableNames: ["points"]
             }
@@ -155,7 +155,7 @@ export default class BezierCurve extends Curve {
         } else {
           return ({
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneThrough",
               variableNames: ["point" + (arrayKey + 1)]
             }
@@ -406,7 +406,7 @@ export default class BezierCurve extends Curve {
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneThrough",
           variableNames: ["nPoints"]
         }
@@ -435,7 +435,7 @@ export default class BezierCurve extends Curve {
         if (arrayKeys === undefined) {
           return {
             controlChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneBezierControls",
               variableNames: ["directions"],
             },
@@ -447,7 +447,7 @@ export default class BezierCurve extends Curve {
         } else {
           return {
             controlChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneBezierControls",
               variableNames: ["direction" + (Number(arrayKeys[0]) + 1)],
             },
@@ -766,7 +766,7 @@ export default class BezierCurve extends Curve {
         }
         if (arrayKeys === undefined) {
           dependencies.controlChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneBezierControls",
             variableNames: ["controls"],
           };
@@ -861,7 +861,7 @@ export default class BezierCurve extends Curve {
           }
 
           dependencies['controlChild'] = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneBezierControls",
             variableNames: controlVariables,
           }
@@ -2302,17 +2302,8 @@ export default class BezierCurve extends Curve {
     }
 
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.throughChild.map(x => x.componentName)
-        }
-      })
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     return stateVariableDefinitions;

@@ -26,7 +26,7 @@ export default class ConstraintUnion extends ConstraintComponent {
     stateVariableDefinitions.applyConstraint = {
       returnDependencies: () => ({
         constraintChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneConstraint",
           variableNames: ["applyConstraint", "applyComponentConstraint"],
           variablesOptional: true,

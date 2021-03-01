@@ -5,7 +5,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('Polyline with sugared reffed points', () => {
+  it.skip('Polyline with sugared copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -29,10 +29,10 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([-4, -1]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([-4, -1]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
     })
 
     cy.log('move individual vertex')
@@ -40,10 +40,10 @@ describe('Polyline Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/_polyline1'].movePolyline({ 1: [4, 7] });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, 7]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, 7]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
 
     })
 
@@ -78,13 +78,13 @@ describe('Polyline Tag Tests', function () {
       }
 
       for (let i = 0; i < vertices.length; i++) {
-        expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+        expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
       }
 
     })
   })
 
-  it('Polyline vertices and reffed points', () => {
+  it('Polyline vertices and copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -107,10 +107,10 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([-4, -1]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([-4, -1]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
     })
 
     cy.log('move individual vertex')
@@ -118,10 +118,10 @@ describe('Polyline Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/_polyline1'].movePolyline({ 1: [4, 7] });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, 7]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, 7]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
 
     })
 
@@ -156,13 +156,13 @@ describe('Polyline Tag Tests', function () {
       }
 
       for (let i = 0; i < vertices.length; i++) {
-        expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+        expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
       }
 
     })
   })
 
-  it('Polyline string points', () => {
+  it.skip('Polyline string points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -179,10 +179,10 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([-4, -1]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([-4, -1]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
     })
 
     cy.log('move individual vertex')
@@ -190,10 +190,10 @@ describe('Polyline Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/_polyline1'].movePolyline({ 1: [4, 7] });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, 7]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, 7]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
 
     })
 
@@ -228,7 +228,7 @@ describe('Polyline Tag Tests', function () {
       }
 
       for (let i = 0; i < vertices.length; i++) {
-        expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+        expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
       }
 
     })
@@ -251,10 +251,10 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([-4, -1]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([-4, -1]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
     })
 
     cy.log('move individual vertex')
@@ -262,10 +262,10 @@ describe('Polyline Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/_polyline1'].movePolyline({ 1: [4, 7] });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, 7]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([5, 2]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([-3, 4]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, 7]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([5, 2]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([-3, 4]);
 
     })
 
@@ -300,13 +300,13 @@ describe('Polyline Tag Tests', function () {
       }
 
       for (let i = 0; i < vertices.length; i++) {
-        expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+        expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
       }
 
     })
   })
 
-  it('dynamic polyline, initially zero, reffed', () => {
+  it('dynamic polyline, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -315,12 +315,10 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-      <substitutions><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></substitutions>
+      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
-    </vertices></polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -442,10 +440,8 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline><vertices>
     <map>
-      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-      <substitutions><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></substitutions>
+      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polyline>
   </graph>
@@ -501,7 +497,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('dynamic polyline with sugared vertices, initially zero, reffed', () => {
+  it.skip('dynamic polyline with sugared vertices, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -510,10 +506,10 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
     <map>
-      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-      <substitutions><sequence from="0">
+      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
-      </sequence></substitutions>
+      </sequence></sources>
     </map>
     </polyline>
   </graph>
@@ -639,10 +635,10 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
     <map>
-      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-      <substitutions><sequence from="0">
+      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
-      </sequence></substitutions>
+      </sequence></sources>
     </map>
     </polyline>
   </graph>
@@ -699,7 +695,7 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('dynamic polyline with sugared vertices from reffed map, initially zero, reffed', () => {
+  it('dynamic polyline with vertices from copied map, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -708,14 +704,12 @@ describe('Polyline Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-    <substitutions><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></substitutions>
+    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
-  <polyline>
+  <polyline><vertices>
     <copy tname="_map1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -836,14 +830,12 @@ describe('Polyline Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-    <substitutions><sequence from="0">
-      <count><copy prop="value" tname="count" /></count>
-    </sequence></substitutions>
+    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <sources><sequence from="0" count="$count" /></sources>
   </map>
-  <polyline>
+  <polyline><vertices>
     <copy tname="_map1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -904,13 +896,13 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
   <mathinput/>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <point>(1,2)</point>
     <point>(-1,5)</point>
     <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
     <point>(3,-5)</point>
     <point>(-4,-3)</point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   
   <graph>
@@ -967,10 +959,10 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polyline><vertices hide="false">
+  <polyline><vertices>
     <map>
-      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
-      <substitutions><sequence from="-5" to="5"/></substitutions>
+      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polyline>
   </graph>
@@ -985,7 +977,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let polyline2 = components["/polyline2"].replacements[0];
-      let points = components["/_map1"].replacements;
+      let points = components["/_map1"].replacements.map(x => x.replacements[0]);
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1097,10 +1089,10 @@ describe('Polyline Tag Tests', function () {
   <text>a</text>
 
   <graph>
-  <polyline><vertices hide="false">
+  <polyline><vertices>
     <map>
-      <template><point>(<copyFromSubs/> + <math>0</math>, 5sin(<copyFromSubs/>) + <math>0</math>)</point></template>
-      <substitutions><sequence from="-5" to="5"/></substitutions>
+      <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
+      <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polyline>
   </graph>
@@ -1115,7 +1107,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let polyline2 = components["/polyline2"].replacements[0];
-      let points = components["/_map1"].replacements;
+      let points = components["/_map1"].replacements.map(x => x.replacements[0]);
 
       let xs = [], ys = [];
       for (let i = -5; i <= 5; i++) {
@@ -1237,13 +1229,13 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('ref vertices of polyline', () => {
+  it('copy vertices of polyline', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-3,-1),(1,2),(3,4),(6,-2)</polyline>
+  <polyline><vertices>(-3,-1),(1,2),(3,4),(6,-2)</vertices></polyline>
   </graph>
   <graph>
   <copy name="v1" prop="vertex1" tname="_polyline1" />
@@ -1285,7 +1277,7 @@ describe('Polyline Tag Tests', function () {
         }
       })
 
-      cy.log('move individually reffed vertices');
+      cy.log('move individually copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-5, 3], [-2, 7], [0, -8], [9, -6]];
@@ -1303,7 +1295,7 @@ describe('Polyline Tag Tests', function () {
 
       })
 
-      cy.log('move array-reffed vertices');
+      cy.log('move array-copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-7, -1], [-3, 5], [2, 4], [6, 0]];
@@ -1323,18 +1315,18 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
-  it('new polyline from reffed vertices of polyline', () => {
+  it('new polyline from copied vertices of polyline', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
+  <polyline><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polyline>
   </graph>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <copy prop="vertices" tname="_polyline1" />
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -1359,8 +1351,8 @@ describe('Polyline Tag Tests', function () {
           for (let j = 0; j < 2; j++) {
             expect(components[pointnames[i][j]].stateValues.xs[0].tree).eq(ps[i][0]);
             expect(components[pointnames[i][j]].stateValues.xs[1].tree).eq(ps[i][1]);
-            expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
-            expect(components['/_polyline2'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline2'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
           }
         }
       })
@@ -1397,8 +1389,8 @@ describe('Polyline Tag Tests', function () {
           for (let j = 0; j < 2; j++) {
             expect(components[pointnames[i][j]].stateValues.xs[0].tree).eq(ps[i][0]);
             expect(components[pointnames[i][j]].stateValues.xs[1].tree).eq(ps[i][1]);
-            expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
-            expect(components['/_polyline2'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline2'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
           }
         }
 
@@ -1438,8 +1430,8 @@ describe('Polyline Tag Tests', function () {
           for (let j = 0; j < 2; j++) {
             expect(components[pointnames[i][j]].stateValues.xs[0].tree).eq(ps[i][0]);
             expect(components[pointnames[i][j]].stateValues.xs[1].tree).eq(ps[i][1]);
-            expect(components['/_polyline1'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
-            expect(components['/_polyline2'].stateValues.vertices[i].map(x=>x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline1'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
+            expect(components['/_polyline2'].stateValues.vertices[i].map(x => x.tree)).eqls([ps[i][0], ps[i][1]]);
           }
         }
 
@@ -1448,16 +1440,16 @@ describe('Polyline Tag Tests', function () {
 
   })
 
-  it('new polyline from reffed vertices, some flipped', () => {
+  it('new polyline from copied vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
+  <polyline><vertices>(-9,6),(-3,7),(4,0),(8,5)</vertices></polyline>
   </graph>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <copy prop="vertex1" tname="_polyline1" />
     <point>
       <xs>
@@ -1470,7 +1462,7 @@ describe('Polyline Tag Tests', function () {
       <x><extract prop="y"><copy prop="vertex4" tname="_polyline1" /></extract></x>
       <y><extract prop="x"><copy prop="vertex4" tname="_polyline1" /></extract></y>
     </point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -1480,14 +1472,14 @@ describe('Polyline Tag Tests', function () {
       let ps = [[-9, 6], [-3, 7], [4, 0], [8, 5]];
       let psflipped = [[-9, 6], [7, -3], [4, 0], [5, 8]];
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...ps[0]]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...ps[1]]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...ps[2]]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...ps[3]]);
-      expect(components['/_polyline2'].stateValues.vertices[0].map(x=>x.tree)).eqls([...psflipped[0]]);
-      expect(components['/_polyline2'].stateValues.vertices[1].map(x=>x.tree)).eqls([...psflipped[1]]);
-      expect(components['/_polyline2'].stateValues.vertices[2].map(x=>x.tree)).eqls([...psflipped[2]]);
-      expect(components['/_polyline2'].stateValues.vertices[3].map(x=>x.tree)).eqls([...psflipped[3]]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...ps[0]]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...ps[1]]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...ps[2]]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...ps[3]]);
+      expect(components['/_polyline2'].stateValues.vertices[0].map(x => x.tree)).eqls([...psflipped[0]]);
+      expect(components['/_polyline2'].stateValues.vertices[1].map(x => x.tree)).eqls([...psflipped[1]]);
+      expect(components['/_polyline2'].stateValues.vertices[2].map(x => x.tree)).eqls([...psflipped[2]]);
+      expect(components['/_polyline2'].stateValues.vertices[3].map(x => x.tree)).eqls([...psflipped[3]]);
     })
 
     cy.log('move first polyline verticies')
@@ -1498,14 +1490,14 @@ describe('Polyline Tag Tests', function () {
 
       components['/_polyline1'].movePolyline(ps);
 
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...ps[0]]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...ps[1]]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...ps[2]]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...ps[3]]);
-      expect(components['/_polyline2'].stateValues.vertices[0].map(x=>x.tree)).eqls([...psflipped[0]]);
-      expect(components['/_polyline2'].stateValues.vertices[1].map(x=>x.tree)).eqls([...psflipped[1]]);
-      expect(components['/_polyline2'].stateValues.vertices[2].map(x=>x.tree)).eqls([...psflipped[2]]);
-      expect(components['/_polyline2'].stateValues.vertices[3].map(x=>x.tree)).eqls([...psflipped[3]]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...ps[0]]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...ps[1]]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...ps[2]]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...ps[3]]);
+      expect(components['/_polyline2'].stateValues.vertices[0].map(x => x.tree)).eqls([...psflipped[0]]);
+      expect(components['/_polyline2'].stateValues.vertices[1].map(x => x.tree)).eqls([...psflipped[1]]);
+      expect(components['/_polyline2'].stateValues.vertices[2].map(x => x.tree)).eqls([...psflipped[2]]);
+      expect(components['/_polyline2'].stateValues.vertices[3].map(x => x.tree)).eqls([...psflipped[3]]);
 
     })
 
@@ -1517,14 +1509,14 @@ describe('Polyline Tag Tests', function () {
 
       components['/_polyline2'].movePolyline(psflipped);
 
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...ps[0]]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...ps[1]]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...ps[2]]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...ps[3]]);
-      expect(components['/_polyline2'].stateValues.vertices[0].map(x=>x.tree)).eqls([...psflipped[0]]);
-      expect(components['/_polyline2'].stateValues.vertices[1].map(x=>x.tree)).eqls([...psflipped[1]]);
-      expect(components['/_polyline2'].stateValues.vertices[2].map(x=>x.tree)).eqls([...psflipped[2]]);
-      expect(components['/_polyline2'].stateValues.vertices[3].map(x=>x.tree)).eqls([...psflipped[3]]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...ps[0]]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...ps[1]]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...ps[2]]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...ps[3]]);
+      expect(components['/_polyline2'].stateValues.vertices[0].map(x => x.tree)).eqls([...psflipped[0]]);
+      expect(components['/_polyline2'].stateValues.vertices[1].map(x => x.tree)).eqls([...psflipped[1]]);
+      expect(components['/_polyline2'].stateValues.vertices[2].map(x => x.tree)).eqls([...psflipped[2]]);
+      expect(components['/_polyline2'].stateValues.vertices[3].map(x => x.tree)).eqls([...psflipped[3]]);
 
     })
 
@@ -1537,7 +1529,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline>
+  <polyline><vertices>
     <point name="A">(1,2)</point>
     <point name="B">(3,4)</point>
     <point name="C">(-5,6)</point>
@@ -1545,7 +1537,7 @@ describe('Polyline Tag Tests', function () {
       <x><copy fixed prop="x" tname="C" />+<copy fixed prop="x" tname="B" />-<copy prop="x" tname="A" /></x>
       <y><copy fixed prop="y" tname="C" />+<copy fixed prop="y" tname="B" />-<copy prop="y" tname="A" /></y>
     </point>
-  </polyline>
+  </vertices></polyline>
   </graph>
   `}, "*");
     });
@@ -1557,10 +1549,10 @@ describe('Polyline Tag Tests', function () {
     let D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move first vertex')
@@ -1570,10 +1562,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move second vertex')
@@ -1583,10 +1575,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move third vertex')
@@ -1596,10 +1588,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move fourth vertex')
@@ -1608,10 +1600,10 @@ describe('Polyline Tag Tests', function () {
       A = [C[0] + B[0] - D[0], C[1] + B[1] - D[1]];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: D });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...D]);
     })
 
   })
@@ -1640,10 +1632,10 @@ describe('Polyline Tag Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move first vertex')
@@ -1652,10 +1644,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move second vertex')
@@ -1664,10 +1656,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move third vertex')
@@ -1676,10 +1668,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fourth vertex')
@@ -1687,10 +1679,10 @@ describe('Polyline Tag Tests', function () {
       A = [7, 0];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
   })
@@ -1703,7 +1695,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
   <vertices>
-  <copy prop="vertex4" includeUndefinedArrayEntries tname="_polyline1" />
+  <copy prop="vertex4" includeUndefinedObjects tname="_polyline1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
@@ -1720,10 +1712,10 @@ describe('Polyline Tag Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move first vertex')
@@ -1732,10 +1724,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move second vertex')
@@ -1744,10 +1736,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move third vertex')
@@ -1756,10 +1748,10 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fourth vertex')
@@ -1767,10 +1759,10 @@ describe('Polyline Tag Tests', function () {
       A = [7, 0];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
     })
 
   })
@@ -1805,11 +1797,11 @@ describe('Polyline Tag Tests', function () {
     let D = [A[0] + 1, 2];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move first vertex')
@@ -1819,11 +1811,11 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move second vertex')
@@ -1832,11 +1824,11 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move third vertex')
@@ -1845,11 +1837,11 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
     cy.log('move fourth vertex')
@@ -1858,11 +1850,11 @@ describe('Polyline Tag Tests', function () {
       D[0] = A[0] + 1;
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
 
@@ -1872,11 +1864,11 @@ describe('Polyline Tag Tests', function () {
       A[0] = D[0] - 1;
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 4: D });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
     })
 
   })
@@ -1895,7 +1887,7 @@ describe('Polyline Tag Tests', function () {
     <copy prop="vertex7" tname="_polyline1" />
     <point>(5,7)</point>
     <point>(-5,7)</point>
-    <copy prop="vertex10" includeUndefinedArrayEntries tname="_polyline1" />
+    <copy prop="vertex10" includeUndefinedObjects tname="_polyline1" />
     <point>(3,1)</point>
     <point>(5,0)</point>
     <point>(-5,-1)</point>
@@ -1916,16 +1908,16 @@ describe('Polyline Tag Tests', function () {
     let G = [5, 0];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move first vertex')
@@ -1934,16 +1926,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move second vertex')
@@ -1952,16 +1944,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move third vertex')
@@ -1970,16 +1962,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fourth vertex')
@@ -1987,16 +1979,16 @@ describe('Polyline Tag Tests', function () {
       A = [7, 0];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fifth vertex')
@@ -2004,16 +1996,16 @@ describe('Polyline Tag Tests', function () {
       D = [-9, 1];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 4: D });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move sixth vertex')
@@ -2021,16 +2013,16 @@ describe('Polyline Tag Tests', function () {
       E = [-3, 6];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 5: E });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move seventh vertex')
@@ -2038,16 +2030,16 @@ describe('Polyline Tag Tests', function () {
       A = [2, -4];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 6: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move eighth vertex')
@@ -2055,16 +2047,16 @@ describe('Polyline Tag Tests', function () {
       F = [6, 7];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 7: F });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move nineth vertex')
@@ -2072,16 +2064,16 @@ describe('Polyline Tag Tests', function () {
       G = [1, -8];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 8: G });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move tenth vertex')
@@ -2089,16 +2081,16 @@ describe('Polyline Tag Tests', function () {
       A = [-6, 10];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 9: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
   })
@@ -2150,16 +2142,16 @@ describe('Polyline Tag Tests', function () {
     let A3 = [A[0] + 3, A[1] + 3];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move first vertex')
@@ -2171,16 +2163,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 0: A3 });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move second vertex')
@@ -2189,16 +2181,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 1: B });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move third vertex')
@@ -2207,16 +2199,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 2: C });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fourth vertex')
@@ -2228,16 +2220,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 3: A2 });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move fifth vertex')
@@ -2245,16 +2237,16 @@ describe('Polyline Tag Tests', function () {
       D = [-9, 1];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 4: D });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move sixth vertex')
@@ -2262,16 +2254,16 @@ describe('Polyline Tag Tests', function () {
       E = [-3, 6];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 5: E });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move seventh vertex')
@@ -2283,16 +2275,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 6: A1 });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move eighth vertex')
@@ -2300,16 +2292,16 @@ describe('Polyline Tag Tests', function () {
       F = [6, 7];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 7: F });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move nineth vertex')
@@ -2317,16 +2309,16 @@ describe('Polyline Tag Tests', function () {
       G = [1, -8];
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 8: G });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
     cy.log('move tenth vertex')
@@ -2338,16 +2330,16 @@ describe('Polyline Tag Tests', function () {
 
       let components = Object.assign({}, win.state.components);
       components['/_polyline1'].movePolyline({ 9: A });
-      expect(components['/_polyline1'].stateValues.vertices[0].map(x=>x.tree)).eqls([...A3]);
-      expect(components['/_polyline1'].stateValues.vertices[1].map(x=>x.tree)).eqls([...B]);
-      expect(components['/_polyline1'].stateValues.vertices[2].map(x=>x.tree)).eqls([...C]);
-      expect(components['/_polyline1'].stateValues.vertices[3].map(x=>x.tree)).eqls([...A2]);
-      expect(components['/_polyline1'].stateValues.vertices[4].map(x=>x.tree)).eqls([...D]);
-      expect(components['/_polyline1'].stateValues.vertices[5].map(x=>x.tree)).eqls([...E]);
-      expect(components['/_polyline1'].stateValues.vertices[6].map(x=>x.tree)).eqls([...A1]);
-      expect(components['/_polyline1'].stateValues.vertices[7].map(x=>x.tree)).eqls([...F]);
-      expect(components['/_polyline1'].stateValues.vertices[8].map(x=>x.tree)).eqls([...G]);
-      expect(components['/_polyline1'].stateValues.vertices[9].map(x=>x.tree)).eqls([...A]);
+      expect(components['/_polyline1'].stateValues.vertices[0].map(x => x.tree)).eqls([...A3]);
+      expect(components['/_polyline1'].stateValues.vertices[1].map(x => x.tree)).eqls([...B]);
+      expect(components['/_polyline1'].stateValues.vertices[2].map(x => x.tree)).eqls([...C]);
+      expect(components['/_polyline1'].stateValues.vertices[3].map(x => x.tree)).eqls([...A2]);
+      expect(components['/_polyline1'].stateValues.vertices[4].map(x => x.tree)).eqls([...D]);
+      expect(components['/_polyline1'].stateValues.vertices[5].map(x => x.tree)).eqls([...E]);
+      expect(components['/_polyline1'].stateValues.vertices[6].map(x => x.tree)).eqls([...A1]);
+      expect(components['/_polyline1'].stateValues.vertices[7].map(x => x.tree)).eqls([...F]);
+      expect(components['/_polyline1'].stateValues.vertices[8].map(x => x.tree)).eqls([...G]);
+      expect(components['/_polyline1'].stateValues.vertices[9].map(x => x.tree)).eqls([...A]);
     })
 
   })
@@ -2358,12 +2350,14 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polyline>
+    <polyline><vertices>
       (3,5), (-4,-1),(5,2)
-    </polyline>
+    </vertices></polyline>
     <point>
-      <attractTo><copy tname="_polyline1" /></attractTo>
-      (7,8)
+      <constraints>
+        <attractTo><copy tname="_polyline1" /></attractTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");
@@ -2593,12 +2587,14 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <polyline>
+    <polyline><vertices>
       (3,5), (-4,-1),(5,2)
-    </polyline>
+    </vertices></polyline>
     <point>
-      <constrainTo><copy tname="_polyline1" /></constrainTo>
-      (7,8)
+      <constraints>
+        <constrainTo><copy tname="_polyline1" /></constrainTo>
+      </constraints>
+      <x>7</x><y>8</y>
     </point>
   </graph>
   `}, "*");

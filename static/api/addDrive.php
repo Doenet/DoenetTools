@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -31,7 +32,7 @@ INSERT INTO drive
 VALUES
 ('$driveId','$label','$contentOrCourse','0',null,'$image','$color')
 ";
-echo $sql;
+
 $result = $conn->query($sql); 
 
 $sql = "

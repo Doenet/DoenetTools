@@ -1,10 +1,10 @@
 import BaseComponent from './abstract/BaseComponent';
 
-export default class Substitutions extends BaseComponent {
-  static componentType = "substitutions";
+export default class Sources extends BaseComponent {
+  static componentType = "sources";
   static rendererType = "container";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -24,24 +24,31 @@ export default class Substitutions extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.numberOfChildren = {
-      additionalStateVariablesDefined: ["childComponentNames"],
+      additionalStateVariablesDefined: ["childComponentNames", "childIdentities"],
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren",
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: function ({ dependencyValues }) {
         let numberOfChildren = dependencyValues.children.length;
         let childComponentNames = dependencyValues.children.map(x => x.componentName);
-        return { newValues: { numberOfChildren, childComponentNames } };
+        return {
+          newValues: {
+            numberOfChildren,
+            childComponentNames,
+            childIdentities: dependencyValues.children,
+          }
+        };
       },
     }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroChildren"
         }
       }),
@@ -52,7 +59,7 @@ export default class Substitutions extends BaseComponent {
         };
       }
     }
-    
+
 
     return stateVariableDefinitions;
 

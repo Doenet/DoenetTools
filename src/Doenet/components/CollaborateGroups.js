@@ -49,7 +49,7 @@ export default class CollaborateGroups extends BaseComponent {
     stateVariableDefinitions.collaborateGroups = {
       returnDependencies: () => ({
         pointChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
           variableNames: ["xs", "coords", "nDimensions"]
         }

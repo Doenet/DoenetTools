@@ -25,7 +25,7 @@ export default class GraphicalComponent extends BaseComponent {
           variableName: "styleNumber",
         },
         ancestorWithStyle: {
-          dependencyType: "ancestorStateVariables",
+          dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         }
       }),

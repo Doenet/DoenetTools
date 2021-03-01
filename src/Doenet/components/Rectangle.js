@@ -29,6 +29,7 @@ export default class Rectangle extends Polygon {
       componentType: 'width',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneHeight = childLogic.newLeaf({
@@ -36,6 +37,7 @@ export default class Rectangle extends Polygon {
       componentType: 'height',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
@@ -56,8 +58,8 @@ export default class Rectangle extends Polygon {
 
       returnDependencies: () => ({
         verticesChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneVertices",
+          dependencyType: "child",
+          childLogicName: "atMostOneVertices",
           variableNames: ["nPoints"]
         }
       }),
@@ -124,7 +126,7 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.haveSpecifiedCenter = {
       returnDependencies: () => ({
         centerChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneCenter"
         }
       }),
@@ -156,7 +158,7 @@ export default class Rectangle extends Polygon {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             centerChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneCenter",
               variableNames: ["x" + varEnding],
             },
@@ -215,7 +217,7 @@ export default class Rectangle extends Polygon {
       returnDependencies() {
         return {
           specifiedWidthChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneWidth",
             variableNames: ["value"]
           },
@@ -224,7 +226,7 @@ export default class Rectangle extends Polygon {
             variableName: "nVerticesSpecified"
           },
           centerChild: {
-            dependencyType: "childIdentity",
+            dependencyType: "child",
             childLogicName: "atMostOneCenter"
           }
         }
@@ -269,7 +271,7 @@ export default class Rectangle extends Polygon {
       returnDependencies() {
         return {
           specifiedHeightChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneHeight",
             variableNames: ["value"],
           },
@@ -278,7 +280,7 @@ export default class Rectangle extends Polygon {
             variableName: "nVerticesSpecified"
           },
           centerChild: {
-            dependencyType: "childIdentity",
+            dependencyType: "child",
             childLogicName: "atMostOneCenter"
           }
         }
@@ -654,8 +656,8 @@ export default class Rectangle extends Polygon {
 
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
-                  dependencyType: "childStateVariables",
-                  childLogicName: "exactlyOneVertices",
+                  dependencyType: "child",
+                  childLogicName: "atMostOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -677,8 +679,8 @@ export default class Rectangle extends Polygon {
 
               dependenciesByKey[arrayKey] = {
                 verticesChild: {
-                  dependencyType: "childStateVariables",
-                  childLogicName: "exactlyOneVertices",
+                  dependencyType: "child",
+                  childLogicName: "atMostOneVertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -728,8 +730,8 @@ export default class Rectangle extends Polygon {
 
             dependenciesByKey[arrayKey] = {
               verticesChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneVertices",
+                dependencyType: "child",
+                childLogicName: "atMostOneVertices",
                 variableNames: ["pointX" + varEnding]
               }
             };

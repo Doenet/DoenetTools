@@ -36,8 +36,8 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -104,7 +104,7 @@ describe('Feedback Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p><answer><award>x+y</award><award credit="0.5">x</award></answer></p>
+  <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <section>
   <feedback><condition><copy tname="_award1" /></condition>
   <p>You got award 1.</p>
@@ -121,8 +121,8 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -187,11 +187,11 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 1</condition></award>
-    <award><condition><copy prop="immediateValue" tname="_mathinput1" /> > 10</condition></award>
-    <award credit="0.2"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 2</condition></award>
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</condition></award>
-    <award credit="0"><condition><copy prop="immediateValue" tname="_mathinput1" /> < 0</condition></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 1</when></award>
+    <award><when><copy prop="immediateValue" tname="_mathinput1" /> > 10</when></award>
+    <award credit="0.2"><when><copy prop="immediateValue" tname="_mathinput1" /> > 2</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</when></award>
+    <award credit="0"><when><copy prop="immediateValue" tname="_mathinput1" /> < 0</when></award>
   </answer></p>
   <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   <section>
@@ -223,7 +223,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', '');
@@ -360,10 +360,10 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
-      let choiceinputAnchor = '#' + choiceinputName;
-      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName)
+      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputAnchor = cesc('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(caAnchor).invoke('text').then((text) => {
@@ -444,7 +444,7 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -479,22 +479,22 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>
-    <award feedbackcodes="goodjob">sin(pi x)</award>
-    <award credit="0.7" feedbacktext="Close, but wrong trignometric function">cos(pi x)</award>
-    <award credit="0.3" feedbacktext="You lost pi">sin(x)</award>
+    <award feedbackcodes="goodjob"><math>sin(pi x)</math></award>
+    <award credit="0.7" feedbacktext="Close, but wrong trignometric function"><math>cos(pi x)</math></award>
+    <award credit="0.3" feedbacktext="You lost pi"><math>sin(x)</math></award>
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <aside name="feedback1" title=""><copy prop="feedback" tname="_award1" /></aside>
+  <subsection name="feedback1" title=""><copy prop="feedback" tname="_award1" /></subsection>
   
   <p>Award 2 feedback:</p>
-  <aside name="feedback2" title=""><copy prop="feedback" tname="_award2" /></aside>
+  <subsection name="feedback2" title=""><copy prop="feedback" tname="_award2" /></subsection>
 
   <p>Award 3 feedback:</p>
-  <aside name="feedback3" title=""><copy prop="feedback" tname="_award3" /></aside>
+  <subsection name="feedback3" title=""><copy prop="feedback" tname="_award3" /></subsection>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -503,11 +503,11 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -549,38 +549,38 @@ describe('Feedback Tag Tests', function () {
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
 
       cy.log("Type cos(pi x)")
       cy.get(mathinputAnchor).clear().type(`cos(pi x)`);
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').should('have.text', '')
-      cy.get('#\\/feedback2').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback2').should('have.text', ' FeedbackClose, but wrong trignometric function')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackClose, but wrong trignometric function')
 
 
       cy.log("Enter x")
@@ -596,8 +596,8 @@ describe('Feedback Tag Tests', function () {
       cy.get(mathinputPartialAnchor).should('have.text', '30 %');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
-      cy.get('#\\/feedback3').should('have.text', 'You lost pi')
-      cy.get('#\\/feedback4').should('have.text', 'You lost pi')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
 
     })
   });
@@ -618,7 +618,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -646,24 +646,24 @@ describe('Feedback Tag Tests', function () {
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Select half correct answer")
       cy.get(choiceinputAnchor).contains(`cat`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Select half incorrect answer")
       cy.get(choiceinputAnchor).contains(`monkey`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();

@@ -57,8 +57,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only center', () => {
 
     setupScene({
-      rectangleProperties: 'center="(-1, 5)"',
-      rectangleChildren: "",
+      rectangleProperties: '',
+      rectangleChildren: "<center>(-1,5)</center>",
     });
 
     runTests({
@@ -73,8 +73,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only center and width', () => {
 
     setupScene({
-      rectangleProperties: 'center="(-4, 2)" width="-2"',
-      rectangleChildren: "",
+      rectangleProperties: 'width="-2"',
+      rectangleChildren: "<center>(-4,2)</center>",
     });
 
     runTests({
@@ -90,7 +90,7 @@ describe('Rectangle Tag Tests', function () {
 
     setupScene({
       rectangleProperties: "",
-      rectangleChildren: '(2,3)',
+      rectangleChildren: '<vertices>(2,3)</vertices>',
     });
 
     runTests({
@@ -106,7 +106,7 @@ describe('Rectangle Tag Tests', function () {
 
     setupScene({
       rectangleProperties: 'height="6"',
-      rectangleChildren: '(-3,4)',
+      rectangleChildren: '<vertices>(-3,4)</vertices>',
     });
 
     runTests({
@@ -121,8 +121,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with center, width and height', () => {
 
     setupScene({
-      rectangleProperties: 'center="(-3,-4)" width="6" height="-3"',
-      rectangleChildren: "",
+      rectangleProperties: 'width="6" height="-3"',
+      rectangleChildren: "<center>(-3,-4)</center>",
     });
 
     runTests({
@@ -138,7 +138,7 @@ describe('Rectangle Tag Tests', function () {
 
     setupScene({
       rectangleProperties: 'width="7" height="4"',
-      rectangleChildren: "(-1, 2)",
+      rectangleChildren: "<vertices>(-1, 2)</vertices>",
     });
 
     runTests({
@@ -153,8 +153,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with 1 vertex and center', () => {
 
     setupScene({
-      rectangleProperties: 'center="(1,-1)"',
-      rectangleChildren: "(-2, -4)",
+      rectangleProperties: '',
+      rectangleChildren: "<vertices>(-2, -4)</vertices><center>(1,-1)</center>",
     });
 
     runTests({
@@ -170,7 +170,7 @@ describe('Rectangle Tag Tests', function () {
 
     setupScene({
       rectangleProperties: "",
-      rectangleChildren: '(-5, -9), (-1, -2)',
+      rectangleChildren: '<vertices>(-5, -9), (-1, -2)</vertices>',
     });
 
     runTests({

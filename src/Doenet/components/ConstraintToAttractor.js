@@ -32,7 +32,7 @@ export default class ConstraintToAttractor extends ConstraintComponent {
     stateVariableDefinitions.applyConstraint = {
       returnDependencies: () => ({
         constraintChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneConstraint",
           variableNames: ["applyConstraint", "applyComponentConstraint"],
           variablesOptional: true,

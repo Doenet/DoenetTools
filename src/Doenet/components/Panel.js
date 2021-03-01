@@ -32,7 +32,7 @@ export default class panel extends InlineComponent {
     stateVariableDefinitions.breakpoints = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "anything",
           variableNames: ["width"]
         },
@@ -119,7 +119,7 @@ export default class panel extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "anything",
         },
       }),

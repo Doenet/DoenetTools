@@ -13,7 +13,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
       setAsBase: true,
     });
 
@@ -25,6 +25,9 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    delete stateVariableDefinitions.parsedExpression;
+    delete stateVariableDefinitions.mathChildrenByCode;
+
     let constructor = this;
 
     stateVariableDefinitions.value = {
@@ -33,7 +36,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastOneMath",
           variableNames: ["value"]
         }

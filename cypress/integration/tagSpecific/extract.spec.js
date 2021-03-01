@@ -219,7 +219,7 @@ describe('Extract Tag Tests', function () {
     cy.log('move extracted center');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/copiedextract'].replacements[0].replacements[0].movePoint({ x: -2, y: -5 });
+      components['/copiedextract'].replacements[0].movePoint({ x: -2, y: -5 });
       expect(components["/x1"].replacements[0].stateValues.value.tree).closeTo(-2, 1E-12);
       expect(components["/y1"].replacements[0].stateValues.value.tree).closeTo(-5, 1E-12);
       expect(components["/x2"].replacements[0].stateValues.value.tree).closeTo(-2, 1E-12);
@@ -253,7 +253,7 @@ describe('Extract Tag Tests', function () {
 
     <p><aslist>
     <extract prop="text">
-      <sequence><count><copy prop="value" tname="n" /></count></sequence>
+      <sequence count="$n" />
     </extract>
     </aslist></p>
     
@@ -359,10 +359,10 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template><point>(<copyFromSubs/>+<copy prop="value" tname="../m" />,0)</point></template>
-        <substitutions>
-          <sequence><count><copy prop="value" tname="n" /></count></sequence>
-        </substitutions>
+        <template newnamespace><point>(<copySource/>+<copy prop="value" tname="../m" />,0)</point></template>
+        <sources>
+          <sequence count="$n" />
+        </sources>
       </map>
     </extract>
     </aslist></p>

@@ -11,7 +11,7 @@ export default function Button(props) {
         fontFamily: 'Arial',
         color: '#FFFFFF',
         borderRadius: '20px',
-        text: 'Button',
+        value: 'Button',
         padding: '0px 10px 0px 10px',
         cursor: 'pointer',
         fontSize: '12px'
@@ -23,15 +23,15 @@ export default function Button(props) {
   if (button.width < button.height) {
     button.width = '85px'
     };
-  if (props.text) {
-      button.text = props.text;
+  if (props.value) {
+      button.value = props.value;
   };
-  function handleClick() {
-    if (props.callback) props.callback()
+  function handleClick(e) {
+    if (props.callback) props.callback(e)
   }
     return (
         <>
-            <button style={button} onClick={() => { handleClick() }}>{button.text}</button>
+            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{button.text}</button>
         </>
     )
 }

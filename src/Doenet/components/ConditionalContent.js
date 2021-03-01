@@ -1,6 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { postProcessCopy } from '../utils/copy';
-import ComponentSize from './abstract/ComponentSize';
 
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalcontent";
@@ -47,9 +46,9 @@ export default class ConditionalContent extends CompositeComponent {
     stateVariableDefinitions.hide = {
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
-          variableNames: ["conditionSatisfied"],
+          variableNames: ["value"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -58,43 +57,22 @@ export default class ConditionalContent extends CompositeComponent {
         if (dependencyValues.conditionChild.length === 0) {
           hide = true;
         } else {
-          hide = !dependencyValues.conditionChild[0].stateValues.conditionSatisfied;
+          hide = !dependencyValues.conditionChild[0].stateValues.value;
         }
 
         return { newValues: { hide } }
       }
     };
 
-    stateVariableDefinitions.replacementClasses = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         hide: {
           dependencyType: "stateVariable",
           variableName: "hide",
         },
         anyChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroAnything"
-        }
-      }),
-      definition({ dependencyValues, componentInfoObjects }) {
-        let replacementClasses = [];
-
-        if (!dependencyValues.hide) {
-          replacementClasses = dependencyValues.anyChildren.map(
-            x => componentInfoObjects.allComponentClasses[x.componentType]
-          )
-        }
-
-        return { newValues: { replacementClasses } };
-
-      }
-    }
-
-    stateVariableDefinitions.readyToExpand = {
-      returnDependencies: () => ({
-        replacementClasses: {
-          dependencyType: "stateVariable",
-          variableName: "replacementClasses"
         },
         needsReplacementsUpdatedWhenStale: {
           dependencyType: "stateVariable",
@@ -109,7 +87,7 @@ export default class ConditionalContent extends CompositeComponent {
     stateVariableDefinitions.conditionName = {
       returnDependencies: () => ({
         conditionChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atMostOneCondition",
         },
       }),

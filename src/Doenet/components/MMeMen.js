@@ -42,6 +42,13 @@ export class M extends InlineComponent {
       comparison: 'atLeast',
       number: 0,
     });
+
+    let atLeastZeroMathinputs = childLogic.newLeaf({
+      name: "atLeastZeroMathinputs",
+      componentType: 'mathinput',
+      comparison: 'atLeast',
+      number: 0,
+    });
     childLogic.newOperator({
       name: "stringsTextsAndMaths",
       operator: 'and',
@@ -50,7 +57,8 @@ export class M extends InlineComponent {
         atLeastZeroTexts,
         atLeastZeroMaths,
         atLeastZeroMathlists,
-        atLeastZeroMs
+        atLeastZeroMs,
+        atLeastZeroMathinputs
       ],
       requireConsecutive: true,
       setAsBase: true,
@@ -64,12 +72,11 @@ export class M extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: this.componentType,
+      componentType: "text",
       defaultValue: "",
-      forRenderer: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsTextsAndMaths",
           variableNames: ["latex", "text"],
           variablesOptional: true,
@@ -101,6 +108,63 @@ export class M extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        stringTextMathChildren: {
+          dependencyType: "child",
+          childLogicName: "stringsTextsAndMaths",
+          variableNames: ["latex", "text"],
+          variablesOptional: true,
+        },
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+
+        if (dependencyValues.stringTextMathChildren.length === 0) {
+          return {
+            newValues: {
+              latexWithInputChildren: [dependencyValues.latex]
+            }
+          }
+        }
+
+        let latexWithInputChildren = [];
+        let lastLatex = "";
+        let inputInd = 0;
+        for (let child of dependencyValues.stringTextMathChildren) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "mathinput"
+          })) {
+            if (lastLatex.length > 0) {
+              latexWithInputChildren.push(lastLatex);
+              lastLatex = "";
+            }
+            latexWithInputChildren.push(inputInd);
+            inputInd++;
+          } else {
+            if (child.stateValues.latex) {
+              lastLatex += child.stateValues.latex
+            } else if (child.stateValues.text) {
+              lastLatex += child.stateValues.text
+            }
+          }
+        }
+        if (lastLatex.length > 0) {
+          latexWithInputChildren.push(lastLatex);
+        }
+
+        return { newValues: { latexWithInputChildren } }
+
+      }
+
+    }
+
+
     stateVariableDefinitions.renderMode = {
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -126,6 +190,24 @@ export class M extends InlineComponent {
         return { newValues: { text: expression.toString() } };
       }
     }
+
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        mathinputChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMathinputs"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            childrenToRender: dependencyValues.mathinputChildren.map(x => x.componentName)
+          }
+        };
+      }
+    }
+
 
     return stateVariableDefinitions;
   }
