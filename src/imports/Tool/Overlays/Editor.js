@@ -17,7 +17,7 @@ import DoenetViewer from '../../../Tools/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
-
+import './editor.css';
 
 const fileByContentId = atomFamily({
   key:"fileByContentId",
@@ -208,7 +208,7 @@ function TextEditor(props){
     }  
     }}>
 <CodeMirror
-
+  className="CodeMirror"
   editorDidMount={editor => { editorRef.current = editor;  }}
   value={textValue}
   options={options}
