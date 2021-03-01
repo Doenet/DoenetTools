@@ -531,6 +531,7 @@ export const folderDictionarySelector = selectorFamily({
           let newSortOrder = "";
 
           for(let gItem of globalSelectedItems){
+            console.log(">>>", gItem)
             //Deselect Item
             let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
             set(selectedDriveItemsAtom(selecteditem),false)
@@ -696,7 +697,6 @@ export const folderDictionarySelector = selectorFamily({
             }
           })
         } else {
-          console.log(">>>HERE", instructions)
           // insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
           set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
             let newObj = {...old};
@@ -745,6 +745,8 @@ export const folderDictionarySelector = selectorFamily({
         dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
         let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj.contentIds[sortOptions.DEFAULT];
         let insertIndex = dragShadowParentDefaultOrder.indexOf(dragShadowId);
+
+        console.log(">>>", insertIndex)
 
         if (insertIndex >= 0) {
           const instructions = {
@@ -1940,6 +1942,7 @@ const DoenetML = React.memo((props)=>{
         onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
+        onDragEnd={onDragEndCb}
         ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
         >
         { doenetMLJSX } 
@@ -1963,7 +1966,7 @@ const DoenetML = React.memo((props)=>{
   })
 
 const Url = React.memo((props)=>{
-  const { onDragStart, onDrag, onDragEnd, onDragOverContainer, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
+  const { onDragStart, onDrag, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const [dragState] = useRecoilState(dragStateAtom);
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
   // console.log(`=== 🔗 Url`)
@@ -1995,22 +1998,23 @@ const Url = React.memo((props)=>{
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-      
     if (cursorArea < 0.5) {
       // insert shadow to top of current dropTarget
       setFolderInfo({
         instructionType:"insertDragShadow",
-        position: "beforeCurrent"
+        position: "beforeCurrent",
+        itemId: props.item.itemId,
+        parentId: props.item.parentFolderId
       });
     }else if (cursorArea < 1.0000) {
       // insert shadow to bottom of current dropTarget
       setFolderInfo({
         instructionType:"insertDragShadow",
-        position: "afterCurrent"
+        position: "afterCurrent",
+        itemId: props.item.itemId,
+        parentId: props.item.parentFolderId
       });
     }
-
-    // onDragOverContainer({ id: props.folderId, driveId: props.driveId });
   }
 
   const onDragEndCb = () => {
@@ -2107,6 +2111,7 @@ const Url = React.memo((props)=>{
       onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
       onDrag={onDrag}
       onDragEnd={onDragEnd}
+      onDragEnd={onDragEndCb}
       ghostElement={renderDragGhost(props.item.itemId, urlJSX)}
       >
       { urlJSX } 
