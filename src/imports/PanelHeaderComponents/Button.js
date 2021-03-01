@@ -34,7 +34,7 @@ export default function Button(props) {
   }
     return (
         <>
-            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{button.text}</button>
+            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{button.value}</button>
         </>
     )
 }
