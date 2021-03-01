@@ -211,12 +211,16 @@ export default class Function extends InlineComponent {
           childLogicName: "atMostOneFunction",
           variableNames: ["variable"],
         },
+        parentVariable: {
+          dependencyType: "parentStateVariable",
+          variableName: "variable"
+        },
         isInterpolatedFunction: {
           dependencyType: "stateVariable",
           variableName: "isInterpolatedFunction"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.isInterpolatedFunction) {
           return { newValues: { variable: me.fromAst('\uff3f') } };
         } else if (dependencyValues.functionChild.length === 1) {
@@ -226,6 +230,8 @@ export default class Function extends InlineComponent {
           return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
         } else if (dependencyValues.variableChild.length === 1) {
           return { newValues: { variable: dependencyValues.variableChild[0].stateValues.value } }
+        } else if (dependencyValues.parentVariable && !usedDefault.parentVariable) {
+          return { newValues: { variable: dependencyValues.parentVariable } }
         } else {
           return {
             useEssentialOrDefaultValue: {
