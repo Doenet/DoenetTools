@@ -543,9 +543,6 @@ export const folderDictionarySelector = selectorFamily({
             if (!newSourceFInfo) newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
 
             if (gItem.parentFolderId !== instructions.itemId) {  
-              // item must be removed from parent, add to edited cache
-              sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
-
               // remove item from original parent contentIds
               let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
               newSourceFInfo["contentIds"]["defaultOrder"].splice(index, 1)
@@ -555,6 +552,9 @@ export const folderDictionarySelector = selectorFamily({
 
               // remove item from original dictionary
               delete newSourceFInfo["contentsDictionary"][gItem.itemId];
+
+              // item must be removed from parent, add to edited cache
+              sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
             } else {
               // make sure item not duplicated in destination contentIds
               newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
@@ -568,6 +568,7 @@ export const folderDictionarySelector = selectorFamily({
               defaultFolderChildrenIds: cleanDefaultOrder 
             });
             newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
+            newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = instructions.itemId;
 
             // insert item into contentIds of destination
             newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
@@ -1257,7 +1258,6 @@ function Folder(props){
     if (!isOpenRef.current && !props.isNav) {
       toggleOpen();
     }
-
     if (cursorArea < 0.5) {
       // insert shadow to top of current dropTarget
       setFolderInfo({
