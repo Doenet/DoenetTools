@@ -665,7 +665,7 @@ export const folderDictionarySelector = selectorFamily({
         const insertPosition = instructions.position;
         
         const dropTargetParentId = instructions.parentId;
-        dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+        if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
 
         // remove dragShadowId from dragShadowParentId (contentDictionary, contentIds)
         if (dragShadowParentFolderInfoObj) {
@@ -748,9 +748,9 @@ export const folderDictionarySelector = selectorFamily({
         })
       break;
       case "replaceDragShadow":
-        dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
-        let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj.contentIds[sortOptions.DEFAULT];
-        let insertIndex = dragShadowParentDefaultOrder.indexOf(dragShadowId);
+        if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+        let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
+        let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
 
         if (insertIndex >= 0) {
           const instructions = {
