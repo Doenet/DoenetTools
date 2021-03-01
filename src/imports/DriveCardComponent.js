@@ -172,7 +172,7 @@ const DriveCardComponent = (props) => {
   return avalibleCard.length > 0 ? true : false;
  }
   return (
-    // <div className="drivecardContainer">
+    <div className="drivecardContainer">
       <div
         {...bind}
         style={{
@@ -180,7 +180,7 @@ const DriveCardComponent = (props) => {
           height: Math.max(...heights),
           position: "relative",
         }}
-        className={`list drivecardContainer`}
+        className={`list`}
       >
         {transitions.map(({ item, props }, index) => {
           let selectedCard = getSelectedCard(item);
@@ -234,7 +234,7 @@ const DriveCardComponent = (props) => {
           );
         })}
       </div>
-    // </div>
+     </div>
   );
 };
 

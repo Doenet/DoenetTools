@@ -4,14 +4,13 @@
 }
 
 .drivecardContainer {
-  margin: 0;
-  height: 100%;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
+    segoe ui, arial, sans-serif;
   width: 100%;
-  user-select: none;
-  justify-content: center;
+  height: 100%;
 }
-
-.list {
+.list{
   position: relative;
   background-size: cover;
   background-position: center center;

@@ -13,7 +13,6 @@ line-height: 12px;
 border-radius: 5px;
 display: flex; /*added*/
 flex-direction: column; /*added*/
-justify-content: space-between;
 background-image: url(${(props) => props.url});
 background-color: ${(props) => `#${props.color}`};
 border: 2px solid #040F1A
@@ -54,10 +53,10 @@ const LabelContainer = Styled.p`
 const DriveCard = props => {
   // console.log(">>> Drive Card", props)
   let imageURL = `/media/${props.image}`
-
+  
 return(
-  <DriveCardContainer
-  url={imageURL}
+  <DriveCardContainer  
+  url={imageURL} 
   color={props.color}>
   <Image url={imageURL} color={props.color} />
   <Info>
@@ -67,7 +66,7 @@ return(
 )
 
 }
-
+ 
 
 
 export default DriveCard;
