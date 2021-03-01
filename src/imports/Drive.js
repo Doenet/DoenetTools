@@ -231,6 +231,7 @@ const dragStateAtom = atom({
   key: 'dragStateAtom',
   default: {
     isDragging: false,
+    draggedItemsId: null,
     draggedOverDriveId: null,
     isDraggedOverBreadcrumb: false,
     dragShadowDriveId: null,
@@ -347,7 +348,7 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
-    const { dragShadowDriveId, dragShadowParentId } = get(dragStateAtom);
+    const { dragShadowDriveId, dragShadowParentId, draggedItemsId } = get(dragStateAtom);
     let dragShadowParentFolderInfoObj = null;
     
     let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
@@ -642,6 +643,11 @@ export const folderDictionarySelector = selectorFamily({
         })
         break;
       case "insertDragShadow":
+        if (!draggedItemsId || draggedItemsId?.has(instructions.itemId)) {
+          set(folderDictionarySelector(driveIdFolderId), {instructionType:"removeDragShadow"});
+          return;
+        }
+
         const dragShadow = {
           assignmentId: null,
           branchId: null,
@@ -745,8 +751,6 @@ export const folderDictionarySelector = selectorFamily({
         dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
         let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj.contentIds[sortOptions.DEFAULT];
         let insertIndex = dragShadowParentDefaultOrder.indexOf(dragShadowId);
-
-        console.log(">>>", insertIndex)
 
         if (insertIndex >= 0) {
           const instructions = {
@@ -1198,6 +1202,7 @@ function Folder(props){
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
+  const dragStateRef = useRef(dragState);  // for memoized DnD callbacks
   
   // console.log(`=== 📁 ${folderInfo?.label}`)
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
@@ -1248,12 +1253,11 @@ function Folder(props){
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-    
     // open folder if initially closed
     if (!isOpenRef.current && !props.isNav) {
       toggleOpen();
     }
-      
+
     if (cursorArea < 0.5) {
       // insert shadow to top of current dropTarget
       setFolderInfo({
@@ -2138,18 +2142,22 @@ const Url = React.memo((props)=>{
 function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
+  const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
-    setDragState((dragState) => ({
+    let draggedItemsId = new Set();
+    draggedItemsId.add(nodeId)
+    setDragState((dragState) => ({      
       ...dragState,
       isDragging: true,
-      draggedOverDriveId: driveId
+      draggedOverDriveId: driveId,
+      draggedItemsId
     }));
     onDragStartCallback?.();
   };
 
   const onDrag = ({ clientX, clientY, translation, id }) => {
-    dropActions.handleDrag(clientX, clientY, id);
+    dropActions.handleDrag(clientX, clientY);
   };
 
   const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
@@ -2167,7 +2175,8 @@ function useDnDCallbacks() {
     setDragState((dragState) => ({
       ...dragState,
       isDragging: false,
-      draggedOverDriveId: null
+      draggedOverDriveId: null,
+      draggedItemsId: null
     }));
     dropActions.handleDrop();
   };

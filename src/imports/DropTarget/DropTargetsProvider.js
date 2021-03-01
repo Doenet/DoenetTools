@@ -98,7 +98,7 @@ export default function DropTargetsProvider({ children }) {
 
   const handleDrop = (selfId = null) => {
     if (activeDropTargetId !== null) {
-      dropTargetsRef.current[activeDropTargetId]?.[0]?.onDrop();
+      if (dropTargetsRef.current[activeDropTargetId]?.[0]?.onDrop) dropTargetsRef.current[activeDropTargetId][0].onDrop();
     }    
     setActiveDropTargetId(null);
   };
