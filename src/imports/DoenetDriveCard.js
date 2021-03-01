@@ -10,7 +10,7 @@ height: 100%;
 overflow: hidden;
 font-size: 10px;
 line-height: 12px;
-border-radius: 4px;
+border-radius: 5px;
 box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
 display: flex; /*added*/
 flex-direction: column; /*added*/
