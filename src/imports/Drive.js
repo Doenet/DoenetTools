@@ -1555,7 +1555,7 @@ function Folder(props){
               key={`item${itemId}${props.driveInstanceId}`} 
               driveId={props.driveId} 
               item={item} 
-              indentLevel={props.indentLevel+1}  
+              indentLevel={props.indentLevel+1}
               driveInstanceId={props.driveInstanceId}
               route={props.route}
               isNav={props.isNav} 
@@ -1581,6 +1581,7 @@ function Folder(props){
           case "DragShadow":
             items.push(<DragShadow 
               key={`dragShadow${itemId}${props.driveInstanceId}`} 
+              indentLevel={props.indentLevel+1}
             />)
           break;
           default:
@@ -1615,12 +1616,13 @@ const EmptyNode =  React.memo(function Node(props){
 })
 
 const DragShadow =  React.memo(function Node(props){
-
+  const indentPx = 20;
   return (<div style={{
     width: "840px",
     padding: "8px",
     backgroundColor: "#8dff45",
     margin: "2px",
+    marginLeft: `${props.indentLevel * indentPx}px`,
   
   }} ><div className="noselect" style={{marginLeft: "50px"}}>Drag shadow</div></div>)
 })
