@@ -26,8 +26,11 @@ export default function Button(props) {
   if (props.value) {
       button.value = props.value;
   };
-  function handleClick(e) {
-    if (props.callback) props.callback(e)
+  if (props.alert) {
+    button.backgroundColor = "#C1292E";
+  }
+  function handleClick() {
+    if (props.callback) props.callback()
   }
     return (
         <>
