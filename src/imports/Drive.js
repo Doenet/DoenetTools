@@ -2021,7 +2021,7 @@ const DragGhost = ({ id, element, numItems }) => {
     justifyContent: 'center',
     alignItems: 'center',
     background: "#e2e2e2",
-    marginLeft: "-60px"
+    // marginLeft: "-60px"
   }
 
   const multipleItemsNumCircleContainerStyle = {
@@ -2038,7 +2038,7 @@ const DragGhost = ({ id, element, numItems }) => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center', 
-    marginLeft: "-60px"
+    // marginLeft: "-60px"
   }
 
   // const multipleItemsRearStackStyle = {
