@@ -1,6 +1,5 @@
 import React from "react";
 import Styled from "styled-components";
-import Menu from "../Tools/DoenetCourseCardMenu";
 
 const DriveCardContainer = Styled.div`
 position: relative;
@@ -11,9 +10,12 @@ height: 100%;
 overflow: hidden;
 font-size: 10px;
 line-height: 12px;
-border-radius: 5px;
+border-radius: 4px;
+box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
 display: flex; /*added*/
 flex-direction: column; /*added*/
+justify-content: space-between;
+box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 20%);
 background-image: url(${(props) => props.url});
 background-color: ${(props) => `#${props.color}`};
 border: 2px solid #040F1A
@@ -54,10 +56,10 @@ const LabelContainer = Styled.p`
 const DriveCard = props => {
   // console.log(">>> Drive Card", props)
   let imageURL = `/media/${props.image}`
-  
+
 return(
-  <DriveCardContainer  
-  url={imageURL} 
+  <DriveCardContainer
+  url={imageURL}
   color={props.color}>
   <Image url={imageURL} color={props.color} />
   <Info>
@@ -67,7 +69,7 @@ return(
 )
 
 }
- 
+
 
 
 export default DriveCard;
