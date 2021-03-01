@@ -45,7 +45,6 @@ const DriveCardComponent = (props) => {
         height,
         opacity: 0,
         scale: 1,
-        position:"absolute"
             }),
 
       enter: ({
@@ -89,7 +88,6 @@ const DriveCardComponent = (props) => {
   };
   const handleKeyBlur = ( e , item) =>{
     if(e.type === "blur"){
-      console.log("!!!!!!!!!!!!");
       setDrivecardSelection([]);
 
     }
@@ -133,8 +131,8 @@ const DriveCardComponent = (props) => {
           let filteredArr = slicedArr.map((m)=>m.item);
           finalArray = [...finalArray,...filteredArr];
         }
-        //  console.log(">>>> final array",finalArray);
-        return finalArray;
+        let outputArray = finalArray.reduce((uniue,index) => uniue.find((el)=> (el.driveId==index.driveId) ? true :false) ? uniue:[...uniue,index],[]);
+        return outputArray;
         
       }
       else{
@@ -213,7 +211,7 @@ const DriveCardComponent = (props) => {
                 }}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onKeyUp={(e) => handleKeyUp(e, item)}
-                onBlur={(e)=> handleKeyBlur(e,item)}
+                // onBlur={(e)=> handleKeyBlur(e,item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
