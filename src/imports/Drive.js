@@ -532,7 +532,6 @@ export const folderDictionarySelector = selectorFamily({
           let newSortOrder = "";
 
           for(let gItem of globalSelectedItems){
-            console.log(">>>", gItem)
             //Deselect Item
             let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
             set(selectedDriveItemsAtom(selecteditem),false)
@@ -574,7 +573,7 @@ export const folderDictionarySelector = selectorFamily({
             newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
           }
           //Add all to destination
-          set(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}),newDestinationFolderObj);
+          set(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}), newDestinationFolderObj);
           //Clear global selection
           set(globalSelectedNodesAtom,[])
           //Remove from sources
@@ -799,7 +798,6 @@ export const folderInfoSelector = selectorFamily({
     
     let newFolderInfo = { ...folderInfo };
     newFolderInfo.sortBy = folderSortOrder
-    
     return {folderInfo: newFolderInfo, contentsDictionary, contentIdsArr};
   },
   set: (driveIdInstanceIdFolderId) => async ({set,get}, instructions)=>{
@@ -1203,9 +1201,7 @@ function Folder(props){
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
-  const dragStateRef = useRef(dragState);  // for memoized DnD callbacks
   
-  // console.log(`=== 📁 ${folderInfo?.label}`)
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
@@ -1226,7 +1222,7 @@ function Folder(props){
   useEffect(() => {
     isOpenRef.current = isOpen;
   }, [isOpen])
- 
+
   if (folderInfoObj.state === "loading"){ return null;}
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
  
@@ -1258,13 +1254,14 @@ function Folder(props){
     if (!isOpenRef.current && !props.isNav) {
       toggleOpen();
     }
+
     if (cursorArea < 0.5) {
       // insert shadow to top of current dropTarget
       setFolderInfo({
         instructionType:"insertDragShadow",
         position: "beforeCurrent",
         itemId: props.folderId,
-        parentId: folderInfo.parentFolderId
+        parentId: props.item?.parentFolderId
       });
     }else if (cursorArea < 1.0000) {
       // insert shadow to bottom of current dropTarget
@@ -1272,7 +1269,7 @@ function Folder(props){
         instructionType:"insertDragShadow",
         position: "afterCurrent",
         itemId: props.folderId,
-        parentId: folderInfo.parentFolderId
+        parentId: props.item?.parentFolderId
       });
     }
 
@@ -1287,8 +1284,6 @@ function Folder(props){
   }
 
   const onDrop = () => {
-    // setFolderInfo({instructionType:"removeDragShadow"});
-    // setFolderInfo({instructionType: "move items", driveId: props.driveId, itemId: dropTargetId});
   }
 
   const onDragEndCb = () => {
@@ -1520,7 +1515,8 @@ function Folder(props){
           items.push(<Folder 
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
-            folderId={item.itemId} 
+            folderId={itemId} 
+            item={item} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
@@ -1540,6 +1536,7 @@ function Folder(props){
             key={`item${itemId}${props.driveInstanceId}`} 
             driveId={props.driveId} 
             folderId={item.itemId} 
+            item={item} 
             indentLevel={props.indentLevel+1}  
             driveInstanceId={props.driveInstanceId}
             route={props.route}
