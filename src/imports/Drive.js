@@ -1211,11 +1211,11 @@ function Folder(props){
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
-  let borderSide = "0px 0px 0px 0px";
-  let marginSize = "2.5vw";
+  let borderSide = "0px";
+  let marginSize = "0";
   let widthSize = "60vw";
   if (props.isNav) {marginSize = "0px"; widthSize = "224px"};
-  if (isSelected  || (props.isNav && itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"; }
+  if (isSelected) { bgcolor = "hsl(209,54%,82%)";  }
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
 
@@ -1223,6 +1223,8 @@ function Folder(props){
     isOpenRef.current = isOpen;
   }, [isOpen])
 
+  if (props.isNav && itemId === props.pathItemId) {borderSide = "8px solid #1A5A99";}
+ 
   if (folderInfoObj.state === "loading"){ return null;}
   // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
  
@@ -1327,7 +1329,8 @@ function Folder(props){
         backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
-        marginLeft: marginSize
+        marginLeft: marginSize,
+        borderLeft: borderSide
       }}
       onClick={(e)=>{
         e.preventDefault(); // Folder
@@ -1379,7 +1382,7 @@ function Folder(props){
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`,
         display: 'grid',
-        gridTemplateColumns: '80% 20%',
+        gridTemplateColumns: '1fr',
         gridTemplateRows: '1fr',
         alignContent: 'center'
       }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> </div></div>
@@ -1400,14 +1403,15 @@ function Folder(props){
       className="noselect nooutline" 
       style={{
         cursor: "pointer",
-        padding: "8px",
+        padding: "12.5px",
         border: "0px",
         borderBottom: "2px solid black",
         backgroundColor: bgcolor,
         width: widthSize,
         // marginLeft: `${(props.indentLevel * indentPx)}px`,
         marginLeft: marginSize,
-        fontSize: "24px"
+        fontSize: "24px",
+        borderLeft: borderSide
       }}
       onClick={(e)=>{
         e.preventDefault();
@@ -1416,7 +1420,6 @@ function Folder(props){
           clearSelections();
           //Only select one item
           let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-          
           let newParams = {...urlParamsObj} 
           newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Drive`
           history.push('?'+encodeParams(newParams))
@@ -1432,14 +1435,15 @@ function Folder(props){
         className="noselect nooutline" 
         style={{
           cursor: "pointer",
-          padding: "8px",
+          padding: "12.5px",
           border: "0px",
           borderBottom: "2px solid black",
           backgroundColor: bgcolor,
           width: widthSize,
           // marginLeft: `${(props.indentLevel * indentPx)}px`,
           marginLeft: marginSize,
-          fontSize: "24px"
+          fontSize: "24px",
+          borderLeft: borderSide
         }}
       > {openCloseButton} Drive {label}</div>
     }
@@ -1608,11 +1612,10 @@ const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
     width: "840px",
     padding: "8px",
-    // border: "1px solid black",
     backgroundColor: "#f6f8ff",
-    margin: "2px",
+    marginLeft: '47.5%',
   
-  }} ><div className="noselect" style={{marginLeft: "50px"}}>EMPTY</div></div>)
+  }} ><div className="noselect" style={{justifyContent: "center"}}>EMPTY</div></div>)
 })
 
 const DragShadow =  React.memo(function Node(props){
@@ -1804,12 +1807,12 @@ const DoenetML = React.memo((props)=>{
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
-  let marginSize = "2.5vw";
+  let marginSize = "0";
   let date = props.item.creationDate.slice(0,10)
-  let published = <p><FontAwesomeIcon icon={faUsersSlash}/></p>
+  let published = <FontAwesomeIcon icon={faUsersSlash}/>
   let assigned = '-'
-  let columns = 'repeat(5, 20%)'
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='80% 20%'}
+  let columns = 'repeat(4,25%)'
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='1fr'}
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
@@ -1925,9 +1928,9 @@ const DoenetML = React.memo((props)=>{
         display: 'grid',
         gridTemplateColumns: columns,
         gridTemplateRows: '1fr',
-        alignItems: 'center'
+        alignContent: 'center'
       }}>
-<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> {date} {published} {assigned}</div></div>
+<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> <span>{date}</span> <span>{published}</span> <span>{assigned}</span></div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
@@ -1985,12 +1988,12 @@ const Url = React.memo((props)=>{
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
-  let marginSize = "2.5vw";
+  let marginSize = "0";
   let date = props.item.creationDate.slice(0,10);
   let published = <FontAwesomeIcon icon={faUsersSlash}/>
   let assigned = '-'
-  let columns = 'repeat(5, 20%)'
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='80% 20%'};
+  let columns = 'repeat(4,25%)'
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='1fr'};
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
@@ -2243,7 +2246,7 @@ function useUpdateBreadcrumb(props) {
     // generate folder stack
     const breadcrumbItemStyle = {
       fontSize: "24px",
-      color: "#8a8a8a",
+      color: "#040F1A",
       textDecoration: "none",
     }
     
@@ -2337,7 +2340,7 @@ const DragGhost = ({ id, element, numItems }) => {
     justifyContent: 'center',
     alignItems: 'center',
     background: "#e2e2e2",
-    marginLeft: "-60px"
+    // marginLeft: "-60px"
   }
 
   const multipleItemsNumCircleContainerStyle = {
@@ -2354,7 +2357,7 @@ const DragGhost = ({ id, element, numItems }) => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center', 
-    marginLeft: "-60px"
+    // marginLeft: "-60px"
   }
 
   // const multipleItemsRearStackStyle = {
