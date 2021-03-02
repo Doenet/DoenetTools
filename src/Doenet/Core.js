@@ -317,6 +317,8 @@ export default class Core {
 
       serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects);
 
+      serializeFunctions.decodeXMLEntities(serializedComponents);
+
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
 
       serializedStates.push(serializedComponents);

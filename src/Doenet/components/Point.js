@@ -33,19 +33,25 @@ export default class Point extends GraphicalComponent {
         componentType: "x", children: x
       });
 
-      let mustStripOffOuterParentheses = true;
-      if (matchedChildren.length === 1 && !matchedChildren[0].state.value.includes(",")) {
-        // if have just one string and that string doesn't have a comma,
-        // then don't strip off outer parentheses
-        mustStripOffOuterParentheses = false;
-      }
-
       let breakFunction = returnBreakStringsSugarFunction({
         childrenToComponentFunction,
-        mustStripOffOuterParentheses
+        mustStripOffOuterParentheses: true
       })
 
       let result = breakFunction({ matchedChildren });
+
+      if (!result.success && matchedChildren.length === 1) {
+        // if didn't succeed and just have a single string child,
+        // then just wrap string with a x
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "x",
+            children: matchedChildren
+          }]
+        }
+      }
+
 
       if (result.success) {
         // wrap xs around the x children
