@@ -43,7 +43,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "stats.js": "0.17.0",
     "styled-components": "^5.2.1",
-    "three": "^0.123.0",
+    "three": "^0.125.0",
     "three-text2d": "0.4.1"
   },
   "scripts": {
