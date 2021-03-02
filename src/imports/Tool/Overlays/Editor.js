@@ -280,45 +280,42 @@ function VersionHistoryPanel(props){
   // </>
 }
 
-const newVersionSelector = selector({
-  key:"newVersionSelector",
-  get: async ({get})=>{
-    // let data = await get(itemHistoryAtom(branchId));
-    const doenetML = get(editorDoenetMLAtom);
-    const contentId = getSHAofContent(doenetML);
-    const dt = new Date();
-    const timestamp = `${
-      dt.getFullYear().toString().padStart(2, '0')}-${
-      (dt.getMonth()+1).toString().padStart(2, '0')}-${
-      dt.getDate().toString().padStart(2, '0')} ${
-      dt.getHours().toString().padStart(2, '0')}:${
-      dt.getMinutes().toString().padStart(2, '0')}:${
-      dt.getSeconds().toString().padStart(2, '0')}`
+function buildTimestamp(){
+  const dt = new Date();
+  return `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    dt.getDate().toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`
+}
 
-    return {doenetML,contentId,timestamp}
-  }
-})
 
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
-  const addToVersionHistory = useRecoilCallback(({snapshot,set})=> async ()=>{
-    console.log(">>>Autosave!!!!!!!!!")
+  const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
+
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const timestamp = buildTimestamp();
+    let newVersion = {
+      contentId,
+      timestamp,
+      isDraft:'0',
+      isNamed:'0',
+      title:'Autosave'
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId:props.branchId
+    }
 
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    let newVersion = await snapshot.getPromise(newVersionSelector);
-    let modifiedNewVerion = {...newVersion}
-    modifiedNewVerion["isDraft"] = '0';
-    modifiedNewVerion["isNamed"] = '0';
-    modifiedNewVerion["title"] = 'Autosave';
-
-    const newHistoryVersion =  {...modifiedNewVerion }
-    delete newHistoryVersion.doenetML;
-    modifiedNewVerion["branchId"] = props.branchId;
- 
-    set(itemHistoryAtom(props.branchId),[...oldVersions,newHistoryVersion])
-    set(fileByContentId(newVersion.contentId),{data:newVersion.doenetML});
-    axios.post("/api/saveNewVersion.php",modifiedNewVerion)
+    set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
+    set(fileByContentId(newVersion.contentId),{data:doenetML});
+    axios.post("/api/saveNewVersion.php",newDBVersion)
     //  .then((resp)=>{console.log(">>>resp",resp.data)})
   });
 
@@ -367,17 +364,18 @@ function TextEditor(props){
   onBeforeChange={(editor, data, value) => {
       // if (selectedTimestamp === "") { //Only update if an inactive version history
       setEditorDoenetML(value);
-      if (timeout.current === null){
-        timeout.current = setTimeout(function(){
-          setVersion({instructions:{type:"Save Draft"}}) 
-          timeout.current = null;
-        },3000)
-      }
+      // if (timeout.current === null){
+      //   timeout.current = setTimeout(function(){
+      //     setVersion({instructions:{type:"Save Draft"}}) 
+      //     timeout.current = null;
+      //   },3000)
+      // }
       if (autosavetimeout.current === null){
         autosavetimeout.current = setTimeout(function(){
-          addToVersionHistory();
+          autoSave();
           autosavetimeout.current = null;
-        },60000) //1 minute
+        },1000) //1 second
+      // },60000) //1 minute
       }
   // }
   }}
