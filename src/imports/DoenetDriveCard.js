@@ -1,6 +1,5 @@
 import React from "react";
 import Styled from "styled-components";
-import Menu from "../Tools/DoenetCourseCardMenu";
 
 const DriveCardContainer = Styled.div`
 position: relative;
@@ -11,12 +10,13 @@ height: 100%;
 overflow: hidden;
 font-size: 10px;
 line-height: 12px;
-border-radius: 4px;
-box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 20%);
+border-radius: 5px;
 display: flex; /*added*/
 flex-direction: column; /*added*/
+justify-content: space-between;
 background-image: url(${(props) => props.url});
 background-color: ${(props) => `#${props.color}`};
+border: 2px solid #040F1A
 `;
 
 const Image = Styled.div`
@@ -31,16 +31,17 @@ const Image = Styled.div`
 const Info = Styled.div`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
+  border-top: 2px solid #040F1A;
   height: 65px;
   width: inherit;
-  background: rgba(240, 240, 240, 0.8);
+  background: #f6f8ff;
 `;
 
 const LabelContainer = Styled.p`
   text-transform: capitalize;
   margin: 7px;
   //width: 100%;
-  color: #282828;
+  color: #040F1A;
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
@@ -53,10 +54,10 @@ const LabelContainer = Styled.p`
 const DriveCard = props => {
   // console.log(">>> Drive Card", props)
   let imageURL = `/media/${props.image}`
-  
+
 return(
-  <DriveCardContainer  
-  url={imageURL} 
+  <DriveCardContainer
+  url={imageURL}
   color={props.color}>
   <Image url={imageURL} color={props.color} />
   <Info>
@@ -66,7 +67,7 @@ return(
 )
 
 }
- 
+
 
 
 export default DriveCard;
