@@ -4,19 +4,24 @@ import { useToolControlHelper } from "../ToolRoot";
 import axios from "axios";
 import crypto from 'crypto';
 import  VisibilitySensor from 'react-visibility-sensor';
+import Button from "../../../imports/PanelHeaderComponents/Button";
+
 import { 
   useRecoilValue, 
   atom, 
   atomFamily,
+  selector,
   selectorFamily,
   useSetRecoilState,
   useRecoilState,
-  useRecoilValueLoadable 
+  useRecoilValueLoadable, 
+  useRecoilCallback
 } from "recoil";
 import DoenetViewer from '../../../Tools/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
+// import 'codemirror/theme/material.css';
+// import 'codemirror/theme/xq-light.css';
 import './editor.css';
 
 const fileByContentId = atomFamily({
@@ -43,6 +48,24 @@ const viewerDoenetMLAtom = atom({
   default:{updateNumber:0,doenetML:""}
 })
 
+const itemHistoryAtom = atomFamily({
+  key:"itemHistoryAtom",
+  default: selectorFamily({
+    key:"itemHistoryAtom/Default",
+    get:(branchId)=> async ()=>{
+      console.log(">>>itemHistoryAtom branchId",branchId)
+      if (!branchId){
+        return [];
+      }
+      const { data } = await axios.get(
+        `/api/loadVersions.php?branchId=${branchId}`
+      );
+      console.log(">>>data",data)
+      return data.versions
+    }
+  })
+})
+
 function DoenetViewerPanel(){
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   console.log(">>>viewerDoenetML",viewerDoenetML)
@@ -67,7 +90,6 @@ function DoenetViewerPanel(){
       requestedVariant={requestedVariant}
       /> 
 }
-
 
 const getSHAofContent = (doenetML)=>{
   const hash = crypto.createHash('sha256');
@@ -107,33 +129,31 @@ const updateItemHistorySelector = selectorFamily({
         isNamed = "1";
       }else if (instructions.instructions.type === "Save Draft"){
         draft = true;
-        title = "draft";
-       } else if (instructions.instructions.type === "Autosave"){
-        title = "Autosave";
+        title = "Draft";
        } 
 
-       if (instructions.instructions.type === "Name Version"){
-        const newTitle = instructions.instructions.newTitle;
-        const timestamp = instructions.instructions.timestamp;
-        set(itemHistoryAtom(branchId),(oldVersions)=>{
-          let newVersions = [];
-          for (let version of oldVersions){
-            if (version.timestamp === timestamp){
-            let newVersion = {...version};
-              newVersion.title = newTitle;
-              newVersion.isNamed="1";
-              newVersions.push(newVersion);
-            }else{
-              newVersions.push(version);
-            }
+      //  if (instructions.instructions.type === "Name Version"){
+      //   const newTitle = instructions.instructions.newTitle;
+      //   const timestamp = instructions.instructions.timestamp;
+      //   set(itemHistoryAtom(branchId),(oldVersions)=>{
+      //     let newVersions = [];
+      //     for (let version of oldVersions){
+      //       if (version.timestamp === timestamp){
+      //       let newVersion = {...version};
+      //         newVersion.title = newTitle;
+      //         newVersion.isNamed="1";
+      //         newVersions.push(newVersion);
+      //       }else{
+      //         newVersions.push(version);
+      //       }
 
-          }
-          return [...newVersions]
-        })
-        axios.get("/api/updateNamedVersion.php",{ params: {timestamp,newTitle,branchId,isNamed:'1'} })
-        //  .then((resp)=>{console.log(">>>resp",resp.data)})
+      //     }
+      //     return [...newVersions]
+      //   })
+      //   axios.get("/api/updateNamedVersion.php",{ params: {timestamp,newTitle,branchId,isNamed:'1'} })
+      //   //  .then((resp)=>{console.log(">>>resp",resp.data)})
 
-       }else{
+      //  }else{
         let newVersion = {
           title:timestamp,
           contentId,
@@ -141,64 +161,196 @@ const updateItemHistorySelector = selectorFamily({
           isDraft: "0",
           isNamed
         }
-    
+
         if (!draft){
-          set(itemHistoryAtom(branchId),(oldVersions)=>{return [...oldVersions,newVersion]})
+          console.log(">>>itemHistoryAtom",branchId,newVersion)
+          // set(itemHistoryAtom(branchId),(oldVersions)=>{
+          //   console.log(">>>oldVersions",oldVersions)
+          //   return [...oldVersions,newVersion]
+          // })
+          let oldVersions = get(itemHistoryAtom(branchId));
+          console.log(">>>oldVersion",oldVersions);
+          // set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+
+          console.log(">>>fileByContentId",contentId,doenetML)
           set(fileByContentId(contentId),{data:doenetML})
         }else{
 
           set(fileByContentId(branchId),{data:doenetML})
         }
-console.log(`>>>write file with ${doenetML}`)
-        axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,draft})
+
+        axios.post("/api/saveNewVersion.php",{title,branchId,doenetML,isNamed,isDraft:draft})
         //  .then((resp)=>{console.log(">>>resp",resp.data)})
-       }
+       
 
 
     
   }
 })
 
+function VersionHistoryPanel(props){
+  return <p>history</p>
+  // const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
+  // const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  // const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
+  // const setEditingContentId = useSetRecoilState(EditingContentIdAtom);
+
+  // const [editingText,setEditingText] = useState("")
+
+  // if (versionHistory.state === "loading"){ return null;}
+  // if (versionHistory.state === "hasError"){ 
+  //   console.error(versionHistory.contents)
+  //   return null;}
+
+  //   let versions = [];
+  // for (let version of versionHistory.contents){
+  //   // console.log(">>>version",version)
+  //     if (version.isDraft !== "1"){
+  //     // let nameItButton = <button>Name Version</button>;
+
+  //     let titleText = version.timestamp;
+  //     let titleStyle = {}
+
+  //     if (version.isNamed === "1"){
+  //       titleText = version.title;
+  //     }
+
+  //     let drawer = null;
+  //     let versionStyle = {};
+
+  //     if (selectedTimestamp === version.timestamp){
+  //       versionStyle = {backgroundColor:"#b8d2ea"}
+  //       titleStyle = {border: "1px solid black", padding: "1px"}
+  //       drawer = <>
+  //       {/* <div>{nameItButton}</div> */}
+  //       <div><Button value="Make a copy" /></div>
+  //       <div><Button value="Delete Version" /></div>
+  //       <div><Button value="Use as Current Version" /></div>
+  //       </>
+  //     }
+  //     let title = <div><b 
+  //     onClick={()=>{
+  //       if (selectedTimestamp !== ""){
+  //         setEditingText(titleText);
+  //         setEditingTimestamp(version.timestamp)
+  //       }
+  //     }} 
+  //     style={titleStyle}>{titleText}</b></div>
+
+  //     if (editingTimestamp === version.timestamp){
+  //       title = <div><input 
+  //       autoFocus
+  //       onBlur={()=>{
+  //         setEditingTimestamp("");
+  //         setVersion({instructions:{type:"Name Version",newTitle:editingText,timestamp:version.timestamp}})
+  //       }}
+  //       onChange={(e)=>{setEditingText(e.target.value)}}
+  //       value = {editingText}
+  //     type="text" /></div>
+  //     }
+
+  //     versions.push(<React.Fragment key={`pastVersion${version.timestamp}`}>
+  //       <div 
+  //       onClick={()=>{
+  //         if (version.timestamp !== selectedTimestamp){
+  //           setSelectedTimestamp(version.timestamp)
+  //           // console.log(">>>version.contentId",version.contentId)
+  //           setEditingContentId(version.contentId)
+  //         }
+  //       }}
+  //     style={versionStyle}
+  //     >
+  //       {title}
+  //       <div>{version.timestamp}</div>
+  //       </div>
+  //       {drawer}
+  //       </React.Fragment> )
+
+  //   }
+  // }
+
+  // //   setVersion({instructions:{type:"Name Current Version"}}) }}>Name Version</button>
+
+  // if (versions.length === 0){
+  //   versions = <b>No Saved Versions</b>
+  // }
+  
+  // return <>
+  // {versions}
+  // </>
+}
+
+const newVersionSelector = selector({
+  key:"newVersionSelector",
+  get: async ({get})=>{
+    // let data = await get(itemHistoryAtom(branchId));
+    const doenetML = get(editorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const dt = new Date();
+    const timestamp = `${
+      dt.getFullYear().toString().padStart(2, '0')}-${
+      (dt.getMonth()+1).toString().padStart(2, '0')}-${
+      dt.getDate().toString().padStart(2, '0')} ${
+      dt.getHours().toString().padStart(2, '0')}:${
+      dt.getMinutes().toString().padStart(2, '0')}:${
+      dt.getSeconds().toString().padStart(2, '0')}`
+
+    return {doenetML,contentId,timestamp}
+  }
+})
 
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
-  // const [cancelAutoSave,setCancelAutoSave] = useRecoilState(cancelAutoSaveAtom);
+  const addToVersionHistory = useRecoilCallback(({snapshot,set})=> async ()=>{
+    console.log(">>>Autosave!!!!!!!!!")
+
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    let newVersion = await snapshot.getPromise(newVersionSelector);
+    let modifiedNewVerion = {...newVersion}
+    modifiedNewVerion["isDraft"] = '0';
+    modifiedNewVerion["isNamed"] = '0';
+    modifiedNewVerion["title"] = 'Autosave';
+
+    const newHistoryVersion =  {...modifiedNewVerion }
+    delete newHistoryVersion.doenetML;
+    modifiedNewVerion["branchId"] = props.branchId;
+ 
+    set(itemHistoryAtom(props.branchId),[...oldVersions,newHistoryVersion])
+    set(fileByContentId(newVersion.contentId),{data:newVersion.doenetML});
+    axios.post("/api/saveNewVersion.php",modifiedNewVerion)
+    //  .then((resp)=>{console.log(">>>resp",resp.data)})
+  });
 
   const timeout = useRef(null);
   let editorRef = useRef(null);
-  // const autosavetimeout = useRef(null);
+  const autosavetimeout = useRef(null);
   let textValue = editorDoenetML;
 
   //Used to work around second mount of codemirror with the same textValue it doesn't display textValue
   useEffect(() => {
-    // console.log(`>>>Mount!>${textValue}<`);
-    // textValue = ""; 
     return () => {
-      console.log(`>>>Unmount! textValue:>${textValue}<`);
+      console.log(`>>>Unmount!!!!!!!!!!!!!!!`);
       if (timeout.current !== null){
         clearTimeout(timeout.current)
         timeout.current = null;
-        setVersion({instructions:{type:"Save Draft"}})
+        setVersion({instructions:{type:"Save Draft"}}) 
+      }
+      if (autosavetimeout.current !== null){
+        clearTimeout(autosavetimeout.current)
       }
     };
   },[]);
-  console.log(`>>>textValue>${textValue}<`)
 
   // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
   
 
-  // if (cancelAutoSave){
-  //   if (autosavetimeout.current !== null){
-  //     clearTimeout(autosavetimeout.current)
-  //   }
-  //   setCancelAutoSave(false);
-  // }
-
   const options = {
       mode: 'xml',
       autoRefresh:true,
-      // theme: 'material',
+      // theme: 'neo',
+      // theme: 'base16-light',
+      // theme: 'xq-light',
       lineNumbers: true
   }
 
@@ -213,39 +365,32 @@ function TextEditor(props){
   value={textValue}
   options={options}
   onBeforeChange={(editor, data, value) => {
-      // setEditorDoenetML(value)
       // if (selectedTimestamp === "") { //Only update if an inactive version history
       setEditorDoenetML(value);
       if (timeout.current === null){
         timeout.current = setTimeout(function(){
-          setVersion({instructions:{type:"Save Draft"}})
+          setVersion({instructions:{type:"Save Draft"}}) 
           timeout.current = null;
         },3000)
       }
-      // if (autosavetimeout.current === null){
-      //   autosavetimeout.current = setTimeout(function(){
-      //     setVersion({instructions:{type:"Autosave"}})
-      //     autosavetimeout.current = null;
-      //   },60000) //TODO: Make 1 minute 60000
-      // }
+      if (autosavetimeout.current === null){
+        autosavetimeout.current = setTimeout(function(){
+          addToVersionHistory();
+          autosavetimeout.current = null;
+        },60000) //1 minute
+      }
   // }
   }}
   // onChange={(editor, data, value) => {
-  // }}
-  // onBlur={()=>{
-  //   if (timeout.current !== null){
-  //     clearTimeout(timeout.current)
-  //     timeout.current = null;
-  //     setVersion({instructions:{type:"Save Draft"}})
-  //   }
-  //   if (autosavetimeout.current !== null){
-  //     clearTimeout(autosavetimeout.current)
-  //   }
   // }}
 />
 
   </VisibilitySensor>
 }
+
+
+
+
 
 function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
@@ -253,12 +398,12 @@ function DoenetViewerUpdateButton(){
   // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
   // if (selectedTimestamp !== "") {return null;}
 
-  return <button onClick={()=>{setViewerDoenetML((old)=>{
+  return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
     newInfo.updateNumber = old.updateNumber+1;
     return newInfo;
-  })}}>Update</button>
+  })}} />
 }
 
 export default function Editor({ contentId, branchId }) {
@@ -283,17 +428,13 @@ export default function Editor({ contentId, branchId }) {
     return null;}
 
 
-
-
   return (
     <Tool>
       <headerPanel title="How?"></headerPanel>
 
       <mainPanel>
-        This is the editor on branch: {branchId} with content: {contentId}
         <div><DoenetViewerUpdateButton  /></div>
         <DoenetViewerPanel />
-
       </mainPanel>
 
       <supportPanel>
@@ -303,10 +444,8 @@ export default function Editor({ contentId, branchId }) {
           </div>
       </supportPanel>
 
-      <menuPanel title={"test"}>
-       {/* <p>test</p> */}
-          {/* <TextEditor  branchId={branchId}/> */}
-
+      <menuPanel title="Version history">
+        <VersionHistoryPanel branchId={branchId} />
       </menuPanel>
     </Tool>
   );
