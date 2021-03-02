@@ -3,11 +3,13 @@ import Tool from "../imports/Tool/Tool";
 import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 import Drive from "../imports/Drive";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
+import { useToast } from "../imports/Tool/Toast";
 
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
 
   const { open, activateMenuPanel } = useToolControlHelper();
+  const toast = useToast();
 
   useEffect(() => {
     activateMenuPanel(1);
@@ -33,10 +35,17 @@ export default function DoenetExampleTool() {
       <menuPanel title="edit">
         <button
           onClick={() => {
-            open("editor", "fdsa", "f13");
+            toast("hello from Toast!", 3000);
           }}
         >
-          Go to editor
+          Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("Other Toast!", 1000);
+          }}
+        >
+          Other Toast!
         </button>
         <button
           onClick={() => {

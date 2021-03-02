@@ -9,9 +9,11 @@ import Assignment from "./Overlays/Assignment";
 import Editor from "./Overlays/Editor";
 import Calendar from "./Overlays/Calendar";
 import Image from "./Overlays/Image";
+import Toast from "./Toast";
 import { useMenuPanelController } from "./Panels/MenuPanel";
 import { useSupportPanelController } from "./Panels/SupportPanel";
-import "./temp.css";
+import { GlobalStyle } from "../../Tools/DoenetStyle";
+// import doenetImage from "../../media/Doenet_Logo_cloud_only.png";
 
 const layerStackAtom = atom({
   key: "layerStackAtom",
@@ -102,10 +104,13 @@ export default function LayerRoot({ tool }) {
 
   return (
     <>
+      <GlobalStyle />
+
       {tool}
       {overlays.map((layer, idx) =>
         idx == overlays.length - 1 ? layer : null
       )}
+      <Toast />
     </>
   );
 }
