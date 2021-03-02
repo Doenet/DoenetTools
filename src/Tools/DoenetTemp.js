@@ -1,83 +1,48 @@
-import React from 'react';
-// import Date from '../imports/PanelHeaderComponents/Date.js';
-import GlobalFont from '../fonts/GlobalFont.js';
-import {driveColors} from '../imports/Util';
-import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
+import React, { useEffect } from "react";
+import Tool from "../imports/Tool/Tool";
+import { useToolControlHelper } from "../imports/Tool/ToolRoot";
+import Drive from "../imports/Drive";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
 
-//   // var timeout;
-//   // var timeout, promise,cancel;
-//   var latestDoenetML = doenetML;
-//   // console.log({timeout})
+export default function DoenetTemp() {
+  // console.log("=== DoenetExampleTool");
 
-export default function App() {
-return (
-<>
-<GlobalFont/>
-{/* <Date/> */}
-<div>
-<DoenetDriveCardMenu
-      data={driveColors} 
-      driveId = {'34XeNDOlpUtNIng4jsCKH'} 
-      // updateDriveColor = {updateDriveColor}
-      />
-</div>
-</>
-);
-}
+  const { open, setMenuPanel } = useToolControlHelper();
 
-  // return {promise,
-  //         cancel}
-// }
+  // useEffect(() => {
+  //   setMenuPanel(1);
+  // }, []);
 
-// let doenetMLAtom = atom({
-//   key:"doenetMLAtom",
-//   default:""
-// })
+  return (
+    <Tool>
+      <navPanel>
+        <p>nav</p>
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+      </navPanel>
 
+      <headerPanel title="Doenet Temp Tool"></headerPanel>
 
-// let saveSelector = selector({
-//   key:"saveSelector",
-//   set: ({get,set})=>{
-//     const doenetML = get(doenetMLAtom);
-//     console.log(">>>doenetML",doenetML)
-//   }
-// })
+      <mainPanel>
+      <button
+          onClick={() => {
+            open("editor", "ku_n7AXkAlEkZqNEvX_Vo", "6At01-MZM8nUjAFpBqquZ");
+          }}
+        >
+          Open Editor with Main Example
+        </button>
+      </mainPanel>
 
-function Temp() {
+      <supportPanel width="40%">
+        <p>Support Panel</p>
+      </supportPanel>
 
-  // let delaySave = delaySaveDraft("Done!")
-  const [doenetML,setDoenetML] = useRecoilState(doenetMLAtom)
-  const setSave = useSetRecoilState(saveSelector);
-  const timeout = useRef(null);
+      <menuPanel title="select">
+      <p>select</p>
+      </menuPanel>
 
-
-  return <><textarea value={doenetML} onChange={(e)=>{
-    setDoenetML(e.target.value);
-    if (timeout.current === null){
-      timeout.current = setTimeout(function(){
-        setSave()
-        timeout.current = null;
-      },3000)
-    }
-  }}
-    onBlur={()=>{
-      if (timeout.current !== null){
-        clearTimeout(timeout.current)
-        timeout.current = null;
-        setSave();
-      }
-    }}
-  />
-  {/* <button onClick={()=>{
-    // delaySaveDraft(doenetML,timeout)
-    delaySaveDraft();
-    // delaySave.promise.then((result)=>{
-      // alert(result)
-    // })
-  }}>Create Promise</button>
-  <button onClick={()=>{
-    // delaySave.cancel();
-  }}>Cancel</button> */}
-  </>
-  
+      <menuPanel title="+Add">
+        <p>Add</p>
+      </menuPanel>
+    </Tool>
+  );
 }
