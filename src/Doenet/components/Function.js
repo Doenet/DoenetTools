@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { normalizeMathExpression } from '../utils/math';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -10,6 +11,16 @@ export default class Function extends InlineComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.symbolic = { default: false };
+    // let simply==="" be full simplify so that can simplify <math simplify /> to get full simplification
+    // TODO: do we want to support simplify===""?
+    properties.simplify = {
+      default: "none",
+      toLowerCase: true,
+      valueTransformations: { "": "full", "true": "full" },
+      validValues: ["none", "full", "numbers", "numberspreserveorder"]
+    };
+    properties.expand = { default: false };
+
     properties.xscale = { default: 1, propagateToDescendants: true };
     properties.yscale = { default: 1, propagateToDescendants: true };
     // include properties of graphical components
@@ -530,6 +541,14 @@ export default class Function extends InlineComponent {
               childLogicName: "atMostOneFunction",
               variableNames: ["f"],
             },
+            simplify: {
+              dependencyType: "stateVariable",
+              variableName: "simplify"
+            },
+            expand: {
+              dependencyType: "stateVariable",
+              variableName: "expand"
+            },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
@@ -602,9 +621,16 @@ export default class Function extends InlineComponent {
           if (dependencyValues.symbolic) {
             let formula = dependencyValues.formula;
             let varString = dependencyValues.variable.tree;
+            let simplify = dependencyValues.simplify;
+            let expand = dependencyValues.expand;
             return {
               newValues: {
-                f: (x) => formula.substitute({ [varString]: x })
+                f: (x) => normalizeMathExpression({
+                  value: formula.substitute({ [varString]: x }),
+                  simplify,
+                  expand
+
+                })
               }
             }
           } else {

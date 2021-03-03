@@ -1,6 +1,7 @@
 import me from 'math-expressions';
 import { deepCompare } from './deepFunctions';
 import MathComponent from '../components/Math';
+import { normalizeMathExpression } from './math';
 
 export default function checkEquality({
   object1, object2, isUnordered = false, partialMatches = false,
@@ -89,7 +90,7 @@ export default function checkEquality({
     } else {
       x = x.evaluate_numbers({ max_digits: Infinity, evaluate_functions: true });
     }
-    return MathComponent.normalize({
+    return normalizeMathExpression({
       value: x, simplify: simplify, expand: expand
     });
   }
