@@ -37,7 +37,6 @@ export default class SectioningComponent extends BlockComponent {
       componentType: "title",
       comparison: "atMost",
       number: 1,
-      takePropertyChildren: true,
     })
 
     let anything = childLogic.newLeaf({

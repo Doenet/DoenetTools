@@ -25,7 +25,7 @@ describe('Sectioning Tag Tests', function () {
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
-    <section title="Section 1" name="section1">
+    <section name="section1"><title>Section 1</title>
       <p>Credit achieved for <copy prop="title" tname="section1" />:
       <copy name="s1Ca" prop="creditAchieved" tname="section1" />, or <copy name="s1Pca" prop="percentCreditAchieved" tname="section1" />%</p>
 
@@ -34,13 +34,13 @@ describe('Sectioning Tag Tests', function () {
 
 
     </section>
-    <section title="Section 2" name="section2">
+    <section name="section2"><title>Section 2</title>
       <p>Credit achieved for <copy prop="title" tname="section2" />:
       <copy name="s2Ca" prop="creditAchieved" tname="section2" />, or <copy name="s2Pca" prop="percentCreditAchieved" tname="section2" />%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
-      <subsection title="Section 2.1" name="section21">
+      <subsection name="section21"><title>Section 2.1</title>
         <p>Credit achieved for <copy prop="title" tname="section21" />:
         <copy name="s21Ca" prop="creditAchieved" tname="section21" />, or <copy name="s21Pca" prop="percentCreditAchieved" tname="section21" />%</p>
 
@@ -49,20 +49,20 @@ describe('Sectioning Tag Tests', function () {
         <p>Enter <m>w</m>: <answer>w</answer></p>
 
       </subsection>
-      <subsection title="Section 2.2" name="section22">
+      <subsection name="section22"><title>Section 2.2</title>
         <p>Credit achieved for <copy prop="title" tname="section22" />:
         <copy name="s22Ca" prop="creditAchieved" tname="section22" />, or <copy name="s22Pca" prop="percentCreditAchieved" tname="section22" />%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
-        <subsubsection title="Section 2.2.1" name="section221">
+        <subsubsection name="section221"><title>Section 2.2.1</title>
           <p>Credit achieved for <copy prop="title" tname="section221" />:
           <copy name="s221Ca" prop="creditAchieved" tname="section221" />, or <copy name="s221Pca" prop="percentCreditAchieved" tname="section221" />%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </subsubsection>
-        <subsubsection title="Section 2.2.2" name="section222">
+        <subsubsection name="section222"><title>Section 2.2.2</title>
           <p>Credit achieved for <copy prop="title" tname="section222" />:
           <copy name="s222Ca" prop="creditAchieved" tname="section222" />, or <copy name="s222Pca" prop="percentCreditAchieved" tname="section222" />%</p>
 
@@ -370,7 +370,7 @@ describe('Sectioning Tag Tests', function () {
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
-    <section title="Section 1" name="section1" aggregatescores>
+    <section name="section1" aggregatescores><title>Section 1</title>
       <p>Credit achieved for <copy prop="title" tname="section1" />:
       <copy name="s1Ca" prop="creditAchieved" tname="section1" />, or <copy name="s1Pca" prop="percentCreditAchieved" tname="section1" />%</p>
 
@@ -379,13 +379,13 @@ describe('Sectioning Tag Tests', function () {
 
 
     </section>
-    <section title="Section 2" name="section2" aggregatescores>
+    <section name="section2" aggregatescores><title>Section 2</title>
       <p>Credit achieved for <copy prop="title" tname="section2" />:
       <copy name="s2Ca" prop="creditAchieved" tname="section2" />, or <copy name="s2Pca" prop="percentCreditAchieved" tname="section2" />%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
-      <subsection title="Section 2.1" name="section21" aggregatescores>
+      <subsection name="section21" aggregatescores><title>Section 2.1</title>
         <p>Credit achieved for <copy prop="title" tname="section21" />:
         <copy name="s21Ca" prop="creditAchieved" tname="section21" />, or <copy name="s21Pca" prop="percentCreditAchieved" tname="section21" />%</p>
 
@@ -394,20 +394,20 @@ describe('Sectioning Tag Tests', function () {
         <p>Enter <m>w</m>: <answer>w</answer></p>
 
       </subsection>
-      <subsection title="Section 2.2" name="section22">
+      <subsection name="section22"><title>Section 2.2</title>
         <p>Credit achieved for <copy prop="title" tname="section22" />:
         <copy name="s22Ca" prop="creditAchieved" tname="section22" />, or <copy name="s22Pca" prop="percentCreditAchieved" tname="section22" />%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
-        <subsubsection title="Section 2.2.1" name="section221" aggregatescores>
+        <subsubsection name="section221" aggregatescores><title>Section 2.2.1</title>
           <p>Credit achieved for <copy prop="title" tname="section221" />:
           <copy name="s221Ca" prop="creditAchieved" tname="section221" />, or <copy name="s221Pca" prop="percentCreditAchieved" tname="section221" />%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </subsubsection>
-        <subsubsection title="Section 2.2.2" name="section222" aggregatescores>
+        <subsubsection name="section222" aggregatescores><title>Section 2.2.2</title>
           <p>Credit achieved for <copy prop="title" tname="section222" />:
           <copy name="s222Ca" prop="creditAchieved" tname="section222" />, or <copy name="s222Pca" prop="percentCreditAchieved" tname="section222" />%</p>
 
@@ -773,7 +773,7 @@ describe('Sectioning Tag Tests', function () {
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
-    <section title="Section 1" name="section1" aggregatescores weight="0.5">
+    <section name="section1" aggregatescores weight="0.5"><title>Section 1</title>
       <p>Credit achieved for <copy prop="title" tname="section1" />:
       <copy name="s1Ca" prop="creditAchieved" tname="section1" />, or <copy name="s1Pca" prop="percentCreditAchieved" tname="section1" />%</p>
 
@@ -782,13 +782,13 @@ describe('Sectioning Tag Tests', function () {
 
 
     </section>
-    <section title="Section 2" name="section2" aggregatescores weight="2">
+    <section name="section2" aggregatescores weight="2"><title>Section 2</title>
       <p>Credit achieved for <copy prop="title" tname="section2" />:
       <copy name="s2Ca" prop="creditAchieved" tname="section2" />, or <copy name="s2Pca" prop="percentCreditAchieved" tname="section2" />%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
-      <subsection title="Section 2.1" name="section21" aggregatescores weight="3">
+      <subsection name="section21" aggregatescores weight="3"><title>Section 2.1</title>
         <p>Credit achieved for <copy prop="title" tname="section21" />:
         <copy name="s21Ca" prop="creditAchieved" tname="section21" />, or <copy name="s21Pca" prop="percentCreditAchieved" tname="section21" />%</p>
 
@@ -797,20 +797,20 @@ describe('Sectioning Tag Tests', function () {
         <p>Enter <m>w</m>: <answer>w</answer></p>
 
       </subsection>
-      <subsection title="Section 2.2" name="section22" aggregatescores weight="4">
+      <subsection name="section22" aggregatescores weight="4"><title>Section 2.2</title>
         <p>Credit achieved for <copy prop="title" tname="section22" />:
         <copy name="s22Ca" prop="creditAchieved" tname="section22" />, or <copy name="s22Pca" prop="percentCreditAchieved" tname="section22" />%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
-        <subsubsection title="Section 2.2.1" name="section221" aggregatescores weight="5">
+        <subsubsection name="section221" aggregatescores weight="5"><title>Section 2.2.1</title>
           <p>Credit achieved for <copy prop="title" tname="section221" />:
           <copy name="s221Ca" prop="creditAchieved" tname="section221" />, or <copy name="s221Pca" prop="percentCreditAchieved" tname="section221" />%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </subsubsection>
-        <subsubsection title="Section 2.2.2" name="section222" aggregatescores weight="1">
+        <subsubsection name="section222" aggregatescores weight="1"><title>Section 2.2.2</title>
           <p>Credit achieved for <copy prop="title" tname="section222" />:
           <copy name="s222Ca" prop="creditAchieved" tname="section222" />, or <copy name="s222Pca" prop="percentCreditAchieved" tname="section222" />%</p>
 
@@ -1185,7 +1185,7 @@ describe('Sectioning Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <paragraphs title="Some paragraphs">
+    <paragraphs><title>Some paragraphs</title>
 
     <p>Paragraph 1</p>
     <p>Paragraph 2</p>

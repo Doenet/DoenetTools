@@ -581,7 +581,7 @@ describe('Specifying subvariants tests', function () {
                 <variantControl nvariants="100"/>
             
                 <select assignnames="(problem1), (problem2), (problem3)" numbertoselect="3" withReplacement>
-                  <option><problem title="A word problem" >
+                  <option><problem><title>A word problem</title>
                     <variantControl nvariants="5" variants="a,b,c,d,e" />
                     <p>Word:
                       <select>
@@ -593,7 +593,7 @@ describe('Specifying subvariants tests', function () {
                       </select>
                     </p>
                   </problem></option>
-                  <option><problem title="A number problem">
+                  <option><problem><title>A number problem</title>
                     <variantControl nvariants="3" />
                     <p>Number: 
                       <select>

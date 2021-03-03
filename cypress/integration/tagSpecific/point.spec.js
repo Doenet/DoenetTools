@@ -3823,13 +3823,13 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
-    <section title="The points" name="thePoints">
+    <section name="thePoints"><title>The points</title>
     <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
     </section>
 
-    <section title="From point 1">
+    <section><title>From point 1</title>
     <p>Number of dimensions: <copy name="nDimensions1" prop="nDimensions" tname="_point1" /></p>
     <p name="p1x">x-coordinate: <copy name="point1x1" prop="x1" tname="_point1"/></p>
     <p name="p1y">y-coordinate: <copy name="point1x2" prop="x2" tname="_point1"/></p>
@@ -3838,7 +3838,7 @@ describe('Point Tag Tests', function () {
     <p>Coordinates: <copy name="coords1" prop="coords" tname="_point1"/></p>
     </section>
 
-    <section title="From point 2">
+    <section><title>From point 2</title>
     <p>Number of dimensions: <copy name="nDimensions2" prop="nDimensions" tname="point2" /></p>
     <p name="p2x">x-coordinate: <copy name="point2x1" prop="x1" tname="point2"/></p>
     <p name="p2y">y-coordinate: <copy name="point2x2" prop="x2" tname="point2"/></p>
@@ -3847,7 +3847,7 @@ describe('Point Tag Tests', function () {
     <p>Coordinates: <copy name="coords2" prop="coords" tname="point2"/></p>
     </section>
 
-    <section title="From point 3">
+    <section><title>From point 3</title>
     <p>Number of dimensions: <copy name="nDimensions3" prop="nDimensions" tname="point3" /></p>
     <p name="p3x">x-coordinate: <copy name="point3x1" prop="x1" tname="point3"/></p>
     <p name="p3y">y-coordinate: <copy name="point3x2" prop="x2" tname="point3"/></p>
@@ -3856,28 +3856,28 @@ describe('Point Tag Tests', function () {
     <p>Coordinates: <copy name="coords3" prop="coords" tname="point3"/></p>
     </section>
 
-    <section title="For point 1">
+    <section><title>For point 1</title>
     <p>Change coords: <mathinput name="coords1b"><copy prop="coords" tname="_point1"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point1x1b"><copy prop="x1" tname="_point1"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point1x2b"><copy prop="x2" tname="_point1" includeUndefinedObjects/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point1x3b"><copy prop="x3" tname="_point1" includeUndefinedObjects/></mathinput></p>    
     </section>
 
-    <section title="For point 2">
+    <section><title>For point 2</title>
     <p>Change coords: <mathinput name="coords2b"><copy prop="coords" tname="point2"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point2x1b"><copy prop="x1" tname="point2"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point2x2b"><copy prop="x2" tname="point2" includeUndefinedObjects/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point2x3b"><copy prop="x3" tname="point2" includeUndefinedObjects/></mathinput></p>    
     </section>
 
-    <section title="For point 3">
+    <section><title>For point 3</title>
     <p>Change coords: <mathinput name="coords3b"><copy prop="coords" tname="point3"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point3x1b"><copy prop="x1" tname="point3"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point3x2b"><copy prop="x2" tname="point3" includeUndefinedObjects/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point3x3b"><copy prop="x3" tname="point3" includeUndefinedObjects/></mathinput></p>    
     </section>
 
-    <section title="collecting">
+    <section><title>collecting</title>
     <p name="pallx">x-coordinates: <aslist><collect name="pointallx1" componentTypes="point" prop="x1" tname="thePoints"/></aslist></p>
     <p name="pally">y-coordinates: <aslist><collect name="pointallx2" componentTypes="point" prop="x2" tname="thePoints"/></aslist></p>
     <p name="pallz">z-coordinates: <aslist><collect name="pointallx3" componentTypes="point" prop="x3" tname="thePoints"/></aslist></p>
@@ -3885,7 +3885,7 @@ describe('Point Tag Tests', function () {
     <p>Coordinates: <aslist><collect name="coordsall" componentTypes="point" prop="coords" tname="thePoints"/></aslist></p>
     </section>
 
-    <section title="Extracting from point 3">
+    <section><title>Extracting from point 3</title>
     <p name="p3xe">x-coordinate: <extract name="point3x1e" prop="x1"><copy tname="point3"/></extract></p>
     <p name="p3ye">y-coordinate: <extract name="point3x2e" prop="x2"><copy tname="point3"/></extract></p>
     <p name="p3ze">z-coordinate: <extract name="point3x3e" prop="x3"><copy tname="point3"/></extract></p>
@@ -7039,7 +7039,7 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
-    <section title="The points" name="thePoints">
+    <section name="thePoints"><title>The points</title>
     <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
