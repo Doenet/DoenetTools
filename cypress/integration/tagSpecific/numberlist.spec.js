@@ -263,16 +263,6 @@ describe('Numberlist Tag Tests', function () {
       cy.get(child7Anchor).should('have.text', '8');
       cy.get(child8Anchor).should('have.text', '9');
 
-      cy.get("#\\/_mathinput1_input").should('have.value', '1')
-      cy.get("#\\/_mathinput2_input").should('have.value', '2')
-      cy.get("#\\/_mathinput3_input").should('have.value', '3')
-      cy.get("#\\/_mathinput4_input").should('have.value', '4')
-      cy.get("#\\/_mathinput5_input").should('have.value', '5')
-      cy.get("#\\/_mathinput6_input").should('have.value', '6')
-      cy.get("#\\/_mathinput7_input").should('have.value', '7')
-      cy.get("#\\/_mathinput8_input").should('have.value', '8')
-      cy.get("#\\/_mathinput9_input").should('have.value', '9')
-
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -303,15 +293,15 @@ describe('Numberlist Tag Tests', function () {
 
       cy.log('change values')
 
-      cy.get("#\\/_mathinput1_input").clear().type("-11{enter}")
-      cy.get("#\\/_mathinput2_input").clear().type("-12{enter}")
-      cy.get("#\\/_mathinput3_input").clear().type("-13{enter}")
-      cy.get("#\\/_mathinput4_input").clear().type("-14{enter}")
-      cy.get("#\\/_mathinput5_input").clear().type("-15{enter}")
-      cy.get("#\\/_mathinput6_input").clear().type("-16{enter}")
-      cy.get("#\\/_mathinput7_input").clear().type("-17{enter}")
-      cy.get("#\\/_mathinput8_input").clear().type("-18{enter}")
-      cy.get("#\\/_mathinput9_input").clear().type("-19{enter}")
+      cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-11{enter}", { force: true })
+      cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}-12{enter}", { force: true })
+      cy.get("#\\/_mathinput3 textarea").type("{end}{backspace}-13{enter}", { force: true })
+      cy.get("#\\/_mathinput4 textarea").type("{end}{backspace}-14{enter}", { force: true })
+      cy.get("#\\/_mathinput5 textarea").type("{end}{backspace}-15{enter}", { force: true })
+      cy.get("#\\/_mathinput6 textarea").type("{end}{backspace}-16{enter}", { force: true })
+      cy.get("#\\/_mathinput7 textarea").type("{end}{backspace}-17{enter}", { force: true })
+      cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}-18{enter}", { force: true })
+      cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}-19{enter}", { force: true })
 
 
       cy.log('Test value displayed in browser')
@@ -324,16 +314,6 @@ describe('Numberlist Tag Tests', function () {
       cy.get(child6Anchor).should('have.text', '-17');
       cy.get(child7Anchor).should('have.text', '-18');
       cy.get(child8Anchor).should('have.text', '-19');
-
-      cy.get("#\\/_mathinput1_input").should('have.value', '-11')
-      cy.get("#\\/_mathinput2_input").should('have.value', '-12')
-      cy.get("#\\/_mathinput3_input").should('have.value', '-13')
-      cy.get("#\\/_mathinput4_input").should('have.value', '-14')
-      cy.get("#\\/_mathinput5_input").should('have.value', '-15')
-      cy.get("#\\/_mathinput6_input").should('have.value', '-16')
-      cy.get("#\\/_mathinput7_input").should('have.value', '-17')
-      cy.get("#\\/_mathinput8_input").should('have.value', '-18')
-      cy.get("#\\/_mathinput9_input").should('have.value', '-19')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
@@ -430,16 +410,6 @@ describe('Numberlist Tag Tests', function () {
       cy.get(child7Anchor).should('have.text', '8');
       cy.get(child8Anchor).should('have.text', '9');
 
-      cy.get("#\\/_mathinput1_input").should('have.value', '1')
-      cy.get("#\\/_mathinput2_input").should('have.value', '2')
-      cy.get("#\\/_mathinput3_input").should('have.value', '3')
-      cy.get("#\\/_mathinput4_input").should('have.value', '4')
-      cy.get("#\\/_mathinput5_input").should('have.value', '5')
-      cy.get("#\\/_mathinput6_input").should('have.value', '6')
-      cy.get("#\\/_mathinput7_input").should('have.value', '7')
-      cy.get("#\\/_mathinput8_input").should('have.value', '8')
-      cy.get("#\\/_mathinput9_input").should('have.value', '9')
-
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -470,15 +440,15 @@ describe('Numberlist Tag Tests', function () {
 
       cy.log('change values')
 
-      cy.get("#\\/_mathinput1_input").clear().type("-11{enter}")
-      cy.get("#\\/_mathinput2_input").clear().type("-12{enter}")
-      cy.get("#\\/_mathinput3_input").clear().type("-13{enter}")
-      cy.get("#\\/_mathinput4_input").clear().type("-14{enter}")
-      cy.get("#\\/_mathinput5_input").clear().type("-15{enter}")
-      cy.get("#\\/_mathinput6_input").clear().type("-16{enter}")
-      cy.get("#\\/_mathinput7_input").clear().type("-17{enter}")
-      cy.get("#\\/_mathinput8_input").clear().type("-18{enter}")
-      cy.get("#\\/_mathinput9_input").clear().type("-19{enter}")
+      cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-11{enter}", { force: true })
+      cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}-12{enter}", { force: true })
+      cy.get("#\\/_mathinput3 textarea").type("{end}{backspace}-13{enter}", { force: true })
+      cy.get("#\\/_mathinput4 textarea").type("{end}{backspace}-14{enter}", { force: true })
+      cy.get("#\\/_mathinput5 textarea").type("{end}{backspace}-15{enter}", { force: true })
+      cy.get("#\\/_mathinput6 textarea").type("{end}{backspace}-16{enter}", { force: true })
+      cy.get("#\\/_mathinput7 textarea").type("{end}{backspace}-17{enter}", { force: true })
+      cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}-18{enter}", { force: true })
+      cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}-19{enter}", { force: true })
 
 
       cy.log('Test value displayed in browser')
@@ -491,16 +461,6 @@ describe('Numberlist Tag Tests', function () {
       cy.get(child6Anchor).should('have.text', '-17');
       cy.get(child7Anchor).should('have.text', '-18');
       cy.get(child8Anchor).should('have.text', '-19');
-
-      cy.get("#\\/_mathinput1_input").should('have.value', '-11')
-      cy.get("#\\/_mathinput2_input").should('have.value', '-12')
-      cy.get("#\\/_mathinput3_input").should('have.value', '-13')
-      cy.get("#\\/_mathinput4_input").should('have.value', '-14')
-      cy.get("#\\/_mathinput5_input").should('have.value', '-15')
-      cy.get("#\\/_mathinput6_input").should('have.value', '-16')
-      cy.get("#\\/_mathinput7_input").should('have.value', '-17')
-      cy.get("#\\/_mathinput8_input").should('have.value', '-18')
-      cy.get("#\\/_mathinput9_input").should('have.value', '-19')
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
@@ -610,7 +570,7 @@ describe('Numberlist Tag Tests', function () {
 
       let mathinputAnchors = []
       for (let i in mapping) {
-        mathinputAnchors.push(`#\\/_mathinput${Number(i) + 1}_input`)
+        mathinputAnchors.push(`#\\/_mathinput${Number(i) + 1} textarea`)
 
       }
 
@@ -618,7 +578,6 @@ describe('Numberlist Tag Tests', function () {
 
       for (let i in mapping) {
         cy.get(childAnchors[i]).should('have.text', String(mv(i)))
-        cy.get(mathinputAnchors[i]).should('have.value', String(mv(i)))
       }
 
       cy.log('Test internal values are set to the correct values')
@@ -633,13 +592,12 @@ describe('Numberlist Tag Tests', function () {
       for (let changeInd in mapping) {
         cy.window().then((win) => {
           vals[mapping[changeInd]] = 100 + Number(changeInd);
-          cy.get(mathinputAnchors[changeInd]).clear().type((100 + Number(changeInd)) + "{enter}");
+          cy.get(mathinputAnchors[changeInd]).type("{end}{backspace}{backspace}{backspace}" + (100 + Number(changeInd)) + "{enter}", { force: true });
 
           cy.log('Test value displayed in browser')
 
           for (let i in mapping) {
             cy.get(childAnchors[i]).should('have.text', String(mv(i)))
-            cy.get(mathinputAnchors[i]).should('have.value', String(mv(i)))
           }
 
           cy.log('Test internal values are set to the correct values')

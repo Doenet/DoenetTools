@@ -171,7 +171,7 @@ describe('Group Tag Tests',function() {
     Number list:
     <aslist>
     <map>
-    <template><math simplify><copySource/>^2</math></template>
+    <template><math simplify><copy tname="_source" />^2</math></template>
     <sources>
     <sequence>
       <from><copy prop="value" tname="from" /></from>
