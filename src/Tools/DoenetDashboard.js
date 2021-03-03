@@ -287,7 +287,7 @@ const alphabet =
     // Drive cards component
     let drivecardComponent = null;
     if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-      drivecardComponent = <DriveCardComponent 
+      drivecardComponent = <DriveCardComponent  OneDriveSelect={true}
       driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} driveInfo={driveInfo}/>;
     } else if (driveInfo.length === 0 && routePathDriveId === "") {
       drivecardComponent = (
