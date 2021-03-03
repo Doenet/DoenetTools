@@ -19,12 +19,14 @@ import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/cour
 import DriveCardComponent from "../imports/DriveCardComponent";
 import {
   useRecoilValueLoadable,
+  useSetRecoilState,
 } from "recoil";
 import  { 
   fetchDrivesSelector,
   encodeParams
   
 } from "../imports/Drive";
+import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
 const Button = styled.button`
   width: 60px;
@@ -254,6 +256,7 @@ const alphabet =
     }
     
 
+    const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
     const transitions = useTransition(gridItems, item => item.shortname, {
       from: ({ xy, width, height }) => ({ xy, width, height, opacity: 0 }),
@@ -276,6 +279,9 @@ const alphabet =
     let driveInfo = [];
     if (drivesInfo.state === "hasValue") {
       driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    }
+    function cleardrivecardSelection(){
+      setDrivecardSelection([]);
     }
     function driveCardSelector({item}) {
       let newParams = {};
@@ -312,8 +318,10 @@ const alphabet =
 
        <ToolLayoutPanel >
        <div 
-      
-        tabIndex={0}
+      onClick={
+        cleardrivecardSelection
+      }
+      tabIndex={0}
         style={{width:"100%",height:"100%"}}
         >
        {drivecardComponent}
