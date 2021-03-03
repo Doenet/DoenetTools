@@ -19,7 +19,7 @@ import { useMenuPanelController } from "./Tool/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
 const DriveCardComponent = (props) => {
-  const { driveDoubleClickCallback } = props;
+  const { driveDoubleClickCallback , OneDriveSelect} = props;
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
@@ -45,6 +45,8 @@ const DriveCardComponent = (props) => {
         height,
         opacity: 0,
         scale: 1,
+        shadow : 0,
+        zIndex:0,
             }),
 
       enter: ({
@@ -52,11 +54,13 @@ const DriveCardComponent = (props) => {
         xy,
         width,
         height,
-        opacity: 1,
+        opacity: 0,
         scale: 1,
+        shadow : 0,
+        zIndex:0,
       }),
       update: ({
-         xy, width, height }) => ({ xy, width, height, scale: 1,position:"absolute"
+         xy, width, height }) => ({ xy, width, height, scale: 1,opacity: 1,position:"absolute",  shadow : 0,zIndex:0,
         }),
       leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 5000, friction: 1000 },
@@ -99,66 +103,75 @@ const DriveCardComponent = (props) => {
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
-   if (!e.shiftKey && !e.metaKey){          // one item
-    setDrivecardSelection((old) => [item]);
-  }else if (e.shiftKey && !e.metaKey){      // range to item 
-    
-    setDrivecardSelection((old) => {
-      if(old.length > 0)
-      {
 
-        let finalArray = [];
-        let initalDriveId = '';
-        if(old.length === 1)
+   if(OneDriveSelect){
+    if (!e.shiftKey && !e.metaKey){          // one item
+      setDrivecardSelection((old) => [item]);
+    }
+   }
+   else{
+    if (!e.shiftKey && !e.metaKey){          // one item
+      setDrivecardSelection((old) => [item]);
+      
+    }else if (e.shiftKey && !e.metaKey){      // range to item 
+      
+      setDrivecardSelection((old) => {
+        if(old.length > 0)
         {
-          initalDriveId = old[0].driveId;
-        }
-        else
-        {
-          finalArray = [...old];
-          initalDriveId = old[old.length-1].driveId;
-        }
-        let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
-        let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
-        if(firstDriveId > lastDriveId)
-        {
-          let slicedArr = transitions.slice(lastDriveId,firstDriveId+1);
-          let filteredArr = slicedArr.map((l)=>l.item);
-          finalArray = [...finalArray,...filteredArr];
+  
+          let finalArray = [];
+          let initalDriveId = '';
+          if(old.length === 1)
+          {
+            initalDriveId = old[0].driveId;
+          }
+          else
+          {
+            finalArray = [...old];
+            initalDriveId = old[old.length-1].driveId;
+          }
+          let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
+          let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
+          if(firstDriveId > lastDriveId)
+          {
+            let slicedArr = transitions.slice(lastDriveId,firstDriveId+1);
+            let filteredArr = slicedArr.map((l)=>l.item);
+            finalArray = [...finalArray,...filteredArr];
+          }
+          else{
+            let slicedArr = transitions.slice(firstDriveId,lastDriveId+1);
+            let filteredArr = slicedArr.map((m)=>m.item);
+            finalArray = [...finalArray,...filteredArr];
+          }
+          let outputArray = finalArray.reduce((uniue,index) => uniue.find((el)=> (el.driveId==index.driveId) ? true :false) ? uniue:[...uniue,index],[]);
+          return outputArray;
+          
         }
         else{
-          let slicedArr = transitions.slice(firstDriveId,lastDriveId+1);
-          let filteredArr = slicedArr.map((m)=>m.item);
-          finalArray = [...finalArray,...filteredArr];
+          return [...old,item];
         }
-        let outputArray = finalArray.reduce((uniue,index) => uniue.find((el)=> (el.driveId==index.driveId) ? true :false) ? uniue:[...uniue,index],[]);
-        return outputArray;
-        
-      }
-      else{
-        return [...old,item];
-      }
-    }); 
-  }else if (!e.shiftKey && e.metaKey){   // add item
-    setDrivecardSelection((old) =>{
-      let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
-      if(alreadyAvaliable.length > 0)
-      {
-        const arr = [];
-        for(let i = 0;i<old.length;i++)
+      }); 
+    }else if (!e.shiftKey && e.metaKey){   // add item
+      setDrivecardSelection((old) =>{
+        let alreadyAvaliable = old.filter((i)=>i.driveId === item.driveId);
+        if(alreadyAvaliable.length > 0)
         {
-          if(old[i].driveId != item.driveId)
+          const arr = [];
+          for(let i = 0;i<old.length;i++)
           {
-            arr.push(old[i]);
+            if(old[i].driveId != item.driveId)
+            {
+              arr.push(old[i]);
+            }
           }
+          return arr;
         }
-        return arr;
-      }
-      else{
-        return [...old,item];
-      }
-    } );
-  }
+        else{
+          return [...old,item];
+        }
+      } );
+    }   }
+
   //  console.log('>>>> drivecard selection item', item);
 
  }
@@ -177,7 +190,7 @@ const DriveCardComponent = (props) => {
         {...bind}
         style={{
           width: "100%",
-          height: Math.max(...heights),
+          height:"100%",
           position: "relative",
         }}
         className={`list`}
@@ -197,13 +210,14 @@ const DriveCardComponent = (props) => {
                 ...props,
                 height: 250,
                 opacity: 1,
-                zIndex:selectedCard ? 999 : 0,
+                zIndex:selectedCard ? 2 : 0,
+                padding: selectedCard ? 0 : 10,
+                boxShadow: props.shadow.interpolate(s => `0px ${selectedCard ? 35 : 0}px ${2 * (selectedCard ? 35: 0)}px 0px` ),
               }}
             >
               <div
-                style={{ height: "100%" }}
+                style={{ height: "100%" ,outline:"none"}}
                 tabIndex={index + 1}
-                // onclick scale
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

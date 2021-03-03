@@ -1200,7 +1200,7 @@ export default function DoenetLibraryTool(props) {
     drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
   } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
-      <h2>You have no drives. Add one using the Menu Panel --> </h2>
+      <h2>You have no courses. Add one using the Menu Panel --> </h2>
     );
   }
   
