@@ -16,8 +16,8 @@ describe('UpdateValue Tag Tests',function() {
     <template>
     <linesegment>
       <endpoints>
-      <point><coords>(<copySource/>, sin(<copySource/>))</coords></point>
-      <point><coords>(<copySource/>+<copy tname="step" />, sin(<copySource/>+<copy tname="step" />))</coords></point>
+      <point><coords>(<copy tname="_source" />, sin(<copy tname="_source" />))</coords></point>
+      <point><coords>(<copy tname="_source" />+<copy tname="step" />, sin(<copy tname="_source" />+<copy tname="step" />))</coords></point>
       </endpoints>
     </linesegment>
     </template>

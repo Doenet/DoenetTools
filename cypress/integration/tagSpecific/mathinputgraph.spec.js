@@ -39,9 +39,6 @@ describe('Mathinput Graph Tests', function () {
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '1');
-      cy.get('#\\/y_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
       });
@@ -57,12 +54,9 @@ describe('Mathinput Graph Tests', function () {
 
 
       cy.log("Enter -3 for x");
-      cy.get('#\\/x_input').clear().type('-3{enter}');
+      cy.get('#\\/x textarea').type('{end}{backspace}-3{enter}', { force: true });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '-3');
-      cy.get('#\\/y_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,2)')
       });
@@ -78,12 +72,9 @@ describe('Mathinput Graph Tests', function () {
 
 
       cy.log("Enter -4 for y");
-      cy.get('#\\/y_input').clear().type('-4{enter}');
+      cy.get('#\\/y textarea').type('{end}{backspace}-4{enter}', { force: true });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '-3');
-      cy.get('#\\/y_input').should('have.value', '-4');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−4)')
       });
@@ -108,9 +99,6 @@ describe('Mathinput Graph Tests', function () {
       });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '5');
-      cy.get('#\\/y_input').should('have.value', '-6');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−6)')
       });
@@ -145,9 +133,6 @@ describe('Mathinput Graph Tests', function () {
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '3');
-      cy.get('#\\/y_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,2)')
       });
@@ -163,12 +148,9 @@ describe('Mathinput Graph Tests', function () {
 
 
       cy.log("Enter -1.2 for x");
-      cy.get('#\\/x_input').clear().type('-1.2{enter}');
+      cy.get('#\\/x textarea').type('{end}{backspace}-1.2{enter}', { force: true });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '-1.2');
-      cy.get('#\\/y_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.44,2)')
       });
@@ -194,9 +176,6 @@ describe('Mathinput Graph Tests', function () {
       });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/x_input').should('have.value', '-1.2');
-      cy.get('#\\/y_input').should('have.value', '6');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1.44,6)')
       });
@@ -230,9 +209,6 @@ describe('Mathinput Graph Tests', function () {
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '- 3');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,−7)')
       });
@@ -248,12 +224,9 @@ describe('Mathinput Graph Tests', function () {
 
 
       cy.log("Enter -1.5 for a");
-      cy.get('#\\/a_input').clear().type('-1.5{enter}');
+      cy.get('#\\/a textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '-1.5');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       });
@@ -279,9 +252,6 @@ describe('Mathinput Graph Tests', function () {
       });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '-1.5');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,6)')
       });
@@ -315,9 +285,6 @@ describe('Mathinput Graph Tests', function () {
       let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '- 3');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−6,−7)')
       });
@@ -333,12 +300,9 @@ describe('Mathinput Graph Tests', function () {
 
 
       cy.log("Enter -1.5 for a");
-      cy.get('#\\/a_input').clear().type('-1.5{enter}');
+      cy.get('#\\/a textarea').type('{end}{backspace}{backspace}-1.5{enter}', { force: true });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '-1.5');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,−7)')
       });
@@ -364,9 +328,6 @@ describe('Mathinput Graph Tests', function () {
       });
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', '5/2');
-      cy.get('#\\/b_input').should('have.value', '2');
-
       cy.get(coordsAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,6)')
       });

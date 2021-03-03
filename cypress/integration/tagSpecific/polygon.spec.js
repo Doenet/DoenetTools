@@ -315,7 +315,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
@@ -338,7 +338,7 @@ describe('Polygon Tag Tests', function () {
         expect(polygon2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -353,7 +353,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -368,7 +368,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -383,7 +383,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -399,7 +399,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -414,7 +414,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -440,7 +440,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0" count="$count" /></sources>
     </map>
     </vertices></polygon>
@@ -464,7 +464,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -479,7 +479,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -506,7 +506,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -532,7 +532,7 @@ describe('Polygon Tag Tests', function () {
         expect(polygon2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -547,7 +547,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -562,7 +562,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -577,7 +577,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -593,7 +593,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -608,7 +608,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -635,7 +635,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="0">
         <count><copy prop="value" tname="count" /></count>
       </sequence></sources>
@@ -662,7 +662,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -677,7 +677,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -704,7 +704,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polygon>
@@ -729,7 +729,7 @@ describe('Polygon Tag Tests', function () {
         expect(polygon2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -744,7 +744,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -759,7 +759,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("3{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -774,7 +774,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("2{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -790,7 +790,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("0{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -805,7 +805,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("5{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -830,7 +830,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
     <sources><sequence from="0" count="$count" /></sources>
   </map>
   <polygon><vertices>
@@ -856,7 +856,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count_input').clear().type("10{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -871,7 +871,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count_input').clear().type("1{enter}");
+      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -935,7 +935,7 @@ describe('Polygon Tag Tests', function () {
         }
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type("-2{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-2{enter}", { force: true });
       cy.window().then((win) => {
         for (let polygon of polygons) {
           expect(polygon.stateValues.nVertices).eq(5);
@@ -963,7 +963,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/>, 5sin(<copySource/>))</point></template>
+      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polygon>
@@ -1093,7 +1093,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<copySource/> + <math>0</math>, 5sin(<copySource/>) + <math>0</math>)</point></template>
+      <template><point>(<copy tname="_source" /> + <math>0</math>, 5sin(<copy tname="_source" />) + <math>0</math>)</point></template>
       <sources><sequence from="-5" to="5"/></sources>
     </map>
     </vertices></polygon>
@@ -1459,9 +1459,9 @@ describe('Polygon Tag Tests', function () {
       <vertices>
       <map>
         <template newNamespace>
-          <point>(<extract prop="x"><copySource fixed="false"/></extract>+
+          <point>(<extract prop="x"><copy tname="_source"  fixed="false"/></extract>+
             <copy prop="value" modifyIndirectly="false" tname="../transx" />,
-           <extract prop="y"><copySource fixed="false" /></extract>+
+           <extract prop="y"><copy tname="_source"  fixed="false" /></extract>+
            <copy prop="value" modifyIndirectly="false" tname="../transy" />)
           </point>
         </template>
@@ -1565,8 +1565,8 @@ describe('Polygon Tag Tests', function () {
 
 
       cy.log("change translation")
-      cy.get("#\\/transx_input").clear().type("2{enter}");
-      cy.get("#\\/transy_input").clear().type("10{enter}");
+      cy.get("#\\/transx textarea").type("{end}{backspace}2{enter}", { force: true });
+      cy.get("#\\/transy textarea").type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-3 - 5, 4 - 7], [1 - 5, 0 - 7], [9 - 5, 6 - 7], [2 - 5, -1 - 7]];

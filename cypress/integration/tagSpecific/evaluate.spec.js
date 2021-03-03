@@ -84,9 +84,9 @@ describe('Evaluate Tag Tests', function () {
       expect(components['/result_numeric3'].stateValues.value.tree).eq(0);
     })
 
-    
+
     cy.log('evaluate at pi')
-    cy.get('#\\/input_input').clear().type("pi{enter}");
+    cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π)')
     })
@@ -97,13 +97,13 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('sin(π)')
     })
     cy.get('#\\/result_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
     cy.get('#\\/result_numeric2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
 
     cy.window().then((win) => {
@@ -118,7 +118,7 @@ describe('Evaluate Tag Tests', function () {
 
 
     cy.log('change variable')
-    cy.get('#\\/variable_input').clear().type("y{enter}");
+    cy.get('#\\/variable textarea').type("{end}{backspace}y{enter}", { force: true });
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)')
     })
@@ -151,7 +151,7 @@ describe('Evaluate Tag Tests', function () {
     })
 
     cy.log('change formula to match variable')
-    cy.get('#\\/formula_input').clear().type("sin(y){enter}");
+    cy.get('#\\/formula textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π)')
     })
@@ -162,13 +162,13 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('sin(π)')
     })
     cy.get('#\\/result_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
     cy.get('#\\/result_numeric2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim().slice(0,9)).eq(Math.sin(Math.PI).toString().slice(0,9))
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
 
     cy.window().then((win) => {

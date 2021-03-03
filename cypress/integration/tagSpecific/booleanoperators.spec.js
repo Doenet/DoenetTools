@@ -63,7 +63,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('enter 2')
-    cy.get('#\\/_mathinput1_input').type('2{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('2{enter}', { force: true });
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/_not1').should('have.text', "false");
@@ -77,7 +77,7 @@ describe('Boolean Operator Tag Tests', function () {
     });
 
     cy.log('enter 1')
-    cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}1{enter}', { force: true });
 
     cy.log('Test values displayed in browser')
     cy.get('#\\/_not1').should('have.text', "true");

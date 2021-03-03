@@ -27,19 +27,19 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copySource/>)</template>
+      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copySource/></input></evaluate></template>
+      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copy tname="_source" /></input></evaluate></template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../clampn35)(<copySource/>)</template>
+      <template newNamespace>$$(../clampn35)(<copy tname="_source" />)</template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
@@ -56,15 +56,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map1Replacements = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map2Replacements = components["/_map2"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map3Replacements = components["/_map3"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map4Replacements = components["/m4"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map5Replacements = components["/m5"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
@@ -117,19 +117,19 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copySource/>)</template>
+      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copySource/></input></evaluate></template>
+      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copy tname="_source" /></input></evaluate></template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../wrapn23)(<copySource/>)</template>
+      <template newNamespace>$$(../wrapn23)(<copy tname="_source" />)</template>
       <sources><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
@@ -146,15 +146,15 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let map1Replacements = components["/_map1"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map1Replacements = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
-      let map2Replacements = components["/_map2"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map2Replacements = components["/_map2"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
-      let map3Replacements = components["/_map3"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map3Replacements = components["/_map3"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
-      let map4Replacements = components["/m4"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map4Replacements = components["/m4"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
-      let map5Replacements = components["/m5"].replacements.reduce((a,c) => [...a,...c.replacements],[]);
+      let map5Replacements = components["/m5"].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
@@ -282,10 +282,10 @@ describe('Function Operator Tag Tests', function () {
     })
 
 
-    cy.get(cesc('#/a_input')).clear().type(`2`);
-    cy.get(cesc('#/b_input')).clear().type(`pi`);
-    cy.get(cesc('#/c_input')).clear().type(`e`);
-    cy.get(cesc('#/x_input')).clear().type(`q`).blur();
+    cy.get(cesc('#/a') + ' textarea').type(`{end}{backspace}2`, { force: true });
+    cy.get(cesc('#/b') + ' textarea').type(`{end}{backspace}pi`, { force: true });
+    cy.get(cesc('#/c') + ' textarea').type(`{end}{backspace}e`, { force: true });
+    cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}q`, { force: true }).blur();
 
 
     cy.get(cesc('#/_m5')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -427,13 +427,13 @@ describe('Function Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       for (let x = -10; x <= 10; x += 0.5) {
-        expect(components["/_function1"].stateValues.numericalf(x)).eq((x - 3) ** 2 + 4);
-        expect(components["/_derivative1"].stateValues.numericalf(x)).eq(2 * (x - 3));
-        expect(components["/_derivative2"].stateValues.numericalf(x)).eq(2);
-        expect(components["/_derivative3"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative4"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative5"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative6"].stateValues.numericalf(x)).eq(0);
+        expect(components["/_function1"].stateValues.f(x)).eq((x - 3) ** 2 + 4);
+        expect(components["/_derivative1"].stateValues.f(x)).eq(2 * (x - 3));
+        expect(components["/_derivative2"].stateValues.f(x)).eq(2);
+        expect(components["/_derivative3"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative4"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative5"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative6"].stateValues.f(x)).eq(0);
 
       }
     })
@@ -469,21 +469,21 @@ describe('Function Operator Tag Tests', function () {
       // make sure we don't get within dx of a grid point
       for (let x = -10.02412412; x <= 10; x += 0.5) {
 
-        let f0 = components["/_function1"].stateValues.numericalf(x);
-        let f1 = components["/_function1"].stateValues.numericalf(x + dx);
-        let fp05 = components["/_derivative1"].stateValues.numericalf(x + dx / 2);
+        let f0 = components["/_function1"].stateValues.f(x);
+        let f1 = components["/_function1"].stateValues.f(x + dx);
+        let fp05 = components["/_derivative1"].stateValues.f(x + dx / 2);
         expect(fp05).closeTo((f1 - f0) / dx, 1E-6)
 
-        let fpn05 = components["/_derivative1"].stateValues.numericalf(x - dx / 2);
-        let fpp0 = components["/_derivative2"].stateValues.numericalf(x);
+        let fpn05 = components["/_derivative1"].stateValues.f(x - dx / 2);
+        let fpp0 = components["/_derivative2"].stateValues.f(x);
         expect(fpp0).closeTo((fp05 - fpn05) / dx, 1E-6)
 
-        let fpp1 = components["/_derivative2"].stateValues.numericalf(x + dx);
-        let fppp05 = components["/_derivative3"].stateValues.numericalf(x + dx / 2);
+        let fpp1 = components["/_derivative2"].stateValues.f(x + dx);
+        let fppp05 = components["/_derivative3"].stateValues.f(x + dx / 2);
         expect(fppp05).closeTo((fpp1 - fpp0) / dx, 1E-6)
 
-        let fpppn05 = components["/_derivative3"].stateValues.numericalf(x - dx / 2);
-        let fpppp0 = components["/_derivative4"].stateValues.numericalf(x);
+        let fpppn05 = components["/_derivative3"].stateValues.f(x - dx / 2);
+        let fpppp0 = components["/_derivative4"].stateValues.f(x);
         expect(fpppp0).closeTo((fppp05 - fpppn05) / dx, 1E-6)
 
       }

@@ -7,7 +7,7 @@ import { deepClone } from '../../utils/deepFunctions';
 export default class BaseComponent {
   constructor({
     componentName, ancestors,
-    serializedState,
+    serializedComponent,
     definingChildren,
     serializedChildren, childLogic,
     stateVariableDefinitions,
@@ -50,17 +50,17 @@ export default class BaseComponent {
     }
     this.stateValues = new Proxy(this.state, createStateProxyHandler());
 
-    if (serializedState.state) {
-      this.potentialEssentialState = new Proxy(serializedState.state, readOnlyProxyHandler);
+    if (serializedComponent.state) {
+      this.potentialEssentialState = new Proxy(serializedComponent.state, readOnlyProxyHandler);
     }
 
     this.doenetAttributes = {};
-    if (serializedState.doenetAttributes !== undefined) {
-      Object.assign(this.doenetAttributes, serializedState.doenetAttributes);
+    if (serializedComponent.doenetAttributes !== undefined) {
+      Object.assign(this.doenetAttributes, serializedComponent.doenetAttributes);
     }
 
-    if (serializedState.variants !== undefined) {
-      this.variants = serializedState.variants;
+    if (serializedComponent.variants !== undefined) {
+      this.variants = serializedComponent.variants;
     }
 
   }
@@ -462,7 +462,7 @@ export default class BaseComponent {
 
     }
 
-    let serializedState = {
+    let serializedComponent = {
       componentType: this.componentType,
     }
 
@@ -488,18 +488,18 @@ export default class BaseComponent {
       }
 
       if (serializedChildren.length > 0) {
-        serializedState.children = serializedChildren;
+        serializedComponent.children = serializedChildren;
       }
 
     }
 
 
     if (parameters.forCopy) {
-      serializedState.originalName = this.componentName;
-      serializedState.originalDoenetAttributes = deepClone(this.doenetAttributes);
-      serializedState.doenetAttributes = deepClone(this.doenetAttributes);
-      delete serializedState.doenetAttributes.prescribedName;
-      delete serializedState.doenetAttributes.assignNames;
+      serializedComponent.originalName = this.componentName;
+      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
+      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
+      delete serializedComponent.doenetAttributes.prescribedName;
+      delete serializedComponent.doenetAttributes.assignNames;
 
     } else {
       console.warn('serializing a component without forCopy set is not yet converted!!!!')
@@ -517,16 +517,16 @@ export default class BaseComponent {
       }
 
       if (Object.keys(additionalState).length > 0) {
-        serializedState.state = additionalState;
+        serializedComponent.state = additionalState;
       }
 
       let doenetAttributes = Object.assign({}, this.doenetAttributes);
       if (Object.keys(doenetAttributes).length > 0) {
-        serializedState.doenetAttributes = doenetAttributes;
+        serializedComponent.doenetAttributes = doenetAttributes;
       }
     }
 
-    return serializedState;
+    return serializedComponent;
 
   }
 
@@ -542,7 +542,7 @@ export default class BaseComponent {
       }
     }
 
-    let serializedState = {
+    let serializedCopy = {
       componentType: serializedComponent.componentType,
       originalName: serializedComponent.componentName,
       originalNameFromSerializedComponent: true,
@@ -553,19 +553,19 @@ export default class BaseComponent {
 
     if (//parameters.forCopy !== true &&
       serializedComponent.doenetAttributes !== undefined) {
-      serializedState.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
-      serializedState.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
-      delete serializedState.doenetAttributes.prescribedName;
-      delete serializedState.doenetAttributes.assignNames;
+      serializedCopy.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
+      serializedCopy.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
+      delete serializedCopy.doenetAttributes.prescribedName;
+      delete serializedCopy.doenetAttributes.assignNames;
 
     }
 
     if (serializedComponent.state !== undefined) {
       // shallow copy of state
-      Object.assign(serializedState.state, serializedComponent.state);
+      Object.assign(serializedCopy.state, serializedComponent.state);
     }
 
-    return serializedState;
+    return serializedCopy;
 
   }
 
