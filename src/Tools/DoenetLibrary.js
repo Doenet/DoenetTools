@@ -1197,10 +1197,10 @@ export default function DoenetLibraryTool(props) {
   // Drive cards component
   let drivecardComponent = null;
   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}  style={mainPanelStyle} driveInfo={driveInfo}/>;
+    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} style={mainPanelStyle} driveInfo={driveInfo}/>;
   } else if (driveInfo.length === 0 && routePathDriveId === "") {
     drivecardComponent = (
-      <h2>You have no drives. Add one using the Menu Panel --> </h2>
+      <h2>You have no courses. Add one using the Menu Panel --> </h2>
     );
   }
   

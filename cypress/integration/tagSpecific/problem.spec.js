@@ -94,15 +94,15 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = cesc("#" + components["/p221Pca"].replacements[0].componentName);
       let p222CaAnchor = cesc("#" + components["/p222Ca"].replacements[0].componentName);
       let p222PcaAnchor = cesc("#" + components["/p222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName + "_input");
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName + "_input");
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName + "_input");
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName + "_input");
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName + "_input");
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName + "_input");
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName + "_input");
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName + "_input");
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName + "_input");
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -147,7 +147,7 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter first correct answer');
-      cy.get(mathinput1Anchor).type(`u{enter}`);
+      cy.get(mathinput1Anchor).type(`u{enter}`, { force: true });
 
       let credit1 = 1 / 3;
       let credit1Round = Math.round(1000 * credit1) / 1000;
@@ -198,9 +198,9 @@ describe('Problem Tag Tests', function () {
 
 
       cy.log('enter additional correct answers');
-      cy.get(mathinput3Anchor).type(`y{enter}`);
-      cy.get(mathinput5Anchor).type(`v{enter}`);
-      cy.get(mathinput7Anchor).type(`q{enter}`);
+      cy.get(mathinput3Anchor).type(`y{enter}`, { force: true });
+      cy.get(mathinput5Anchor).type(`v{enter}`, { force: true });
+      cy.get(mathinput7Anchor).type(`q{enter}`, { force: true });
 
       let problem1credit2 = 2 / 3;
       let problem1credit2Round = Math.round(1000 * problem1credit2) / 1000;
@@ -270,10 +270,10 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter most other correct answers');
-      cy.get(mathinput2Anchor).type(`x{enter}`);
-      cy.get(mathinput4Anchor).type(`z{enter}`);
-      cy.get(mathinput6Anchor).type(`w{enter}`);
-      cy.get(mathinput8Anchor).type(`r{enter}`);
+      cy.get(mathinput2Anchor).type(`x{enter}`, { force: true });
+      cy.get(mathinput4Anchor).type(`z{enter}`, { force: true });
+      cy.get(mathinput6Anchor).type(`w{enter}`, { force: true });
+      cy.get(mathinput8Anchor).type(`r{enter}`, { force: true });
 
 
       let problem1credit3 = 1;
@@ -349,7 +349,7 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter last correct answer');
-      cy.get(mathinput9Anchor).type(`s{enter}`);
+      cy.get(mathinput9Anchor).type(`s{enter}`, { force: true });
 
 
       let problem1credit4 = 1;
@@ -512,30 +512,30 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = cesc("#" + components["/p221Pca"].replacements[0].componentName);
       let p222CaAnchor = cesc("#" + components["/p222Ca"].replacements[0].componentName);
       let p222PcaAnchor = cesc("#" + components["/p222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName + "_input");
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName + "_input");
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName + "_input");
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName + "_input");
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName + "_input");
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName + "_input");
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName + "_input");
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName + "_input");
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName + "_input");
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
 
-      cy.get(docCaAnchor).should('have.text','0')
-      cy.get(docPcaAnchor).should('have.text','0')
-      cy.get(p1CaAnchor).should('have.text','0')
-      cy.get(p1PcaAnchor).should('have.text','0')
-      cy.get(p2CaAnchor).should('have.text','0')
-      cy.get(p2PcaAnchor).should('have.text','0')
-      cy.get(p21CaAnchor).should('have.text','0')
-      cy.get(p21PcaAnchor).should('have.text','0')
-      cy.get(p22CaAnchor).should('have.text','0')
-      cy.get(p22PcaAnchor).should('have.text','0')
-      cy.get(p221CaAnchor).should('have.text','0')
-      cy.get(p221PcaAnchor).should('have.text','0')
-      cy.get(p222CaAnchor).should('have.text','0')
-      cy.get(p222PcaAnchor).should('have.text','0')
+      cy.get(docCaAnchor).should('have.text', '0')
+      cy.get(docPcaAnchor).should('have.text', '0')
+      cy.get(p1CaAnchor).should('have.text', '0')
+      cy.get(p1PcaAnchor).should('have.text', '0')
+      cy.get(p2CaAnchor).should('have.text', '0')
+      cy.get(p2PcaAnchor).should('have.text', '0')
+      cy.get(p21CaAnchor).should('have.text', '0')
+      cy.get(p21PcaAnchor).should('have.text', '0')
+      cy.get(p22CaAnchor).should('have.text', '0')
+      cy.get(p22PcaAnchor).should('have.text', '0')
+      cy.get(p221CaAnchor).should('have.text', '0')
+      cy.get(p221PcaAnchor).should('have.text', '0')
+      cy.get(p222CaAnchor).should('have.text', '0')
+      cy.get(p222PcaAnchor).should('have.text', '0')
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -565,27 +565,27 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter first correct answer');
-      cy.get(mathinput1Anchor).type(`u{enter}`);
+      cy.get(mathinput1Anchor).type(`u{enter}`, { force: true });
 
       let credit1 = 1 / 3.5;
       let credit1Round = Math.round(1000 * credit1) / 1000;
       let percentCredit1 = credit1 * 100;
       let percentCredit1Round = Math.round(10 * percentCredit1) / 10;
 
-      cy.get(docCaAnchor).should('have.text',credit1Round.toString())
-      cy.get(docPcaAnchor).should('have.text',percentCredit1Round.toString())
-      cy.get(p1CaAnchor).should('have.text','0')
-      cy.get(p1PcaAnchor).should('have.text','0')
-      cy.get(p2CaAnchor).should('have.text','0')
-      cy.get(p2PcaAnchor).should('have.text','0')
-      cy.get(p21CaAnchor).should('have.text','0')
-      cy.get(p21PcaAnchor).should('have.text','0')
-      cy.get(p22CaAnchor).should('have.text','0')
-      cy.get(p22PcaAnchor).should('have.text','0')
-      cy.get(p221CaAnchor).should('have.text','0')
-      cy.get(p221PcaAnchor).should('have.text','0')
-      cy.get(p222CaAnchor).should('have.text','0')
-      cy.get(p222PcaAnchor).should('have.text','0')
+      cy.get(docCaAnchor).should('have.text', credit1Round.toString())
+      cy.get(docPcaAnchor).should('have.text', percentCredit1Round.toString())
+      cy.get(p1CaAnchor).should('have.text', '0')
+      cy.get(p1PcaAnchor).should('have.text', '0')
+      cy.get(p2CaAnchor).should('have.text', '0')
+      cy.get(p2PcaAnchor).should('have.text', '0')
+      cy.get(p21CaAnchor).should('have.text', '0')
+      cy.get(p21PcaAnchor).should('have.text', '0')
+      cy.get(p22CaAnchor).should('have.text', '0')
+      cy.get(p22PcaAnchor).should('have.text', '0')
+      cy.get(p221CaAnchor).should('have.text', '0')
+      cy.get(p221PcaAnchor).should('have.text', '0')
+      cy.get(p222CaAnchor).should('have.text', '0')
+      cy.get(p222PcaAnchor).should('have.text', '0')
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -616,9 +616,9 @@ describe('Problem Tag Tests', function () {
 
 
       cy.log('enter additional correct answers');
-      cy.get(mathinput3Anchor).type(`y{enter}`);
-      cy.get(mathinput5Anchor).type(`v{enter}`);
-      cy.get(mathinput7Anchor).type(`q{enter}`);
+      cy.get(mathinput3Anchor).type(`y{enter}`, { force: true });
+      cy.get(mathinput5Anchor).type(`v{enter}`, { force: true });
+      cy.get(mathinput7Anchor).type(`q{enter}`, { force: true });
 
       let problem1credit2 = 2 / 3;
       let problem1credit2Round = Math.round(1000 * problem1credit2) / 1000;
@@ -645,20 +645,20 @@ describe('Problem Tag Tests', function () {
       let percentCredit2 = credit2 * 100;
       let percentCredit2Round = Math.round(10 * percentCredit2) / 10;
 
-      cy.get(docCaAnchor).should('have.text',credit2Round.toString())
-      cy.get(docPcaAnchor).should('have.text',percentCredit2Round.toString())
-      cy.get(p1CaAnchor).should('have.text',problem1credit2Round.toString())
-      cy.get(p1PcaAnchor).should('have.text',problem1percentCredit2Round.toString())
-      cy.get(p2CaAnchor).should('have.text',problem2credit2Round.toString())
-      cy.get(p2PcaAnchor).should('have.text',problem2percentCredit2Round.toString())
-      cy.get(p21CaAnchor).should('have.text',problem21credit2Round.toString())
-      cy.get(p21PcaAnchor).should('have.text',problem21percentCredit2Round.toString())
-      cy.get(p22CaAnchor).should('have.text',problem22credit2Round.toString())
-      cy.get(p22PcaAnchor).should('have.text',problem22percentCredit2Round.toString())
-      cy.get(p221CaAnchor).should('have.text','0')
-      cy.get(p221PcaAnchor).should('have.text','0')
-      cy.get(p222CaAnchor).should('have.text','0')
-      cy.get(p222PcaAnchor).should('have.text','0')
+      cy.get(docCaAnchor).should('have.text', credit2Round.toString())
+      cy.get(docPcaAnchor).should('have.text', percentCredit2Round.toString())
+      cy.get(p1CaAnchor).should('have.text', problem1credit2Round.toString())
+      cy.get(p1PcaAnchor).should('have.text', problem1percentCredit2Round.toString())
+      cy.get(p2CaAnchor).should('have.text', problem2credit2Round.toString())
+      cy.get(p2PcaAnchor).should('have.text', problem2percentCredit2Round.toString())
+      cy.get(p21CaAnchor).should('have.text', problem21credit2Round.toString())
+      cy.get(p21PcaAnchor).should('have.text', problem21percentCredit2Round.toString())
+      cy.get(p22CaAnchor).should('have.text', problem22credit2Round.toString())
+      cy.get(p22PcaAnchor).should('have.text', problem22percentCredit2Round.toString())
+      cy.get(p221CaAnchor).should('have.text', '0')
+      cy.get(p221PcaAnchor).should('have.text', '0')
+      cy.get(p222CaAnchor).should('have.text', '0')
+      cy.get(p222PcaAnchor).should('have.text', '0')
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -688,10 +688,10 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter most other correct answers');
-      cy.get(mathinput2Anchor).type(`x{enter}`);
-      cy.get(mathinput4Anchor).type(`z{enter}`);
-      cy.get(mathinput6Anchor).type(`w{enter}`);
-      cy.get(mathinput8Anchor).type(`r{enter}`);
+      cy.get(mathinput2Anchor).type(`x{enter}`, { force: true });
+      cy.get(mathinput4Anchor).type(`z{enter}`, { force: true });
+      cy.get(mathinput6Anchor).type(`w{enter}`, { force: true });
+      cy.get(mathinput8Anchor).type(`r{enter}`, { force: true });
 
 
       let problem1credit3 = 1;
@@ -724,20 +724,20 @@ describe('Problem Tag Tests', function () {
       let percentCredit3 = credit3 * 100;
       let percentCredit3Round = Math.round(10 * percentCredit3) / 10;
 
-      cy.get(docCaAnchor).should('have.text',credit3Round.toString())
-      cy.get(docPcaAnchor).should('have.text',percentCredit3Round.toString())
-      cy.get(p1CaAnchor).should('have.text',problem1credit3Round.toString())
-      cy.get(p1PcaAnchor).should('have.text',problem1percentCredit3Round.toString())
-      cy.get(p2CaAnchor).should('have.text',problem2credit3Round.toString())
-      cy.get(p2PcaAnchor).should('have.text',problem2percentCredit3Round.toString())
-      cy.get(p21CaAnchor).should('have.text',problem21credit3Round.toString())
-      cy.get(p21PcaAnchor).should('have.text',problem21percentCredit3Round.toString())
-      cy.get(p22CaAnchor).should('have.text',problem22credit3Round.toString())
-      cy.get(p22PcaAnchor).should('have.text',problem22percentCredit3Round.toString())
-      cy.get(p221CaAnchor).should('have.text',problem221credit3Round.toString())
-      cy.get(p221PcaAnchor).should('have.text',problem221percentCredit3Round.toString())
-      cy.get(p222CaAnchor).should('have.text','0')
-      cy.get(p222PcaAnchor).should('have.text','0')
+      cy.get(docCaAnchor).should('have.text', credit3Round.toString())
+      cy.get(docPcaAnchor).should('have.text', percentCredit3Round.toString())
+      cy.get(p1CaAnchor).should('have.text', problem1credit3Round.toString())
+      cy.get(p1PcaAnchor).should('have.text', problem1percentCredit3Round.toString())
+      cy.get(p2CaAnchor).should('have.text', problem2credit3Round.toString())
+      cy.get(p2PcaAnchor).should('have.text', problem2percentCredit3Round.toString())
+      cy.get(p21CaAnchor).should('have.text', problem21credit3Round.toString())
+      cy.get(p21PcaAnchor).should('have.text', problem21percentCredit3Round.toString())
+      cy.get(p22CaAnchor).should('have.text', problem22credit3Round.toString())
+      cy.get(p22PcaAnchor).should('have.text', problem22percentCredit3Round.toString())
+      cy.get(p221CaAnchor).should('have.text', problem221credit3Round.toString())
+      cy.get(p221PcaAnchor).should('have.text', problem221percentCredit3Round.toString())
+      cy.get(p222CaAnchor).should('have.text', '0')
+      cy.get(p222PcaAnchor).should('have.text', '0')
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -767,7 +767,7 @@ describe('Problem Tag Tests', function () {
       })
 
       cy.log('enter last correct answer');
-      cy.get(mathinput9Anchor).type(`s{enter}`);
+      cy.get(mathinput9Anchor).type(`s{enter}`, { force: true });
 
 
       let problem1credit4 = 1;
@@ -805,20 +805,20 @@ describe('Problem Tag Tests', function () {
       let percentCredit4 = credit4 * 100;
       let percentCredit4Round = Math.round(10 * percentCredit4) / 10;
 
-      cy.get(docCaAnchor).should('have.text',credit4Round.toString())
-      cy.get(docPcaAnchor).should('have.text',percentCredit4Round.toString())
-      cy.get(p1CaAnchor).should('have.text',problem1credit4Round.toString())
-      cy.get(p1PcaAnchor).should('have.text',problem1percentCredit4Round.toString())
-      cy.get(p2CaAnchor).should('have.text',problem2credit4Round.toString())
-      cy.get(p2PcaAnchor).should('have.text',problem2percentCredit4Round.toString())
-      cy.get(p21CaAnchor).should('have.text',problem21credit4Round.toString())
-      cy.get(p21PcaAnchor).should('have.text',problem21percentCredit4Round.toString())
-      cy.get(p22CaAnchor).should('have.text',problem22credit4Round.toString())
-      cy.get(p22PcaAnchor).should('have.text',problem22percentCredit4Round.toString())
-      cy.get(p221CaAnchor).should('have.text',problem221credit4Round.toString())
-      cy.get(p221PcaAnchor).should('have.text',problem221percentCredit4Round.toString())
-      cy.get(p222CaAnchor).should('have.text',problem222credit4Round.toString())
-      cy.get(p222PcaAnchor).should('have.text',problem222percentCredit4Round.toString())
+      cy.get(docCaAnchor).should('have.text', credit4Round.toString())
+      cy.get(docPcaAnchor).should('have.text', percentCredit4Round.toString())
+      cy.get(p1CaAnchor).should('have.text', problem1credit4Round.toString())
+      cy.get(p1PcaAnchor).should('have.text', problem1percentCredit4Round.toString())
+      cy.get(p2CaAnchor).should('have.text', problem2credit4Round.toString())
+      cy.get(p2PcaAnchor).should('have.text', problem2percentCredit4Round.toString())
+      cy.get(p21CaAnchor).should('have.text', problem21credit4Round.toString())
+      cy.get(p21PcaAnchor).should('have.text', problem21percentCredit4Round.toString())
+      cy.get(p22CaAnchor).should('have.text', problem22credit4Round.toString())
+      cy.get(p22PcaAnchor).should('have.text', problem22percentCredit4Round.toString())
+      cy.get(p221CaAnchor).should('have.text', problem221credit4Round.toString())
+      cy.get(p221PcaAnchor).should('have.text', problem221percentCredit4Round.toString())
+      cy.get(p222CaAnchor).should('have.text', problem222credit4Round.toString())
+      cy.get(p222PcaAnchor).should('have.text', problem222percentCredit4Round.toString())
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);

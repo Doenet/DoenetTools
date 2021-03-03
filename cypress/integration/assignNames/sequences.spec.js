@@ -96,7 +96,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 2')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b');
     cy.get('#\\/s2').should('have.text', 'a, b');
@@ -138,7 +138,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 1')
-    cy.get('#\\/n_input').clear().type('1{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a');
     cy.get('#\\/s2').should('have.text', 'a');
@@ -180,7 +180,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 2')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b');
     cy.get('#\\/s2').should('have.text', 'a, b');
@@ -222,7 +222,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 3')
-    cy.get('#\\/n_input').clear().type('3{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b, c');
     cy.get('#\\/s2').should('have.text', 'a, b, c');
@@ -265,7 +265,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 1 again')
-    cy.get('#\\/n_input').clear().type('1{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a');
     cy.get('#\\/s2').should('have.text', 'a');
@@ -307,7 +307,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 5')
-    cy.get('#\\/n_input').clear().type('5{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}5{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b, c, d, e');
     cy.get('#\\/s2').should('have.text', 'a, b, c, d, e');
@@ -349,7 +349,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 4')
-    cy.get('#\\/n_input').clear().type('4{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b, c, d');
     cy.get('#\\/s2').should('have.text', 'a, b, c, d');
@@ -391,7 +391,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 10')
-    cy.get('#\\/n_input').clear().type('10{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}10{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b, c, d, e, f, g, h, i, j');
     cy.get('#\\/s2').should('have.text', 'a, b, c, d, e, f, g, h, i, j');
@@ -433,7 +433,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 2 again')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}{backspace}2{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b');
     cy.get('#\\/s2').should('have.text', 'a, b');
@@ -475,7 +475,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 0')
-    cy.get('#\\/n_input').clear().type('0{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', '');
     cy.get('#\\/s2').should('have.text', '');
@@ -517,7 +517,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 4')
-    cy.get('#\\/n_input').clear().type('4{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
 
     cy.get('#\\/s1').should('have.text', 'a, b, c, d');
     cy.get('#\\/s2').should('have.text', 'a, b, c, d');
@@ -567,7 +567,7 @@ describe('sequence and map assignName Tests', function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map assignNames="a,b">
-    <template newNamespace>Letter <sourceIndex name="n" /> is <copySource name="v" />. </template>
+    <template newNamespace>Letter <copy tname="_sourceindex" name="n" /> is <copy tname="_source" name="v" />. </template>
     <sources>
       <sequence type="letters" count="$n" />
    </sources>
@@ -708,7 +708,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 2')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
@@ -781,7 +781,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 1')
-    cy.get('#\\/n_input').clear().type('1{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. ');
@@ -853,7 +853,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 2')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
@@ -926,7 +926,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 3')
-    cy.get('#\\/n_input').clear().type('3{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. ');
@@ -999,7 +999,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 1 again')
-    cy.get('#\\/n_input').clear().type('1{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. ');
@@ -1072,7 +1072,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 5')
-    cy.get('#\\/n_input').clear().type('5{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}5{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. ');
@@ -1145,7 +1145,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 4')
-    cy.get('#\\/n_input').clear().type('4{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. ');
@@ -1218,7 +1218,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 10')
-    cy.get('#\\/n_input').clear().type('10{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}10{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. Letter 6 is f. Letter 7 is g. Letter 8 is h. Letter 9 is i. Letter 10 is j. ');
@@ -1291,7 +1291,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 2 again')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}{backspace}2{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
@@ -1364,7 +1364,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 0')
-    cy.get('#\\/n_input').clear().type('0{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
 
     cy.get('#\\/m1').should('have.text', '');
     cy.get('#\\/m2').should('have.text', '');
@@ -1436,7 +1436,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n back to 4')
-    cy.get('#\\/n_input').clear().type('4{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. ');
@@ -1509,14 +1509,14 @@ describe('sequence and map assignName Tests', function () {
 
   })
 
-  it('copySource and sourceIndex assign names', () => {
+  it('copy _source and _sourceindex assign names', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map assignNames="a,b">
-    <template newNamespace>Letter <sourceIndex assignNames="n1,n2" /> is <copySource assignnames="v1, v2" />. </template>
+    <template newNamespace>Letter <copy tname="_sourceindex" assignNames="n1,n2" /> is <copy tname="_source" assignnames="v1, v2" />. </template>
     <sources>
       <sequence type="letters" count="$n" />
    </sources>
@@ -1603,7 +1603,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 2')
-    cy.get('#\\/n_input').clear().type('2{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
     cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. ');
@@ -1644,7 +1644,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 0')
-    cy.get('#\\/n_input').clear().type('0{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
 
 
     cy.get('#\\/m1').should('have.text', '');
@@ -1687,7 +1687,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 3')
-    cy.get('#\\/n_input').clear().type('3{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. ');
     cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. ');
@@ -1729,7 +1729,7 @@ describe('sequence and map assignName Tests', function () {
 
 
     cy.log('change n to 5')
-    cy.get('#\\/n_input').clear().type('5{enter}')
+    cy.get('#\\/n textarea').type('{end}{backspace}5{enter}', { force: true })
 
     cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. ');
     cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Letter 2 is b. Letter 3 is c. Letter 4 is d. Letter 5 is e. ');

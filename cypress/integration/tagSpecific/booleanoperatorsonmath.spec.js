@@ -23,7 +23,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('37');
-    cy.get('#\\/_mathinput1_input').clear().type("37{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("37{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -31,7 +31,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('37.1');
-    cy.get('#\\/_mathinput1_input').clear().type("37.1{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}.1{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -39,7 +39,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('39/3');
-    cy.get('#\\/_mathinput1_input').clear().type("39/3{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}39/3{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -47,7 +47,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-39.6/3.3');
-    cy.get('#\\/_mathinput1_input').clear().type("39.6/3.3{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-39.6/3.3{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -55,7 +55,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('x');
-    cy.get('#\\/_mathinput1_input').clear().type("x{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -63,7 +63,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('sqrt(4)');
-    cy.get('#\\/_mathinput1_input').clear().type("sqrt(4){enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}sqrt4{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -71,7 +71,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('2sin(pi/4)^2');
-    cy.get('#\\/_mathinput1_input').clear().type("2sin(pi/4)^2{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -79,7 +79,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('1E-300');
-    cy.get('#\\/_mathinput1_input').clear().type("1E-300{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-300{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -87,7 +87,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-0');
-    cy.get('#\\/_mathinput1_input').clear().type("-0{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0{enter}", { force: true });
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);

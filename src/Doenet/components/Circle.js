@@ -57,26 +57,27 @@ export default class Circle extends Curve {
   }
 
 
-  static returnStateVariableDefinitions() {
+  static returnStateVariableDefinitions(args) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    let stateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
-    // since circle inherits from curve, we put dummy placeholders for variables
-    stateVariableDefinitions.nVariables = {
+    stateVariableDefinitions.curveType = {
+      forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nVariables: 0 } })
+      definition: () => ({ newValues: { curveType: "circle" } })
     }
-    stateVariableDefinitions.variables = {
+
+    delete stateVariableDefinitions.variableForChild;
+
+    stateVariableDefinitions.fs = {
+      forRenderer: true,
       isArray: true,
-      public: true,
-      componentType: "variable",
-      entryPrefixes: ["var"],
+      entryPrefixes: ["f"],
+      defaultEntryValue: () => 0,
       returnArraySizeDependencies: () => ({}),
-      returnArraySize() {
-        return [0];
-      },
+      returnArraySize: () => [0],
       returnArrayDependenciesByKey: () => ({}),
-      arrayDefinitionByKey: () => ({})
+      arrayDefinitionByKey: () => ({ newValues: { fs: {} } })
     }
 
     stateVariableDefinitions.nThroughPoints = {

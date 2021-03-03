@@ -69,7 +69,7 @@ describe('ODEsystem Tag Tests', function () {
   <map>
     <template>
       <mrow>
-        x_{<sourceIndex/>} \\amp = <copySource displaydigits="5"/>
+        x_{<copy tname="_sourceindex"/>} \\amp = <copy tname="_source" displaydigits="5"/>
       </mrow>
     </template>
     <sources>
