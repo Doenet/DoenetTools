@@ -1,5 +1,28 @@
 import me from 'math-expressions';
 
+export function normalizeMathExpression({ value, simplify, expand = false,
+  createVectors = false, createIntervals = false
+}) {
+
+  if (createVectors) {
+    value = value.tuples_to_vectors();
+  }
+  if (createIntervals) {
+    value = value.to_intervals();
+  }
+  if (expand) {
+    value = value.expand();
+  }
+  if (simplify === "full") {
+    return value.simplify();
+  } else if (simplify === "numbers") {
+    return value.evaluate_numbers();
+  } else if (simplify === "numberspreserveorder") {
+    return value.evaluate_numbers({ skip_ordering: true });
+  }
+  return value;
+}
+
 export function findFiniteNumericalValue(value) {
   // return undefined if value is undefined
   // returns null if value has a non-numerical value (including Infinity)

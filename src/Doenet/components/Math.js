@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -195,7 +195,7 @@ export default class MathComponent extends InlineComponent {
 
         let { simplify, expand, createVectors, createIntervals } = dependencyValues;
 
-        value = MathComponent.normalize({
+        value = normalizeMathExpression({
           value, simplify, expand, createVectors, createIntervals
         });
 
@@ -274,7 +274,7 @@ export default class MathComponent extends InlineComponent {
         }
         return {
           newValues: {
-            valueForDisplay: MathComponent.normalize({
+            valueForDisplay: normalizeMathExpression({
               value: rounded, simplify: dependencyValues.simplify, expand: dependencyValues.expand
             })
           }
@@ -453,28 +453,6 @@ export default class MathComponent extends InlineComponent {
       return { skipChildren, stateVariables };
     }
     return {};
-  }
-
-  static normalize({ value, simplify, expand = false,
-    createVectors = false, createIntervals = false
-  }) {
-    if (createVectors) {
-      value = value.tuples_to_vectors();
-    }
-    if (createIntervals) {
-      value = value.to_intervals();
-    }
-    if (expand) {
-      value = value.expand();
-    }
-    if (simplify === "full") {
-      return value.simplify();
-    } else if (simplify === "numbers") {
-      return value.evaluate_numbers();
-    } else if (simplify === "numberspreserveorder") {
-      return value.evaluate_numbers({ skip_ordering: true });
-    }
-    return value;
   }
 
   adapters = ["number", "text"];
@@ -1207,7 +1185,7 @@ function getExpressionPieces({ expression, stateValues }) {
       }
       pieces[id] = inverseMap.result.substitute(subMap);
 
-      pieces[id] = MathComponent.normalize({
+      pieces[id] = normalizeMathExpression({
         value: pieces[id],
         simplify: stateValues.simplify,
         expand: stateValues.expand,
