@@ -658,7 +658,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 9")
-    cy.get('#\\/exclude2_input').clear().type(`9{enter}`);
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}9{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -674,7 +674,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 6 twice")
-    cy.get('#\\/exclude2_input').clear().type(`6{enter}`);
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}6{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -690,7 +690,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 12")
-    cy.get('#\\/exclude2_input').clear().type(`12{enter}`);
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}12{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -707,7 +707,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("also exclude 3")
-    cy.get('#\\/exclude2_input').clear().type(`3{enter}`);
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{backspace}3{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -724,7 +724,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("don't exclude anything else")
-    cy.get('#\\/exclude2_input').clear().type(`{enter}`);
+    cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -882,7 +882,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 9x")
-    cy.get('#\\/e_input').clear().type(`9x{enter}`);
+    cy.get('#\\/e textarea').type(`{end}{backspace}9x{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -898,7 +898,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 6x twice")
-    cy.get('#\\/e_input').clear().type(`6x{enter}`);
+    cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}6x{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -914,7 +914,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.log("also exclude 12x")
-    cy.get('#\\/e_input').clear().type(`12x{enter}`);
+    cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}12x{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -931,7 +931,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("also exclude 3x")
-    cy.get('#\\/e_input').clear().type(`3x{enter}`);
+    cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{backspace}3x{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -948,7 +948,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("don't exclude anything else")
-    cy.get('#\\/e_input').clear().type(`{enter}`);
+    cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let children = components['/_aslist1'].activeChildren;
@@ -1058,7 +1058,7 @@ describe('Sequence Tag Tests', function () {
 
     })
 
-    cy.get('#\\/n_input').clear().type("2{enter}");
+    cy.get('#\\/n textarea').type("2{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);

@@ -113,7 +113,7 @@ export default class Award extends BaseComponent {
         mathChild: {
           dependencyType: "child",
           childLogicName: "exactlyOneMath",
-          variableNames: ["value", "unordered"]
+          variableNames: ["value", "unordered", "expand", "simplify"]
         },
         textChild: {
           dependencyType: "child",

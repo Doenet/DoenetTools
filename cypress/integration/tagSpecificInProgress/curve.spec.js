@@ -538,7 +538,7 @@ describe('Curve Tag Tests', function () {
     <curve>
       <through>
       <map>
-        <template><point>(<copySource/>, sin(<copySource/>))</point></template>
+        <template><point>(<copy tname="_source" />, sin(<copy tname="_source" />))</point></template>
         <sources>
           <sequence from="0">
             <count><copy prop="value" tname="_mathinput1" /></count>
