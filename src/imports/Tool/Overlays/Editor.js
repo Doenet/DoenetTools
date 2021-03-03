@@ -487,7 +487,7 @@ export default function Editor({ contentId, branchId }) {
 
       <mainPanel>
         <div><DoenetViewerUpdateButton  /></div>
-        <DoenetViewerPanel />
+        <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
       </mainPanel>
 
       <supportPanel>
