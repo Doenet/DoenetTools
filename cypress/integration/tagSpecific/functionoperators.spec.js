@@ -427,13 +427,13 @@ describe('Function Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       for (let x = -10; x <= 10; x += 0.5) {
-        expect(components["/_function1"].stateValues.numericalf(x)).eq((x - 3) ** 2 + 4);
-        expect(components["/_derivative1"].stateValues.numericalf(x)).eq(2 * (x - 3));
-        expect(components["/_derivative2"].stateValues.numericalf(x)).eq(2);
-        expect(components["/_derivative3"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative4"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative5"].stateValues.numericalf(x)).eq(0);
-        expect(components["/_derivative6"].stateValues.numericalf(x)).eq(0);
+        expect(components["/_function1"].stateValues.f(x)).eq((x - 3) ** 2 + 4);
+        expect(components["/_derivative1"].stateValues.f(x)).eq(2 * (x - 3));
+        expect(components["/_derivative2"].stateValues.f(x)).eq(2);
+        expect(components["/_derivative3"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative4"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative5"].stateValues.f(x)).eq(0);
+        expect(components["/_derivative6"].stateValues.f(x)).eq(0);
 
       }
     })
@@ -469,21 +469,21 @@ describe('Function Operator Tag Tests', function () {
       // make sure we don't get within dx of a grid point
       for (let x = -10.02412412; x <= 10; x += 0.5) {
 
-        let f0 = components["/_function1"].stateValues.numericalf(x);
-        let f1 = components["/_function1"].stateValues.numericalf(x + dx);
-        let fp05 = components["/_derivative1"].stateValues.numericalf(x + dx / 2);
+        let f0 = components["/_function1"].stateValues.f(x);
+        let f1 = components["/_function1"].stateValues.f(x + dx);
+        let fp05 = components["/_derivative1"].stateValues.f(x + dx / 2);
         expect(fp05).closeTo((f1 - f0) / dx, 1E-6)
 
-        let fpn05 = components["/_derivative1"].stateValues.numericalf(x - dx / 2);
-        let fpp0 = components["/_derivative2"].stateValues.numericalf(x);
+        let fpn05 = components["/_derivative1"].stateValues.f(x - dx / 2);
+        let fpp0 = components["/_derivative2"].stateValues.f(x);
         expect(fpp0).closeTo((fp05 - fpn05) / dx, 1E-6)
 
-        let fpp1 = components["/_derivative2"].stateValues.numericalf(x + dx);
-        let fppp05 = components["/_derivative3"].stateValues.numericalf(x + dx / 2);
+        let fpp1 = components["/_derivative2"].stateValues.f(x + dx);
+        let fppp05 = components["/_derivative3"].stateValues.f(x + dx / 2);
         expect(fppp05).closeTo((fpp1 - fpp0) / dx, 1E-6)
 
-        let fpppn05 = components["/_derivative3"].stateValues.numericalf(x - dx / 2);
-        let fpppp0 = components["/_derivative4"].stateValues.numericalf(x);
+        let fpppn05 = components["/_derivative3"].stateValues.f(x - dx / 2);
+        let fpppp0 = components["/_derivative4"].stateValues.f(x);
         expect(fpppp0).closeTo((fppp05 - fpppn05) / dx, 1E-6)
 
       }

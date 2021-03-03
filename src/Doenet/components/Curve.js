@@ -13,6 +13,8 @@ export default class Curve extends GraphicalComponent {
   static componentType = "curve";
   static rendererType = "curve";
 
+  static primaryStateVariableForDefinition = "fShadow";
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
@@ -23,7 +25,6 @@ export default class Curve extends GraphicalComponent {
     properties.flipFunction = { default: false, forRenderer: true };
     properties.nDiscretizationPoints = { default: 500 };
     properties.periodic = { default: false };
-    properties.variable = { default: me.fromAst("x") };
     properties.parmin = { default: me.fromAst(-10) };
     properties.parmax = { default: me.fromAst(10) };
 
@@ -109,13 +110,26 @@ export default class Curve extends GraphicalComponent {
       name: "throughAndControls",
       operator: 'and',
       propositions: [exactlyOneThrough, atMostOneBezierControls],
-      setAsBase: true,
     });
+
+    let functionsXorThrough = childLogic.newOperator({
+      name: "functionsXorThrough",
+      operator: 'xor',
+      propositions: [atLeastZeroFunctions, throughAndControls],
+    });
+
+    let atMostOneVariable = childLogic.newLeaf({
+      name: "atMostOneVariable",
+      componentType: "variable",
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
+    })
 
     childLogic.newOperator({
       name: "curveLogic",
-      operator: 'xor',
-      propositions: [atLeastZeroFunctions, throughAndControls],
+      operator: 'and',
+      propositions: [functionsXorThrough, atMostOneVariable],
       setAsBase: true,
     });
 
@@ -157,6 +171,34 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.variableForChild = {
+      defaultValue: me.fromAst("x"),
+      returnDependencies: () => ({
+        variableChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneVariable",
+          variableNames: ["value"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.variableChild.length === 1) {
+          return {
+            newValues: {
+              variableForChild: dependencyValues.variableChild[0].stateValues.value
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              variableForChild: {
+                variablesToCheck: ["variable", "variableForChild"]
+              }
+            }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.curveType = {
       forRenderer: true,
       returnDependencies: () => ({
@@ -181,11 +223,27 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    // fShadow will be null unless curve was created via an adapter
+    // In case of adapter,,
+    // given the primaryStateVariableForDefinition static variable,
+    // the definition of fShadow will be changed to be the value
+    // that shadows the component adapted
+    stateVariableDefinitions.fShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          fShadow: { variablesToCheck: ["fShadow"] }
+        }
+      }),
+    }
+
 
     stateVariableDefinitions.fs = {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
+      defaultEntryValue: () => 0,
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -206,20 +264,40 @@ export default class Curve extends GraphicalComponent {
               childIndices: [arrayKey]
             }
           };
+          if (Number(arrayKey) === 0) {
+            dependenciesByKey[arrayKey].fShadow = {
+              dependencyType: "stateVariable",
+              variableName: "fShadow"
+            }
+          }
         }
         return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let fs = {};
+        let essentialFs = {};
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
             fs[arrayKey] = functionChild[0].stateValues.f;
           } else {
-            fs[arrayKey] = () => 0;
+            if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
+              fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
+            } else {
+              essentialFs[arrayKey] = {
+                variablesToCheck: [
+                  { variableName: "fs", arrayIndex: arrayKey }
+                ],
+              }
+            }
           }
         }
-        return { newValues: { fs } }
+        return {
+          newValues: { fs },
+          useEssentialOrDefaultValue: {
+            fs: essentialFs,
+          },
+        }
 
       }
     }

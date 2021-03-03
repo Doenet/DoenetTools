@@ -3816,7 +3816,7 @@ describe('Point Tag Tests', function () {
     });
   })
 
-  it.only('change point dimensions', () => {
+  it('change point dimensions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

@@ -47,7 +47,7 @@ describe('Function curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.variable.tree).eq("x");
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-8 + 2);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(27 - 3);
@@ -196,7 +196,7 @@ describe('Function curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("function");
-      expect(components['/_curve1'].stateValues.variable.tree).eq("r");
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("r");
       expect(components['/_curve1'].stateValues.flipFunction).eq(false);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-8 + 2);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(27 - 3);

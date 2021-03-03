@@ -86,8 +86,8 @@ export default class Function extends InlineComponent {
     })
 
 
-    let functionFormulaXorSugar = childLogic.newOperator({
-      name: "functionFormulaXorSugar",
+    let functionXorFormula = childLogic.newOperator({
+      name: "functionXorFormula",
       operator: 'xor',
       propositions: [atMostOneFunction, exactlyOneFormula, throughCriteria],
     })
@@ -104,7 +104,7 @@ export default class Function extends InlineComponent {
     childLogic.newOperator({
       name: "formulaWithVariable",
       operator: "and",
-      propositions: [atMostOneVariable, functionFormulaXorSugar],
+      propositions: [atMostOneVariable, functionXorFormula],
       setAsBase: true,
     })
 
@@ -211,9 +211,9 @@ export default class Function extends InlineComponent {
           childLogicName: "atMostOneFunction",
           variableNames: ["variable"],
         },
-        parentVariable: {
+        parentVariableForChild: {
           dependencyType: "parentStateVariable",
-          variableName: "variable"
+          variableName: "variableForChild"
         },
         isInterpolatedFunction: {
           dependencyType: "stateVariable",
@@ -230,8 +230,8 @@ export default class Function extends InlineComponent {
           return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
         } else if (dependencyValues.variableChild.length === 1) {
           return { newValues: { variable: dependencyValues.variableChild[0].stateValues.value } }
-        } else if (dependencyValues.parentVariable && !usedDefault.parentVariable) {
-          return { newValues: { variable: dependencyValues.parentVariable } }
+        } else if (dependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
+          return { newValues: { variable: dependencyValues.parentVariableForChild } }
         } else {
           return {
             useEssentialOrDefaultValue: {
@@ -1629,7 +1629,7 @@ export default class Function extends InlineComponent {
 
   adapters = [{
     stateVariable: "f",
-    componentType: "functioncurve"
+    componentType: "curve"
   },
   {
     stateVariable: "formula",

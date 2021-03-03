@@ -135,11 +135,6 @@ export default class Copy extends CompositeComponent {
 
         let sourcesInfo = sharedParameters.sourcesInfo;
 
-        console.log(`sourcesInfo`)
-        console.log(sourcesInfo)
-
-        console.log(stateValues)
-
         if (sourcesInfo === undefined) {
           console.error(`Cannot copy _source when not inside a map template.`);
           return {};
