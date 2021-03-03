@@ -182,24 +182,54 @@ const updateItemHistorySelector = selectorFamily({
     default:""
   })
   
+
+  //Need this?
   const EditingTimestampAtom = atom({
     key:"EditingTimestampAtom",
     default:""
   })
   
-  const EditingContentIdAtom = atom({
-    key:"EditingContentIdAtom",
-    default:""
+function ReturnToEditingButton(props){
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  const returnToEditing = useRecoilCallback(({snapshot,set})=> async ()=>{
+    set(versionHistorySelectedAtom,"")
+    let loadableDoenetML = await snapshot.getPromise(fileByContentId(props.branchId));
+    const doenetML = loadableDoenetML.data;
+    set(editorDoenetMLAtom,doenetML);
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
   })
-          
+
+  if (selectedTimestamp === ""){ return null; }
+
+  return <Button callback={()=> returnToEditing() } value="Return to editing" />
+}
 
 function VersionHistoryPanel(props){
   const [versionHistory,setVersion] = useRecoilStateLoadable(updateItemHistorySelector(props.branchId))
-  const [selectedTimestamp,setSelectedTimestamp] = useRecoilState(versionHistorySelectedAtom);
+  const selectedTimestamp  = useRecoilValue(versionHistorySelectedAtom);
   const [editingTimestamp,setEditingTimestamp] = useRecoilState(EditingTimestampAtom);
-  const setEditingContentId = useSetRecoilState(EditingContentIdAtom);
 
-  const [editingText,setEditingText] = useState("")
+  const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
+    set(versionHistorySelectedAtom,version.timestamp)
+    let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
+    const doenetML = loadableDoenetML.data;
+    // console.log(">>>version",version)
+    // console.log(">>>doenetML",doenetML)
+    set(editorDoenetMLAtom,doenetML);
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
+  })
+  
+
+
+  const [editingTitleText,setEditingTitleText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
@@ -217,7 +247,7 @@ function VersionHistoryPanel(props){
       let titleStyle = {}
 
       if (version.isDraft === "1"){ 
-        titleText = "Draft";
+        titleText = "Current Version";
       
       }
       // if (version.isNamed === "1"){
@@ -244,7 +274,7 @@ function VersionHistoryPanel(props){
       let title = <div><b 
       onClick={()=>{
         if (selectedTimestamp !== ""){
-          setEditingText(titleText);
+          setEditingTitleText(titleText);
           setEditingTimestamp(version.timestamp)
         }
       }} 
@@ -255,20 +285,18 @@ function VersionHistoryPanel(props){
         autoFocus
         onBlur={()=>{
           setEditingTimestamp("");
-          setVersion({instructions:{type:"Name Version",newTitle:editingText,timestamp:version.timestamp}})
+          setVersion({instructions:{type:"Name Version",newTitle:editingTitleText,timestamp:version.timestamp}})
         }}
-        onChange={(e)=>{setEditingText(e.target.value)}}
-        value = {editingText}
+        onChange={(e)=>{setEditingTitleText(e.target.value)}}
+        value = {editingTitleText}
       type="text" /></div>
       }
 
-      let jsx = <React.Fragment key={`pastVersion${version.timestamp}`}>
+      let jsx = (<React.Fragment key={`history${version.timestamp}`}>
       <div 
       onClick={()=>{
         if (version.timestamp !== selectedTimestamp){
-          setSelectedTimestamp(version.timestamp)
-          // console.log(">>>version.contentId",version.contentId)
-          setEditingContentId(version.contentId)
+          versionHistorySelected(version);
         }
       }}
     style={versionStyle}
@@ -277,7 +305,8 @@ function VersionHistoryPanel(props){
       <div>{version.timestamp}</div>
       </div>
       {drawer}
-      </React.Fragment>
+      </React.Fragment>)
+
       //Put draft at the top
         if (version.isDraft === "1"){ 
           versions.unshift(jsx)
@@ -306,10 +335,10 @@ function buildTimestamp(){
     dt.getSeconds().toString().padStart(2, '0')}`
 }
 
-
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const setVersion = useSetRecoilState(updateItemHistorySelector(props.branchId))
+  const selectedTimestamp  = useRecoilValue(versionHistorySelectedAtom);
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
 
@@ -340,22 +369,27 @@ function TextEditor(props){
   const autosavetimeout = useRef(null);
   let textValue = editorDoenetML;
 
-  //Used to work around second mount of codemirror with the same textValue it doesn't display textValue
+  function clearSaveTimeouts(){
+    if (timeout.current !== null){
+      clearTimeout(timeout.current)
+      timeout.current = null;
+      setVersion({instructions:{type:"Save Draft"}}) 
+    }
+    if (autosavetimeout.current !== null){
+      clearTimeout(autosavetimeout.current)
+    }
+  }
+
+ //Stop timers on unmount
   useEffect(() => {
     return () => {
-      if (timeout.current !== null){
-        clearTimeout(timeout.current)
-        timeout.current = null;
-        setVersion({instructions:{type:"Save Draft"}}) 
-      }
-      if (autosavetimeout.current !== null){
-        clearTimeout(autosavetimeout.current)
-      }
+      clearSaveTimeouts()
     };
   },[]);
 
-  // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
-  
+  if (selectedTimestamp !== ""){
+    clearSaveTimeouts()
+  }
 
   const options = {
       mode: 'xml',
@@ -378,7 +412,7 @@ function TextEditor(props){
   value={textValue}
   options={options}
   onBeforeChange={(editor, data, value) => {
-      // if (selectedTimestamp === "") { //Only update if an inactive version history
+    if (selectedTimestamp === "") { //No timers when active version history
       setEditorDoenetML(value);
       if (timeout.current === null){
         timeout.current = setTimeout(function(){
@@ -390,9 +424,9 @@ function TextEditor(props){
         autosavetimeout.current = setTimeout(function(){
           autoSave();
           autosavetimeout.current = null;
-    },60000) //1 minute
+        },60000) //1 minute
       }
-  // }
+    }
   }}
   // onChange={(editor, data, value) => {
   // }}
@@ -404,8 +438,8 @@ function TextEditor(props){
 function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
-  // const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
-  // if (selectedTimestamp !== "") {return null;}
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
 
   return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
@@ -413,6 +447,14 @@ function DoenetViewerUpdateButton(){
     newInfo.updateNumber = old.updateNumber+1;
     return newInfo;
   })}} />
+}
+
+function TempEditorHeaderBar(props){
+  return <div style={{height:"24px"}}>
+    
+              {/* <NameCurrentVersionControl branchId={props.branchId} /> */}
+
+  </div>
 }
 
 export default function Editor({ contentId, branchId }) {
@@ -439,7 +481,9 @@ export default function Editor({ contentId, branchId }) {
 
   return (
     <Tool>
-      <headerPanel title="How?"></headerPanel>
+      <headerPanel title="How?">
+        <ReturnToEditingButton branchId={branchId} />
+      </headerPanel>
 
       <mainPanel>
         <div><DoenetViewerUpdateButton  /></div>
@@ -447,10 +491,8 @@ export default function Editor({ contentId, branchId }) {
       </mainPanel>
 
       <supportPanel>
-        <div>
-          {/* <NameCurrentVersionControl branchId={branchId} /> */}
+      <TempEditorHeaderBar branchId={branchId} />
           <TextEditor  branchId={branchId}/>
-          </div>
       </supportPanel>
 
       <menuPanel title="Version history">
