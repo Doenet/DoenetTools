@@ -20,7 +20,7 @@ import Textfield from "../imports/PanelHeaderComponents/Textfield";
 import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
-import Drive, { folderDictionarySelector } from "../imports/Drive";
+import Drive, { folderDictionarySelector,fetchDrivesSelector } from "../imports/Drive";
 import DoenetViewer from "./DoenetViewer";
 import {
   atom,
@@ -37,6 +37,7 @@ import {
 import Switch from "../imports/Switch";
 import AddItem from "../imports/AddItem";
 import { supportVisible } from "../imports/Tool/SupportPanel";
+import DriveCardComponent from "../imports/DriveCardComponent";
 
 export const roleAtom = atom({
   key: "roleAtom",
@@ -756,8 +757,7 @@ const ContentInfoPanel = (props) => {
 };
 
 function DoenetCourseRouted({ props }) {
-  // let courseId = ""; 
-  let courseId = "Fhg532fk9873412s65"; //TODO
+  let courseId = ""; 
 
   const [role, setRole] = useRecoilState(roleAtom);
   // const setOverlayOpen = useSetRecoilState(openOverlayByName);
@@ -790,6 +790,7 @@ function DoenetCourseRouted({ props }) {
     courseId = urlParamsObj?.courseId;
   }
 
+
   const [openEnrollment, setEnrollmentView] = useState(false);
 
   const enrollCourseId = { courseId: courseId };
@@ -818,11 +819,11 @@ function DoenetCourseRouted({ props }) {
 
   return (
     <Tool>
-      <headerPanel title="my title">{roleMenu}</headerPanel>
+      <headerPanel title="Course">{roleMenu}</headerPanel>
 
       <navPanel>
         <Drive
-          types={["course"]}
+          driveId={routePathDriveId}
           hideUnpublished={hideUnpublished}
           urlClickBehavior={urlClickBehavior}
         />
