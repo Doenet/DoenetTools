@@ -61,7 +61,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: cat');
     cy.get('#\\/pa1').should('have.text', 'a1: cat');
@@ -73,7 +73,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'cat');
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -85,7 +85,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -97,7 +97,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'dog');
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -156,7 +156,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: cat');
     cy.get('#\\/pa1').should('have.text', 'a1: cat');
@@ -168,7 +168,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'cat');
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -180,7 +180,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -192,7 +192,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'dog');
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -258,7 +258,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/bb1').should('not.exist');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a,aa: cat');
     cy.get('#\\/pa1').should('have.text', 'a1: cat');
@@ -275,7 +275,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/bb1').should('not.exist');
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a,aa: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -292,7 +292,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/bb1').should('not.exist');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a,aa: dogcat');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -309,7 +309,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/bb1').should('have.text', 'cat');
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a,aa: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -374,7 +374,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: cat');
     cy.get('#\\/pa1').should('have.text', 'a1: cat');
@@ -386,7 +386,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'cat');
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -398,7 +398,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -410,7 +410,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'dog');
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -521,7 +521,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/a').should('have.text', 'cat');
     cy.get('#\\/a1').should('have.text', 'cat');
@@ -566,7 +566,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -609,7 +609,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/i1').should('not.exist');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
 
     cy.get('#\\/a').should('have.text', 'dog');
@@ -654,7 +654,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -796,7 +796,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'cat');
     cy.get('#\\/a1').should('have.text', 'cat');
@@ -841,7 +841,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -884,7 +884,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/i1').should('not.exist');
 
     cy.log('enter -11')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
 
     cy.get('#\\/s1\\/a').should('have.text', 'dog');
@@ -929,7 +929,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter x')
-    cy.get('#\\/n_input').clear().type("x{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -1065,7 +1065,7 @@ describe('SelectByCondition Tag Tests', function () {
     });
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1099,7 +1099,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1132,7 +1132,7 @@ describe('SelectByCondition Tag Tests', function () {
     });
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1268,7 +1268,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
@@ -1307,7 +1307,7 @@ describe('SelectByCondition Tag Tests', function () {
     })
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'dog')
     cy.get(`#\\/a\\/plant`).should('have.text', 'tree')
@@ -1347,7 +1347,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
@@ -1490,7 +1490,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
@@ -1529,7 +1529,7 @@ describe('SelectByCondition Tag Tests', function () {
     })
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'dog')
     cy.get(`#\\/a\\/plant`).should('have.text', 'tree')
@@ -1569,7 +1569,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
@@ -1716,7 +1716,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
@@ -1756,7 +1756,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let aReplacements = components["/a"].replacements;
@@ -1817,7 +1817,7 @@ describe('SelectByCondition Tag Tests', function () {
     })
 
     cy.log('enter 10')
-    cy.get('#\\/n_input').clear().type("10{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
@@ -1914,7 +1914,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get(`#\\/_p2`).should('have.text', 'The response one more time: Fred')
 
 
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
     cy.get(`#\\/a\\/_p1`).should('have.text', 'What is your favorite animal? ')
     cy.get(`#\\/a\\/_p2`).should('have.text', 'I like , too.')
     cy.get(`#\\/_p1`).should('have.text', 'The response: ')
@@ -1930,7 +1930,7 @@ describe('SelectByCondition Tag Tests', function () {
 
 
 
-    cy.get('#\\/n_input').clear().type("3{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}3{enter}", { force: true })
     cy.get(`#\\/a\\/_p1`).should('have.text', 'Anything else? ')
     cy.get(`#\\/a\\/_p2`).should('have.text', 'To repeat: .')
     cy.get(`#\\/_p1`).should('have.text', 'The response: ')
@@ -2003,7 +2003,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get(`#\\/pResponse2`).should('have.text', 'The response one more time: Fred')
 
 
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
     cy.get(`#\\/a`).should('have.text', 'What is your favorite animal? ')
     cy.get(`#\\/b`).should('have.text', 'I like , too.')
     cy.get(`#\\/pResponse`).should('have.text', 'The response: ')
@@ -2018,7 +2018,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get(`#\\/pResponse2`).should('have.text', 'The response one more time: dogs')
 
 
-    cy.get('#\\/n_input').clear().type("3{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}3{enter}", { force: true })
     cy.get(`#\\/a`).should('have.text', 'Anything else? ')
     cy.get(`#\\/b`).should('have.text', 'To repeat: .')
     cy.get(`#\\/pResponse`).should('have.text', 'The response: ')
@@ -2084,7 +2084,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'neither');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'positive');
     cy.get('#\\/_p3').should('have.text', 'positive');
@@ -2092,7 +2092,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'positive');
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'non-positive');
     cy.get('#\\/_p3').should('have.text', 'non-positive');
@@ -2100,8 +2100,8 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'negative');
 
     cy.log('enter 0')
-    cy.get('#\\/n_input').clear().type("0{enter}")
-    
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}0{enter}", { force: true })
+
     cy.get('#\\/_p1').should('have.text', 'non-positive');
     cy.get('#\\/_p3').should('have.text', 'non-positive');
     cy.get('#\\/_p2').should('have.text', 'neither');
@@ -2158,7 +2158,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'bye');
 
     cy.log('enter 1')
-    cy.get('#\\/n_input').clear().type("1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'hello');
     cy.get('#\\/_p3').should('have.text', 'hello');
@@ -2166,7 +2166,7 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'oops');
 
     cy.log('enter -1')
-    cy.get('#\\/n_input').clear().type("-1{enter}")
+    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'bye');
     cy.get('#\\/_p3').should('have.text', 'bye');
@@ -2174,8 +2174,8 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'hello');
 
     cy.log('enter 0')
-    cy.get('#\\/n_input').clear().type("0{enter}")
-    
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}0{enter}", { force: true })
+
     cy.get('#\\/_p1').should('have.text', 'bye');
     cy.get('#\\/_p3').should('have.text', 'bye');
     cy.get('#\\/_p2').should('have.text', 'bye');

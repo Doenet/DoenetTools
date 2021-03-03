@@ -96,8 +96,6 @@ export default class Map extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        console.log(`definition of template`)
-        console.log(dependencyValues);
 
         let templateChild = dependencyValues.templateChild[0];
         if (!templateChild) {

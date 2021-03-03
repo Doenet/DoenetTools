@@ -105,6 +105,19 @@ export default class FunctionOperator extends Function {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
+    stateVariableDefinitions.isInterpolatedFunction = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isInterpolatedFunction: false } })
+    }
+
+    delete stateVariableDefinitions.nPrescribedPoints;
+    delete stateVariableDefinitions.prescribedPoints;
+    delete stateVariableDefinitions.prescribedMinima;
+    delete stateVariableDefinitions.prescribedMaxima;
+    delete stateVariableDefinitions.prescribedExtrema;
+    delete stateVariableDefinitions.interpolationPoints;
+    delete stateVariableDefinitions.xs;
+
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: false } })

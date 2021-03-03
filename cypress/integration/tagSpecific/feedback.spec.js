@@ -36,41 +36,41 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`);
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').eq(0).should('have.text', 'You got full credit!')
       cy.get('#\\/_section1 p').eq(1).should('have.text', 'You typed the right answer!')
       cy.get('#\\/_section1 p').eq(2).should('not.exist')
 
       cy.log("Type wrong answer")
-      cy.get(mathinputAnchor).clear().type(`x`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').eq(0).should('have.text', 'You got full credit!')
       cy.get('#\\/_section1 p').eq(1).should('have.text', 'You typed the right answer!')
       cy.get('#\\/_section1 p').eq(2).should('not.exist')
@@ -79,21 +79,21 @@ describe('Feedback Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', "That's a bad answer.")
 
       cy.log("Enter different wrong answer")
-      cy.get(mathinputAnchor).clear().type(`y`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('have.text', "That's a bad answer.")
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('not.exist')
 
     })
@@ -121,60 +121,60 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`);
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
 
       cy.log("Enter wrong answer")
-      cy.get(mathinputAnchor).clear().type(`x`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
 
       cy.log("Enter different wrong answer")
-      cy.get(mathinputAnchor).clear().type(`y`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('not.exist')
 
     })
@@ -226,28 +226,27 @@ describe('Feedback Tag Tests', function () {
       let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type 11")
-      cy.get('#\\/_mathinput1_input').type(`11`);
+      cy.get('#\\/_mathinput1 textarea').type(`11`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
-      cy.get('#\\/_mathinput1_input').blur();
+      cy.get('#\\/_mathinput1 textarea').blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
@@ -257,57 +256,57 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_mathinput1_submit').click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 10`)
 
       cy.log("submit 10")
-      cy.get('#\\/_mathinput1_input').clear().type(`10{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '10');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '10');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.2')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 2`)
 
       cy.log("submit 2")
-      cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}2{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '2');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '2');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 1`)
 
       cy.log("submit 1")
-      cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '1');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '1');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 0.9`)
 
       cy.log("submit 0")
-      cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '0');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '0');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("submit -1")
-      cy.get('#\\/_mathinput1_input').clear().type(`-1{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}-1{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '-1');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '-1');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
@@ -503,14 +502,14 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
@@ -528,7 +527,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type sin(pi x)")
-      cy.get(mathinputAnchor).clear().type(`sin(pi x)`);
+      cy.get(mathinputAnchor).type(`sin(pi x)`, { force: true });
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', '')
@@ -557,7 +556,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type cos(pi x)")
-      cy.get(mathinputAnchor).clear().type(`cos(pi x)`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -584,7 +583,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Enter x")
-      cy.get(mathinputAnchor).clear().type(`x{enter}`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -592,7 +591,7 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/feedback4').should('have.text', '')
 
       cy.log("Enter sin(x)")
-      cy.get(mathinputAnchor).clear().type(`sin(x){enter}`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}sin(x){enter}`, { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '30 %');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')

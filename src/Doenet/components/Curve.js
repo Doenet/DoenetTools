@@ -2,7 +2,8 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import { createUniqueName } from '../utils/naming';
 import {
   breakEmbeddedStringByCommas, breakIntoVectorComponents,
-  breakPiecesByEquals
+  breakPiecesByEquals,
+  returnBreakStringsSugarFunction
 } from './commonsugar/breakstrings';
 import { returnNVariables } from '../utils/math';
 
@@ -10,23 +11,22 @@ import me from 'math-expressions';
 
 export default class Curve extends GraphicalComponent {
   static componentType = "curve";
-  static rendererType = "container";
+  static rendererType = "curve";
+
+  static primaryStateVariableForDefinition = "fShadow";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
-    properties.draggable = { default: true, forRenderer: true, propagateToDescendants: true };
+    properties.draggable = { default: true, forRenderer: true };
     properties.label.propagateToDescendants = true;
     properties.showLabel.propagateToDescendants = true;
     properties.layer.propagateToDescendants = true;
-
-    // some of these properties won't make sense for components that
-    // inherit off curve
-    // However, even those components should keep these properties
-    // so that code can assume that a curve has these properties
-    properties.parameter = { default: me.fromAst('t'), propagateToDescendants: true };
-    properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
-    properties.parmax = { default: me.fromAst(10), propagateToDescendants: true };
+    properties.flipFunction = { default: false, forRenderer: true };
+    properties.nDiscretizationPoints = { default: 500 };
+    properties.periodic = { default: false };
+    properties.parmin = { default: me.fromAst(-10) };
+    properties.parmax = { default: me.fromAst(10) };
 
     // properties.variables = {
     //   componentType: "math",
@@ -41,455 +41,95 @@ export default class Curve extends GraphicalComponent {
     return properties;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
+      let childrenToComponentFunction = x => ({
+        componentType: "function", children: x
+      });
+
+      let breakFunction = returnBreakStringsSugarFunction({
+        childrenToComponentFunction,
+        mustStripOffOuterParentheses: true
+      })
+
+      let result = breakFunction({ matchedChildren });
+
+      if (!result.success) {
+        // if didn't succeed,
+        // then just wrap string with a function
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "function",
+            children: matchedChildren
+          }]
+        }
+
+      }
+
+      return result;
+
+    };
+
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: breakIntoFunctionsByCommas
+    })
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.deleteAllLogic();
-
-    let getVarName = function (piece) {
-      if (piece.length > 1) {
-        return;
-      }
-      let varName = piece[0]._string;
-      if (varName !== undefined) {
-        return varName.trim();
-      }
-    }
-
-    let checkIfMathVector = function (compList, mathClass) {
-      if (compList.length === 1) {
-        let component = compList[0]._component;
-        if (component instanceof mathClass) {
-          let tree = component.stateValues.value.tree;
-          if (tree !== undefined) {
-            if (Array.isArray(tree) && (tree[0] === "tuple" || tree[0] === "vector")) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    }
-
-    let createParametrizationFunctionOrThrough = function ({ dependencyValues, allComponentClasses, parentName, childLogicName }) {
-
-      let results = breakEmbeddedStringByCommas({
-        childrenList: dependencyValues.stringsAndMaths,
-      });
-
-      if (results.success !== true) {
-        return { success: false }
-      }
-
-      let pieces = results.pieces;
-      let toDelete = results.toDelete;
-
-      // check if each pieces appears to be a point
-      let allPiecesPoints = true;
-      for (let piece of pieces) {
-        let vresult = breakIntoVectorComponents(piece, true);
-        if (vresult.foundVector !== true) {
-          if (!checkIfMathVector(piece, allComponentClasses.math)) {
-            allPiecesPoints = false;
-            break;
-          }
-        }
-      }
-
-      if (allPiecesPoints) {
-        // put point-like pieces inside points inside a through
-        // and create a Bezier curve
-        let throughChildren = pieces.map(x => ({
-          componentType: "point", children: [{
-            componentType: "coords", children: x
-          }]
-        }));
-
-        let newChildren = [{
-          componentType: "beziercurve",
-          children: [{
-            componentType: "through",
-            children: throughChildren
-          }]
-        }];
-
-        return {
-          success: true,
-          toDelete,
-          newChildren
-        };
-      }
-
-      // at least one piece wasn't point-like,
-      // meaning it wasn't surrounded by parenthesis
-      // or a math vector
-
-      // for each piece, we could have the following:
-      // - An expression without an = sign.
-      //   Make it a function of the first variable.
-      // - For case of one piece only:
-      //   An expression with a single = sign where both sides are of the form
-      //   of vectors of the same length, i.e., (x,y).
-      //   Treat them the same as multiple pieces with matched equalities.
-      // - Any other expression with a single = sign.
-      //   Eventually want to be able to treat as an implicit function of the variables.
-      //   For now, require one side of = to be one of the variables.
-      //   Treat it a function of the other variables
-      // - Anything else
-      //   The sugar fails.
-      // Note: all punctuation (=, comma, or parens) are recognized only inside strings
-
-      results = breakPiecesByEquals(pieces, true);
-
-      if (results.success !== true) {
-        return { success: false }
-      }
-
-      toDelete = [...toDelete, ...results.toDelete];
-
-      let lhsByPiece = results.lhsByPiece;
-      let rhsByPiece = results.rhsByPiece;
-
-
-      let newChildren = [];
-
-      if (lhsByPiece.length === 1) {
-        let functionChildren;
-        let flip = false;
-        if (rhsByPiece.length === 0) {
-          // with just one piece and no equal sign
-          // the curve is the graph of a function
-          functionChildren = lhsByPiece[0];
-        } else {
-          // one piece with an equal sign
-          // the curve should be an implicit function
-          // For now, just implement a function in the case
-          // where either lhs or rhs is the string corresponding to var2
-
-          if (getVarName(lhsByPiece[0]) === dependencyValues.variables[1].tree) {
-            functionChildren = rhsByPiece[0];
-          } else if (getVarName(rhsByPiece[0]) === dependencyValues.variables[1].tree) {
-            functionChildren = lhsByPiece[0];
-          } else if (getVarName(lhsByPiece[0]) === dependencyValues.variables[0].tree) {
-            functionChildren = rhsByPiece[0];
-            flip = true;
-          } else if (getVarName(rhsByPiece[0]) === dependencyValues.variables[0].tree) {
-            functionChildren = lhsByPiece[0];
-            flip = true;
-          } else {
-            console.log("General form of equation for curve not implemented")
-            return { success: false }
-          }
-        }
-
-        let longNameId = parentName + "|sugarReplacement|" + childLogicName;
-        let functionCurveName = createUniqueName("functioncurve", longNameId);
-  
-        let functionCurveChildren = [];
-        let variableName = "var1";
-        if (flip) {
-          functionCurveChildren.push({
-            componentType: "flipfunction",
-            state: { value: true }
-          });
-          variableName = "var2";
-        }
-
-        functionChildren.push({
-          componentType: "variable",
-          children: [{
-            componentType: "copy",
-            children: [{
-              componentType: "tname",
-              state: { targetName: functionCurveName }
-            },
-            {
-              componentType: "prop",
-              state: { variableName }
-            }]
-          }]
-        })
-
-        functionCurveChildren.push({
-          componentType: "function",
-          children: functionChildren,
-        })
-
-        newChildren = [{
-          componentType: "functioncurve",
-          children: functionCurveChildren,
-          doenetAttributes: { componentName: functionCurveName },
-        }]
-
-      } else {
-
-        let longNameId = parentName + "|sugarReplacement|" + childLogicName;
-        let parametrizedCurveName = createUniqueName("parametrizedcurve", longNameId);
- 
-        let variableForParameterFunctions = {
-          componentType: "variable",
-          children: [{
-            componentType: "copy",
-            children: [{
-              componentType: "tname",
-              state: { targetName: parametrizedCurveName }
-            },
-            {
-              componentType: "prop",
-              state: { variableName: "parameter" }
-            }]
-          }]
-        }
-        if (rhsByPiece.length === 0) {
-          // multiple pieces with no equal sign
-          // each piece is a function for the coresponding variable
-
-          let functionChildren = []
-          for (let i = 0; i < lhsByPiece.length; i++) {
-            functionChildren.push({
-              componentType: "function",
-              children: [variableForParameterFunctions, ...lhsByPiece[i]]
-            });
-          }
-          newChildren = [{
-            componentType: "parametrizedcurve",
-            children: functionChildren,
-            doenetAttributes: { componentName: parametrizedCurveName },
-          }]
-
-        } else {
-          // multiple pieces with equal signs
-          // each piece is a function for the coresponding variable
-          // For now, just implement a parametrization in the case
-          // where either lhs or rhs is the string corresponding to one of the variables
-          let variablesLeft = new Set([]);
-          let variableNames = dependencyValues.variables.map(x => x.tree);
-          variableNames.forEach(x => variablesLeft.add(x));
-
-
-          let variableOrder = {};
-          let childrenToBeOrdered = [];
-          for (let i = 0; i < lhsByPiece.length; i++) {
-            let functionChildren = [variableForParameterFunctions];
-            let varName = getVarName(lhsByPiece[i]);
-            if (variablesLeft.has(varName)) {
-              let varInd = variableNames.indexOf(varName);
-              variableOrder[varInd] = i;
-              variablesLeft.delete(varName);
-              functionChildren.push(...rhsByPiece[i]);
-            } else {
-              varName = getVarName(rhsByPiece[i]);
-              if (variablesLeft.has(varName)) {
-                let varInd = variableNames.indexOf(varName);
-                variableOrder[varInd] = i;
-                variablesLeft.delete(varName);
-                functionChildren.push(...lhsByPiece[i]);
-              } else {
-                console.log("General form of parametric curve not implemented")
-                return { success: false }
-              }
-            }
-
-            childrenToBeOrdered.push({
-              componentType: "function",
-              children: functionChildren,
-            });
-          }
-
-          let orderedChildren = [];
-          for (let i = 0; i < lhsByPiece.length; i++) {
-            orderedChildren.push(childrenToBeOrdered[variableOrder[i]]);
-          }
-
-          newChildren = [{
-            componentType: "parametrizedcurve",
-            children: orderedChildren,
-            doenetAttributes: { componentName: parametrizedCurveName },
-          }]
-        }
-      }
-
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: toDelete,
-      }
-
-    }
-
-    // let atLeastOneString = childLogic.newLeaf({
-    //   name: "atLeastOneString",
-    //   componentType: 'string',
-    //   comparison: 'atLeast',
-    //   number: 1,
-    // });
-
-    // let atLeastOneMath = childLogic.newLeaf({
-    //   name: "atLeastOneMath",
-    //   componentType: 'math',
-    //   comparison: 'atLeast',
-    //   number: 1,
-    // });
-
-    // let stringsAndMaths = childLogic.newOperator({
-    //   name: "stringsAndMaths",
-    //   operator: 'or',
-    //   propositions: [atLeastOneString, atLeastOneMath],
-    //   requireConsecutive: true,
-    //   isSugar: true,
-    //   returnSugarDependencies: () => ({
-    //     stringsAndMaths: {
-    //       dependencyType: "child",
-    //       childLogicName: "stringsAndMaths",
-    //       variableNames: ["value"],
-    //     },
-    //     variables: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "variables"
-    //     },
-    //   }),
-    //   logicToWaitOnSugar: ["exactlyOneCurve"],
-    //   replacementFunction: createParametrizationFunctionOrThrough,
-    // });
-
-
-    let addThroughAndBezierCurve = function ({ activeChildrenMatched }) {
-      // add <beizercurve><through> around points
-      let throughChildren = [];
-      for (let child of activeChildrenMatched) {
-        throughChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "beziercurve",
-          children: [{ componentType: "through", children: throughChildren }],
-        }]
-      }
-    }
-
-    // let atLeastOnePoint = childLogic.newLeaf({
-    //   name: "atLeastOnePoint",
-    //   componentType: 'point',
-    //   comparison: 'atLeast',
-    //   number: 1,
-    //   isSugar: true,
-    //   logicToWaitOnSugar: ["exactlyOneCurve"],
-    //   replacementFunction: addThroughAndBezierCurve,
-    // });
-
-
-    let addBezierCurve = function ({ activeChildrenMatched }) {
-      // add <beziercurve> around through
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "beziercurve",
-          children: [{
-            createdComponent: true,
-            componentName: activeChildrenMatched[0].componentName
-          }],
-        }]
-      }
-    }
-
-    // let exactlyOneThrough = childLogic.newLeaf({
-    //   name: "exactlyOneThrough",
-    //   componentType: 'through',
-    //   number: 1,
-    //   isSugar: true,
-    //   logicToWaitOnSugar: ["exactlyOneCurve"],
-    //   replacementFunction: addBezierCurve,
-    // });
-
-
-    let addFunctionCurve = function ({ activeChildrenMatched }) {
-      // add <functioncurve> around function and options
-      let functionChildren = [];
-      for (let child of activeChildrenMatched) {
-        functionChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "functioncurve",
-          children: functionChildren,
-        }]
-      }
-    }
-
-    // let exactlyOneFunction = childLogic.newLeaf({
-    //   name: "exactlyOneFunction",
-    //   componentType: 'function',
-    //   number: 1,
-    //   isSugar: true,
-    //   logicToWaitOnSugar: ["exactlyOneCurve"],
-    //   replacementFunction: addFunctionCurve,
-    // });
-
-
-    let addParametrizedCurve = function ({ activeChildrenMatched }) {
-      // add <parametrizedcurve> around functions and options
-      let parametrizedCurveChildren = [];
-      for (let child of activeChildrenMatched) {
-        parametrizedCurveChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "parametrizedcurve",
-          children: parametrizedCurveChildren,
-        }]
-      }
-    }
-
-
-    // let atLeastTwoFunctions = childLogic.newLeaf({
-    //   name: "atLeastTwoFunctions",
-    //   componentType: 'function',
-    //   comparison: 'atLeast',
-    //   number: 2,
-    //   isSugar: true,
-    //   logicToWaitOnSugar: ["exactlyOneCurve"],
-    //   replacementFunction: addParametrizedCurve,
-    // });
-
-    let exactlyOneCurve = childLogic.newLeaf({
-      name: "exactlyOneCurve",
-      componentType: "curve",
-      number: 1,
+    let atLeastZeroFunctions = childLogic.newLeaf({
+      name: "atLeastZeroFunctions",
+      componentType: "function",
+      comparison: "atLeast",
+      number: 0
     })
 
-    // let curveXorSugar = childLogic.newOperator({
-    //   name: "curveXorSugar",
-    //   operator: 'xor',
-    //   propositions: [
-    //     stringsAndMaths, atLeastOnePoint, exactlyOneThrough,
-    //     atLeastTwoFunctions, exactlyOneFunction,
-    //     exactlyOneCurve
-    //   ],
-    // });
+    let exactlyOneThrough = childLogic.newLeaf({
+      name: "exactlyOneThrough",
+      componentType: 'through',
+      number: 1
+    });
 
-    let atMostOneVariables = childLogic.newLeaf({
-      name: "atMostOneVariables",
-      componentType: 'variables',
+    let atMostOneBezierControls = childLogic.newLeaf({
+      name: "atMostOneBezierControls",
+      componentType: 'beziercontrols',
       comparison: 'atMost',
       number: 1
     });
 
+    let throughAndControls = childLogic.newOperator({
+      name: "throughAndControls",
+      operator: 'and',
+      propositions: [exactlyOneThrough, atMostOneBezierControls],
+    });
+
+    let functionsXorThrough = childLogic.newOperator({
+      name: "functionsXorThrough",
+      operator: 'xor',
+      propositions: [atLeastZeroFunctions, throughAndControls],
+    });
+
+    let atMostOneVariable = childLogic.newLeaf({
+      name: "atMostOneVariable",
+      componentType: "variable",
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
+    })
+
     childLogic.newOperator({
       name: "curveLogic",
       operator: 'and',
-      propositions: [exactlyOneCurve, atMostOneVariables],
+      propositions: [functionsXorThrough, atMostOneVariable],
       setAsBase: true,
     });
 
@@ -497,9 +137,9 @@ export default class Curve extends GraphicalComponent {
   }
 
 
-  static returnStateVariableDefinitions() {
+  static returnStateVariableDefinitions({ numerics }) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -531,166 +171,464 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.nVariables = {
-      defaultValue: 2,
+    stateVariableDefinitions.variableForChild = {
+      defaultValue: me.fromAst("x"),
       returnDependencies: () => ({
-        stringAndMathChildren: {
+        variableChild: {
           dependencyType: "child",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        },
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneFunction",
-        },
-        functionChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastTwoFunctions",
+          childLogicName: "atMostOneVariable",
+          variableNames: ["value"],
         }
       }),
-      definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.functionChild.length === 1) {
+      definition({ dependencyValues }) {
+        if (dependencyValues.variableChild.length === 1) {
           return {
-            newValues: { nVariables: 2 },
-            makeEssential: ["nVariables"],
-          }
-        } else if (dependencyValues.functionChildren.length > 1) {
-          return {
-            newValues: { nVariables: dependencyValues.functionChildren.length },
-            makeEssential: ["nVariables"],
-          }
-        } else if (dependencyValues.stringAndMathChildren.length > 0) {
-
-          // repeat the same function that is executed in sugar
-          let results = breakEmbeddedStringByCommas({
-            childrenList: dependencyValues.stringAndMathChildren,
-          });
-
-          if (!results.success) {
-            return {
-              useEssentialOrDefaultValue: {
-                nVariables: { variablesToCheck: ["nVariables"], }
-              }
+            newValues: {
+              variableForChild: dependencyValues.variableChild[0].stateValues.value
             }
           }
-
-          results = breakPiecesByEquals(results.pieces, true);
-
-          if (!results.success) {
-            return {
-              useEssentialOrDefaultValue: {
-                nVariables: { variablesToCheck: ["nVariables"], }
-              }
-            }
-          }
-
-          let nVariables = me.math.max([
-            results.lhsByPiece.length,
-            results.rhsByPiece.length,
-            2
-          ])
-
-          return {
-            newValues: { nVariables },
-            makeEssential: ["nVariables"]
-          }
-
         } else {
           return {
             useEssentialOrDefaultValue: {
-              nVariables: { variablesToCheck: ["nVariables"], }
+              variableForChild: {
+                variablesToCheck: ["variable", "variableForChild"]
+              }
             }
           }
+        }
+      }
+    }
+
+    stateVariableDefinitions.curveType = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        functionChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroFunctions"
+        },
+        throughChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneThrough"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let curveType = "function"
+        if (dependencyValues.throughChild.length === 1) {
+          curveType = "bezier"
+        } else if (dependencyValues.functionChildren.length > 1) {
+          curveType = "parameterization"
+        }
+
+        return { newValues: { curveType } }
+      }
+    }
+
+    // fShadow will be null unless curve was created via an adapter
+    // In case of adapter,,
+    // given the primaryStateVariableForDefinition static variable,
+    // the definition of fShadow will be changed to be the value
+    // that shadows the component adapted
+    stateVariableDefinitions.fShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          fShadow: { variablesToCheck: ["fShadow"] }
+        }
+      }),
+    }
+
+
+    stateVariableDefinitions.fs = {
+      forRenderer: true,
+      isArray: true,
+      entryPrefixes: ["f"],
+      defaultEntryValue: () => 0,
+      returnArraySizeDependencies: () => ({
+        functionChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroFunctions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [Math.max(1, dependencyValues.functionChildren.length)];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            functionChild: {
+              dependencyType: "child",
+              childLogicName: "atLeastZeroFunctions",
+              variableNames: ["f"],
+              childIndices: [arrayKey]
+            }
+          };
+          if (Number(arrayKey) === 0) {
+            dependenciesByKey[arrayKey].fShadow = {
+              dependencyType: "stateVariable",
+              variableName: "fShadow"
+            }
+          }
+        }
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let fs = {};
+        let essentialFs = {};
+        for (let arrayKey of arrayKeys) {
+          let functionChild = dependencyValuesByKey[arrayKey].functionChild;
+          if (functionChild.length === 1) {
+            fs[arrayKey] = functionChild[0].stateValues.f;
+          } else {
+            if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
+              fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
+            } else {
+              essentialFs[arrayKey] = {
+                variablesToCheck: [
+                  { variableName: "fs", arrayIndex: arrayKey }
+                ],
+              }
+            }
+          }
+        }
+        return {
+          newValues: { fs },
+          useEssentialOrDefaultValue: {
+            fs: essentialFs,
+          },
         }
 
       }
     }
 
+    stateVariableDefinitions.f = {
+      isAlias: true,
+      targetVariableName: "f1"
+    };
 
-    stateVariableDefinitions.variables = {
-      isArray: true,
-      public: true,
-      componentType: "variable",
-      entryPrefixes: ["var"],
-      returnArraySizeDependencies: () => ({
-        nVariables: {
+
+    stateVariableDefinitions.parmaxNumeric = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        parmax: {
           dependencyType: "stateVariable",
-          variableName: "nVariables",
+          variableName: "parmax"
         },
       }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVariables];
-      },
-      returnArrayDependenciesByKey() {
-        let globalDependencies = {
-          variablesChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneVariables",
-            variableNames: ["variables"],
-          }
-        };
-
-        return { globalDependencies }
-      },
-      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
-        let variablesSpecified = [];
-        if (globalDependencyValues.variablesChild.length === 1) {
-          variablesSpecified = globalDependencyValues.variablesChild[0].stateValues.variables;
+      definition: function ({ dependencyValues }) {
+        let parmaxNumeric = dependencyValues.parmax.evaluate_to_constant();
+        if (!Number.isFinite(parmaxNumeric)) {
+          parmaxNumeric = NaN;
         }
+        return { newValues: { parmaxNumeric } }
+      }
+    }
 
-        return {
-          newValues: {
-            variables: returnNVariables(arraySize[0], variablesSpecified)
-          }
+    stateVariableDefinitions.parminNumeric = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        parmin: {
+          dependencyType: "stateVariable",
+          variableName: "parmin"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let parminNumeric = dependencyValues.parmin.evaluate_to_constant();
+        if (!Number.isFinite(parminNumeric)) {
+          parminNumeric = NaN;
         }
-
+        return { newValues: { parminNumeric } }
       }
     }
 
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        curveChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneCurve",
-          variableNames: ["nearestPoint"]
+        curveType: {
+          dependencyType: "stateVariable",
+          variableName: "curveType"
+        },
+        fs: {
+          dependencyType: "stateVariable",
+          variableName: "fs"
+        },
+        flipFunction: {
+          dependencyType: "stateVariable",
+          variableName: "flipFunction"
+        },
+        nDiscretizationPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nDiscretizationPoints"
+        },
+        parminNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "parminNumeric"
+        },
+        parmaxNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "parmaxNumeric"
+        },
+        periodic: {
+          dependencyType: "stateVariable",
+          variableName: "periodic"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { nearestPoint: dependencyValues.curveChild[0].stateValues.nearestPoint }
-      })
-    }
+      definition({ dependencyValues }) {
+        let nearestPointFunction = null;
 
-    stateVariableDefinitions.childrenToRender = {
-      additionalStateVariablesDefined: ["curveChild"],
-      returnDependencies: () => ({
-        curveChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneCurve"
+        if (dependencyValues.curveType === "function") {
+          nearestPointFunction = getNearestPointFunctionCurve({ dependencyValues, numerics });
+        } else if (dependencyValues.curveType === "parameterization") {
+          nearestPointFunction = getNearestPointParametrizedCurve({ dependencyValues, numerics });
         }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.curveChild.length === 0) {
-          return {
-            newValues: {
-              childrenToRender: [],
-              curveChild: null
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.curveChild[0].componentName],
-              curveChild: dependencyValues.curveChild[0].componentName
-            }
-          }
+
+        return {
+          newValues: { nearestPoint: nearestPointFunction }
         }
+
       }
     }
+
 
     return stateVariableDefinitions;
   }
 
 
+}
+
+function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
+  let flipFunction = dependencyValues.flipFunction;
+  let f = dependencyValues.fs[0];
+  let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
+
+  return function (variables) {
+
+    // first find nearest point when treating a function
+    // (or an inverse function)
+    // which finds a the nearest point vertically
+    // (or horizontally)
+    // assuming the function is defined at that point
+
+    let x1AsFunction, x2AsFunction;
+    if (flipFunction) {
+      x2AsFunction = variables.x2.evaluate_to_constant();
+      x1AsFunction = f(x2AsFunction);
+    } else {
+      x1AsFunction = variables.x1.evaluate_to_constant();
+      x2AsFunction = f(x1AsFunction);
+    }
+
+
+    // next, find the nearest point over all
+
+    let x1 = variables.x1.evaluate_to_constant();
+    let x2 = variables.x2.evaluate_to_constant();
+
+    if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+      if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
+        result = {
+          x1: x1AsFunction,
+          x2: x2Asx1AsFunction
+        }
+        if (variables.x3 !== undefined) {
+          result.x3 = 0;
+        }
+        return result;
+      } else {
+        return {};
+      }
+
+    }
+
+    let minfunc = function (t) {
+      let x = -10 * Math.log(1 / t - 1);
+
+      let dx1 = x1;
+      let dx2 = x2;
+
+      if (flipFunction) {
+        dx1 -= f(x);
+        dx2 -= x;
+      } else {
+        dx1 -= x;
+        dx2 -= f(x);
+      }
+
+      return dx1 * dx1 + dx2 * dx2;
+    }
+
+    let minT = 0;
+    let maxT = 1;
+
+    let Nsteps = nDiscretizationPoints;
+    let delta = (maxT - minT) / Nsteps;
+
+    // sample Nsteps values of x between  [minT, maxT] 
+    // and find one where the value of minfunc is smallest
+    // Will create an interval [tIntervalMin, tIntervalMax]
+    // around that point (unless that point is minT or maxT)
+    // to run numerical minimizer over that interval
+
+    let tAtMin = minT;
+    let fAtMin = minfunc(minT);
+    let tIntervalMin = minT;
+    let tIntervalMax = minT + delta;
+
+    for (let step = 1; step <= Nsteps; step++) {
+      let tnew = minT + step * delta;
+      let fnew = minfunc(tnew);
+      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+        tAtMin = tnew;
+        fAtMin = fnew;
+        tIntervalMin = tnew - delta;
+        if (step === Nsteps) {
+          tIntervalMax = tnew;
+        } else {
+          tIntervalMax = tnew + delta;
+        }
+      }
+
+    }
+
+
+    let result = numerics.fminbr(minfunc, [tIntervalMin, tIntervalMax]);
+    tAtMin = result.x;
+
+    let x1AtMin = -10 * Math.log(1 / tAtMin - 1);
+    let x2AtMin = f(x1AtMin)
+    if (flipFunction) {
+      [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
+    }
+
+
+    // choose the nearest point treating as a function
+    // if that point exists and isn't 10 times further
+    // that the actual nearest point
+    if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
+      let funD2 = Math.pow(x1AsFunction - x1, 2) + Math.pow(x2AsFunction - x2, 2);
+      let d2 = Math.pow(x1AtMin - x1, 2) + Math.pow(x2AtMin - x2, 2);
+
+      // 100 is 10 times distance, as working with squared distance
+      if (funD2 < 100 * d2) {
+        result = {
+          x1: x1AsFunction,
+          x2: x2AsFunction
+        }
+        if (variables.x3 !== undefined) {
+          result.x3 = 0;
+        }
+        return result;
+      }
+
+    }
+
+    result = {
+      x1: x1AtMin,
+      x2: x2AtMin
+    }
+
+    if (variables.x3 !== undefined) {
+      result.x3 = 0;
+    }
+
+    return result;
+
+  }
+}
+
+function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
+  let fs = dependencyValues.fs;
+  let parminNumeric = dependencyValues.parminNumeric;
+  let parmaxNumeric = dependencyValues.parmaxNumeric;
+  let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
+  let periodic = dependencyValues.periodic;
+
+  return function (variables) {
+
+    // TODO: extend to dimensions other than N=2
+
+    if (dependencyValues.fs.length !== 2) {
+      return {};
+    }
+
+    let x1 = variables.x1.evaluate_to_constant();
+    let x2 = variables.x2.evaluate_to_constant();
+
+    if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+      return {};
+    }
+
+    let minfunc = function (t) {
+
+      let dx1 = x1 - fs[0](t);
+      let dx2 = x2 - fs[1](t);
+
+      return dx1 * dx1 + dx2 * dx2;
+    }
+
+    let minT = parminNumeric;
+    let maxT = parmaxNumeric;
+
+    let Nsteps = nDiscretizationPoints;
+    let delta = (maxT - minT) / Nsteps;
+
+    // sample Nsteps values of x between  [minT, maxT] 
+    // and find one where the value of minfunc is smallest
+    // Will create an interval [tIntervalMin, tIntervalMax]
+    // around that point (unless that point is minT or maxT)
+    // to run numerical minimizer over that interval
+
+    let tAtMin = minT;
+    let fAtMin = minfunc(minT);
+    let tIntervalMin = minT;
+    let tIntervalMax = minT + delta;
+
+    for (let step = 1; step <= Nsteps; step++) {
+      let tnew = minT + step * delta;
+      let fnew = minfunc(tnew);
+      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+        tAtMin = tnew;
+        fAtMin = fnew;
+        tIntervalMin = tnew - delta;
+        if (step === Nsteps) {
+          tIntervalMax = tnew;
+        } else {
+          tIntervalMax = tnew + delta;
+        }
+      }
+
+    }
+
+
+    if (periodic) {
+      // if have periodic
+      // and tAtMin is at endpoint, make interval span past endpoint
+      if (Math.abs(tAtMin - minT) < numerics.eps) {
+        // append interval for delta for last interval before minT
+        tIntervalMin = minT - delta;
+      } else if (Math.abs(tAtMin - maxT) < numerics.eps) {
+        // append interval for delta for first interval after minT
+        tIntervalMax = maxT + delta;
+      }
+    }
+
+    let result = numerics.fminbr(minfunc, [tIntervalMin, tIntervalMax]);
+    tAtMin = result.x;
+
+    let x1AtMin = fs[0](tAtMin);
+    let x2AtMin = fs[1](tAtMin);
+
+    result = {
+      x1: x1AtMin,
+      x2: x2AtMin
+    }
+
+    if (variables.x3 !== undefined) {
+      result.x3 = 0;
+    }
+
+    return result;
+
+  }
 }

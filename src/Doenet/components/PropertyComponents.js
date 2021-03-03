@@ -906,16 +906,6 @@ export class delegateCheckWorkToAnswerNumber extends NumberComponent {
   static rendererType = "number";
 }
 
-export class FromSources extends NumberComponent {
-  static componentType = "fromSources";
-  static rendererType = "number";
-}
-
-export class FromMapAncestor extends NumberComponent {
-  static componentType = "fromMapAncestor";
-  static rendererType = "number";
-}
-
 export class Condition extends BooleanComponent {
   static componentType = "condition";
 }

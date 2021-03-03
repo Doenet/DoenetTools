@@ -296,15 +296,15 @@ describe('Copy Tag Tests', function () {
         let v_head = displacement.map((x, i) => x + v_tail[i]);
         let d_head = displacement.map((x, i) => x + d_tail[i]);
 
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([...v_tail]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([...v_head]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector2.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector2.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector2.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector3.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector3.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector3.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([...v_tail]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([...v_head]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector2.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector2.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector2.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector3.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector3.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector3.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
       })
 
       cy.log(`move vector 1`);
@@ -320,15 +320,15 @@ describe('Copy Tag Tests', function () {
           tailcoords: v_tail,
           headcoords: v_head,
         })
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([...v_tail]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([...v_head]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector2.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector2.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector2.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector3.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector3.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector3.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([...v_tail]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([...v_head]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector2.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector2.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector2.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector3.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector3.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector3.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
       })
 
       cy.log(`move vector 2`);
@@ -344,15 +344,15 @@ describe('Copy Tag Tests', function () {
           tailcoords: d_tail,
           headcoords: d_head,
         })
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([...v_tail]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([...v_head]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector2.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector2.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector2.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector3.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector3.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector3.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([...v_tail]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([...v_head]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector2.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector2.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector2.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector3.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector3.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector3.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
       })
 
       cy.log(`move vector 3`);
@@ -368,15 +368,15 @@ describe('Copy Tag Tests', function () {
           tailcoords: d_tail,
           headcoords: d_head,
         })
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([...v_tail]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([...v_head]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector2.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector2.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector2.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector3.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector3.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector3.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([...v_tail]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([...v_head]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector2.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector2.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector2.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector3.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector3.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector3.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
       })
 
       cy.log(`move vector 1`);
@@ -392,15 +392,15 @@ describe('Copy Tag Tests', function () {
           tailcoords: v_tail,
           headcoords: v_head,
         })
-        expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([...v_tail]);
-        expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([...v_head]);
-        expect(components['/_vector1'].stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector2.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector2.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector2.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
-        expect(vector3.stateValues.tail.map(x=>x.tree)).eqls([...d_tail]);
-        expect(vector3.stateValues.head.map(x=>x.tree)).eqls([...d_head]);
-        expect(vector3.stateValues.displacement.map(x=>x.tree)).eqls([...displacement]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([...v_tail]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([...v_head]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector2.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector2.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector2.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
+        expect(vector3.stateValues.tail.map(x => x.tree)).eqls([...d_tail]);
+        expect(vector3.stateValues.head.map(x => x.tree)).eqls([...d_head]);
+        expect(vector3.stateValues.displacement.map(x => x.tree)).eqls([...displacement]);
       })
     })
 
@@ -454,7 +454,7 @@ describe('Copy Tag Tests', function () {
       });
 
 
-      cy.get('#\\/_mathinput1_input').clear().type("2{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('a, b')
       });
@@ -471,7 +471,7 @@ describe('Copy Tag Tests', function () {
         expect(text.trim()).equal('a, b')
       });
 
-      cy.get('#\\/_mathinput1_input').clear().type("5{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('a, b, c, d, e')
       });
@@ -488,7 +488,7 @@ describe('Copy Tag Tests', function () {
         expect(text.trim()).equal('a, b, c, d, e')
       });
 
-      cy.get('#\\/_mathinput1_input').clear().type("1{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('a')
       });
@@ -505,7 +505,7 @@ describe('Copy Tag Tests', function () {
         expect(text.trim()).equal('a')
       });
 
-      cy.get('#\\/_mathinput1_input').clear().type("6{enter}");
+      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}6{enter}", { force: true });
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('a, b, c, d, e, f')
       });
