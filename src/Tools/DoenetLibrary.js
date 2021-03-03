@@ -52,11 +52,8 @@ import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import crypto from 'crypto';
-import DriveCard from '../imports/DoenetDriveCard';
-import { useTransition, animated, interpolate } from "react-spring";
 import "../imports/drivecard.css";
-import useMeasure  from "./useMeasure";
-import DriveCardComponent from "../imports/DriveCardComponent";
+import DriveCards from "../imports/DriveCards";
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -1178,40 +1175,26 @@ export default function DoenetLibraryTool(props) {
     // history.push("?" + encodeParams(newParams));
   }
 
-  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
-  let driveInfo = [];
-  if (drivesInfo.state === "hasValue") {
-    driveInfo = drivesInfo.contents.driveIdsAndLabels;
-  }
+ 
   // Breadcrumb container
   let breadcrumbContainer = null;
   if (routePathDriveId) {
     breadcrumbContainer = <BreadcrumbContainer />;
   }
 
-  function driveCardSelector({item}) {
+  
+  // let mainPanelStyle ={
+  //   height:'100%',
+  //   width:'100%'
+  // }
+  // if(routePathDriveId === ''){
+  //   mainPanelStyle = {}
+  // }
+  const driveCardSelector = ({item}) => {
     let newParams = {};
     newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
     history.push("?" + encodeParams(newParams));
   }
-  // Drive cards component
-  let drivecardComponent = null;
-  if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-    drivecardComponent = <DriveCardComponent driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} style={mainPanelStyle} driveInfo={driveInfo}/>;
-  } else if (driveInfo.length === 0 && routePathDriveId === "") {
-    drivecardComponent = (
-      <h2>You have no courses. Add one using the Menu Panel --> </h2>
-    );
-  }
-  
-  let mainPanelStyle ={
-    height:'100%',
-    width:'100%'
-  }
-  if(routePathDriveId === ''){
-    mainPanelStyle = {}
-  }
-  
 
   return (
     <Tool>
@@ -1234,7 +1217,7 @@ export default function DoenetLibraryTool(props) {
         onClick={()=>{
           clearSelections()
         }}
-        style={mainPanelStyle}
+        className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
         <Drive types={['content','course']}  urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
@@ -1254,15 +1237,18 @@ export default function DoenetLibraryTool(props) {
 
      
         </div>
-
+       
         <div 
         onClick={
           cleardrivecardSelection
         }
         tabIndex={0}
-        style={{width:"100%",height:"100%"}}
+        className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
-       {drivecardComponent}
+       <DriveCards
+       routePathDriveId={routePathDriveId}
+       driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}
+       />
         </div>
         
           

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import ToolLayout from "./ToolLayout/ToolLayout";
-import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
 import axios from 'axios';
 import { useTransition, a } from 'react-spring'
@@ -16,7 +14,7 @@ import {
   useHistory
 } from "react-router-dom";
 import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/courseInfo";
-import DriveCardComponent from "../imports/DriveCardComponent";
+import DriveCards from "../imports/DriveCards";
 import {
   useRecoilValueLoadable,
   useSetRecoilState,
@@ -27,6 +25,8 @@ import  {
   
 } from "../imports/Drive";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
+import Tool from "../imports/Tool/Tool";
+import './util.css';
 
 const Button = styled.button`
   width: 60px;
@@ -275,11 +275,7 @@ const alphabet =
 
     let routePathDriveId = "";
 
-    const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
-    let driveInfo = [];
-    if (drivesInfo.state === "hasValue") {
-      driveInfo = drivesInfo.contents.driveIdsAndLabels;
-    }
+
     function cleardrivecardSelection(){
       setDrivecardSelection([]);
     }
@@ -290,49 +286,27 @@ const alphabet =
       // history.push("/course?" + encodeParams(newParams));
       window.location = "/course/#/?" + encodeParams(newParams);
     }
-    // Drive cards component
-    let drivecardComponent = null;
-    if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
-      drivecardComponent = <DriveCardComponent  OneDriveSelect={true}
-      driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} driveInfo={driveInfo}/>;
-    } else if (driveInfo.length === 0 && routePathDriveId === "") {
-      drivecardComponent = (
-        <h2>You have no courses</h2>
-      );
-    }
     
     return (
-      <Router basename = "/">
-        <ToolLayout toolName="Dashboard" toolPanelsWidth = {toolPanelsWidthResize} leftPanelClose = {true}>
-
-       <ToolLayoutPanel
-            // menuControls={menuControls}
-            panelName="context"
-          >
-          <div>
-            {x}gi
-            <button onClick={()=>setX(x + 1)}>Count</button>
-            <p>test</p>
-          </div>
-          </ToolLayoutPanel> 
-
-       <ToolLayoutPanel >
-       <div 
-      onClick={
-        cleardrivecardSelection
-      }
-      tabIndex={0}
-        style={{width:"100%",height:"100%"}}
-        >
-       {drivecardComponent}
-        </div>        
-        </ToolLayoutPanel>
-
-          {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
-            {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel>  */}
-        </ToolLayout>
-      </Router>
+        <Tool>
+            <headerPanel title="Dashboard">
+            </headerPanel>
+           <mainPanel>
+              <div 
+                onClick={
+                  cleardrivecardSelection
+                }
+                tabIndex={0}
+                className={routePathDriveId ? '' : 'mainPanelStyle' }
+                >
+              <DriveCards 
+              routePathDriveId={routePathDriveId}
+              OneDriveSelect={true} 
+              types={['courseStudent', 'courseInstructor']}
+              driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}/>
+                </div>  
+                </mainPanel>
+        </Tool>
     );
   }
 
