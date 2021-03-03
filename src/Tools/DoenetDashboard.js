@@ -16,8 +16,17 @@ import {
   useHistory
 } from "react-router-dom";
 import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/courseInfo";
-import { min } from "moment";
-
+import DriveCardComponent from "../imports/DriveCardComponent";
+import {
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
+import  { 
+  fetchDrivesSelector,
+  encodeParams
+  
+} from "../imports/Drive";
+import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 
 const Button = styled.button`
   width: 60px;
@@ -247,6 +256,7 @@ const alphabet =
     }
     
 
+    const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
 
     const transitions = useTransition(gridItems, item => item.shortname, {
       from: ({ xy, width, height }) => ({ xy, width, height, opacity: 0 }),
@@ -261,7 +271,36 @@ const alphabet =
       //console.log("leftWidth ---", leftW + " middleWidth ---", middleW + " rightWidth ---",  rightW);
       setWidth(middleW);
     };
+    const history = useHistory();
 
+    let routePathDriveId = "";
+
+    const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+    let driveInfo = [];
+    if (drivesInfo.state === "hasValue") {
+      driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    }
+    function cleardrivecardSelection(){
+      setDrivecardSelection([]);
+    }
+    function driveCardSelector({item}) {
+      let newParams = {};
+      newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+      newParams["courseId"] = `${item.courseId}`
+      // history.push("/course?" + encodeParams(newParams));
+      window.location = "/course/#/?" + encodeParams(newParams);
+    }
+    // Drive cards component
+    let drivecardComponent = null;
+    if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+      drivecardComponent = <DriveCardComponent  OneDriveSelect={true}
+      driveDoubleClickCallback={({item})=>{driveCardSelector({item})}} driveInfo={driveInfo}/>;
+    } else if (driveInfo.length === 0 && routePathDriveId === "") {
+      drivecardComponent = (
+        <h2>You have no courses</h2>
+      );
+    }
+    
     return (
       <Router basename = "/">
         <ToolLayout toolName="Dashboard" toolPanelsWidth = {toolPanelsWidthResize} leftPanelClose = {true}>
@@ -277,34 +316,16 @@ const alphabet =
           </div>
           </ToolLayoutPanel> 
 
-       <ToolLayoutPanel
-            // menuControls={menuControlsEditor}
-            panelName="Editor">
-
-            <div className = "dashboardcontainer">
-
-            {hasClasses ? 
-            <div {...bind} className="list" style={{ height: Math.max(...heights), position: "relative"}} onMouseMove = {handleDragThrough} onMouseUp = {handleDragExit} onMouseLeave = {handleDragExit}>
-              {/* {console.log("items", items)} */}
-              {transitions.map(({ item, props: { xy, ...rest }}, index) => (
-                <a.div className = "adiv" key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
-                  {/* {console.log(item)} */}
-              {drag === 2 ? <div onMouseDown = {(e) => handleDragEnter(index, e)} style = {{height: "100%"}}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></div> : 
-                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} 
-                  onClick = {() => setSelected_CI(item.courseId)} onMouseDown = {(e) => handleDragEnter(index, e)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>}
-                  {/* <CourseCard data = {item} /> */}
-                </a.div>
-              ))}
-            </div> : isLoaded ? <p>No classes to display...</p> :
-            <p>Loading...</p>
-            }
-
-            <Switch>
-              {routes}
-            </Switch>
-
-            </div>
-            
+       <ToolLayoutPanel >
+       <div 
+      onClick={
+        cleardrivecardSelection
+      }
+      tabIndex={0}
+        style={{width:"100%",height:"100%"}}
+        >
+       {drivecardComponent}
+        </div>        
         </ToolLayoutPanel>
 
           {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">

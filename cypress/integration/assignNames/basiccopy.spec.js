@@ -1004,7 +1004,7 @@ describe('Basic copy assignName Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <section name="hello" title="Hello" newNamespace >
+  <section name="hello" newNamespace ><title>hello</title>
   <graph>
     <line><through>(0,0),(1,1)</through></line>
   </graph>
@@ -1429,13 +1429,13 @@ describe('Basic copy assignName Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <section name="hello" newNamespace title="Hello">
+  <section name="hello" newNamespace><title>Hello</title>
     <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
     <copy assignNames="a" tname="_p1"/>
     <p><copy tname="_p1/person"/> <copy tname="a/person" /> <copy tname="../bye/a/person" /></p>
   </section>
 
-  <section name="bye" newNamespace title="Bye">
+  <section name="bye" newNamespace><title>Bye</title>
     <copy assignNames="a" tname="../hello/_p1"/>
     <p><copy tname="../hello/_p1/person"/> <copy tname="../hello/a/person" /> <copy tname="a/person" /></p>
   </section>

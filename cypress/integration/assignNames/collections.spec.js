@@ -4260,7 +4260,7 @@ describe('Basic copy assignName Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <section title="The originals" name="originals">
+  <section name="originals"><title>The originals</title>
 
     <p>Number for first set of points: <mathinput name="n1" /></p>
     <p>Number for second set of points: <mathinput name="n2" /></p>
