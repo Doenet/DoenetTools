@@ -87,7 +87,9 @@ export default function ContentPanel({ main, support }) {
       $proportion={supportController}
     >
       {main}
-      {support ? <DragHandle onMouseDown={onMouseDown} /> : null}
+      {support ? (
+        <DragHandle onMouseDown={onMouseDown} key={`SupportHandle${stackId}`} />
+      ) : null}
       {support}
     </ContentPanelContainer>
   );
