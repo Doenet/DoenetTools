@@ -18,8 +18,7 @@ ReactDOM.render(
               path="/"
               render={(routeprops) => (
                 <ToolRoot
-                  route={{ ...routeprops }}
-                  tool={<DoenetTemp key={"BaseTool"} />}
+                  tool={<DoenetTemp key={"BaseTool"} route={{ ...routeprops }}/>}
                 />
               )}
             />

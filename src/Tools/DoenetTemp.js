@@ -4,8 +4,8 @@ import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 import Drive from "../imports/Drive";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 
-export default function DoenetTemp() {
-  // console.log("=== DoenetExampleTool");
+export default function DoenetTemp(props) {
+  console.log("=== DoenetExampleTool",props);
 
   const { open, setMenuPanel } = useToolControlHelper();
 
