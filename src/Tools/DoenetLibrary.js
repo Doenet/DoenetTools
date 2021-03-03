@@ -723,9 +723,13 @@ const DriveInfoPanel = function(props){
   let owners = [];
 
   let addOwners = null;
-  let addOwnersButton = <Button value="+ Add Owner" callback={()=>{
-    setAddOwners(true);
+  let addOwnersButton = null;
+  if (isOwner){
+    addOwnersButton = <Button value="+ Add Owner" callback={()=>{
+      setAddOwners(true);
     }} />
+  }
+  
 
   if (shouldAddOwners){ 
     addOwners = <NewUser open={setAddOwners} driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers}/>
