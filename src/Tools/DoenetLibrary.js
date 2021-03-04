@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
-import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import Tool from "../imports/Tool/Tool";
 import { useMenuPanelController } from "../imports/Tool/Panels/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
@@ -712,10 +712,7 @@ function AutoSelect(props){
 export default function DoenetLibraryTool(props) {
   // console.log("=== 📚 Doenet Library Tool",props);  
 
-  const { open, setMenuPanel } = useToolControlHelper();
-
- //Temp: Delete this soon!
-  const setOpenMenuPanel = useMenuPanelController();
+  const { open, activateMenuPanel } = useToolControlHelper();
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -733,7 +730,7 @@ export default function DoenetLibraryTool(props) {
   //Select +Add menuPanel if no drives selected on startup
   useEffect(()=>{
     if (routePathDriveId === ""){
-      setOpenMenuPanel(1)
+      activateMenuPanel(1)
     }
   },[]);
   

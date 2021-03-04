@@ -18,7 +18,6 @@
     "crypto": "^1.0.1",
     "csv-parse": "^4.14.1",
     "csv-parser": "^2.3.5",
-    "fsevents": "^2.1.2",
     "handsontable": "^6.2.2",
     "math-expressions": "2.0.0-alpha26",
     "mersenne-twister": "1.1.0",

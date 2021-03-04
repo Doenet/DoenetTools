@@ -28,7 +28,7 @@ export default function DoenetExampleTool() {
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
       </mainPanel>
 
-      <supportPanel>
+      <supportPanel isInitOpen>
         <p>Support Panel</p>
       </supportPanel>
 
