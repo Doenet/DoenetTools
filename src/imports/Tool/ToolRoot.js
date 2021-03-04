@@ -25,7 +25,14 @@ export const useToolControlHelper = () => {
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportPanelController();
 
-  const openOverlay = ({ type, title, branchId, assignmentId }) => {
+  const openOverlay = ({
+    type,
+    title,
+    contentId,
+    courseId,
+    branchId,
+    assignmentId,
+  }) => {
     switch (type.toLowerCase()) {
       case "editor":
         setLayers((old) => [
@@ -43,6 +50,7 @@ export const useToolControlHelper = () => {
           <Assignment
             branchId={branchId}
             assignmentId={assignmentId}
+            courseId={courseId}
             key={`AssignmentLayer${old.length + 1}`}
           />,
         ]);
@@ -52,6 +60,7 @@ export const useToolControlHelper = () => {
           ...old,
           <Calendar
             branchId={branchId}
+            contentId={contentId}
             key={`CalendarLayer${old.length + 1}`}
           />,
         ]);
