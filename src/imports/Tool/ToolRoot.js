@@ -25,14 +25,14 @@ export const useToolControlHelper = () => {
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportPanelController();
 
-  const open = (name, branchId, courseId, assignmentId) => {
+  const open = (name, branchId, title, assignmentId) => {
     switch (name.toLowerCase()) {
       case "editor":
         setLayers((old) => [
           ...old,
           <Editor
             branchId={branchId}
-            contentId={courseId}
+            title={title}
             key={`EditorLayer${old.length + 1}`}
           />,
         ]);

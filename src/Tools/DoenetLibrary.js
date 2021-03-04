@@ -513,6 +513,8 @@ const DoenetMLInfoPanel = function(props){
 
   const [label,setLabel] = useState(itemInfo.label);
   const [panelLabel,setPanelLabel] = useState(itemInfo.label);
+  const { open } = useToolControlHelper();
+
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
   
@@ -547,19 +549,7 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Edit DoenetML" callback={()=>{
-    console.log(">>>itemInfo",itemInfo)
-    // setOverlayOpen({
-    //   name: "editor", //to match the prop
-    //   instructions: { 
-    //     supportVisble: true,
-    //     action: "open", 
-    //     contentId: itemInfo.contentId,
-    //     branchId: itemInfo.branchId,
-    //     title: itemInfo.label,
-    //     isDraft: '1',
-    //     timestamp: itemInfo.creationDate
-    //   }
-    // });
+    open("editor", itemInfo.branchId, itemInfo.label);
   }} />
   <br />
   <br />
@@ -824,7 +814,7 @@ export default function DoenetLibraryTool(props) {
         >
         <Drive types={['content','course']}  urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
-          open("editor", info.item.branchId, "");
+          open("editor", info.item.branchId, info.item.label);
           }}/>
 
         </div>

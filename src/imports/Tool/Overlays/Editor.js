@@ -457,9 +457,11 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
-export default function Editor({ contentId, branchId }) {
+export default function Editor({ branchId, title }) {
   console.log("===Editor!");
-  if (contentId === ""){contentId = branchId;} //Load current working version when no contentId
+  // if (contentId === ""){contentId = branchId;} 
+  let contentId = branchId;
+
   const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
   let doenetML = loadedDoenetML.contents?.data;
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
@@ -481,7 +483,7 @@ export default function Editor({ contentId, branchId }) {
 
   return (
     <Tool>
-      <headerPanel title="How?">
+      <headerPanel title={title}>
         <ReturnToEditingButton branchId={branchId} />
       </headerPanel>
 
