@@ -8,7 +8,7 @@ import { useToast } from "../imports/Tool/Toast";
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
 
-  const { open, activateMenuPanel } = useToolControlHelper();
+  const { openOverlay, activateMenuPanel } = useToolControlHelper();
   const toast = useToast();
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function DoenetExampleTool() {
         </button>
         <button
           onClick={() => {
-            open("calendar", "fdsa", "f001");
+            openOverlay({ type: "calendar", title: "Cal", branchId: "fdsa" });
           }}
         >
           Go to calendar
