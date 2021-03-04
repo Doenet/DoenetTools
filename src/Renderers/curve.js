@@ -34,15 +34,26 @@ export default class FunctionCurve extends DoenetRenderer {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
-    if (this.doenetSvData.flipFunction) {
-      this.originalCurveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], { visible: false });
-      this.reflectLine = this.props.board.create('line', [0, 1, -1], { visible: false });
-      this.curveJXG = this.props.board.create('reflection', [this.originalCurveJXG, this.reflectLine], curveAttributes);
+    if (this.doenetSvData.curveType === "parameterization") {
+      this.curveJXG = this.props.board.create('curve', [
+        this.doenetSvData.fs[0], this.doenetSvData.fs[1],
+        this.doenetSvData.parminNumeric, this.doenetSvData.parmaxNumeric
+      ], curveAttributes);
+
     } else {
-      this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], curveAttributes);
+      if (this.doenetSvData.flipFunction) {
+        this.originalCurveJXG = this.props.board.create('functiongraph', [this.doenetSvData.fs[0]], { visible: false });
+        this.reflectLine = this.props.board.create('line', [0, 1, -1], { visible: false });
+        this.curveJXG = this.props.board.create('reflection', [this.originalCurveJXG, this.reflectLine], curveAttributes);
+      } else {
+        this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.fs[0]], curveAttributes);
+      }
+      this.currentFlipFunction = this.doenetSvData.flipFunction;
+
     }
 
-    this.currentFlipFunction = this.doenetSvData.flipFunction;
+    this.currentCurveType = this.doenetSvData.curveType;
+
 
     return this.curveJXG;
 
@@ -80,13 +91,19 @@ export default class FunctionCurve extends DoenetRenderer {
       return;
     }
 
-    if (this.currentFlipFunction !== this.doenetSvData.flipFunction) {
-      // redraw entire curve if flip changed
+    if (
+      this.currentCurveType !== this.doenetSvData.currentCurveType ||
+      (
+        this.currentCurveType === "function" &&
+        this.currentFlipFunction !== this.doenetSvData.flipFunction
+      )
+    ) {
+      // redraw entire curve curve type changed or if flip of function changed
       this.deleteGraphicalObject();
       let result = this.createGraphicalObject();
 
       if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        if (this.doenetSvData.flipFunction) {
+        if (this.doenetSvData.curveType === "function" && this.doenetSvData.flipFunction) {
           this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
         } else {
           this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
@@ -107,15 +124,20 @@ export default class FunctionCurve extends DoenetRenderer {
     this.curveJXG.visProp["visible"] = visible;
     this.curveJXG.visPropCalc["visible"] = visible;
 
-    if (this.doenetSvData.flipFunction) {
-      this.originalCurveJXG.Y = this.doenetSvData.f;
-      this.originalCurveJXG.needsUpdate = true;
-      this.originalCurveJXG.updateCurve();
-      if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-      }
+    if (this.doenetSvData.curveType === "parameterization") {
+      this.curveJXG.minX = () => this.doenetSvData.parminNumeric;
+      this.curveJXG.maxX = () => this.doenetSvData.parmaxNumeric;
     } else {
-      this.curveJXG.Y = this.doenetSvData.f;
+      if (this.doenetSvData.flipFunction) {
+        this.originalCurveJXG.Y = this.doenetSvData.fs[0];
+        this.originalCurveJXG.needsUpdate = true;
+        this.originalCurveJXG.updateCurve();
+        if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
+          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
+        }
+      } else {
+        this.curveJXG.Y = this.doenetSvData.fs[0];
+      }
     }
 
     this.curveJXG.needsUpdate = true;
@@ -133,7 +155,7 @@ export default class FunctionCurve extends DoenetRenderer {
   render() {
 
     if (this.props.board) {
-      return <><a name={this.componentName} />{this.children}</>
+      return <><a name={this.componentName} /></>
     }
 
     if (this.doenetSvData.hidden) {

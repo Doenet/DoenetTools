@@ -66,24 +66,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=x2')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -117,7 +99,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -131,25 +113,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -184,7 +147,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -198,24 +161,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2+3x')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -250,7 +195,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -264,25 +209,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2+3x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -316,7 +242,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -330,24 +256,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2+3x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -382,7 +290,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -396,25 +304,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2−1.7x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -448,7 +337,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -462,24 +351,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2−1.7x−4.5')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -528,25 +399,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -594,25 +446,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -659,25 +492,6 @@ describe('Parabola Tag Tests', function () {
         let c = vertex_y + a * vertex_x * vertex_x;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -765,24 +579,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=x2')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -816,7 +612,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -830,24 +626,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -883,7 +661,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -897,25 +675,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2+3x')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -949,7 +708,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -963,24 +722,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=−2x2+3x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1015,7 +756,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1029,24 +770,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2+3x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1081,7 +804,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1095,24 +818,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2−1.7x+9')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1147,7 +852,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1161,24 +866,6 @@ describe('Parabola Tag Tests', function () {
         cy.get(equationAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y=0.2x2−1.7x−4.5')
         })
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1227,25 +914,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -1293,25 +961,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -1358,25 +1007,6 @@ describe('Parabola Tag Tests', function () {
         let c = vertex_y + a * vertex_x * vertex_x;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1462,25 +1092,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
         cy.window().then((win) => {
 
           expect(components['/_parabola1'].stateValues.a).closeTo(a, 1E-12);
@@ -1515,7 +1126,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1525,25 +1136,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1581,7 +1173,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1591,25 +1183,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1646,7 +1219,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1656,25 +1229,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1711,7 +1265,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1721,25 +1275,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1776,7 +1311,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1786,25 +1321,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1841,7 +1357,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1851,25 +1367,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -1920,25 +1417,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -1987,25 +1465,6 @@ describe('Parabola Tag Tests', function () {
         let c = vertex_y + a * vertex_x * vertex_x;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2057,25 +1516,6 @@ describe('Parabola Tag Tests', function () {
         let c = vertex_y + a * vertex_x * vertex_x;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2170,25 +1610,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
         cy.window().then((win) => {
 
           expect(components['/_parabola1'].stateValues.a).closeTo(a, 1E-12);
@@ -2225,7 +1646,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2248,25 +1669,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2306,7 +1708,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2329,25 +1731,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2386,7 +1769,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2401,25 +1784,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2458,7 +1822,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2473,25 +1837,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2530,7 +1875,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2545,25 +1890,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2602,7 +1928,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2617,25 +1943,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2693,25 +2000,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -2767,25 +2055,6 @@ describe('Parabola Tag Tests', function () {
         let y2 = a * x2 ** 2 + b * x2 + c;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -2845,25 +2114,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -2920,25 +2170,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -2984,14 +2215,6 @@ describe('Parabola Tag Tests', function () {
 
         components['/_point1'].movePoint({ x: x1, y: y1 });
         components['/_point2'].movePoint({ x: x2, y: y2 });
-
-        // TODO: should these inputs show NaN instead?
-        cy.get('#\\/a_input').should('have.value', '')
-        cy.get('#\\/b_input').should('have.value', '')
-        cy.get('#\\/c_input').should('have.value', '')
-        cy.get('#\\/a2_input').should('have.value', '')
-        cy.get('#\\/b2_input').should('have.value', '')
-        cy.get('#\\/c2_input').should('have.value', '')
 
 
         cy.window().then((win) => {
@@ -3040,25 +2263,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3147,16 +2351,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -3164,25 +2368,6 @@ describe('Parabola Tag Tests', function () {
         let c = y1 - b * x1 - a * x12;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -3222,7 +2407,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3234,16 +2419,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -3261,25 +2446,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3320,7 +2486,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3332,16 +2498,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -3359,25 +2525,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3418,7 +2565,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3434,25 +2581,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3493,7 +2621,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3509,25 +2637,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3568,7 +2677,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3584,25 +2693,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3643,7 +2733,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3659,25 +2749,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3738,25 +2809,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -3816,25 +2868,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -3887,16 +2920,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -3907,25 +2940,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -3986,25 +3000,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -4063,25 +3058,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -4139,25 +3115,6 @@ describe('Parabola Tag Tests', function () {
 
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -4218,25 +3175,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -4286,14 +3224,6 @@ describe('Parabola Tag Tests', function () {
         components['/_point2'].movePoint({ x: x2, y: y2 });
         components['/_point3'].movePoint({ x: x3, y: y3 });
 
-        // TODO: should these inputs show NaN instead?
-        cy.get('#\\/a_input').should('have.value', '')
-        cy.get('#\\/b_input').should('have.value', '')
-        cy.get('#\\/c_input').should('have.value', '')
-        cy.get('#\\/a2_input').should('have.value', '')
-        cy.get('#\\/b2_input').should('have.value', '')
-        cy.get('#\\/c2_input').should('have.value', '')
-
 
         cy.window().then((win) => {
           assert.isNaN(components['/_parabola1'].stateValues.a);
@@ -4337,16 +3267,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -4357,25 +3287,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -4431,7 +3342,7 @@ describe('Parabola Tag Tests', function () {
     <parabola><through hide="false">
       <map>
         <template>
-          <point>(<sourceIndex/>+<math>0</math>, <copySource/>+<math>0</math>)</point>
+          <point>(<copy tname="_sourceindex" />+<math>0</math>, <copy tname="_source" />+<math>0</math>)</point>
         </template>
         <sources>
           <sequence step="2"><count><copy prop="value" tname="n" /></count></sequence>
@@ -4471,25 +3382,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_x = -b / (2 * a);
         let vertex_y = c - b ** 2 / (4 * a);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
         cy.window().then((win) => {
 
           expect(components['/_parabola1'].stateValues.a).closeTo(a, 1E-12);
@@ -4518,7 +3410,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a_input').clear().type("-2{enter}");
+      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
 
 
       cy.window().then((win) => {
@@ -4527,25 +3419,6 @@ describe('Parabola Tag Tests', function () {
 
         let vertex_x = -b / (2 * a);
         let vertex_y = c - b ** 2 / (4 * a);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -4575,7 +3448,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("3{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
 
@@ -4583,25 +3456,6 @@ describe('Parabola Tag Tests', function () {
 
         let vertex_x = -b / (2 * a);
         let vertex_y = c - b ** 2 / (4 * a);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -4645,25 +3499,6 @@ describe('Parabola Tag Tests', function () {
         let c = vertex_y + a * vertex_x * vertex_x;
 
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
         cy.window().then((win) => {
 
           expect(components['/_parabola1'].stateValues.a).closeTo(a, 1E-12);
@@ -4693,7 +3528,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Add a second point");
-      cy.get('#\\/n_input').clear().type("2{enter}");
+      cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}2{enter}", { force: true });
 
 
       cy.window().then((win) => {
@@ -4708,25 +3543,6 @@ describe('Parabola Tag Tests', function () {
 
         let vertex_x = -b / (2 * a);
         let vertex_y = c - b ** 2 / (4 * a);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
         cy.window().then((win) => {
 
@@ -4766,16 +3582,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -4793,25 +3609,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -4852,7 +3649,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b_input').clear().type("3{enter}");
+      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -4864,16 +3661,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -4891,25 +3688,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -4950,7 +3728,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c_input').clear().type("9{enter}");
+      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -4966,25 +3744,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5025,7 +3784,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2_input').clear().type("0.2{enter}");
+      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5041,25 +3800,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5100,7 +3840,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2_input').clear().type("-1.7{enter}");
+      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5116,25 +3856,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5175,7 +3896,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2_input').clear().type("-4.5{enter}");
+      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -5191,25 +3912,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5269,25 +3971,6 @@ describe('Parabola Tag Tests', function () {
         let y3 = a * x3 ** 2 + b * x3 + c;
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5348,25 +4031,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -5419,16 +4083,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -5439,25 +4103,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5518,25 +4163,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -5595,25 +4221,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -5671,25 +4278,6 @@ describe('Parabola Tag Tests', function () {
 
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {
@@ -5750,25 +4338,6 @@ describe('Parabola Tag Tests', function () {
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
 
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-
 
         cy.window().then((win) => {
 
@@ -5818,14 +4387,6 @@ describe('Parabola Tag Tests', function () {
         components['/_point2'].movePoint({ x: x2, y: y2 });
         components['/_point3'].movePoint({ x: x3, y: y3 });
 
-        // TODO: should these inputs show NaN instead?
-        cy.get('#\\/a_input').should('have.value', '')
-        cy.get('#\\/b_input').should('have.value', '')
-        cy.get('#\\/c_input').should('have.value', '')
-        cy.get('#\\/a2_input').should('have.value', '')
-        cy.get('#\\/b2_input').should('have.value', '')
-        cy.get('#\\/c2_input').should('have.value', '')
-
 
         cy.window().then((win) => {
           assert.isNaN(components['/_parabola1'].stateValues.a);
@@ -5869,16 +4430,16 @@ describe('Parabola Tag Tests', function () {
         let x12 = x1 * x1;
         let x22 = x2 * x2;
         let x32 = x3 * x3;
-  
+
         let u1 = x12 - x32;
         let u2 = x22 - x32;
-  
+
         let v1 = x1 - x3;
         let v2 = x2 - x3;
-  
+
         let z1 = y1 - y3;
         let z2 = y2 - y3;
-  
+
         let det = u1 * v2 - u2 * v1;
 
         let a = (z1 * v2 - z2 * v1) / det;
@@ -5889,25 +4450,6 @@ describe('Parabola Tag Tests', function () {
         let vertex_y = c - b ** 2 / (4 * a);
 
         let equationExpression = me.fromText(`y=${a}x^2+${b}x+${c}`);
-
-        cy.get('#\\/a_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/a2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(a, 1E-8)
-        });
-        cy.get('#\\/b_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/b2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(b, 1E-8)
-        });
-        cy.get('#\\/c_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
-        cy.get('#\\/c2_input').invoke('val').then(text => {
-          expect(Number(text)).closeTo(c, 1E-8)
-        });
 
 
         cy.window().then((win) => {

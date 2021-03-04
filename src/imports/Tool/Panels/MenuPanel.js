@@ -27,12 +27,14 @@ const PanelsWrapper = styled.div`
 
 const MenuHeaderButton = styled.button`
   border: none;
-  border-top: 8px solid
+  border-top: 
     ${({ linkedPanel, activePanel }) =>
-      linkedPanel === activePanel ? "#1A5A99" : "#f6f8ff"};
-  background-color: "#f6f8ff";
-  border-bottom: 1px solid #3d3d3d;
-  border-left: 1px solid #3d3d3d;
+      linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
+  background-color: #f6f8ff;
+  border-bottom: 2px solid ${({ linkedPanel, activePanel }) =>
+  linkedPanel === activePanel ? '#f6f8ff' : "black"};;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
   width: 100%;
   height: 100%;
 `;

@@ -280,7 +280,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('set to 3')
-    cy.get('#\\/n_input').clear().type(`3{enter}`);
+    cy.get('#\\/n textarea').type(`3{enter}`, { force: true });
     cy.get('#\\/_p1').should('have.text', '1, 2, 3');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3');
@@ -296,7 +296,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('increase to 4')
-    cy.get('#\\/n_input').clear().type(`4{enter}`);
+    cy.get('#\\/n textarea').type(`{end}{backspace}4{enter}`, { force: true });
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3, 4');
@@ -314,7 +314,7 @@ describe('Extract Tag Tests', function () {
 
 
     cy.log('decrease to 2')
-    cy.get('#\\/n_input').clear().type(`2{enter}`);
+    cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
     cy.get('#\\/_p1').should('have.text', '1, 2');
     cy.get('#\\/_p2').should('have.text', '1, 2');
     cy.get('#\\/_p3').should('have.text', '1, 2');
@@ -330,7 +330,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('increase to 5')
-    cy.get('#\\/n_input').clear().type(`5{enter}`);
+    cy.get('#\\/n textarea').type(`{end}{backspace}5{enter}`, { force: true });
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3, 4, 5');
@@ -359,7 +359,7 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template newnamespace><point>(<copySource/>+<copy prop="value" tname="../m" />,0)</point></template>
+        <template newnamespace><point>(<copy tname="_source" />+<copy prop="value" tname="../m" />,0)</point></template>
         <sources>
           <sequence count="$n" />
         </sources>
@@ -395,7 +395,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('set n to 3')
-      cy.get('#\\/n_input').clear().type(`3{enter}`);
+      cy.get('#\\/n textarea').type(`3{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -423,7 +423,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('set m to 7')
-      cy.get('#\\/m_input').clear().type(`7{enter}`);
+      cy.get('#\\/m textarea').type(`7{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -451,7 +451,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('increase n to 4')
-      cy.get('#\\/n_input').clear().type(`4{enter}`);
+      cy.get('#\\/n textarea').type(`{end}{backspace}4{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -479,7 +479,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('change m to q')
-      cy.get('#\\/m_input').clear().type(`q{enter}`);
+      cy.get('#\\/m textarea').type(`{end}{backspace}q{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -509,7 +509,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('decrease n to 2')
-      cy.get('#\\/n_input').clear().type(`2{enter}`);
+      cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -538,7 +538,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('set m to -1')
-      cy.get('#\\/m_input').clear().type(`-1{enter}`);
+      cy.get('#\\/m textarea').type(`{end}{backspace}-1{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -567,7 +567,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('increase n to 5')
-      cy.get('#\\/n_input').clear().type(`5{enter}`);
+      cy.get('#\\/n textarea').type(`{end}{backspace}5{enter}`, { force: true });
       cy.window().then((win) => {
         for (let i = 0; i < 5; i++) {
           cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

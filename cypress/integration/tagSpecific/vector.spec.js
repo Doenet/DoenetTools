@@ -2986,7 +2986,7 @@ describe('Vector Tag Tests', function () {
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
-    
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let tail = components['/_copy1'].replacements[0];
@@ -4720,7 +4720,7 @@ describe('Vector Tag Tests', function () {
     });
 
     cy.log("Change factor");
-    cy.get('#\\/a_input').clear().type(`-3{enter}`);
+    cy.get('#\\/a textarea').type(`{end}{backspace}-3{enter}`, { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
@@ -7886,9 +7886,6 @@ describe('Vector Tag Tests', function () {
       let dy = 4 - b;
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/a_input').should('have.value', `${a}`);
-      cy.get('#\\/b_input').should('have.value', `${b}`);
-
       cy.get(xAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim().replace(/−/g, '-')).equal(`${dx}`)
       });
@@ -7918,11 +7915,8 @@ describe('Vector Tag Tests', function () {
       let dx2 = a2 - 3;
       let dy2 = 4 - b2;
 
-      cy.get('#\\/a_input').clear().type(`${a2}`);
-      cy.get('#\\/b_input').clear().type(`${b2}`).blur();
-
-      cy.get('#\\/a_input').should('have.value', `${a2}`);
-      cy.get('#\\/b_input').should('have.value', `${b2}`);
+      cy.get('#\\/a textarea').type(`{end}{backspace}${a2}`, { force: true });
+      cy.get('#\\/b textarea').type(`{end}{backspace}${b2}`, { force: true }).blur();
 
       cy.get(xAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim().replace(/−/g, '-')).equal(`${dx2}`)

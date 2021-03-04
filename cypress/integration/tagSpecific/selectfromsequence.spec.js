@@ -1,14 +1,16 @@
 import me from 'math-expressions';
 
-describe('SelectFromSequence Tag Tests',function() {
+describe('SelectFromSequence Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
 
   })
 
-  it('no parameters, select single number from 1 to 10',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('no parameters, select single number from 1 to 10', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1"/>
@@ -42,7 +44,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence name="sample29"/>
     <selectfromsequence name="sample30"/>
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -51,16 +53,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let num = components['/sample' + ind].replacements[0].stateValues.value;
-        expect([1,2,3,4,5,6,7,8,9,10].includes(num)).eq(true);
+        expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(num)).eq(true);
       }
     })
   });
 
-  it('select single number from 1 to 6',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single number from 1 to 6', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1" to="6" />
@@ -94,7 +98,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence name="sample29" to="6" />
     <selectfromsequence name="sample30" to="6" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -103,16 +107,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let num = components['/sample' + ind].replacements[0].stateValues.value;
-        expect([1,2,3,4,5,6].includes(num)).eq(true);
+        expect([1, 2, 3, 4, 5, 6].includes(num)).eq(true);
       }
     })
   });
 
-  it('select single number from -3 to 5',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single number from -3 to 5', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1" from="-3" to="5" />
@@ -146,7 +152,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence name="sample29" from="-3" to="5" />
     <selectfromsequence name="sample30" from="-3" to="5" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -155,16 +161,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let num = components['/sample' + ind].replacements[0].stateValues.value;
-        expect([-3,-2,-1,0,1,2,3,4,5].includes(num)).eq(true);
+        expect([-3, -2, -1, 0, 1, 2, 3, 4, 5].includes(num)).eq(true);
       }
     })
   });
 
-  it('select single number from -3 to 5, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single number from -3 to 5, excluding 0', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence exclude="0" name="sample1" from="-3" to="5" />
@@ -198,7 +206,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence exclude="0" name="sample29" from="-3" to="5" />
     <selectfromsequence exclude="0" name="sample30" from="-3" to="5" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -207,16 +215,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let num = components['/sample' + ind].replacements[0].stateValues.value;
-        expect([-3,-2,-1,1,2,3,4,5].includes(num)).eq(true);
+        expect([-3, -2, -1, 1, 2, 3, 4, 5].includes(num)).eq(true);
       }
     })
   });
 
-  it('select single odd number from -3 to 5',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single odd number from -3 to 5', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" name="sample1" from="-3" to="5" />
@@ -250,7 +260,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence step="2" name="sample29" from="-3" to="5" />
     <selectfromsequence step="2" name="sample30" from="-3" to="5" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -259,16 +269,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let num = components['/sample' + ind].replacements[0].stateValues.value;
-        expect([-3,-1,1,3,5].includes(num)).eq(true);
+        expect([-3, -1, 1, 3, 5].includes(num)).eq(true);
       }
     })
   });
 
-  it('select single letter from c to h',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single letter from c to h', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1" from="c" to="h" />
@@ -302,7 +314,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence name="sample29" from="c" to="h" />
     <selectfromsequence name="sample30" from="c" to="h" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -311,16 +323,18 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 30; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 30; ind++) {
         let letter = components['/sample' + ind].replacements[0].stateValues.value;
-        expect(['c','d','e','f','g','h'].includes(letter)).eq(true);
+        expect(['c', 'd', 'e', 'f', 'g', 'h'].includes(letter)).eq(true);
       }
     })
   });
 
-  it('select two even numbers from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select two even numbers from -4 to 4, excluding 0', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="4" />
@@ -344,7 +358,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="4" />
     <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="4" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -353,19 +367,21 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let num1 = components['/sample' + ind].replacements[0].stateValues.value;
         let num2 = components['/sample' + ind].replacements[1].stateValues.value;
-        expect([-4,-2,2,4].includes(num1)).eq(true);
-        expect([-4,-2,2,4].includes(num2)).eq(true);
+        expect([-4, -2, 2, 4].includes(num1)).eq(true);
+        expect([-4, -2, 2, 4].includes(num2)).eq(true);
         expect(num1).not.eq(num2);
       }
     })
   });
 
-  it('select two even numbers from -4 to 2, excluding 0 and combinations',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select two even numbers from -4 to 2, excluding 0 and combinations', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
@@ -387,26 +403,28 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" ><excludecombination>-4,-2</excludecombination><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination></selectfromsequence></aslist></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a')
+    cy.get('#\\/_text1').should('have.text', 'a')
 
-    let allowedCombinations = [[-4,2], [-2,-4], [2,-2]];
+    let allowedCombinations = [[-4, 2], [-2, -4], [2, -2]];
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let num1 = components['/sample' + ind].replacements[0].stateValues.value;
         let num2 = components['/sample' + ind].replacements[1].stateValues.value;
-        
-        expect(allowedCombinations.some(v => v[0]===num1 && v[1]===num2)).eq(true);
+
+        expect(allowedCombinations.some(v => v[0] === num1 && v[1] === num2)).eq(true);
       }
     })
   });
 
-  it('select five even numbers with replacement from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select five even numbers with replacement from -4 to 4, excluding 0', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample1" from="-4" to="4" />
@@ -430,7 +448,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample19" from="-4" to="4" />
     <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample20" from="-4" to="4" />
     </aslist>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -439,24 +457,26 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let num1 = components['/sample' + ind].replacements[0].stateValues.value;
         let num2 = components['/sample' + ind].replacements[1].stateValues.value;
         let num3 = components['/sample' + ind].replacements[2].stateValues.value;
         let num4 = components['/sample' + ind].replacements[3].stateValues.value;
         let num5 = components['/sample' + ind].replacements[4].stateValues.value;
-        expect([-4,-2,2,4].includes(num1)).eq(true);
-        expect([-4,-2,2,4].includes(num2)).eq(true);
-        expect([-4,-2,2,4].includes(num3)).eq(true);
-        expect([-4,-2,2,4].includes(num4)).eq(true);
-        expect([-4,-2,2,4].includes(num5)).eq(true);
+        expect([-4, -2, 2, 4].includes(num1)).eq(true);
+        expect([-4, -2, 2, 4].includes(num2)).eq(true);
+        expect([-4, -2, 2, 4].includes(num3)).eq(true);
+        expect([-4, -2, 2, 4].includes(num4)).eq(true);
+        expect([-4, -2, 2, 4].includes(num5)).eq(true);
       }
     })
   });
 
-  it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <aslist>
     <selectfromsequence step="2" exclude="0" withReplacement name="sample1" numbertoselect="$n" from="-4" to="4" />
@@ -486,30 +506,32 @@ describe('SelectFromSequence Tag Tests',function() {
     <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
     <copy name="n3" tname="num3" />
     <number name="num3">1</number>
-    `},"*");
+    `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let num1 = components['/sample' + ind].replacements[0].stateValues.value;
         let num2 = components['/sample' + ind].replacements[1].stateValues.value;
         let num3 = components['/sample' + ind].replacements[2].stateValues.value;
         let num4 = components['/sample' + ind].replacements[3].stateValues.value;
         let num5 = components['/sample' + ind].replacements[4].stateValues.value;
-        expect([-4,-2,2,4].includes(num1)).eq(true);
-        expect([-4,-2,2,4].includes(num2)).eq(true);
-        expect([-4,-2,2,4].includes(num3)).eq(true);
-        expect([-4,-2,2,4].includes(num4)).eq(true);
-        expect([-4,-2,2,4].includes(num5)).eq(true);
+        expect([-4, -2, 2, 4].includes(num1)).eq(true);
+        expect([-4, -2, 2, 4].includes(num2)).eq(true);
+        expect([-4, -2, 2, 4].includes(num3)).eq(true);
+        expect([-4, -2, 2, 4].includes(num4)).eq(true);
+        expect([-4, -2, 2, 4].includes(num5)).eq(true);
       }
     })
   });
 
-  it("copies don't resample",() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it("copies don't resample", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <p><aslist>
     <selectfromsequence name="sample1" to="100" />
@@ -529,7 +551,7 @@ describe('SelectFromSequence Tag Tests',function() {
 
     <copy name="noresamplep" tname="_p1" />
     <copy name="noreresamplep" tname="noresamplep" />
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -538,11 +560,11 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let num1 = components['/sample1'].replacements[0].stateValues.value;
       let num2 = components['/sample2'].replacements[0].stateValues.value;
-      expect(Number.isInteger(num1) && num1>=1 && num1 <=100).eq(true);
-      expect(Number.isInteger(num2) && num2>=1 && num2 <=100).eq(true);
+      expect(Number.isInteger(num1) && num1 >= 1 && num1 <= 100).eq(true);
+      expect(Number.isInteger(num2) && num2 >= 1 && num2 <= 100).eq(true);
       expect(components['/noresample1'].replacements[0].stateValues.value).eq(num1);
       expect(components['/noresample2'].replacements[0].stateValues.value).eq(num2);
       expect(components['/noreresample1'].replacements[0].stateValues.value).eq(num1);
@@ -561,8 +583,10 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it("select doesn't change dynamically",() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it("select doesn't change dynamically", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <mathinput prefill="5" name="numbertoselect"/>
     <mathinput prefill="3" name="maxnum"/>
@@ -575,7 +599,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><aslist>
     <selectfromsequence name="sample2" withReplacement count="$maxnum2" numbertoselect="$numbertoselect2" />
     </aslist></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -586,7 +610,7 @@ describe('SelectFromSequence Tag Tests',function() {
     let sample1numbers, sample2numbers;
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let sample1replacements = components['/sample1'].replacements;
       let sample2replacements = components['/sample2'].replacements;
       expect(sample1replacements.length).eq(5);
@@ -594,26 +618,26 @@ describe('SelectFromSequence Tag Tests',function() {
       sample1numbers = sample1replacements.map(x => x.stateValues.value);
       sample2numbers = sample2replacements.map(x => x.stateValues.value);
 
-      for(let num of sample1numbers) {
-        expect([1,2,3].includes(num)).eq(true);
+      for (let num of sample1numbers) {
+        expect([1, 2, 3].includes(num)).eq(true);
       }
-      for(let num of sample2numbers) {
-        expect([1,2,3,4,5,6,7,8,9,10].includes(num)).eq(true);
+      for (let num of sample2numbers) {
+        expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(num)).eq(true);
       }
 
     });
 
     cy.log("Nothing changes when change mathinputs");
-    cy.get('#\\/numbertoselect_input').clear().type(`7{enter}`);
-    cy.get('#\\/maxnum_input').clear().type(`11{enter}`);
-    cy.get('#\\/numbertoselect2_input').clear().type(`15{enter}`);
-    cy.get('#\\/maxnum2_input').clear().type(`18{enter}`);
+    cy.get('#\\/numbertoselect textarea').type(`{end}{backspace}7{enter}`, { force: true });
+    cy.get('#\\/maxnum textarea').type(`{end}{backspace}11{enter}`, { force: true });
+    cy.get('#\\/numbertoselect2 textarea').type(`{end}{backspace}15{enter}`, { force: true });
+    cy.get('#\\/maxnum2 textarea').type(`{end}{backspace}{backspace}18{enter}`, { force: true });
 
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let sample1replacements = components['/sample1'].replacements;
       let sample2replacements = components['/sample2'].replacements;
- 
+
       expect(sample1replacements.map(x => x.stateValues.value)).eqls(sample1numbers)
       expect(sample2replacements.map(x => x.stateValues.value)).eqls(sample2numbers)
 
@@ -621,8 +645,10 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it("select doesn't resample in dynamic map",() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it("select doesn't resample in dynamic map", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
@@ -646,17 +672,17 @@ describe('SelectFromSequence Tag Tests',function() {
     <copy name="p7" tname="p4" />
     <copy name="p8" tname="p5" />
     <copy name="p9" tname="p6" />
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
-    let samplednumbers=[];
+    let samplednumbers = [];
 
     cy.log("initially nothing")
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
@@ -669,9 +695,9 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
     cy.log("sample one number");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       samplednumbers.push(n1);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
@@ -683,7 +709,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      for(let ind=0; ind<1; ind++) {
+      for (let ind = 0; ind < 1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -697,9 +723,9 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
@@ -712,9 +738,9 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
     cy.log("get same number back");
-    cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
@@ -727,7 +753,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
-      for(let ind=0; ind<1; ind++) {
+      for (let ind = 0; ind < 1; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -741,9 +767,9 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.log("get two more samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`3{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       let n2 = components['/b/n'].stateValues.value;
       let n3 = components['/c/n'].stateValues.value;
@@ -759,7 +785,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      for(let ind=0; ind<3; ind++) {
+      for (let ind = 0; ind < 3; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -769,13 +795,13 @@ describe('SelectFromSequence Tag Tests',function() {
         expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-     }
+      }
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
@@ -789,9 +815,9 @@ describe('SelectFromSequence Tag Tests',function() {
 
 
     cy.log("get first two numbers back");
-    cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}2{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       let n2 = components['/b/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
@@ -806,7 +832,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
-      for(let ind=0; ind<2; ind++) {
+      for (let ind = 0; ind < 2; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -820,9 +846,9 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.log("get six total samples");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       let n2 = components['/b/n'].stateValues.value;
       let n3 = components['/c/n'].stateValues.value;
@@ -844,7 +870,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      for(let ind=0; ind<6; ind++) {
+      for (let ind = 0; ind < 6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -858,9 +884,9 @@ describe('SelectFromSequence Tag Tests',function() {
     })
 
     cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
@@ -873,9 +899,9 @@ describe('SelectFromSequence Tag Tests',function() {
     });
 
     cy.log("get all six back");
-    cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
+    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
       let n1 = components['/a/n'].stateValues.value;
       let n2 = components['/b/n'].stateValues.value;
       let n3 = components['/c/n'].stateValues.value;
@@ -897,7 +923,7 @@ describe('SelectFromSequence Tag Tests',function() {
       expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      for(let ind=0; ind<6; ind++) {
+      for (let ind = 0; ind < 6; ind++) {
         expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
         expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
@@ -913,8 +939,10 @@ describe('SelectFromSequence Tag Tests',function() {
 
   });
 
-  it('select single math, assign name',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select single math, assign name', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="u"/></p>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="v"/></p>
@@ -922,7 +950,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><copy name="u2" tname="u" /></p>
     <p><copy name="v2" tname="v" /></p>
     <p><copy name="w2" tname="w" /></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -933,24 +961,24 @@ describe('SelectFromSequence Tag Tests',function() {
       me.fromText("x+y"),
       me.fromText("x+2y"),
     ];
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
 
-      let u=components['/u'];
-      let u2=components['/u2'].replacements[0];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let u = components['/u'];
+      let u2 = components['/u2'].replacements[0];
       let comparisons = options.map(el => el.equals(u.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
 
-      let v=components['/v'];
-      let v2=components['/v2'].replacements[0];
+      let v = components['/v'];
+      let v2 = components['/v2'].replacements[0];
       comparisons = options.map(el => el.equals(v.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
 
-      let w=components['/w'];
-      let w2=components['/w2'].replacements[0];
+      let w = components['/w'];
+      let w2 = components['/w2'].replacements[0];
       comparisons = options.map(el => el.equals(w.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
@@ -959,8 +987,10 @@ describe('SelectFromSequence Tag Tests',function() {
 
   });
 
-  it('select multiple maths, assign names',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select multiple maths, assign names', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <p><aslist>
       <selectfromsequence name="s" type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
@@ -968,7 +998,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><copy name="u2" tname="u" /></p>
     <p><copy name="v2" tname="v" /></p>
     <p><copy name="w2" tname="w" /></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -981,40 +1011,42 @@ describe('SelectFromSequence Tag Tests',function() {
       me.fromText("x+y"),
       me.fromText("x+2y"),
     ];
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
 
-      let u=components['/u'];
-      let u2=components['/u2'].replacements[0];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let u = components['/u'];
+      let u2 = components['/u2'].replacements[0];
       let comparisons = options.map(el => el.equals(u.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
 
-      let v=components['/v'];
-      let v2=components['/v2'].replacements[0];
+      let v = components['/v'];
+      let v2 = components['/v2'].replacements[0];
       comparisons = options.map(el => el.equals(v.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
 
-      let w=components['/w'];
-      let w2=components['/w2'].replacements[0];
+      let w = components['/w'];
+      let w2 = components['/w2'].replacements[0];
       comparisons = options.map(el => el.equals(w.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
 
       let s = components['/s'];
-      for(let ind=3; ind < 6; ind++) {
+      for (let ind = 3; ind < 6; ind++) {
         let r = s.replacements[0];
         comparisons = options.map(el => el.equals(r.stateValues.value));
         expect(comparisons.includes(true)).eq(true);
       }
     })
-    
+
   });
 
-  it('select multiple maths, assign names, new namespace',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select multiple maths, assign names, new namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <math>1</math>
     <p><aslist>
       <selectfromsequence name="s" newnamespace type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
@@ -1022,7 +1054,7 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><copy name="u2" tname="s/u" /></p>
     <p><copy name="v2" tname="s/v" /></p>
     <p><copy name="w2" tname="s/w" /></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
@@ -1035,36 +1067,36 @@ describe('SelectFromSequence Tag Tests',function() {
       me.fromText("x+y"),
       me.fromText("x+2y"),
     ];
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
 
-      let u=components['/s/u'];
-      let u2=components['/u2'].replacements[0];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let u = components['/s/u'];
+      let u2 = components['/u2'].replacements[0];
       let comparisons = options.map(el => el.equals(u.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(u.stateValues.value.tree).eqls(u2.stateValues.value.tree);
 
-      let v=components['/s/v'];
-      let v2=components['/v2'].replacements[0];
+      let v = components['/s/v'];
+      let v2 = components['/v2'].replacements[0];
       comparisons = options.map(el => el.equals(v.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(v.stateValues.value.tree).eqls(v2.stateValues.value.tree);
 
-      let w=components['/s/w'];
-      let w2=components['/w2'].replacements[0];
+      let w = components['/s/w'];
+      let w2 = components['/w2'].replacements[0];
       comparisons = options.map(el => el.equals(w.stateValues.value));
       expect(comparisons.includes(true)).eq(true);
       expect(w.stateValues.value.tree).eqls(w2.stateValues.value.tree);
 
       let s = components['/s'];
-      for(let ind=3; ind < 6; ind++) {
+      for (let ind = 3; ind < 6; ind++) {
         let r = s.replacements[0];
         comparisons = options.map(el => el.equals(r.stateValues.value));
         expect(comparisons.includes(true)).eq(true);
       }
     })
-    
+
   });
 
   it('selectfromsequence with hide will hide replacements', () => {
@@ -1093,8 +1125,10 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it('select multiple maths with excludes and excludecombinations',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select multiple maths with excludes and excludecombinations', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample2"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
@@ -1116,26 +1150,28 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample18"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample19"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample20"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a')
+    cy.get('#\\/_text1').should('have.text', 'a')
 
-    let allowedCombinations = [[me.fromText('x'),me.fromText('x+3y')], [me.fromText('x+y'),me.fromText('x')], [me.fromText('x+3y'),me.fromText('x+y')]];
+    let allowedCombinations = [[me.fromText('x'), me.fromText('x+3y')], [me.fromText('x+y'), me.fromText('x')], [me.fromText('x+3y'), me.fromText('x+y')]];
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let x1 = components['/sample' + ind].replacements[0].stateValues.value;
         let x2 = components['/sample' + ind].replacements[1].stateValues.value;
-        
+
         expect(allowedCombinations.some(v => v[0].equals(x1) && v[1].equals(x2))).eq(true);
       }
     })
   });
 
-  it('select multiple letters with excludes and excludecombinations',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select multiple letters with excludes and excludecombinations', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample2" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
@@ -1157,46 +1193,48 @@ describe('SelectFromSequence Tag Tests',function() {
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample18" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample19" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample20" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a')
+    cy.get('#\\/_text1').should('have.text', 'a')
 
-    let allowedCombinations = [['m', 's'],['s','v'],['v','m']];
+    let allowedCombinations = [['m', 's'], ['s', 'v'], ['v', 'm']];
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      for(let ind=1; ind <= 20; ind++) {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
         let x1 = components['/sample' + ind].replacements[0].stateValues.value;
         let x2 = components['/sample' + ind].replacements[1].stateValues.value;
-        
+
         expect(allowedCombinations.some(v => v[0] === x1 && v[1] === x2)).eq(true);
       }
     })
   });
 
-  it('select numbers and sort',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select numbers and sort', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true" from="-20" to="20" /></aslist></p>
 
     <p><copy tname="_aslist1" /></p>
     <copy tname="_p1" />
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a')
+    cy.get('#\\/_text1').should('have.text', 'a')
 
-  
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
 
       let lastnumber = -20;
       let originalnumbers = components['/_selectfromsequence1'].replacements;
       let secondnumbers = components['/_copy1'].replacements[0].activeChildren;
       let thirdnumbers = components['/_copy2'].replacements[0].activeChildren[0].activeChildren;
-      for(let i=0; i<20; i++) {
+      for (let i = 0; i < 20; i++) {
         let newnumber = originalnumbers[i].stateValues.value;
         expect(newnumber).gte(lastnumber);
         lastnumber = newnumber;
@@ -1207,28 +1245,30 @@ describe('SelectFromSequence Tag Tests',function() {
 
   });
 
-  it('select letters and sort',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('select letters and sort', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence numbertoselect="40" sortresults="true" withreplacement="true" from="a" to="bz" /></aslist></p>
 
     <p><copy tname="_aslist1" /></p>
     <copy tname="_p1" />
-    `},"*");
+    `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a')
+    cy.get('#\\/_text1').should('have.text', 'a')
 
-  
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
+      let components = Object.assign({}, win.state.components);
 
       let lastletter = 'a';
       let originalletters = components['/_selectfromsequence1'].replacements;
       let secondletters = components['/_copy1'].replacements[0].activeChildren;
       let thirdletters = components['/_copy2'].replacements[0].activeChildren[0].activeChildren;
-      for(let i=0; i<20; i++) {
+      for (let i = 0; i < 20; i++) {
         let newletter = originalletters[i].stateValues.value;
         expect(newletter.length).gte(lastletter.length);
         expect(newletter.length > lastletter.length || newletter >= lastletter).to.be.true;

@@ -26,13 +26,18 @@ export default class AsList extends InlineComponent {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroInline"
+          childLogicName: "atLeastZeroInline",
+          variableNames: ["hidden"]
         }
       }),
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
+          {
+            childrenToRender: dependencyValues.activeChildren
+              .filter(x => !x.stateValues.hidden)
+              .map(x => x.componentName)
+          }
         };
       }
     }

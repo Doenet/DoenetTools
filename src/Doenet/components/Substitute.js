@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import MathComponent from './Math';
 import me from 'math-expressions';
 import {breakEmbeddedStringByCommas, breakIntoVectorComponents} from './commonsugar/breakstrings';
+import { normalizeMathExpression } from '../utils/math';
 
 export default class Substitute extends CompositeComponent {
   static componentType = 'substitute';
@@ -388,7 +389,7 @@ export default class Substitute extends CompositeComponent {
             this.state.replaces[ind][1].subscripts_to_strings()})
       }
       this.state.value = this.state.value.strings_to_subscripts();
-      this.state.value = MathComponent.normalize({
+      this.state.value = normalizeMathExpression({
         value: this.state.value,
         simplify: this.state.simplify
       });
