@@ -67,31 +67,6 @@ const itemHistoryAtom = atomFamily({
   })
 })
 
-function DoenetViewerPanel(){
-  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  console.log(">>>viewerDoenetML",viewerDoenetML)
-  let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
-  let solutionDisplayMode = "button";
-
-  return <DoenetViewer
-      key={"doenetviewer" + viewerDoenetML?.updateNumber}
-      doenetML={viewerDoenetML?.doenetML}
-      flags={{
-        showCorrectness: true,
-        readOnly: false,
-        solutionDisplayMode: solutionDisplayMode,
-        showFeedback: true,
-        showHints: true,
-      }}
-      attemptNumber={attemptNumber}
-      assignmentId={assignmentId}
-      ignoreDatabase={false}
-      requestedVariant={requestedVariant}
-      /> 
-}
-
 const getSHAofContent = (doenetML)=>{
   const hash = crypto.createHash('sha256');
   if (doenetML === undefined){
@@ -391,6 +366,9 @@ function TextEditor(props){
     clearSaveTimeouts()
   }
 
+  const editorInit = useRecoilValue(editorInitAtom);
+  if (!editorInit){return null;}
+
   const options = {
       mode: 'xml',
       autoRefresh:true,
@@ -457,6 +435,45 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
+
+function DoenetViewerPanel(){
+  console.log("=== DoenetViewer Panel")
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
+  const editorInit = useRecoilValue(editorInitAtom);
+
+  console.log(">>>viewer editorInit",editorInit)
+  console.log(">>>viewerDoenetML",viewerDoenetML)
+  if (!editorInit){ return null; }
+  console.log(">>>viewer show DoenetViewer")
+
+  let attemptNumber = 1;
+  let requestedVariant = { index: attemptNumber }
+  let assignmentId = "myassignmentid";
+  let solutionDisplayMode = "button";
+
+  return <DoenetViewer
+      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      doenetML={viewerDoenetML?.doenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+      }}
+      attemptNumber={attemptNumber}
+      assignmentId={assignmentId}
+      ignoreDatabase={false}
+      requestedVariant={requestedVariant}
+      /> 
+}
+
+const editorInitAtom = atom({
+  key:"editorInit",
+  default:false
+})
+
+
 export default function Editor({ branchId, title }) {
   console.log("===Editor!");
   // if (contentId === ""){contentId = branchId;} 
@@ -466,13 +483,22 @@ export default function Editor({ branchId, title }) {
   let doenetML = loadedDoenetML.contents?.data;
   const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+  const setEditorInit = useSetRecoilState(editorInitAtom);
   // const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
   useEffect(() => {
     if (doenetML !== undefined){
     setEditorDoenetML(doenetML);
-    setViewerDoenetML({updateNumber:1,doenetML});
+    setEditorInit(true);
+
+    setViewerDoenetML((was)=>{
+      let updateNumber = was.updateNumber+1
+      return {updateNumber,doenetML}
     }
-    // return () => console.log(">>>Cal exit"); //cleanup code here
+    );
+    }
+    return () => {
+      setEditorInit(false);
+    }
 }, [doenetML]);
 
   if (loadedDoenetML.state === "loading"){ return null;}
