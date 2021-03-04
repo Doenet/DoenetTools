@@ -515,7 +515,7 @@ export default function Editor({ branchId, title }) {
         <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
       </mainPanel>
 
-      <supportPanel>
+      <supportPanel isInitOpen>
       <TempEditorHeaderBar branchId={branchId} />
           <TextEditor  branchId={branchId}/>
       </supportPanel>
