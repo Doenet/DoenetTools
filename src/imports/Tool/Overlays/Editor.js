@@ -61,7 +61,7 @@ const itemHistoryAtom = atomFamily({
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
-      console.log(">>>data",data)
+      // console.log(">>>data",data)
       return data.versions
     }
   })
@@ -437,14 +437,11 @@ function TempEditorHeaderBar(props){
 
 
 function DoenetViewerPanel(){
-  console.log("=== DoenetViewer Panel")
+  // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
 
-  console.log(">>>viewer editorInit",editorInit)
-  console.log(">>>viewerDoenetML",viewerDoenetML)
   if (!editorInit){ return null; }
-  console.log(">>>viewer show DoenetViewer")
 
   let attemptNumber = 1;
   let requestedVariant = { index: attemptNumber }
@@ -475,7 +472,7 @@ const editorInitAtom = atom({
 
 
 export default function Editor({ branchId, title }) {
-  console.log("===Editor!");
+  // console.log("===Editor!");
   // if (contentId === ""){contentId = branchId;} 
   let contentId = branchId;
 

@@ -957,7 +957,7 @@ let fetchDrivesQuery = atom({
     const { data } = await axios.get(
       `/api/loadAvailableDrives.php`
     );
-    console.log(">>>data",data)
+    // console.log(">>>data",data)
     return data
   },
  
