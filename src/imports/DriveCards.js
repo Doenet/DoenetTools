@@ -20,8 +20,7 @@ import {
 
 
 const DriveCards = (props) => {
-
-  const {routePathDriveId, driveDoubleClickCallback, OneDriveSelect} = props;
+  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes,types} = props;
 
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
@@ -33,13 +32,21 @@ const DriveCards = (props) => {
    if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
      drivecardComponent = <DriveCardWrapper 
      driveDoubleClickCallback={driveDoubleClickCallback} 
-     OneDriveSelect = {OneDriveSelect}
+     subTypes={subTypes}
+     types={types}
+     isOneDriveSelect = {isOneDriveSelect}
      driveInfo={driveInfo}/>;
-    //  ({item})=>{driveDoubleClickCallback({item})}
    } else if (driveInfo.length === 0 && routePathDriveId === "") {
-     drivecardComponent = (
-       <h2>You have no courses. Add one using the Menu Panel --> </h2>
-     );
+     if(isOneDriveSelect){
+      drivecardComponent = (
+        <h2>You have no courses.</h2>
+      );
+     }
+     else{
+      drivecardComponent = (
+        <h2>You have no courses. Add one using the Menu Panel {`-->`} </h2>
+      );
+     }    
    }
    return (
      <>
@@ -49,21 +56,37 @@ const DriveCards = (props) => {
 };
 
 const DriveCardWrapper = (props) => {
-  const { driveDoubleClickCallback , OneDriveSelect} = props;
+  const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, types} = props;
  
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
       .map((kv) => kv.map(encodeURIComponent).join("="))
       .join("&");
-  // let transitions = "";
   let driveCardItems =[];
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
   const [bind, { width },columns] = useMeasure();
   heights = new Array(columns).fill(0);
-  //  console.log(">>>>> !!!!!!width  ", width,"columns",columns );
-  driveCardItems = props.driveInfo.map((child, i) => {
+  let showCards = [];
+         if(types[0] === 'course'){
+          if(subTypes.length > 1)
+          {
+            showCards = driveInfo;
+          }
+          else
+          {
+            for(let i = 0;i< driveInfo.length;i++)
+            {
+                if(driveInfo[i].subType === subTypes[0])
+                {
+                  showCards.push(driveInfo[i]);
+                }
+            }            
+          } 
+         }
+         
+  driveCardItems = showCards.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: (width / columns), height: 250};
@@ -134,9 +157,7 @@ const DriveCardWrapper = (props) => {
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
-console.log(">>>>>> here !!!!!!!!!!!!!!!!!",OneDriveSelect);
-   if(OneDriveSelect){
-     
+   if(isOneDriveSelect){
     if (!e.shiftKey && !e.metaKey){          // one item
       setDrivecardSelection((old) => [item]);
     }

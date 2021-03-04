@@ -16,11 +16,9 @@ import {
 import { getCourses_CI, setSelected_CI, updateCourses_CI } from "../imports/courseInfo";
 import DriveCards from "../imports/DriveCards";
 import {
-  useRecoilValueLoadable,
   useSetRecoilState,
 } from "recoil";
 import  { 
-  fetchDrivesSelector,
   encodeParams
   
 } from "../imports/Drive";
@@ -279,7 +277,7 @@ const alphabet =
     function cleardrivecardSelection(){
       setDrivecardSelection([]);
     }
-    function driveCardSelector({item}) {
+    function DriveCardCallBack({item}) {
       let newParams = {};
       newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
       newParams["courseId"] = `${item.courseId}`
@@ -301,9 +299,10 @@ const alphabet =
                 >
               <DriveCards 
               routePathDriveId={routePathDriveId}
-              OneDriveSelect={true} 
-              types={['courseStudent', 'courseInstructor']}
-              driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}/>
+              isOneDriveSelect={true} 
+              types={['course']}     
+              subTypes={['Student','Administrator']}
+              driveDoubleClickCallback={({item})=>{DriveCardCallBack({item})}}/>
                 </div>  
                 </mainPanel>
         </Tool>

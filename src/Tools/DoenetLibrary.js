@@ -1246,6 +1246,8 @@ export default function DoenetLibraryTool(props) {
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
        <DriveCards
+       types={['course']}
+       subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
        driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}
        />
