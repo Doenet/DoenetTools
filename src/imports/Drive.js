@@ -778,24 +778,14 @@ const folderSortOrderAtom = atomFamily({
   default:sortOptions.DEFAULT
 })
 
-const folderSortOrderSelector = selectorFamily({
-  key:"folderSortOrderSelector",
-  get:(driveInstanceIdFolderId)=>({get})=>{
-    return get(folderSortOrderAtom(driveInstanceIdFolderId));
-  },
-  set:(driveInstanceIdFolderId) => ({set}, sortOrder)=>{
-    set(folderSortOrderAtom(driveInstanceIdFolderId), sortOrder); 
-  }
-})
-
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
     
     const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
-    const folderSortOrder = get(folderSortOrderSelector(driveIdInstanceIdFolderId))
+    const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId))
     const contentIdsArr = contentIds[folderSortOrder] ?? [];
-    
+
     let newFolderInfo = { ...folderInfo };
     newFolderInfo.sortBy = folderSortOrder
     return {folderInfo: newFolderInfo, contentsDictionary, contentIdsArr};
@@ -805,14 +795,13 @@ export const folderInfoSelector = selectorFamily({
 
     const dirtyActions = new Set(["addItem", "delete item"])
     if (dirtyActions.has(instructions.instructionType)) {
-      set(folderSortOrderSelector(driveIdInstanceIdFolderId), sortOptions.DEFAULT);
+      set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortOptions.DEFAULT);
     }
 
     switch(instructions.instructionType){
       case "sort":
         const {contentIds} = get(folderDictionarySelector({driveId, folderId}))
-        
-        set(folderSortOrderSelector(driveIdInstanceIdFolderId), instructions.sortKey);
+        set(folderSortOrderAtom(driveIdInstanceIdFolderId), instructions.sortKey);
         
         // if sortOrder not already cached in folderDictionary
         if (!contentIds[instructions.sortKey]) {
@@ -1201,7 +1190,9 @@ function Folder(props){
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
-  
+
+  const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
+  const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
@@ -1222,6 +1213,10 @@ function Folder(props){
   useEffect(() => {
     isOpenRef.current = isOpen;
   }, [isOpen])
+
+  useEffect(() => {
+    parentFolderSortOrderRef.current = parentFolderSortOrder;
+  }, [parentFolderSortOrder])
 
   if (props.isNav && itemId === props.pathItemId) {borderSide = "8px solid #1A5A99";}
  
@@ -1256,23 +1251,25 @@ function Folder(props){
     if (!isOpenRef.current && !props.isNav) {
       toggleOpen();
     }
-
-    if (cursorArea < 0.5) {
-      // insert shadow to top of current dropTarget
-      setFolderInfo({
-        instructionType:"insertDragShadow",
-        position: "beforeCurrent",
-        itemId: props.folderId,
-        parentId: props.item?.parentFolderId
-      });
-    }else if (cursorArea < 1.0000) {
-      // insert shadow to bottom of current dropTarget
-      setFolderInfo({
-        instructionType:"insertDragShadow",
-        position: "afterCurrent",
-        itemId: props.folderId,
-        parentId: props.item?.parentFolderId
-      });
+    
+    if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
+      if (cursorArea < 0.5) {
+        // insert shadow to top of current dropTarget
+        setFolderInfo({
+          instructionType:"insertDragShadow",
+          position: "beforeCurrent",
+          itemId: props.folderId,
+          parentId: props.item?.parentFolderId
+        });
+      }else if (cursorArea < 1.0000) {
+        // insert shadow to bottom of current dropTarget
+        setFolderInfo({
+          instructionType:"insertDragShadow",
+          position: "afterCurrent",
+          itemId: props.folderId,
+          parentId: props.item?.parentFolderId
+        });
+      }
     }
 
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
