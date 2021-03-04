@@ -28,7 +28,7 @@ export default function DoenetExampleTool() {
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
       </mainPanel>
 
-      <supportPanel width="40%">
+      <supportPanel>
         <p>Support Panel</p>
       </supportPanel>
 
@@ -46,6 +46,13 @@ export default function DoenetExampleTool() {
           }}
         >
           Other Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("hello from Toast!", 3000);
+          }}
+        >
+          Toast Test!
         </button>
         <button
           onClick={() => {

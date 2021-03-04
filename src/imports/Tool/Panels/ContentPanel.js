@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useSetRecoilState, useRecoilState, atomFamily } from "recoil";
 import { clearDriveAndItemSelections } from "../../Drive";
@@ -39,6 +39,11 @@ export default function ContentPanel({ main, support }) {
     supportPanelControl(stackId)
   );
   const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+
+  useEffect(() => {
+    if (support?.props?.isInitOpen)
+      setSupportController(support?.props?.isInitOpen);
+  }, [support?.props.isInitOpen]);
 
   let handleClicked = false;
   let handleDragged = false;

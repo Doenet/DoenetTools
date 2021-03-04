@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { atom, useRecoilState, useRecoilCallback } from "recoil";
 import styled from "styled-components";
 import { animated, useTransition } from "react-spring";
@@ -12,6 +12,10 @@ const ToastContainer = styled.div`
   right: 20px;
   border-radius: 4px;
   background-color: darkgray;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  align-items: center;
 `;
 
 const Message = styled(animated.div)`
@@ -41,13 +45,31 @@ const Content = styled("div")`
   margin-bottom: ${(props) => (props.top ? "10px" : "0")};
 `;
 
-export const Life = styled(animated.div)`
+const Life = styled(animated.div)`
   position: absolute;
   bottom: ${(props) => (props.top ? "10px" : "0")};
   left: 0px;
   width: auto;
   background-image: linear-gradient(130deg, #00b4e6, #00f0e0);
   height: 5px;
+`;
+
+const Button = styled("button")`
+  cursor: pointer;
+  pointer-events: all;
+  outline: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-self: flex-end;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  :hover {
+    color: rgba(255, 255, 255, 0.6);
+  }
 `;
 
 const toastStack = atom({
@@ -79,34 +101,20 @@ export default function Toast({
     },
     leave: (toast) => async (next, cancel) => {
       cancelMap.set(toast, cancel);
-      await next({ life: "0%" });
-      await next({ opacity: 0 });
-      await next({ height: 0 });
+      await next({
+        life: "0%",
+        config: () => {
+          return { duration: toast.timeout };
+        },
+      });
+      await next({ opacity: 0, config: () => ({ duration: 0, ...defConfig }) });
+      await next({ height: 0, config: () => ({ duration: 0, ...defConfig }) });
     },
-    config: (toast, state) => {
-      console.log(
-        ">>>Config for",
-        toast.key,
-        state === "leave"
-          ? [{ duration: toast.timeout }, defConfig, defConfig]
-          : defConfig
-      );
-      return state === "leave"
-        ? [
-            { duration: toast.timeout },
-            { duration: 5000, ...defConfig },
-            defConfig,
-          ]
-        : defConfig;
-    },
+    config: defConfig,
     onRest: (toast) => {
       setToasts((state) => state.filter((i) => i.key !== toast.key));
     },
   });
-
-  useEffect(() => {
-    console.log(toasts);
-  }, [toasts]);
 
   return (
     <ToastContainer>
@@ -115,14 +123,14 @@ export default function Toast({
           <Content ref={(ref) => ref && refMap.set(item, ref)}>
             <Life style={{ right: life }} />
             <p>{item.msg}</p>
-            {/* <Button
+            <Button
               onClick={(e) => {
                 e.stopPropagation();
                 cancelMap.has(item) && cancelMap.get(item)();
               }}
             >
-              <X size={18} />
-            </Button> */}
+              X
+            </Button>
           </Content>
         </Message>
       ))}
