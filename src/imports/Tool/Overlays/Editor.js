@@ -473,35 +473,24 @@ const editorInitAtom = atom({
 
 export default function Editor({ branchId, title }) {
   // console.log("===Editor!");
-  // if (contentId === ""){contentId = branchId;} 
-  let contentId = branchId;
 
-  const loadedDoenetML = useRecoilValueLoadable(fileByContentId(contentId))
-  let doenetML = loadedDoenetML.contents?.data;
-  const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
-  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (contentId)=>{
+    const response = await snapshot.getPromise(fileByContentId(contentId));
+    const doenetML = response.data;
+    set(editorDoenetMLAtom,doenetML);
+    const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);
+    const updateNumber = viewerObj.updateNumber+1;
+    set(viewerDoenetMLAtom,{updateNumber,doenetML})
+    set(editorInitAtom,true);
+  })
+
   const setEditorInit = useSetRecoilState(editorInitAtom);
-  // const setEditorOverlayTitle = useSetRecoilState(overlayTitleAtom);
   useEffect(() => {
-    if (doenetML !== undefined){
-    setEditorDoenetML(doenetML);
-    setEditorInit(true);
-
-    setViewerDoenetML((was)=>{
-      let updateNumber = was.updateNumber+1
-      return {updateNumber,doenetML}
-    }
-    );
-    }
+    initDoenetML(branchId)
     return () => {
       setEditorInit(false);
     }
-}, [doenetML]);
-
-  if (loadedDoenetML.state === "loading"){ return null;}
-  if (loadedDoenetML.state === "hasError"){ 
-    console.error(loadedDoenetML.contents)
-    return null;}
+}, []);
 
 
   return (
