@@ -297,13 +297,21 @@ const alphabet =
                 tabIndex={0}
                 className={routePathDriveId ? '' : 'mainPanelStyle' }
                 >
+              <h2>Admin</h2>
+              <DriveCards 
+              routePathDriveId={routePathDriveId}
+              isOneDriveSelect={true} 
+              types={['course']}  
+              subTypes={['Administrator']}   
+              driveDoubleClickCallback={({item})=>{DriveCardCallBack({item})}}/>
+              <h2>Student</h2>
               <DriveCards 
               routePathDriveId={routePathDriveId}
               isOneDriveSelect={true} 
               types={['course']}     
-              subTypes={['Student','Administrator']}
+              subTypes={['Student']}
               driveDoubleClickCallback={({item})=>{DriveCardCallBack({item})}}/>
-                </div>  
+              </div>  
                 </mainPanel>
         </Tool>
     );
