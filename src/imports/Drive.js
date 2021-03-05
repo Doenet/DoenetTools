@@ -255,7 +255,7 @@ export default function Drive(props){
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
-        if (driveObj.type === type){
+        if (driveObj.type === type && driveObj.subType === 'Administrator'){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
@@ -1047,7 +1047,8 @@ export const fetchDrivesSelector = selector({
         label:labelTypeDriveIdColorImage.label,
         type: "course",
         image:labelTypeDriveIdColorImage.image,
-        color:labelTypeDriveIdColorImage.color
+        color:labelTypeDriveIdColorImage.color,
+        subType:"Administrator"
       }
       newDriveData.driveIdsAndLabels.unshift(newDrive)
     set(fetchDrivesQuery,newDriveData)
