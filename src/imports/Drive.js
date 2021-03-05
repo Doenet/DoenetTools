@@ -425,14 +425,13 @@ export const folderDictionarySelector = selectorFamily({
       break;
       case "sort":
         const { sortKey } = instructions;
-
         set(folderDictionary(driveIdFolderId),(old)=>{
           let newObj = JSON.parse(JSON.stringify(old));
           let { contentsDictionary, contentIds } = newObj;
           let newFolderInfo = { ...newObj.folderInfo }
 
           // sort folder child array
-          const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds["defaultOrder"]});
+          const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds[sortOptions.DEFAULT]});
 
           // update folder data
           newObj.folderInfo = newFolderInfo;
@@ -440,6 +439,16 @@ export const folderDictionarySelector = selectorFamily({
           
           return newObj;
         })
+
+        break;
+      case "invalidate sort cache":
+        set(folderDictionary(driveIdFolderId),(old)=>{
+          let newObj = { ...old };
+          let { contentIds } = old;
+
+          newObj.contentIds = { [sortOptions.DEFAULT]: [...contentIds[sortOptions.DEFAULT]] };
+          return newObj;
+        });
 
         break;
       case "rename item":
@@ -799,7 +808,12 @@ export const folderInfoSelector = selectorFamily({
     
     const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
     const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId))
-    const contentIdsArr = contentIds[folderSortOrder] ?? [];
+    let contentIdsArr = contentIds[folderSortOrder] ?? [];
+
+    const sortedContentIdsNotInCache = !contentIdsArr.length && contentIds[sortOptions.DEFAULT].length;
+    if (sortedContentIdsNotInCache) {
+      contentIdsArr = sortItems({sortKey: folderSortOrder, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds[sortOptions.DEFAULT]});
+    }
 
     let newFolderInfo = { ...folderInfo };
     newFolderInfo.sortBy = folderSortOrder
@@ -1226,6 +1240,7 @@ function Folder(props){
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
 
+  /* Update refs for variables used in DnD callbacks to eliminate re-registration */
   useEffect(() => {
     isOpenRef.current = isOpen;
   }, [isOpen])
@@ -1234,14 +1249,10 @@ function Folder(props){
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder])
 
+  /* Cache invalidation when folder is dirty */
   useEffect(() => {
     if (folderCacheDirty) {
-      // re-sort
-      setFolderInfo({
-        instructionType:"sort",
-        sortKey: folderInfo.sortBy
-      });
-      // TODO: invalidate other caches
+      setFolderInfo({ instructionType: "invalidate sort cache" });
       setFolderCacheDirty(false);
     }    
   }, [folderCacheDirty])
