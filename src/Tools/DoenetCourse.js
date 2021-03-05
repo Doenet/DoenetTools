@@ -37,7 +37,6 @@ import {
 import Switch from "../imports/Switch";
 import AddItem from "../imports/AddItem";
 import { supportVisible } from "../imports/Tool/SupportPanel";
-import DriveCardComponent from "../imports/DriveCardComponent";
 
 export const roleAtom = atom({
   key: "roleAtom",
