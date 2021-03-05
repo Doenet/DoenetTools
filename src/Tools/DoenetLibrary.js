@@ -1190,7 +1190,7 @@ export default function DoenetLibraryTool(props) {
   // if(routePathDriveId === ''){
   //   mainPanelStyle = {}
   // }
-  const driveCardSelector = ({item}) => {
+  const driveCardSelection = ({item}) => {
     let newParams = {};
     newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
     history.push("?" + encodeParams(newParams));
@@ -1249,7 +1249,7 @@ export default function DoenetLibraryTool(props) {
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{driveCardSelector({item})}}
+       driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
        />
         </div>
         

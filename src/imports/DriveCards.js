@@ -243,7 +243,7 @@ const DriveCardWrapper = (props) => {
         {...bind}
         style={{
           width: "100%",
-          height:"100%",
+          height:Math.max(...heights)+50,
         }}
         className={`list`}
       >
@@ -256,15 +256,15 @@ const DriveCardWrapper = (props) => {
               style={{
                 transform: props.xy.interpolate((x, y) => {
                   return `translate(${x}px,${y}px) scale(${
-                    selectedCard ? 1.1 : props.scale.value
+                    selectedCard ? 1.02 : props.scale.value
                   })`;
                 }),
                 ...props,
                 height: 250,
                 opacity: 1,
                 zIndex:selectedCard ? 2 : 0,
-                padding: selectedCard ? 0 : 10,
-                boxShadow: props.shadow.interpolate(s => `0px ${selectedCard ? 35 : 0}px ${2 * (selectedCard ? 35: 0)}px 0px` ),
+                padding: selectedCard ? 5 : 15,
+                boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
               }}
             >
               <div
