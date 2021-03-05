@@ -579,7 +579,11 @@ export const folderDictionarySelector = selectorFamily({
           //Remove from sources
           for (let parentFolderId of Object.keys(sourcesByParentFolderId)){
             set(folderDictionary({driveId:instructions.driveId,folderId:parentFolderId}),sourcesByParentFolderId[parentFolderId])
+            //Mark modified folders as dirty
+            set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:parentFolderId}), true);
           }
+          //Mark current folder as dirty
+          set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:instructions.itemId}), true);
 
           let selectedItemIds = [];
           for (let item of globalSelectedItems){
@@ -731,7 +735,10 @@ export const folderDictionarySelector = selectorFamily({
 
       break;
       case "removeDragShadow":
-        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
+        // check if drag shadow valid
+        if (!dragShadowDriveId || !dragShadowParentId) return;
+
+        set(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}),(old)=>{
           let newObj = {...old};
           let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
           newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
@@ -748,6 +755,9 @@ export const folderDictionarySelector = selectorFamily({
         })
       break;
       case "replaceDragShadow":
+        // check if drag shadow valid
+        if (!dragShadowDriveId || !dragShadowParentId) return;
+
         if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
         let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
         let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
@@ -776,6 +786,11 @@ export const folderDictionarySelector = selectorFamily({
 const folderSortOrderAtom = atomFamily({
   key:"folderSortOrderAtom",
   default:sortOptions.DEFAULT
+})
+
+const folderCacheDirtyAtom = atomFamily({
+  key:"foldedCacheDirtyAtom",
+  default:false
 })
 
 export const folderInfoSelector = selectorFamily({
@@ -1190,6 +1205,7 @@ function Folder(props){
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState] = useRecoilState(dragStateAtom);
+  const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
 
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
@@ -1218,10 +1234,21 @@ function Folder(props){
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder])
 
+  useEffect(() => {
+    if (folderCacheDirty) {
+      // re-sort
+      setFolderInfo({
+        instructionType:"sort",
+        sortKey: folderInfo.sortBy
+      });
+      // TODO: invalidate other caches
+      setFolderCacheDirty(false);
+    }    
+  }, [folderCacheDirty])
+
   if (props.isNav && itemId === props.pathItemId) {borderSide = "8px solid #1A5A99";}
  
   if (folderInfoObj.state === "loading"){ return null;}
-  // console.log(folderInfo.label, folderInfo?.sortBy, contentIdsArr)
  
   let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
 
@@ -1270,6 +1297,8 @@ function Folder(props){
           parentId: props.item?.parentFolderId
         });
       }
+    } else {
+      setFolderInfo({instructionType:"removeDragShadow"});
     }
 
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
@@ -1504,6 +1533,7 @@ function Folder(props){
     items = [];
     for (let itemId of contentIdsArr){
       let item = dictionary[itemId];
+      if (!item) continue;
       // console.log(">>>item",item)
       if (props.hideUnpublished && item.isPublished === "0"){
         //hide item
