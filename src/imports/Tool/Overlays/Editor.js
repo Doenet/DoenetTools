@@ -156,7 +156,6 @@ const updateItemHistorySelector = selectorFamily({
     key:"versionHistorySelectedAtom",
     default:""
   })
-  
 
   //Need this?
   const EditingTimestampAtom = atom({
@@ -427,11 +426,37 @@ function DoenetViewerUpdateButton(){
   })}} />
 }
 
+function NameCurrentVersionControl(props){
+  const saveVersion = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const timestamp = buildTimestamp();
+    const contentId = getSHAofContent(doenetML);
+    let newVersion = {
+      title:timestamp,
+      timestamp,
+      isDraft:'0',
+      isNamed:'1',
+      contentId
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId
+    }
+
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+    set(fileByContentId(contentId),{data:doenetML});
+    axios.post("/api/saveNewVersion.php",newDBVersion)
+  })
+  const selectedTimestamp = useRecoilValue(versionHistorySelectedAtom);
+  if (selectedTimestamp !== "") {return null;}
+
+  return <Button value="Save Version" callback={()=>saveVersion(props.branchId)} />
+}
+
 function TempEditorHeaderBar(props){
   return <div style={{height:"24px"}}>
-    
-              {/* <NameCurrentVersionControl branchId={props.branchId} /> */}
-
+    <NameCurrentVersionControl branchId={props.branchId} />
   </div>
 }
 
