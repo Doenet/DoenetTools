@@ -5,9 +5,7 @@
 
 .drivecardContainer {
   margin: 0;
-  height: 100%;
   width: 100%;
-  user-select: none;
   justify-content: center;
   overflow:hidden;
 }
@@ -17,8 +15,8 @@
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
     segoe ui, arial, sans-serif;
   width: 100%;
-  height: 100%;
-  overflow: auto;
+  padding: 15px;
+  overflow-y: scroll;
   text-transform: uppercase;
   font-size: 10px;
   line-height: 10px;

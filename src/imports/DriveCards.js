@@ -1,13 +1,4 @@
-import React, { useEffect, useRef, useState, Suspense } from "react";
-import Drive, { 
-  fetchDrivesSelector,
-} from "./Drive";
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-} from "recoil";
-
+import React, { useState } from "react";
 import DriveCard from './DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import "./drivecard.css";
@@ -17,22 +8,85 @@ import {
 } from "react-router-dom";
 import { useMenuPanelController } from "./Tool/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
+import {
+  atom,
+  useSetRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+} from "recoil";
+import { 
+  fetchDrivesSelector,
+} from "./Drive";
 
-const DriveCardComponent = (props) => {
-  const { driveDoubleClickCallback , OneDriveSelect} = props;
+
+const DriveCards = (props) => {
+  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes,types} = props;
+
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+  let driveInfo = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+  }
+   // Drive cards component
+   let drivecardComponent = null;
+   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+     drivecardComponent = <DriveCardWrapper 
+     driveDoubleClickCallback={driveDoubleClickCallback} 
+     subTypes={subTypes}
+     types={types}
+     isOneDriveSelect = {isOneDriveSelect}
+     driveInfo={driveInfo}/>;
+   } else if (driveInfo.length === 0 && routePathDriveId === "") {
+     if(isOneDriveSelect){
+      drivecardComponent = (
+        <h2>You have no courses.</h2>
+      );
+     }
+     else{
+      drivecardComponent = (
+        <h2>You have no courses. Add one using the Menu Panel {`-->`} </h2>
+      );
+     }    
+   }
+   return (
+     <>
+     {drivecardComponent}
+     </>
+   )
+};
+
+const DriveCardWrapper = (props) => {
+  const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, types} = props;
+ 
   const history = useHistory();
   let encodeParams = (p) =>
     Object.entries(p)
       .map((kv) => kv.map(encodeURIComponent).join("="))
       .join("&");
-  // let transitions = "";
   let driveCardItems =[];
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
   const [bind, { width },columns] = useMeasure();
   heights = new Array(columns).fill(0);
-  //  console.log(">>>>> !!!!!!width  ", width,"columns",columns );
-  driveCardItems = props.driveInfo.map((child, i) => {
+  let showCards = [];
+         if(types[0] === 'course'){
+          if(subTypes.length > 1)
+          {
+            showCards = driveInfo;
+          }
+          else
+          {
+            for(let i = 0;i< driveInfo.length;i++)
+            {
+                if(driveInfo[i].subType === subTypes[0])
+                {
+                  showCards.push(driveInfo[i]);
+                }
+            }            
+          } 
+         }
+         
+  driveCardItems = showCards.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: (width / columns), height: 250};
@@ -103,8 +157,7 @@ const DriveCardComponent = (props) => {
    e.preventDefault();
    e.stopPropagation();
    setOpenMenuPanel(0);
-
-   if(OneDriveSelect){
+   if(isOneDriveSelect){
     if (!e.shiftKey && !e.metaKey){          // one item
       setDrivecardSelection((old) => [item]);
     }
@@ -190,8 +243,7 @@ const DriveCardComponent = (props) => {
         {...bind}
         style={{
           width: "100%",
-          height:"100%",
-          position: "relative",
+          height:Math.max(...heights)+50,
         }}
         className={`list`}
       >
@@ -204,15 +256,15 @@ const DriveCardComponent = (props) => {
               style={{
                 transform: props.xy.interpolate((x, y) => {
                   return `translate(${x}px,${y}px) scale(${
-                    selectedCard ? 1.1 : props.scale.value
+                    selectedCard ? 1.02 : props.scale.value
                   })`;
                 }),
                 ...props,
                 height: 250,
                 opacity: 1,
                 zIndex:selectedCard ? 2 : 0,
-                padding: selectedCard ? 0 : 10,
-                boxShadow: props.shadow.interpolate(s => `0px ${selectedCard ? 35 : 0}px ${2 * (selectedCard ? 35: 0)}px 0px` ),
+                padding: selectedCard ? 5 : 15,
+                boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
               }}
             >
               <div
@@ -250,4 +302,4 @@ const DriveCardComponent = (props) => {
   );
 };
 
-export default DriveCardComponent;
+export default DriveCards;
