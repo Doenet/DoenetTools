@@ -61,7 +61,7 @@ const itemHistoryAtom = atomFamily({
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
-      // console.log(">>>data",data)
+      console.log(">>>data",data)
       return data.versions
     }
   })
@@ -510,6 +510,7 @@ export default function Editor({ branchId, title }) {
   })
 
   const setEditorInit = useSetRecoilState(editorInitAtom);
+
   useEffect(() => {
     initDoenetML(branchId)
     return () => {

@@ -405,6 +405,7 @@ export const folderDictionarySelector = selectorFamily({
             folderInfo:newItem,contentsDictionary:{},contentIds:{[sortOptions.DEFAULT]:[]}
           })
         }
+        const versionId = nanoid();
 
         const data = { 
           driveId:driveIdFolderId.driveId,
@@ -413,6 +414,7 @@ export const folderDictionarySelector = selectorFamily({
           label:instructions.label,
           type:instructions.itemType,
           branchId,
+          versionId,
           sortOrder: newItem.sortOrder,
          };
         const payload = { params: data };
