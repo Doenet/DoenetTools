@@ -5,7 +5,6 @@ module.exports = {
     "plugin:react/recommended",
     // "plugin:jsx-a11y/recommended",
     "prettier",
-    "prettier/react",
   ],
   rules: {
     "linebreak-style": ["error", "unix"],
@@ -17,8 +16,13 @@ module.exports = {
       { additionalHooks: "useRecoilCallback" },
     ],
   },
-  plugins: ["react", "import", "jsx-a11y", "react-hooks"],
-  parser: "babel-eslint",
+  plugins: [
+    "react",
+    "import",
+    // "jsx-a11y",
+    "react-hooks",
+  ],
+  parser: "@babel/eslint-parser",
   parserOptions: {
     ecmaVersion: 11,
     sourceType: "module",

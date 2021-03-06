@@ -6,7 +6,7 @@ import useMeasure  from "../Tools/useMeasure";
 import {
   useHistory
 } from "react-router-dom";
-import { useMenuPanelController } from "./Tool/MenuPanel";
+import { useMenuPanelController } from "./Tool/Panels/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../Tools/DoenetLibrary";
 import {
   atom,
