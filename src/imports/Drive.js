@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useEffect, Suspense} from 'react';
-import { IsNavContext } from './Tool/NavPanel'
+import { IsNavContext } from "./Tool/Panels/NavPanel";
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
@@ -957,6 +957,7 @@ let fetchDrivesQuery = atom({
     const { data } = await axios.get(
       `/api/loadAvailableDrives.php`
     );
+    // console.log(">>>data",data)
     return data
   },
  
