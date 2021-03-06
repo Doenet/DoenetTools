@@ -10,8 +10,6 @@ const ToastContainer = styled.div`
   left: unset;
   bottom: 30px;
   right: 20px;
-  border-radius: 4px;
-  background-color: darkgray;
   display: flex;
   flex-direction: column;
   pointer-events: none;
@@ -26,11 +24,12 @@ const Message = styled(animated.div)`
   @media (max-width: 680px) {
     width: 100%;
   }
+  border-radius: 4px;
 `;
 
 const Content = styled("div")`
   color: white;
-  background: #445159;
+  background: #1a5a99;
   opacity: 0.9;
   padding: 12px 22px;
   font-size: 1em;
@@ -50,7 +49,7 @@ const Life = styled(animated.div)`
   bottom: ${(props) => (props.top ? "10px" : "0")};
   left: 0px;
   width: auto;
-  background-image: linear-gradient(130deg, #00b4e6, #00f0e0);
+  background-image: linear-gradient(130deg, #1a5a99, #8fb8de);
   height: 5px;
 `;
 
@@ -81,15 +80,18 @@ let id = 0;
 
 export const useToast = () => {
   return useRecoilCallback(
-    ({ set }) => (msg, timeout = 3000) => {
-      set(toastStack, (old) => [...old, { msg, timeout, key: id++ }]);
+    ({ set }) => (msg, priority = 0, onClick = null, timeout = 3000) => {
+      set(toastStack, (old) => [
+        ...old,
+        { msg, priority, timeout, onClick, key: id++ },
+      ]);
     },
     []
   );
 };
 
 export default function Toast({
-  config: defConfig = { tension: 125, friction: 20, precision: 0.1 },
+  defConfig = { tension: 125, friction: 20, precision: 0.1 },
 }) {
   const [toasts, setToasts] = useRecoilState(toastStack);
   const [refMap] = useState(() => new WeakMap());
@@ -104,11 +106,11 @@ export default function Toast({
       await next({
         life: "0%",
         config: () => {
-          return { duration: toast.timeout };
+          return { duration: 3000 };
         },
       });
-      await next({ opacity: 0, config: () => ({ duration: 0, ...defConfig }) });
-      await next({ height: 0, config: () => ({ duration: 0, ...defConfig }) });
+      await next({ opacity: 0 });
+      await next({ height: 0 });
     },
     config: defConfig,
     onRest: (toast) => {

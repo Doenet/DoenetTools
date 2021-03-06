@@ -25,8 +25,15 @@ export const useToolControlHelper = () => {
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportPanelController();
 
-  const open = (name, branchId, title, assignmentId) => {
-    switch (name.toLowerCase()) {
+  const openOverlay = ({
+    type,
+    title,
+    contentId,
+    courseId,
+    branchId,
+    assignmentId,
+  }) => {
+    switch (type.toLowerCase()) {
       case "editor":
         setLayers((old) => [
           ...old,
@@ -42,8 +49,8 @@ export const useToolControlHelper = () => {
           ...old,
           <Assignment
             branchId={branchId}
-            contentId={courseId}
             assignmentId={assignmentId}
+            courseId={courseId}
             key={`AssignmentLayer${old.length + 1}`}
           />,
         ]);
@@ -53,7 +60,7 @@ export const useToolControlHelper = () => {
           ...old,
           <Calendar
             branchId={branchId}
-            contentId={courseId}
+            contentId={contentId}
             key={`CalendarLayer${old.length + 1}`}
           />,
         ]);
@@ -61,11 +68,7 @@ export const useToolControlHelper = () => {
       case "image":
         setLayers((old) => [
           ...old,
-          <Image
-            branchId={branchId}
-            contentId={courseId}
-            key={`ImageLayer${old.length + 1}`}
-          />,
+          <Image branchId={branchId} key={`ImageLayer${old.length + 1}`} />,
         ]);
         break;
       default:
@@ -83,7 +86,7 @@ export const useToolControlHelper = () => {
   };
 
   return {
-    open,
+    openOverlay,
     close,
     activateMenuPanel,
     activateSupportPanel,
