@@ -113,16 +113,33 @@ function VersionHistoryPanel(props){
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
   const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (newTitle)=>{
-    console.log(">>>newTitle",newTitle);
+  const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
+    set(itemHistoryAtom(branchId),(was)=>{
+      let newHistory = [...was]
+      let newVersion;
+      for (const [i,version] of was.entries()){
+        if (versionId === version.versionId){
+          newVersion = {...version}
+          newVersion.title = newTitle;
+          newHistory.splice(i,1,newVersion)
+        }
+      }
+      let newDBVersion = {...newVersion,
+        isNewTitle:'1',
+        branchId
+      }
+         axios.post("/api/saveNewVersion.php",newDBVersion)
+          // .then((resp)=>{console.log(">>>resp",resp.data)})
+      return newHistory;
+    })
+
   });
 
   const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
     set(versionHistorySelectedAtom,version.versionId)
     let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
     const doenetML = loadableDoenetML.data;
-    console.log(">>>version",version)
-    // console.log(">>>doenetML",doenetML)
+
     set(editorDoenetMLAtom,doenetML);
     set(viewerDoenetMLAtom,(was)=>{
       let newObj = {...was}
@@ -176,8 +193,6 @@ function VersionHistoryPanel(props){
         if (selectedVersionId === version.versionId){
           setEditingVersionId(version.versionId);
           setEditingTitleText(titleText);
-        }else{
-          console.log(">>>what?")
         }
       }} 
       style={titleStyle}>{titleText}</b></div>
@@ -187,11 +202,11 @@ function VersionHistoryPanel(props){
         autoFocus
         onBlur={()=>{
           setEditingVersionId("");
-          saveNamedVersion(editingTitleText);
+          saveNamedVersion(props.branchId,version.versionId,editingTitleText);
         }}
         onKeyDown={(e)=>{if (e.key === 'Enter'){
           setEditingVersionId("");
-          saveNamedVersion(editingTitleText);
+          saveNamedVersion(props.branchId,version.versionId,editingTitleText);
         }}}
         onChange={(e)=>{setEditingTitleText(e.target.value)}}
         value = {editingTitleText}
@@ -413,7 +428,6 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
-
 function DoenetViewerPanel(){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
@@ -447,7 +461,6 @@ const editorInitAtom = atom({
   key:"editorInit",
   default:false
 })
-
 
 export default function Editor({ branchId, title }) {
   // console.log("===Editor!");
