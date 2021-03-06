@@ -14,6 +14,7 @@ $userId = $jwtArray['userId'];
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $parentFolderId = mysqli_real_escape_string($conn,$_REQUEST["parentFolderId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
+$versionId = mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
@@ -81,9 +82,9 @@ if ($success){
     $result = $conn->query($sql); 
     $sql="
     INSERT INTO content
-    (branchId,contentId,title,timestamp,isDraft,removedFlag,public)
+    (branchId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
     VALUES
-    ('$branchId','$branchId','Draft',NOW(),'1','0','1')
+    ('$branchId','$versionId','$branchId','Draft',NOW(),'1','0','1')
     ";
     
     $result = $conn->query($sql); 

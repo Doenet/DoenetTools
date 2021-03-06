@@ -16,6 +16,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
 
@@ -50,6 +51,7 @@ if ($isDraft){
     $sql = "INSERT INTO content 
     SET branchId='$branchId',
     contentId='$contentId', 
+    versionId='$versionId', 
     title='$title',
     timestamp=NOW(),
     isDraft='0',
