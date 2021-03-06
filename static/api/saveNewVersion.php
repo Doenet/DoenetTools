@@ -19,6 +19,8 @@ $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
+$isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
+
 
 //Add new version to content table
 //TODO: Update draft version (Overwrite BranchId named file)
@@ -45,6 +47,15 @@ if ($isDraft){
     AND branchId='$branchId'
     ";
 
+    $result = $conn->query($sql);
+
+}else if($isNewTitle == '1'){
+    $sql = "
+    UPDATE content
+    SET title='$title',isNamed='1'
+    WHERE branchId='$branchId'
+    AND versionId='$versionId'
+    ";
     $result = $conn->query($sql);
 
 }else{
