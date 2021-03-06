@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, Suspense } from "react";
 import Tool from "../imports/Tool/Tool";
-import { useMenuPanelController } from "../imports/Tool/Panels/MenuPanel";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 import { useToolControlHelper } from "../imports/Tool/ToolRoot";
@@ -510,7 +509,8 @@ const DoenetMLInfoPanel = function(props){
 
   const [label,setLabel] = useState(itemInfo.label);
   const [panelLabel,setPanelLabel] = useState(itemInfo.label);
-  const { open } = useToolControlHelper();
+
+  const { openOverlay } = useToolControlHelper();
 
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
@@ -546,7 +546,8 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Edit DoenetML" callback={()=>{
-    open("editor", itemInfo.branchId, itemInfo.label);
+    openOverlay({type:"editor",branchId:itemInfo.branchId,title:itemInfo.label})
+    // open("editor", itemInfo.branchId, itemInfo.label);
   }} />
   <br />
   <br />
@@ -695,13 +696,14 @@ function AddMenuPanel(props){
 }
 
 function AutoSelect(props){
-  const setOpenMenuPanel = useMenuPanelController();
+  const { activateMenuPanel } = useToolControlHelper();
+
   const infoLoad = useRecoilValueLoadable(selectedInformation);
 
   if (infoLoad?.contents?.number > 0){
-    setOpenMenuPanel(0);
+    activateMenuPanel(0);
   }else{
-    setOpenMenuPanel(1);
+    activateMenuPanel(1);
   }
   return null;
 }
@@ -709,7 +711,7 @@ function AutoSelect(props){
 export default function DoenetLibraryTool(props) {
   // console.log("=== 📚 Doenet Library Tool",props);  
 
-  const { open, activateMenuPanel } = useToolControlHelper();
+  const { openOverlay, activateMenuPanel } = useToolControlHelper();
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -794,7 +796,7 @@ export default function DoenetLibraryTool(props) {
         >
         <Drive types={['content','course']}  urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
-          open("editor", info.item.branchId, info.item.label);
+          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
           }}/>
 
         </div>
