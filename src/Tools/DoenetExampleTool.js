@@ -49,7 +49,7 @@ export default function DoenetExampleTool() {
         </button>
         <button
           onClick={() => {
-            toast("hello from Toast!", 3000);
+            toast("hello from Toast!", 2000);
           }}
         >
           Toast Test!
