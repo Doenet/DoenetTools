@@ -22,8 +22,12 @@ import {
 import DoenetViewer from '../../../Tools/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/xml/xml';
 // import 'codemirror/theme/material.css';
-// import 'codemirror/theme/xq-light.css';
+import 'codemirror/theme/xq-light.css';
+// import 'codemirror/theme/neo.css';
+// import 'codemirror/theme/base16-light.css';
+
 import './editor.css';
 
 const fileByContentId = atomFamily({
@@ -337,7 +341,7 @@ function TextEditor(props){
       autoRefresh:true,
       // theme: 'neo',
       // theme: 'base16-light',
-      // theme: 'xq-light',
+      theme: 'xq-light',
       lineNumbers: true
   }
 
