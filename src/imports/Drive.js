@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useEffect, Suspense} from 'react';
-import { IsNavContext } from './Tool/NavPanel'
+import { IsNavContext } from "./Tool/Panels/NavPanel";
 import axios from "axios";
 import nanoid from 'nanoid';
 import './util.css';
@@ -255,7 +255,7 @@ export default function Drive(props){
     let drives = [];
     for (let type of props.types){
       for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
-        if (driveObj.type === type){
+        if (driveObj.type === type && driveObj.subType === 'Administrator'){
           drives.push(
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
@@ -405,6 +405,7 @@ export const folderDictionarySelector = selectorFamily({
             folderInfo:newItem,contentsDictionary:{},contentIds:{[sortOptions.DEFAULT]:[]}
           })
         }
+        const versionId = nanoid();
 
         const data = { 
           driveId:driveIdFolderId.driveId,
@@ -413,6 +414,7 @@ export const folderDictionarySelector = selectorFamily({
           label:instructions.label,
           type:instructions.itemType,
           branchId,
+          versionId,
           sortOrder: newItem.sortOrder,
          };
         const payload = { params: data };
@@ -992,6 +994,7 @@ let fetchDrivesQuery = atom({
     const { data } = await axios.get(
       `/api/loadAvailableDrives.php`
     );
+    // console.log(">>>data",data)
     return data
   },
  
@@ -1079,7 +1082,8 @@ export const fetchDrivesSelector = selector({
         label:labelTypeDriveIdColorImage.label,
         type: "course",
         image:labelTypeDriveIdColorImage.image,
-        color:labelTypeDriveIdColorImage.color
+        color:labelTypeDriveIdColorImage.color,
+        subType:"Administrator"
       }
       newDriveData.driveIdsAndLabels.unshift(newDrive)
     set(fetchDrivesQuery,newDriveData)

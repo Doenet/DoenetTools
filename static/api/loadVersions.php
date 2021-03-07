@@ -15,6 +15,7 @@ $branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 $sql="
 SELECT 
  c.contentId AS contentId,
+ c.versionId AS versionId,
  c.title AS title,
  c.timestamp AS timestamp,
  c.isDraft AS isDraft,
@@ -33,6 +34,7 @@ if ($result->num_rows > 0){
         $version = array(
                 "title"=>$row['title'],
                 "contentId"=>$row['contentId'],
+                "versionId"=>$row['versionId'],
                 "timestamp"=>$row['timestamp'],
                 "isDraft"=>$row['isDraft'],
                 "isNamed"=>$row['isNamed']

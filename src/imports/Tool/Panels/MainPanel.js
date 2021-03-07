@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ResponsiveControlsWrapper from "../Tool/ResponsiveControlsWrapper";
+import ResponsiveControlsWrapper from "./ResponsiveControlsWrapper";
 
 const MainPanelContainer = styled.div`
   grid-area: mainPanel;
