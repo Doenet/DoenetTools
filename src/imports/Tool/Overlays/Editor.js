@@ -345,7 +345,30 @@ function TextEditor(props){
       lineNumbers: true
   }
 
-  return <VisibilitySensor onChange={(visible)=>{
+  return <>
+
+  {/* <button onClick={()=>{
+    console.log(">>>editorRef.current",editorRef.current)
+    // editorRef.current.options.readOnly = true;
+    // editorRef.current.doc.undo();
+    editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3});
+    // let tm = editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3},{css:"background:olive"});
+    // tm.css("background:olive")
+    //cm.getTokenAt
+    let cm = editorRef.current.doc.getEditor();
+    // let token = cm.getTokenAt({line:1,ch:1},true);
+    // console.log(">>>token",token)
+    let tokens = cm.getLineTokens(1);
+    console.log(">>>tokens",tokens)
+
+  }}>Mark</button>
+  <button onClick={()=>{
+    console.log(">>>editorRef.current",editorRef.current)
+    // editorRef.current.options.readOnly = false;
+    // editorRef.current.doc.redo();
+  }}>Redo</button> */}
+
+  <VisibilitySensor onChange={(visible)=>{
     if (visible){
       editorRef.current.refresh();
     }  
@@ -378,6 +401,7 @@ function TextEditor(props){
 />
 
   </VisibilitySensor>
+  </>
 }
 
 function DoenetViewerUpdateButton(){
