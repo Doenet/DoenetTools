@@ -7,6 +7,7 @@ import './util.css';
 
 import Drive, { 
   folderDictionarySelector, 
+  folderInfoSelectorActions,
   globalSelectedNodesAtom, 
   folderDictionary, 
   clearDriveAndItemSelections,
@@ -885,7 +886,7 @@ const FolderInfoPanel = function(props){
     if (e.keyCode === 13){
       setPanelLabel(label)
       setFolder({
-        instructionType:"rename item",
+        instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
         driveInstanceId:itemInfo.driveInstanceId,
         itemType:itemInfo.itemType,
@@ -896,7 +897,7 @@ const FolderInfoPanel = function(props){
   onBlur={()=>{
     setPanelLabel(label)
     setFolder({
-      instructionType:"rename item",
+      instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId,
       itemType:itemInfo.itemType,
@@ -907,7 +908,7 @@ const FolderInfoPanel = function(props){
   <br />
   <Button value="Delete Folder" callback={()=>{
     setFolder({
-      instructionType:"delete item",
+      instructionType: folderInfoSelectorActions.DELETE_ITEM,
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     })
@@ -936,7 +937,7 @@ const DoenetMLInfoPanel = function(props){
     if (e.keyCode === 13){
       setPanelLabel(label)
       setFolder({
-        instructionType:"rename item",
+        instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
         driveInstanceId:itemInfo.driveInstanceId,
         itemType:itemInfo.itemType,
@@ -947,7 +948,7 @@ const DoenetMLInfoPanel = function(props){
   onBlur={()=>{
     setPanelLabel(label)
     setFolder({
-      instructionType:"rename item",
+      instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId,
       itemType:itemInfo.itemType,
@@ -974,7 +975,7 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <Button value="Delete DoenetML" callback={()=>{
     setFolder({
-      instructionType:"delete item",
+      instructionType: folderInfoSelectorActions.DELETE_ITEM,
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     })
@@ -1076,7 +1077,7 @@ function AddMenuPanel(props){
    {addDrives}
   <h3>Folder</h3>
   <Button value="Add Folder" callback={()=>{
-    setFolderInfo({instructionType:"addItem",
+    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
     label:"Untitled",
     itemType:"Folder"
     })
@@ -1085,7 +1086,7 @@ function AddMenuPanel(props){
 
   <h3>DoenetML</h3>
   <Button value="Add DoenetML" callback={()=>{
-    setFolderInfo({instructionType:"addItem",
+    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
     label:"Untitled",
     itemType:"DoenetML"
     })
