@@ -300,10 +300,19 @@ function TextEditor(props){
     }
 
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
-    set(fileByContentId(newVersion.contentId),{data:doenetML});
-    axios.post("/api/saveNewVersion.php",newDBVersion)
-    //  .then((resp)=>{console.log(">>>resp",resp.data)})
+    let foundVersionId = false;
+    for (let version of oldVersions){
+      if (version.versionId === versionId){
+        foundVersionId = true;
+        break;
+      }
+    }
+    if (!foundVersionId){
+      set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
+      set(fileByContentId(newVersion.contentId),{data:doenetML});
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+      //  .then((resp)=>{console.log(">>>resp",resp.data)})
+    }
   });
 
   const timeout = useRef(null);
@@ -439,9 +448,29 @@ function NameCurrentVersionControl(props){
     }
 
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
-    set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-    set(fileByContentId(contentId),{data:doenetML});
-    axios.post("/api/saveNewVersion.php",newDBVersion)
+
+    let foundVersionId = false;
+    for (let version of oldVersions){
+      if (version.versionId === versionId){
+        foundVersionId = true;
+        break;
+      }
+    }
+    if (!foundVersionId){
+      set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+      set(fileByContentId(contentId),{data:doenetML});
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+    }
+    
+
+    //Can't set in a set callback
+    // set(itemHistoryAtom(branchId),(oldVersions)=>{
+    //   console.log(">>>newVersion",newVersion)
+    //   set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+    //   set(fileByContentId(contentId),{data:doenetML});
+    //   axios.post("/api/saveNewVersion.php",newDBVersion)
+    // })
+    
   })
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
   if (selectedVersionId !== "") {return null;}
