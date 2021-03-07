@@ -1222,11 +1222,6 @@ function Folder(props){
 
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
-  //Used to determine range of items in Shift Click
-  const isOpen = useRecoilValue(folderOpenAtom({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId}))
-  const toggleOpen = useSetRecoilState(folderOpenSelector({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId}))
-  const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
-
   let history = useHistory();
   
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
@@ -1247,6 +1242,12 @@ function Folder(props){
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
+  //Used to determine range of items in Shift Click
+  const isOpen = useRecoilValue(folderOpenAtom({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId}))
+  const toggleOpen = useSetRecoilState(folderOpenSelector({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId}))
+  const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
+  const isSelectedRef = useRef(isSelected);  // for memoized DnD callbacks
+
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px";
@@ -1260,7 +1261,8 @@ function Folder(props){
   /* Update refs for variables used in DnD callbacks to eliminate re-registration */
   useEffect(() => {
     isOpenRef.current = isOpen;
-  }, [isOpen])
+    isSelectedRef.current = isSelected;
+  }, [isOpen, isSelected])
 
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
@@ -1303,7 +1305,7 @@ function Folder(props){
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
     // open folder if initially closed
-    if (!isOpenRef.current && !props.isNav) {
+    if (!isOpenRef.current && !props.isNav && !isSelectedRef.current) {
       toggleOpen();
     }
     
@@ -1857,6 +1859,8 @@ const DoenetML = React.memo((props)=>{
   const { onDragStart, onDrag, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
+  const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
+  const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
@@ -1878,27 +1882,33 @@ const DoenetML = React.memo((props)=>{
     label = props.item?.assignment_title;
   }
 
+  useEffect(() => {
+    parentFolderSortOrderRef.current = parentFolderSortOrder;
+  }, [parentFolderSortOrder])
+
   const onDragOver = ({x, y, dropTargetRef}) => {
     const dropTargetTopY = dropTargetRef?.offsetTop;
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-    if (cursorArea < 0.5) {
-      // insert shadow to top of current dropTarget
-      setFolderInfo({
-        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-        position: "beforeCurrent",
-        itemId: props.item.itemId,
-        parentId: props.item.parentFolderId
-      });
-    }else if (cursorArea < 1.0000) {
-      // insert shadow to bottom of current dropTarget
-      setFolderInfo({
-        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-        position: "afterCurrent",
-        itemId: props.item.itemId,
-        parentId: props.item.parentFolderId
-      });
+    if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
+      if (cursorArea < 0.5) {
+        // insert shadow to top of current dropTarget
+        setFolderInfo({
+          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+          position: "beforeCurrent",
+          itemId: props.item.itemId,
+          parentId: props.item.parentFolderId
+        });
+      }else if (cursorArea < 1.0000) {
+        // insert shadow to bottom of current dropTarget
+        setFolderInfo({
+          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+          position: "afterCurrent",
+          itemId: props.item.itemId,
+          parentId: props.item.parentFolderId
+        });
+      }
     }
   }
 
@@ -2030,8 +2040,8 @@ const Url = React.memo((props)=>{
   const { onDragStart, onDrag, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const [dragState] = useRecoilState(dragStateAtom);
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
-  // console.log(`=== 🔗 Url`)
-
+  const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
+  const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
 
   const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
@@ -2054,27 +2064,33 @@ const Url = React.memo((props)=>{
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
   if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
+  useEffect(() => {
+    parentFolderSortOrderRef.current = parentFolderSortOrder;
+  }, [parentFolderSortOrder])
+
   const onDragOver = ({x, y, dropTargetRef}) => {
     const dropTargetTopY = dropTargetRef?.offsetTop;
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-    if (cursorArea < 0.5) {
-      // insert shadow to top of current dropTarget
-      setFolderInfo({
-        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-        position: "beforeCurrent",
-        itemId: props.item.itemId,
-        parentId: props.item.parentFolderId
-      });
-    }else if (cursorArea < 1.0000) {
-      // insert shadow to bottom of current dropTarget
-      setFolderInfo({
-        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-        position: "afterCurrent",
-        itemId: props.item.itemId,
-        parentId: props.item.parentFolderId
-      });
+    if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
+      if (cursorArea < 0.5) {
+        // insert shadow to top of current dropTarget
+        setFolderInfo({
+          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+          position: "beforeCurrent",
+          itemId: props.item.itemId,
+          parentId: props.item.parentFolderId
+        });
+      }else if (cursorArea < 1.0000) {
+        // insert shadow to bottom of current dropTarget
+        setFolderInfo({
+          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+          position: "afterCurrent",
+          itemId: props.item.itemId,
+          parentId: props.item.parentFolderId
+        });
+      }
     }
   }
 
