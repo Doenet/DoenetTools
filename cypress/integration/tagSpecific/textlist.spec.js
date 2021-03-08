@@ -64,15 +64,15 @@ describe('Textlist Tag Tests', function () {
         </textlist>
       </textlist>
   
-      <textinput><copy prop="text1" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text2" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text3" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text4" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text5" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text6" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text7" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text8" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text9" tname="_textlist1" /></textinput>
+      <textinput><bindValueTo><copy prop="text1" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text2" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text3" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text4" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text5" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text6" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text7" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text8" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text9" tname="_textlist1" /></bindValueTo></textinput>
   
       ` }, "*");
     });

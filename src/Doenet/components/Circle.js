@@ -1,4 +1,6 @@
 import Curve from './Curve';
+import GraphicalComponent from './abstract/GraphicalComponent';
+
 import me from 'math-expressions';
 
 export default class Circle extends Curve {
@@ -59,7 +61,12 @@ export default class Circle extends Curve {
 
   static returnStateVariableDefinitions(args) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions(args);
+    let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
+
+    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -67,7 +74,23 @@ export default class Circle extends Curve {
       definition: () => ({ newValues: { curveType: "circle" } })
     }
 
-    delete stateVariableDefinitions.variableForChild;
+
+    stateVariableDefinitions.parmax = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmax: NaN } })
+    }
+
+    stateVariableDefinitions.parmin = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmin: NaN } })
+    }
+
 
     stateVariableDefinitions.fs = {
       forRenderer: true,

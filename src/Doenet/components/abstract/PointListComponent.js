@@ -28,8 +28,6 @@ export default class PointListComponent extends BaseComponent {
         let piece = pieces[ind];
 
         // each piece must be a vector (if not, we won't sugar)
-        // the next step is to find the vector components
-        // so that we can see if the components themselves are vectors
 
         let result = breakIntoVectorComponents(piece);
         if (result.foundVector !== true) {
@@ -138,7 +136,6 @@ export default class PointListComponent extends BaseComponent {
 
     stateVariableDefinitions.points = {
       isArray: true,
-      entryPrefixes: ["pointX"],
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       returnWrappingComponents(prefix) {

@@ -224,7 +224,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     <p>Reffed boolean: <copy tname="_boolean1" /></p>
     <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
     `}, "*");
@@ -278,7 +278,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput prefill="false"><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput prefill="false"><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     `}, "*");
     });
 
@@ -297,7 +297,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     `}, "*");
     });
 

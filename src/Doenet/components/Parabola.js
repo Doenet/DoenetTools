@@ -1,9 +1,12 @@
 import Curve from './Curve';
+import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
+
+  static get stateVariablesShadowedForReference() { return [] };
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -36,7 +39,11 @@ export default class Parabola extends Curve {
 
   static returnStateVariableDefinitions(args) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions(args);
+    let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
+
+    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -44,10 +51,24 @@ export default class Parabola extends Curve {
       definition: () => ({ newValues: { curveType: "function" } })
     }
 
-    delete stateVariableDefinitions.variableForChild;
+    stateVariableDefinitions.parmax = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmax: NaN } })
+    }
+
+    stateVariableDefinitions.parmin = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmin: NaN } })
+    }
 
     // variable to store essential value of a
-    // that we can then use its values to calculate b and c
+    // that we can then use its value to calculate b and c
     stateVariableDefinitions.aShadow = {
       defaultValue: 1,
       returnDependencies: () => ({}),
@@ -314,7 +335,7 @@ export default class Parabola extends Curve {
       }
     }
 
-    stateVariableDefinitions.pointAreNumerical = {
+    stateVariableDefinitions.pointsAreNumerical = {
       returnDependencies: () => ({
         numericalThroughPoints: {
           dependencyType: "stateVariable",
@@ -324,10 +345,10 @@ export default class Parabola extends Curve {
       definition: ({ dependencyValues }) => ({
         // need to check just the first entry of numericalThroughPoints
         newValues: {
-          pointAreNumerical: dependencyValues.numericalThroughPoints
+          pointsAreNumerical: dependencyValues.numericalThroughPoints
             .every(x => Number.isFinite(x[0]))
         },
-        checkForActualChange: { pointAreNumerical: true }
+        checkForActualChange: { pointsAreNumerical: true }
       })
     }
 
@@ -350,9 +371,9 @@ export default class Parabola extends Curve {
           dependencyType: "stateVariable",
           variableName: "numericalThroughPoints"
         },
-        pointAreNumerical: {
+        pointsAreNumerical: {
           dependencyType: "stateVariable",
-          variableName: "pointAreNumerical"
+          variableName: "pointsAreNumerical"
         },
         aShadow: {
           dependencyType: "stateVariable",
@@ -363,7 +384,7 @@ export default class Parabola extends Curve {
         // console.log('definition of a, b, c, realValued of parabola')
         // console.log(dependencyValues)
 
-        if (!dependencyValues.pointAreNumerical) {
+        if (!dependencyValues.pointsAreNumerical) {
           return {
             newValues: {
               a: NaN,
@@ -561,19 +582,50 @@ export default class Parabola extends Curve {
         // console.log(dependencyValues);
         // console.log(workspace);
 
-        if (!dependencyValues.pointAreNumerical) {
+        if (!dependencyValues.pointsAreNumerical) {
           return { success: false }
         }
 
-        if (
-          (desiredStateVariableValues.a !== undefined && !Number.isFinite(desiredStateVariableValues.a))
-          || (desiredStateVariableValues.b !== undefined && !Number.isFinite(desiredStateVariableValues.b))
-          || (desiredStateVariableValues.c !== undefined && !Number.isFinite(desiredStateVariableValues.c))
-        ) {
+        let desiredNumericalValues = {};
+
+        let findNumericalValue = function (par) {
+          if (Number.isFinite(par)) {
+            return { success: true, value: par }
+          } else if (par instanceof me.class) {
+            let val = par.evaluate_to_constant();
+            if (Number.isFinite(val)) {
+              return { success: true, value: val }
+            }
+          }
           return { success: false }
         }
 
-        Object.assign(workspace, desiredStateVariableValues);
+        if (desiredStateVariableValues.a !== undefined) {
+          let numerical = findNumericalValue(desiredStateVariableValues.a);
+          if (numerical.success) {
+            desiredNumericalValues.a = numerical.value;
+          } else {
+            return { success: false }
+          }
+        }
+        if (desiredStateVariableValues.b !== undefined) {
+          let numerical = findNumericalValue(desiredStateVariableValues.b);
+          if (numerical.success) {
+            desiredNumericalValues.b = numerical.value;
+          } else {
+            return { success: false }
+          }
+        }
+        if (desiredStateVariableValues.c !== undefined) {
+          let numerical = findNumericalValue(desiredStateVariableValues.c);
+          if (numerical.success) {
+            desiredNumericalValues.c = numerical.value;
+          } else {
+            return { success: false }
+          }
+        }
+
+        Object.assign(workspace, desiredNumericalValues);
 
         let getWorkingParameterValue = function (parName) {
           if (workspace[parName] !== undefined) {
@@ -586,22 +638,22 @@ export default class Parabola extends Curve {
         if (dependencyValues.numericalThroughPoints.length === 0) {
           let instructions = [];
 
-          if (desiredStateVariableValues.a !== undefined) {
+          if (desiredNumericalValues.a !== undefined) {
             instructions.push({
               setDependency: "aShadow",
-              desiredValue: desiredStateVariableValues.a
+              desiredValue: desiredNumericalValues.a
             })
           }
-          if (desiredStateVariableValues.b !== undefined) {
+          if (desiredNumericalValues.b !== undefined) {
             instructions.push({
               setStateVariable: "b",
-              value: desiredStateVariableValues.b
+              value: desiredNumericalValues.b
             })
           }
-          if (desiredStateVariableValues.c !== undefined) {
+          if (desiredNumericalValues.c !== undefined) {
             instructions.push({
               setStateVariable: "c",
-              value: desiredStateVariableValues.c
+              value: desiredNumericalValues.c
             })
           }
           return {
@@ -625,10 +677,10 @@ export default class Parabola extends Curve {
             desiredValue: [[x1, y1]],
           }];
 
-          if (desiredStateVariableValues.a !== undefined) {
+          if (desiredNumericalValues.a !== undefined) {
             instructions.push({
               setDependency: "aShadow",
-              desiredValue: desiredStateVariableValues.a
+              desiredValue: desiredNumericalValues.a
             })
           }
 
@@ -662,10 +714,10 @@ export default class Parabola extends Curve {
               desiredValue: [[x1, y1], [x1, y1]],
             }];
 
-            if (desiredStateVariableValues.a !== undefined) {
+            if (desiredNumericalValues.a !== undefined) {
               instructions.push({
                 setDependency: "aShadow",
-                desiredValue: desiredStateVariableValues.a
+                desiredValue: desiredNumericalValues.a
               })
             }
 
@@ -684,10 +736,10 @@ export default class Parabola extends Curve {
               desiredValue: [[x1, y1], [x2, y2]],
             }];
 
-            if (desiredStateVariableValues.a !== undefined) {
+            if (desiredNumericalValues.a !== undefined) {
               instructions.push({
                 setDependency: "aShadow",
-                desiredValue: desiredStateVariableValues.a
+                desiredValue: desiredNumericalValues.a
               })
             }
 
@@ -749,10 +801,10 @@ export default class Parabola extends Curve {
             // even though don't use a in computation of parabola
             // when have three unique points
             // still set aShadow in case two points become identical
-            if (desiredStateVariableValues.a !== undefined) {
+            if (desiredNumericalValues.a !== undefined) {
               instructions.push({
                 setDependency: "aShadow",
-                desiredValue: desiredStateVariableValues.a
+                desiredValue: desiredNumericalValues.a
               })
             }
             return {
@@ -771,10 +823,10 @@ export default class Parabola extends Curve {
                 desiredValue: [[ux1, uy1], [ux2, uy2], [ux2, uy2]],
               }];
 
-              if (desiredStateVariableValues.a !== undefined) {
+              if (desiredNumericalValues.a !== undefined) {
                 instructions.push({
                   setDependency: "aShadow",
-                  desiredValue: desiredStateVariableValues.a
+                  desiredValue: desiredNumericalValues.a
                 })
               }
               return {
@@ -792,10 +844,10 @@ export default class Parabola extends Curve {
                 desiredValue: [[ux1, uy1], [ux2, uy2], [ux1, uy1]],
               }];
 
-              if (desiredStateVariableValues.a !== undefined) {
+              if (desiredNumericalValues.a !== undefined) {
                 instructions.push({
                   setDependency: "aShadow",
-                  desiredValue: desiredStateVariableValues.a
+                  desiredValue: desiredNumericalValues.a
                 })
               }
               return {
@@ -813,10 +865,10 @@ export default class Parabola extends Curve {
                 desiredValue: [[ux1, uy1], [ux1, uy1], [ux2, uy2]],
               }];
 
-              if (desiredStateVariableValues.a !== undefined) {
+              if (desiredNumericalValues.a !== undefined) {
                 instructions.push({
                   setDependency: "aShadow",
-                  desiredValue: desiredStateVariableValues.a
+                  desiredValue: desiredNumericalValues.a
                 })
               }
               return {
@@ -835,10 +887,10 @@ export default class Parabola extends Curve {
               desiredValue: [[x1, y1], [x1, y1], [x1, y1]],
             }];
 
-            if (desiredStateVariableValues.a !== undefined) {
+            if (desiredNumericalValues.a !== undefined) {
               instructions.push({
                 setDependency: "aShadow",
-                desiredValue: desiredStateVariableValues.a
+                desiredValue: desiredNumericalValues.a
               })
             }
 

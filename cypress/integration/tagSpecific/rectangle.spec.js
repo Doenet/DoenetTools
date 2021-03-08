@@ -203,8 +203,8 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   <copy name="v4" tname="_rectangle1" prop="vertex4"/>
   </graph>
 
-  <mathinput><copy tname="_rectangle1" prop="width"/></mathinput>
-  <mathinput><copy tname="_rectangle1" prop="height"/></mathinput>
+  <mathinput><bindValueTo><copy tname="_rectangle1" prop="width"/></bindValueTo></mathinput>
+  <mathinput><bindValueTo><copy tname="_rectangle1" prop="height"/></bindValueTo></mathinput>
 
   <graph name="graph3">
     <copy name="rectangleCopy" tname="_rectangle1"/>

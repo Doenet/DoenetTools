@@ -132,12 +132,12 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       }
 
       let optionsList = this.doenetSvData.choiceTexts.map(function (s, i) {
-        return <option key={i} value={i + 1}>{s}</option>
+        return <option key={i + 1} value={i + 1}>{s}</option>
       });
 
 
       let value = this.doenetSvData.selectedIndices[0];
-      if(value === undefined) {
+      if (value === undefined) {
         value = "";
       }
 
@@ -252,22 +252,22 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let disabled = this.doenetSvData.disabled;
       let keyBeginning = inputKey + '_choice';
       let choiceDoenetTags = this.children.map(function (child, i) {
-        return <li key={inputKey + '_choice' + i}>
+        return <li key={inputKey + '_choice' + (i + 1)}>
           <input
             type="radio"
-            id={keyBeginning + i + "_input"}
+            id={keyBeginning + (i + 1) + "_input"}
             name={inputKey}
             value={i + 1}
             checked={selectedIndices.includes(i + 1)}
             onChange={onChangeHandler}
             disabled={disabled}
           />
-          <label htmlFor={keyBeginning + i + "_input"}>
+          <label htmlFor={keyBeginning + (i + 1) + "_input"}>
             {child}
           </label>
         </li>
       });
-      
+
       return <React.Fragment>
         <ol id={inputKey} style={listStyle}><a name={this.componentName} />{choiceDoenetTags}</ol>
         {checkworkComponent}

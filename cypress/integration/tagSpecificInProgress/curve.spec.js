@@ -4,7 +4,7 @@ describe('Curve Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('spline through four points, as string with ref', () => {
+  it('spline through four points, as string with copy', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -12,8 +12,10 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <curve>
-    (-1,2),(2, <copy prop="value" tname="_mathinput1" />),
-    (2<copy prop="value" tname="_mathinput1" />, -4), (5,6)
+      <through>
+        (-1,2),(2, <copy prop="value" tname="_mathinput1" />),
+        (2<copy prop="value" tname="_mathinput1" />, -4), (5,6)
+      </through>
     </curve>
     </graph>
     `}, "*");
@@ -24,36 +26,32 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(-2);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, -2]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(-4);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([-4, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(-2);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(-4);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("4{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(4);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, 4]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(8);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([8, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(4);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(8);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
   });
 
-  it('spline through four points, as reffed points', () => {
+  it('spline through four points, as copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -64,12 +62,12 @@ describe('Curve Tag Tests', function () {
     <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
     <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
-    <curve>
+    <curve><through>
     <copy tname="_point1" />
     <copy tname="_point2" />
     <copy tname="_point3" />
     <copy tname="_point4" />
-    </curve>
+    </through></curve>
     </graph>
     `}, "*");
     });
@@ -79,51 +77,45 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(-2);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, -2]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(-4);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([-4, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(-2);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(-4);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("4{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(4);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, 4]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(8);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([8, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(4);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(8);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point2'].movePoint({ x: 5, y: 7 })
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(5);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(7);
-      expect(components['/_curve1'].parameterization(1)).eqls([5, 7]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(14);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([14, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(5);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(7);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(14);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
   });
 
-  it('spline through four points, as reffed points, no sugar', () => {
+  it('spline through four points, as copied points, change spline parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -134,14 +126,12 @@ describe('Curve Tag Tests', function () {
     <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
     <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
-    <curve>
-    <through>
+    <curve splineForm="uniform" splineTension="0.4"><through>
     <copy tname="_point1" />
     <copy tname="_point2" />
     <copy tname="_point3" />
     <copy tname="_point4" />
-    </through>
-    </curve>
+    </through></curve>
     </graph>
     `}, "*");
     });
@@ -151,116 +141,40 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(-2);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, -2]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(-4);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([-4, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.4);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(-2);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(-4);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("4{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(4);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, 4]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(8);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([8, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.4);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(2);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(4);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(8);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point2'].movePoint({ x: 5, y: 7 })
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(5);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(7);
-      expect(components['/_curve1'].parameterization(1)).eqls([5, 7]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(14);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([14, -4]);
-    })
-
-  });
-
-  it('spline through four points, as reffed points, change spline parameters', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <mathinput prefill="-2"/>
-    <graph>
-    <point>(-1,2)</point>
-    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
-    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
-    <point>(5,6)</point>
-    <curve splineform="uniform" splinetension="0.4">
-    <copy tname="_point1" />
-    <copy tname="_point2" />
-    <copy tname="_point3" />
-    <copy tname="_point4" />
-    </curve>
-    </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.4);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(-2);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, -2]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(-4);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([-4, -4]);
-    })
-
-    cy.get("#\\/_mathinput1_input").clear().type("4{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.4);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(2);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(4);
-      expect(components['/_curve1'].parameterization(1)).eqls([2, 4]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(8);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([8, -4]);
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/_point2'].movePoint({ x: 5, y: 7 })
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.4);
-      expect(components['/_curve1'].parameterization(1, 0)).eq(5);
-      expect(components['/_curve1'].parameterization(1, 1)).eq(7);
-      expect(components['/_curve1'].parameterization(1)).eqls([5, 7]);
-      expect(components['/_curve1'].parameterization(2, 0)).eq(14);
-      expect(components['/_curve1'].parameterization(2, 1)).eq(-4);
-      expect(components['/_curve1'].parameterization(2)).eqls([14, -4]);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.4);
+      expect(components['/_curve1'].stateValues.fs[0](1)).eq(5);
+      expect(components['/_curve1'].stateValues.fs[1](1)).eq(7);
+      expect(components['/_curve1'].stateValues.fs[0](2)).eq(14);
+      expect(components['/_curve1'].stateValues.fs[1](2)).eq(-4);
     })
 
   });
@@ -277,17 +191,20 @@ describe('Curve Tag Tests', function () {
     <point>(2.5,6)</point>
     <point>(3, 5.8)</point>
     <point>(8,-6)</point>
-    <curve>
-      <splineform><copy prop="value" tname="_textinput1" /></splineform>
-      <splinetension><copy prop="value" tname="_mathinput1" /></splinetension>
-     <copy tname="_point1" />
-     <copy tname="_point2" />
-     <copy tname="_point3" />
-     <copy tname="_point4" />
+    <curve splineForm="$_textinput1" splineTension="$_mathinput1">
+      <through>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+        <copy tname="_point3" />
+        <copy tname="_point4" />
+      </through>
     </curve>
     
-    <point>(5,10)
-    <constrainTo><copy tname="_curve1" /></constrainTo>
+    <point>
+      <x>5</x><y>10</y>
+      <constraints>
+        <constrainTo><copy tname="_curve1" /></constrainTo>
+      </constraints>
     </point>
     
     </graph>
@@ -299,10 +216,10 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("spline");
-      expect(components['/_curve1'].stateValues.nPoints).eq(4);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
+      expect(components['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(components['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
 
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
@@ -313,8 +230,8 @@ describe('Curve Tag Tests', function () {
     cy.get("#\\/_textinput1_input").clear().type("uniform{enter}")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(3.4, 0.1);
@@ -324,8 +241,8 @@ describe('Curve Tag Tests', function () {
     cy.get("#\\/_textinput1_input").clear().type("centripetal{enter}")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.8);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.8);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(2.8, 0.1);
@@ -341,11 +258,11 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(0.2, 0.1);
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("0.1{enter}")
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}{backspace}0.1{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.1);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.1);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(5.5, 0.1);
@@ -359,8 +276,8 @@ describe('Curve Tag Tests', function () {
       components['/_point3'].movePoint({ x: 6, y: -8 });
       components['/_point4'].movePoint({ x: 9, y: 9 });
       components['/_point5'].movePoint({ x: 10, y: -7 });
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.1);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.1);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(6.4, 0.1);
@@ -371,20 +288,20 @@ describe('Curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point5'].movePoint({ x: 10, y: -7 });
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(0.1);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(0.1);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(6.5, 0.1);
       expect(y).closeTo(-6.3, 0.1);
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("1{enter}")
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}{backspace}1{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point5'].movePoint({ x: 10, y: -7 });
-      expect(components['/_curve1'].stateValues.splineform).eq("uniform");
-      expect(components['/_curve1'].stateValues.splinetension).eq(1);
+      expect(components['/_curve1'].stateValues.splineForm).eq("uniform");
+      expect(components['/_curve1'].stateValues.splineTension).eq(1);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(8.6, 0.1);
@@ -395,8 +312,8 @@ describe('Curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point5'].movePoint({ x: 10, y: -7 });
-      expect(components['/_curve1'].stateValues.splineform).eq("centripetal");
-      expect(components['/_curve1'].stateValues.splinetension).eq(1);
+      expect(components['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(components['/_curve1'].stateValues.splineTension).eq(1);
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
       expect(x).closeTo(7.4, 0.1);
@@ -417,24 +334,36 @@ describe('Curve Tag Tests', function () {
     <point>(-4, 3)</point>
     <point>(4, 3)</point>
     <point>(7,-4)</point>
-    <curve>
-    <extrapolatebackward><copy prop="value" tname="_booleaninput1" /></extrapolatebackward>
-    <extrapolateforward><copy prop="value" tname="_booleaninput2" /></extrapolateforward>
-
-     <copy tname="_point1" />
-     <copy tname="_point2" />
-     <copy tname="_point3" />
-     <copy tname="_point4" />
+    <curve extrapolatebackward="$_booleaninput1" extrapolateforward="$_booleaninput2">
+      <through>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+        <copy tname="_point3" />
+        <copy tname="_point4" />
+      </through>
+      <beziercontrols/>
     </curve>
     
-    <point>(8,-8)
-    <constrainTo><copy tname="_curve1" /></constrainTo>
+    <point>
+      <x>8</x><y>-8</y>
+      <constraints>
+        <constrainTo><copy tname="_curve1" /></constrainTo>
+      </constraints>
     </point>
-    <point>(-8,-8)
-    <constrainTo><copy tname="_curve1" /></constrainTo>
+    <point>
+      <x>-8</x><y>-8</y>
+      <constraints>
+        <constrainTo><copy tname="_curve1" /></constrainTo>
+      </constraints>
     </point>
     
     </graph>
+
+    <p>Temp way to change controls:
+    <textinput name="dir1"><copy prop="vectorcontroldirection1" tname="_curve1" /></textinput>
+    <textinput name="dir4"><copy prop="vectorcontroldirection4" tname="_curve1" /></textinput>
+    </p>
+
     `}, "*");
     });
 
@@ -474,17 +403,19 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("activate bezier controls and move tangents")
+    cy.get('#\\/dir1_input').clear().type("symmetric{enter}")
+    cy.get('#\\/dir4_input').clear().type("symmetric{enter}")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_curve1'].togglePointControl(0)
-      components['/_curve1'].moveControlvector({
-        controlvectorInd: 0,
-        controlvector: [-1, 2]
+      // components['/_curve1'].togglePointControl(0)
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [-1, 2]
       })
-      components['/_curve1'].togglePointControl(3)
-      components['/_curve1'].moveControlvector({
-        controlvectorInd: 2 * 3 - 1,
-        controlvector: [1, 2]
+      // components['/_curve1'].togglePointControl(3)
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [3, 1],
+        controlVector: [1, 2]
       })
       let x = components['/_point5'].stateValues.xs[0].tree;
       let y = components['/_point5'].stateValues.xs[1].tree;
@@ -499,13 +430,13 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_curve1'].moveControlvector({
-        controlvectorInd: 0,
-        controlvector: [1, -2]
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [0, 0],
+        controlVector: [1, -2]
       })
-      components['/_curve1'].moveControlvector({
-        controlvectorInd: 2 * 3 - 1,
-        controlvector: [-1, -2]
+      components['/_curve1'].moveControlVector({
+        controlVectorInds: [3, 1],
+        controlVector: [-1, -2]
       })
 
       components['/_point5'].movePoint({ x: 9, y: -3 })
@@ -540,10 +471,7 @@ describe('Curve Tag Tests', function () {
       <map>
         <template><point>(<copy tname="_source" />, sin(<copy tname="_source" />))</point></template>
         <sources>
-          <sequence from="0">
-            <count><copy prop="value" tname="_mathinput1" /></count>
-            <step><copy prop="value" tname="_mathinput2" /></step>
-          </sequence>
+          <sequence from="0" count="$_mathinput1" step="$_mathinput2" />
         </sources>
       </map>
       </through>
@@ -560,98 +488,98 @@ describe('Curve Tag Tests', function () {
 
       let curve = components['/_curve1'];
 
-      expect(curve.state.throughpoints.length).eq(0);
-      expect(curve.state.controlvectors.length).eq(0);
+      expect(curve.stateValues.throughPoints.length).eq(0);
+      expect(curve.stateValues.controlVectors.length).eq(0);
 
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("10{enter}");
-    cy.get("#\\/_mathinput2_input").clear().type("1{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
       let curve = components['/_curve1'];
 
-      let throughpoints = curve.state.throughpoints;
+      let throughPoints = curve.stateValues.throughPoints;
 
-      expect(throughpoints.length).eq(10);
-      expect(curve.state.controlvectors.length).eq(19);
+      expect(throughPoints.length).eq(10);
+      expect(curve.stateValues.controlVectors.length).eq(10);
 
       for (let i = 0; i < 10; i++) {
-        expect(throughpoints[i].tree[1]).closeTo(i, 1E-12);
-        expect(throughpoints[i].tree[2]).closeTo(Math.sin(i), 1E-12);
+        expect(throughPoints[i][0].evaluate_to_constant()).closeTo(i, 1E-12);
+        expect(throughPoints[i][1].evaluate_to_constant()).closeTo(Math.sin(i), 1E-12);
       }
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("20{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
       let curve = components['/_curve1'];
 
-      let throughpoints = curve.state.throughpoints;
+      let throughPoints = curve.stateValues.throughPoints;
 
-      expect(throughpoints.length).eq(20);
-      expect(curve.state.controlvectors.length).eq(39);
+      expect(throughPoints.length).eq(20);
+      expect(curve.stateValues.controlVectors.length).eq(20);
 
       for (let i = 0; i < 20; i++) {
-        expect(throughpoints[i].tree[1]).closeTo(i, 1E-12);
-        expect(throughpoints[i].tree[2]).closeTo(Math.sin(i), 1E-12);
+        expect(throughPoints[i][0].evaluate_to_constant()).closeTo(i, 1E-12);
+        expect(throughPoints[i][1].evaluate_to_constant()).closeTo(Math.sin(i), 1E-12);
       }
     })
 
 
-    cy.get("#\\/_mathinput2_input").clear().type("0.5{enter}");
+    cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
       let curve = components['/_curve1'];
 
-      let throughpoints = curve.state.throughpoints;
+      let throughPoints = curve.stateValues.throughPoints;
 
-      expect(throughpoints.length).eq(20);
-      expect(curve.state.controlvectors.length).eq(39);
+      expect(throughPoints.length).eq(20);
+      expect(curve.stateValues.controlVectors.length).eq(20);
 
       for (let i = 0; i < 20; i++) {
-        expect(throughpoints[i].tree[1]).closeTo(i * 0.5, 1E-12);
-        expect(throughpoints[i].tree[2]).closeTo(Math.sin(i * 0.5), 1E-12);
+        expect(throughPoints[i][0].evaluate_to_constant()).closeTo(i * 0.5, 1E-12);
+        expect(throughPoints[i][1].evaluate_to_constant()).closeTo(Math.sin(i * 0.5), 1E-12);
       }
     })
 
-    cy.get("#\\/_mathinput1_input").clear().type("10{enter}");
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
       let curve = components['/_curve1'];
 
-      let throughpoints = curve.state.throughpoints;
+      let throughPoints = curve.stateValues.throughPoints;
 
-      expect(throughpoints.length).eq(10);
-      expect(curve.state.controlvectors.length).eq(19);
+      expect(throughPoints.length).eq(10);
+      expect(curve.stateValues.controlVectors.length).eq(10);
 
       for (let i = 0; i < 10; i++) {
-        expect(throughpoints[i].tree[1]).closeTo(i * 0.5, 1E-12);
-        expect(throughpoints[i].tree[2]).closeTo(Math.sin(i * 0.5), 1E-12);
+        expect(throughPoints[i][0].evaluate_to_constant()).closeTo(i * 0.5, 1E-12);
+        expect(throughPoints[i][1].evaluate_to_constant()).closeTo(Math.sin(i * 0.5), 1E-12);
       }
     })
 
 
   });
 
-  it('new curve from reffed vertices, some flipped', () => {
+  it('new curve from copied vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph>
-    <curve>(-9,6),(-3,7),(4,0),(8,5)</curve>
+    <curve><through>(-9,6),(-3,7),(4,0),(8,5)</through></curve>
     </graph>
     <graph>
-    <curve>
+    <curve><through>
       <copy prop="throughpoint1" tname="_curve1" />
       <point>
         (<extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract>,
@@ -662,7 +590,7 @@ describe('Curve Tag Tests', function () {
         <x><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract></x>
         <y><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract></y>
       </point>
-    </curve>
+    </through></curve>
     </graph>
     `}, "*");
     });
@@ -674,14 +602,14 @@ describe('Curve Tag Tests', function () {
       let ps = [[-9, 6], [-3, 7], [4, 0], [8, 5]];
       let psflipped = [[-9, 6], [7, -3], [4, 0], [5, 8]];
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].stateValues.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].stateValues.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].stateValues.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].stateValues.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].stateValues.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].stateValues.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls(ps[0]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls(ps[1]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls(ps[2]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls(ps[3]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].map(x => x.tree)).eqls(psflipped[0]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].map(x => x.tree)).eqls(psflipped[1]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].map(x => x.tree)).eqls(psflipped[2]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].map(x => x.tree)).eqls(psflipped[3]);
     })
 
     cy.log('move first curve points')
@@ -690,37 +618,37 @@ describe('Curve Tag Tests', function () {
       let ps = [[7, 2], [1, -3], [2, 9], [-4, -3]];
       let psflipped = [[7, 2], [-3, 1], [2, 9], [-3, -4]];
 
-      components['/_curve1'].moveThroughpoint({
-        throughpointInd: 0,
-        throughpoint: ps[0]
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 0,
+        throughPoint: ps[0]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].stateValues.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls(ps[0]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].map(x => x.tree)).eqls(psflipped[0]);
 
-      components['/_curve1'].moveThroughpoint({
-        throughpointInd: 1,
-        throughpoint: ps[1]
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 1,
+        throughPoint: ps[1]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].stateValues.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls(ps[1]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].map(x => x.tree)).eqls(psflipped[1]);
 
-      components['/_curve1'].moveThroughpoint({
-        throughpointInd: 2,
-        throughpoint: ps[2]
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 2,
+        throughPoint: ps[2]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].stateValues.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls(ps[2]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].map(x => x.tree)).eqls(psflipped[2]);
 
-      components['/_curve1'].moveThroughpoint({
-        throughpointInd: 3,
-        throughpoint: ps[3]
+      components['/_curve1'].moveThroughPoint({
+        throughPointInd: 3,
+        throughPoint: ps[3]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].stateValues.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls(ps[3]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].map(x => x.tree)).eqls(psflipped[3]);
 
     })
 
@@ -730,37 +658,37 @@ describe('Curve Tag Tests', function () {
       let ps = [[-1, 9], [7, 5], [-8, 1], [6, -7]];
       let psflipped = [[-1, 9], [5, 7], [-8, 1], [-7, 6]];
 
-      components['/_curve2'].moveThroughpoint({
-        throughpointInd: 0,
-        throughpoint: psflipped[0]
+      components['/_curve2'].moveThroughPoint({
+        throughPointInd: 0,
+        throughPoint: psflipped[0]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].stateValues.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls(ps[0]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].map(x => x.tree)).eqls(psflipped[0]);
 
-      components['/_curve2'].moveThroughpoint({
-        throughpointInd: 1,
-        throughpoint: psflipped[1]
+      components['/_curve2'].moveThroughPoint({
+        throughPointInd: 1,
+        throughPoint: psflipped[1]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].stateValues.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls(ps[1]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].map(x => x.tree)).eqls(psflipped[1]);
 
-      components['/_curve2'].moveThroughpoint({
-        throughpointInd: 2,
-        throughpoint: psflipped[2]
+      components['/_curve2'].moveThroughPoint({
+        throughPointInd: 2,
+        throughPoint: psflipped[2]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].stateValues.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls(ps[2]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].map(x => x.tree)).eqls(psflipped[2]);
 
-      components['/_curve2'].moveThroughpoint({
-        throughpointInd: 3,
-        throughpoint: psflipped[3]
+      components['/_curve2'].moveThroughPoint({
+        throughPointInd: 3,
+        throughPoint: psflipped[3]
       });
 
-      expect(components['/_curve1'].stateValues.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].stateValues.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls(ps[3]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].map(x => x.tree)).eqls(psflipped[3]);
 
     })
 
@@ -772,12 +700,12 @@ describe('Curve Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <curve>
+    <curve><through>
       <point>(1,2)</point>
       <point>
         (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
       </point>
-    </curve> 
+    </through></curve> 
     <point name="x1">
       <x><extract prop="x"><copy prop="throughpoint1" tname="_curve1" /></extract></x>
       <y fixed>3</y>
@@ -805,8 +733,8 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([x, y]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -819,8 +747,8 @@ describe('Curve Tag Tests', function () {
 
       x = 3;
       components['/x1'].movePoint({ x: x });
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([x, y]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -833,8 +761,8 @@ describe('Curve Tag Tests', function () {
 
       y = 4;
       components['/x2'].movePoint({ x: y });
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([x, y]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -847,8 +775,8 @@ describe('Curve Tag Tests', function () {
 
       y = -6;
       components['/y1'].movePoint({ y: y });
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([x, y]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -861,8 +789,8 @@ describe('Curve Tag Tests', function () {
 
       x = -8;
       components['/y2'].movePoint({ y: x });
-      expect(components['/_curve1'].stateValues.throughpoints[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_curve1'].stateValues.throughpoints[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([x, y]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);

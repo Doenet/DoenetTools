@@ -33,13 +33,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" tname="p2" />
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
@@ -546,13 +546,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" tname="p2" />
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
@@ -1063,13 +1063,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" tname="p2" />
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
@@ -1575,13 +1575,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" tname="p2" />
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
@@ -2325,13 +2325,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" tname="p2" />
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
@@ -3357,13 +3357,13 @@ describe('Parabola Tag Tests', function () {
     </graph>
     <copy name="g3" tname="g2"/>
 
-    <p>a = <mathinput name="a"><copy prop="a" tname="_parabola1" /></mathinput></p>
-    <p>b = <mathinput name="b"><copy prop="b" tname="_parabola1" /></mathinput></p>
-    <p>c = <mathinput name="c"><copy prop="c" tname="_parabola1" /></mathinput></p>
+    <p>a = <mathinput name="a"><bindValueTo><copy prop="a" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>b = <mathinput name="b"><bindValueTo><copy prop="b" tname="_parabola1" /></bindValueTo></mathinput></p>
+    <p>c = <mathinput name="c"><bindValueTo><copy prop="c" tname="_parabola1" /></bindValueTo></mathinput></p>
 
-    <p>a2 = <mathinput name="a2"><copy prop="a" tname="p2" /></mathinput></p>
-    <p>b2 = <mathinput name="b2"><copy prop="b" tname="p2" /></mathinput></p>
-    <p>c2 = <mathinput name="c2"><copy prop="c" tname="p2" /></mathinput></p>
+    <p>a2 = <mathinput name="a2"><bindValueTo><copy prop="a" tname="p2" /></bindValueTo></mathinput></p>
+    <p>b2 = <mathinput name="b2"><bindValueTo><copy prop="b" tname="p2" /></bindValueTo></mathinput></p>
+    <p>c2 = <mathinput name="c2"><bindValueTo><copy prop="c" tname="p2" /></bindValueTo></mathinput></p>
 
     `}, "*");
     });
