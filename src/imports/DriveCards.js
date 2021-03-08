@@ -259,6 +259,8 @@ const DriveCardWrapper = (props) => {
                     selectedCard ? 1.02 : props.scale.value
                   })`;
                 }),
+                transitionDuration: '0.2s' ,
+                transitionDelay:'0s',
                 ...props,
                 height: 250,
                 opacity: 1,
