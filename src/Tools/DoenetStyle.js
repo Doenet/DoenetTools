@@ -1,4 +1,25 @@
-.hvr-shutter-in-horizontal {
+import { createGlobalStyle } from "styled-components";
+
+export const GlobalStyle = createGlobalStyle`
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
+      segoe ui, arial, sans-serif;
+    background: rgb(246, 248, 255);
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hvr-shutter-in-horizontal {
   display: inline-block;
   vertical-align: middle;
   -webkit-transform: perspective(1px) translateZ(0);
@@ -40,3 +61,5 @@
   -webkit-transform: scaleX(0);
   transform: scaleX(0);
 }
+
+`;

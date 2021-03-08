@@ -1,6 +1,5 @@
 import React, { useState, createContext } from "react";
 import styled from "styled-components";
-import "../../../src/Tools/ToolLayout/toollayout.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSpring, animated } from "react-spring";
@@ -12,7 +11,7 @@ const NavPanelWrapper = styled(animated.div)`
   background-color: #f6f8ff;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid black
+  border-right: 1px solid black;
 `;
 
 const VisibilityButton = styled.button`

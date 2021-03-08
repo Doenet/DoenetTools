@@ -16,8 +16,11 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
-$draft = mysqli_real_escape_string($conn,$_POST["draft"]);
+$versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
+$isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
+$isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
+
 
 //Add new version to content table
 //TODO: Update draft version (Overwrite BranchId named file)
@@ -31,13 +34,13 @@ $response_arr = array(
     "contentId"=> $contentId
 );
 $fileName = $contentId;
-if ($draft){$fileName = $branchId;}
+if ($isDraft){$fileName = $branchId;}
 //TODO: Config file needed for server
 $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
 fwrite($newfile, $dangerousDoenetML);
 fclose($newfile);
 
-if ($draft){
+if ($isDraft){
     $sql = "UPDATE content 
     SET timestamp=NOW()
     WHERE isDraft='1'
@@ -46,10 +49,20 @@ if ($draft){
 
     $result = $conn->query($sql);
 
+}else if($isNewTitle == '1'){
+    $sql = "
+    UPDATE content
+    SET title='$title',isNamed='1'
+    WHERE branchId='$branchId'
+    AND versionId='$versionId'
+    ";
+    $result = $conn->query($sql);
+
 }else{
     $sql = "INSERT INTO content 
     SET branchId='$branchId',
     contentId='$contentId', 
+    versionId='$versionId', 
     title='$title',
     timestamp=NOW(),
     isDraft='0',
