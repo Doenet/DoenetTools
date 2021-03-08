@@ -4,7 +4,7 @@ describe('Curve Tag Bezier Tests', function () {
     cy.visit('/test')
   })
 
-  it('sugared points, no controls specified', () => {
+  it.only('sugared points, no controls specified', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -12,7 +12,7 @@ describe('Curve Tag Bezier Tests', function () {
     <text>a</text>
     <graph>
     <curve>
-      (1,2),(3,4),(-5,6),(2,1)
+      <through>(1,2),(3,4),(-5,6),(2,1)</through>
     </curve>
     </graph>
     
@@ -23,10 +23,10 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
     });
 
     cy.log('move control vector')
@@ -37,12 +37,12 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [2, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 2, 2 + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 2, 2 + 1]);
     });
 
     cy.log('move through point')
@@ -52,12 +52,12 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 2, -4 + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 2, -4 + 1]);
     });
 
     cy.log('move symmetric control vector')
@@ -68,16 +68,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 2, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 2, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
     });
   })
 
@@ -100,10 +100,10 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
     });
 
     cy.log('move control vector')
@@ -114,12 +114,12 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [2, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 2, 2 + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 2, 2 + 1]);
     });
 
     cy.log('move through point')
@@ -129,12 +129,12 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 2, -4 + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 2, -4 + 1]);
     });
 
     cy.log('move symmetric control vector')
@@ -145,16 +145,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 2, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 2, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
     });
   })
 
@@ -177,22 +177,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3 - 1, 1 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3 - 1, 1 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move control vector')
@@ -203,22 +203,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: [3, 1]
       })
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move through point')
@@ -228,22 +228,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 3, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 3, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move symmetric control vector')
@@ -253,22 +253,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 3, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 3, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
   })
@@ -292,22 +292,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3 - 1, 1 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3 - 1, 1 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
     cy.log('move control vector')
@@ -317,22 +317,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [3, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 + 1, 1 + 2]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 + 1, 1 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
     cy.log('move through point')
@@ -342,22 +342,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
     cy.log('move asymmetric control vector')
@@ -367,22 +367,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
   })
@@ -406,22 +406,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move control vector')
@@ -431,22 +431,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [-2, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 - 2, 2 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 - 2, 2 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move through point')
@@ -456,22 +456,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move symmetric control vector')
@@ -481,22 +481,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
   })
@@ -520,22 +520,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move control vector')
@@ -545,22 +545,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [-2, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 - 2, 2 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 - 2, 2 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move through point')
@@ -570,22 +570,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move asymmetric control vector')
@@ -595,22 +595,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
   })
@@ -639,22 +639,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3 - 1, 1 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3 - 1, 1 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move control vector')
@@ -665,22 +665,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: [3, 1]
       })
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move through point')
@@ -690,22 +690,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 3, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 + 1, 2 * 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 3, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 + 1, 2 * 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
     cy.log('move symmetric control vector')
@@ -715,22 +715,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 + 3, -4 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 2 * -5 - 5, 2 * 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, -1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 + 3, -4 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([2 * -5 - 5, 2 * 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, -1]);
     });
 
   })
@@ -759,22 +759,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3 - 1, 1 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3 - 1, 1 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
     cy.log('move control vector')
@@ -784,22 +784,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [3, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 + 1, 1 + 2]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 + 1, 1 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
     cy.log('move through point')
@@ -809,22 +809,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
     cy.log('move asymmetric control vector')
@@ -834,22 +834,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5 + 5, 3 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7 + 5, -1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5 + 5, 3 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7 + 5, -1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     })
 
   })
@@ -878,22 +878,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move control vector')
@@ -903,22 +903,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [-2, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 - 2, 2 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 - 2, 2 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move through point')
@@ -928,22 +928,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 1, 4 - 5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -5]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 1, 4 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -5]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move symmetric control vector')
@@ -953,22 +953,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 - 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 - 5, 6 - 3]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, -3]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 - 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 - 5, 6 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
   })
@@ -997,22 +997,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move control vector')
@@ -1022,22 +1022,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [-2, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 - 2, 2 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 - 2, 2 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move through point')
@@ -1047,22 +1047,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 - 1, 4 + 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 - 1, 4 + 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
     cy.log('move asymmetric control vector')
@@ -1072,22 +1072,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3 + 4, 4 + 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3 + 4, 4 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0, 0]);
     });
 
   })
@@ -1117,22 +1117,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 + 3, 2 + 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 + 3, 2 + 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
     cy.log('move control vector')
@@ -1142,22 +1142,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [-2, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1 - 2, 2 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1 - 2, 2 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
     cy.log('move through point')
@@ -1167,22 +1167,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: [-3, -4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -1, 5]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -1 - 3, 5 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-1, 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-1 - 3, 5 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
     cy.log('move asymmetric control vector')
@@ -1192,22 +1192,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [4, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", -3 - 2, -4 + 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3 + 4, 4 - 2]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 4, 2]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5 + 5, 6 + 3]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -5 + 7, 6 - 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", -2, 4]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 4, -2]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4 - 3, 2 - 4]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, 3]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -1]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 0 - 2, 0 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([-3 - 2, -4 + 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3 + 4, 4 - 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([4, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5 + 5, 6 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-5 + 7, 6 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([-2, 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([4, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4 - 3, 2 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([0 - 2, 0 - 1]);
     });
 
   })
@@ -1242,22 +1242,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 - 3, 2 * 4 - 1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 4, 1]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 7 - 1, 8 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -(3 - 3), -(1 - 4)]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 4 + 5, 1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0 + 5, 0 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1 - 2, -2 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 - 3, 2 * 4 - 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([4, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([7 - 1, 8 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-(3 - 3), -(1 - 4)]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([4 + 5, 1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0 + 5, 0 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1 - 2, -2 - 1]);
     });
 
     cy.log('move through point')
@@ -1267,22 +1267,22 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: [1.1, 8.7]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 1, 9]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 1, 9 - 3]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 1, 9 + 3]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 4, 1]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 7 - 1, 8 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 3 - 3, 1 - 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -(3 - 3), -(1 - 4)]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 4 + 5, 1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0 + 5, 0 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1 - 2, -2 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([1, 9]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([1, 9 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([1, 9 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([4, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([7 - 1, 8 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([3 - 3, 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-(3 - 3), -(1 - 4)]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([4 + 5, 1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0 + 5, 0 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1 - 2, -2 - 1]);
     });
 
     cy.log('move control vector')
@@ -1292,44 +1292,44 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [-1.25, 2.75]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 1, 9]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 1 + 1.25, 9 - 2.75]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 1 - 1.25, 9 + 2.75]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 4, 1]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 7 - 1, 8 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 1.25, -2.75]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -1.25, 2.75]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 4 + 5, 1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0 + 5, 0 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1 - 2, -2 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([1, 9]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([1 + 1.25, 9 - 2.75]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([1 - 1.25, 9 + 2.75]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([4, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([7 - 1, 8 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([1.25, -2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-1.25, 2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([4 + 5, 1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0 + 5, 0 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1 - 2, -2 - 1]);
     });
 
     cy.log('move original point determining through point')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point3'].movePoint({ x: -3.2, y: 4.9 })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 1, 9]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -3, 5]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 1 + 1.25, 9 - 2.75]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 1 - 1.25, 9 + 2.75]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -3 + 9, 5 - 5]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", -3 + 5, 5 - 6]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 7 - 1, 8 - 2]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 1.25, -2.75]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -1.25, 2.75]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 4 + 5, 1 - 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0 + 5, 0 - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1 - 2, -2 - 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([1, 9]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-3, 5]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([1 + 1.25, 9 - 2.75]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([1 - 1.25, 9 + 2.75]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-3 + 9, 5 - 5]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([-3 + 5, 5 - 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([7 - 1, 8 - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([1.25, -2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-1.25, 2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([4 + 5, 1 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0 + 5, 0 - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1 - 2, -2 - 1]);
     });
 
   })
@@ -1368,27 +1368,27 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", 0, 0]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 2 * 3 - 3, 2 * 1 - 4]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 0, 2]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 1 - 7, 2 - 8]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 3 - 3, 4 - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -(3 - 3), -(4 - 1)]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0, 2]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 2 + 1, 1 + 2]);
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", 1, 2]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", 3, 4]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", -5, 6]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", 0, 2]);
-      expect(components['/_point5'].state.coords.tree).eqls(["tuple", 2, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([2 * 3 - 3, 2 * 1 - 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([0, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([1 - 7, 2 - 8]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([3 - 3, 4 - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-(3 - 3), -(4 - 1)]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([2 + 1, 1 + 2]);
+      expect(components['/_point1'].stateValues.coords.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_point2'].stateValues.coords.map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_point3'].stateValues.coords.map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_point4'].stateValues.coords.map(x => x.tree)).eqls([0, 2]);
+      expect(components['/_point5'].stateValues.coords.map(x => x.tree)).eqls([2, 1]);
     });
 
     cy.log(`move through points and control points aren't constrained`)
@@ -1402,27 +1402,27 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: [1.25, 8.75]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", -3.75, 5.25]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", 1.25, 8.75]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -3.75, 5.25 + 3]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", -3.75, 5.25 - 3]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 1.25 - 5, 8.75 + 6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 1.25 + 0, 8.75 + 2]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 1 - 7, 2 - 8]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 3 - 3, 4 - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -(3 - 3), -(4 - 1)]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 0, 2]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 2 + 1, 1 + 2]);
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", 1, 2]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", -4, 8]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", 1 - 5, 9 + 6]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", 1 + 0, 9 + 2]);
-      expect(components['/_point5'].state.coords.tree).eqls(["tuple", 2, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([-3.75, 5.25]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([1.25, 8.75]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-3.75, 5.25 + 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([-3.75, 5.25 - 3]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([1.25 - 5, 8.75 + 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([1.25 + 0, 8.75 + 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([1 - 7, 2 - 8]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([3 - 3, 4 - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-(3 - 3), -(4 - 1)]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([0, 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([2 + 1, 1 + 2]);
+      expect(components['/_point1'].stateValues.coords.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_point2'].stateValues.coords.map(x => x.tree)).eqls([-4, 8]);
+      expect(components['/_point3'].stateValues.coords.map(x => x.tree)).eqls([1 - 5, 9 + 6]);
+      expect(components['/_point4'].stateValues.coords.map(x => x.tree)).eqls([1 + 0, 9 + 2]);
+      expect(components['/_point5'].stateValues.coords.map(x => x.tree)).eqls([2, 1]);
     });
 
     cy.log(`move control points or original points deterimining control points`)
@@ -1433,27 +1433,27 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: [7.3, -2.9]
       })
       components['/_point4'].movePoint({ x: 5.4, y: 0.7 });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 7, 8]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", -3.75, 5.25]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", 1.25, 8.75]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", -11, 8]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", 3.5, 2.5]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", 1.25 - 5, 8.75 + 6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", 5, 1]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 1 - 7, 2 - 8]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -7.25, 2.75]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 7.25, -2.75]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 5 - 1.25, 1 - 8.75]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", 2 + 1, 1 + 2]);
-      expect(components['/_point1'].state.coords.tree).eqls(["tuple", 1, 2]);
-      expect(components['/_point2'].state.coords.tree).eqls(["tuple", -11, 8]);
-      expect(components['/_point3'].state.coords.tree).eqls(["tuple", 1 - 5, 9 + 6]);
-      expect(components['/_point4'].state.coords.tree).eqls(["tuple", 5, 1]);
-      expect(components['/_point5'].state.coords.tree).eqls(["tuple", 2, 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([7, 8]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([-3.75, 5.25]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([1.25, 8.75]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([-11, 8]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([3.5, 2.5]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([1.25 - 5, 8.75 + 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([1 - 7, 2 - 8]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-7.25, 2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([7.25, -2.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([5 - 1.25, 1 - 8.75]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([2 + 1, 1 + 2]);
+      expect(components['/_point1'].stateValues.coords.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_point2'].stateValues.coords.map(x => x.tree)).eqls([-11, 8]);
+      expect(components['/_point3'].stateValues.coords.map(x => x.tree)).eqls([1 - 5, 9 + 6]);
+      expect(components['/_point4'].stateValues.coords.map(x => x.tree)).eqls([5, 1]);
+      expect(components['/_point5'].stateValues.coords.map(x => x.tree)).eqls([2, 1]);
     });
   })
 
@@ -1485,22 +1485,22 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[0].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[4].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[4].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[5].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[5].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree[2]).greaterThan(0);
     });
 
     cy.log('move control vectors')
@@ -1514,22 +1514,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [-6, -5]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[0].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[4].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[4].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[5].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[5].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree[2]).greaterThan(0);
     });
 
   })
@@ -1562,16 +1562,16 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -4, 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 1, -2]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, -6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, 3]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-4, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([1, -2]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, -6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, 3]);
 
     });
 
@@ -1586,19 +1586,19 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [0.1, -6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -4, 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[4].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[4].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, 3]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-4, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, 3]);
     });
 
   })
@@ -1631,16 +1631,16 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -4, 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 4, -1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 5, -6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, 3]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-4, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([4, -1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([5, -6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, 3]);
 
     });
 
@@ -1655,20 +1655,20 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [0.125, -6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[4].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[4].tree[2]).closeTo(0, 1E-12);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, 3]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree[2]).closeTo(0, 1E-12);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, 3]);
     });
 
     cy.log('move control vectors opposite sides')
@@ -1682,16 +1682,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [0.125, 6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(["tuple", -5, 6]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(["tuple", 2, -3]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 3, 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -0.125, -6]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 0.125, 6]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", -7, 0.125]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", 7, -0.125]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -2, 3]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([3, 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-0.125, -6]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([0.125, 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([-7, 0.125]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([7, -0.125]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-2, 3]);
     });
 
   })
@@ -1713,14 +1713,14 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.controlvectors[0].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[0].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).lessThan(0);
 
     });
 
@@ -1737,14 +1737,14 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
       })
 
-      expect(components['/_curve1'].state.controlvectors[0].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[0].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).greaterThan(0);
 
     });
 
@@ -1766,14 +1766,14 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
       })
 
-      expect(components['/_curve1'].state.controlvectors[0].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[0].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[1].tree[2]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[1]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[2].tree[2]).lessThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[1]).greaterThan(0);
-      expect(components['/_curve1'].state.controlvectors[3].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree[2]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[1]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[2].tree[2]).lessThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[1]).greaterThan(0);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree[2]).greaterThan(0);
 
     });
 
@@ -1857,24 +1857,24 @@ describe('Curve Tag Bezier Tests', function () {
       let cvsflipped = [[3, 1], [-6, 5], [3, 2], [5, -1], [4, 1]];
 
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
     })
 
     cy.log('move first curve points')
@@ -1890,43 +1890,43 @@ describe('Curve Tag Bezier Tests', function () {
         throughpoint: ps[0]
       });
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 1,
         throughpoint: ps[1]
       });
 
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: ps[2]
       });
 
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 3,
         throughpoint: ps[3]
       });
 
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
     })
 
@@ -1943,43 +1943,43 @@ describe('Curve Tag Bezier Tests', function () {
         throughpoint: psflipped[0]
       });
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
 
       components['/_curve2'].moveThroughpoint({
         throughpointInd: 1,
         throughpoint: psflipped[1]
       });
 
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
 
       components['/_curve2'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: psflipped[2]
       });
 
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
 
       components['/_curve2'].moveThroughpoint({
         throughpointInd: 3,
         throughpoint: psflipped[3]
       });
 
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
     })
 
@@ -1997,50 +1997,50 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: cvs[0]
       });
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: cvs[1]
       });
 
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: cvs[2]
       });
 
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 4,
         controlvector: cvs[3]
       });
 
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 5,
         controlvector: cvs[4]
       });
 
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
     })
 
@@ -2058,50 +2058,50 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: cvsflipped[0]
       });
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 1,
         controlvector: cvsflipped[1]
       });
 
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 3,
         controlvector: cvsflipped[2]
       });
 
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 4,
         controlvector: cvsflipped[3]
       });
 
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 5,
         controlvector: cvsflipped[4]
       });
 
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
     })
 
@@ -2190,24 +2190,24 @@ describe('Curve Tag Bezier Tests', function () {
       let cvsflipped = [[3, 1], [-6, 5], [3, 2], [5, -1], [4, 1]];
 
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
     })
 
     cy.log('move first curve points')
@@ -2223,43 +2223,43 @@ describe('Curve Tag Bezier Tests', function () {
         throughpoint: ps[0]
       });
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 1,
         throughpoint: ps[1]
       });
 
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: ps[2]
       });
 
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
 
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 3,
         throughpoint: ps[3]
       });
 
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
     })
 
@@ -2276,16 +2276,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpoint: psflipped[0]
       });
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
 
       components['/_curve2'].moveThroughpoint({
         throughpointInd: 1,
         throughpoint: psflipped[1]
       });
 
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
 
       // the test would fail if didn't repeat this move command
       // to allow two passes of downstream updates
@@ -2298,27 +2298,27 @@ describe('Curve Tag Bezier Tests', function () {
         throughpoint: psflipped[2]
       });
 
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
 
       components['/_curve2'].moveThroughpoint({
         throughpointInd: 3,
         throughpoint: psflipped[3]
       });
 
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
     })
 
@@ -2336,50 +2336,50 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: cvs[0]
       });
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: cvs[1]
       });
 
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: cvs[2]
       });
 
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 4,
         controlvector: cvs[3]
       });
 
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 5,
         controlvector: cvs[4]
       });
 
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
     })
 
@@ -2397,50 +2397,50 @@ describe('Curve Tag Bezier Tests', function () {
         controlvector: cvsflipped[0]
       });
 
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
-      expect(components['/_curve2'].state.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvs[0]]);
+      expect(components['/_curve2'].stateValues.controlvectors[0].tree).eqls(['tuple', ...cvsflipped[0]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 1,
         controlvector: cvsflipped[1]
       });
 
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
-      expect(components['/_curve2'].state.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvs[1]]);
+      expect(components['/_curve2'].stateValues.controlvectors[1].tree).eqls(['tuple', ...cvsflipped[1]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 3,
         controlvector: cvsflipped[2]
       });
 
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
-      expect(components['/_curve2'].state.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvs[2]]);
+      expect(components['/_curve2'].stateValues.controlvectors[3].tree).eqls(['tuple', ...cvsflipped[2]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 4,
         controlvector: cvsflipped[3]
       });
 
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
-      expect(components['/_curve2'].state.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvs[3]]);
+      expect(components['/_curve2'].stateValues.controlvectors[4].tree).eqls(['tuple', ...cvsflipped[3]]);
 
       components['/_curve2'].moveControlvector({
         controlvectorInd: 5,
         controlvector: cvsflipped[4]
       });
 
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
-      expect(components['/_curve2'].state.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvs[4]]);
+      expect(components['/_curve2'].stateValues.controlvectors[5].tree).eqls(['tuple', ...cvsflipped[4]]);
 
 
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...ps[0]]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...ps[1]]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...ps[2]]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...ps[3]]);
-      expect(components['/_curve2'].state.throughpoints[0].tree).eqls(['tuple', ...psflipped[0]]);
-      expect(components['/_curve2'].state.throughpoints[1].tree).eqls(['tuple', ...psflipped[1]]);
-      expect(components['/_curve2'].state.throughpoints[2].tree).eqls(['tuple', ...psflipped[2]]);
-      expect(components['/_curve2'].state.throughpoints[3].tree).eqls(['tuple', ...psflipped[3]]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...ps[0]]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...ps[1]]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...ps[2]]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...ps[3]]);
+      expect(components['/_curve2'].stateValues.throughPoints[0].tree).eqls(['tuple', ...psflipped[0]]);
+      expect(components['/_curve2'].stateValues.throughPoints[1].tree).eqls(['tuple', ...psflipped[1]]);
+      expect(components['/_curve2'].stateValues.throughPoints[2].tree).eqls(['tuple', ...psflipped[2]]);
+      expect(components['/_curve2'].stateValues.throughPoints[3].tree).eqls(['tuple', ...psflipped[3]]);
 
     })
 
@@ -2471,10 +2471,10 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first point')
@@ -2486,10 +2486,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move second point')
@@ -2501,10 +2501,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move third point')
@@ -2516,10 +2516,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fourth point')
@@ -2530,10 +2530,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 3,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first control vector')
@@ -2544,12 +2544,12 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [2, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
 
     })
 
@@ -2561,16 +2561,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [-3, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -3, 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] - 3, B[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3, -4]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] + 3, B[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] - 3, B[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] + 3, B[1] - 4]);
 
     })
 
@@ -2581,16 +2581,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [-5, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
 
     })
 
@@ -2602,20 +2602,20 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 3,
         controlvector: [0, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 0, 4]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 0, C[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -0, -4]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 0, C[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([0, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 0, C[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-0, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 0, C[1] - 4]);
 
     })
 
@@ -2626,20 +2626,20 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 4,
         controlvector: [-7, -6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
 
     })
 
@@ -2651,22 +2651,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 5,
         controlvector: [-1, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", A[0] - 1, A[1] - 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([A[0] - 1, A[1] - 2]);
 
     })
   })
@@ -2695,10 +2695,10 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first point')
@@ -2710,10 +2710,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move second point')
@@ -2725,10 +2725,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move third point')
@@ -2740,10 +2740,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fourth point')
@@ -2754,10 +2754,10 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 3,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first control vector')
@@ -2768,12 +2768,12 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [2, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
 
     })
 
@@ -2785,16 +2785,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [-3, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -3, 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] - 3, B[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3, -4]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] + 3, B[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] - 3, B[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] + 3, B[1] - 4]);
 
     })
 
@@ -2805,16 +2805,16 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [-5, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
 
     })
 
@@ -2826,20 +2826,20 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 3,
         controlvector: [0, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 0, 4]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 0, C[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -0, -4]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 0, C[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([0, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 0, C[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-0, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 0, C[1] - 4]);
 
     })
 
@@ -2850,20 +2850,20 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 4,
         controlvector: [-7, -6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
 
     })
 
@@ -2875,22 +2875,22 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 5,
         controlvector: [-1, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", A[0] - 1, A[1] - 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([A[0] - 1, A[1] - 2]);
 
     })
   })
@@ -2924,11 +2924,11 @@ describe('Curve Tag Bezier Tests', function () {
     let D = [A[0] + 1, 2];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
     cy.log('move first point')
@@ -2941,11 +2941,11 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
     cy.log('move second point')
@@ -2957,11 +2957,11 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
     cy.log('move third point')
@@ -2973,11 +2973,11 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
     cy.log('move fourth point')
@@ -2989,11 +2989,11 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 3,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
 
@@ -3006,11 +3006,11 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 4,
         throughpoint: D
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
     })
 
 
@@ -3022,13 +3022,13 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 0,
         controlvector: [2, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
 
     })
 
@@ -3040,17 +3040,17 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 1,
         controlvector: [-3, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", -3, 4]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] - 3, B[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", 3, -4]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] + 3, B[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([-3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] - 3, B[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([3, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] + 3, B[1] - 4]);
 
     })
 
@@ -3061,17 +3061,17 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 2,
         controlvector: [-5, 1]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
 
     })
 
@@ -3083,21 +3083,21 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 3,
         controlvector: [0, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 0, 4]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 0, C[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -0, -4]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 0, C[1] - 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([0, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 0, C[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-0, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 0, C[1] - 4]);
 
     })
 
@@ -3108,21 +3108,21 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 4,
         controlvector: [-7, -6]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
 
     })
 
@@ -3134,25 +3134,25 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 5,
         controlvector: [-1, -2]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -1, -2]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", A[0] - 1, A[1] - 2]);
-      expect(components['/_curve1'].state.controlvectors[6].tree).eqls(["tuple", 1, 2]);
-      expect(components['/_curve1'].state.controlpoints[6].tree).eqls(["tuple", A[0] + 1, A[1] + 2]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-1, -2]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([A[0] - 1, A[1] - 2]);
+      expect(components['/_curve1'].stateValues.controlvectors[6].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_curve1'].stateValues.controlpoints[6].map(x => x.tree)).eqls([A[0] + 1, A[1] + 2]);
 
     })
 
@@ -3163,25 +3163,25 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 6,
         controlvector: [3, 4]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", A[0] - 3, A[1] - 4]);
-      expect(components['/_curve1'].state.controlvectors[6].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.controlpoints[6].tree).eqls(["tuple", A[0] + 3, A[1] + 4]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([A[0] - 3, A[1] - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[6].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[6].map(x => x.tree)).eqls([A[0] + 3, A[1] + 4]);
 
     })
 
@@ -3193,27 +3193,27 @@ describe('Curve Tag Bezier Tests', function () {
         controlvectorInd: 7,
         controlvector: [7, -9]
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(["tuple", 2, 1]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(["tuple", A[0] + 2, A[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(["tuple", 5, -1]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(["tuple", B[0] + 5, B[1] - 1]);
-      expect(components['/_curve1'].state.controlvectors[2].tree).eqls(["tuple", -5, 1]);
-      expect(components['/_curve1'].state.controlpoints[2].tree).eqls(["tuple", B[0] - 5, B[1] + 1]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(["tuple", 7, 6]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(["tuple", C[0] + 7, C[1] + 6]);
-      expect(components['/_curve1'].state.controlvectors[4].tree).eqls(["tuple", -7, -6]);
-      expect(components['/_curve1'].state.controlpoints[4].tree).eqls(["tuple", C[0] - 7, C[1] - 6]);
-      expect(components['/_curve1'].state.controlvectors[5].tree).eqls(["tuple", -3, -4]);
-      expect(components['/_curve1'].state.controlpoints[5].tree).eqls(["tuple", A[0] - 3, A[1] - 4]);
-      expect(components['/_curve1'].state.controlvectors[6].tree).eqls(["tuple", 3, 4]);
-      expect(components['/_curve1'].state.controlpoints[6].tree).eqls(["tuple", A[0] + 3, A[1] + 4]);
-      expect(components['/_curve1'].state.controlvectors[7].tree).eqls(["tuple", 7, -9]);
-      expect(components['/_curve1'].state.controlpoints[7].tree).eqls(["tuple", D[0] + 7, D[1] - 9]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].map(x => x.tree)).eqls([A[0] + 2, A[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].map(x => x.tree)).eqls([5, -1]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].map(x => x.tree)).eqls([B[0] + 5, B[1] - 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[2].map(x => x.tree)).eqls([-5, 1]);
+      expect(components['/_curve1'].stateValues.controlpoints[2].map(x => x.tree)).eqls([B[0] - 5, B[1] + 1]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].map(x => x.tree)).eqls([7, 6]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].map(x => x.tree)).eqls([C[0] + 7, C[1] + 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[4].map(x => x.tree)).eqls([-7, -6]);
+      expect(components['/_curve1'].stateValues.controlpoints[4].map(x => x.tree)).eqls([C[0] - 7, C[1] - 6]);
+      expect(components['/_curve1'].stateValues.controlvectors[5].map(x => x.tree)).eqls([-3, -4]);
+      expect(components['/_curve1'].stateValues.controlpoints[5].map(x => x.tree)).eqls([A[0] - 3, A[1] - 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[6].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_curve1'].stateValues.controlpoints[6].map(x => x.tree)).eqls([A[0] + 3, A[1] + 4]);
+      expect(components['/_curve1'].stateValues.controlvectors[7].map(x => x.tree)).eqls([7, -9]);
+      expect(components['/_curve1'].stateValues.controlpoints[7].map(x => x.tree)).eqls([D[0] + 7, D[1] - 9]);
 
     })
 
@@ -3254,16 +3254,16 @@ describe('Curve Tag Bezier Tests', function () {
     let G = [5, 0];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first point')
@@ -3275,16 +3275,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move second point')
@@ -3296,16 +3296,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move third point')
@@ -3317,16 +3317,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fourth point')
@@ -3337,16 +3337,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 3,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fifth point')
@@ -3357,16 +3357,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 4,
         throughpoint: D
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move sixth point')
@@ -3377,16 +3377,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 5,
         throughpoint: E
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move seventh point')
@@ -3397,16 +3397,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 6,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move eighth point')
@@ -3417,16 +3417,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 7,
         throughpoint: F
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move nineth point')
@@ -3437,16 +3437,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 8,
         throughpoint: G
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move tenth point')
@@ -3457,16 +3457,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 9,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
   })
@@ -3518,16 +3518,16 @@ describe('Curve Tag Bezier Tests', function () {
     let A3 = [A[0] + 3, A[1] + 3];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move first point')
@@ -3542,16 +3542,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 0,
         throughpoint: A3
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move second point')
@@ -3563,16 +3563,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move third point')
@@ -3584,16 +3584,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fourth point')
@@ -3608,16 +3608,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 3,
         throughpoint: A2
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move fifth point')
@@ -3628,16 +3628,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 4,
         throughpoint: D
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move sixth point')
@@ -3648,16 +3648,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 5,
         throughpoint: E
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move seventh point')
@@ -3672,16 +3672,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 6,
         throughpoint: A1
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move eighth point')
@@ -3692,16 +3692,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 7,
         throughpoint: F
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move nineth point')
@@ -3712,16 +3712,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 8,
         throughpoint: G
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
     cy.log('move tenth point')
@@ -3736,16 +3736,16 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 9,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A3]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.throughpoints[3].tree).eqls(['tuple', ...A2]);
-      expect(components['/_curve1'].state.throughpoints[4].tree).eqls(['tuple', ...D]);
-      expect(components['/_curve1'].state.throughpoints[5].tree).eqls(['tuple', ...E]);
-      expect(components['/_curve1'].state.throughpoints[6].tree).eqls(['tuple', ...A1]);
-      expect(components['/_curve1'].state.throughpoints[7].tree).eqls(['tuple', ...F]);
-      expect(components['/_curve1'].state.throughpoints[8].tree).eqls(['tuple', ...G]);
-      expect(components['/_curve1'].state.throughpoints[9].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A3]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.throughPoints[3].tree).eqls(['tuple', ...A2]);
+      expect(components['/_curve1'].stateValues.throughPoints[4].tree).eqls(['tuple', ...D]);
+      expect(components['/_curve1'].stateValues.throughPoints[5].tree).eqls(['tuple', ...E]);
+      expect(components['/_curve1'].stateValues.throughPoints[6].tree).eqls(['tuple', ...A1]);
+      expect(components['/_curve1'].stateValues.throughPoints[7].tree).eqls(['tuple', ...F]);
+      expect(components['/_curve1'].stateValues.throughPoints[8].tree).eqls(['tuple', ...G]);
+      expect(components['/_curve1'].stateValues.throughPoints[9].tree).eqls(['tuple', ...A]);
     })
 
   })
@@ -3774,21 +3774,21 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     let Acp = [-1, 4];
     let Bcp = [2, 0];
-    let Acv = [Acp[0]-A[0], Acp[1]-A[1]];
-    let Bcv = [Bcp[0]-B[0], Bcp[1]-B[1]];
-    let Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
+    let Acv = [Acp[0] - A[0], Acp[1] - A[1]];
+    let Bcv = [Bcp[0] - B[0], Bcp[1] - B[1]];
+    let Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
-   })
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+    })
 
     cy.log('move first point')
     cy.window().then((win) => {
@@ -3796,22 +3796,22 @@ describe('Curve Tag Bezier Tests', function () {
       A[1] -= 3;
       Acp[0] -= 5;
       Acp[1] -= 3;
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-  
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move second point')
@@ -3826,15 +3826,15 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move third point')
@@ -3843,44 +3843,44 @@ describe('Curve Tag Bezier Tests', function () {
       C[1] += 1;
       Acp[0] += 4;
       Acp[1] += 1;
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move first control vector')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Acv = [2, 1];
-      Acp = [A[0]+Acv[0], A[1] + Acv[1]];
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-      
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       components['/_curve1'].moveControlvector({
         controlvectorInd: 0,
         controlvector: Acv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -3888,21 +3888,21 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Bcv = [-3, 4];
-      Bcp = [B[0]+Bcv[0], B[1] + Bcv[1]];
+      Bcp = [B[0] + Bcv[0], B[1] + Bcv[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: Bcv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -3910,22 +3910,22 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Ccv = [0, 6];
-      Acp = [C[0]+Ccv[0], C[1] + Ccv[1]];
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acp = [C[0] + Ccv[0], C[1] + Ccv[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: Ccv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -3955,21 +3955,21 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     let Acp = [-1, 4];
     let Bcp = [2, 0];
-    let Acv = [Acp[0]-A[0], Acp[1]-A[1]];
-    let Bcv = [Bcp[0]-B[0], Bcp[1]-B[1]];
-    let Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
+    let Acv = [Acp[0] - A[0], Acp[1] - A[1]];
+    let Bcv = [Bcp[0] - B[0], Bcp[1] - B[1]];
+    let Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
-   })
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+    })
 
     cy.log('move first point')
     cy.window().then((win) => {
@@ -3977,22 +3977,22 @@ describe('Curve Tag Bezier Tests', function () {
       A[1] -= 3;
       Acp[0] -= 5;
       Acp[1] -= 3;
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-  
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move second point')
@@ -4007,15 +4007,15 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move third point')
@@ -4024,44 +4024,44 @@ describe('Curve Tag Bezier Tests', function () {
       C[1] += 1;
       Acp[0] += 4;
       Acp[1] += 1;
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move first control vector')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Acv = [2, 1];
-      Acp = [A[0]+Acv[0], A[1] + Acv[1]];
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-      
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       components['/_curve1'].moveControlvector({
         controlvectorInd: 0,
         controlvector: Acv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4069,21 +4069,21 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Bcv = [-3, 4];
-      Bcp = [B[0]+Bcv[0], B[1] + Bcv[1]];
+      Bcp = [B[0] + Bcv[0], B[1] + Bcv[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: Bcv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4091,22 +4091,22 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Ccv = [0, 6];
-      Acp = [C[0]+Ccv[0], C[1] + Ccv[1]];
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acp = [C[0] + Ccv[0], C[1] + Ccv[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: Ccv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4136,21 +4136,21 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     let Acp = [-1, 4];
     let Bcp = [2, 0];
-    let Acv = [Acp[0]-A[0], Acp[1]-A[1]];
-    let Bcv = [Bcp[0]-B[0], Bcp[1]-B[1]];
-    let Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
+    let Acv = [Acp[0] - A[0], Acp[1] - A[1]];
+    let Bcv = [Bcp[0] - B[0], Bcp[1] - B[1]];
+    let Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
-   })
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+    })
 
     cy.log('move first point')
     cy.window().then((win) => {
@@ -4158,22 +4158,22 @@ describe('Curve Tag Bezier Tests', function () {
       A[1] -= 3;
       Acp[0] -= 5;
       Acp[1] -= 3;
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-  
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move second point')
@@ -4188,15 +4188,15 @@ describe('Curve Tag Bezier Tests', function () {
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move third point')
@@ -4205,44 +4205,44 @@ describe('Curve Tag Bezier Tests', function () {
       C[1] += 1;
       Acp[0] += 4;
       Acp[1] += 1;
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
     })
 
     cy.log('move first control vector')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Acv = [2, 1];
-      Acp = [A[0]+Acv[0], A[1] + Acv[1]];
-      Ccv = [Acp[0]-C[0], Acp[1]-C[1]];
-      
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+      Ccv = [Acp[0] - C[0], Acp[1] - C[1]];
+
       components['/_curve1'].moveControlvector({
         controlvectorInd: 0,
         controlvector: Acv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4250,21 +4250,21 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Bcv = [-3, 4];
-      Bcp = [B[0]+Bcv[0], B[1] + Bcv[1]];
+      Bcp = [B[0] + Bcv[0], B[1] + Bcv[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: Bcv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4272,22 +4272,22 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Ccv = [0, 6];
-      Acp = [C[0]+Ccv[0], C[1] + Ccv[1]];
-      Acv = [Acp[0]-A[0], Acp[1]-A[1]];
+      Acp = [C[0] + Ccv[0], C[1] + Ccv[1]];
+      Acv = [Acp[0] - A[0], Acp[1] - A[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: Ccv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Ccv]);
 
     })
 
@@ -4317,108 +4317,108 @@ describe('Curve Tag Bezier Tests', function () {
     let C = [-5, 6];
     let Ccp = [-1, 4];
     let Bcp = [2, 0];
-    let Acv = [Ccp[0]-C[0], Ccp[1]-C[1]];
-    let Bcv = [Bcp[0]-B[0], Bcp[1]-B[1]];
-    let Acp = [A[0]+Acv[0], A[1]+Acv[1]];
+    let Acv = [Ccp[0] - C[0], Ccp[1] - C[1]];
+    let Bcv = [Bcp[0] - B[0], Bcp[1] - B[1]];
+    let Acp = [A[0] + Acv[0], A[1] + Acv[1]];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
-   })
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+    })
 
     cy.log('move first point')
     cy.window().then((win) => {
       A[0] -= 5;
       A[1] -= 3;
-      Acp = [A[0]+Acv[0], A[1]+Acv[1]];
-  
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
     })
 
     cy.log('move second point')
     cy.window().then((win) => {
       B[0] += 2;
       B[1] -= 2;
-      Bcp = [B[0]+Bcv[0], B[1]+Bcv[1]];
+      Bcp = [B[0] + Bcv[0], B[1] + Bcv[1]];
 
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 1,
         throughpoint: B
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
     })
 
     cy.log('move third point')
     cy.window().then((win) => {
       C[0] += 4;
       C[1] += 1;
-      Ccp = [C[0]+Acv[0], C[1]+Acv[1]];
+      Ccp = [C[0] + Acv[0], C[1] + Acv[1]];
 
       let components = Object.assign({}, win.state.components);
       components['/_curve1'].moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
     })
 
     cy.log('move first control vector')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Acv = [2, 1];
-      Acp = [A[0]+Acv[0], A[1] + Acv[1]];
-      Ccp = [C[0]+Acv[0], C[1]+Acv[1]];
-      
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+      Ccp = [C[0] + Acv[0], C[1] + Acv[1]];
+
       components['/_curve1'].moveControlvector({
         controlvectorInd: 0,
         controlvector: Acv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
 
     })
 
@@ -4426,21 +4426,21 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Bcv = [-3, 4];
-      Bcp = [B[0]+Bcv[0], B[1] + Bcv[1]];
+      Bcp = [B[0] + Bcv[0], B[1] + Bcv[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 1,
         controlvector: Bcv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
 
     })
 
@@ -4448,22 +4448,22 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       Acv = [0, 6];
-      Acp = [A[0]+Acv[0], A[1] + Acv[1]];
-      Ccp = [C[0]+Acv[0], C[1]+Acv[1]];
+      Acp = [A[0] + Acv[0], A[1] + Acv[1]];
+      Ccp = [C[0] + Acv[0], C[1] + Acv[1]];
 
       components['/_curve1'].moveControlvector({
         controlvectorInd: 3,
         controlvector: Acv
       })
-      expect(components['/_curve1'].state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(components['/_curve1'].state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(components['/_curve1'].state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(components['/_curve1'].state.controlpoints[0].tree).eqls(['tuple', ...Acp]);
-      expect(components['/_curve1'].state.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
-      expect(components['/_curve1'].state.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
-      expect(components['/_curve1'].state.controlvectors[0].tree).eqls(['tuple', ...Acv]);
-      expect(components['/_curve1'].state.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
-      expect(components['/_curve1'].state.controlvectors[3].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(components['/_curve1'].stateValues.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(components['/_curve1'].stateValues.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(components['/_curve1'].stateValues.controlpoints[0].tree).eqls(['tuple', ...Acp]);
+      expect(components['/_curve1'].stateValues.controlpoints[1].tree).eqls(['tuple', ...Bcp]);
+      expect(components['/_curve1'].stateValues.controlpoints[3].tree).eqls(['tuple', ...Ccp]);
+      expect(components['/_curve1'].stateValues.controlvectors[0].tree).eqls(['tuple', ...Acv]);
+      expect(components['/_curve1'].stateValues.controlvectors[1].tree).eqls(['tuple', ...Bcv]);
+      expect(components['/_curve1'].stateValues.controlvectors[3].tree).eqls(['tuple', ...Acv]);
 
     })
 
@@ -4496,25 +4496,25 @@ describe('Curve Tag Bezier Tests', function () {
     let A = [1, 2];
     let B = [3, 4];
     let C = [-5, 6];
-    let D = [3,5];
+    let D = [3, 5];
 
-    let Cv6 = [4,-2];
-    let Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+    let Cv6 = [4, -2];
+    let Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
     let Cv4 = Cv6;
-    let Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
+    let Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
 
     let Cp3 = Cp4;
-    let Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
+    let Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
 
     let Cv1 = Cv3;
-    let Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+    let Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
     let Cp2 = Cp1;
-    let Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+    let Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
     let Cv5 = Cv2;
-    let Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+    let Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
     let curve1, curve2;
 
@@ -4522,11 +4522,11 @@ describe('Curve Tag Bezier Tests', function () {
       let components = Object.assign({}, win.state.components);
       curve1 = components['/_curve1'];
       curve2 = components['/c2'].replacements[0];
-  
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4539,10 +4539,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4555,29 +4555,29 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   })
+    })
 
     cy.log('move first point')
     cy.window().then((win) => {
-      A = [-4,-1];
+      A = [-4, -1];
 
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve1.moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4590,10 +4590,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4606,30 +4606,30 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
     cy.log('move first point shadow')
     cy.window().then((win) => {
-      A = [3,7];
+      A = [3, 7];
 
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve2.moveThroughpoint({
         throughpointInd: 0,
         throughpoint: A
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4642,10 +4642,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4658,40 +4658,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
     cy.log('move second point')
     cy.window().then((win) => {
 
-      B = [2,-1];
+      B = [2, -1];
 
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
-      
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
       curve1.moveThroughpoint({
         throughpointInd: 1,
         throughpoint: B
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4704,10 +4704,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4720,41 +4720,41 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move second point shadow')
     cy.window().then((win) => {
 
-      B = [-1,3];
+      B = [-1, 3];
 
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
-      
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
       curve2.moveThroughpoint({
         throughpointInd: 1,
         throughpoint: B
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4767,10 +4767,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4783,37 +4783,37 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
     cy.log('move third point')
     cy.window().then((win) => {
-      C = [-4,5];
+      C = [-4, 5];
 
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
-  
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
+
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
-  
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
-  
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
+
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
-  
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
+
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
 
       curve1.moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4826,10 +4826,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4842,37 +4842,37 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
     cy.log('move third point shadow')
     cy.window().then((win) => {
-      C = [4,-6];
+      C = [4, -6];
 
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
-  
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
+
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
-  
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
-  
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
+
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
-  
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
+
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
 
       curve2.moveThroughpoint({
         throughpointInd: 2,
         throughpoint: C
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4885,10 +4885,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4901,40 +4901,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fourth point')
     cy.window().then((win) => {
-      D = [-6,-7];
+      D = [-6, -7];
 
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
-  
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
+
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
-  
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
-  
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
+
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
-  
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
+
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
 
       curve1.moveThroughpoint({
         throughpointInd: 3,
         throughpoint: D
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4947,10 +4947,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -4963,40 +4963,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fourth point shadow')
     cy.window().then((win) => {
-      D = [8,-6];
+      D = [8, -6];
 
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
-  
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
+
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
-  
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
+
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
-  
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
+
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
-  
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
+
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
-  
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
+
 
       curve2.moveThroughpoint({
         throughpointInd: 3,
         throughpoint: D
       });
 
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5009,10 +5009,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5025,39 +5025,39 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
     cy.log('move first control vector')
     cy.window().then((win) => {
 
-      Cv1 = [-3,2]
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cv1 = [-3, 2]
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 0,
         controlvector: Cv1
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5070,10 +5070,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5086,40 +5086,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move first control vector shadow')
     cy.window().then((win) => {
 
-      Cv1 = [-2,3]
-      Cp1 = [A[0]+Cv1[0], A[1]+Cv1[1]];
+      Cv1 = [-2, 3]
+      Cp1 = [A[0] + Cv1[0], A[1] + Cv1[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 0,
         controlvector: Cv1
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5132,10 +5132,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5148,40 +5148,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move second control vector')
     cy.window().then((win) => {
 
-      Cv2 = [5,-4];
-      Cp2 = [B[0]+Cv2[0], B[1]+Cv2[1]];
+      Cv2 = [5, -4];
+      Cp2 = [B[0] + Cv2[0], B[1] + Cv2[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cp1 = Cp2;
-      Cv1 = [Cp1[0]-A[0], Cp1[1]-A[1]];
+      Cv1 = [Cp1[0] - A[0], Cp1[1] - A[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 1,
         controlvector: Cv2
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5194,10 +5194,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5210,40 +5210,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move second control vector shadow')
     cy.window().then((win) => {
 
-      Cv2 = [3,-5];
-      Cp2 = [B[0]+Cv2[0], B[1]+Cv2[1]];
+      Cv2 = [3, -5];
+      Cp2 = [B[0] + Cv2[0], B[1] + Cv2[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cp1 = Cp2;
-      Cv1 = [Cp1[0]-A[0], Cp1[1]-A[1]];
+      Cv1 = [Cp1[0] - A[0], Cp1[1] - A[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 1,
         controlvector: Cv2
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5256,10 +5256,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5272,40 +5272,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move third control vector')
     cy.window().then((win) => {
 
-      Cv3 = [2,7];
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cv3 = [2, 7];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 2,
         controlvector: Cv3
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5318,10 +5318,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5334,40 +5334,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move third control vector shadow')
     cy.window().then((win) => {
 
-      Cv3 = [7,2];
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cv3 = [7, 2];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 2,
         controlvector: Cv3
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5380,10 +5380,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5396,40 +5396,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fourth control vector')
     cy.window().then((win) => {
 
-      Cv4 = [-5,-4];
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
+      Cv4 = [-5, -4];
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 3,
         controlvector: Cv4
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5442,10 +5442,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5458,40 +5458,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fourth control vector shadow')
     cy.window().then((win) => {
 
-      Cv4 = [5,4];
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
+      Cv4 = [5, 4];
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 3,
         controlvector: Cv4
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5504,10 +5504,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5520,40 +5520,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fifth control vector')
     cy.window().then((win) => {
 
-      Cv5 = [1,6];
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cv5 = [1, 6];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cv2 = Cv5;
-      Cp2 = [B[0]+Cv2[0], B[1]+Cv2[1]];
+      Cp2 = [B[0] + Cv2[0], B[1] + Cv2[1]];
 
       Cp1 = Cp2;
-      Cv1 = [Cp1[0]-A[0], Cp1[1]-A[1]];
+      Cv1 = [Cp1[0] - A[0], Cp1[1] - A[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 4,
         controlvector: Cv5
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5566,10 +5566,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5582,40 +5582,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move fifth control vector shadow')
     cy.window().then((win) => {
 
-      Cv5 = [6,1];
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cv5 = [6, 1];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       Cv2 = Cv5;
-      Cp2 = [B[0]+Cv2[0], B[1]+Cv2[1]];
+      Cp2 = [B[0] + Cv2[0], B[1] + Cv2[1]];
 
       Cp1 = Cp2;
-      Cv1 = [Cp1[0]-A[0], Cp1[1]-A[1]];
+      Cv1 = [Cp1[0] - A[0], Cp1[1] - A[1]];
 
       Cv3 = Cv1;
-      Cp3 = [B[0]+Cv3[0], B[1]+Cv3[1]];
+      Cp3 = [B[0] + Cv3[0], B[1] + Cv3[1]];
 
       Cp4 = Cp3;
-      Cv4 = [Cp4[0]-C[0], Cp4[1]-C[1]];
+      Cv4 = [Cp4[0] - C[0], Cp4[1] - C[1]];
 
       Cv6 = Cv4;
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 4,
         controlvector: Cv5
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5628,10 +5628,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5644,40 +5644,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move sixth control vector')
     cy.window().then((win) => {
 
-      Cv6 = [-9,2];
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cv6 = [-9, 2];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cv4 = Cv6;
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
 
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve1.moveControlvector({
         controlvectorInd: 5,
         controlvector: Cv6
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5690,10 +5690,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5706,40 +5706,40 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 
     cy.log('move sixth control vector shadow')
     cy.window().then((win) => {
 
-      Cv6 = [2,-9];
-      Cp6 = [D[0]+Cv6[0], D[1]+Cv6[1]];
+      Cv6 = [2, -9];
+      Cp6 = [D[0] + Cv6[0], D[1] + Cv6[1]];
 
       Cv4 = Cv6;
-      Cp4 = [C[0]+Cv4[0], C[1]+Cv4[1]];
+      Cp4 = [C[0] + Cv4[0], C[1] + Cv4[1]];
 
       Cp3 = Cp4;
-      Cv3 = [Cp3[0]-B[0], Cp3[1]-B[1]];
+      Cv3 = [Cp3[0] - B[0], Cp3[1] - B[1]];
 
       Cv1 = Cv3;
-      Cp1 = [A[0]+Cv3[0], A[1]+Cv3[1]];
+      Cp1 = [A[0] + Cv3[0], A[1] + Cv3[1]];
 
       Cp2 = Cp1;
-      Cv2 = [Cp2[0]-B[0], Cp2[1]-B[1]];
+      Cv2 = [Cp2[0] - B[0], Cp2[1] - B[1]];
 
       Cv5 = Cv2;
-      Cp5 = [C[0]+Cv5[0], C[1]+Cv5[1]];
+      Cp5 = [C[0] + Cv5[0], C[1] + Cv5[1]];
 
       curve2.moveControlvector({
         controlvectorInd: 5,
         controlvector: Cv6
       })
-      
-      expect(curve1.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve1.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve1.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve1.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+
+      expect(curve1.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve1.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve1.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve1.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve1.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve1.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve1.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5752,10 +5752,10 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve1.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve1.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve1.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-      expect(curve2.state.throughpoints[0].tree).eqls(['tuple', ...A]);
-      expect(curve2.state.throughpoints[1].tree).eqls(['tuple', ...B]);
-      expect(curve2.state.throughpoints[2].tree).eqls(['tuple', ...C]);
-      expect(curve2.state.throughpoints[3].tree).eqls(['tuple', ...D]);
+      expect(curve2.state.throughPoints[0].tree).eqls(['tuple', ...A]);
+      expect(curve2.state.throughPoints[1].tree).eqls(['tuple', ...B]);
+      expect(curve2.state.throughPoints[2].tree).eqls(['tuple', ...C]);
+      expect(curve2.state.throughPoints[3].tree).eqls(['tuple', ...D]);
       expect(curve2.state.controlpoints[0].tree).eqls(['tuple', ...Cp1]);
       expect(curve2.state.controlpoints[1].tree).eqls(['tuple', ...Cp2]);
       expect(curve2.state.controlpoints[2].tree).eqls(['tuple', ...Cp3]);
@@ -5768,7 +5768,7 @@ describe('Curve Tag Bezier Tests', function () {
       expect(curve2.state.controlvectors[3].tree).eqls(['tuple', ...Cv4]);
       expect(curve2.state.controlvectors[4].tree).eqls(['tuple', ...Cv5]);
       expect(curve2.state.controlvectors[5].tree).eqls(['tuple', ...Cv6]);
-   
+
     })
 
 

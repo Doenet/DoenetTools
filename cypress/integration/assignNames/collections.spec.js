@@ -10,7 +10,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Basic copy assignName Tests', function () {
+describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')

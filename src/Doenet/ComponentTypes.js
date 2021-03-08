@@ -125,6 +125,7 @@ import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
 import Empty from './components/Empty';
+import BindValueTo from './components/BindValueTo';
 
 
 //Extended
@@ -254,6 +255,7 @@ const componentTypeArray = [
   Case,
   SelectByCondition,
   Empty,
+  BindValueTo,
 ];
 
 const componentTypeArrayExtended = [

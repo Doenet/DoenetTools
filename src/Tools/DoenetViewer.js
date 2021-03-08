@@ -8,7 +8,7 @@ import crypto from 'crypto';
 // What is the cause of this dependency?
 import { HotTable } from '@handsontable/react';
 
-import { serializedStateReplacer, serializedStateReviver } from '../Doenet/utils/serializedStateProcessing';
+import { serializedComponentsReplacer, serializedComponentsReviver } from '../Doenet/utils/serializedStateProcessing';
 
 
 class DoenetViewer extends Component {
@@ -80,13 +80,13 @@ class DoenetViewer extends Component {
       this.cumulativeStateVariableChanges = null;
       variant = null;
     } else {
-    this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
+    this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedComponentsReviver)
     }
 
     // if loaded variant from database,
     // then use that variant rather than requestedVariant from props
     if (variant !== null) {
-      this.requestedVariant = JSON.parse(variant, serializedStateReviver);
+      this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
     }
 
     // TODO: who is responsible for verifying that a contentId matches hash?
@@ -224,10 +224,10 @@ class DoenetViewer extends Component {
       }
     }
 
-    let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedStateReplacer);
+    let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
 
 
-    let variantString = JSON.stringify(this.resultingVariant, serializedStateReplacer);
+    let variantString = JSON.stringify(this.resultingVariant, serializedComponentsReplacer);
 
     // save to database
     // check the cookie to see if allowed to record
@@ -402,11 +402,11 @@ class DoenetViewer extends Component {
       assignmentId: this.assignmentId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.resultingVariant, serializedStateReplacer),
+      variant: JSON.stringify(this.resultingVariant, serializedComponentsReplacer),
       verb: event.verb,
-      object: JSON.stringify(event.object, serializedStateReplacer),
-      result: JSON.stringify(event.result, serializedStateReplacer),
-      context: JSON.stringify(event.context, serializedStateReplacer),
+      object: JSON.stringify(event.object, serializedComponentsReplacer),
+      result: JSON.stringify(event.result, serializedComponentsReplacer),
+      context: JSON.stringify(event.context, serializedComponentsReplacer),
       timestamp: event.timestamp,
       version: "0.1.0",
     }

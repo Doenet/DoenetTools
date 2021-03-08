@@ -245,15 +245,15 @@ describe('Mathlist Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput><copy prop="math1" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math2" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math3" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math4" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math5" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math6" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math7" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math8" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math9" tname="_mathlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
 
     ` }, "*");
     });
@@ -424,15 +424,15 @@ describe('Mathlist Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput><copy prop="math1" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math2" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math3" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math4" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math5" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math6" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math7" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math8" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math9" tname="_mathlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
 
     ` }, "*");
     });
@@ -611,18 +611,18 @@ describe('Mathlist Tag Tests', function () {
       <copy tname="mid" />
     </mathlist>
 
-    <mathinput><copy prop="math1" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math2" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math3" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math4" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math5" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math6" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math7" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math8" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math9" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math10" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math11" tname="_mathlist1" /></mathinput>
-    <mathinput><copy prop="math12" tname="_mathlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math10" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math11" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="math12" tname="_mathlist1" /></bindValueTo></mathinput>
     ` }, "*");
     });
 
@@ -828,7 +828,7 @@ describe('Mathlist Tag Tests', function () {
       <math name="ee" simplify="none">e+e</math>
       <math name="ff" simplify="full">f+f</math>
     </p>
-    <p><textinput><copy prop="simplify" tname="_mathlist1" /></textinput></p>
+    <p><textinput><bindValueTo><copy prop="simplify" tname="_mathlist1" /></bindValueTo></textinput></p>
     ` }, "*");
     });
 

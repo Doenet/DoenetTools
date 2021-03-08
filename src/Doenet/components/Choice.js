@@ -59,14 +59,24 @@ export default class Choice extends InlineComponent {
       defaultValue: false,
       public: true,
       componentType: "boolean",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          selected: {
-            variablesToCheck: ["selected"]
-          }
+      returnDependencies: () => ({
+        countAmongSiblings: {
+          dependencyType: "countAmongSiblingsOfSameType"
+        },
+        childIndicesSelected: {
+          dependencyType: "parentStateVariable",
+          variableName: "childIndicesSelected"
         }
       }),
+      definition({ dependencyValues }) {
+
+        let selected = dependencyValues.childIndicesSelected.includes(
+          dependencyValues.countAmongSiblings - 1
+        );
+
+        return { newValues: { selected } }
+
+      },
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
