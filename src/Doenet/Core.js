@@ -3610,11 +3610,23 @@ export default class Core {
 
         let result = stateVarObj.entireArrayDefinition(args);
 
-        let newArrayValues = result.newValues[stateVariable];
 
-        let arraySize = getSubArraySize(newArrayValues, stateVarObj.nDimensions);
+        if (result.newValues) {
+          let newArrayValues = result.newValues[stateVariable];
+          let arraySize = getSubArraySize(newArrayValues, stateVarObj.nDimensions);
+          result.newValues[stateVarObj.arraySizeStateVariable] = arraySize;
+        } else if (result.useEssentialOrDefaultValue) {
+          if (!stateVarObj._previousValue) {
+            let defaultValue = result.defaultValue;
+            if (defaultValue === undefined) {
+              defaultValue = stateVarObj.defaultValue;
+            }
+            let arraySize = getSubArraySize(defaultValue, stateVarObj.nDimensions);
 
-        result.newValues[stateVarObj.arraySizeStateVariable] = arraySize;
+            result.newValues = { [stateVarObj.arraySizeStateVariable]: arraySize };
+
+          }
+        }
 
         if (!result.checkForActualChange) {
           result.checkForActualChange = {};
@@ -7857,13 +7869,15 @@ export default class Core {
 
     for (let instruction of updateInstructions) {
 
-      let componentSourceInformation = sourceInformation[instruction.componentName];
-      if (!componentSourceInformation) {
-        componentSourceInformation = sourceInformation[instruction.componentName] = {};
-      }
+      if (instruction.componentName) {
+        let componentSourceInformation = sourceInformation[instruction.componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+        }
 
-      if (instruction.sourceInformation) {
-        Object.assign(componentSourceInformation, instruction.sourceInformation);
+        if (instruction.sourceInformation) {
+          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        }
       }
 
       if (instruction.updateType === "updateValue") {

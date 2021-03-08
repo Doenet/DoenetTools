@@ -190,6 +190,7 @@ export default class BooleanComponent extends InlineComponent {
       componentType: this.componentType,
       forRenderer: true,
       defaultValue: false,
+      set: Boolean,
       returnDependencies: () => ({
         parsedExpression: {
           dependencyType: "stateVariable",
@@ -284,7 +285,7 @@ export default class BooleanComponent extends InlineComponent {
             success: true,
             instructions: [{
               setStateVariable: "value",
-              value: desiredStateVariableValues.value
+              value: Boolean(desiredStateVariableValues.value)
             }]
           };
         } else if (dependencyValues.stringMathTextBooleanChildren.length === 1) {
@@ -295,7 +296,7 @@ export default class BooleanComponent extends InlineComponent {
               success: true,
               instructions: [{
                 setDependency: "stringMathTextBooleanChildren",
-                desiredValue: desiredStateVariableValues.value.toString(),
+                desiredValue: desiredStateVariableValues.value,
                 childIndex: 0,
                 variableIndex: 0,
               }]

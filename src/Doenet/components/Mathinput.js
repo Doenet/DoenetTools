@@ -1,5 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
+import { convertValueToMathExpression } from '../utils/math';
 
 export default class Mathinput extends Input {
   constructor(args) {
@@ -50,8 +51,8 @@ export default class Mathinput extends Input {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "atMostOneMath",
-      componentType: "math",
+      name: "atMostOneBindValueTo",
+      componentType: "bindValueTo",
       comparison: "atMost",
       number: 1,
       setAsBase: true,
@@ -70,9 +71,9 @@ export default class Mathinput extends Input {
       componentType: "math",
       forRenderer: true,
       returnDependencies: () => ({
-        mathChild: {
+        bindValueToChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneMath",
+          childLogicName: "atMostOneBindValueTo",
           variableNames: ["value", "valueForDisplay"],
           requireChildLogicInitiallySatisfied: true,
         },
@@ -86,7 +87,7 @@ export default class Mathinput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.mathChild.length === 0) {
+        if (dependencyValues.bindValueToChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               value: {
@@ -102,16 +103,18 @@ export default class Mathinput extends Input {
           }
         }
 
-        // since value will be displayed, round to displaydigits
-        return { newValues: { value: dependencyValues.mathChild[0].stateValues.valueForDisplay } };
+        return { newValues: { value: convertValueToMathExpression(dependencyValues.bindValueToChild[0].stateValues.valueForDisplay) } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        if (dependencyValues.mathChild.length === 1) {
+        // console.log(`inverse definition of value for mathinput`)
+        // console.log(desiredStateVariableValues)
+
+        if (dependencyValues.bindValueToChild.length === 1) {
           return {
             success: true,
             instructions: [{
-              setDependency: "mathChild",
+              setDependency: "bindValueToChild",
               desiredValue: desiredStateVariableValues.value,
               childIndex: 0,
               variableIndex: 0,

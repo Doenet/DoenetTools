@@ -38,10 +38,11 @@ describe('Choiceinput Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', 'Selected value: ')
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
 
-    let choices;
+    let choices, choiceOrder;
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
       expect(originalChoices.includes(choices[0])).eq(true);
       expect(originalChoices.includes(choices[1])).eq(true);
@@ -58,17 +59,21 @@ describe('Choiceinput Tag Tests', function () {
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.fixedOrder).eq(false);
+      expect(components['/_choice1'].stateValues.selected).eq(false);
+      expect(components['/_choice2'].stateValues.selected).eq(false);
+      expect(components['/_choice3'].stateValues.selected).eq(false);
+      expect(components['/_choice4'].stateValues.selected).eq(false);
 
     });
 
     cy.log('select options in order')
 
     for (let i = 0; i < 4; i++) {
-      cy.get(`#\\/_choiceinput1_choice${i}_input`).click();
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
 
       cy.window().then((win) => {
 
-        // put this inside promise so that choices is populated before line is executed
+        // make this asynchronous so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
         cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
         // cy.get('#\\/_p3 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -78,6 +83,10 @@ describe('Choiceinput Tag Tests', function () {
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 0);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 3);
 
       });
     }
@@ -109,10 +118,11 @@ describe('Choiceinput Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'Selected index: ')
 
 
-    let choices;
+    let choices, choiceOrder;
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
       expect(originalChoices.includes(choices[0])).eq(true);
       expect(originalChoices.includes(choices[1])).eq(true);
@@ -129,6 +139,11 @@ describe('Choiceinput Tag Tests', function () {
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(components['/_choiceinput1'].stateValues.inline).eq(true);
       expect(components['/_choiceinput1'].stateValues.fixedOrder).eq(false);
+      expect(components['/_choice1'].stateValues.selected).eq(false);
+      expect(components['/_choice2'].stateValues.selected).eq(false);
+      expect(components['/_choice3'].stateValues.selected).eq(false);
+      expect(components['/_choice4'].stateValues.selected).eq(false);
+
     });
 
     cy.log('select options in order')
@@ -138,7 +153,7 @@ describe('Choiceinput Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        // put this inside promise so that choices is populated before line is executed
+        // make this asynchronous  so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
         cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
         // cy.get('#\\/_p3 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -149,6 +164,10 @@ describe('Choiceinput Tag Tests', function () {
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 0);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 3);
 
       });
     }
@@ -191,16 +210,21 @@ describe('Choiceinput Tag Tests', function () {
       // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(components['/_choiceinput1'].stateValues.inline).eq(false);
       expect(components['/_choiceinput1'].stateValues.fixedOrder).eq(true);
+      expect(components['/_choice1'].stateValues.selected).eq(false);
+      expect(components['/_choice2'].stateValues.selected).eq(false);
+      expect(components['/_choice3'].stateValues.selected).eq(false);
+      expect(components['/_choice4'].stateValues.selected).eq(false);
+
     });
 
     cy.log('select options in order')
 
     for (let i = 0; i < 4; i++) {
-      cy.get(`#\\/_choiceinput1_choice${i}_input`).click();
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
 
       cy.window().then((win) => {
 
-        // put this inside promise so that choices is populated before line is executed
+        // make this asynchronous  so that choices is populated before line is executed
         cy.get('#\\/_p1').should('have.text', 'Selected value: ' + choices[i])
         cy.get('#\\/_p2').should('have.text', 'Selected index: ' + (i + 1))
         // cy.get('#\\/_p3 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -211,6 +235,10 @@ describe('Choiceinput Tag Tests', function () {
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
+        expect(components['/_choice1'].stateValues.selected).eq(i === 0);
+        expect(components['/_choice2'].stateValues.selected).eq(i === 1);
+        expect(components['/_choice3'].stateValues.selected).eq(i === 2);
+        expect(components['/_choice4'].stateValues.selected).eq(i === 3);
 
       });
     }
@@ -326,7 +354,7 @@ describe('Choiceinput Tag Tests', function () {
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}, ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}, ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 4; ind++) {
@@ -359,7 +387,7 @@ describe('Choiceinput Tag Tests', function () {
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}, ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}, ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 4; ind++) {
@@ -387,12 +415,12 @@ describe('Choiceinput Tag Tests', function () {
 
       cy.log('select options in order from third input')
       for (let i = 0; i < 6; i++) {
-        cy.get(`${choice3Anchor}_choice${i}_input`).click();
+        cy.get(`${choice3Anchor}_choice${i + 1}_input`).click();
 
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}, ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}, ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 4; ind++) {
@@ -420,12 +448,12 @@ describe('Choiceinput Tag Tests', function () {
 
       cy.log('select options in order from fourth input')
       for (let i = 0; i < 6; i++) {
-        cy.get(`${choice4Anchor}_choice${i}_input`).click();
+        cy.get(`${choice4Anchor}_choice${i + 1}_input`).click();
 
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}, ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}, ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 4; ind++) {
@@ -533,12 +561,12 @@ describe('Choiceinput Tag Tests', function () {
 
       cy.log('select options in order from first input')
       for (let i = 0; i < 4; i++) {
-        cy.get(`#\\/_choiceinput1_choice${i}_input`).click();
+        cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click();
 
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 2; ind++) {
@@ -565,7 +593,7 @@ describe('Choiceinput Tag Tests', function () {
         cy.window().then((win) => {
 
           let origInd = originalChoices.indexOf(choices[i]) + 1;
-          // put this inside promise so that choices is populated before line is executed
+          // make this asynchronous  so that choices is populated before line is executed
           cy.get('#\\/_p1').should('have.text', `Selected values: ${choices[i]}, ${choices[i]}`)
           cy.get('#\\/_p2').should('have.text', `Selected indices: ${i + 1}, ${i + 1}`)
           // for (let ind = 0; ind < 2; ind++) {
@@ -584,6 +612,154 @@ describe('Choiceinput Tag Tests', function () {
 
         });
       }
+
+    })
+  });
+
+  it('bind value to choiceinput', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput>
+      <bindValueTo><copy tname="_textinput1" prop="value" /></bindValueTo>
+      <choice>caT</choice>
+      <choice>  dog </choice>
+      <choice>Monkey</choice>
+    </choiceinput>
+
+    <p>Select by typing: <textinput prefill="monkey" /></p>
+
+    <copy name="copy" inline tname="_choiceinput1" />
+
+    <p>Selected values: <aslist>
+    <copy prop='selectedvalue' tname="_choiceinput1" />
+    <copy prop='selectedvalue' tname="copy" />
+    </aslist></p>
+    <p>Selected indices: <aslist>
+    <copy prop='selectedindex' tname="_choiceinput1" />
+    <copy prop='selectedindex' tname="copy" />
+    </aslist></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["caT", "  dog ", "Monkey"]
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
+
+      let choiceOrder = components["/_choiceinput1"].stateValues.choiceOrder;
+      let choices = choiceOrder.map(x => originalChoices[x]);
+
+
+      let checkChoices = function (selectedChoice, inputText) {
+
+        let choiceArray, indexArray;
+        if (selectedChoice === null) {
+          choiceArray = indexArray = [];
+
+          for (let i = 1; i <= 3; i++) {
+            cy.get(`#\\/_choiceinput1_choice${i}_input`).should('not.be.checked')
+          }
+          cy.get(choice2Anchor).should('have.value', '')
+
+          cy.get('#\\/_p2').should('have.text', `Selected values: `)
+          cy.get('#\\/_p3').should('have.text', `Selected indices: `)
+
+        } else {
+          let selectedIndex = choices.indexOf(selectedChoice) + 1;
+          choiceArray = [selectedChoice];
+          indexArray = [selectedIndex];
+
+          for (let i = 1; i <= 3; i++) {
+            if (i === selectedIndex) {
+              cy.get(`#\\/_choiceinput1_choice${i}_input`).should('be.checked')
+            } else {
+              cy.get(`#\\/_choiceinput1_choice${i}_input`).should('not.be.checked')
+            }
+          }
+          cy.get(choice2Anchor).should('have.value', String(selectedIndex))
+          cy.get('#\\/_p2').should('have.text', `Selected values: ${selectedChoice}, ${selectedChoice}`)
+          cy.get('#\\/_p3').should('have.text', `Selected indices: ${selectedIndex}, ${selectedIndex}`)
+        }
+
+        cy.get('#\\/_textinput1_input').should('have.value', inputText)
+
+        cy.window().then((win) => {
+          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choiceArray)
+          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls(indexArray)
+          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls(choiceArray)
+          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls(indexArray)
+        })
+      }
+
+      checkChoices("Monkey", "monkey")
+
+
+      cy.log('select cat from first input');
+      let selectedChoice = "caT";
+      let selectedIndex = choices.indexOf(selectedChoice) + 1;
+      let inputText = selectedChoice;
+      cy.get(`#\\/_choiceinput1_choice${selectedIndex}_input`).click();
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('Type Dog')
+      selectedChoice = "  dog ";
+      selectedIndex = choices.indexOf(selectedChoice) + 1;
+      inputText = "Dog";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoice, inputText)
+
+
+      cy.log('select monkey from second input');
+      selectedChoice = "Monkey";
+      selectedIndex = choices.indexOf(selectedChoice) + 1;
+      inputText = selectedChoice;
+      cy.get(choice2Anchor).select(`${selectedIndex}`);
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('type no cat');
+      selectedChoice = null;
+      inputText = "no cat";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('select cat from second input');
+      selectedChoice = "caT";
+      selectedIndex = choices.indexOf(selectedChoice) + 1;
+      inputText = selectedChoice;
+      cy.get(choice2Anchor).select(`${selectedIndex}`);
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('type no dog');
+      selectedChoice = null;
+      inputText = "no dog";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('select dog from first input');
+      selectedChoice = "  dog ";
+      selectedIndex = choices.indexOf(selectedChoice) + 1;
+      inputText = selectedChoice;
+      cy.get(`#\\/_choiceinput1_choice${selectedIndex}_input`).click();
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('type no monkey');
+      selectedChoice = null;
+      inputText = "no monkey";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoice, inputText)
+
+      cy.log('type   monKey   ');
+      selectedChoice = "Monkey";
+      inputText = "  monKey   ";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoice, inputText)
 
     })
   });
