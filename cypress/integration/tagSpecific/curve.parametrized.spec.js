@@ -22,11 +22,9 @@ describe('Curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
       expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
@@ -54,8 +52,8 @@ describe('Curve Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
       expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
@@ -87,13 +85,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-3 * 32);
@@ -124,13 +122,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("y");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("x");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("y");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("x");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[1](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-3 * 32);
@@ -161,13 +159,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("u");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("v");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("s");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("u");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("v");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("s");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-3 * 32);
@@ -198,13 +196,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-3 * 32);
@@ -235,13 +233,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-3 * 32);
@@ -273,12 +271,12 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
       expect(components['/_curve1'].stateValues.parmin.simplify().tree).eq(-1);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(0.5);
+      expect(components['/_curve1'].stateValues.parmax).eq(0.5);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
       expect(parametrizedCurve.stateValues.parmin.simplify().tree).eq(-1);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(0.5);
+      expect(parametrizedCurve.stateValues.parmax).eq(0.5);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(-5 * 8);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(5 * 27);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(-3 * 32);
@@ -307,8 +305,8 @@ describe('Curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
       expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
@@ -336,8 +334,8 @@ describe('Curve Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.parmin.simplify().tree).eq(-1);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(0.5);
+      expect(components['/_curve1'].stateValues.parmin).eq(-1);
+      expect(components['/_curve1'].stateValues.parmax).eq(0.5);
       expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
       expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
       expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
@@ -369,13 +367,13 @@ describe('Curve Tag Tests', function () {
       expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
       expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
       expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parmin.tree).eq(-10);
-      expect(components['/_curve1'].stateValues.parmax.tree).eq(10);
+      expect(components['/_curve1'].stateValues.parmin).eq(-10);
+      expect(components['/_curve1'].stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
-      expect(parametrizedCurve.stateValues.parmin.tree).eq(-10);
-      expect(parametrizedCurve.stateValues.parmax.tree).eq(10);
+      expect(parametrizedCurve.stateValues.parmin).eq(-10);
+      expect(parametrizedCurve.stateValues.parmax).eq(10);
       expect(parametrizedCurve.stateValues.fs[0](-2)).eq(4 * 5);
       expect(parametrizedCurve.stateValues.fs[0](3)).eq(0);
       expect(parametrizedCurve.stateValues.fs[1](-2)).eq(0);
@@ -410,8 +408,8 @@ describe('Curve Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_curve1"].stateValues.parmin.tree).eq(-10);
-      expect(components["/_curve1"].stateValues.parmax.tree).eq(10);
+      expect(components["/_curve1"].stateValues.parmin).eq(-10);
+      expect(components["/_curve1"].stateValues.parmax).eq(10);
       expect(components["/_curve1"].stateValues.fs[0](-2)).eq(-4 + 1);
       expect(components["/_curve1"].stateValues.fs[0](3)).eq(6 + 1);
       expect(components["/_curve1"].stateValues.fs[1](-2)).eq(-8 - 2);
@@ -421,8 +419,8 @@ describe('Curve Tag Tests', function () {
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_curve1"].stateValues.parmin.tree).eq(-10);
-      expect(components["/_curve1"].stateValues.parmax.tree).eq(10);
+      expect(components["/_curve1"].stateValues.parmin).eq(-10);
+      expect(components["/_curve1"].stateValues.parmax).eq(10);
       expect(components["/_curve1"].stateValues.fs[0](-2)).eq(6 + 1);
       expect(components["/_curve1"].stateValues.fs[0](3)).eq(-9 + 1);
       expect(components["/_curve1"].stateValues.fs[1](-2)).eq(-8 + 3);

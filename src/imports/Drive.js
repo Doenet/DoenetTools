@@ -1546,21 +1546,21 @@ function Folder(props){
     { folder } 
   </WithDropTarget>
 
-  if (props.driveObj && !props.isNav) {
-    const sortButtons = <div style={{marginLeft: "2.5vw"}}>
-      {sortNodeButtonFactory({buttonLabel: "Sort Default", sortKey: sortOptions.DEFAULT, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
-      {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
-    </div>;
+  // if (props.driveObj && !props.isNav) {
+  //   const sortButtons = <div style={{marginLeft: "2.5vw"}}>
+  //     {sortNodeButtonFactory({buttonLabel: "Sort Custom", sortKey: sortOptions.DEFAULT, sortHandler})} 
+  //     {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})} 
+  //     {sortNodeButtonFactory({buttonLabel: "Sort Label DESC", sortKey: sortOptions.LABEL_DESC, sortHandler})} 
+  //     {sortNodeButtonFactory({buttonLabel: "Sort Date ASC", sortKey: sortOptions.CREATION_DATE_ASC, sortHandler})} 
+  //     {sortNodeButtonFactory({buttonLabel: "Sort Date DESC", sortKey: sortOptions.CREATION_DATE_DESC, sortHandler})}
+  //   </div>;
 
-    folder = <>
-      {sortButtons}
-      {folder}
+  //   folder = <>
+  //     {sortButtons}
+  //     {folder}
       
-    </>;
-  }
+  //   </>;
+  // }
 
   if (isOpen || (props.driveObj && !props.rootCollapsible)){
     let dictionary = contentsDictionary;

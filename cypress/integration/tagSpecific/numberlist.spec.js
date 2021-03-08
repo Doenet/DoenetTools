@@ -222,15 +222,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist>
 
-    <mathinput><copy prop="number1" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number2" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number3" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number4" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number5" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number6" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number7" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number8" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number9" tname="_numberlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
 
     ` }, "*");
     });
@@ -365,15 +365,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist>
 
-    <mathinput><copy prop="number1" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number2" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number3" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number4" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number5" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number6" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number7" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number8" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number9" tname="_numberlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
 
     ` }, "*");
     });
@@ -516,18 +516,18 @@ describe('Numberlist Tag Tests', function () {
       <copy tname="mid" />
     </numberlist>
 
-    <mathinput><copy prop="number1" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number2" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number3" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number4" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number5" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number6" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number7" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number8" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number9" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number10" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number11" tname="_numberlist1" /></mathinput>
-    <mathinput><copy prop="number12" tname="_numberlist1" /></mathinput>
+    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number10" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number11" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput><bindValueTo><copy prop="number12" tname="_numberlist1" /></bindValueTo></mathinput>
     ` }, "*");
     });
 

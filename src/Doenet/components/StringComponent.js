@@ -20,6 +20,7 @@ export default class StringComponent extends InlineComponent {
       returnDependencies: () => ({}),
       defaultValue: "",
       forRenderer: true,
+      set: String,
       definition: () => ({
         useEssentialOrDefaultValue: {
           value: { variablesToCheck: "value" },
@@ -30,7 +31,7 @@ export default class StringComponent extends InlineComponent {
           success: true,
           instructions: [{
             setStateVariable: "value",
-            value: desiredStateVariableValues.value
+            value: String(desiredStateVariableValues.value)
           }]
         };
       }

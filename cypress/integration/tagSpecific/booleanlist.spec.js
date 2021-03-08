@@ -60,15 +60,15 @@ describe('Booleanlist Tag Tests', function () {
           </booleanlist>
         </booleanlist>
     
-        <booleaninput><copy prop="boolean1" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean2" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean3" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean4" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean5" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean6" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean7" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean8" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean9" tname="_booleanlist1" /></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean1" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean2" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean3" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean4" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean5" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean6" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean7" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean8" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean9" tname="_booleanlist1" /></bindValueTo></booleaninput>
     
         ` }, "*");
     });
@@ -203,15 +203,15 @@ describe('Booleanlist Tag Tests', function () {
           </booleanlist>
         </booleanlist>
     
-        <booleaninput><copy prop="boolean1" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean2" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean3" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean4" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean5" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean6" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean7" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean8" tname="_booleanlist1" /></booleaninput>
-        <booleaninput><copy prop="boolean9" tname="_booleanlist1" /></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean1" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean2" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean3" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean4" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean5" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean6" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean7" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean8" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput><bindValueTo><copy prop="boolean9" tname="_booleanlist1" /></bindValueTo></booleaninput>
     
         ` }, "*");
     });

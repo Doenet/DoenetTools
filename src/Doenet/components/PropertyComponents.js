@@ -908,6 +908,7 @@ export class delegateCheckWorkToAnswerNumber extends NumberComponent {
 
 export class Condition extends BooleanComponent {
   static componentType = "condition";
+  static rendererType = "boolean";
 }
 
 export class EncodedGeogebraContent extends TextComponent {

@@ -506,7 +506,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>hello there</text></p>
-    <p>textinput based on text: <textinput><copy tname="_text1" /></textinput></p>
+    <p>textinput based on text: <textinput><bindValueTo><copy tname="_text1" /></bindValueTo></textinput></p>
     `}, "*");
     });
 
@@ -540,7 +540,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>hello there</text></p>
-    <p>textinput based on text: <textinput prefill="bye now"><copy tname="_text1" /></textinput></p>
+    <p>textinput based on text: <textinput prefill="bye now"><bindvalueto><copy tname="_text1" /></bindvalueto></textinput></p>
     `}, "*");
     });
 
@@ -554,7 +554,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>can't <text>update</text> <text>me</text></text></p>
-    <p>textinput based on text: <textinput><copy tname="_text1" /></textinput></p>
+    <p>textinput based on text: <textinput><bindValueTo><copy tname="_text1" /></bindValueTo></textinput></p>
     `}, "*");
     });
 
@@ -588,7 +588,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
-    <p>textinput based on textinput: <textinput><copy prop="value" tname="_textinput1" /></textinput></p>
+    <p>textinput based on textinput: <textinput><bindValueTo><copy prop="value" tname="_textinput1" /></bindValueTo></textinput></p>
     <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
     <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
     <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
@@ -699,7 +699,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
-    <p>textinput based on textinput: <textinput><copy prop="immediateValue" tname="_textinput1" /></textinput></p>
+    <p>textinput based on textinput: <textinput><bindValueTo><copy prop="immediateValue" tname="_textinput1" /></bindValueTo></textinput></p>
     <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
     <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
     <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
