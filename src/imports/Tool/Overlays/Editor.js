@@ -228,7 +228,7 @@ function VersionHistoryPanel(props){
       {title}
       <div>{version.timestamp}</div>
       </div>
-      {drawer}
+      {/* {drawer} */}
       </React.Fragment>)
 
       //Put draft at the top
@@ -258,7 +258,7 @@ function buildTimestamp(){
 
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
-  const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
+  const [selectedVersionId,setSelectedVersionId]  = useRecoilState(versionHistorySelectedAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
@@ -332,9 +332,11 @@ function TextEditor(props){
   }
 
  //Stop timers on unmount
+ //Also, clear history selection on unmount
   useEffect(() => {
     return () => {
-      clearSaveTimeouts()
+      clearSaveTimeouts();
+      setSelectedVersionId("");
     };
   },[]);
 
