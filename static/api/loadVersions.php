@@ -23,7 +23,7 @@ SELECT
 FROM content AS c
 WHERE removedFlag = 0
 AND branchId = '$branchId'
-ORDER BY c.timestamp DESC
+ORDER BY isDraft DESC,c.timestamp DESC
 ";
 
 $result = $conn->query($sql); 

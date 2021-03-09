@@ -33,12 +33,6 @@ $response_arr = array(
     "success"=> TRUE,
     "contentId"=> $contentId
 );
-$fileName = $contentId;
-if ($isDraft){$fileName = $branchId;}
-//TODO: Config file needed for server
-$newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
-fwrite($newfile, $dangerousDoenetML);
-fclose($newfile);
 
 if ($isDraft){
     $sql = "UPDATE content 
@@ -48,31 +42,65 @@ if ($isDraft){
     ";
 
     $result = $conn->query($sql);
+    saveDoenetML($branchId,$dangerousDoenetML);
 
-}else if($isNewTitle == '1'){
-    $sql = "
-    UPDATE content
-    SET title='$title',isNamed='1'
-    WHERE branchId='$branchId'
-    AND versionId='$versionId'
-    ";
-    $result = $conn->query($sql);
-
+}elseif($isNewTitle == '1'){
+        $sql = "
+        UPDATE content
+        SET title='$title',isNamed='1'
+        WHERE branchId='$branchId'
+        AND versionId='$versionId'
+        ";
+        $result = $conn->query($sql);
+    
 }else{
-    $sql = "INSERT INTO content 
-    SET branchId='$branchId',
-    contentId='$contentId', 
-    versionId='$versionId', 
-    title='$title',
-    timestamp=NOW(),
-    isDraft='0',
-    isNamed='$isNamed'
+
+    //Protect against duplicate versionId's
+    $sql = "
+    SELECT versionId
+    FROM content
+    WHERE versionId='$versionId'
     ";
 
     $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+
+
+    if($versionId == $row['versionId']){
+        $response_arr = array(
+            "success"=> false,
+            "versionId"=> $versionId
+        );
+    }else{
+
+        saveDoenetML($contentId,$dangerousDoenetML);
+    
+        $sql = "INSERT INTO content 
+        SET branchId='$branchId',
+        contentId='$contentId', 
+        versionId='$versionId', 
+        title='$title',
+        timestamp=NOW(),
+        isDraft='0',
+        isNamed='$isNamed'
+        ";
+    
+        $result = $conn->query($sql);
+    }
+    
 }
 
- 
+
+
+function saveDoenetML($fileName,$dangerousDoenetML){
+    // $fileName = $contentId;
+    // if ($isDraft){$fileName = $branchId;}
+    //TODO: Config file needed for server
+    $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
+    fwrite($newfile, $dangerousDoenetML);
+    fclose($newfile);
+}
+
 
 
 // set response code - 200 OK

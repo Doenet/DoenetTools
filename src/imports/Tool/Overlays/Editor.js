@@ -133,7 +133,7 @@ function VersionHistoryPanel(props){
         branchId
       }
          axios.post("/api/saveNewVersion.php",newDBVersion)
-          // .then((resp)=>{console.log(">>>resp",resp.data)})
+          // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
       return newHistory;
     })
 
@@ -263,7 +263,16 @@ function TextEditor(props){
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    let newVersion = {...oldVersions[0]}  //Draft is always first entry
+
+    //Find Draft
+    let newVersion;
+    for (const [i,version] of oldVersions.entries()){
+      if (version.isDraft === '1'){
+        newVersion = {...version};
+        break;
+      }
+
+    }
     newVersion.contentId = getSHAofContent(doenetML);
     newVersion.timestamp = buildTimestamp();
 
@@ -277,7 +286,7 @@ function TextEditor(props){
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp",resp.data)})
+        // .then((resp)=>{console.log(">>>resp saveDraft",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
 
@@ -300,19 +309,12 @@ function TextEditor(props){
     }
 
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    let foundVersionId = false;
-    for (let version of oldVersions){
-      if (version.versionId === versionId){
-        foundVersionId = true;
-        break;
-      }
-    }
-    if (!foundVersionId){
+    
       set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
       set(fileByContentId(newVersion.contentId),{data:doenetML});
       axios.post("/api/saveNewVersion.php",newDBVersion)
-      //  .then((resp)=>{console.log(">>>resp",resp.data)})
-    }
+      //  .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
+  
   });
 
   const timeout = useRef(null);
@@ -341,7 +343,15 @@ function TextEditor(props){
   },[]);
 
   if (selectedVersionId !== ""){
+    //Read Only without timers
     clearSaveTimeouts()
+    if (editorRef.current){
+      editorRef.current.options.readOnly = true;
+    }
+  }else{
+    if (editorRef.current){
+      editorRef.current.options.readOnly = false;
+    }
   }
 
   const editorInit = useRecoilValue(editorInitAtom);
@@ -451,27 +461,11 @@ function NameCurrentVersionControl(props){
 
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
 
-    let foundVersionId = false;
-    for (let version of oldVersions){
-      if (version.versionId === versionId){
-        foundVersionId = true;
-        break;
-      }
-    }
-    if (!foundVersionId){
-      set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-      set(fileByContentId(contentId),{data:doenetML});
-      axios.post("/api/saveNewVersion.php",newDBVersion)
-    }
+    set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+    set(fileByContentId(contentId),{data:doenetML});
+    axios.post("/api/saveNewVersion.php",newDBVersion)
+      // .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
     
-
-    //Can't set in a set callback
-    // set(itemHistoryAtom(branchId),(oldVersions)=>{
-    //   console.log(">>>newVersion",newVersion)
-    //   set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-    //   set(fileByContentId(contentId),{data:doenetML});
-    //   axios.post("/api/saveNewVersion.php",newDBVersion)
-    // })
     
   })
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
