@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { animated, useTransition } from "react-spring";
+import { animated } from "react-spring";
 import NavPanel from "./Panels/NavPanel";
 import HeaderPanel from "./Panels/HeaderPanel";
 import ContentPanel from "./Panels/ContentPanel";
@@ -36,8 +36,6 @@ export default function Tool({ children }) {
   const [panels, setPanels] = useState({});
 
   useEffect(() => {
-    console.log(">>>Generating elemnts: ", stackId);
-
     //lowercase names logic
     var toolParts = {};
 
@@ -126,7 +124,7 @@ export default function Tool({ children }) {
       );
     }
     setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
-  }, [children]);
+  }, [children, stackId]);
 
   return (
     <ToolContainer $isOverlay={stackId > 0}>
@@ -138,21 +136,3 @@ export default function Tool({ children }) {
     </ToolContainer>
   );
 }
-// const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
-//   from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
-//   enter: { top: 0 },
-//   leave: { top: 100 },
-//   unique: true,
-//   reset: true,
-// });
-// {/* {transition.map(
-//   ({ item, key, props }) =>
-//     item && (
-//       <animated.div
-//         key={key}
-//         style={{ ...props, top: props.top.interpolate((h) => `${h}vh`) }}
-//       >
-//         {overlay}
-//       </animated.div>
-//     )
-// )} */}
