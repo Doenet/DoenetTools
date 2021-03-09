@@ -47,8 +47,8 @@ export default class Booleaninput extends Input {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "atMostOneBoolean",
-      componentType: "boolean",
+      name: "atMostOneBindValueTo",
+      componentType: "bindValueTo",
       comparison: "atMost",
       number: 1,
       setAsBase: true,
@@ -67,9 +67,9 @@ export default class Booleaninput extends Input {
       componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
-        booleanChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneBoolean",
+        bindValueToChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneBindValueTo",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
         },
@@ -79,27 +79,27 @@ export default class Booleaninput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.booleanChild.length === 0) {
+        if (dependencyValues.bindValueToChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
                 get defaultValue() {
-                  return ["true", "t"].includes(dependencyValues.prefill.trim().toLowerCase());
+                  return dependencyValues.prefill.trim().toLowerCase() === "true";
                 }
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.booleanChild[0].stateValues.value } };
+        return { newValues: { value: dependencyValues.bindValueToChild[0].stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        if (dependencyValues.booleanChild.length === 1) {
+        if (dependencyValues.bindValueToChild.length === 1) {
           return {
             success: true,
             instructions: [{
-              setDependency: "booleanChild",
+              setDependency: "bindValueToChild",
               desiredValue: desiredStateVariableValues.value,
               childIndex: 0,
               variableIndex: 0,

@@ -29,8 +29,6 @@ import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
 import MathComponent from './components/Math';
 import Copy from './components/Copy';
-import Tname from './components/Tname';
-import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
 import Ref from './components/Ref';
@@ -45,9 +43,6 @@ import Rectangle from './components/Rectangle';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
-import FunctionCurve from './components/FunctionCurve';
-import ParametrizedCurve from './components/ParametrizedCurve';
-import BezierCurve from './components/BezierCurve';
 import BezierControls from './components/BezierControls';
 import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
@@ -70,13 +65,11 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
-import InterpolatedFunction from './components/InterpolatedFunction';
 import Template from './components/Template';
+import Option from './components/Option';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
-import Substitutions from './components/Substitutions';
-import CopyFromSubs from './components/CopyFromSubs';
-import IndexFromSubs from './components/IndexFromSubs';
+import Sources from './components/Sources';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
@@ -128,6 +121,11 @@ import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
+import SelectByIndex from './components/SelectByIndex';
+import Case from './components/Case';
+import SelectByCondition from './components/SelectByCondition';
+import Empty from './components/Empty';
+import BindValueTo from './components/BindValueTo';
 
 
 //Extended
@@ -147,7 +145,6 @@ import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import ComponentSize from './components/abstract/ComponentSize';
-import ComponentWithSerializedChildren from './components/abstract/ComponentWithSerializedChildren';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
 import MathWithVariable from './components/abstract/MathWithVariable';
@@ -183,8 +180,7 @@ const componentTypeArray = [
   BooleanComponent, BooleanList,
   MathComponent, MathList,
   NumberList,
-  Copy, Tname,
-  Prop,
+  Copy,
   Extract,
   Collect,
   Ref,
@@ -195,7 +191,7 @@ const componentTypeArray = [
   Rectangle,
   Circle,
   Parabola,
-  Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
+  Curve,
   BezierControls, ControlVectors,
   Vector,
   Angle,
@@ -208,8 +204,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
-  InterpolatedFunction,
-  Template,
+  Template, Option,
   Sequence,
   Slider,
   Spreadsheet,
@@ -220,7 +215,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, CopyFromSubs, IndexFromSubs,
+  Map, Sources,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,
@@ -256,6 +251,11 @@ const componentTypeArray = [
   CollaborateGroupSetup,
   Div,
   ConsiderAsResponses,
+  SelectByIndex,
+  Case,
+  SelectByCondition,
+  Empty,
+  BindValueTo,
 ];
 
 const componentTypeArrayExtended = [
@@ -278,7 +278,6 @@ const componentTypeArrayExtended = [
   MathBaseOperator, MathBaseOperatorOneInput,
   FunctionBaseOperator,
   ComponentSize,
-  ComponentWithSerializedChildren,
   SectioningComponent,
   TextFromSingleStringChild,
   MathWithVariable,
@@ -322,23 +321,6 @@ export function allComponentClasses() {
   return componentClasses;
 }
 
-export function componentTypesTakingComponentNames() {
-  const componentClasses = {};
-  for (let ct of componentTypeArray) {
-    if (ct.takesComponentName) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      newComponentType = newComponentType.toLowerCase();
-      if (newComponentType in componentClasses) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-    }
-  }
-  return componentClasses;
-}
 
 export function componentTypesCreatingVariants() {
   const componentClasses = {};

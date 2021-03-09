@@ -11,3 +11,7 @@
 .nooutline {
   outline: none;
 }
+
+* {
+  outline: none;
+}

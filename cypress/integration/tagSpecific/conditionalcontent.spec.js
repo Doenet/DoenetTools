@@ -44,22 +44,22 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
-    cy.get('#\\/_mathinput1_input').clear().type("10{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
 
-    cy.get('#\\/_mathinput1_input').clear().type("-5/9{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
-    cy.get('#\\/_mathinput1_input').clear().type("5-5{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
-    cy.get('#\\/_mathinput1_input').clear().type("-x{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
@@ -113,7 +113,7 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
-    cy.get('#\\/_mathinput1_input').clear().type("10{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
     cy.get('#\\/_section1 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
@@ -121,7 +121,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section3 p').should('not.exist');
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1_input').clear().type("-5/9{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
@@ -129,7 +129,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section3 p').should('not.exist');
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1_input').clear().type("5-5{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').invoke('text').then((text) => {
@@ -137,7 +137,7 @@ describe('Conditional Content Tag Tests', function () {
     });
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1_input').clear().type("-x{enter}");
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').should('not.exist');
@@ -157,7 +157,7 @@ describe('Conditional Content Tag Tests', function () {
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
     <choiceinput inline="true"><choice>stable</choice><choice>unstable</choice></choiceinput>
-    <award><condition>
+    <award><when>
       <copy prop="selectedvalue" tname="_choiceinput1" />
       =
       <text>
@@ -168,7 +168,7 @@ describe('Conditional Content Tag Tests', function () {
           unstable
         </conditionalcontent>
       </text>
-    </condition></award>
+    </when></award>
   </answer>
   </p>
   `}, "*");
@@ -183,7 +183,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('3{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('3{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -191,7 +191,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('-0.8{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-0.8{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
@@ -199,7 +199,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('1/3{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1/3{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
@@ -208,7 +208,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
 
-    cy.get('#\\/_mathinput1_input').clear().type('-7/5{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}-7/5{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -217,7 +217,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
 
 
-    cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -238,7 +238,7 @@ describe('Conditional Content Tag Tests', function () {
   <p>Condition on <m>x</m>:
   <answer>
     <mathinput />
-    <award><condition>
+    <award><when>
       <copy prop="immediateValue" tname="_mathinput1" />
       =
       <math>
@@ -249,7 +249,7 @@ describe('Conditional Content Tag Tests', function () {
           x < 0
         </conditionalcontent>
       </math>
-    </condition></award>
+    </when></award>
   </answer>
   </p>
   `}, "*");
@@ -259,10 +259,10 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.get('#\\/_mathinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('x > 0{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('x > 0{enter}', { force: true });
     cy.get('#\\/_mathinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('x < 0{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
     cy.get('#\\/_mathinput1_incorrect').should('be.visible');
 
 
@@ -270,7 +270,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.get('#\\/_mathinput1_correct').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('x > 0{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}> 0{enter}', { force: true });
     cy.get('#\\/_mathinput1_incorrect').should('be.visible');
 
 
@@ -278,7 +278,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.get('#\\/_mathinput1_correct').should('be.visible');
 
-    cy.get('#\\/_mathinput1_input').clear().type('x < 0{enter}');
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
     cy.get('#\\/_mathinput1_incorrect').should('be.visible');
 
 

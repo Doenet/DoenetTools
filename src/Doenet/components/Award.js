@@ -1,4 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
+import me from 'math-expressions';
+import { evaluateLogic } from '../utils/booleanLogic';
 
 export default class Award extends BaseComponent {
   static componentType = "award";
@@ -22,7 +24,6 @@ export default class Award extends BaseComponent {
     properties.allowedErrorInNumbers = { default: 0, propagateToDescendants: true };
     properties.includeErrorInNumberExponents = { default: false, propagateToDescendants: true };
     properties.allowedErrorIsAbsolute = { default: false, propagateToDescendants: true };
-    properties.splitIntoOptions = { default: false, propagateToDescendants: true };
     properties.nSignErrorsMatched = { default: 0, propagateToDescendants: true };
     properties.feedbackCodes = { default: [] };
     properties.feedbackText = { default: null };
@@ -37,12 +38,6 @@ export default class Award extends BaseComponent {
     let exactlyOneWhen = childLogic.newLeaf({
       name: "exactlyOneWhen",
       componentType: 'when',
-      number: 1
-    });
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
       number: 1
     });
 
@@ -61,7 +56,7 @@ export default class Award extends BaseComponent {
     childLogic.newOperator({
       name: "whenXorStringXorMathXorText",
       operator: 'xor',
-      propositions: [exactlyOneWhen, exactlyOneString, exactlyOneMath, exactlyOneText],
+      propositions: [exactlyOneWhen, exactlyOneMath, exactlyOneText],
       setAsBase: true,
     });
 
@@ -73,75 +68,125 @@ export default class Award extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.incomplete = {
-      additionalStateVariablesDefined: [
-        "incompleteType", "childForIncomplete",
-      ],
-      triggerParentChildLogicWhenResolved: true,
+    stateVariableDefinitions.parsedExpression = {
+      additionalStateVariablesDefined: ["requireInputInAnswer"],
       returnDependencies: () => ({
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
-        },
         mathChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneMath",
-          requireChildLogicInitiallySatisfied: true,
         },
         textChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneText",
-          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: function ({ dependencyValues }) {
-        let incomplete = false;
-        let incompleteType, childForIncomplete;
 
-        if (dependencyValues.stringChild.length === 1) {
-          childForIncomplete = dependencyValues.stringChild[0];
-          incomplete = true;
-          incompleteType = "string";
-        } else if (dependencyValues.mathChild.length === 1) {
-          childForIncomplete = dependencyValues.mathChild[0];
-          incomplete = true;
-          incompleteType = "math";
-        } else if (dependencyValues.textChild.length === 1) {
-          childForIncomplete = dependencyValues.textChild[0];
-          incomplete = true;
-          incompleteType = "text";
+        let parsedExpression = null;
+        let requireInputInAnswer = false;
+
+        if (dependencyValues.mathChild.length === 1 ||
+          dependencyValues.textChild.length === 1
+        ) {
+
+          requireInputInAnswer = true;
+
+          parsedExpression = me.fromAst(["=", "comp1", "comp2"]);
         }
 
-        return { newValues: { incomplete, incompleteType, childForIncomplete } }
+        return { newValues: { parsedExpression, requireInputInAnswer } };
       }
     };
 
     stateVariableDefinitions.creditAchieved = {
-      additionalStateVariablesDefined: ["fractionSatisfied", "whenChild"],
+      additionalStateVariablesDefined: ["fractionSatisfied"],
       returnDependencies: () => ({
         credit: {
           dependencyType: "stateVariable",
           variableName: "credit"
         },
         whenChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneWhen",
           variableNames: ["fractionSatisfied"]
-        }
+        },
+        mathChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneMath",
+          variableNames: ["value", "unordered", "expand", "simplify"]
+        },
+        textChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneText",
+          variableNames: ["value"]
+        },
+        answerInput: {
+          dependencyType: "parentStateVariable",
+          variableName: "inputChildWithValues"
+        },
+        parsedExpression: {
+          dependencyType: "stateVariable",
+          variableName: "parsedExpression"
+        },
+        matchPartial: {
+          dependencyType: "stateVariable",
+          variableName: "matchPartial",
+        },
+        symbolicEquality: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicEquality",
+        },
+        expandOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "expandOnCompare",
+        },
+        simplifyOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "simplifyOnCompare",
+        },
+        unorderedCompare: {
+          dependencyType: "stateVariable",
+          variableName: "unorderedCompare",
+        },
+        allowedErrorInNumbers: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorInNumbers",
+        },
+        includeErrorInNumberExponents: {
+          dependencyType: "stateVariable",
+          variableName: "includeErrorInNumberExponents",
+        },
+        allowedErrorIsAbsolute: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorIsAbsolute",
+        },
+        nSignErrorsMatched: {
+          dependencyType: "stateVariable",
+          variableName: "nSignErrorsMatched",
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.whenChild.length === 0) {
-          return {
-            newValues: {
-              creditAchieved: 0,
-              fractionSatisfied: 0,
-              whenChild: undefined,
+      definition: function ({ dependencyValues, usedDefault }) {
+
+        let fractionSatisfied;
+
+        if (dependencyValues.whenChild.length === 1) {
+          fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
+        } else {
+          if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
+            return {
+              newValues: {
+                creditAchieved: 0,
+                fractionSatisfied: 0,
+              }
             }
           }
+
+          fractionSatisfied = evaluateLogicDirectlyFromChildren({
+            dependencyValues, usedDefault
+          });
+
         }
-        let fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
+
         let creditAchieved = 0;
         if (Number.isFinite(dependencyValues.credit)) {
           creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * Math.max(0, Math.min(1, fractionSatisfied));
@@ -149,11 +194,10 @@ export default class Award extends BaseComponent {
         return {
           newValues: {
             fractionSatisfied, creditAchieved,
-            whenChild: dependencyValues.whenChild[0],
           }
         }
-
       }
+
     }
 
     stateVariableDefinitions.awarded = {
@@ -256,3 +300,81 @@ export default class Award extends BaseComponent {
   }
 
 }
+
+
+function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
+
+  let dependenciesForEvaluateLogic = {
+    mathChildrenByCode: {},
+    mathlistChildrenByCode: {},
+    textChildrenByCode: {},
+    textlistChildrenByCode: {},
+    booleanChildrenByCode: {},
+    booleanlistChildrenByCode: {},
+  };
+
+  Object.assign(dependenciesForEvaluateLogic, dependencyValues);
+
+  let unorderedCompare = dependencyValues.unorderedCompare;
+  let simplifyOnCompare = dependencyValues.simplifyOnCompare;
+  let expandOnCompare = dependencyValues.expandOnCompare;
+
+  let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
+  let canOverrideSimplifyOnCompare = usedDefault.simplifyOnCompare;
+  let canOverrideExpandOnCompare = usedDefault.expandOnCompare;
+
+  if (dependencyValues.textChild.length === 1) {
+    dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
+  } else if (dependencyValues.mathChild.length === 1) {
+    let child = dependencyValues.mathChild[0];
+
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = child;
+    if (canOverrideUnorderedCompare && child.stateValues.unordered) {
+      unorderedCompare = true;
+    }
+
+    if (canOverrideExpandOnCompare && child.stateValues.expand) {
+      expandOnCompare = true;
+    }
+
+    if (canOverrideSimplifyOnCompare) {
+      if (child.stateValues.simplify === "full") {
+        simplifyOnCompare = "full";
+      } else if (child.stateValues.simplify === "numbers") {
+        if (simplifyOnCompare !== "full") {
+          simplifyOnCompare = "numbers";
+        }
+      } else if (child.stateValues.simplify === "numberspreserveorder") {
+        if (simplifyOnCompare !== "full" && simplifyOnCompare !== "numbers") {
+          simplifyOnCompare = "numberspreserveorder";
+        }
+      }
+    }
+
+  }
+
+  let answerValue = dependencyValues.answerInput.stateValues.immediateValue;
+  if (answerValue === undefined) {
+    answerValue = dependencyValues.answerInput.stateValues.value;
+  }
+
+  let answerChildForLogic = {
+    stateValues: { value: answerValue }
+  };
+
+  if (dependencyValues.answerInput.componentType === "textinput") {
+    dependenciesForEvaluateLogic.textChildrenByCode.comp1 = answerChildForLogic;
+  } else {
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp1 = answerChildForLogic;
+  }
+
+  return evaluateLogic({
+    logicTree: dependencyValues.parsedExpression.tree,
+    unorderedCompare: unorderedCompare,
+    simplifyOnCompare: simplifyOnCompare,
+    expandOnCompare: expandOnCompare,
+    dependencyValues: dependenciesForEvaluateLogic,
+  });
+
+}
+

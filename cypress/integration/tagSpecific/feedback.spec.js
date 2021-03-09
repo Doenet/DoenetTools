@@ -36,41 +36,41 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`);
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').eq(0).should('have.text', 'You got full credit!')
       cy.get('#\\/_section1 p').eq(1).should('have.text', 'You typed the right answer!')
       cy.get('#\\/_section1 p').eq(2).should('not.exist')
 
       cy.log("Type wrong answer")
-      cy.get(mathinputAnchor).clear().type(`x`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').eq(0).should('have.text', 'You got full credit!')
       cy.get('#\\/_section1 p').eq(1).should('have.text', 'You typed the right answer!')
       cy.get('#\\/_section1 p').eq(2).should('not.exist')
@@ -79,21 +79,21 @@ describe('Feedback Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', "That's a bad answer.")
 
       cy.log("Enter different wrong answer")
-      cy.get(mathinputAnchor).clear().type(`y`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('have.text', "That's a bad answer.")
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('not.exist')
 
     })
@@ -104,7 +104,7 @@ describe('Feedback Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p><answer><award>x+y</award><award credit="0.5">x</award></answer></p>
+  <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <section>
   <feedback><condition><copy tname="_award1" /></condition>
   <p>You got award 1.</p>
@@ -121,60 +121,60 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type correct answer in")
-      cy.get(mathinputAnchor).type(`x+y`);
+      cy.get(mathinputAnchor).type(`x+y`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x+y');
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
 
       cy.log("Enter wrong answer")
-      cy.get(mathinputAnchor).clear().type(`x`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'x');
+      // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
 
       cy.log("Enter different wrong answer")
-      cy.get(mathinputAnchor).clear().type(`y`).blur();
+      cy.get(mathinputAnchor).type(`{end}{backspace}y`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', 'y');
+      // cy.get(mathinputAnchor).should('have.value', 'y');
       cy.get('#\\/_section1 p').should('not.exist')
 
     })
@@ -187,11 +187,11 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 1</condition></award>
-    <award><condition><copy prop="immediateValue" tname="_mathinput1" /> > 10</condition></award>
-    <award credit="0.2"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 2</condition></award>
-    <award credit="0.1"><condition><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</condition></award>
-    <award credit="0"><condition><copy prop="immediateValue" tname="_mathinput1" /> < 0</condition></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 1</when></award>
+    <award><when><copy prop="immediateValue" tname="_mathinput1" /> > 10</when></award>
+    <award credit="0.2"><when><copy prop="immediateValue" tname="_mathinput1" /> > 2</when></award>
+    <award credit="0.1"><when><copy prop="immediateValue" tname="_mathinput1" /> > 0.9</when></award>
+    <award credit="0"><when><copy prop="immediateValue" tname="_mathinput1" /> < 0</when></award>
   </answer></p>
   <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   <section>
@@ -223,31 +223,30 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Type 11")
-      cy.get('#\\/_mathinput1_input').type(`11`);
+      cy.get('#\\/_mathinput1 textarea').type(`11`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Blur")
-      cy.get('#\\/_mathinput1_input').blur();
+      cy.get('#\\/_mathinput1 textarea').blur();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
@@ -257,57 +256,57 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_mathinput1_submit').click();
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '11');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '11');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 10`)
 
       cy.log("submit 10")
-      cy.get('#\\/_mathinput1_input').clear().type(`10{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '10');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '10');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.2')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 2`)
 
       cy.log("submit 2")
-      cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}2{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '2');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '2');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 1`)
 
       cy.log("submit 1")
-      cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '1');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '1');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0.1')
       });
       cy.get('#\\/_section1 p').should('have.text', `Larger than 0.9`)
 
       cy.log("submit 0")
-      cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '0');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '0');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("submit -1")
-      cy.get('#\\/_mathinput1_input').clear().type(`-1{enter}`);
+      cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}-1{enter}`, { force: true });
 
       cy.log('Test value displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '-1');
+      // cy.get('#\\/_mathinput1_input').should('have.value', '-1');
       cy.get(caAnchor).invoke('text').then((text) => {
         expect(text.trim()).equal('0')
       });
@@ -360,10 +359,10 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
-      let choiceinputAnchor = '#' + choiceinputName;
-      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName)
+      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputAnchor = cesc('#' + choiceinputName);
+      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
 
       cy.log('Test value displayed in browser')
       cy.get(caAnchor).invoke('text').then((text) => {
@@ -444,7 +443,7 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -479,22 +478,22 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>
-    <award feedbackcodes="goodjob">sin(pi x)</award>
-    <award credit="0.7" feedbacktext="Close, but wrong trignometric function">cos(pi x)</award>
-    <award credit="0.3" feedbacktext="You lost pi">sin(x)</award>
+    <award feedbackcodes="goodjob"><math>sin(pi x)</math></award>
+    <award credit="0.7" feedbacktext="Close, but wrong trignometric function"><math>cos(pi x)</math></award>
+    <award credit="0.3" feedbacktext="You lost pi"><math>sin(x)</math></award>
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <aside name="feedback1" title=""><copy prop="feedback" tname="_award1" /></aside>
+  <subsection name="feedback1"><title/><copy prop="feedback" tname="_award1" /></subsection>
   
   <p>Award 2 feedback:</p>
-  <aside name="feedback2" title=""><copy prop="feedback" tname="_award2" /></aside>
+  <subsection name="feedback2"><title/><copy prop="feedback" tname="_award2" /></subsection>
 
   <p>Award 3 feedback:</p>
-  <aside name="feedback3" title=""><copy prop="feedback" tname="_award3" /></aside>
+  <subsection name="feedback3"><title/><copy prop="feedback" tname="_award3" /></subsection>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedback4" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedback4"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -503,14 +502,14 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
       cy.log('Test value displayed in browser')
-      cy.get(mathinputAnchor).should('have.value', '');
+      // cy.get(mathinputAnchor).should('have.value', '');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
@@ -528,7 +527,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type sin(pi x)")
-      cy.get(mathinputAnchor).clear().type(`sin(pi x)`);
+      cy.get(mathinputAnchor).type(`sin(pi x)`, { force: true });
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', '')
@@ -549,42 +548,42 @@ describe('Feedback Tag Tests', function () {
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
 
       cy.log("Type cos(pi x)")
-      cy.get(mathinputAnchor).clear().type(`cos(pi x)`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Blur")
       cy.get(mathinputAnchor).blur();
       cy.get(mathinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedback1').should('have.text', 'Good job!')
+      cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Good job!')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackGood job!')
 
 
       cy.log("Submit answer")
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').should('have.text', '')
-      cy.get('#\\/feedback2').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback2').should('have.text', ' FeedbackClose, but wrong trignometric function')
       cy.get('#\\/feedback3').should('have.text', '')
-      cy.get('#\\/feedback4').should('have.text', 'Close, but wrong trignometric function')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackClose, but wrong trignometric function')
 
 
       cy.log("Enter x")
-      cy.get(mathinputAnchor).clear().type(`x{enter}`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -592,12 +591,12 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/feedback4').should('have.text', '')
 
       cy.log("Enter sin(x)")
-      cy.get(mathinputAnchor).clear().type(`sin(x){enter}`);
+      cy.get(mathinputAnchor).type(`{end}{backspace}sin(x){enter}`, { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '30 %');
       cy.get('#\\/feedback1').should('have.text', '')
       cy.get('#\\/feedback2').should('have.text', '')
-      cy.get('#\\/feedback3').should('have.text', 'You lost pi')
-      cy.get('#\\/feedback4').should('have.text', 'You lost pi')
+      cy.get('#\\/feedback3').should('have.text', ' FeedbackYou lost pi')
+      cy.get('#\\/feedback4').should('have.text', ' FeedbackYou lost pi')
 
     })
   });
@@ -618,7 +617,7 @@ describe('Feedback Tag Tests', function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <aside name="feedbacks" title=""><copy prop="feedbacks" tname="_answer1" /></aside>
+  <subsection name="feedbacks"><title/><copy prop="feedbacks" tname="_answer1" /></subsection>
   `}, "*");
     });
 
@@ -646,24 +645,24 @@ describe('Feedback Tag Tests', function () {
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputCorrectAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Select half correct answer")
       cy.get(choiceinputAnchor).contains(`cat`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'Good job!')
+      cy.get('#\\/feedbacks').should('have.text', ' FeedbackGood job!')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();
       cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
         expect(text.trim().toLowerCase()).equal('50% correct')
       })
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Select half incorrect answer")
       cy.get(choiceinputAnchor).contains(`monkey`).click();
       cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get('#\\/feedbacks').should('have.text', 'meow')
+      cy.get('#\\/feedbacks').should('have.text', ' Feedbackmeow')
 
       cy.log("Click submit button")
       cy.get(choiceinputSubmitAnchor).click();

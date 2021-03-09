@@ -1,74 +1,83 @@
 import BaseComponent from './BaseComponent';
-import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
+import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from '../commonsugar/breakstrings';
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
   static rendererType = "container";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+
+    let createVectorList = function ({ matchedChildren }) {
+
+      let results = breakEmbeddedStringByCommas({
+        childrenList: matchedChildren,
+      });
+
+      if (results.success !== true) {
+        return { success: false }
+      }
+
+      let pieces = results.pieces;
+
+      let newChildren = [];
+
+      for (let ind = 0; ind < pieces.length; ind++) {
+        let piece = pieces[ind];
+
+        // each piece must be a vector (if not, we won't sugar)
+
+        let result = breakIntoVectorComponents(piece);
+        if (result.foundVector !== true) {
+          return { success: false };
+        }
+
+        let vectorComponents = result.vectorComponents;
+
+        let children = vectorComponents.map(x => ({
+          componentType: "x",
+          children: x
+        }));
+
+
+
+        newChildren.push({
+          componentType: "vector",
+          children: [{
+            componentType: "xs",
+            children
+          }]
+        })
+
+      }
+
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+
+    }
+
+    sugarInstructions.push({
+      // childrenRegex: /s+(.*s)?/,
+      replacementFunction: createVectorList
+    });
+
+    return sugarInstructions;
+
   }
+
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroVectors = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atLeastZeroVectors",
       componentType: 'vector',
       comparison: 'atLeast',
-      number: 0
-    });
-
-    let childrenToComponentFunction = x => ({
-      componentType: "vector", children: [{
-        componentType: "head", children: [{
-          componentType: "coords", children: x
-        }]
-      }]
-    });
-
-    let breakIntoVectorsByCommas = returnBreakStringsSugarFunction({
-      childrenToComponentFunction,
-      dependencyNameWithChildren: "stringsAndMaths"
-    });
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "childStateVariables",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroVectors"],
-      replacementFunction: breakIntoVectorsByCommas,
-    });
-
-    childLogic.newOperator({
-      name: "vectorsXorSugar",
-      operator: 'xor',
-      propositions: [stringsAndMaths, atLeastZeroVectors],
+      number: 0,
       setAsBase: true,
     });
 
@@ -83,7 +92,7 @@ export default class VectorListComponent extends BaseComponent {
     stateVariableDefinitions.nVectors = {
       returnDependencies: () => ({
         vectorChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
         }
       }),
@@ -93,29 +102,111 @@ export default class VectorListComponent extends BaseComponent {
       })
     }
 
+    
+    stateVariableDefinitions.nDimensions = {
+      returnDependencies: () => ({
+        vectorChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroVectors",
+          variableNames: ["nDimensions"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let nDimensions;
+
+        if (dependencyValues.vectorChildren.length === 0) {
+          nDimensions = 2;
+        } else {
+          nDimensions = 1;
+          for (let vector of dependencyValues.vectorChildren) {
+            if (Number.isFinite(vector.stateValues.nDimensions)) {
+              nDimensions = Math.max(nDimensions, vector.stateValues.nDimensions)
+            }
+          }
+        }
+        return {
+          newValues: { nDimensions },
+          checkForActualChange: { nDimensions: true }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.vectors = {
       isArray: true,
-      entryPrefixes: ["vector"],
+      nDimensions: 2,
+      entryPrefixes: ["vectorX", "vector"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "vectorX") {
+          return [];
+        } else {
+          // vector or entire array
+          // wrap inner dimension by both <vector> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["vector", "xs"]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "vectorX") {
+          // vectorX1_2 is the 2nd component of the first vector
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // vector3 is all components of the third vector
+          if (!arraySize) {
+            return [];
+          }
+          let vectorInd = Number(varEnding) - 1;
+          if (Number.isInteger(vectorInd) && vectorInd >= 0 && vectorInd < arraySize[0]) {
+            // array of "vectorInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => vectorInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+
+      },
       returnArraySizeDependencies: () => ({
         nVectors: {
           dependencyType: "stateVariable",
           variableName: "nVectors",
         },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVectors];
+        return [dependencyValues.nVectors, dependencyValues.nDimensions];
       },
-
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
+          let [vectorInd, dim] = arrayKey.split(',');
           dependenciesByKey[arrayKey] = {
             vectorChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroVectors",
-              variableNames: ["displacement"],
-              childIndices: [arrayKey],
+              variableNames: ["x" + (Number(dim) + 1)],
+              childIndices: [vectorInd],
             }
           }
         }
@@ -132,9 +223,11 @@ export default class VectorListComponent extends BaseComponent {
         let vectors = {};
 
         for (let arrayKey of arrayKeys) {
+          let dim = arrayKey.split(',')[1];
+
           let vectorChild = dependencyValuesByKey[arrayKey].vectorChild[0];
           if (vectorChild) {
-            vectors[arrayKey] = vectorChild.stateValues.coords;
+            vectors[arrayKey] = vectorChild.stateValues["x" + (Number(dim) + 1)];
           }
         }
 
@@ -167,14 +260,13 @@ export default class VectorListComponent extends BaseComponent {
         }
 
       }
-
     }
 
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         vectorChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
         }
       }),

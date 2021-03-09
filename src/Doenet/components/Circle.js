@@ -1,4 +1,6 @@
 import Curve from './Curve';
+import GraphicalComponent from './abstract/GraphicalComponent';
+
 import me from 'math-expressions';
 
 export default class Circle extends Curve {
@@ -26,51 +28,16 @@ export default class Circle extends Curve {
 
     childLogic.deleteAllLogic();
 
-    let addCenter = function ({ activeChildrenMatched }) {
-      // add <center> around point
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "center",
-          children: [{
-            createdComponent: true,
-            componentName: activeChildrenMatched[0].componentName
-          }],
-        }],
-      }
-    }
-
-    let exactlyOnePoint = childLogic.newLeaf({
-      name: "exactlyOnePoint",
-      componentType: 'point',
-      number: 1,
-      isSugar: true,
-      replacementFunction: addCenter,
-    });
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      replacementFunction: addCenter,
-    });
-
-    let noPoints = childLogic.newLeaf({
-      name: "noPoints",
-      componentType: 'point',
-      number: 0
-    });
-
     let exactlyOneThrough = childLogic.newLeaf({
       name: "exactlyOneThrough",
       componentType: 'through',
       number: 1
     });
 
-    let exactlyOneCenter = childLogic.newLeaf({
-      name: "exactlyOneCenter",
+    let atMostOneCenter = childLogic.newLeaf({
+      name: "atMostOneCenter",
       componentType: 'center',
+      comparison: "atMost",
       number: 1
     });
 
@@ -78,18 +45,13 @@ export default class Circle extends Curve {
       name: "exactlyOneRadius",
       componentType: 'radius',
       number: 1,
-    });
-
-    let centerXorSugar = childLogic.newOperator({
-      name: "centerXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneCenter, exactlyOnePoint, exactlyOneString, noPoints],
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
       name: "radiusCenterOrThrough",
       operator: 'or',
-      propositions: [exactlyOneRadius, exactlyOneThrough, centerXorSugar],
+      propositions: [exactlyOneRadius, exactlyOneThrough, atMostOneCenter],
       setAsBase: true,
     });
 
@@ -97,32 +59,54 @@ export default class Circle extends Curve {
   }
 
 
-  static returnStateVariableDefinitions() {
+  static returnStateVariableDefinitions(args) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
 
-    // since circle inherits from curve, we put dummy placeholders for variables
-    stateVariableDefinitions.nVariables = {
+    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+
+    stateVariableDefinitions.curveType = {
+      forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nVariables: 0 } })
+      definition: () => ({ newValues: { curveType: "circle" } })
     }
-    stateVariableDefinitions.variables = {
-      isArray: true,
+
+
+    stateVariableDefinitions.parmax = {
       public: true,
-      componentType: "variable",
-      entryPrefixes: ["var"],
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmax: NaN } })
+    }
+
+    stateVariableDefinitions.parmin = {
+      public: true,
+      componentType: "number",
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { parmin: NaN } })
+    }
+
+
+    stateVariableDefinitions.fs = {
+      forRenderer: true,
+      isArray: true,
+      entryPrefixes: ["f"],
+      defaultEntryValue: () => 0,
       returnArraySizeDependencies: () => ({}),
-      returnArraySize() {
-        return [0];
-      },
+      returnArraySize: () => [0],
       returnArrayDependenciesByKey: () => ({}),
-      arrayDefinitionByKey: () => ({})
+      arrayDefinitionByKey: () => ({ newValues: { fs: {} } })
     }
 
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
         throughChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneThrough",
           variableNames: ["nPoints"]
         }
@@ -210,7 +194,7 @@ export default class Circle extends Curve {
 
           dependenciesByKey[arrayKey] = {
             throughChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneThrough",
               variableNames: ["pointX" + varEnding]
             }
@@ -335,8 +319,8 @@ export default class Circle extends Curve {
     stateVariableDefinitions.havePrescribedCenter = {
       returnDependencies: () => ({
         centerChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneCenter"
+          dependencyType: "child",
+          childLogicName: "atMostOneCenter"
         },
         centerShadow: {
           dependencyType: "stateVariable",
@@ -379,8 +363,8 @@ export default class Circle extends Curve {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             centerChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneCenter",
+              dependencyType: "child",
+              childLogicName: "atMostOneCenter",
               variableNames: ["x" + varEnding],
             },
           }
@@ -468,7 +452,7 @@ export default class Circle extends Curve {
       defaultValue: null,
       returnDependencies: () => ({
         radiusChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneRadius",
           variableNames: ["value"],
         },
@@ -519,7 +503,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.havePrescribedRadius = {
       returnDependencies: () => ({
         radiusChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneRadius"
         },
         radiusShadow: {
@@ -2030,30 +2014,9 @@ export default class Circle extends Curve {
       }
     }
 
-
-
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        },
-        centerChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneCenter"
-
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let childrenToRender = []
-        if (dependencyValues.throughChild.length === 1) {
-          childrenToRender.push(dependencyValues.throughChild[0].componentName);
-        }
-        if (dependencyValues.centerChild.length === 1) {
-          childrenToRender.push(dependencyValues.centerChild[0].componentName);
-        }
-        return { newValues: { childrenToRender } };
-      }
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     stateVariableDefinitions.nearestPoint = {

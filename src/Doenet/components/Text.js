@@ -48,13 +48,14 @@ export default class Text extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringTextChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndTexts",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
         },
       }),
       defaultValue: "",
+      set: String,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.stringTextChildren.length === 0) {
           return {
@@ -90,7 +91,7 @@ export default class Text extends InlineComponent {
           success: true,
           instructions: [{
             setStateVariable: "value",
-            value: desiredStateVariableValues.value
+            value: String(desiredStateVariableValues.value)
           }]
         };
       }
@@ -107,7 +108,15 @@ export default class Text extends InlineComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: { text: dependencyValues.value }
+      }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setDependency: "value",
+          desiredValue: desiredStateVariableValues.text,
+        }]
       })
+
     }
 
     return stateVariableDefinitions;

@@ -1,5 +1,6 @@
 import React, {useContext, useState, useCallback, useRef, useEffect} from 'react';
 import { IsNavContext } from './Tool/NavPanel'
+import { IsNavContext } from "./Tools/NavPanel";
 import {
   useQuery,
   useQueryCache,

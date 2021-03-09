@@ -31,6 +31,7 @@ FROM drive AS d
 LEFT JOIN drive_user AS du
 ON d.driveId = du.driveId
 WHERE du.userId='$userId'
+AND d.isDeleted = '0'
 ";
 
 $result = $conn->query($sql);
@@ -39,6 +40,39 @@ while($row = $result->fetch_assoc()){
     "driveId"=>$row['driveId'],
     "label"=>$row['label'],
     "type"=>$row['driveType'],
+    "subType"=>"Administrator",
+    "isShared"=>$row['isShared'],
+    "courseId"=>$row['courseId'],
+    "image"=>$row['image'],
+    "color"=>$row['color'],
+
+  );
+  array_push($driveIdsAndLabels,$driveAndLabel);
+}
+
+$sql = "
+SELECT 
+d.driveId AS driveId,
+d.label AS label,
+d.driveType AS driveType,
+d.isShared AS isShared,
+d.courseId AS courseId,
+d.image AS image,
+d.color AS color
+FROM course_enrollment AS ce
+LEFT JOIN drive AS d
+ON d.courseId = ce.courseId
+WHERE ce.userId='$userId'
+AND d.isDeleted = '0'
+";
+
+$result = $conn->query($sql);
+while($row = $result->fetch_assoc()){
+  $driveAndLabel = array(
+    "driveId"=>$row['driveId'],
+    "label"=>$row['label'],
+    "type"=>$row['driveType'],
+    "subType"=>"Student",
     "isShared"=>$row['isShared'],
     "courseId"=>$row['courseId'],
     "image"=>$row['image'],

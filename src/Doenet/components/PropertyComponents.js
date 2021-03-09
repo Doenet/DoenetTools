@@ -20,6 +20,8 @@ import NumberList from './NumberList';
 import MathList from './MathList';
 import When from './When';
 import TextOrInline from './abstract/TextOrInline';
+import Option from './Option';
+import Variants from './Variants';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -36,7 +38,7 @@ export class Draggable extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class modifyIndirectly extends BooleanComponent {
+export class ModifyIndirectly extends BooleanComponent {
   static componentType = "modifyIndirectly";
   static rendererType = "boolean";
 }
@@ -56,8 +58,8 @@ export class ChildNumber extends Integer {
   static rendererType = "number";
 }
 
-export class IncludeUndefinedArrayEntries extends BooleanComponent {
-  static componentType = "includeUndefinedArrayEntries";
+export class includeUndefinedObjects extends BooleanComponent {
+  static componentType = "includeUndefinedObjects";
   static rendererType = "boolean";
 }
 
@@ -105,21 +107,11 @@ export class Vertices extends PointListComponent {
 
 export class Head extends Point {
   static componentType = "head"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide.default = true;
-    return properties;
-  }
   static rendererType = "point";
 }
 
 export class Tail extends Point {
   static componentType = "tail"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide.default = true;
-    return properties;
-  }
   static rendererType = "point";
 }
 
@@ -130,11 +122,6 @@ export class Displacement extends Vector {
 
 export class Center extends Point {
   static componentType = "center"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true, forRenderer: true };
-    return properties;
-  }
   static rendererType = "point";
 }
 
@@ -266,11 +253,6 @@ export class RowNum extends TextComponent {
 
 export class ColNum extends TextComponent {
   static componentType = "colnum";
-  static rendererType = "text";
-}
-
-export class Type extends TextComponent {
-  static componentType = "type";
   static rendererType = "text";
 }
 
@@ -440,6 +422,10 @@ export class Variant extends TextFromSingleStringChild {
   static rendererType = "text";
 }
 
+export class SelectForVariants extends Variants {
+  static componentType = "selectForVariants";
+}
+
 export class NVariants extends Integer {
   static componentType = "nvariants";
   static rendererType = "number";
@@ -535,6 +521,11 @@ export class Symbolic extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class Input extends MathList {
+  static componentType = "input";
+  static rendererType = "aslist";
+}
+
 export class X extends MathComponent {
   static componentType = "x";
   static rendererType = "math";
@@ -565,8 +556,13 @@ export class RenderAsAcuteAngle extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class DisplayAxes extends BooleanComponent {
-  static componentType = "displayaxes";
+export class DisplayXAxis extends BooleanComponent {
+  static componentType = "displayxaxis";
+  static rendererType = "boolean";
+}
+
+export class DisplayYAxis extends BooleanComponent {
+  static componentType = "displayyaxis";
   static rendererType = "boolean";
 }
 
@@ -705,11 +701,6 @@ export class Geogebra extends TextComponent {
   static rendererType = "text";
 }
 
-export class SplitIntoOptions extends BooleanComponent {
-  static componentType = "splitintooptions";
-  static rendererType = "boolean";
-}
-
 export class Keyword extends TextComponent {
   static componentType = "keyword";
   static rendererType = "text";
@@ -747,6 +738,11 @@ export class MatchPartial extends BooleanComponent {
 
 export class SymbolicEquality extends BooleanComponent {
   static componentType = "symbolicequality";
+  static rendererType = "boolean";
+}
+
+export class ShowCorrectness extends BooleanComponent {
+  static componentType = "showCorrectness";
   static rendererType = "boolean";
 }
 
@@ -840,6 +836,11 @@ export class MaximumNumber extends NumberComponent {
   static rendererType = "number";
 }
 
+export class MaximumNumberToSelect extends NumberComponent {
+  static componentType = "maximumNumberToSelect";
+  static rendererType = "number";
+}
+
 export class ShowLabel extends BooleanComponent {
   static componentType = "showlabel";
   static rendererType = "boolean";
@@ -847,11 +848,6 @@ export class ShowLabel extends BooleanComponent {
 
 export class MergeMathLists extends BooleanComponent {
   static componentType = "mergemathlists";
-  static rendererType = "boolean";
-}
-
-export class MergeNumberLists extends BooleanComponent {
-  static componentType = "mergenumberlists";
   static rendererType = "boolean";
 }
 
@@ -910,18 +906,9 @@ export class delegateCheckWorkToAnswerNumber extends NumberComponent {
   static rendererType = "number";
 }
 
-export class FromSubstitutions extends NumberComponent {
-  static componentType = "fromSubstitutions";
-  static rendererType = "number";
-}
-
-export class FromMapAncestor extends NumberComponent {
-  static componentType = "fromMapAncestor";
-  static rendererType = "number";
-}
-
-export class Condition extends When {
+export class Condition extends BooleanComponent {
   static componentType = "condition";
+  static rendererType = "boolean";
 }
 
 export class EncodedGeogebraContent extends TextComponent {
@@ -932,4 +919,47 @@ export class EncodedGeogebraContent extends TextComponent {
 export class FromMathInsight extends TextComponent {
   static componentType = "fromMathInsight";
   static rendererType = "text";
+}
+
+export class HeadDraggable extends BooleanComponent {
+  static componentType = "headDraggable";
+  static rendererType = "boolean";
+}
+
+export class TailDraggable extends BooleanComponent {
+  static componentType = "tailDraggable";
+  static rendererType = "boolean";
+}
+
+export class ShowNavigation extends BooleanComponent {
+  static componentType = "showNavigation";
+  static rendererType = "boolean";
+}
+
+export class SelectIndices extends NumberList {
+  static componentType = "selectIndices";
+  static rendererType = "numberlist";
+}
+
+export class Rendered extends BooleanComponent {
+  static componentType = "rendered";
+  static rendererType = "boolean";
+}
+
+export class Else extends Option {
+  static componentType = "else";
+}
+
+export class Result extends Option {
+  static componentType = "result";
+}
+
+export class ComponentIndex extends NumberComponent {
+  static componentType = "componentIndex";
+  static rendererType = "number";
+}
+
+export class PropIndex extends NumberList {
+  static componentType = "propIndex";
+  static rendererType = "number";
 }

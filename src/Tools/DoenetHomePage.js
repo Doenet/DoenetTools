@@ -283,16 +283,8 @@ class DoenetHomePage extends Component {
               <h1 className="section-headline">Introducing DoenetML</h1>
               <p style={{ textAlign: "left" }}>The markup language DoenetML allows you to build richly interactive activities by focusing on the meaning of the elements you wish to create.  Based on <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks similar to HTML, with descriptive tags such as <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and <code>&lt;answer&gt;</code>.</p>
 
-              <p style={{ textAlign: "left" }}>You can experiment with activities using a preliminary version of DoenetML below.  Click on a link to open a page with both the DoenetML code and resulting activity.  Only a small subset of DoenetML tags are implemented in these demonstrations.  If you are familiar with HTML, you can edit the code and update the activity.</p>
-              <div style={{ margin: "auto", width: "300px" }}>
-                <ul style={{ textAlign: "left", color: "#6de5ff" }}>
-                  <li><a href="/guesteditor/?contentId=8c6c046148bce603dd8670c1274e0353e041f1d7bce6343382f94d06ca72b77d">Guest Editor</a></li>
-                  <li><a href="/guesteditor/?contentId=d386fa777d0bf25175b8d3e0fe95f309cc9f20fdd88c5b996419dd4742598b42">A line through two points</a></li>
-                  <li><a href="/guesteditor/?contentId=a22a2e97e1d853d385319e6cf24992eb2598cd2c597c68f249f0efa2c437dce7">The derivative of a quadratic</a></li>
-                  {/* <li><a href="/guesteditor/?contentId=ea679d587429fbeab982f296857eb856db3214da7327797553f285fe5ce72de3">Undamped pendulum simulation</a></li> */}
-                </ul>
-
-              </div>
+              <p style={{ textAlign: "left" }}>We expect to release examples of DoenetML soon.</p>
+              
             </div>
           </div>
           {/* 
@@ -314,10 +306,10 @@ class DoenetHomePage extends Component {
           <div className="shadow-color section">
             <div className="section-text">
               <h1 className="section-headline">Timeline</h1>
-              <p style={{ textAlign: "left" }}>In Fall 2020, we will begin piloting Doenet in a small number of courses.  We’ll use Doenet both for content delivery and learning experiments analyzing the effectiveness of the materials.
+              <p style={{ textAlign: "left" }}>In Fall 2020, we piloted Doenet in a small number of courses.  We used Doenet for both content delivery and learning experiments and performed analysis on the effectiveness of the materials.
               </p>
               <p style={{ textAlign: "left" }}>
-                After a successful pilot, we will expand the use of Doenet to include more courses at the University of Minnesota, Ohio State University and Ithaca College.  Starting in Fall 2021, we expect Doenet to be available to instructors at other institutions on a limited basis.
+                We will expand the use of Doenet to include more courses at the University of Minnesota, Ohio State University and Ithaca College.  Starting in Fall 2021, we expect Doenet to be available to instructors at other institutions on a limited basis.
               </p>
             </div>
           </div>

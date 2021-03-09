@@ -186,6 +186,7 @@ DROP TABLE IF EXISTS `content`;
 CREATE TABLE `content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `branchId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `versionId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
@@ -510,6 +511,7 @@ CREATE TABLE `drive` (
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
+  `isDeleted` tinyint(1) DEFAULT '0',
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1245,4 +1247,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-11 16:42:45
+-- Dump completed on 2021-03-05 15:58:28

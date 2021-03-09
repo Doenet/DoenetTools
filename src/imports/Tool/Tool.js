@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { animated, useTransition } from "react-spring";
-import { atom, selector, useRecoilValue, useRecoilCallback } from "recoil";
-import NavPanel from "./NavPanel";
-import HeaderPanel from "./HeaderPanel";
-import ContentPanel from "./ContentPanel";
-import MainPanel from "./MainPanel";
-import SupportPanel, { supportVisible } from "./SupportPanel";
-import MenuPanel from "./MenuPanel";
+import NavPanel from "./Panels/NavPanel";
+import HeaderPanel from "./Panels/HeaderPanel";
+import ContentPanel from "./Panels/ContentPanel";
+import MainPanel from "./Panels/MainPanel";
+import SupportPanel from "./Panels/SupportPanel";
+import MenuPanel from "./Panels/MenuPanel";
+import { useStackId } from "./ToolRoot";
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -18,176 +18,141 @@ const ToolContainer = styled(animated.div)`
   width: 100vw;
   height: 100vh;
   background-color: #f6f8ff;
+  position: fixed;
+  top: 0;
+  left: 0;
 `;
 
-export const overlayStack = atom({
-  key: "activeOverlayNameAtom",
-  default: [],
-});
+const implementedToolParts = [
+  "navPanel",
+  "headerPanel",
+  "mainPanel",
+  "supportPanel",
+  "menuPanel",
+];
 
-export const openOverlayByName = selector({
-  key: "openOverlayByNameSelector",
-  get: ({ get }) => {
-    const currentElement = get(overlayStack);
-    return currentElement.length === 0
-      ? currentElement
-      : currentElement[currentElement.length - 1];
-  },
-
-  set: ({ get, set }, newValue) => {
-    if (newValue.instructions.action === "open") {
-      const stackDepth = get(overlayStack).length + 1;
-      set(overlayStack, (old) => [...old, newValue]);
-      set(
-        supportVisible(stackDepth),
-        newValue?.instructions?.supportVisble ?? false
-      );
-    } else if (newValue.instructions.action === "close") {
-      set(overlayStack, (old) => {
-        let newArray = [...old];
-        newArray.pop();
-        return newArray;
-      });
-    }
-  },
-});
-
-export const useStackId = () => {
-  const getId = useRecoilCallback(({ snapshot }) => () => {
-    const currentId = snapshot.getLoadable(overlayStack);
-    return currentId.getValue().length;
-  });
-  const [stackId] = useState(() => getId());
-  return stackId;
-};
-
-export default function Tool(props) {
-  // console.log("=== Tool (only once)");
+export default function Tool({ children }) {
   const stackId = useStackId();
-  const openOverlayObj = useRecoilValue(openOverlayByName);
+  const [panels, setPanels] = useState({});
 
-  const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
-    from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
-    enter: { top: 0 },
-    leave: { top: 100 },
-    unique: true,
-    reset: true,
-  });
+  useEffect(() => {
+    console.log(">>>Generating elemnts: ", stackId);
 
-  //lowercase names logic
-  var toolParts = {};
+    //lowercase names logic
+    var toolParts = {};
 
-  const implementedToolParts = [
-    "navPanel",
-    "headerPanel",
-    "mainPanel",
-    "supportPanel",
-    "menuPanel",
-    "overlay",
-  ];
-
-  if (props.children) {
-    if (Array.isArray(props.children)) {
-      //populate toolParts dictionary from the lowercase Tool children
-      for (let child of props.children) {
-        if (implementedToolParts.includes(child.type)) {
-          let newProps = { ...child.props };
-          delete newProps.children;
-          if (child.type === "menuPanel") {
-            if (!toolParts.menuPanel) {
-              toolParts["menuPanel"] = [];
+    if (children) {
+      if (Array.isArray(children)) {
+        //populate toolParts dictionary from the lowercase Tool children
+        for (let child of children) {
+          if (implementedToolParts.includes(child.type)) {
+            let newProps = { ...child.props };
+            delete newProps.children;
+            if (child.type === "menuPanel") {
+              if (!toolParts.menuPanel) {
+                toolParts["menuPanel"] = [];
+              }
+              toolParts.menuPanel.push({
+                children: child.props.children,
+                props: newProps,
+              });
+            } else {
+              toolParts[child.type] = {
+                children: child.props.children,
+                props: newProps,
+              };
             }
-            toolParts.menuPanel.push({
-              children: child.props.children,
-              props: newProps,
-            });
-          } else if (child.type === "overlay") {
-            if (!toolParts.overlay) {
-              toolParts["overlay"] = {};
-            }
-            toolParts.overlay[child.props.name] = (
-              <Tool key={child.props.name}>{child.props.children}</Tool>
-            );
-          } else {
-            toolParts[child.type] = {
-              children: child.props.children,
-              props: newProps,
-            };
           }
         }
-      }
-    } else {
-      //Only one child
-      if (implementedToolParts.includes(props.children.type)) {
-        let newProps = { ...props.children.props };
-        delete newProps.children;
-        toolParts[props.children.type] = {
-          children: props.children.props.children,
-          props: newProps,
-        };
+      } else {
+        //Only one child
+        if (implementedToolParts.includes(children.type)) {
+          let newProps = { ...children.props };
+          delete newProps.children;
+          toolParts[children.type] = {
+            children: children.props.children,
+            props: newProps,
+          };
+        }
       }
     }
-  }
 
-  let navPanel = null;
-  let headerPanel = null;
-  let mainPanel = null;
-  let supportPanel = null;
-  let menuPanel = null;
-  let overlay = null;
+    let navPanel = null;
+    let headerPanel = null;
+    let mainPanel = null;
+    let supportPanel = null;
+    let menuPanel = null;
 
-  if (toolParts?.navPanel) {
-    navPanel = <NavPanel>{toolParts.navPanel.children}</NavPanel>;
-  }
+    if (toolParts?.navPanel) {
+      navPanel = (
+        <NavPanel {...toolParts.navPanel.props} key={`Nav${stackId}`}>
+          {toolParts.navPanel.children}
+        </NavPanel>
+      );
+    }
 
-  if (toolParts?.headerPanel) {
-    headerPanel = (
-      <HeaderPanel title={toolParts.headerPanel.props.title}>
-        {toolParts.headerPanel.children}
-      </HeaderPanel>
-    );
-  }
+    if (toolParts?.headerPanel) {
+      headerPanel = (
+        <HeaderPanel {...toolParts.headerPanel.props} key={`Header${stackId}`}>
+          {toolParts.headerPanel.children}
+        </HeaderPanel>
+      );
+    }
 
-  if (toolParts?.mainPanel) {
-    mainPanel = <MainPanel>{toolParts.mainPanel.children}</MainPanel>;
-  }
+    if (toolParts?.mainPanel) {
+      mainPanel = (
+        <MainPanel {...toolParts.mainPanel.props} key={`Main${stackId}`}>
+          {toolParts.mainPanel.children}
+        </MainPanel>
+      );
+    }
 
-  if (toolParts?.supportPanel) {
-    supportPanel = (
-      <SupportPanel>{toolParts.supportPanel.children}</SupportPanel>
-    );
-  }
+    if (toolParts?.supportPanel) {
+      supportPanel = (
+        <SupportPanel
+          {...toolParts.supportPanel.props}
+          key={`Suppoort${stackId}`}
+        >
+          {toolParts.supportPanel.children}
+        </SupportPanel>
+      );
+    }
 
-  if (toolParts?.menuPanel) {
-    menuPanel = <MenuPanel>{toolParts.menuPanel}</MenuPanel>;
-  }
-  if (stackId === 0 && openOverlayObj?.name && toolParts?.overlay) {
-    overlay = toolParts.overlay[openOverlayObj.name];
-  }
+    if (toolParts?.menuPanel) {
+      menuPanel = (
+        <MenuPanel {...toolParts.menuPanel.props} key={`Menu${stackId}`}>
+          {toolParts.menuPanel}
+        </MenuPanel>
+      );
+    }
+    setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
+  }, [children]);
 
   return (
-    <>
-      {transition.map(
-        ({ item, key, props }) =>
-          item && (
-            <animated.div
-              key={key}
-              style={{ ...props, top: props.top.interpolate((h) => `${h}vh`) }}
-            >
-              {overlay}
-            </animated.div>
-          )
-      )}
-      <ToolContainer
-        // style={{ top: spring.value.interpolate((h) => `${h}vh`) }}
-        $isoverlay={stackId > 0 ?? false}
-      >
-        {navPanel}
-        {headerPanel}
-        <ContentPanel main={mainPanel} support={supportPanel} />
-        {menuPanel}
-        {/* <ReactQueryDevtools /> */}
-      </ToolContainer>
-    </>
+    <ToolContainer $isOverlay={stackId > 0}>
+      {panels.navPanel}
+      {panels.headerPanel}
+      <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
+      {panels.menuPanel}
+      {/* <ReactQueryDevtools /> */}
+    </ToolContainer>
   );
 }
+// const transition = useTransition(openOverlayObj?.length != 0 ?? true, null, {
+//   from: { position: "fixed", zIndex: "3", backgroundColor: "red", top: 100 },
+//   enter: { top: 0 },
+//   leave: { top: 100 },
+//   unique: true,
+//   reset: true,
+// });
+// {/* {transition.map(
+//   ({ item, key, props }) =>
+//     item && (
+//       <animated.div
+//         key={key}
+//         style={{ ...props, top: props.top.interpolate((h) => `${h}vh`) }}
+//       >
+//         {overlay}
+//       </animated.div>
+//     )
+// )} */}

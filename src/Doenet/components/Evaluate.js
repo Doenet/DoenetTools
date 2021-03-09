@@ -1,15 +1,16 @@
 import MathComponent from './Math';
 import me from 'math-expressions';
+import { func } from 'prop-types';
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
   static rendererType = "math";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.symbolic = { default: false };
-    return properties;
-  }
+  // static createPropertiesObject(args) {
+  //   let properties = super.createPropertiesObject(args);
+  //   properties.symbolic = { default: false };
+  //   return properties;
+  // }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -23,16 +24,16 @@ export default class Evaluate extends MathComponent {
       number: 0,
       requireConsecutive: true,
     });
-    let atMostOneMath = childLogic.newLeaf({
-      name: "atMostOneMath",
-      componentType: 'math',
+    let atMostOneInput = childLogic.newLeaf({
+      name: "atMostOneInput",
+      componentType: 'input',
       comparison: 'atMost',
       number: 1,
     });
     childLogic.newOperator({
       name: "FunctionsAndMaths",
       operator: 'or',
-      propositions: [atLeastZeroFunctions, atMostOneMath],
+      propositions: [atLeastZeroFunctions, atMostOneInput],
       setAsBase: true,
     });
 
@@ -56,12 +57,13 @@ export default class Evaluate extends MathComponent {
     stateVariableDefinitions.nResults = {
       returnDependencies: () => ({
         functionChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroFunctions",
         },
-        mathChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneMath",
+        inputChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneInput",
+          variableNames: ["nComponents"]
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -69,7 +71,8 @@ export default class Evaluate extends MathComponent {
         let nResults;
 
         if (dependencyValues.functionChildren.length > 0
-          && dependencyValues.mathChild.length > 0
+          && dependencyValues.inputChild.length === 1
+          && dependencyValues.inputChild[0].stateValues.nComponents > 0
         ) {
           nResults = dependencyValues.functionChildren.length;
         } else {
@@ -97,14 +100,10 @@ export default class Evaluate extends MathComponent {
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
-          symbolic: {
-            dependencyType: "stateVariable",
-            variableName: "symbolic",
-          },
-          mathChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "atMostOneMath",
-            variableNames: ["value"]
+          inputChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneInput",
+            variableNames: ["nComponents", "maths"]
           }
         }
 
@@ -113,9 +112,9 @@ export default class Evaluate extends MathComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             functionChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atLeastZeroFunctions",
-              variableNames: ["f", "numericalf"],
+              variableNames: ["f", "symbolic"],
               childIndices: [arrayKey]
             },
           }
@@ -125,29 +124,75 @@ export default class Evaluate extends MathComponent {
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
 
+        // console.log(globalDependencyValues, dependencyValuesByKey)
+
         let evaluatedResults = {};
 
-        if (globalDependencyValues.mathChild.length > 0) {
+        if (globalDependencyValues.inputChild.length === 1
+          && globalDependencyValues.inputChild[0].stateValues.nComponents > 0
+        ) {
 
-          if (globalDependencyValues.symbolic) {
-            let input = globalDependencyValues.mathChild[0].stateValues.value;
-            for(let arrayKey of arrayKeys) {
-              let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
-              if(functionChild) {
-                evaluatedResults[arrayKey] = functionChild.stateValues.f(input)
-              }
-            }
-          } else {
-            let numericInput = globalDependencyValues.mathChild[0].stateValues.value.evaluate_to_constant();
-            for(let arrayKey of arrayKeys) {
-              let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
-              if(functionChild) {
-                evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.numericalf(numericInput))
+          // TODO: for now just take the first input
+          // generalize to functions of multiple variables
+
+          let input = globalDependencyValues.inputChild[0].stateValues.maths[0];
+
+          let calculatedNumericInput = false;
+          let numericInput;
+
+          for (let arrayKey of arrayKeys) {
+            let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+            if (functionChild) {
+              if (functionChild.stateValues.symbolic) {
+                evaluatedResults[arrayKey] = functionChild.stateValues.f(input);
+              } else {
+                if (!calculatedNumericInput) {
+                  calculatedNumericInput = true;
+                  numericInput = input.evaluate_to_constant();
+                  if (numericInput === null) {
+                    numericInput = NaN;
+                  }
+                }
+
+                for (let arrayKey of arrayKeys) {
+                  let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+                  if (functionChild) {
+                    evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.f(numericInput))
+                  }
+                }
               }
             }
           }
 
+
+          // if (globalDependencyValues.symbolic) {
+          //   // TODO: for now just take the first input
+          //   // generalize to functions of multiple varialbes
+          //   for (let arrayKey of arrayKeys) {
+          //     let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+          //     if (functionChild) {
+          //       evaluatedResults[arrayKey] = functionChild.stateValues.f(input)
+          //     }
+          //   }
+          // } else {
+          //   let numericInput = globalDependencyValues.inputChild[0].stateValues.maths[0].evaluate_to_constant();
+          //   console.log(`numericInput:  ${numericInput}`)
+          //   if (numericInput === null) {
+          //     numericInput = NaN;
+          //   }
+          //   for (let arrayKey of arrayKeys) {
+          //     let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+          //     if (functionChild) {
+          //       console.log(functionChild.stateValues.numericalf(numericInput))
+          //       evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.numericalf(numericInput))
+          //     }
+          //   }
+          // }
+
         }
+
+        // console.log("evaluatedResults")
+        // console.log(evaluatedResults)
 
         return {
           newValues: { evaluatedResults }

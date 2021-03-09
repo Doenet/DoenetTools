@@ -11,6 +11,49 @@ export default class BooleanList extends InlineComponent {
     return properties;
   }
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+
+    let breakStringsIntoBooleansByCommas = function ({ matchedChildren }) {
+
+      // break any string by commas,
+      // removing any empty (white space only) pieces
+      // and wrap pieces with boolean
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(",")
+              .map(s => s.trim())
+              .filter(s => s)
+              .map(s => ({
+                componentType: "boolean",
+                children: [{ componentType: "string", state: { value: s } }]
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
+      return {
+        success: true,
+        newChildren: newChildren,
+      }
+    }
+
+
+    sugarInstructions.push({
+      replacementFunction: breakStringsIntoBooleansByCommas
+    });
+
+    return sugarInstructions;
+
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -28,47 +71,12 @@ export default class BooleanList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoBooleansByCommas = function ({ dependencyValues }) {
-      let stringChild = dependencyValues.stringChildren[0];
-      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
-        componentType: "boolean",
-        state: { value: ["true", "t"].includes(x.trim().toLowerCase()) }
-      }));
-      return {
-        success: true,
-        newChildren: newChildren,
-        toDelete: [stringChild.componentName],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: "exactlyOneString",
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["atLeastZeroBooleans"],
-      replacementFunction: breakStringIntoBooleansByCommas,
-    });
-
-    let booleanAndBooleanLists = childLogic.newOperator({
+    childLogic.newOperator({
       name: "booleanAndBooleanLists",
       operator: "and",
-      propositions: [atLeastZeroBooleans, atLeastZeroBooleanlists]
-    })
-
-    childLogic.newOperator({
-      name: "BooleansXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneString, booleanAndBooleanLists],
+      propositions: [atLeastZeroBooleans, atLeastZeroBooleanlists],
       setAsBase: true,
-    });
+    })
 
     return childLogic;
   }
@@ -98,7 +106,7 @@ export default class BooleanList extends InlineComponent {
             variableName: "maximumNumber",
           },
           booleanAndBooleanlistChildren: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "booleanAndBooleanLists",
             variableNames: ["nComponents"],
             variablesOptional: true,
@@ -169,7 +177,7 @@ export default class BooleanList extends InlineComponent {
           }
           dependenciesByKey[arrayKey] = {
             booleanAndBooleanlistChildren: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "booleanAndBooleanLists",
               variableNames: ["value", "boolean" + booleanIndex],
               variablesOptional: true,
@@ -253,7 +261,7 @@ export default class BooleanList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         booleanAndBooleanlistChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "booleanAndBooleanLists",
           variableNames: ["childrenToRender"],
           variablesOptional: true,

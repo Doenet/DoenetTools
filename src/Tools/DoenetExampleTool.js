@@ -1,73 +1,65 @@
-import React from "react";
-import Tool, { openOverlayByName } from "../imports/Tool/Tool";
-import { useMenuPanelController } from "../imports/Tool/MenuPanel";
+import React, { useEffect } from "react";
+import Tool from "../imports/Tool/Tool";
+import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 import Drive from "../imports/Drive";
-import AddItem from "../imports/AddItem";
-import { useSetRecoilState, useRecoilValue } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
-
-//example data acessing
-function OverlayDataViwer() {
-  const overlayData = useRecoilValue(openOverlayByName);
-
-  return (
-    <div>
-      <h2>Data</h2>
-      <ul>
-        <li> name: {overlayData.name} </li>
-        <li> action: {overlayData.instructions.action} </li>
-        <li> supportVisble: {overlayData.supportVisble} </li>
-        <li> courseId: {overlayData.instructions.courseId} </li>
-        <li> branchId: {overlayData.instructions.branchId} </li>
-      </ul>
-    </div>
-  );
-}
+import { useToast } from "../imports/Tool/Toast";
 
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
 
-  const setOverlayOpen = useSetRecoilState(openOverlayByName);
-  const setOpenMenuPanel = useMenuPanelController();
-  setOpenMenuPanel(1); //array ID index of the desired panel
+  const { openOverlay, activateMenuPanel } = useToolControlHelper();
+  const toast = useToast();
+
+  useEffect(() => {
+    activateMenuPanel(1);
+  }, []);
 
   return (
     <Tool>
       <navPanel>
-        <div>DEMO!</div>
-        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+        <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
       </navPanel>
 
-      <headerPanel title="my title"></headerPanel>
+      <headerPanel title="Doenet Example Tool"></headerPanel>
 
       <mainPanel>
         <BreadcrumbContainer />
-        <AddItem />
         <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" />
-        <div
-          style={{ width: "80px", height: "2000px", backgroundColor: "red" }}
-        />
       </mainPanel>
 
-      <supportPanel width="40%">
+      <supportPanel isInitOpen>
         <p>Support Panel</p>
       </supportPanel>
 
       <menuPanel title="edit">
         <button
           onClick={() => {
-            setOverlayOpen({
-              name: "editor",
-              instructions: {
-                action: "open",
-                supportVisble: true,
-                courseId: "c1",
-                branchId: "b1",
-              },
-            });
+            toast("hello from Toast!", 3000);
           }}
         >
-          Go to Overlay
+          Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("Other Toast!", 1000);
+          }}
+        >
+          Other Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("hello from Toast!", 2000);
+          }}
+        >
+          Toast Test!
+        </button>
+        <button
+          onClick={() => {
+            openOverlay({ type: "calendar", title: "Cal", branchId: "fdsa" });
+          }}
+        >
+          Go to calendar
         </button>
         <p>control important stuff</p>
       </menuPanel>
@@ -75,106 +67,6 @@ export default function DoenetExampleTool() {
       <menuPanel title="other">
         <p>control more important stuff</p>
       </menuPanel>
-
-      <overlay name="editor">
-        <headerPanel title="my title"></headerPanel>
-
-        <mainPanel>
-          <h1>Editor</h1>
-          <h2>Data</h2>
-          <OverlayDataViwer />
-        </mainPanel>
-
-        <supportPanel width="40%">
-          <p>Support Panel</p>
-        </supportPanel>
-
-        <menuPanel title="control">
-          <p>control important stuff</p>
-          <div>
-            <button
-              onClick={() => {
-                setOverlayOpen({
-                  name: "cal",
-                  instructions: {
-                    action: "open",
-                    supportVisble: false,
-                    courseId: "d1",
-                    branchId: "e1",
-                  },
-                });
-              }}
-            >
-              Go to cal
-            </button>
-          </div>
-        </menuPanel>
-
-        <menuPanel title="extras">
-          <p>control more important stuff</p>
-        </menuPanel>
-      </overlay>
-
-      <overlay name="cal">
-        <headerPanel title="my title"></headerPanel>
-
-        <mainPanel>
-          <h1>calender</h1>
-          <h2>Data</h2>
-          <OverlayDataViwer />
-        </mainPanel>
-
-        <supportPanel width="40%">
-          <p>Support Panel</p>
-        </supportPanel>
-
-        <menuPanel title="edit">
-          <p>control important stuff</p>
-          <div>
-            <button
-              onClick={() => {
-                setOverlayOpen({
-                  name: "cal2",
-                  instructions: {
-                    action: "open",
-                    supportVisble: false,
-                    courseId: "d1",
-                    branchId: "e1",
-                  },
-                });
-              }}
-            >
-              Go to cal
-            </button>
-          </div>
-        </menuPanel>
-
-        <menuPanel title="other">
-          <p>control more important stuff</p>
-        </menuPanel>
-      </overlay>
-
-      <overlay name="cal2">
-        <headerPanel title="my title"></headerPanel>
-
-        <mainPanel>
-          <h1>calender</h1>
-          <h2>Data</h2>
-          <OverlayDataViwer />
-        </mainPanel>
-
-        <supportPanel width="40%">
-          <p>Support Panel</p>
-        </supportPanel>
-
-        <menuPanel title="edit">
-          <p>control important stuff</p>
-        </menuPanel>
-
-        <menuPanel title="other">
-          <p>control more important stuff</p>
-        </menuPanel>
-      </overlay>
     </Tool>
   );
 }

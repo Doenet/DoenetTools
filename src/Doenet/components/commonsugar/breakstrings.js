@@ -23,43 +23,41 @@
 
 export function returnBreakStringsSugarFunction({
   childrenToComponentFunction,
-  dependencyNameWithChildren,
-  stripOffOuterParentheses = false
+  mustStripOffOuterParentheses = false
 }) {
-  return function ({ dependencyValues }) {
+  return function ({ matchedChildren }) {
     let Nparens = 0;
     let pieces = [];
     let currentPiece = [];
-    let toDelete = [];
     let strippedParens = false;
 
-    let nChildren = dependencyValues[dependencyNameWithChildren].length;
+    let nChildren = matchedChildren.length;
 
-    for (let [compInd, component] of dependencyValues[dependencyNameWithChildren].entries()) {
+    if (mustStripOffOuterParentheses) {
+      let firstComponent = matchedChildren[0];
+      if (firstComponent.componentType !== "string" || firstComponent.state.value.trimLeft()[0] !== "(") {
+        return { success: false };
+      }
+
+    }
+
+    for (let [compInd, component] of matchedChildren.entries()) {
       if (component.componentType !== "string") {
-        currentPiece.push({
-          createdComponent: true,
-          componentName: component.componentName
-        });
+        currentPiece.push(component);
         continue;
       }
 
-      let s = component.stateValues.value.trim();
-      let deleteOriginalString = false;
+      let s = component.state.value.trim();
 
-      if (compInd === 0 && stripOffOuterParentheses && s[0] === "(") {
+      if (compInd === 0 && mustStripOffOuterParentheses && s[0] === "(") {
         // found beginning paren, now check if there is an ending parens
-        let lastChild = dependencyValues[dependencyNameWithChildren][nChildren - 1];
+        let lastChild = matchedChildren[nChildren - 1];
         if (lastChild.componentType === "string") {
-          let sLast = lastChild.stateValues.value.trimRight();
+          let sLast = lastChild.state.value.trimRight();
           if (sLast[sLast.length - 1] === ")") {
             // found ending paren, so we'll strip off first paren
             strippedParens = true;
             s = s.substring(1);
-            if (!deleteOriginalString) {
-              toDelete.push(component.componentName);
-              deleteOriginalString = true;
-            }
           }
         }
       }
@@ -77,10 +75,6 @@ export function returnBreakStringsSugarFunction({
 
             // check if stripped off initial paren and we're at the end
             if (strippedParens && compInd === nChildren - 1 && ind === s.length - 1) {
-              if (!deleteOriginalString) {
-                toDelete.push(component.componentName);
-                deleteOriginalString = true;
-              }
               // strip off last parens
               s = s.substring(0, s.length - 1);
               break;
@@ -100,24 +94,13 @@ export function returnBreakStringsSugarFunction({
           pieces.push(currentPiece);
           currentPiece = [];
           beginInd = ind + 1;
-          if (!deleteOriginalString) {
-            deleteOriginalString = true;
-            toDelete.push(component.componentName);
-          }
         }
       }
 
-      if (deleteOriginalString) {
-        if (s.length > beginInd) {
-          currentPiece.push({
-            componentType: "string",
-            state: { value: s.substring(beginInd, s.length) }
-          });
-        }
-      } else {
+      if (s.length > beginInd) {
         currentPiece.push({
-          createdComponent: true,
-          componentName: component.componentName
+          componentType: "string",
+          state: { value: s.substring(beginInd, s.length) }
         });
       }
 
@@ -134,7 +117,6 @@ export function returnBreakStringsSugarFunction({
 
     return {
       success: true,
-      toDelete: toDelete,
       newChildren: newChildren
     };
   }
@@ -145,59 +127,28 @@ export function returnBreakStringsSugarFunction({
 //
 // Utility function that can be used at the beginning of a sugar replacement function.
 // It breaks children by commas not enclosed in parentheses.
-// Components that are instances of entries of classesToExtract extracted into a separate array
 // Remaining components are kept embedded in the pieces
 
 // Returns
 // - success: true if successed to break pieces
 // - pieces: array of pieces that were broken apart by commas
 //   Each piece is an array of components.
-//   Each component is either a serialized string or a created component
-// - componentsExtracted: array of created components that matched classesToExtract
-// - toDelete: strings that were broken apart and hence must be deleted
 
-// In both pieces and componentsExtracted, additional information is added for internal use
-// (the information will be ignored when sugar replacement is processed)
-// - strings (whether createdComponents or serialized) have a _string property containing their string
-// - other created components have a _component property containing the original (proxied) child
-
-export function breakEmbeddedStringByCommas({ childrenList, classesToExtract = [] }) {
+export function breakEmbeddedStringByCommas({ childrenList }) {
   let Nparens = 0;
   let pieces = [];
   let currentPiece = [];
-  let toDelete = [];
-
-  let componentsExtracted = [];
 
   for (let component of childrenList) {
 
     if (component.componentType !== "string") {
 
-      let extracted = false;
-      for (let cl of classesToExtract) {
-        if (component instanceof cl) {
-          componentsExtracted.push({
-            createdComponent: true,
-            componentName: component.componentName,
-            _component: component,
-          });
-          extracted = true;
-          break;
-        }
-      }
-      if (!extracted) {
-        currentPiece.push({
-          createdComponent: true,
-          componentName: component.componentName,
-          _component: component,
-        });
-      }
+      currentPiece.push(component);
       continue;
     }
 
-    let s = component.stateValues.value.trim();
+    let s = component.state.value.trim();
     let beginInd = 0;
-    let deleteOriginalString = false;
 
     for (let ind = 0; ind < s.length; ind++) {
       let char = s[ind];
@@ -217,35 +168,20 @@ export function breakEmbeddedStringByCommas({ childrenList, classesToExtract = [
           currentPiece.push({
             componentType: "string",
             state: { value: newString },
-            _string: newString,
           });
         }
 
         pieces.push(currentPiece);
         currentPiece = [];
         beginInd = ind + 1;
-        if (deleteOriginalString !== true) {
-          toDelete.push(component.componentName);
-        }
-        deleteOriginalString = true;
-
       }
     }
 
-    if (deleteOriginalString) {
-      if (s.length > beginInd) {
-        let newString = s.substring(beginInd, s.length);
-        currentPiece.push({
-          componentType: "string",
-          state: { value: newString },
-          _string: newString,
-        });
-      }
-    } else {
+    if (s.length > beginInd) {
+      let newString = s.substring(beginInd, s.length);
       currentPiece.push({
-        createdComponent: true,
-        componentName: component.componentName,
-        _string: component.stateValues.value,
+        componentType: "string",
+        state: { value: newString },
       });
     }
 
@@ -261,8 +197,6 @@ export function breakEmbeddedStringByCommas({ childrenList, classesToExtract = [
   return {
     success: true,
     pieces: pieces,
-    toDelete: toDelete,
-    componentsExtracted: componentsExtracted,
   }
 }
 
@@ -276,77 +210,61 @@ export function breakEmbeddedStringByCommas({ childrenList, classesToExtract = [
 // Moreover, once those parens are removed, the remainder must be able to be broken by commas not in parens
 // (If not, then either compList didn't obey math rules of paren or the parens removed didn't match each other
 //
-// Assumes that compList was already a results of breakEmbeddedStringByCommas
-// as strings are intenfied solely by the presence of the _string property.
-// All other components are left embedded in the pieces
-//
 // Returns:
 // - foundVector: true if succeded
 // - vectorComponents: array whose components are arrays representing the vector components
-// - toDelete: strings that were broken apart and hence must be deleted
 
-export function breakIntoVectorComponents(compList, dryRun = false) {
+export function breakIntoVectorComponents(compList) {
   if (compList.length === 0) {
     return { foundVector: false };
   }
-  let s0 = compList[0]._string;
-  if (s0 === undefined) {
-    return { foundVector: false };
-  }
-  let char0 = s0.trim()[0];
-  if (char0 !== "(") {
+
+  if (compList[0].componentType !== "string") {
     return { foundVector: false };
   }
 
-  let sl = compList[compList.length - 1]._string;
-  if (sl === undefined) {
+  let sFirst = compList[0].state.value;
+  let charFirst = sFirst.trim()[0];
+  if (charFirst !== "(") {
     return { foundVector: false };
   }
-  let charl = sl.trim().slice(-1);
-  if (charl !== ")") {
+
+  if (compList[compList.length - 1].componentType !== "string") {
+    return { foundVector: false };
+  }
+
+  let sLast = compList[compList.length - 1].state.value;
+  let charLast = sLast.trim().slice(-1);
+  if (charLast !== ")") {
     return { foundVector: false };
   }
 
   let newCompList = [];
-  let toDelete = [];
   if (compList.length === 1) {
-    let snew = s0.trim().slice(1, -1).trim();
+    let snew = sFirst.trim().slice(1, -1).trim();
     if (snew.length > 0) {
       newCompList.push({
         componentType: "string",
         state: { value: snew },
-        _string: snew,
       })
-    }
-    if (dryRun !== true && compList[0].createdComponent === true) {
-      toDelete.push(compList[0].componentName);
     }
   } else {
-    let snew = s0.trim().slice(1).trim();
+    let snew = sFirst.trim().slice(1).trim();
     if (snew.length > 0) {
       newCompList.push({
         componentType: "string",
         state: { value: snew },
-        _string: snew,
       })
     }
-    if (dryRun !== true && compList[0].createdComponent === true) {
-      toDelete.push(compList[0].componentName);
-    }
 
-    for (let comp of compList.slice(1, -1)) {
-      newCompList.push(comp);
-    }
-    snew = sl.trim().slice(0, -1).trim();
+    newCompList.push(...compList.slice(1, -1));
+
+    snew = sLast.trim().slice(0, -1).trim();
     if (snew.length > 0) {
       newCompList.push({
         componentType: "string",
         state: { value: snew },
-        _string: snew,
       });
-    }
-    if (dryRun !== true && compList[compList.length - 1].createdComponent === true) {
-      toDelete.push(compList[compList.length - 1].componentName);
     }
 
   }
@@ -355,16 +273,16 @@ export function breakIntoVectorComponents(compList, dryRun = false) {
   let currentPiece = [];
 
   for (let comp of newCompList) {
-    let s = comp._string;
 
-    if (s === undefined) {
+    if (comp.componentType !== "string") {
       currentPiece.push(comp);
       continue;
     }
-    s = s.trim();
+
+    let s = comp.state.value.trim();
 
     let beginInd = 0;
-    let deleteOriginalString = false;
+    let brokeString = false;
 
     for (let ind = 0; ind < s.length; ind++) {
       let char = s[ind];
@@ -378,43 +296,34 @@ export function breakIntoVectorComponents(compList, dryRun = false) {
         }
         Nparens--
       }
-      if (dryRun !== true) {
-        if (char === "," && Nparens === 0) {
-          if (ind > beginInd) {
-            let snew = s.substring(beginInd, ind).trim();
-            currentPiece.push({
-              componentType: "string",
-              state: { value: snew },
-              _string: snew,
-            });
-          }
 
-          pieces.push(currentPiece);
-          currentPiece = [];
-          beginInd = ind + 1;
-          if (deleteOriginalString !== true) {
-            if (comp.createdComponent) {
-              toDelete.push(comp.componentName);
-            }
-          }
-          deleteOriginalString = true;
-        }
-      }
-    }
-
-    if (dryRun !== true) {
-      if (deleteOriginalString) {
-        if (s.length > beginInd) {
-          let snew = s.substring(beginInd, s.length).trim();
+      if (char === "," && Nparens === 0) {
+        if (ind > beginInd) {
+          let snew = s.substring(beginInd, ind).trim();
           currentPiece.push({
             componentType: "string",
             state: { value: snew },
-            _string: snew,
           });
         }
-      } else {
-        currentPiece.push(comp);
+
+        pieces.push(currentPiece);
+        currentPiece = [];
+        beginInd = ind + 1;
+        brokeString = true;
       }
+
+    }
+
+    if (brokeString) {
+      if (s.length > beginInd) {
+        let snew = s.substring(beginInd, s.length).trim();
+        currentPiece.push({
+          componentType: "string",
+          state: { value: snew },
+        });
+      }
+    } else {
+      currentPiece.push(comp);
     }
   }
 
@@ -423,16 +332,11 @@ export function breakIntoVectorComponents(compList, dryRun = false) {
     return { foundVector: false };
   }
 
-  if (dryRun === true) {
-    return { foundVector: true };
-  }
-
   pieces.push(currentPiece);
 
   return {
     foundVector: true,
     vectorComponents: pieces,
-    toDelete: toDelete,
   }
 }
 
@@ -464,6 +368,13 @@ export function breakIntoVectorComponents(compList, dryRun = false) {
 //
 // Note 2: we assume pieces have already been processed by breakEmbeddedStringByCommas
 // so that strings can be idenified by the _string property
+
+
+
+
+// TODO: this no longer works, as we don't add _string property,
+// but this code isn't currently being called anywhere
+
 
 export function breakPiecesByEquals(pieces, parseVectorEquality = false) {
 

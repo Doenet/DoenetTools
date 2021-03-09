@@ -122,6 +122,7 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
     transition: state.isDragging ? "none" : "transform 500ms",
     // zIndex: state.isDragging ? 2 : 1,
     // position: state.isDragging ? "absolute" : "relative"
+    marginLeft: "2.5vw"
   };
   const ghostStyles = {
     cursor: state.isDragging ? "-webkit-grabbing" : "-webkit-grab",

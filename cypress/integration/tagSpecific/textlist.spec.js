@@ -1,3 +1,12 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Textlist Tag Tests', function () {
 
@@ -55,15 +64,15 @@ describe('Textlist Tag Tests', function () {
         </textlist>
       </textlist>
   
-      <textinput><copy prop="text1" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text2" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text3" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text4" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text5" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text6" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text7" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text8" tname="_textlist1" /></textinput>
-      <textinput><copy prop="text9" tname="_textlist1" /></textinput>
+      <textinput><bindValueTo><copy prop="text1" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text2" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text3" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text4" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text5" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text6" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text7" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text8" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput><bindValueTo><copy prop="text9" tname="_textlist1" /></bindValueTo></textinput>
   
       ` }, "*");
     });
@@ -73,17 +82,17 @@ describe('Textlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_textlist1'].stateValues.childrenToRender[1];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_textlist1'].stateValues.childrenToRender[2];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child5Name = components['/_textlist1'].stateValues.childrenToRender[5];
-      let child5Anchor = '#' + child5Name;
+      let child5Anchor = cesc('#' + child5Name);
       let child6Name = components['/_textlist1'].stateValues.childrenToRender[6];
-      let child6Anchor = '#' + child6Name;
+      let child6Anchor = cesc('#' + child6Name);
       let child7Name = components['/_textlist1'].stateValues.childrenToRender[7];
-      let child7Anchor = '#' + child7Name;
+      let child7Anchor = cesc('#' + child7Name);
       let child8Name = components['/_textlist1'].stateValues.childrenToRender[8];
-      let child8Anchor = '#' + child8Name;
+      let child8Anchor = cesc('#' + child8Name);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_text1').should('have.text', 'a')

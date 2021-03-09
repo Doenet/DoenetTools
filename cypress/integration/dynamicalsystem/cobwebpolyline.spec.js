@@ -69,12 +69,12 @@ describe('ODEsystem Tag Tests', function () {
   <map>
     <template>
       <mrow>
-        x_{<indexFromSubs/>} \\amp = <copyFromSubs displaydigits="5"/>
+        x_{<copy tname="_sourceindex"/>} \\amp = <copy tname="_source" displaydigits="5"/>
       </mrow>
     </template>
-    <substitutions>
+    <sources>
       <ref prop="iterateValues">graph1/cobweb</ref>
-    </substitutions>
+    </sources>
   </map>
   </md>
 
@@ -94,9 +94,9 @@ describe('ODEsystem Tag Tests', function () {
           <template>
             <boolean>true</boolean>
           </template>
-          <substitutions>
+          <sources>
             <sequence><to><max><number><ref>nPoints</ref>-1</number><number>5</number></max></to></sequence>
-          </substitutions>
+          </sources>
         </map>
       </booleanlist>
     </if>

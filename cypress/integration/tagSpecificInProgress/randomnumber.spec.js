@@ -16,7 +16,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber/>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -71,7 +71,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber>6</randomnumber>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -126,7 +126,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber>-3,5</randomnumber>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -181,7 +181,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber exclude="0">-3,5</randomnumber>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -236,7 +236,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber step="2">-3,5</randomnumber>
       </template>
-      <substitutions><sequence>1,30</sequence></substitutions>
+      <sources><sequence>1,30</sequence></sources>
     </map>
     </aslist></p>
 
@@ -291,7 +291,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="uniform"/>
       </template>
-      <substitutions><sequence>1,50</sequence></substitutions>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -347,7 +347,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="uniform">5</randomnumber>
       </template>
-      <substitutions><sequence>1,50</sequence></substitutions>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -403,7 +403,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="uniform">-13,-7</randomnumber>
       </template>
-      <substitutions><sequence>1,50</sequence></substitutions>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -459,7 +459,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="gaussian"/>
       </template>
-      <substitutions><sequence>1,100</sequence></substitutions>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -534,7 +534,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="gaussian" mean="100" standardDeviation="10"/>
       </template>
-      <substitutions><sequence>1,100</sequence></substitutions>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -609,7 +609,7 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber type="gaussian" mean="-3" variance="0.01"/>
       </template>
-      <substitutions><sequence>1,100</sequence></substitutions>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -791,11 +791,11 @@ describe('RandomNumber Tag Tests', function () {
       <template>
         <randomnumber name="n">1000000000</randomnumber>
       </template>
-      <substitutions>
+      <sources>
       <sequence>
         <count><ref prop="value">_mathinput1</ref></count>
       </sequence>
-      </substitutions>
+      </sources>
     </map>
     </aslist></p>
     

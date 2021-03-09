@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -91,7 +91,7 @@ export default class MathComponent extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -105,7 +105,7 @@ export default class MathComponent extends InlineComponent {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringMathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -134,13 +134,13 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         mathChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "canBeModified"],
           requireChildLogicInitiallySatisfied: true,
         },
         stringChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true,
@@ -195,7 +195,7 @@ export default class MathComponent extends InlineComponent {
 
         let { simplify, expand, createVectors, createIntervals } = dependencyValues;
 
-        value = MathComponent.normalize({
+        value = normalizeMathExpression({
           value, simplify, expand, createVectors, createIntervals
         });
 
@@ -274,7 +274,7 @@ export default class MathComponent extends InlineComponent {
         }
         return {
           newValues: {
-            valueForDisplay: MathComponent.normalize({
+            valueForDisplay: normalizeMathExpression({
               value: rounded, simplify: dependencyValues.simplify, expand: dependencyValues.expand
             })
           }
@@ -286,7 +286,6 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -297,6 +296,20 @@ export default class MathComponent extends InlineComponent {
         return { newValues: { latex: dependencyValues.valueForDisplay.toLatex() } };
       }
     }
+
+    stateVariableDefinitions.latexWithInputChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latexWithInputChildren: [dependencyValues.latex] } };
+      }
+    }
+
 
     stateVariableDefinitions.text = {
       public: true,
@@ -316,7 +329,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.codesAdjacentToStrings = {
       returnDependencies: () => ({
         stringMathChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "stringsAndMaths",
         },
         codePre: {
@@ -338,7 +351,7 @@ export default class MathComponent extends InlineComponent {
       ],
       returnDependencies: () => ({
         mathChildrenModifiable: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["canBeModified"],
           requireChildLogicInitiallySatisfied: true,
@@ -370,7 +383,7 @@ export default class MathComponent extends InlineComponent {
           variableName: "codePre",
         },
         mathChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
         },
         expressionWithCodes: {
@@ -440,28 +453,6 @@ export default class MathComponent extends InlineComponent {
       return { skipChildren, stateVariables };
     }
     return {};
-  }
-
-  static normalize({ value, simplify, expand = false,
-    createVectors = false, createIntervals = false
-  }) {
-    if (createVectors) {
-      value = value.tuples_to_vectors();
-    }
-    if (createIntervals) {
-      value = value.to_intervals();
-    }
-    if (expand) {
-      value = value.expand();
-    }
-    if (simplify === "full") {
-      return value.simplify();
-    } else if (simplify === "numbers") {
-      return value.evaluate_numbers();
-    } else if (simplify === "numberspreserveorder") {
-      return value.evaluate_numbers({ skip_ordering: true });
-    }
-    return value;
   }
 
   adapters = ["number", "text"];
@@ -1138,10 +1129,10 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
         });
 
       } else {
-        if (stringCodes.prevCode !== null) {
+        if (stringCodes.prevCode) {
           thisString = thisString.split(stringCodes.prevCode)[1];
         }
-        if (stringCodes.nextCode !== null) {
+        if (stringCodes.nextCode) {
           thisString = thisString.split(stringCodes.nextCode)[0];
         }
         instructions.push({
@@ -1194,7 +1185,7 @@ function getExpressionPieces({ expression, stateValues }) {
       }
       pieces[id] = inverseMap.result.substitute(subMap);
 
-      pieces[id] = MathComponent.normalize({
+      pieces[id] = normalizeMathExpression({
         value: pieces[id],
         simplify: stateValues.simplify,
         expand: stateValues.expand,

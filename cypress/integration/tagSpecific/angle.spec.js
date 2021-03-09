@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Angle Tag Tests', function () {
 
   beforeEach(() => {
@@ -14,14 +24,18 @@ describe('Angle Tag Tests', function () {
   <mathinput prefill="2"/>
 
   <graph>
-  <point>(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /></x>
+    <y><copy prop="value" tname="_mathinput2" /></y>
+  </point>
   <point>(2,4)</point>
   <point>(4,2)</point>
     <angle>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-      <copy tname="_point3" />
+      <through>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+        <copy tname="_point3" />
+      </through>
     </angle>
   </graph>
   `}, "*");
@@ -31,7 +45,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
@@ -42,8 +56,8 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 4, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('4{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('4{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}4{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(7 * Math.PI / 4, 1E-6)
@@ -54,8 +68,8 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.angle.tree).closeTo(7 * Math.PI / 4, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('0{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('2{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}0{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}2{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
@@ -67,8 +81,8 @@ describe('Angle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/_mathinput1_input').clear().type('4{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('6{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}6{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
@@ -94,19 +108,29 @@ describe('Angle Tag Tests', function () {
   <mathinput prefill="2"/>
 
   <graph>
-  <point>(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</point>
-  <point>(<copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput3" />),
-    <copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput3" />))</point>
-  <point>(<copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput4" />),
-    <copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput4" />))</point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /></x>
+    <y><copy prop="value" tname="_mathinput2" /></y>
+  </point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput3" />)</x>
+    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput3" />)</y>
+  </point>
+  <point>
+    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput4" />)</x>
+    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput4" />)</y>
+    </point>
   <line>
-    <copy tname="_point1" />
-    <copy tname="_point2" />
+    <through>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+    </through>
   </line>
   <line>
-    <copy tname="_point1" />
-    <copy tname="_point3" />
+    <through>
+      <copy tname="_point1" />
+      <copy tname="_point3" />
+    </through>
   </line>
 
   <angle radius="2">
@@ -121,7 +145,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(4, 1E-6)
@@ -132,10 +156,10 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.angle.tree).closeTo(4, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('-3{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('7{enter}');
-      cy.get('#\\/_mathinput3_input').clear().type('4{enter}');
-      cy.get('#\\/_mathinput4_input').clear().type('6{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-3{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}7{enter}', { force: true });
+      cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}{backspace}4{enter}', { force: true });
+      cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}6{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2, 1E-6)
@@ -146,10 +170,10 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.angle.tree).closeTo(2, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('5{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('-3{enter}');
-      cy.get('#\\/_mathinput3_input').clear().type('3{enter}');
-      cy.get('#\\/_mathinput4_input').clear().type('3{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}5{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}-3{enter}', { force: true });
+      cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}3{enter}', { force: true });
+      cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}3{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(0, 1E-6)
@@ -160,10 +184,10 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.angle.tree).closeTo(0, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('2{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('-1{enter}');
-      cy.get('#\\/_mathinput3_input').clear().type('pi/4{enter}');
-      cy.get('#\\/_mathinput4_input').clear().type('5pi/4{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}{backspace}-1{enter}', { force: true });
+      cy.get('#\\/_mathinput3 textarea').type('{end}{backspace}pi/4{enter}', { force: true });
+      cy.get('#\\/_mathinput4 textarea').type('{end}{backspace}5pi/4{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI, 1E-6)
@@ -187,9 +211,18 @@ describe('Angle Tag Tests', function () {
   <copy prop="angle" tname="_angle1" />
 
   <graph>
-  <line>(1,2),(<copy prop="value" tname="_mathinput1" />,
-    <copy prop="value" tname="_mathinput2" />)</line>
-  <line>(6,2),(8,4)</line>
+  <line>
+    <through>
+      <point>(1,2)</point>
+      <point>
+        <xs>
+          <copy prop="value" tname="_mathinput1" />
+          <copy prop="value" tname="_mathinput2" />
+        </xs>
+      </point>
+    </through>
+  </line>
+  <line><through>(6,2),(8,4)</through></line>
 
   <angle>
     <copy tname="_line1" />
@@ -203,7 +236,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/_copy1"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/_copy1"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).eq("＿");
@@ -214,7 +247,7 @@ describe('Angle Tag Tests', function () {
         assert.isNaN(components['/_angle1'].stateValues.angle.tree);
       })
 
-      cy.get('#\\/_mathinput2_input').clear().type('0{enter}');
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}0{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
@@ -226,8 +259,8 @@ describe('Angle Tag Tests', function () {
       })
 
 
-      cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
-      cy.get('#\\/_mathinput2_input').clear().type('2{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}1{enter}', { force: true });
+      cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}2{enter}', { force: true });
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).eq("＿");
@@ -250,9 +283,9 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point>(<math>7cos(1)</math>,<math>7sin(1)</math>)</point>
-    <angle><radius><copy prop="value" tname="_mathinput1" /></radius>
-      <copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" />
+    <point><xs><math>7cos(1)</math><math>7sin(1)</math></xs></point>
+    <angle radius="$_mathinput1">
+      <through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through>
     </angle>
   </graph>
   <copy name="alpha" prop="angle" tname="_angle1" />
@@ -263,7 +296,7 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/alpha"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/alpha"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(1, 1E-6)
@@ -275,31 +308,31 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.radius.tree).eq('\uFF3F');
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('1{enter}', { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_angle1'].stateValues.radius.tree).eq(1);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('2{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2{enter}', { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_angle1'].stateValues.radius.tree).eq(2);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('-3{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-3{enter}', { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_angle1'].stateValues.radius.simplify().tree).eq(-3);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('x{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}x{enter}', { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_angle1'].stateValues.radius.tree).eq('x');
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('4{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_angle1'].stateValues.radius.tree).eq(4);
@@ -317,13 +350,13 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point>
-      (<math>8cos(<copy prop="value" tname="_mathinput1" />)</math>,
-      <math>8sin(<copy prop="value" tname="_mathinput1" />)</math>)
-    </point>
-    <angle>
+    <point><xs>
+      <math>8cos(<copy prop="value" tname="_mathinput1" />)</math>
+      <math>8sin(<copy prop="value" tname="_mathinput1" />)</math>
+    </xs></point>
+    <angle><through>
       <copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" />
-    </angle>
+    </through></angle>
   </graph>
   <p><copy name="alpha" prop="angle" tname="_angle1" /></p>
   <p><copy name="alphadeg" prop="degrees" tname="_angle1" /></p>
@@ -334,8 +367,8 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let angleAnchor = '#' + components["/alpha"].replacements[0].componentName;
-      let angleDegAnchor = '#' + components["/alphadeg"].replacements[0].componentName;
+      let angleAnchor = cesc('#' + components["/alpha"].replacements[0].componentName);
+      let angleDegAnchor = cesc('#' + components["/alphadeg"].replacements[0].componentName);
 
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text).eq("＿")
@@ -348,7 +381,7 @@ describe('Angle Tag Tests', function () {
         assert.isNaN(components['/_angle1'].stateValues.degrees);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('pi/4{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('pi/4{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
       })
@@ -362,7 +395,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(45, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('1{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(1, 1E-6)
       })
@@ -375,7 +408,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(180 / Math.PI, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('pi/3{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}pi/3{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 3, 1E-6)
       })
@@ -388,7 +421,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('2pi/3{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}2pi/3{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
       })
@@ -401,7 +434,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(120, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('pi{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}pi{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI, 1E-6)
       })
@@ -414,7 +447,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('4{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(4, 1E-6)
       })
@@ -427,7 +460,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(4 * 180 / Math.PI, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('3pi/2{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3pi/2{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
       })
@@ -440,7 +473,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(270, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('11pi/6{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}11pi/6{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
       })
@@ -453,7 +486,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(330, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('2pi{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2pi{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2 * Math.PI, 1E-6)
       })
@@ -466,7 +499,7 @@ describe('Angle Tag Tests', function () {
         expect(components['/_angle1'].stateValues.degrees).closeTo(360, 1E-12);
       })
 
-      cy.get('#\\/_mathinput1_input').clear().type('2pi+0.00001{enter}');
+      cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}2pi+0.00001{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(0.00001, 1E-6)
       })

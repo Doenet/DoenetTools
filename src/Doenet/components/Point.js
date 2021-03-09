@@ -11,9 +11,10 @@ export default class Point extends GraphicalComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["xs", "nDimensions"] };
 
-  // Note: for point, the recommended course of action is not to have
+  // Note: for other components with public point state variables,
+  // the recommended course of action is not to have
   // a public state variable with component type point, which would use coordsShadow
-  // Instead have a array state variable of maths for each component
+  // Instead have a public array state variable of maths for each component
   // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
   static stateVariableForPropertyValue = "coords";
@@ -22,6 +23,55 @@ export default class Point extends GraphicalComponent {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
     return properties;
+  }
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let breakIntoXsByCommas = function ({ matchedChildren }) {
+      let childrenToComponentFunction = x => ({
+        componentType: "x", children: x
+      });
+
+      let breakFunction = returnBreakStringsSugarFunction({
+        childrenToComponentFunction,
+        mustStripOffOuterParentheses: true
+      })
+
+      let result = breakFunction({ matchedChildren });
+
+      if (!result.success && matchedChildren.length === 1) {
+        // if didn't succeed and just have a single string child,
+        // then just wrap string with a x
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "x",
+            children: matchedChildren
+          }]
+        }
+      }
+
+
+      if (result.success) {
+        // wrap xs around the x children
+        result.newChildren = [{
+          componentType: "xs",
+          children: result.newChildren
+        }];
+      }
+
+      return result;
+
+    };
+
+    sugarInstructions.push({
+      childrenRegex: /s+(.*s)?/,
+      replacementFunction: breakIntoXsByCommas
+    })
+
+    return sugarInstructions;
+
   }
 
   static returnChildLogic(args) {
@@ -63,62 +113,6 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
-
-    let breakIntoXsByCommas = function (args) {
-      let childrenToComponentFunction = x => ({
-        componentType: "x", children: x
-      });
-
-      let breakFunction = returnBreakStringsSugarFunction({
-        childrenToComponentFunction,
-        dependencyNameWithChildren: "stringsAndMaths",
-        stripOffOuterParentheses: true
-      })
-
-      let result = breakFunction(args);
-
-      // wrap xs around the x children
-      result.newChildren = [{
-        componentType: "xs",
-        children: result.newChildren
-      }];
-
-      return result;
-
-    };
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      returnSugarDependencies: () => ({
-        stringsAndMaths: {
-          dependencyType: "childStateVariables",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        }
-      }),
-      logicToWaitOnSugar: ["exactlyOneXs"],
-      replacementFunction: breakIntoXsByCommas,
-    });
-
-
     let exactlyOnePoint = childLogic.newLeaf({
       name: "exactlyOnePoint",
       componentType: "point",
@@ -132,42 +126,15 @@ export default class Point extends GraphicalComponent {
       allowSpillover: false,
     });
 
-    let coordsXorSugar = childLogic.newOperator({
-      name: "coordsXorSugar",
+    let coordsCombinations = childLogic.newOperator({
+      name: "coordsCombinations",
       operator: 'xor',
       propositions: [
         coordinatesViaComponents, exactlyOneXs, exactlyOnePoint,
-        exactlyOneCoords, stringsAndMaths, noCoords
+        exactlyOneCoords, noCoords
       ],
     });
 
-
-    let addConstraints = function ({ activeChildrenMatched }) {
-      let constraintsChildren = [];
-      for (let child of activeChildrenMatched) {
-        constraintsChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "constraints", children: constraintsChildren }],
-      }
-    }
-
-
-    let constraintComponents = childLogic.newLeaf({
-      name: "constraintComponents",
-      componentType: "_constraint",
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      requireConsecutive: true,
-      logicToWaitOnSugar: ["atMostOneConstraints"],
-      replacementFunction: addConstraints,
-
-    });
 
     let atMostOneConstraints = childLogic.newLeaf({
       name: "atMostOneConstraints",
@@ -176,16 +143,10 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
-    let constraintsXorConstraintsComponents = childLogic.newOperator({
-      name: "constraintsXorConstraintsComponents",
-      operator: "xor",
-      propositions: [constraintComponents, atMostOneConstraints],
-    });
-
     childLogic.newOperator({
       name: "pointWithConstraints",
       operator: "and",
-      propositions: [coordsXorSugar, constraintsXorConstraintsComponents],
+      propositions: [coordsCombinations, atMostOneConstraints],
       setAsBase: true,
     });
 
@@ -208,16 +169,34 @@ export default class Point extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        return {
+          newValues: {
+            styleDescription: dependencyValues.selectedStyle.markerColor
+          }
+        };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
         let pointDescription = dependencyValues.selectedStyle.markerColor;
         if (dependencyValues.selectedStyle.markerStyle === "circle") {
           pointDescription += " point";
         } else {
           pointDescription += ` ${dependencyValues.selectedStyle.markerStyle}`
         }
-        return { newValues: { styleDescription: pointDescription } };
+        return { newValues: { styleDescriptionWithNoun: pointDescription } };
       }
     }
-
 
     // coordsShadow will be null unless point was created
     // via an adapter or ref prop or from serialized state with coords value
@@ -265,29 +244,29 @@ export default class Point extends GraphicalComponent {
           variableName: "coordsShadow",
         },
         coordsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneCoords",
           variableNames: ["value"],
         },
         xChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneX",
         },
         yChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneY",
         },
         zChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneZ",
         },
         xsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOneXs",
           variableNames: ["nComponents"]
         },
         pointChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "exactlyOnePoint",
           variableNames: ["nDimensions"]
         }
@@ -397,7 +376,7 @@ export default class Point extends GraphicalComponent {
             variableName: "coordsShadow",
           },
           coordsChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneCoords",
             variableNames: ["value"],
           },
@@ -408,31 +387,31 @@ export default class Point extends GraphicalComponent {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             xsChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneXs",
               variableNames: ["math" + varEnding]
             },
             pointChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOnePoint",
               variableNames: ["x" + varEnding]
             }
           }
           if (arrayKey === "0") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneX",
               variableNames: ["value"],
             }
           } else if (arrayKey === "1") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneY",
               variableNames: ["value"],
             }
           } else if (arrayKey === "2") {
             dependenciesByKey[arrayKey].componentChild = {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "exactlyOneZ",
               variableNames: ["value"],
             }
@@ -661,7 +640,7 @@ export default class Point extends GraphicalComponent {
             variableName: `unconstrainedX${varEnding}`,
           };
           keyDeps.constraintsChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneConstraints",
             variableNames: [`constraintResult${varEnding}`]
           }
@@ -780,8 +759,10 @@ export default class Point extends GraphicalComponent {
         }
         if (coordsAst.length > 1) {
           coordsAst = ["vector", ...coordsAst];
-        } else {
+        } else if (coordsAst.length === 1) {
           coordsAst = coordsAst[0];
+        } else {
+          coordsAst = '\uff3f';
         }
 
         return { newValues: { coords: me.fromAst(coordsAst) } }
@@ -839,7 +820,7 @@ export default class Point extends GraphicalComponent {
       componentType: "boolean",
       returnDependencies: () => ({
         constraintsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneConstraints",
           variableNames: ["constraintUsed"]
         }
@@ -981,13 +962,16 @@ export default class Point extends GraphicalComponent {
 
   adapters = ["coords"];
 
-  movePoint({ x, y, transient }) {
+  movePoint({ x, y, z, transient }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
     }
     if (y !== undefined) {
       components[1] = me.fromAst(y);
+    }
+    if (z !== undefined) {
+      components[2] = me.fromAst(z);
     }
     if (transient) {
       this.coreFunctions.requestUpdate({
@@ -1014,7 +998,7 @@ export default class Point extends GraphicalComponent {
             componentType: this.componentType,
           },
           result: {
-            x, y
+            x, y, z
           }
         }
       })

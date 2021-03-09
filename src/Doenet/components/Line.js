@@ -13,7 +13,7 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["points"] };
+  static get stateVariablesShadowedForReference() { return ["points", "variables"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -29,6 +29,25 @@ export default class Line extends GraphicalComponent {
     return properties;
   }
 
+
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    sugarInstructions.push({
+      childrenRegex: "s",
+      replacementFunction: ({ matchedChildren }) => ({
+        success: true,
+        newChildren: [{ componentType: "equation", children: matchedChildren }],
+      })
+    });
+
+    return sugarInstructions;
+
+  }
+
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -38,188 +57,26 @@ export default class Line extends GraphicalComponent {
       number: 1
     });
 
-    let replaceWithEquationOrThrough = function ({ dependencyValues }) {
-      // have matched a sequence of strings and maths
-      // first, break up by commas
-      // If only one piece, then make an equation out of it
-      // If more than one piece, create a <though> with points
-      let Nparens = 0;
-      let pieces = [];
-      let currentPiece = [];
-      let toDelete = [];
 
-      for (let component of dependencyValues.stringAndMathChildren) {
-        if (component.componentType !== "string") {
-          currentPiece.push({
-            createdComponent: true,
-            componentName: component.componentName
-          });
-          continue;
-        }
-
-        let s = component.stateValues.value.trim();
-        let beginInd = 0;
-        let deleteOriginalString = false;
-
-        for (let ind = 0; ind < s.length; ind++) {
-          let char = s[ind];
-          if (char === "(") {
-            Nparens++;
-          }
-          if (char === ")") {
-            if (Nparens === 0) {
-              // parens didn't match, so return failure
-              return { success: false };
-            }
-            Nparens--
-          }
-          if (char === "," && Nparens === 0) {
-            if (ind > beginInd) {
-              currentPiece.push({
-                componentType: "string",
-                state: { value: s.substring(beginInd, ind) }
-              });
-            }
-            pieces.push(currentPiece);
-            currentPiece = [];
-            beginInd = ind + 1;
-            deleteOriginalString = true;
-            toDelete.push(component.componentName);
-
-          }
-        }
-
-        if (deleteOriginalString) {
-          if (s.length > beginInd) {
-            currentPiece.push({
-              componentType: "string",
-              state: { value: s.substring(beginInd, s.length) }
-            });
-          }
-        } else {
-          currentPiece.push({
-            createdComponent: true,
-            componentName: component.componentName
-          });
-        }
-
-      }
-
-      // parens didn't match, so return failure
-      if (Nparens !== 0) {
-        return { success: false };
-      }
-
-      pieces.push(currentPiece);
-
-      let newChildren;
-
-      if (pieces.length === 1) {
-        // since just one piece (and no comma), make an equation
-        newChildren = [{
-          componentType: 'equation', children: pieces[0]
-        }];
-      } else {
-        // more than one piece, make a through with points
-
-        newChildren = [{
-          componentType: "through",
-          children: pieces.map(x => ({
-            componentType: "point", children: [{
-              componentType: "coords", children: x
-            }]
-          }))
-        }]
-      }
-
-      return {
-        success: true,
-        toDelete: toDelete,
-        newChildren: newChildren
-      };
-    }
-
-    let atLeastOneString = childLogic.newLeaf({
-      name: "atLeastOneString",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let atLeastOneMath = childLogic.newLeaf({
-      name: "atLeastOneMath",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 1,
-    });
-
-    let stringsAndMaths = childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'or',
-      propositions: [atLeastOneString, atLeastOneMath],
-      requireConsecutive: true,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneEquation", "exactlyOneThrough"],
-      returnSugarDependencies: () => ({
-        stringAndMathChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "stringsAndMaths",
-          variableNames: ["value"]
-        }
-      }),
-      replacementFunction: replaceWithEquationOrThrough,
-    });
-
-    let addThrough = function ({ activeChildrenMatched }) {
-      // add <through> around points
-      let throughChildren = [];
-      for (let child of activeChildrenMatched) {
-        throughChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "through", children: throughChildren }],
-      }
-    }
-
-
-    let exactlyTwoPoints = childLogic.newLeaf({
-      name: "exactlyTwoPoints",
-      componentType: 'point',
-      number: 2,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneThrough"],
-      replacementFunction: addThrough,
-    });
-
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
+    let atMostOneThrough = childLogic.newLeaf({
+      name: "atMostOneThrough",
       componentType: 'through',
+      comparison: "atMost",
       number: 1
-    });
-
-    let noThrough = childLogic.newLeaf({
-      name: "noThrough",
-      componentType: 'through',
-      number: 0,
-      allowSpillover: false,
     });
 
     let equationXorThrough = childLogic.newOperator({
       name: "equationXorThrough",
       operator: 'xor',
-      propositions: [exactlyOneEquation, exactlyOneThrough,
-        exactlyTwoPoints, stringsAndMaths, noThrough],
+      propositions: [exactlyOneEquation, atMostOneThrough],
     });
 
     let atMostOneVariables = childLogic.newLeaf({
       name: "atMostOneVariables",
       componentType: 'variables',
       comparison: 'atMost',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
@@ -263,7 +120,7 @@ export default class Line extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+        lineDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: lineDescription } };
       }
@@ -278,15 +135,15 @@ export default class Line extends GraphicalComponent {
         if (stateValues.equationChild === null) {
           return {
             throughChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneThrough",
+              dependencyType: "child",
+              childLogicName: "atMostOneThrough",
               variableNames: ["nDimensions"],
             }
           }
         } else {
           return {
             equationChild: {
-              dependencyType: "childIdentity",
+              dependencyType: "child",
               childLogicName: "exactlyOneEquation"
             },
           }
@@ -343,7 +200,7 @@ export default class Line extends GraphicalComponent {
       returnArrayDependenciesByKey() {
         let globalDependencies = {
           variablesChild: {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "atMostOneVariables",
             variableNames: ["variables"],
           }
@@ -372,11 +229,14 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.equationChild = {
       returnDependencies: () => ({
         equationChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "exactlyOneEquation"
         }
       }),
       definition: function ({ dependencyValues }) {
+        // console.log(`definition of equation child for ${componentName}`)
+        // console.log(dependencyValues);
+
         if (dependencyValues.equationChild.length === 1) {
           return { newValues: { equationChild: dependencyValues.equationChild[0] } }
         } else {
@@ -457,8 +317,8 @@ export default class Line extends GraphicalComponent {
 
             dependenciesByKey[arrayKey] = {
               throughChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneThrough",
+                dependencyType: "child",
+                childLogicName: "atMostOneThrough",
                 variableNames: ["pointX" + varEnding]
               }
             }
@@ -491,7 +351,11 @@ export default class Line extends GraphicalComponent {
         }
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize, componentName }) {
+        // console.log(`array definition of points for ${componentName}`)
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey)
+        // console.log(arrayKeys)
 
         if ("coeff0" in globalDependencyValues) {
 
@@ -539,6 +403,9 @@ export default class Line extends GraphicalComponent {
           if (Object.keys(essentialPoints).length > 0) {
             result.useEssentialOrDefaultValue = { points: essentialPoints }
           }
+
+          // console.log(`result of array definition of key of points`)
+          // console.log(result);
           return result;
         }
       },
@@ -747,7 +614,7 @@ export default class Line extends GraphicalComponent {
           }
         } else {
           dependencies.equationChild = {
-            dependencyType: "childStateVariables",
+            dependencyType: "child",
             childLogicName: "exactlyOneEquation",
             variableNames: ["value"],
           };
@@ -756,7 +623,7 @@ export default class Line extends GraphicalComponent {
       },
       definition: function ({ dependencyValues }) {
 
-        // console.log('definition of equation')
+        // console.log(`definition of equation for ${componentName}`)
         // console.log(dependencyValues);
 
         let variables = dependencyValues.variables;
@@ -963,7 +830,14 @@ export default class Line extends GraphicalComponent {
         return { globalDependencies, dependenciesByKey }
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, componentName }) {
+        // console.log(`array definition by key of numericalPoints of ${componentName}`)
+
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey)
+        // console.log(arrayKeys);
+
+
         if (Number.isNaN(globalDependencyValues.nDimensions)) {
           return {}
         }
@@ -1119,27 +993,6 @@ export default class Line extends GraphicalComponent {
       })
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneThrough"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.throughChild[0].componentName]
-            }
-          }
-        } else {
-          return { newValues: { childrenToRender: [] } }
-        }
-      }
-    }
-
-
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -1210,6 +1063,8 @@ export default class Line extends GraphicalComponent {
     return stateVariableDefinitions;
 
   }
+
+  adapters = ["equation"];
 
   moveLine({ point1coords, point2coords, transient }) {
 

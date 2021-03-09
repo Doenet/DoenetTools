@@ -48,12 +48,12 @@ export default class Textinput extends Input {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "atMostOneText",
-      componentType: "text",
+      name: "atMostOneBindValueTo",
+      componentType: "bindValueTo",
       comparison: "atMost",
       number: 1,
       setAsBase: true,
-    });
+    })
 
     return childLogic;
   }
@@ -68,10 +68,10 @@ export default class Textinput extends Input {
       componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
-        textChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneText",
-          variableNames: ["value"],
+        bindValueToChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneBindValueTo",
+          variableNames: ["text"],
           requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
@@ -80,22 +80,22 @@ export default class Textinput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.textChild.length === 0) {
+        if (dependencyValues.bindValueToChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               value: { variablesToCheck: "value", defaultValue: dependencyValues.prefill }
             }
           }
         }
-        return { newValues: { value: dependencyValues.textChild[0].stateValues.value } };
+        return { newValues: { value: dependencyValues.bindValueToChild[0].stateValues.text } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        if (dependencyValues.textChild.length === 1) {
+        if (dependencyValues.bindValueToChild.length === 1) {
           return {
             success: true,
             instructions: [{
-              setDependency: "textChild",
+              setDependency: "bindValueToChild",
               desiredValue: desiredStateVariableValues.value,
               childIndex: 0,
               variableIndex: 0,

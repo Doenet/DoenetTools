@@ -2150,7 +2150,7 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <section title="Match partial" name="a" newNamespace>
+  <section name="a" newNamespace><title>Match partial</title>
 
   <p><mathinput name="x"/></p>
   <p><mathinput name="y"/></p>
@@ -2170,7 +2170,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
 
-  <section title="Match partial, unordered" name="b" newnamespace>
+  <section name="b" newnamespace><title>Match partial, unordered</title>
     <p><mathinput name="x"/></p>
     <p><mathinput name="y"/></p>
     <p><mathinput name="z"/></p>
@@ -2189,7 +2189,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
 
-  <section title="Strict equality" newnamespace name="c">
+  <section newnamespace name="c"><title>Strict equality</title>
    <p><mathinput name="x"/></p>
    <p><mathinput name="y"/></p>
    <p><mathinput name="z"/></p>
@@ -2209,7 +2209,7 @@ describe('Match partial validation tests', function () {
  </answer>
  </section>
 
-  <section title="Unordered" newnamespace name="d">
+  <section newnamespace name="d"><title>Unordered</title>
     <p><mathinput name="x"/></p>
     <p><mathinput name="y"/></p>
     <p><mathinput name="z"/></p>
@@ -2452,7 +2452,7 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <section title="Match partial" name="a" newNamespace>
+  <section name="a" newNamespace><title>Match partial</title>
 
   <p><textinput name="x"/></p>
   <p><textinput name="y"/></p>
@@ -2472,7 +2472,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
   
-  <section title="Match partial, unordered" name="b" newnamespace>
+  <section name="b" newnamespace><title>Match partial, unordered</title>
   <p><textinput name="x"/></p>
   <p><textinput name="y"/></p>
   <p><textinput name="z"/></p>
@@ -2492,7 +2492,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
 
-  <section title="Strict equality" newnamespace name="c">
+  <section newnamespace name="c"><title>Strict equality</title>
   <p><textinput name="x"/></p>
   <p><textinput name="y"/></p>
   <p><textinput name="z"/></p>
@@ -2512,7 +2512,7 @@ describe('Match partial validation tests', function () {
    </answer>
    </section>
 
-   <section title="Unordered" newnamespace name="d">
+   <section newnamespace name="d"><title>Unordered</title>
    <p><textinput name="x"/></p>
    <p><textinput name="y"/></p>
    <p><textinput name="z"/></p>
@@ -2756,7 +2756,7 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <section title="Match partial" name="a" newNamespace>
+  <section name="a" newNamespace><title>Match partial</title>
 
   <p><booleaninput name="x"/></p>
   <p><booleaninput name="y"/></p>
@@ -2776,7 +2776,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
   
-  <section title="Match partial, unordered" name="b" newnamespace>
+  <section name="b" newnamespace><title>Match partial, unordered</title>
   <p><booleaninput name="x"/></p>
   <p><booleaninput name="y"/></p>
   <p><booleaninput name="z"/></p>
@@ -2797,7 +2797,7 @@ describe('Match partial validation tests', function () {
   </answer>
   </section>
 
-  <section title="Strict equality" newnamespace name="c">
+  <section newnamespace name="c"><title>Strict equality</title>
   <p><booleaninput name="x"/></p>
   <p><booleaninput name="y"/></p>
   <p><booleaninput name="z"/></p>
@@ -2817,7 +2817,7 @@ describe('Match partial validation tests', function () {
  </answer>
  </section>
 
- <section title="Unordered" newnamespace name="d">
+ <section newnamespace name="d"><title>Unordered</title>
  <p><booleaninput name="x"/></p>
  <p><booleaninput name="y"/></p>
  <p><booleaninput name="z"/></p>

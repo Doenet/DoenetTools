@@ -3,7 +3,7 @@ import BlockComponent from './abstract/BlockComponent';
 export default class P extends BlockComponent {
   static componentType = "p";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -13,7 +13,7 @@ export default class P extends BlockComponent {
       number: 0,
       setAsBase: true,
     });
-    
+
     return childLogic;
   }
 
@@ -25,7 +25,7 @@ export default class P extends BlockComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
-          dependencyType: "childIdentity",
+          dependencyType: "child",
           childLogicName: "atLeastZeroInline"
         }
       }),
@@ -37,8 +37,34 @@ export default class P extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroInline",
+          variableNames: ["text"],
+          variablesOptional: true,
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let text = ""
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child.stateValues.text === "string") {
+            text += child.stateValues.text;
+          } else {
+            text += " ";
+          }
+        }
+
+        return { newValues: { text } };
+      }
+    }
+
     return stateVariableDefinitions;
-    
+
   }
 
   static includeBlankStringChildren = true;

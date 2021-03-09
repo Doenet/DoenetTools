@@ -26,6 +26,7 @@ export default class VariantControl extends BaseComponent {
       componentType: 'seeds',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneVariants = childLogic.newLeaf({
@@ -33,6 +34,7 @@ export default class VariantControl extends BaseComponent {
       componentType: 'variants',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
@@ -92,7 +94,7 @@ export default class VariantControl extends BaseComponent {
       componentType: "number",
       returnDependencies: () => ({
         seedsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneSeeds",
           variableNames: ["nSeeds"],
         }
@@ -126,7 +128,7 @@ export default class VariantControl extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             seedsChild: {
-              dependencyType: "childStateVariables",
+              dependencyType: "child",
               childLogicName: "atMostOneSeeds",
               variableNames: ["seed" + (Number(arrayKey) + 1)],
             }
@@ -149,7 +151,7 @@ export default class VariantControl extends BaseComponent {
     stateVariableDefinitions.originalVariants = {
       returnDependencies: () => ({
         variantsChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "child",
           childLogicName: "atMostOneVariants",
           variableNames: ["variants"],
         },
@@ -220,10 +222,10 @@ export default class VariantControl extends BaseComponent {
       componentType: "number",
       immutable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        essentialSelectedVariantNumber: {
-          dependencyType: "potentialEssentialVariable",
-          variableName: "selectedVariantNumber",
-        },
+        // essentialSelectedVariantNumber: {
+        //   dependencyType: "potentialEssentialVariable",
+        //   variableName: "selectedVariantNumber",
+        // },
         variantsObject: {
           dependencyType: "variants",
         },
@@ -261,14 +263,14 @@ export default class VariantControl extends BaseComponent {
         //    then use the variantNumber corresponding to that value
         // 4. else, random generate variantNumber
 
-        if (dependencyValues.essentialSelectedVariantNumber !== null) {
-          return {
-            makeEssential: ["selectedVariantNumber"],
-            newValues: {
-              selectedVariantNumber: dependencyValues.essentialSelectedVariantNumber
-            }
-          }
-        }
+        // if (dependencyValues.essentialSelectedVariantNumber !== null) {
+        //   return {
+        //     makeEssential: ["selectedVariantNumber"],
+        //     newValues: {
+        //       selectedVariantNumber: dependencyValues.essentialSelectedVariantNumber
+        //     }
+        //   }
+        // }
 
         // no essential state variable, so try to find desiredVariant
         if (dependencyValues.variantsObject !== undefined) {

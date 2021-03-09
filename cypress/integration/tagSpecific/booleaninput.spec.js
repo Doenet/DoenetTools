@@ -32,7 +32,7 @@ describe('Booleaninput Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let boolean1 = components['/_copy1'].replacements[0];
       let boolean1Anchor = cesc('#' + boolean1.componentName);
-      let boolean2 = components['/_copy2'].replacements[0].replacements[0];
+      let boolean2 = components['/_copy2'].replacements[0];
       let boolean2Anchor = cesc('#' + boolean2.componentName);
 
       cy.log('Test values displayed in browser')
@@ -136,13 +136,13 @@ describe('Booleaninput Tag Tests', function () {
     })
   })
 
-  it('reffed boolean input', () => {
+  it('copied boolean input', () => {
 
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><booleaninput prefill="t" label="green"/></p>
+    <p><booleaninput prefill="true" label="green"/></p>
     <p><copy tname="_booleaninput1" /></p>
     <p><copy prop="value" tname="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>
@@ -224,7 +224,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     <p>Reffed boolean: <copy tname="_boolean1" /></p>
     <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
     `}, "*");
@@ -278,7 +278,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput prefill="false"><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput prefill="false"><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     `}, "*");
     });
 
@@ -297,7 +297,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
     `}, "*");
     });
 

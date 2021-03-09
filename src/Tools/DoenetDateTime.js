@@ -15,7 +15,7 @@ export default function DoenetDateTime(props){
         useAmPm : true,
     }
 
-    const renderDate = (date) =>{
+    const renderDate = (date) => {
         const dayMonthYear = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
         const hours = (date.getHours() % 12 === 0 ? 12 : date.getHours() % 12);
         const minutes = (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes().toString());
@@ -45,9 +45,9 @@ export default function DoenetDateTime(props){
             //having the default value be dateState causes issues if an invalid time is input
             defaultValue={new Date(Date.now())}
             value={dateState}
-            onChange = { (date) => {
+            onChange = {(date) => {
                 props.onDateChange(date);
-                return setDateState(date);
+                setDateState(date);
             }}
         />
     )

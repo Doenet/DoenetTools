@@ -8,12 +8,13 @@ describe('Hide Tag Tests', function () {
   })
 
 
-  it('copied hide is not a property', () => {
+  // if we do allow property children again, then we can revive this test
+  it.skip('copied hide is not a property', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <booleaninput label="hide" name="bib" />
-  <p name="p1"><hide><copy prop="value" tname="bib" /></hide>
+  <p name="p1" hide="$bib">
   This paragraph should be hidden when box is checked.
   </p>
   <p name="p2"><copy prop="hide" tname="p1" />

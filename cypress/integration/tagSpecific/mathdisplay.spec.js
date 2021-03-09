@@ -8,10 +8,13 @@ describe('Math Display Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <m>sin(x)</m>
-    <me>cos(x)</me>
+    <text>a</text>
+    <m>\sin(x)</m>
+    <me>\cos(x)</me>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -28,11 +31,15 @@ describe('Math Display Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <men>sin(x)</men>
     <men>cos(x)</men>
     <men>tan(x)</men>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.log('Test value displayed in browser')
     cy.get('#\\/_men1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)(1)')
@@ -69,11 +76,15 @@ describe('Math Display Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <m><math simplify>x+x</math></m>
     <me><math simplify>y+y</math></me>
     <men><math simplify>z+z</math></men>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.log('Test value displayed in browser')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
@@ -91,6 +102,7 @@ describe('Math Display Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <md>
       <mrow>q \\amp = sin(x)</mrow>
       <mrow>cos(x) \\amp = z</mrow>
@@ -101,6 +113,8 @@ describe('Math Display Tag Tests', function () {
     </mdn>
     `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_md1').find('.mjx-mtr').eq(0).invoke('text').then((text) => {
@@ -128,12 +142,15 @@ describe('Math Display Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+    <text>a</text>
     <p><intcomma>25236501.35</intcomma></p>
     <p><intcomma><math>25236501.35</math></intcomma></p>
     <p><m><intcomma>25236501.35</intcomma></m></p>
     <p><m><intcomma><math>25236501.35</math></intcomma></m></p>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('#\\/_p1').should('have.text','25,236,501.35');
     cy.get('#\\/_p2').should('have.text','25,236,501.35');
