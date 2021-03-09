@@ -581,10 +581,11 @@ function findFirstFullMacroInString(str) {
   // - an identifier in parentheses, capturing identifier as fourth group,
   //   where the closing parenthesis could be replaced by an open brace,
   //   capturing the open brace or closing parens as fifth group
-  let reForBeginning = /(?<!\$)(\$\$?)(([a-zA-Z_]\w*\b)|\(([a-zA-Z0-9_:.\/\-]+)\s*(\)|{))/;
+  // let reForBeginning = /(?<!\$)(\$\$?)(([a-zA-Z_]\w*\b)|\(([a-zA-Z0-9_:.\/\-]+)\s*(\)|{))/;
 
   // look for a function macro
-  let match = str.match(reForBeginning);
+  //TODO: CRITICAL remove the negative lookbehind ?<!
+  let match = true; //str.match(reForBeginning);
 
   if (!match) {
     return { success: false };
