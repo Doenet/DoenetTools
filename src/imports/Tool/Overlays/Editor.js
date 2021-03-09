@@ -343,7 +343,15 @@ function TextEditor(props){
   },[]);
 
   if (selectedVersionId !== ""){
+    //Read Only without timers
     clearSaveTimeouts()
+    if (editorRef.current){
+      editorRef.current.options.readOnly = true;
+    }
+  }else{
+    if (editorRef.current){
+      editorRef.current.options.readOnly = false;
+    }
   }
 
   const editorInit = useRecoilValue(editorInitAtom);
