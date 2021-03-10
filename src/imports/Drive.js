@@ -658,7 +658,8 @@ export const folderDictionarySelector = selectorFamily({
         })
         break;
       case folderInfoSelectorActions.INSERT_DRAG_SHADOW:
-        if (!draggedItemsId || draggedItemsId?.has(instructions.itemId)) {
+        console.log(">>>DraggedItemsId", draggedItemsId, instructions.itemId, draggedItemsId?.has(instructions.itemId))
+        if (draggedItemsId && draggedItemsId?.has(instructions.itemId)) {
           set(folderDictionarySelector(driveIdFolderId), {instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
           return;
         }
@@ -2223,7 +2224,15 @@ function useDnDCallbacks() {
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
-    draggedItemsId.add(nodeId)
+    if (globalSelectedNodes.length === 0) {
+      draggedItemsId.add(nodeId);
+    } else {
+      const globalSelectedNodeIds = [];
+      for (let globalSelectedNode of globalSelectedNodes) globalSelectedNodeIds.push(globalSelectedNode.itemId);
+
+      draggedItemsId = new Set(globalSelectedNodeIds);
+    }
+
     setDragState((dragState) => ({      
       ...dragState,
       isDragging: true,
