@@ -600,13 +600,13 @@ export const folderDictionarySelector = selectorFamily({
           for (let item of globalSelectedItems){
             selectedItemIds.push(item.itemId);
           }
-
+          
           const payload = {
             sourceDriveId:globalSelectedItems[0].driveId,
             selectedItemIds, 
             destinationItemId:instructions.itemId,
             destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
-            destinationDriveId:driveIdFolderId.driveId,
+            destinationDriveId:instructions.driveId,
             newSortOrder,
           }
           axios.post("/api/moveItems.php", payload)
@@ -658,7 +658,6 @@ export const folderDictionarySelector = selectorFamily({
         })
         break;
       case folderInfoSelectorActions.INSERT_DRAG_SHADOW:
-        console.log(">>>DraggedItemsId", draggedItemsId, instructions.itemId, draggedItemsId?.has(instructions.itemId))
         if (draggedItemsId && draggedItemsId?.has(instructions.itemId)) {
           set(folderDictionarySelector(driveIdFolderId), {instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
           return;
@@ -773,7 +772,7 @@ export const folderDictionarySelector = selectorFamily({
         if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
         let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
         let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
-
+        
         if (insertIndex >= 0) {
           const instructions = {
             instructionType: folderInfoSelectorActions.MOVE_ITEMS,
