@@ -1,7 +1,12 @@
-import React, { useState } from "react";
-import { atom, useRecoilState, useRecoilCallback } from "recoil";
+import React, { useRef } from "react";
+import {
+  atom,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilCallback,
+} from "recoil";
 import styled from "styled-components";
-import { animated, useTransition } from "react-spring";
+import { animated, useSpring } from "react-spring";
 
 const ToastContainer = styled.div`
   position: fixed;
@@ -83,59 +88,66 @@ export const useToast = () => {
     ({ set }) => (msg, priority = 0, onClick = null, timeout = 3000) => {
       set(toastStack, (old) => [
         ...old,
-        { msg, priority, timeout, onClick, key: id++ },
+        <ToastMessage
+          key={id}
+          priority={priority}
+          onClick={onClick}
+          duration={timeout}
+          tId={id}
+        >
+          {msg}
+        </ToastMessage>,
       ]);
+      id++;
     },
     []
   );
 };
 
-export default function Toast({
+export default function Toast() {
+  const toasts = useRecoilValue(toastStack);
+
+  return <ToastContainer>{toasts.map((toast) => toast)}</ToastContainer>;
+}
+
+function ToastMessage({
   defConfig = { tension: 125, friction: 20, precision: 0.1 },
+  priority,
+  onClick,
+  duration,
+  tId,
+  children,
 }) {
-  const [toasts, setToasts] = useRecoilState(toastStack);
-  const [refMap] = useState(() => new WeakMap());
-  const [cancelMap] = useState(() => new WeakMap());
-  const transitions = useTransition(toasts, (toast) => toast.key, {
+  const setToats = useSetRecoilState(toastStack);
+  const ref = useRef();
+  const props = useSpring({
     from: { opacity: 0, height: 0, life: "100%" },
-    enter: (toast) => async (next) => {
-      await next({ opacity: 1, height: refMap.get(toast).offsetHeight });
-    },
-    leave: (toast) => async (next, cancel) => {
-      cancelMap.set(toast, cancel);
-      await next({
-        life: "0%",
-        config: () => {
-          return { duration: 3000 };
-        },
-      });
+    to: async (next, cancel) => {
+      ref.current.cancel = cancel;
+      await next({ opacity: 1, height: ref.current.offsetHeight });
+      await next({ life: "0%", config: { duration: duration } });
       await next({ opacity: 0 });
       await next({ height: 0 });
     },
     config: defConfig,
-    onRest: (toast) => {
-      setToasts((state) => state.filter((i) => i.key !== toast.key));
+    onRest: () => {
+      setToats((old) => old.filter((i) => i.props.tId !== tId));
     },
   });
-
   return (
-    <ToastContainer>
-      {transitions.map(({ key, item, props: { life, ...style } }) => (
-        <Message key={key} style={style}>
-          <Content ref={(ref) => ref && refMap.set(item, ref)}>
-            <Life style={{ right: life }} />
-            <p>{item.msg}</p>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                cancelMap.has(item) && cancelMap.get(item)();
-              }}
-            >
-              X
-            </Button>
-          </Content>
-        </Message>
-      ))}
-    </ToastContainer>
+    <Message style={props}>
+      <Content ref={ref} key={tId}>
+        <Life style={{ right: props.life }} />
+        <p>{children}</p>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            ref.current.cancel();
+          }}
+        >
+          X
+        </Button>
+      </Content>
+    </Message>
   );
 }
