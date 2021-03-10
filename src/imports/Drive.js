@@ -538,7 +538,7 @@ export const folderDictionarySelector = selectorFamily({
           let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
-          let sourcesByParentFolderId = {};
+          let editedCache = {};
           const insertIndex = instructions.index ?? 0;
           let newSortOrder = "";
 
@@ -547,9 +547,9 @@ export const folderDictionarySelector = selectorFamily({
             let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
             set(selectedDriveItemsAtom(selecteditem),false)
 
-            const oldSourceFInfo = get(folderDictionary({driveId:instructions.driveId,folderId:gItem.parentFolderId}));
+            const oldSourceFInfo = get(folderDictionary({driveId:gItem.driveId, folderId:gItem.parentFolderId}));
             // get parentInfo from edited cache or derive from oldSource
-            let newSourceFInfo = sourcesByParentFolderId[gItem.parentFolderId];
+            let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
             if (!newSourceFInfo) newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
 
             if (gItem.parentFolderId !== instructions.itemId) {  
@@ -564,7 +564,8 @@ export const folderDictionarySelector = selectorFamily({
               delete newSourceFInfo["contentsDictionary"][gItem.itemId];
 
               // item must be removed from parent, add to edited cache
-              sourcesByParentFolderId[gItem.parentFolderId] = newSourceFInfo;
+              if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
+              editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
             } else {
               // make sure item not duplicated in destination contentIds
               newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
@@ -582,16 +583,30 @@ export const folderDictionarySelector = selectorFamily({
 
             // insert item into contentIds of destination
             newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
+
+            /* if moved item is a folder, update folder info */
+            if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
+              // retrieval from folderDictionary necessary when moving to different drive
+              const gItemFolderInfoObj = get(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
+              set(folderDictionary({driveId: instructions.driveId, folderId: gItem.itemId}),()=>{
+                let newFolderInfo = {...gItemFolderInfoObj}
+                newFolderInfo.folderInfo = {...gItemFolderInfoObj.folderInfo}
+                newFolderInfo.folderInfo.parentFolderId = instructions.itemId;
+                return newFolderInfo;
+              })
+            }
           }
           //Add all to destination
-          set(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}), newDestinationFolderObj);
+          set(folderDictionary({driveId:instructions.driveId, folderId:instructions.itemId}), newDestinationFolderObj);
           //Clear global selection
           set(globalSelectedNodesAtom,[])
           //Remove from sources
-          for (let parentFolderId of Object.keys(sourcesByParentFolderId)){
-            set(folderDictionary({driveId:instructions.driveId,folderId:parentFolderId}),sourcesByParentFolderId[parentFolderId])
-            //Mark modified folders as dirty
-            set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:parentFolderId}), true);
+          for (let driveId of Object.keys(editedCache)){
+            for (let parentFolderId of Object.keys(editedCache[driveId])) {
+              set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
+              //Mark modified folders as dirty
+              set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
+            }
           }
           //Mark current folder as dirty
           set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:instructions.itemId}), true);
@@ -600,7 +615,7 @@ export const folderDictionarySelector = selectorFamily({
           for (let item of globalSelectedItems){
             selectedItemIds.push(item.itemId);
           }
-          
+
           const payload = {
             sourceDriveId:globalSelectedItems[0].driveId,
             selectedItemIds, 
