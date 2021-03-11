@@ -1,48 +1,12 @@
-import BaseComponent from './abstract/BaseComponent';
-import { deepClone } from '../utils/deepFunctions';
+import Option from './Option';
 
-export default class Group extends BaseComponent {
+export default class Group extends Option {
   static componentType = "group";
 
-  static rendererType = "container";
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: 'anyNonString',
-      componentType: '_base',
-      excludeComponentTypes: ["string"],
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
-  }
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        children: {
-          dependencyType: "child",
-          childLogicName: "anyNonString"
-        }
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.children.map(x => x.componentName)
-          }
-        };
-      }
-    }
-
-    return stateVariableDefinitions;
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.rendered.default = true;
+    return properties;
   }
 
 }

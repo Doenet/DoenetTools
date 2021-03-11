@@ -1627,7 +1627,7 @@ export default class Curve extends GraphicalComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atLeastZeroFunctions",
-              variableNames: ["f"],
+              variableNames: ["numericalf"],
               childIndices: [arrayKey]
             }
           };
@@ -1653,7 +1653,7 @@ export default class Curve extends GraphicalComponent {
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
-            fs[arrayKey] = functionChild[0].stateValues.f;
+            fs[arrayKey] = functionChild[0].stateValues.numericalf;
           } else {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
