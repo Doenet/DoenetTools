@@ -715,20 +715,20 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <number name="count" hide>1</number>
+    <number name="sequenceLength" hide>1</number>
     <map>
     <template newnamespace><math simplify>
         <copy tname="_source" name="b"/> + <copy tname="_sourceindex" name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
-    <sources><sequence from="1" count="$count"/></sources>
+    <sources><sequence from="1" sequenceLength="$sequenceLength"/></sources>
     </map>
     <math name="a">x</math>
     <copy name="mapcopy" tname="_map1" />
 
     <updatevalue label="double">
-      <mathtarget><copy tname="count" /></mathtarget>
-      <newmathvalue>2<copy tname="count" /></newmathvalue>
+      <mathtarget><copy tname="sequenceLength" /></mathtarget>
+      <newmathvalue>2<copy tname="sequenceLength" /></newmathvalue>
     </updatevalue>
     `}, "*");
     });
@@ -760,7 +760,7 @@ describe('Map Tag Tests', function () {
     })
 
 
-    cy.log('Double the count then test again')
+    cy.log('Double the sequenceLength then test again')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
     cy.window().then((win) => {
@@ -800,7 +800,7 @@ describe('Map Tag Tests', function () {
     });
 
 
-    cy.log('Double the count again then test one more time')
+    cy.log('Double the sequenceLength again then test one more time')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
     cy.window().then((win) => {
@@ -1108,7 +1108,7 @@ describe('Map Tag Tests', function () {
     <map>
     <template><math simplify><copy tname="_source"/>^2</math><text>,</text></template>
     <sources>
-    <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
+    <sequence from="$sequenceFrom" to="$sequenceTo" sequenceLength="$sequenceCount" />
     </sources>
     </map>
     </p>
@@ -1660,7 +1660,7 @@ describe('Map Tag Tests', function () {
             <y><copy tname="_source"/><copy prop="x" tname="../q/_point1" /></y>
           </point></template>
       <sources>
-        <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
+        <sequence from="$sequenceFrom" to="$sequenceTo" sequenceLength="$sequenceCount" />
       </sources>
       </map>
       <map assignnames="q,r,s">
@@ -1669,7 +1669,7 @@ describe('Map Tag Tests', function () {
             <y><copy tname="_source"/><copy prop="x" tname="../a/_point1" /></y>
           </point></template>
       <sources>
-        <sequence from="$sequenceFrom" to="$sequenceTo" count="$sequenceCount" />
+        <sequence from="$sequenceFrom" to="$sequenceTo" sequenceLength="$sequenceCount" />
       </sources>
       </map>
     </graph>
@@ -1949,7 +1949,7 @@ describe('Map Tag Tests', function () {
       <map>
         <template><point>(<copy tname="_source"/>, sin(<copy tname="_source"/>))</point></template>
         <sources>
-          <sequence from="2" count="$number" step="$step" />
+          <sequence from="2" sequenceLength="$number" step="$step" />
         </sources>
       </map>
     </math>
@@ -2044,7 +2044,7 @@ describe('Map Tag Tests', function () {
     <map name="m1" assignNames="p1,p2,p3">
       <template newNamespace><point name="pt">(<copy tname="_source"/>, 2<copy tname="_source"/>)</point></template>
       <sources>
-        <sequence count="$number" />
+        <sequence sequenceLength="$number" />
       </sources>
     </map>
 

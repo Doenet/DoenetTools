@@ -8,13 +8,6 @@ export default class ComponentWithSelectableType extends BaseComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "selectedType"] };
 
-  static modifySharedParameters({ sharedParameters }) {
-    // since sequence turns defaultToPrescribedParameters on,
-    // turn it off here so it doesn't propagate further
-    sharedParameters.defaultToPrescribedParameters = false;
-  }
-
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 

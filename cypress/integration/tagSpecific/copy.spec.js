@@ -415,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence from="a" count="$_mathinput1" />
+        <sequence from="a" sequenceLength="$_mathinput1" />
       </aslist>
     </p>
     

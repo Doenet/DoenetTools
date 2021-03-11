@@ -6144,7 +6144,7 @@ describe('Answer Tag Tests', function () {
           Get <number displaydigits="3"><copy tname="_source" /></number>, plus a bit is <math displaydigits="3" simplify><copy tname="_source" />+0.001</math></choice>
         </template>
         <sources>
-          <sequence from="0" to="1" count="$num" />
+          <sequence from="0" to="1" sequenceLength="$num" />
         </sources>
       </map>
     </choiceinput>

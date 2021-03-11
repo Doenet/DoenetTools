@@ -311,12 +311,12 @@ describe('Polygon Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <mathinput name="count" prefill="0" />
+  <mathinput name="sequenceLength" prefill="0" />
   <graph>
   <polygon><vertices>
     <map>
       <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-      <sources><sequence from="0" count="$count" /></sources>
+      <sources><sequence from="0" sequenceLength="$sequenceLength" /></sources>
     </map>
     </vertices></polygon>
   </graph>
@@ -338,7 +338,7 @@ describe('Polygon Tag Tests', function () {
         expect(polygon2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -353,7 +353,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -368,7 +368,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -383,7 +383,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -399,7 +399,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -414,7 +414,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -436,12 +436,12 @@ describe('Polygon Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>b</text>
-  <mathinput name="count" prefill="0" />
+  <mathinput name="sequenceLength" prefill="0" />
   <graph>
   <polygon><vertices>
     <map>
       <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-      <sources><sequence from="0" count="$count" /></sources>
+      <sources><sequence from="0" sequenceLength="$sequenceLength" /></sources>
     </map>
     </vertices></polygon>
   </graph>
@@ -464,7 +464,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -479,205 +479,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-    })
-
-  })
-
-  it.skip('dynamic polygon with sugared vertices, initially zero, copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <mathinput name="count" prefill="0" />
-  <graph>
-  <polygon>
-    <map>
-      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
-    </map>
-    </polygon>
-  </graph>
-  
-  <graph>
-  <copy name="polygon2" tname="_polygon1" />
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let polygon2 = components["/polygon2"].replacements[0];
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_polygon1'].stateValues.nVertices).eq(0);
-        expect(polygon2.stateValues.nVertices).eq(0);
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].tree).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].tree).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 3;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-
-      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 0;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 5;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-    })
-
-    cy.log("start over and begin with big increment")
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>b</text>
-  <mathinput name="count" prefill="0" />
-  <graph>
-  <polygon>
-    <map>
-      <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-      <sources><sequence from="0">
-        <count><copy prop="value" tname="count" /></count>
-      </sequence></sources>
-    </map>
-    </polygon>
-  </graph>
-  
-  <graph>
-  <copy name="polygon2" tname="_polygon1" />
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let polygon2 = components["/polygon2"].replacements[0];
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_polygon1'].stateValues.nVertices).eq(0);
-        expect(polygon2.stateValues.nVertices).eq(0);
-      })
-
-
-      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let nVertices = 10;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
-        expect(polygon2.stateValues.nVertices).eq(nVertices);
-        for (let i = 0; i < nVertices; i++) {
-          expect(components['/_polygon1'].stateValues.vertices[i][0].tree).eq(i);
-          expect(components['/_polygon1'].stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-          expect(polygon2.stateValues.vertices[i][0].tree).eq(i);
-          expect(polygon2.stateValues.vertices[i][1].evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
-        }
-
-      })
-
-      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -701,11 +503,11 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <mathinput name="count" prefill="0" />
+  <mathinput name="sequenceLength" prefill="0" />
   <graph>
   <map>
     <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-    <sources><sequence from="0" count="$count" /></sources>
+    <sources><sequence from="0" sequenceLength="$sequenceLength" /></sources>
   </map>
   <polygon>
     <vertices><copy tname="_map1" /></vertices>
@@ -729,7 +531,7 @@ describe('Polygon Tag Tests', function () {
         expect(polygon2.stateValues.nVertices).eq(0);
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}1{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;
@@ -744,7 +546,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -759,7 +561,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}3{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}3{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 3;
@@ -774,7 +576,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}2{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}2{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 2;
@@ -790,7 +592,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count textarea').type("{end}{backspace}0{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}0{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 0;
@@ -805,7 +607,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}5{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}5{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 5;
@@ -827,11 +629,11 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>b</text>
 
-  <mathinput name="count" prefill="0" />
+  <mathinput name="sequenceLength" prefill="0" />
   <graph>
   <map>
     <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-    <sources><sequence from="0" count="$count" /></sources>
+    <sources><sequence from="0" sequenceLength="$sequenceLength" /></sources>
   </map>
   <polygon><vertices>
     <copy tname="_map1" />
@@ -856,7 +658,7 @@ describe('Polygon Tag Tests', function () {
       })
 
 
-      cy.get('#\\/count textarea').type("{end}{backspace}10{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}10{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 10;
@@ -871,7 +673,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.get('#\\/count textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
+      cy.get('#\\/sequenceLength textarea').type("{end}{backspace}{backspace}1{enter}", { force: true });
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let nVertices = 1;

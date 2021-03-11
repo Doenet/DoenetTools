@@ -1940,7 +1940,7 @@ describe('Collection assignName Tests', function () {
         <point><x><copy tname="_source" />+<math>0</math></x><y><copy tname="_sourceindex" />+<math>0</math></y></point>
       </template>
       <sources>
-        <sequence from="2" count="$n1" />
+        <sequence from="2" sequenceLength="$n1" />
       </sources>
     </map>
     <map>
@@ -1948,7 +1948,7 @@ describe('Collection assignName Tests', function () {
         <point><x>-<copy tname="_source" />+<math>0</math></x><y>-<copy tname="_sourceindex" />+<math>0</math></y></point>
       </template>
       <sources>
-        <sequence from="2" count="$n2" />
+        <sequence from="2" sequenceLength="$n2" />
       </sources>
     </map>
   </graph>
@@ -4275,14 +4275,14 @@ describe('Collection assignName Tests', function () {
                 <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
               </template>
               <sources>
-                <sequence count="$(../nd1)" />
+                <sequence sequenceLength="$(../nd1)" />
               </sources>
             </map>
           </xs>
         </point>
       </template>
       <sources>
-        <sequence count="$n1" />
+        <sequence sequenceLength="$n1" />
       </sources>
     </map>
     <map assignNames="pb1,pb2,pb3">
@@ -4294,14 +4294,14 @@ describe('Collection assignName Tests', function () {
                 <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
               </template>
               <sources>
-                <sequence count="$(../nd2)" />
+                <sequence sequenceLength="$(../nd2)" />
               </sources>
             </map>
           </xs>
         </point>
       </template>
       <sources>
-        <sequence count="$n2" />
+        <sequence sequenceLength="$n2" />
       </sources>
     </map>
   </section>

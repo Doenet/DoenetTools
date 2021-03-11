@@ -277,13 +277,13 @@ describe('Collect Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathinput name="count" prefill="3"/>
+    <mathinput name="sequenceLength" prefill="3"/>
     <mathinput name="mult" prefill="2"/>
     <panel>
     <graph>
       <map>
         <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
-        <sources><sequence to="$count" /></sources>
+        <sources><sequence to="$sequenceLength" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
@@ -336,7 +336,7 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("increase number of points")
-    cy.get('#\\/count textarea').type(`{end}{backspace}5{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -396,7 +396,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("decrease number of points")
-    cy.get('#\\/count textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -426,7 +426,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("increase number of points back to 4")
-    cy.get('#\\/count textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -455,7 +455,7 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.log("increase number of points to 6")
-    cy.get('#\\/count textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}6{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -780,14 +780,14 @@ describe('Collect Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathinput name="count" prefill="5"/>
+    <mathinput name="sequenceLength" prefill="5"/>
     <mathinput name="mult" prefill="2"/>
     <mathinput name="maxnumber" prefill="2"/>
     <panel>
     <graph>
       <map>
         <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
-        <sources><sequence to="$count" /></sources>
+        <sources><sequence to="$sequenceLength" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
@@ -939,7 +939,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("decrease number of points")
-    cy.get('#\\/count textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -969,7 +969,7 @@ describe('Collect Tag Tests', function () {
 
 
     cy.log("increase number of points back to 4")
-    cy.get('#\\/count textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get('#\\/sequenceLength textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1152,7 +1152,7 @@ describe('Collect Tag Tests', function () {
         <mathinput />
       </template>
       <sources>
-        <sequence count="$n" />
+        <sequence sequenceLength="$n" />
       </sources>
     </map>
   </p>

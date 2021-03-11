@@ -616,7 +616,7 @@ describe('Select Tag Tests', function () {
         </select>
       </template>
       <sources>
-      <sequence count="$_mathinput1"/>
+      <sequence sequenceLength="$_mathinput1"/>
       </sources>
     </map>
     </aslist></p>

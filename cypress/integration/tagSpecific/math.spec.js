@@ -263,7 +263,7 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math simplify>2<sequence count="0"/>3</math>
+  <math simplify>2<sequence sequenceLength="0"/>3</math>
   <graph>
   <point><coords>(<copy tname="_math1" />, 3)</coords></point>
   </graph>
