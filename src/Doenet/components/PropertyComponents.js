@@ -521,6 +521,16 @@ export class Symbolic extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class ForceNumeric extends BooleanComponent {
+  static componentType = "forceNumeric";
+  static rendererType = "boolean";
+}
+
+export class ForceSymbolic extends BooleanComponent {
+  static componentType = "forceSymbolic";
+  static rendererType = "boolean";
+}
+
 export class Input extends MathList {
   static componentType = "input";
   static rendererType = "aslist";

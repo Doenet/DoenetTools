@@ -6,11 +6,12 @@ export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
   static rendererType = "math";
 
-  // static createPropertiesObject(args) {
-  //   let properties = super.createPropertiesObject(args);
-  //   properties.symbolic = { default: false };
-  //   return properties;
-  // }
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.forceSymbolic = { default: false };
+    properties.forceNumeric = { default: false };
+    return properties;
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -104,6 +105,14 @@ export default class Evaluate extends MathComponent {
             dependencyType: "child",
             childLogicName: "atMostOneInput",
             variableNames: ["nComponents", "maths"]
+          },
+          forceSymbolic: {
+            dependencyType: "stateVariable",
+            variableName: "forceSymbolic"
+          },
+          forceNumeric: {
+            dependencyType: "stateVariable",
+            variableName: "forceNumeric"
           }
         }
 
@@ -114,7 +123,7 @@ export default class Evaluate extends MathComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atLeastZeroFunctions",
-              variableNames: ["f", "symbolic"],
+              variableNames: ["symbolicf", "numericalf", "symbolic"],
               childIndices: [arrayKey]
             },
           }
@@ -143,8 +152,10 @@ export default class Evaluate extends MathComponent {
           for (let arrayKey of arrayKeys) {
             let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
             if (functionChild) {
-              if (functionChild.stateValues.symbolic) {
-                evaluatedResults[arrayKey] = functionChild.stateValues.f(input);
+              if (!globalDependencyValues.forceNumeric &&
+                (functionChild.stateValues.symbolic || globalDependencyValues.forceSymbolic)
+              ) {
+                evaluatedResults[arrayKey] = functionChild.stateValues.symbolicf(input);
               } else {
                 if (!calculatedNumericInput) {
                   calculatedNumericInput = true;
@@ -154,40 +165,11 @@ export default class Evaluate extends MathComponent {
                   }
                 }
 
-                for (let arrayKey of arrayKeys) {
-                  let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
-                  if (functionChild) {
-                    evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.f(numericInput))
-                  }
-                }
+                evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.numericalf(numericInput))
               }
             }
           }
 
-
-          // if (globalDependencyValues.symbolic) {
-          //   // TODO: for now just take the first input
-          //   // generalize to functions of multiple varialbes
-          //   for (let arrayKey of arrayKeys) {
-          //     let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
-          //     if (functionChild) {
-          //       evaluatedResults[arrayKey] = functionChild.stateValues.f(input)
-          //     }
-          //   }
-          // } else {
-          //   let numericInput = globalDependencyValues.inputChild[0].stateValues.maths[0].evaluate_to_constant();
-          //   console.log(`numericInput:  ${numericInput}`)
-          //   if (numericInput === null) {
-          //     numericInput = NaN;
-          //   }
-          //   for (let arrayKey of arrayKeys) {
-          //     let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
-          //     if (functionChild) {
-          //       console.log(functionChild.stateValues.numericalf(numericInput))
-          //       evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.numericalf(numericInput))
-          //     }
-          //   }
-          // }
 
         }
 
