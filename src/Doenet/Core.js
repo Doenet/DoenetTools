@@ -5358,6 +5358,13 @@ export default class Core {
 
       if (varName in stateVarInfo.aliases) {
         varName = stateVarInfo.aliases[varName];
+
+        // check again to see if alias is public
+        if (varName in stateVarInfo.stateVariableDescriptions) {
+          // found public
+          newVariables.push(varName);
+          continue;
+        }
       }
 
       let foundMatch = false;
