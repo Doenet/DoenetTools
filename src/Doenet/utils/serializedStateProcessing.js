@@ -887,18 +887,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
       componentProps = new Proxy(componentProps, readOnlyProxyHandler);
 
-      // normalize type
-      let typeForSugar;
-      if (componentClass.acceptType) {
-        typeForSugar = componentProps.type;
-        if (typeForSugar) {
-          typeForSugar = typeForSugar.toLowerCase();
-        } else if (componentClass.defaultType) {
-          typeForSugar = componentClass.defaultType;
-        }
-      }
-
-
       for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
         let nonPropertyChildren = component.children.filter(x =>
@@ -915,12 +903,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
         let nonPropertyTypes = nonPropertyChildren
           .map(x => x.componentType === "string" ? "s" : "n")
           .join("");
-
-        if (sugarInstruction.forType && sugarInstruction.forType !== typeForSugar) {
-          // type property of component doesn't match sugar's type
-          console.log(`type doesn't match`)
-          continue;
-        }
 
         if (sugarInstruction.childrenRegex) {
           let match = nonPropertyTypes.match(sugarInstruction.childrenRegex);

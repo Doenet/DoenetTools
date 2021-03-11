@@ -18,12 +18,9 @@ export default class ComponentWithSelectableType extends BaseComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    function addType({ matchedChildren, componentProps, parentProps, componentInfoObjects }) {
+    function addType({ matchedChildren, parentProps, componentInfoObjects }) {
 
-      let selectedType = componentProps.type;
-      if (!selectedType) {
-        selectedType = parentProps.type;
-      }
+      let selectedType = parentProps.type;
 
       if (!selectedType) {
         if (matchedChildren.length === 1) {
