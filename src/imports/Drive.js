@@ -1319,12 +1319,24 @@ function Folder(props){
   };
 
   const onDragOver = ({x, y, dropTargetRef}) => {
+    onDragOverContainer({ id: props.folderId, driveId: props.driveId });
+
+    if (props.isNav) {
+      setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
+      setFolderInfo({
+        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+        parentId: props.folderId,
+        position: "intoCurrent"
+      });
+      return;
+    }
+
     const dropTargetTopY = dropTargetRef?.offsetTop;
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
     // open folder if initially closed
-    if (!isOpenRef.current && !props.isNav && !isSelectedRef.current) {
+    if (!isOpenRef.current && !isSelectedRef.current) {
       toggleOpen();
     }
     
@@ -1349,13 +1361,14 @@ function Folder(props){
     } else {
       setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
     }
-
-    onDragOverContainer({ id: props.folderId, driveId: props.driveId });
   }
 
   const onDragHover = () => {
+    if (props.isNav) return;
+
     setFolderInfo({
       instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+      parentId: props.folderId,
       position: "intoCurrent"
     });
   }
