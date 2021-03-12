@@ -50,6 +50,7 @@ import {
   useRecoilState,
   useRecoilValue
 } from 'recoil';
+import ChildLogic from '../Doenet/ChildLogic';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -601,9 +602,31 @@ export const folderDictionarySelector = selectorFamily({
             if (gItem.driveId !== instructions.driveId) {
               driveIdChanged.push(gItem.itemId)
 
-              // update driveId of all children in the subtree 
+              /* update driveId of all children in the subtree */
               if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
-                const gItemChildIds = get(nodeChildrenSelector({driveId: gItem.driveId, folderId: gItem.itemId}));
+                let gItemChildIds = [];
+                let queue = [gItem.itemId];
+
+                /* BFS tree-walk to iterate through all child nodes */
+                while (queue.length) {
+                  let size = queue.length;
+                  for (let i = 0; i < size; i++) {
+                    let currentNodeId = queue.shift();
+                    const folderInfoObj = get(folderDictionarySelector({ driveId: gItem.driveId, folderId: currentNodeId}));
+                    gItemChildIds.push(currentNodeId);
+                    for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
+                      if (folderInfoObj?.contentsDictionary[childId].itemType === "Folder") {
+                        // migrate child folderInfo into destination driveId
+                        const childFolderInfoObj = get(folderDictionary({driveId: gItem.driveId, folderId: childId}));
+                        set(folderDictionary({driveId: instructions.driveId, folderId: childId}), childFolderInfoObj);
+                        queue.push(childId);
+                      } else {
+                        gItemChildIds.push(childId);
+                      }
+                    }
+                  }
+                }
+
                 driveIdChanged = [...driveIdChanged, ...gItemChildIds]
               }
             }
