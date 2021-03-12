@@ -1694,6 +1694,32 @@ export default class Circle extends Curve {
       }
     }
 
+    stateVariableDefinitions.diameter = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        radius: {
+          dependencyType: "stateVariable",
+          variableName: "radius"
+        }
+      }),
+      definition({dependencyValues}) {
+        return {
+          newValues: {
+            diameter: dependencyValues.radius.multiply(2).simplify()
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "radius",
+            desiredValue: desiredStateVariableValues.diameter.divide(2).simplify()
+          }]
+        }
+      }
+    }
 
     stateVariableDefinitions.center = {
       forRenderer: true,
