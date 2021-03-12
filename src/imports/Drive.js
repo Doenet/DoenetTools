@@ -539,6 +539,7 @@ export const folderDictionarySelector = selectorFamily({
           let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
           let globalSelectedItems = get(globalSelectedNodesAtom)
           let editedCache = {};
+          let driveIdChanged = [];
           const insertIndex = instructions.index ?? 0;
           let newSortOrder = "";
 
@@ -595,16 +596,28 @@ export const folderDictionarySelector = selectorFamily({
                 return newFolderInfo;
               })
             }
+
+            /* if moved between drives, handle update driveId */
+            if (gItem.driveId !== instructions.driveId) {
+              driveIdChanged.push(gItem.itemId)
+
+              // update driveId of all children in the subtree 
+              if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
+                const gItemChildIds = get(nodeChildrenSelector({driveId: gItem.driveId, folderId: gItem.itemId}));
+                driveIdChanged = [...driveIdChanged, ...gItemChildIds]
+              }
+            }
           }
           //Add all to destination
           set(folderDictionary({driveId:instructions.driveId, folderId:instructions.itemId}), newDestinationFolderObj);
           //Clear global selection
           set(globalSelectedNodesAtom,[])
           //Remove from sources
+          
           for (let driveId of Object.keys(editedCache)){
             for (let parentFolderId of Object.keys(editedCache[driveId])) {
               set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
-              //Mark modified folders as dirty
+              // Mark modified folders as dirty
               set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
             }
           }
@@ -618,7 +631,8 @@ export const folderDictionarySelector = selectorFamily({
 
           const payload = {
             sourceDriveId:globalSelectedItems[0].driveId,
-            selectedItemIds, 
+            selectedItemIds,
+            selectedItemChildrenIds: driveIdChanged,
             destinationItemId:instructions.itemId,
             destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
             destinationDriveId:instructions.driveId,
@@ -2325,6 +2339,30 @@ const nodePathSelector = selectorFamily({
       currentNode = folderInfoObj.folderInfo.parentFolderId;
     }
     return path;
+  }
+})
+
+const nodeChildrenSelector = selectorFamily({
+  key:"nodePathSelector",
+  get: (driveIdFolderId) => ({get})=>{
+    
+    const { driveId, folderId } = driveIdFolderId;
+    if (!driveId || !folderId) return []
+    let children = [];
+    let queue = [folderId];
+    
+    while (queue.length) {
+      let size = queue.length;
+      for (let i = 0; i < size; i++) {
+        let currentNodeId = queue.shift();
+        const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNodeId}));
+        children.push(currentNodeId);
+        for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
+          queue.push(childId); 
+        }
+      }
+    }
+    return children;
   }
 })
 
