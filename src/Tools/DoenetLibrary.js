@@ -89,23 +89,20 @@ const selectedInformation = selector({
   get: ({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);
     if (globalSelected.length !== 1){
-      return {number:globalSelected.length}
+      return {number:globalSelected.length,itemObjs:globalSelected}
     }
     //Find information if only one item selected
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
     let folderInfo = get(folderDictionary({driveId,folderId})); 
+
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};
     itemInfo['driveId'] = driveId;
     itemInfo['driveInstanceId'] = driveInstanceId;
-    let versions = [];
-    if (itemInfo.itemType === "DoenetML"){
-      let branchId = itemInfo.branchId;
-      versions = get(itemVersionsSelector(branchId))
-    }
-    return {number:globalSelected.length,itemInfo,versions}
+
+    return {number:globalSelected.length,itemInfo}
   }
 })
 
@@ -459,19 +456,18 @@ const FolderInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
 
   const [label,setLabel] = useState(itemInfo.label);
-  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder}/>
   
   return <>
-  <h2>{fIcon} {panelLabel}</h2>
+  <h2>{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
-    if (e.keyCode === 13){
-      setPanelLabel(label)
+    if (e.key === "Enter"){
+
       setFolder({
         instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
@@ -482,7 +478,6 @@ const FolderInfoPanel = function(props){
     }
   }}
   onBlur={()=>{
-    setPanelLabel(label)
     setFolder({
       instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
@@ -509,22 +504,20 @@ const DoenetMLInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
 
   const [label,setLabel] = useState(itemInfo.label);
-  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   const { openOverlay } = useToolControlHelper();
-
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
   
   return <>
-  <h2>{dIcon} {panelLabel}</h2>
+  <h2>{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
-    if (e.keyCode === 13){
-      setPanelLabel(label)
+
+    if (e.key === "Enter"){
       setFolder({
         instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
@@ -535,7 +528,6 @@ const DoenetMLInfoPanel = function(props){
     }
   }}
   onBlur={()=>{
-    setPanelLabel(label)
     setFolder({
       instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
@@ -579,8 +571,14 @@ const ItemInfo = function (){
       let itemInfo = infoLoad?.contents?.itemInfo;
 
     if (infoLoad.contents?.number > 1){
+      // let itemIds = [];
+      // for (let itemObj of infoLoad.contents?.itemObjs){
+      //   let key = `itemId${itemObj.itemId}`;
+      //   itemIds.push(<div key={key}>{itemObj.itemId}</div>)
+      // }
       return <>
       <h1>{infoLoad.contents.number} Items Selected</h1>
+      {/* {itemIds} */}
       </>
     }else if (driveSelections.length > 1){
       return  <h1>{driveSelections.length} Drives Selected</h1>

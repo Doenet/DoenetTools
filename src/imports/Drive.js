@@ -48,7 +48,8 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilState,
-  useRecoilValue
+  useRecoilValue,
+  useRecoilCallback
 } from 'recoil';
 
 const fetchDriveUsersQuery = atomFamily({
@@ -1229,7 +1230,6 @@ function Folder(props){
   let history = useHistory();
   
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
-
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
@@ -1251,6 +1251,13 @@ function Folder(props){
   const toggleOpen = useSetRecoilState(folderOpenSelector({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId}))
   const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
   const isSelectedRef = useRef(isSelected);  // for memoized DnD callbacks
+
+  //Set only when parentFolderId changes
+  const setInstanceParentId = useSetRecoilState(driveInstanceParentFolderIdAtom(props.driveInstanceId));
+  useEffect(() => {
+    setInstanceParentId(props.pathItemId);
+  },[props.pathItemId])
+
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
@@ -1720,6 +1727,17 @@ export const clearDriveAndItemSelections = selector({
   }
 })
 
+//key: driveInstanceId
+const driveInstanceParentFolderIdAtom = atomFamily({
+  key:"driveInstanceParentFolderIdAtom",
+  default: selectorFamily({
+    key:"driveInstanceParentFolderIdAtom/Default",
+    get: (driveInstanceId) => ()=>{
+    return driveInstanceId
+  }
+  })
+})
+
 const selectedDriveItems = selectorFamily({
   key:"selectedDriveItems",
   // get:(driveIdDriveInstanceIdItemId) =>({get})=>{ 
@@ -1729,56 +1747,29 @@ const selectedDriveItems = selectorFamily({
     const globalSelected = get(globalSelectedNodesAtom);
     const isSelected = get(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId))
     const {driveId,driveInstanceId,itemId} = driveIdDriveInstanceIdItemId;
-    function findRange({clickNeedle,lastNeedle,foundClickNeedle=false,foundLastNeedle=false,currentFolderId,foldersSearched=[]}){
-      foldersSearched.push(currentFolderId);
-      let itemIdsParentFolderIdsInRange = [];
-      let folder = get(folderInfoSelector({driveId, instanceId:driveInstanceId, folderId:currentFolderId}))      
+    let lastSelectedItem = globalSelected[globalSelected.length-1];
 
-      for (let itemId of folder.contentIdsArr){
-        if (foundClickNeedle && foundLastNeedle){
-          break;
-        }
-        if (clickNeedle === itemId){ foundClickNeedle = true;}
-        if (lastNeedle === itemId){ foundLastNeedle = true;}
-        //Add itemId if inside the range or an end point then add to itemIds
-        if (foundClickNeedle || foundLastNeedle){
-          itemIdsParentFolderIdsInRange.push({itemId,parentFolderId:currentFolderId});
-        }
-        
-        if (folder.contentsDictionary[itemId].itemType === "Folder"){
-          const isOpen = get(folderOpenAtom({driveInstanceId,driveId,itemId}))
-          //Recurse if open
+    function buildItemIdsAndParentIds({parentFolderId,driveInstanceId,driveId,itemIdArr=[],parentFolderIdArr=[]}){
+      const folderObj = get(folderDictionary({driveId,folderId:parentFolderId}))
+      for (let itemId of folderObj.contentIds.defaultOrder){
+        itemIdArr.push(itemId);
+        parentFolderIdArr.push(parentFolderId);
+        if (folderObj.contentsDictionary[itemId].itemType === 'Folder'){
+          const isOpen = get(folderOpenAtom({driveInstanceId,driveId,itemId}));
           if (isOpen){
-            let [subItemIdsParentFolderIdsInRange,subFoundClickNeedle,subFoundLastNeedle] = 
-            findRange({clickNeedle,lastNeedle,foundClickNeedle,foundLastNeedle,currentFolderId:itemId,foldersSearched});
-            itemIdsParentFolderIdsInRange.push(...subItemIdsParentFolderIdsInRange);
-            if (subFoundClickNeedle){foundClickNeedle = true;}
-            if (subFoundLastNeedle){foundLastNeedle = true;}
+            const [folderItemIdArr,folderParentFolderIdsArr] = buildItemIdsAndParentIds({parentFolderId:itemId,driveInstanceId,driveId})
+            itemIdArr = [...itemIdArr,...folderItemIdArr];
+            parentFolderIdArr = [...parentFolderIdArr,...folderParentFolderIdsArr];
           }
-          
         }
-        
-       
-        if (foundClickNeedle && foundLastNeedle){
-          break;
-        }
-        
       }
-      if (!foundClickNeedle && foundLastNeedle && !foldersSearched.includes(folder.folderInfo.parentFolderId)){
-        //search parent folder
-        
-        // let [parentItemIdsParentFolderIdsInRange,parentFoundClickNeedle,parentFoundLastNeedle] = 
-        //     findRange({clickNeedle,lastNeedle,foundClickNeedle,foundLastNeedle,currentFolderId:folder.folderInfo.parentFolderId,foldersSearched});
-        //     itemIdsParentFolderIdsInRange.push(...parentItemIdsParentFolderIdsInRange);
-            // if (parentFoundClickNeedle){foundClickNeedle = true;}
-            // if (parentFoundLastNeedle){foundLastNeedle = true;}
-      }
-      
-      return [itemIdsParentFolderIdsInRange,foundClickNeedle,foundLastNeedle,folder.folderInfo.parentFolderId];
+      return [itemIdArr,parentFolderIdArr];
     }
+
     switch (instruction.instructionType) {
       case "one item":
         if (!isSelected){
+          //Deselect all global selected
           for (let itemObj of globalSelected){
             let itemInfo = { ...itemObj };
             delete itemInfo["parentFolderId"];
@@ -1788,13 +1779,30 @@ const selectedDriveItems = selectorFamily({
           let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
+
+          //Select contents of open folders??
+          // const parentFolder = get(folderDictionary({driveId,folderId:instruction.parentFolderId}))
+          // const itemType = parentFolder.contentsDictionary[itemId].itemType;
+          // if (itemType === 'Folder'){
+          //   let isOpen = get(folderOpenAtom(driveIdDriveInstanceIdItemId));
+          //   console.log(">>>isOpen",isOpen)
+          // }
         }
         break;
       case "add item":
         if (isSelected){
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),false)
           let newGlobalSelected = [...globalSelected];
-          const index = newGlobalSelected.indexOf(driveIdDriveInstanceIdItemId)
+          let index;
+          for (const [i,obj] of newGlobalSelected.entries()){
+            if (obj.driveId === driveId &&
+              obj.itemId === itemId &&
+              obj.driveInstanceId === driveInstanceId
+              ){
+                index = i;
+                break;
+              }
+          }
           newGlobalSelected.splice(index,1)
           set(globalSelectedNodesAtom,newGlobalSelected);
         }else{
@@ -1805,39 +1813,53 @@ const selectedDriveItems = selectorFamily({
         }
         break;
       case "range to item":
-        if (globalSelected.length === 0){
+        //select one if driveInstanceId doesn't match
+        if (globalSelected.length === 0 || lastSelectedItem?.driveInstanceId !== driveInstanceId){
           //No previous items selected so just select this one
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
           let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
         }else{
-          let lastSelectedItem = globalSelected[globalSelected.length-1];
-          //TODO: Just select one if driveInstanceId doesn't match
-          //Starting at root build array of visible items in order
-          let [selectTheseItemIdParentFolderIds] = findRange({
-            currentFolderId:lastSelectedItem.parentFolderId,
-            lastNeedle:lastSelectedItem.itemId,
-            clickNeedle:driveIdDriveInstanceIdItemId.itemId});
-           
-          let addToGlobalSelected = []
-          for (let itemIdParentFolderIdsToSelect of selectTheseItemIdParentFolderIds){
-            let itemKey = {...driveIdDriveInstanceIdItemId}
-            itemKey.itemId = itemIdParentFolderIdsToSelect.itemId;
-            let forGlobal = {...itemKey}
-            forGlobal.parentFolderId = itemIdParentFolderIdsToSelect.parentFolderId;
-            if (!get(selectedDriveItemsAtom(itemKey))){
-              set(selectedDriveItemsAtom(itemKey),true)
-              addToGlobalSelected.push(forGlobal);
-            }
-          }
-          //TODO: Does this have the parentFolderId?
-          set(globalSelectedNodesAtom,[...globalSelected,...addToGlobalSelected])
+          const driveInstanceParentFolderId = get(driveInstanceParentFolderIdAtom(driveInstanceId))
+          let [arrayOfItemIds,parentFolderIds] = buildItemIdsAndParentIds({parentFolderId:driveInstanceParentFolderId,driveInstanceId,driveId})
 
+          let foundClickedItem = false;
+          let foundLastItem = false;
+          let addToGlobalSelected = [];
+          let needToReverseOrder = false;
+          for (const [i,testItemId] of arrayOfItemIds.entries()){
+            if (!foundLastItem && testItemId === lastSelectedItem.itemId){
+              foundLastItem = true;
+              if (foundClickedItem){needToReverseOrder = true;}
+            }
+            if (!foundClickedItem && testItemId === itemId){
+              foundClickedItem = true;
+            }
+            if (foundClickedItem || foundLastItem){
+              //in range
+              // console.log(">>>in range",testItemId,parentFolderIds[i])
+              const isSelected = get(selectedDriveItemsAtom({driveId,driveInstanceId,itemId:testItemId}));
+              if (!isSelected){
+                set(selectedDriveItemsAtom({driveId,driveInstanceId,itemId:testItemId}),true);//select item
+                addToGlobalSelected.push({driveId,driveInstanceId,itemId:testItemId,parentFolderId:parentFolderIds[i]})
+              }
+              if (foundClickedItem && foundLastItem){
+                break;
+              }
+            }
+            
+          }
+          
+          if (needToReverseOrder){
+            addToGlobalSelected.reverse();
+          }
+          // console.log(">>>globalSelected",globalSelected)
+          // console.log(">>>addToGlobalSelected",addToGlobalSelected)
+          set(globalSelectedNodesAtom,[...globalSelected,...addToGlobalSelected])
         }
       break;
       case "clear all":
-          //TODO: Only clear this browser?
           for (let itemObj of globalSelected){
             const {parentFolderId,...atomFormat} = itemObj;  //Without parentFolder
             set(selectedDriveItemsAtom(atomFormat),false)
