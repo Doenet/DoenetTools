@@ -49,6 +49,11 @@ $response_arr = array(
   "success"=>$success
   );
 
+  // $response_arr = array(
+  //   "success"=>FALSE,
+  //   "message"=>"Can't save to database."
+  //   );
+
 // set response code - 200 OK
 http_response_code(200);
 
