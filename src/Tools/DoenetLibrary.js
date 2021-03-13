@@ -3,6 +3,7 @@ import Tool from "../imports/Tool/Tool";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 import { useToolControlHelper } from "../imports/Tool/ToolRoot";
+import { useToast } from "../imports/Tool/Toast";
 
 import './util.css';
 
@@ -14,7 +15,8 @@ import Drive, {
   clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams,
-  fetchDriveUsers
+  fetchDriveUsers,
+  fetchDrivesQuery
 } from "../imports/Drive";
 import nanoid from 'nanoid';
 
@@ -43,6 +45,7 @@ import {
   selectorFamily,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
+  useRecoilCallback
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 // import { supportVisible } from "../imports/Tool/SupportPanel";
@@ -259,7 +262,7 @@ function NewUser(props){
       }else{
         console.log(">>>Toast ",resp.message)
       }
-     
+      
     }
     
   }
@@ -616,8 +619,61 @@ const ItemInfo = function (){
 
 function AddCourseDriveButton(props){
   const history = useHistory();
+  const toast = useToast();
 
-  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+  const createNewDrive = useRecoilCallback(({set})=> 
+  async ({label,newDriveId,image,color})=>{
+    let newDrive = {
+      courseId:null,
+      driveId:newDriveId,
+      isShared:"0",
+      label,
+      type: "course",
+      image,
+      color,
+      subType:"Administrator"
+    }
+    set(fetchDrivesQuery,(oldDrivesInfo)=>{
+      let newDrivesInfo = {...oldDrivesInfo}
+      newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
+      return newDrivesInfo
+    })
+    const payload = { params:{
+      driveId:newDriveId,
+      label,
+      type:"new course drive",
+      image,
+      color,
+    } }
+    return axios.get("/api/addDrive.php", payload)
+
+  });
+
+  const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
+  async (newDriveId)=>{
+    console.log(">>>deleting newDriveId",newDriveId)
+    //Filter out drive which was just added
+    set(fetchDrivesQuery,(oldDrivesInfo)=>{
+      //Could just unshift the first drive but that could break
+      //this is less brittle
+      let newDrivesInfo = {...oldDrivesInfo}
+      let newDriveIdsAndLabels = [];
+      for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
+        if (driveAndLabel.driveId !== newDriveId){
+          newDriveIdsAndLabels.push(driveAndLabel);
+        }
+      }
+      newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
+      return newDrivesInfo
+    })
+
+  });
+
+
+  function onError({newDriveId,errorMessage}){
+    deleteNewDrive(newDriveId);
+    toast(`Course not created. ${errorMessage}`, 2, null, 6000);
+  }
 
   return <Button value="Create a New Course" callback={()=>{
     let driveId = null;
@@ -625,10 +681,19 @@ function AddCourseDriveButton(props){
     let label = "Untitled";
     let image = driveImages[Math.floor(Math.random() * driveImages.length)];
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    setNewDrive({label,type:"new course drive",driveId,newDriveId,image,color})
+    const result = createNewDrive({label,driveId,newDriveId,image,color});
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Created a new course named '${label}'`, 0, null, 3000);
+      }else{
+        onError({newDriveId,errorMessage:resp.data.message});
+      }
+    }).catch((errorObj)=>{
+      onError({newDriveId,errorMessage:errorObj.message});
+      
+    })
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
-    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
     newParams['path'] = `:::`
     history.push('?'+encodeParams(newParams))
 
@@ -780,7 +845,6 @@ export default function DoenetLibraryTool(props) {
       </navPanel>
 
       <headerPanel title="Library">
-        {/* <p>Drive</p> */}
       </headerPanel>
 
       <mainPanel>

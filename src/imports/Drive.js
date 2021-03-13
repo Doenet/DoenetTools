@@ -150,7 +150,7 @@ export const fetchDriveUsers = selectorFamily({
         // .then((resp)=>{console.log(">>>resp",resp.data) })
 
         break;
-        case "To Owner":
+      case "To Owner":
         set(fetchDriveUsersQuery(driveId),(was)=>{
           let newDriveUsers = {...was}
           let userEntry = {};
@@ -174,8 +174,8 @@ export const fetchDriveUsers = selectorFamily({
         axios.get('/api/saveUserToDrive.php', payload)
         // .then((resp)=>{console.log(">>>resp",resp.data) })
 
-        break;
-        case "To Admin":
+      break;
+      case "To Admin":
         set(fetchDriveUsersQuery(driveId),(was)=>{
           let newDriveUsers = {...was}
           let userEntry = {};
@@ -203,7 +203,7 @@ export const fetchDriveUsers = selectorFamily({
         axios.get('/api/saveUserToDrive.php', payload)
         // .then((resp)=>{console.log(">>>resp",resp.data) })
 
-        break;
+      break;
       default:
         console.log(`type ${instructions.type} not handled`)
     }
@@ -805,7 +805,6 @@ const folderCacheDirtyAtom = atomFamily({
   default:false
 })
 
-
 export const folderInfoSelectorActions = Object.freeze({
   ADD_ITEM: "addItem",
   DELETE_ITEM: "delete item",
@@ -986,8 +985,7 @@ function DriveRouted(props){
   </>
 }
 
-
-let fetchDrivesQuery = atom({
+export const fetchDrivesQuery = atom({
   key:"fetchDrivesQuery",
   default: selector({
     key:"fetchDrivesQuery/Default",
