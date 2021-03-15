@@ -360,8 +360,22 @@ describe('Curve Tag Tests', function () {
     </graph>
 
     <p>Temp way to change controls:
-    <textinput name="dir1"><copy prop="vectorcontroldirection1" tname="_curve1" /></textinput>
-    <textinput name="dir4"><copy prop="vectorcontroldirection4" tname="_curve1" /></textinput>
+    <choiceInput name="dir1" fixedOrder>
+      <bindValueTo><copy prop="vectorcontroldirection1" tname="_curve1" /></bindValueTo>
+      <choice>none</choice>
+      <choice>symmetric</choice>
+      <choice>previous</choice>
+      <choice>next</choice>
+      <choice>both</choice>
+    </choiceInput>
+    <choiceInput name="dir4" fixedOrder>
+      <bindValueTo><copy prop="vectorcontroldirection4" tname="_curve1" /></bindValueTo>
+      <choice>none</choice>
+      <choice>symmetric</choice>
+      <choice>previous</choice>
+      <choice>next</choice>
+      <choice>both</choice>
+    </choiceInput>
     </p>
 
     `}, "*");
@@ -403,8 +417,8 @@ describe('Curve Tag Tests', function () {
     })
 
     cy.log("activate bezier controls and move tangents")
-    cy.get('#\\/dir1_input').clear().type("symmetric{enter}")
-    cy.get('#\\/dir4_input').clear().type("symmetric{enter}")
+    cy.get(`#\\/dir1_choice2_input`).click();
+    cy.get(`#\\/dir4_choice2_input`).click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       // components['/_curve1'].togglePointControl(0)

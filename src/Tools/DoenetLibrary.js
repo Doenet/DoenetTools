@@ -3,6 +3,7 @@ import Tool from "../imports/Tool/Tool";
 import {driveColors,driveImages} from '../imports/Util';
 import DoenetDriveCardMenu from "../imports/DoenetDriveCardMenu";
 import { useToolControlHelper } from "../imports/Tool/ToolRoot";
+import { useToast } from "../imports/Tool/Toast";
 
 import './util.css';
 
@@ -14,7 +15,8 @@ import Drive, {
   clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams,
-  fetchDriveUsers
+  fetchDriveUsers,
+  fetchDrivesQuery
 } from "../imports/Drive";
 import nanoid from 'nanoid';
 
@@ -43,6 +45,7 @@ import {
   selectorFamily,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
+  useRecoilCallback
 } from "recoil";
 import { BreadcrumbContainer } from "../imports/Breadcrumb";
 // import { supportVisible } from "../imports/Tool/SupportPanel";
@@ -89,23 +92,20 @@ const selectedInformation = selector({
   get: ({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);
     if (globalSelected.length !== 1){
-      return {number:globalSelected.length}
+      return {number:globalSelected.length,itemObjs:globalSelected}
     }
     //Find information if only one item selected
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
     let folderInfo = get(folderDictionary({driveId,folderId})); 
+
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};
     itemInfo['driveId'] = driveId;
     itemInfo['driveInstanceId'] = driveInstanceId;
-    let versions = [];
-    if (itemInfo.itemType === "DoenetML"){
-      let branchId = itemInfo.branchId;
-      versions = get(itemVersionsSelector(branchId))
-    }
-    return {number:globalSelected.length,itemInfo,versions}
+
+    return {number:globalSelected.length,itemInfo}
   }
 })
 
@@ -262,7 +262,7 @@ function NewUser(props){
       }else{
         console.log(">>>Toast ",resp.message)
       }
-     
+      
     }
     
   }
@@ -459,19 +459,18 @@ const FolderInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
 
   const [label,setLabel] = useState(itemInfo.label);
-  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder}/>
   
   return <>
-  <h2>{fIcon} {panelLabel}</h2>
+  <h2>{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
-    if (e.keyCode === 13){
-      setPanelLabel(label)
+    if (e.key === "Enter"){
+
       setFolder({
         instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
@@ -482,7 +481,6 @@ const FolderInfoPanel = function(props){
     }
   }}
   onBlur={()=>{
-    setPanelLabel(label)
     setFolder({
       instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
@@ -509,22 +507,20 @@ const DoenetMLInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
 
   const [label,setLabel] = useState(itemInfo.label);
-  const [panelLabel,setPanelLabel] = useState(itemInfo.label);
 
   const { openOverlay } = useToolControlHelper();
-
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
   
   return <>
-  <h2>{dIcon} {panelLabel}</h2>
+  <h2>{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
-    if (e.keyCode === 13){
-      setPanelLabel(label)
+
+    if (e.key === "Enter"){
       setFolder({
         instructionType: folderInfoSelectorActions.RENAME_ITEM,
         itemId:itemInfo.itemId,
@@ -535,7 +531,6 @@ const DoenetMLInfoPanel = function(props){
     }
   }}
   onBlur={()=>{
-    setPanelLabel(label)
     setFolder({
       instructionType: folderInfoSelectorActions.RENAME_ITEM,
       itemId:itemInfo.itemId,
@@ -579,8 +574,14 @@ const ItemInfo = function (){
       let itemInfo = infoLoad?.contents?.itemInfo;
 
     if (infoLoad.contents?.number > 1){
+      // let itemIds = [];
+      // for (let itemObj of infoLoad.contents?.itemObjs){
+      //   let key = `itemId${itemObj.itemId}`;
+      //   itemIds.push(<div key={key}>{itemObj.itemId}</div>)
+      // }
       return <>
       <h1>{infoLoad.contents.number} Items Selected</h1>
+      {/* {itemIds} */}
       </>
     }else if (driveSelections.length > 1){
       return  <h1>{driveSelections.length} Drives Selected</h1>
@@ -618,8 +619,61 @@ const ItemInfo = function (){
 
 function AddCourseDriveButton(props){
   const history = useHistory();
+  const toast = useToast();
 
-  const [_,setNewDrive] = useRecoilState(fetchDrivesSelector)
+  const createNewDrive = useRecoilCallback(({set})=> 
+  async ({label,newDriveId,image,color})=>{
+    let newDrive = {
+      courseId:null,
+      driveId:newDriveId,
+      isShared:"0",
+      label,
+      type: "course",
+      image,
+      color,
+      subType:"Administrator"
+    }
+    set(fetchDrivesQuery,(oldDrivesInfo)=>{
+      let newDrivesInfo = {...oldDrivesInfo}
+      newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
+      return newDrivesInfo
+    })
+    const payload = { params:{
+      driveId:newDriveId,
+      label,
+      type:"new course drive",
+      image,
+      color,
+    } }
+    return axios.get("/api/addDrive.php", payload)
+
+  });
+
+  const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
+  async (newDriveId)=>{
+    console.log(">>>deleting newDriveId",newDriveId)
+    //Filter out drive which was just added
+    set(fetchDrivesQuery,(oldDrivesInfo)=>{
+      //Could just unshift the first drive but that could break
+      //this is less brittle
+      let newDrivesInfo = {...oldDrivesInfo}
+      let newDriveIdsAndLabels = [];
+      for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
+        if (driveAndLabel.driveId !== newDriveId){
+          newDriveIdsAndLabels.push(driveAndLabel);
+        }
+      }
+      newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
+      return newDrivesInfo
+    })
+
+  });
+
+
+  function onError({newDriveId,errorMessage}){
+    deleteNewDrive(newDriveId);
+    toast(`Course not created. ${errorMessage}`, 2, null, 6000);
+  }
 
   return <Button value="Create a New Course" callback={()=>{
     let driveId = null;
@@ -627,10 +681,19 @@ function AddCourseDriveButton(props){
     let label = "Untitled";
     let image = driveImages[Math.floor(Math.random() * driveImages.length)];
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    setNewDrive({label,type:"new course drive",driveId,newDriveId,image,color})
+    const result = createNewDrive({label,driveId,newDriveId,image,color});
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Created a new course named '${label}'`, 0, null, 3000);
+      }else{
+        onError({newDriveId,errorMessage:resp.data.message});
+      }
+    }).catch((errorObj)=>{
+      onError({newDriveId,errorMessage:errorObj.message});
+      
+    })
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
-    // newParams['path'] = `${newDriveId}:${newDriveId}:${newDriveId}:Drive`
     newParams['path'] = `:::`
     history.push('?'+encodeParams(newParams))
 
@@ -782,7 +845,6 @@ export default function DoenetLibraryTool(props) {
       </navPanel>
 
       <headerPanel title="Library">
-        {/* <p>Drive</p> */}
       </headerPanel>
 
       <mainPanel>

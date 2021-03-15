@@ -6,6 +6,8 @@ export default class BezierControls extends BaseComponent {
   static componentType = "beziercontrols";
   static rendererType = "container";
 
+  static get stateVariablesShadowedForReference() { return ["controls"] };
+
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();

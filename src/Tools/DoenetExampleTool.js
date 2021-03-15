@@ -13,7 +13,7 @@ export default function DoenetExampleTool() {
 
   useEffect(() => {
     activateMenuPanel(1);
-  }, []);
+  }, [activateMenuPanel]);
 
   return (
     <Tool>
@@ -35,21 +35,21 @@ export default function DoenetExampleTool() {
       <menuPanel title="edit">
         <button
           onClick={() => {
-            toast("hello from Toast!", 3000);
+            toast("hello from Toast!", 0, null, 3000);
           }}
         >
           Toast!
         </button>
         <button
           onClick={() => {
-            toast("Other Toast!", 1000);
+            toast("Other Toast!", 0, null, 1000);
           }}
         >
           Other Toast!
         </button>
         <button
           onClick={() => {
-            toast("hello from Toast!", 2000);
+            toast("hello from Toast!", 0, null, 2000);
           }}
         >
           Toast Test!

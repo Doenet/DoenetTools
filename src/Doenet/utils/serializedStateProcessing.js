@@ -581,16 +581,34 @@ function findFirstFullMacroInString(str) {
   // - an identifier in parentheses, capturing identifier as fourth group,
   //   where the closing parenthesis could be replaced by an open brace,
   //   capturing the open brace or closing parens as fifth group
-  let reForBeginning = /(?<!\$)(\$\$?)(([a-zA-Z_]\w*\b)|\(([a-zA-Z0-9_:.\/\-]+)\s*(\)|{))/;
+  let reForBeginning = /(\$\$?)(([a-zA-Z_]\w*\b)|\(([a-zA-Z0-9_:.\/\-]+)\s*(\)|{))/;
 
-  // look for a function macro
-  let match = str.match(reForBeginning);
+  let offset = 0;
+  let match;
 
-  if (!match) {
-    return { success: false };
+  // since Safari doesn't allow a negative lookbehind to make sure
+  // that match isn't preceeded by third dollar sign,
+  // we instead just skip any matches that include a third dollar sign
+  while (true) {
+    // look for a function macro
+    match = str.substring(offset).match(reForBeginning);
+
+    if (!match) {
+      return { success: false };
+    }
+
+    if (match.index === 0 || str[offset + match.index - 1] !== "$") {
+      break;
+    }
+
+    // found a third dollar sign preceeding match
+    // so skip this match and look for another match later in the string
+    offset += match.index + match[0].length;
+
   }
 
-  let firstIndMatched = match.index;
+
+  let firstIndMatched = match.index + offset;
   let matchLength = match[0].length;
   let nDollarSigns = match[1].length;
 
@@ -829,7 +847,7 @@ export function decodeXMLEntities(serializedComponents) {
           .replace(/&lt;/g, '<')
           .replace(/&dollar;/g, '$')
           .replace(/&amp;/g, '&');
-    } else if(serializedComponent.children) {
+    } else if (serializedComponent.children) {
       decodeXMLEntities(serializedComponent.children)
     }
   }
