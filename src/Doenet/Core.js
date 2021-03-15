@@ -109,7 +109,7 @@ export default class Core {
       componentTypeWithPotentialVariants: this.componentTypeWithPotentialVariants,
       allPossibleProperties: this.allPossibleProperties,
       isInheritedComponentType: this.isInheritedComponentType,
-      isStandardComposite: this.isStandardComposite,
+      isCompositeComponent: this.isCompositeComponent,
       stateVariableInfo: this.stateVariableInfo,
       publicStateVariableInfo: this.publicStateVariableInfo,
     };
@@ -4296,11 +4296,14 @@ export default class Core {
   }
 
 
-  recursivelyReplaceCompositesWithReplacements({ replacements }) {
+  recursivelyReplaceCompositesWithReplacements({ replacements, recurseNonStandardComposites = false }) {
     let compositesFound = [];
     let newReplacements = [];
     for (let replacement of replacements) {
-      if (this.isStandardComposite(replacement.componentType)) {
+      if (this.isCompositeComponent({
+        componentType: replacement.componentType,
+        includeNonStandard: recurseNonStandardComposites
+      })) {
         compositesFound.push(replacement.componentName);
         if (replacement.replacements) {
           let recursionResult = this.recursivelyReplaceCompositesWithReplacements({
@@ -7796,16 +7799,19 @@ export default class Core {
     );
   }
 
-  isStandardComposite(componentType) {
+  isCompositeComponent({ componentType, includeNonStandard = true }) {
     let componentClass = this.allComponentClasses[componentType];
     if (!componentClass) {
       return false;
     }
-    return this.isInheritedComponentType({
+
+    let isComposite = this.isInheritedComponentType({
       inheritedComponentType: componentType,
       baseComponentType: "_composite"
     })
-      && !componentClass.treatAsComponentForRecursiveReplacements
+
+    return isComposite &&
+      (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
   }
 
   get componentTypesCreatingVariants() {

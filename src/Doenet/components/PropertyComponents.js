@@ -616,8 +616,8 @@ export class MaxIterations extends Integer {
   static rendererType = "number";
 }
 
-export class Unbiased extends BooleanComponent {
-  static componentType = "unbiased";
+export class Population extends BooleanComponent {
+  static componentType = "population";
   static rendererType = "boolean";
 }
 

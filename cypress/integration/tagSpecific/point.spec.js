@@ -979,6 +979,59 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
 
+  it('point constrained to grid, copied from outside', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <constraints name="toGrid">
+    <constrainToGrid/>
+  </constraints>
+
+  <graph>
+  <point>
+    $$toGrid
+    <x>1</x><y>2</y>
+  </point>
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.log(`move point to (1.2,3.6)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (-9.8,-7.4)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−10,−7)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+  });
+
   it('point constrained to two contradictory grids', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -991,7 +1044,7 @@ describe('Point Tag Tests', function () {
       <constrainToGrid dx="2" dy="2"/>
       <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
     </constraints>
-    <xs>1,3.1</xs>
+    <xs>1 3.1</xs>
   </point>
 
   </graph>
@@ -1335,7 +1388,75 @@ describe('Point Tag Tests', function () {
     <constraints>
       <attractToGrid/>
     </constraints>
-    <xs>-7.1,8.9</xs>
+    <xs>-7.1 8.9</xs>
+  </point>
+
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−7,9)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (1.1,3.6)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.6);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.6]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(false);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1.1,3.6)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "false")
+
+    cy.log(`move point to (1.1,3.9)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+  });
+
+  it('point attracted to grid, copied from outside', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <constraints name="toGrid">
+    <attractToGrid/>
+  </constraints>
+
+  <graph>
+
+  <point>
+    $$toGrid
+    <xs>-7.1 8.9</xs>
   </point>
 
   </graph>
@@ -1400,7 +1521,7 @@ describe('Point Tag Tests', function () {
     <constraints>
       <attractToGrid includeGridlines="true"/>
     </constraints>
-    <xs>3.1,-3.4</xs>
+    <xs>3.1 -3.4</xs>
   </point>
 
   </graph>
@@ -1490,7 +1611,7 @@ describe('Point Tag Tests', function () {
     <constraints>
       <attractToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" xthreshold="$xthreshold" ythreshold="$ythreshold" />
     </constraints>
-    <xs>-7.1,8.9</xs>
+    <xs>-7.1 8.9</xs>
   </point>
 
   </graph>
@@ -1592,7 +1713,7 @@ describe('Point Tag Tests', function () {
     <constraints>
       <constrainTo><copy tname="_line1" /></constrainTo>
     </constraints>
-    <xs>-1,-5</xs>
+    <xs>-1 -5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1664,7 +1785,7 @@ describe('Point Tag Tests', function () {
     <constraints>
       <attractTo><copy tname="_line1" /></attractTo>
     </constraints>
-    <xs>-1,-5</xs>
+    <xs>-1 -5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1741,7 +1862,7 @@ describe('Point Tag Tests', function () {
       <copy tname="_map1" />
     </constrainTo>
     </constraints>
-    <xs>3,2</xs>
+    <xs>3 2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1818,7 +1939,7 @@ describe('Point Tag Tests', function () {
         <copy tname="_map1" />
       </attractTo>
     </constraints>
-    <xs>3,2</xs>
+    <xs>3 2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1915,7 +2036,7 @@ describe('Point Tag Tests', function () {
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
     </constraints>
-    <xs>7,3</xs>
+    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1999,7 +2120,7 @@ describe('Point Tag Tests', function () {
       </constraintUnion>
     </constraintToAttractor>
     </constraints>
-    <xs>7,3</xs>
+    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2120,7 +2241,7 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7,3</xs>
+    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2289,7 +2410,7 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7,3</xs>
+    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -3816,7 +3937,7 @@ describe('Point Tag Tests', function () {
     });
   })
 
-  it.only('change point dimensions', () => {
+  it('change point dimensions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

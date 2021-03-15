@@ -451,7 +451,10 @@ export default class Copy extends CompositeComponent {
 
           let targets;
 
-          if (componentInfoObjects.isStandardComposite(stateValues.targetComponent.componentType)) {
+          if (componentInfoObjects.isCompositeComponent({
+            componentType: stateValues.targetComponent.componentType,
+            includeNonStandard: false
+          })) {
             targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
@@ -594,7 +597,10 @@ export default class Copy extends CompositeComponent {
             variableName: "propName",
           },
         };
-        if (stateValues.targetComponent && componentInfoObjects.isStandardComposite(stateValues.targetComponent.componentType)) {
+        if (stateValues.targetComponent && componentInfoObjects.isCompositeComponent({
+          componentType: stateValues.targetComponent.componentType,
+          includeNonStandard: false
+        })) {
           dependencies.targetReadyToExpand = {
             dependencyType: "stateVariable",
             componentName: stateValues.targetComponent.componentName,
