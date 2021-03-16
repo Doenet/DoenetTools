@@ -52,6 +52,7 @@
   "dependencies": {
     "@babel/eslint-parser": "^7.12.17",
     "@babel/plugin-transform-runtime": "^7.12.10",
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@blueprintjs/core": "^3.39.0",
     "@blueprintjs/datetime": "^3.20.5",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
@@ -74,6 +75,8 @@
     "react-cookie": "^4.0.3",
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.3.1",
+    "react-is": "^17.0.1",
+    "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
     "react-query": "^2.0.0",
     "react-query-devtools": "^2.6.3",
