@@ -789,6 +789,9 @@ export const folderDictionarySelector = selectorFamily({
 
           /* Helper function to verify if position of insertion is valid */
           const isValidPosition = ({draggedItemsId, contentIdsArr, index}) => {
+            // Allow any position if multiple items are being dragged
+            if (draggedItemsId?.size > 1) return true;
+
             let isValid = true;
             let nextItemId = null, prevItemId = null;
 
