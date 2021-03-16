@@ -752,6 +752,9 @@ export const folderDictionarySelector = selectorFamily({
            * Handle drag move: display drag shadow as a child of target item
            * insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
            */
+          // Handle insertion into dragged items
+          if (draggedItemsId && draggedItemsId?.has(driveIdFolderId.folderId)) return;
+          
           set(folderDictionary(driveIdFolderId), (old)=>{
             let newObj = {...old};
             let newContentsDictionary = {...old.contentsDictionary};
