@@ -4,7 +4,7 @@ services:
   apache:
     build: '../doenet_docker/apache'
     ports:
-      - 8080:80
+      - 80:80
       # - 443:443
     volumes:
       - ../dist_local:/usr/local/apache2/htdocs

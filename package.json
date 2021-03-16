@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "cd doenet_docker_lamp_only && docker-compose up -d && cd ..  && sudo snowpack dev --polyfill-node",
+    "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack dev --polyfill-node",
     "healthcheck": "npx wait-on http://localhost:80 && docker exec doenet_docker_mysql_1 /bin/sh wait_on_mysql.sh",
     "docker:build": "cd doenet_docker && docker-compose build",
     "docker:lamp": "cd doenet_docker_lamp_only && docker-compose up",

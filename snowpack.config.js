@@ -1,5 +1,5 @@
 const httpProxy = require('http-proxy');
-const proxy = httpProxy.createServer({ target: 'http://localhost:8080' });
+const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
   proxyReq.setHeader('Host', 'localhost');
 });
@@ -69,7 +69,7 @@ module.exports = {
     },
   },
   devOptions: {
-    port: 80
+    port: 8080
   },
   buildOptions: {
     /* ... */
