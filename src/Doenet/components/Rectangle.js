@@ -1,5 +1,5 @@
 import Polygon from './Polygon';
-import me, { object, array, isArray } from "math-expressions";
+import me  from "math-expressions";
 
 export default class Rectangle extends Polygon {
   static componentType = "rectangle";
