@@ -746,23 +746,34 @@ export const folderDictionarySelector = selectorFamily({
             return newObj;
           })
         }
-
+        
         if (insertPosition === "intoCurrent") {
-          // insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
+          /*
+           * Handle drag move: display drag shadow as a child of target item
+           * insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
+           */
           set(folderDictionary(driveIdFolderId), (old)=>{
             let newObj = {...old};
             let newContentsDictionary = {...old.contentsDictionary};
-            newContentsDictionary[dragShadowId] = dragShadow;
             let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+
+            // Copy dragShadow data into destination dictionary
+            newContentsDictionary[dragShadowId] = dragShadow;
+
+            // Make sure dragShadow not duplicated
             if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+            
+            // Insert dragShadow into order array
             newDefaultOrder.splice(0, 0, dragShadowId);
+            
+            // Update data
             const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
             newObj.contentIds = defaultOrderObj;
             newObj.contentsDictionary = newContentsDictionary;
             return newObj;
           })
 
-          // update dragStateAtom.dragShadowParentId to dropTargetParentId
+          // Update dragStateAtom.dragShadowParentId to dropTargetParentId
           set(dragStateAtom, (old) => {
             return {
               ...old,
@@ -771,33 +782,74 @@ export const folderDictionarySelector = selectorFamily({
             }
           })
         } else {
-          // insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
+          /*
+           * Handle drag re-ordering: display drag shadow before or after target item
+           * insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
+           */
+
+          /* Helper function to verify if position of insertion is valid */
+          const isValidPosition = ({draggedItemsId, contentIdsArr, index}) => {
+            let isValid = true;
+            let nextItemId = null, prevItemId = null;
+
+            if (contentIdsArr.length !== 0) {
+              if (index <= 0) {
+                nextItemId = contentIdsArr[0];
+              } else if (index >= contentIdsArr.length) {
+                prevItemId = contentIdsArr[defaultFolderChildrenIds.length - 1];
+              } else {
+                prevItemId = contentIdsArr[index - 1];
+                nextItemId = contentIdsArr[index];
+              }
+              
+              if (prevItemId && draggedItemsId?.has(prevItemId)) isValid = false;
+              if (nextItemId && draggedItemsId?.has(nextItemId)) isValid = false;
+            }
+            return isValid;
+          }
+
+          let isValid = true;
+
           set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
             let newObj = {...old};
             let newContentsDictionary = {...old.contentsDictionary};
-            newContentsDictionary[dragShadowId] = dragShadow;
             let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+
+            // Copy dragShadow data into destination dictionary
+            newContentsDictionary[dragShadowId] = dragShadow;
+
+            // Make sure dragShadow not duplicated            
             if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
+            
+            // Compute insertion index
             let index = newDefaultOrder.indexOf(instructions.itemId);
             if (insertPosition === "afterCurrent") index += 1;
-            newDefaultOrder.splice(index, 0, dragShadowId);
+
+            // Check if insertion index valid
+            isValid = isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
+
+            // Insert dragShadow into order array
+            if (isValid) newDefaultOrder.splice(index, 0, dragShadowId);
+            
+            // Update data
             const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
             newObj.contentIds = defaultOrderObj;
             newObj.contentsDictionary = newContentsDictionary;
             return newObj;
           })
           
-          // update dragStateAtom.dragShadowParentId to dropTargetParentId
-          set(dragStateAtom, (old) => {
-            return {
-              ...old,
-              dragShadowDriveId: driveIdFolderId.driveId,
-              dragShadowParentId: dropTargetParentId
-            }
-          })
+          // Update dragShadow data in dragStateAtom
+          if (isValid) {
+            set(dragStateAtom, (old) => {
+              return {
+                ...old,
+                dragShadowDriveId: driveIdFolderId.driveId,
+                dragShadowParentId: dropTargetParentId
+              }
+            })  
+          }
         }
-
-      break;
+        break;
       case folderInfoSelectorActions.REMOVE_DRAG_SHADOW:
         // check if drag shadow valid
         if (!dragShadowDriveId || !dragShadowParentId) return;
