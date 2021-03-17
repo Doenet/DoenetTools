@@ -1,4 +1,9 @@
 
+export function breakStringsAndOthersIntoComponentsByStringCommas(e) {
+  return null;
+}
+
+
 // function: returnBreakStringsSugarFunction
 //
 // returns a sugar replacement function that
