@@ -36,7 +36,7 @@ import {
 } from "recoil";
 import Switch from "../imports/Switch";
 import AddItem from "../imports/AddItem";
-import { supportVisible } from "../imports/Tool/SupportPanel";
+import { supportVisible } from "../imports/Tool/Panels/SupportPanel";
 
 export const roleAtom = atom({
   key: "roleAtom",
