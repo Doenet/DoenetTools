@@ -6,12 +6,13 @@ import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
 import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
-import crypto from 'crypto';
 import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
 import { postProcessCopy } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
+import sha256 from 'crypto-js/sha256';
+import Hex from 'crypto-js/enc-hex'
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -152,9 +153,7 @@ export default class Core {
         finishSerializedStateProcessing: false
       });
     } else {
-      const hash = crypto.createHash('sha256');
-      hash.update(doenetML);
-      let contentId = hash.digest('hex');
+      let contentId = Hex.stringify(sha256(JSON.stringify(doenetML)));
       this.expandDoenetMLsToFullSerializedState({
         contentIds: [contentId],
         doenetMLs: [doenetML],

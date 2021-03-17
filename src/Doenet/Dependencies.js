@@ -267,7 +267,7 @@ export class DependencyHandler {
 
     let stateVariablesNotShadowed = [...allStateVariablesAffected];
 
-    core = this.core;
+    let core = this.core;
 
     component.state[dependencyStateVar] = {
       actionOnResolved: true,
