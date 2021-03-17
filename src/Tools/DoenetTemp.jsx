@@ -12,6 +12,7 @@ import React, { useRef, useState } from "react";
 export default function DoenetTemp(props){
   const wrapperRef = useRef(null);
   const [height,setHeight] = useState(0)
+  const wheight = useRef(0)
 
   let tall = [];
   for (let i = 1; i < 100; i++){
@@ -32,6 +33,19 @@ export default function DoenetTemp(props){
     onClick={()=>{
         window.scrollTo(0,height)
     }}>return to sampled height</button>
+     <button
+    onClick={()=>{
+        console.log("Wrapper")
+        let ref = wrapperRef.current;
+        let top = ref.scrollTop;
+        console.log(wrapperRef.current.scrollTop)
+        console.log(100)
+        ref.scrollTo(0,100)
+
+        // let left = document.documentElement.scrollLeft;
+        // setHeight(top)
+        console.log(`Top ${top}`)
+    }}>sample wrapper</button>
     </div>
         <div ref={wrapperRef}>
             {tall}

@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import DoenetViewer from './DoenetViewer';
+import DoenetViewer from './DoenetViewer.jsx';
+// import doenetDefaultML2 from '../defaultCode.txt';
 import doenetDefaultML from '../defaultCode.doenet';
 import axios from 'axios';
 
 class DoenetTest extends Component {
   constructor(props) {
     super(props);
+
+    // let doenetDefaultML = "<p>this is new</p>";
 
     this.updateAfterMessage = this.updateAfterMessage.bind(this);
     this.newAttempt = this.newAttempt.bind(this);
@@ -82,6 +85,8 @@ class DoenetTest extends Component {
   }
 
   render() {
+
+
 
     if (!this.state.attemptNumberIsReady) {
       return <p>Loading attempt number</p>
