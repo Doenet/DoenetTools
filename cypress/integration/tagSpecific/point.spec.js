@@ -51,9 +51,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
-    <point label="Q">
-      <coords>(1, <copy prop="y" tname="_point1" />)</coords>
-    </point>
+    <point label="Q" coords="(1, $(_point1{prop='y'}))" />
   </graph>
   <copy prop="x2" tname="_point2" />
     `}, "*");
@@ -160,7 +158,7 @@ describe('Point Tag Tests', function () {
   </graph>
 
   <point name="source">
-    <coords>(<math modifyIndirectly="false">a</math>,2,3)</coords>
+    (<math modifyIndirectly="false">a</math>,2,3)
   </point>
   <copy prop="x" tname="_point1" />
   `}, "*");
@@ -203,7 +201,7 @@ describe('Point Tag Tests', function () {
   </graph>
 
   <point name="source">
-    <coords>(<math modifyIndirectly="false">a</math>,2,3)</coords>
+    (<math modifyIndirectly="false">a</math>,2,3)
   </point>
   <copy prop="x" tname="_point1" />
   `}, "*");
@@ -240,17 +238,11 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point>
-    <x><copy prop="y" tname="source" /></x>
-    <y><copy prop="z" tname="source" /></y>
-  </point>
+  <point x="$(source{prop='y'})" y = "$(source{prop='z'})" />
   </graph>
 
-  <point name="source">
-    <x modifyIndirectly="false">a</x>
-    <y>2</y>
-    <z>3</z>
-  </point>
+  <math name="a" modifyIndirectly="false">a</math>
+  <point name="source" x="$a" y="2" z="3" />
   <copy prop="x" tname="_point1" />
   `}, "*");
     });
@@ -286,18 +278,12 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point>
-    <x><copy prop="y" tname="source3" /></x>
-    <y><copy prop="z" tname="source3" /></y>
-  </point>
+  <point x="$(source3{prop='y'})" y = "$(source3{prop='z'})" />
   </graph>
 
   <copy name="source2" tname="source" />
-  <point name="source">
-    <x modifyIndirectly="false">a</x>
-    <y>2</y>
-    <z>3</z>
-  </point>
+  <math name="a" modifyIndirectly="false">a</math>
+  <point name="source" x="$a" y="2" z="3" />
   <copy name="source3" tname="source2" />
   <copy prop="x" tname="_point1" />
 
@@ -447,7 +433,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<math name="x">1</math>, sin(<copy tname="x" />))
+    (<math name="x">1</math>, sin($x))
   </point>
   </graph>
   `}, "*");
@@ -567,7 +553,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy tname="d" />,3-<copy tname="d" />)
+    ($d,3-$d)
   </point>
   </graph>
   <math name="d">5</math>
@@ -934,11 +920,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point x="1" y="2">
     <constraints>
       <constrainToGrid/>
     </constraints>
-    <x>1</x><y>2</y>
   </point>
 
   </graph>
@@ -990,9 +975,8 @@ describe('Point Tag Tests', function () {
   </constraints>
 
   <graph>
-  <point>
-    $$toGrid
-    <x>1</x><y>2</y>
+  <point x="1" y="2">
+    $toGrid
   </point>
   </graph>
   <math><copy prop="coords" tname="_point1" /></math>
@@ -1039,12 +1023,11 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="1 3.1">
     <constraints>
       <constrainToGrid dx="2" dy="2"/>
       <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
     </constraints>
-    <xs>1 3.1</xs>
   </point>
 
   </graph>
@@ -1097,12 +1080,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point name="original">(1,2)</point>
-    <point name="constrained">
+    <point name="constrained" x="$(original{prop='x'})+1" y="$(original{prop='y'})+1" >
       <constraints>
         <constrainToGrid/>
       </constraints>
-      <x><copy prop="x" tname="original" />+1</x>
-      <y><copy prop="y" tname="original" />+1</y>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1226,12 +1207,10 @@ describe('Point Tag Tests', function () {
 
   <graph>
     <point name="original">(1.2,3.6)</point>
-    <point name="constrained">
+    <point name="constrained" x="$(original{prop='x'})+1" y="$(original{prop='y'})+1">
       <constraints>
         <constrainToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" />
       </constraints>
-      <xs><x><copy prop="x" tname="original" />+1</x>
-        <x><copy prop="y" tname="original" />+1</x></xs>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1384,11 +1363,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="-7.1 8.9">
     <constraints>
       <attractToGrid/>
     </constraints>
-    <xs>-7.1 8.9</xs>
   </point>
 
   </graph>
@@ -1454,9 +1432,8 @@ describe('Point Tag Tests', function () {
 
   <graph>
 
-  <point>
-    $$toGrid
-    <xs>-7.1 8.9</xs>
+  <point xs="-7.1 8.9">
+    $toGrid
   </point>
 
   </graph>
@@ -1517,11 +1494,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="3.1 -3.4">
     <constraints>
       <attractToGrid includeGridlines="true"/>
     </constraints>
-    <xs>3.1 -3.4</xs>
   </point>
 
   </graph>
@@ -1607,11 +1583,10 @@ describe('Point Tag Tests', function () {
 
   <graph>
 
-  <point>
+  <point xs="-7.1 8.9">
     <constraints>
       <attractToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" xthreshold="$xthreshold" ythreshold="$ythreshold" />
     </constraints>
-    <xs>-7.1 8.9</xs>
   </point>
 
   </graph>
@@ -1703,17 +1678,11 @@ describe('Point Tag Tests', function () {
   <graph>
   <point>(0,2)</point>
   <point>(2,0)</point>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-    </through>
-  </line>
-  <point name="A">
+  <line through="$_point1 $_point2"/>
+  <point name="A" xs="-1 -5">
     <constraints>
       <constrainTo><copy tname="_line1" /></constrainTo>
     </constraints>
-    <xs>-1 -5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1775,17 +1744,11 @@ describe('Point Tag Tests', function () {
   <graph>
   <point>(0,2)</point>
   <point>(2,0)</point>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-    </through>
-  </line>
-  <point name="A">
+  <line through="$_point1 $_point2"/>
+  <point name="A" xs="-1 -5">
     <constraints>
       <attractTo><copy tname="_line1" /></attractTo>
     </constraints>
-    <xs>-1 -5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1854,7 +1817,7 @@ describe('Point Tag Tests', function () {
     <sources><sequence from="-10" to="10"/></sources>
   </map>
 
-  <point>
+  <point xs="3 2">
     <constraints>
     <constrainTo>
       <copy tname="_line1" />
@@ -1862,7 +1825,6 @@ describe('Point Tag Tests', function () {
       <copy tname="_map1" />
     </constrainTo>
     </constraints>
-    <xs>3 2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1931,7 +1893,7 @@ describe('Point Tag Tests', function () {
     <sources><sequence from="-10" to="10"/></sources>
   </map>
 
-  <point>
+  <point xs="3 2">
     <constraints>
       <attractTo threshold="1">
         <copy tname="_line1" />
@@ -1939,7 +1901,6 @@ describe('Point Tag Tests', function () {
         <copy tname="_map1" />
       </attractTo>
     </constraints>
-    <xs>3 2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -2027,7 +1988,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <constraintUnion>
       <constrainTo><copy tname="_line1" /></constrainTo>
@@ -2036,7 +1997,6 @@ describe('Point Tag Tests', function () {
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
     </constraints>
-    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2109,7 +2069,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <constraintToAttractor>
       <constraintUnion>
@@ -2120,7 +2080,6 @@ describe('Point Tag Tests', function () {
       </constraintUnion>
     </constraintToAttractor>
     </constraints>
-    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2224,7 +2183,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <attractTo>
       <copy tname="_line1" />
@@ -2241,7 +2200,6 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2393,7 +2351,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <constrainTo>
       <copy tname="_line1" />
@@ -2410,7 +2368,6 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7 3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2534,8 +2491,8 @@ describe('Point Tag Tests', function () {
   <point>(3,2)</point>
   <point>(4,2)</point>
   
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
-  <line><through><copy tname="_point3" /><copy tname="_point4" /></through></line>
+  <line through="$_point1 $_point2" />
+  <line through="$_point3 $_point4" />
   <intersection><copy tname="_line1" /><copy tname="_line2" /></intersection>
   
   </graph>
@@ -2774,10 +2731,7 @@ describe('Point Tag Tests', function () {
     <point>(1,2)</point>
     <copy tname="_point1" />
     <copy tname="_point1" />
-    <point>
-      <x><copy prop="y" tname="_copy1" /></x>
-      <y><copy prop="x" tname="_copy2" /></y>
-    </point>
+    <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
     });
@@ -2842,10 +2796,7 @@ describe('Point Tag Tests', function () {
     <point>(1,2)</point>
     <copy tname="_point1" />
     <copy tname="_point1" />
-    <point>
-      <x><copy prop="y" tname="_copy1" /></x>
-      <y><copy prop="x" tname="_copy2" /></y>
-    </point>
+    <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
     });
@@ -2913,10 +2864,7 @@ describe('Point Tag Tests', function () {
     </graph>
     
     <graph>
-      <point name="p1">
-        <x>3</x>
-        <y>7</y>
-      </point>
+      <point name="p1" x="3" y="7" />
     </graph>
   `}, "*");
     });
@@ -2998,10 +2946,7 @@ describe('Point Tag Tests', function () {
   </graph>
   
   <graph>
-    <point name="p1">
-      <x>3</x>
-      <y>7</y>
-    </point>
+    <point name="p1" x="3" y="7"/>
   </graph>
   `}, "*");
     });
@@ -3095,14 +3040,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x><copy prop="y" tname="_point2" /></x>
-      <y>7</y>
-    </point>
-    <point>
-      <x><copy prop="y" tname="_point1" /></x>
-      <y>9</y>
-    </point>
+    <point x="$(_point2{prop='y'})" y="7" />
+    <point x="$(_point1{prop='y'})" y="9" />
   
   </graph>
       
@@ -3236,14 +3175,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x><copy prop="y" tname="P2a" /></x>
-      <y>7</y>
-    </point>
-    <point>
-      <x><copy prop="y" tname="P1a" /></x>
-      <y>9</y>
-    </point>
+    <point x="$(P2a{prop='y'})" y="7" />
+    <point x="$(P1a{prop='y'})" y="9" />
   </graph>
   
   <graph>
@@ -3510,13 +3443,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <coords>(<copy prop="y" tname="_point2" />,7)</coords>
-    </point>
-    <point>
-      <x><copy prop="y" tname="_point1" /></x>
-      <y>9</y>
-    </point>
+    <point coords="($(_point2{prop='y'}), 7)" />
+    <point x="$(_point1{prop='y'})" y="9" />
   
   </graph>
   `}, "*");
@@ -3643,10 +3571,7 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x>3</x>
-      <y><copy prop="ymax" fixed="true" tname="_graph1" /></y>
-    </point>
+    <point x="3" y="$(_graph1{prop='ymax' fixed='true'})" />
     <point>
       (<copy prop="xmin" fixed="true" tname="_graph1" />,5)
     </point>
@@ -3816,21 +3741,15 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <math hide name="fixed0" fixed>0</math>
     <graph>
-      <point>
+      <point x="-4" y="1">
         <constraints>
           <attractTo><point>(1,-7)</point></attractTo>
         </constraints>
-        <x>-4</x><y>1</y>
       </point>
-      <point>
-        <x><copy prop="x" tname="_point1" /></x>
-        <y fixed>0</y>
-      </point>
-        <point>
-        <y><copy prop="y" tname="_point1" /></y>
-        <x fixed>0</x>
-      </point>
+      <point x="$(_point1{prop='x'})" y="$fixed0" />
+      <point y="$(_point1{prop='y'})" x="$fixed0" />
     </graph>
   `}, "*");
     });
@@ -3945,7 +3864,7 @@ describe('Point Tag Tests', function () {
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
     <section name="thePoints"><title>The points</title>
-    <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
+    <p>The point: <point coords="$originalCoords"/></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
     </section>
@@ -7161,7 +7080,7 @@ describe('Point Tag Tests', function () {
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
     <section name="thePoints"><title>The points</title>
-    <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
+    <p>The point: <point coords="$originalCoords" /></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
     </section>

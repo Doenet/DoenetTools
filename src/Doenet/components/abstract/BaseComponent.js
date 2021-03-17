@@ -96,8 +96,9 @@ export default class BaseComponent {
         if (!Array.isArray(componentTypes)) {
           componentTypes = [componentTypes]
         }
-        if(stateVarObj.wrappingComponents) {
-          componentTypes.push(...flattenDeep(stateVarObj.wrappingComponents));
+        if (stateVarObj.wrappingComponents) {
+          componentTypes.push(...flattenDeep(stateVarObj.wrappingComponents)
+            .map(x => typeof x === "object" ? x.componentType : x));
         }
         for (let componentType of componentTypes) {
           let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
@@ -279,7 +280,6 @@ export default class BaseComponent {
       "inverseArrayDefinitionByKey",
       "basedOnArrayKeyStateVariables", "entireArrayAtOnce",
       "markStale", "getPreviousDependencyValuesForMarkStale",
-      "triggerParentChildLogicWhenResolved",
     ];
 
     let stateVariableDefinitions = {};
@@ -373,13 +373,13 @@ export default class BaseComponent {
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
-          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(), x => x.toLowerCase()) : [];
+          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents() : [];
           if (theStateDef.entryPrefixes) {
             for (let prefix of theStateDef.entryPrefixes) {
               arrayEntryPrefixes[prefix] = {
                 arrayVariableName: varName,
                 nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-                wrappingComponents: theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(prefix), x => x.toLowerCase()) : []
+                wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
               }
             }
           }

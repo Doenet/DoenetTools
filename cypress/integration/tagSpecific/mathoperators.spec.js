@@ -352,28 +352,28 @@ describe('Math Operator Tag Tests', function () {
         sum($a$b$c)
       </math>
       <math name="group">
-        sum($$nums)
+        sum($nums)
       </math>
       <math name="groupSimplify" simplify>
-        sum($$nums)
+        sum($nums)
       </math>
       <math name="groupPlus">
-        sum($$nums, $a, $b, $c)
+        sum($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        sum($$nums, $a, $b, $c)
+        sum($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        sum($a, $b, $c, $$nums)
+        sum($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        sum($a, $b, $c, $$nums)
+        sum($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        sum($a, $b, $$nums, $c)
+        sum($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        sum($a, $b, $$nums, $c)
+        sum($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -835,28 +835,28 @@ describe('Math Operator Tag Tests', function () {
         prod($a$b$c)
       </math>
       <math name="group">
-        prod($$nums)
+        prod($nums)
       </math>
       <math name="groupSimplify" simplify>
-        prod($$nums)
+        prod($nums)
       </math>
       <math name="groupPlus">
-        prod($$nums, $a, $b, $c)
+        prod($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        prod($$nums, $a, $b, $c)
+        prod($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        prod($a, $b, $c, $$nums)
+        prod($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        prod($a, $b, $c, $$nums)
+        prod($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        prod($a, $b, $$nums, $c)
+        prod($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        prod($a, $b, $$nums, $c)
+        prod($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -1316,16 +1316,13 @@ describe('Math Operator Tag Tests', function () {
       <graph>
         <point layer="1">(6,7)</point>
         <point>
-          <x>
-          <clampnumber lowervalue="-2" uppervalue="5">
+          (<clampnumber lowervalue="-2" uppervalue="5">
             <copy prop="x" tname="_point1" />
-          </clampnumber>
-          </x>
-          <y>
+          </clampnumber>,
           <wrapnumberperiodic lowervalue="-2" uppervalue="5">
             <copy prop="y" tname="_point1" />
           </wrapnumberperiodic>
-          </y>
+          )
         </point>
         <point>(<copy prop="y" tname="_point2" />, <copy prop="x" tname="_point2" />)</point>
       </graph>
@@ -1841,16 +1838,14 @@ describe('Math Operator Tag Tests', function () {
       <graph>
         <point layer="1">(6.1,7.6)</point>
         <point>
-          <x>
+          (
           <floor>
             <copy prop="x" tname="_point1" />
-          </floor>
-          </x>
-          <y>
+          </floor>,
           <ceil>
             <copy prop="y" tname="_point1" />
           </ceil>
-          </y>
+          )
         </point>
         <point>(<abs><copy prop="y" tname="_point2" /></abs>, <round><copy prop="x" tname="_point1" /></round>)</point>
       </graph>
@@ -2309,28 +2304,28 @@ describe('Math Operator Tag Tests', function () {
         mean($a$b$c)
       </math>
       <math name="group">
-        mean($$nums)
+        mean($nums)
       </math>
       <math name="groupSimplify" simplify>
-        mean($$nums)
+        mean($nums)
       </math>
       <math name="groupPlus">
-        mean($$nums, $a, $b, $c)
+        mean($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        mean($$nums, $a, $b, $c)
+        mean($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        mean($a, $b, $c, $$nums)
+        mean($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        mean($a, $b, $c, $$nums)
+        mean($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        mean($a, $b, $$nums, $c)
+        mean($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        mean($a, $b, $$nums, $c)
+        mean($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -2853,28 +2848,28 @@ describe('Math Operator Tag Tests', function () {
         var($a$b$c)
       </math>
       <math name="group">
-        var($$nums)
+        var($nums)
       </math>
       <math name="groupSimplify" simplify>
-        var($$nums)
+        var($nums)
       </math>
       <math name="groupPlus">
-        var($$nums, $a, $b, 13)
+        var($nums, $a, $b, 13)
       </math>
       <math name="groupPlusSimplify" simplify>
-        var($$nums, $a, $b, 13)
+        var($nums, $a, $b, 13)
       </math>
       <math name="groupPlus2">
-        var($a, $b, 13, $$nums)
+        var($a, $b, 13, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        var($a, $b, 13, $$nums)
+        var($a, $b, 13, $nums)
       </math>
       <math name="groupPlus3">
-        var($a, $b, $$nums, 13)
+        var($a, $b, $nums, 13)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        var($a, $b, $$nums, 13)
+        var($a, $b, $nums, 13)
       </math>
       `}, "*");
     });
@@ -3423,10 +3418,10 @@ describe('Math Operator Tag Tests', function () {
         std($a$b$c)
       </math>
       <math name="group">
-        std($$nums)
+        std($nums)
       </math>
       <math name="groupSimplify" simplify>
-        std($$nums)
+        std($nums)
       </math>
       `}, "*");
     });
@@ -4107,28 +4102,28 @@ describe('Math Operator Tag Tests', function () {
         count($a$b$c)
       </math>
       <math name="group">
-        count($$nums)
+        count($nums)
       </math>
       <math name="groupSimplify" simplify>
-        count($$nums)
+        count($nums)
       </math>
       <math name="groupPlus">
-        count($$nums, $a, $b, $c)
+        count($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        count($$nums, $a, $b, $c)
+        count($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        count($a, $b, $c, $$nums)
+        count($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        count($a, $b, $c, $$nums)
+        count($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        count($a, $b, $$nums, $c)
+        count($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        count($a, $b, $$nums, $c)
+        count($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -4646,28 +4641,28 @@ describe('Math Operator Tag Tests', function () {
         min($a$b$c)
       </math>
       <math name="group">
-        min($$nums)
+        min($nums)
       </math>
       <math name="groupSimplify" simplify>
-        min($$nums)
+        min($nums)
       </math>
       <math name="groupPlus">
-        min($$nums, $a, $b, $c)
+        min($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        min($$nums, $a, $b, $c)
+        min($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        min($a, $b, $c, $$nums)
+        min($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        min($a, $b, $c, $$nums)
+        min($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        min($a, $b, $$nums, $c)
+        min($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        min($a, $b, $$nums, $c)
+        min($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -5126,28 +5121,28 @@ describe('Math Operator Tag Tests', function () {
         max($a$b$c)
       </math>
       <math name="group">
-        max($$nums)
+        max($nums)
       </math>
       <math name="groupSimplify" simplify>
-        max($$nums)
+        max($nums)
       </math>
       <math name="groupPlus">
-        max($$nums, $a, $b, $c)
+        max($nums, $a, $b, $c)
       </math>
       <math name="groupPlusSimplify" simplify>
-        max($$nums, $a, $b, $c)
+        max($nums, $a, $b, $c)
       </math>
       <math name="groupPlus2">
-        max($a, $b, $c, $$nums)
+        max($a, $b, $c, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        max($a, $b, $c, $$nums)
+        max($a, $b, $c, $nums)
       </math>
       <math name="groupPlus3">
-        max($a, $b, $$nums, $c)
+        max($a, $b, $nums, $c)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        max($a, $b, $$nums, $c)
+        max($a, $b, $nums, $c)
       </math>
       `}, "*");
     });
@@ -5532,10 +5527,10 @@ describe('Math Operator Tag Tests', function () {
         mod($a,$b)
       </math>
       <math name="group">
-        mod($$nums)
+        mod($nums)
       </math>
       <math name="groupSimplify" simplify>
-        mod($$nums)
+        mod($nums)
       </math>
       `}, "*");
     });

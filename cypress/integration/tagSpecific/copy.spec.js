@@ -177,8 +177,8 @@ describe('Copy Tag Tests', function () {
     <graph>
       <copy name="p2" tname="_point1"/>
       <point>
-        <x><copy prop="y" tname="p2"/></x>
-        <y><copy prop="x1" tname="p2"/></y>
+        (<copy prop="y" tname="p2"/>,
+        <copy prop="x1" tname="p2"/>)
       </point>
     </graph>
     `}, "*");
@@ -267,7 +267,7 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <vector><displacement>(-4,2)</displacement><tail>(1,1)</tail></vector>
+    <vector displacement="(-4,2)" tail="(1,1)" />
     </graph>
   
     <graph>
@@ -415,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence from="a" sequenceLength="$_mathinput1" />
+        <sequence from="a" length="$_mathinput1" />
       </aslist>
     </p>
     
@@ -554,15 +554,15 @@ describe('Copy Tag Tests', function () {
       expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
     })
     cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
+      expect(text.trim()).equal('ax2+bx+c=$$s')
     })
     cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$$s')
     })
-    cy.get('#\\/singlem').should('have.text', '');
-    cy.get('#\\/doublem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
     })
+    cy.get('#\\/doublem').should('have.text', '$$_m1');
     cy.get('#\\/triplem').should('have.text', '$$$_m1');
 
 
@@ -578,15 +578,15 @@ describe('Copy Tag Tests', function () {
       expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
     })
     cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
+      expect(text.trim()).equal('ax2+bx+c=$$s')
     })
     cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=$$$s')
     })
-    cy.get('#\\/singlem').should('have.text', '');
-    cy.get('#\\/doublem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
     })
+    cy.get('#\\/doublem').should('have.text', '$$_m1');
     cy.get('#\\/triplem').should('have.text', '$$$_m1');
 
 

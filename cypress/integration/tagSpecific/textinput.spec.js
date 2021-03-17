@@ -506,33 +506,50 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>hello there</text></p>
-    <p>textinput based on text: <textinput><bindValueTo><copy tname="_text1" /></bindValueTo></textinput></p>
+    <p>textinput based on text: <textinput bindValueTo="$_text1" /></p>
+    <p>Copied textinput: <copy tname="_textinput1" name="textinput2" /></p>
     `}, "*");
     });
 
-    cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
 
     cy.get('#\\/_text1').should('have.text', 'hello there');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_textinput1'].stateValues.value).eq('hello there');
-      expect(components['/_text1'].stateValues.value).eq('hello there');
-    });
+      let textinput2 = components['/textinput2'].replacements[0];
+      let textinput2Anchor = cesc('#' + textinput2.componentName) + "_input";
 
-    cy.log('enter new values')
-    cy.get('#\\/_textinput1_input').clear().type(`bye now{enter}`);
-
-    cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
-
-    cy.get('#\\/_text1').should('have.text', 'bye now');
+      cy.get('#\\/_textinput1_input').should('have.value', 'hello there');
+      cy.get(textinput2Anchor).should('have.value', 'hello there');
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_textinput1'].stateValues.value).eq('bye now');
-      expect(components['/_text1'].stateValues.value).eq('bye now');
-    });
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq('hello there');
+        expect(components['/_textinput1'].stateValues.immediateValue).eq('hello there');
+        expect(components['/_text1'].stateValues.value).eq('hello there');
+        expect(textinput2.stateValues.value).eq('hello there');
+        expect(textinput2.stateValues.immediateValue).eq('hello there');
+      });
+
+      cy.log('enter new values')
+      cy.get('#\\/_textinput1_input').clear().type(`bye now{enter}`);
+
+      cy.get('#\\/_textinput1_input').should('have.value', 'bye now');
+      cy.get(textinput2Anchor).should('have.value', 'bye now');
+
+      cy.get('#\\/_text1').should('have.text', 'bye now');
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq('bye now');
+        expect(components['/_textinput1'].stateValues.immediateValue).eq('bye now');
+        expect(components['/_text1'].stateValues.value).eq('bye now');
+        expect(textinput2.stateValues.value).eq('bye now');
+        expect(textinput2.stateValues.immediateValue).eq('bye now');
+      });
+    })
 
 
     cy.log('prefill ignored');
@@ -540,7 +557,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>hello there</text></p>
-    <p>textinput based on text: <textinput prefill="bye now"><bindvalueto><copy tname="_text1" /></bindvalueto></textinput></p>
+    <p>textinput based on text: <textinput prefill="bye now" bindValueTo="$_text1" /></p>
     `}, "*");
     });
 
@@ -554,7 +571,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original text: <text>can't <text>update</text> <text>me</text></text></p>
-    <p>textinput based on text: <textinput><bindValueTo><copy tname="_text1" /></bindValueTo></textinput></p>
+    <p>textinput based on text: <textinput bindValueTo="$_text1" /></p>
     `}, "*");
     });
 
@@ -588,7 +605,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
-    <p>textinput based on textinput: <textinput><bindValueTo><copy prop="value" tname="_textinput1" /></bindValueTo></textinput></p>
+    <p>textinput based on textinput: <textinput bindValueTo="$_textinput1" /></p>
     <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
     <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
     <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
@@ -699,7 +716,7 @@ describe('Textinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
-    <p>textinput based on textinput: <textinput><bindValueTo><copy prop="immediateValue" tname="_textinput1" /></bindValueTo></textinput></p>
+    <p>textinput based on textinput: <textinput bindValueTo="$(_textinput1{prop='immediateValue'})" /></p>
     <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" tname="_textinput1"/></text></p>
     <p>Value of original: <text name="originalvalue"><copy prop="value" tname="_textinput1"/></text></p>
     <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" tname="_textinput2"/></text></p>
@@ -732,7 +749,7 @@ describe('Textinput Tag Tests', function () {
     cy.get('#\\/originalvalue').should('have.text', 'hello there');
     cy.get('#\\/secondimmediate').should('have.text', 'bye now');
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
-    
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_textinput1'].stateValues.immediateValue).eq('bye now');
@@ -750,7 +767,7 @@ describe('Textinput Tag Tests', function () {
     cy.get('#\\/originalvalue').should('have.text', 'bye now');
     cy.get('#\\/secondimmediate').should('have.text', 'bye now');
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
-  
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_textinput1'].stateValues.immediateValue).eq('bye now');
@@ -769,7 +786,7 @@ describe('Textinput Tag Tests', function () {
     cy.get('#\\/originalvalue').should('have.text', 'bye now');
     cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
-  
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_textinput1'].stateValues.immediateValue).eq('bye now');
@@ -787,7 +804,7 @@ describe('Textinput Tag Tests', function () {
     cy.get('#\\/originalvalue').should('have.text', 'Hello again');
     cy.get('#\\/secondimmediate').should('have.text', 'Hello again');
     cy.get('#\\/secondvalue').should('have.text', 'Hello again');
-  
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_textinput1'].stateValues.immediateValue).eq('Hello again');

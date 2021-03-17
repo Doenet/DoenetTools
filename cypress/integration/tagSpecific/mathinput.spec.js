@@ -582,7 +582,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput><bindValueTo><copy tname="_math1" /></bindValueTo></mathinput></p>
+    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -736,7 +736,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput prefill="x^2/9"><bindValueTo><copy tname="_math1" /></bindValueTo></mathinput></p>
+    <p>Mathinput based on math: <mathinput prefill="x^2/9" bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -786,6 +786,7 @@ describe('Mathinput Tag Tests', function () {
         expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x']]);
       });
 
+
     })
 
 
@@ -795,7 +796,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
-    <p>Mathinput based on math: <mathinput><bindValueTo><copy tname="_math1" /></bindValueTo></mathinput></p>
+    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -921,7 +922,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>d</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
-    <p>Mathinput based on math: <mathinput><bindValueTo><copy tname="_math1" /></bindValueTo></mathinput></p>
+    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -1045,7 +1046,7 @@ describe('Mathinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original mathinput: <mathinput prefill="x+1"/></p>
-    <p>mathinput based on mathinput: <mathinput><bindValueTo><copy prop="value" tname="_mathinput1" /></bindValueTo></mathinput></p>
+    <p>mathinput based on mathinput: <mathinput bindValueTo="$_mathinput1" /></p>
     <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
     <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
     <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>
@@ -1196,7 +1197,7 @@ describe('Mathinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original mathinput: <mathinput prefill="x+1"/></p>
-    <p>mathinput based on mathinput: <mathinput><bindValueTo><copy prop="immediatevalue" tname="_mathinput1" /></bindValueTo></mathinput></p>
+    <p>mathinput based on mathinput: <mathinput bindValueTo="$(_mathinput1{prop='immediateValue'})" /></p>
     <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
     <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
     <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>

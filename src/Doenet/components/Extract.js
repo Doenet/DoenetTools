@@ -201,8 +201,9 @@ export default class Extract extends CompositeComponent {
 
     let results = replacementFromProp({
       component, components,
-      replacementSources: [component.stateValues.sourceComponents[sourceNum]],
-      numReplacementsSoFar,
+      replacementSource: component.stateValues.sourceComponents[sourceNum],
+      propName: component.stateValues.propName,
+      // numReplacementsSoFar,
       uniqueIdentifiersUsed,
     })
 
@@ -366,9 +367,6 @@ export default class Extract extends CompositeComponent {
         uniqueIdentifiersUsed,
         componentInfoObjects,
       });
-
-      console.log(`results`)
-      console.log(results)
 
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 

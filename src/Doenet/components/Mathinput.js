@@ -39,6 +39,12 @@ export default class Mathinput extends Input {
   }
   static componentType = "mathinput";
 
+  static variableForPlainMacro = "value";
+
+  static get stateVariablesShadowedForReference() {
+    return ["value"]
+  };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
@@ -56,6 +62,7 @@ export default class Mathinput extends Input {
       comparison: "atMost",
       number: 1,
       setAsBase: true,
+      takePropertyChildren: true,
     })
 
     return childLogic;

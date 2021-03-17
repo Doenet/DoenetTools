@@ -19,8 +19,8 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>a,1+1,</mathlist>
-    <mathlist simplify="full">a,1+1,</mathlist>
+    <mathlist>a 1+1 </mathlist>
+    <mathlist simplify="full">a  1+1</mathlist>
     ` }, "*");
     });
 
@@ -71,7 +71,7 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>a,(, 1+1,</mathlist>
+    <mathlist>a (  1+1 </mathlist>
     ` }, "*");
     });
 
@@ -147,7 +147,7 @@ describe('Mathlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathlist>
-      <math>a</math>, q, <math>1+1</math> h
+      <math>a</math> q <math>1+1</math> h
     </mathlist>
     ` }, "*");
     });
@@ -234,26 +234,26 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist>
       <math>a</math>
-      <mathlist>q,r</mathlist>
+      <mathlist>q r</mathlist>
       <math>h</math>
       <mathlist>
         <mathlist>
           <math>b</math>
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j</mathlist>
+        <mathlist>i j</mathlist>
       </mathlist>
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
 
     ` }, "*");
     });
@@ -412,27 +412,27 @@ describe('Mathlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathlist>
-      a,
-      <mathlist>q,r</mathlist>, 
+      a
+      <mathlist>q r</mathlist>  
       <math>h</math>
       <mathlist>
         <mathlist>
           b
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j</mathlist>
+        <mathlist>i  j</mathlist>
       </mathlist>
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
 
     ` }, "*");
     });
@@ -596,12 +596,12 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist>
       <math>a</math>
-      <mathlist>q,r</mathlist>
+      <mathlist>q r</mathlist>
       <copy prop="math3" tname="_mathlist1" />
       <mathlist>
         <mathlist name="mid">
           <math><copy prop="math1" tname="_mathlist1"/></math>
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
         <mathlist>
           <copy prop="math2" tname="_mathlist1"/>
@@ -611,18 +611,19 @@ describe('Mathlist Tag Tests', function () {
       <copy tname="mid" />
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math10" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math11" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math12" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math10'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math11'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math12'})" />
+
     ` }, "*");
     });
 
@@ -722,14 +723,14 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist maximumnumber="7">
       <math>a</math>
-      <mathlist maximumnumber="2">q,r,l,k</mathlist>
+      <mathlist maximumnumber="2">q r l k</mathlist>
       <math>h</math>
       <mathlist maximumnumber="4">
         <mathlist maximumnumber="2">
           <math>b</math>
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j,k</mathlist>
+        <mathlist>i j k</mathlist>
       </mathlist>
     </mathlist>
     ` }, "*");
@@ -1188,7 +1189,7 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><mathlist hide="true">a,b,c</mathlist></p>
+    <p><mathlist hide="true">a b c</mathlist></p>
 
     <p><copy name="mathlist1a" hide="false" tname="_mathlist1" /></p>
 

@@ -22,6 +22,7 @@ export default class Rectangle extends Polygon {
       componentType: 'center',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneWidth = childLogic.newLeaf({
@@ -330,7 +331,7 @@ export default class Rectangle extends Polygon {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
 
@@ -521,7 +522,7 @@ export default class Rectangle extends Polygon {
           // vertex or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {

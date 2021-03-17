@@ -200,8 +200,8 @@ export default class Collect extends CompositeComponent {
       },
       definition: function ({ dependencyValues }) {
 
-        // console.log(`definition of collectedComponents`)
-        // console.log(dependencyValues)
+        console.log(`definition of collectedComponents`)
+        console.log(dependencyValues)
 
         let collectedComponents = dependencyValues.descendants;
         if (!collectedComponents) {
@@ -265,7 +265,8 @@ export default class Collect extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    // console.log(`create serialized replacements for ${component.componentName}`)
+    console.log(`create serialized replacements for ${component.componentName}`)
+    console.log(component.stateValues.collectedComponents)
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
@@ -340,8 +341,9 @@ export default class Collect extends CompositeComponent {
 
       let results = replacementFromProp({
         component, components,
-        replacementSources: [collectedObj],
-        numReplacementsSoFar,
+        replacementSource: collectedObj,
+        propName: component.stateValues.propName,
+        // numReplacementsSoFar,
         uniqueIdentifiersUsed,
       })
 

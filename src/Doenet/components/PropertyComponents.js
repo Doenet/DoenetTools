@@ -451,8 +451,8 @@ export class WithReplacement extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class SequenceLength extends Integer {
-  static componentType = "sequenceLength";
+export class length extends Integer {
+  static componentType = "length";
   static rendererType = "number";
 }
 

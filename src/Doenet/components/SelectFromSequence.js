@@ -92,9 +92,9 @@ export default class SelectFromSequence extends Sequence {
           dependencyType: "stateVariable",
           variableName: "withReplacement"
         },
-        sequenceLength: {
+        length: {
           dependencyType: "stateVariable",
-          variableName: "sequenceLength"
+          variableName: "length"
         },
         from: {
           dependencyType: "stateVariable",
@@ -295,7 +295,7 @@ export default class SelectFromSequence extends Sequence {
         if (!foundValid) {
           return { success: false }
         }
-      } else if (["type", "to", "from", "step", "sequenceLength"].includes(componentType)) {
+      } else if (["type", "to", "from", "step", "length"].includes(componentType)) {
         // calculate sequencePars only if has its value set directly 
         // or if has a child that is a string
         let foundValid = false;
@@ -375,11 +375,11 @@ export default class SelectFromSequence extends Sequence {
       }
     }
 
-    if (sequencePars.sequenceLength !== undefined) {
-      if (typeof sequencePars.sequenceLength === "string") {
-        sequencePars.sequenceLength = Number(sequencePars.sequenceLength);
+    if (sequencePars.length !== undefined) {
+      if (typeof sequencePars.length === "string") {
+        sequencePars.length = Number(sequencePars.length);
       }
-      if (!Number.isInteger(sequencePars.sequenceLength) || sequencePars.sequenceLength < 0) {
+      if (!Number.isInteger(sequencePars.length) || sequencePars.length < 0) {
         return { success: false }
       }
     }
@@ -407,7 +407,7 @@ export default class SelectFromSequence extends Sequence {
 
     this.calculateSequenceParameters(sequencePars)
 
-    let nOptions = sequencePars.sequenceLength;
+    let nOptions = sequencePars.length;
     let excludeIndices = [];
     if (excludes.length > 0) {
       if (sequencePars.selectedType !== math) {
@@ -418,7 +418,7 @@ export default class SelectFromSequence extends Sequence {
             continue;
           }
           let ind = (item - sequencePars.from) / sequencePars.step;
-          if (ind > sequencePars.sequenceLength - 1 + 1E-10) {
+          if (ind > sequencePars.length - 1 + 1E-10) {
             break;
           }
           if (Math.abs(ind - Math.round(ind)) < 1E-10) {
@@ -538,9 +538,9 @@ function makeSelection({ dependencyValues }) {
     numberUniqueRequired = dependencyValues.numberToSelect;
   }
 
-  if (numberUniqueRequired > dependencyValues.sequenceLength) {
+  if (numberUniqueRequired > dependencyValues.length) {
     throw Error("Cannot select " + numberUniqueRequired +
-      " values from a sequence of length " + dependencyValues.sequenceLength);
+      " values from a sequence of length " + dependencyValues.length);
   }
 
   // if desiredIndices is specfied, use those
@@ -554,7 +554,7 @@ function makeSelection({ dependencyValues }) {
       if (!desiredIndices.every(Number.isInteger)) {
         throw Error("All indices specified for select must be integers");
       }
-      let n = dependencyValues.sequenceLength;
+      let n = dependencyValues.length;
       desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
 
       // assume that we have an excluded combination 
@@ -635,7 +635,7 @@ function makeSelection({ dependencyValues }) {
 
   } else {
 
-    let numberPossibilities = dependencyValues.sequenceLength - dependencyValues.exclude.length;
+    let numberPossibilities = dependencyValues.length - dependencyValues.exclude.length;
 
     if (dependencyValues.withReplacement) {
       numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
@@ -727,7 +727,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   let selectedValues = [];
   let selectedIndices = [];
 
-  if (stateValues.exclude.length + numberUniqueRequired < 0.5 * stateValues.sequenceLength) {
+  if (stateValues.exclude.length + numberUniqueRequired < 0.5 * stateValues.length) {
     // the simplest case where the likelihood of getting excluded is less than 50%
     // just randomly select from all possibilities
     // and use rejection method to resample if an excluded is hit
@@ -743,8 +743,8 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
         // random number in [0, 1)
         let rand = rng.random();
-        // random integer from 0 to sequenceLength-1
-        selectedIndex = Math.floor(rand * stateValues.sequenceLength);
+        // random integer from 0 to length-1
+        selectedIndex = Math.floor(rand * stateValues.length);
 
         if (!withReplacement && selectedIndices.includes(selectedIndex)) {
           continue;
@@ -795,7 +795,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
   let possibleValues = [];
 
-  for (let ind = 0; ind < stateValues.sequenceLength; ind++) {
+  for (let ind = 0; ind < stateValues.length; ind++) {
     let componentValue = stateValues.from;
     if (ind > 0) {
       if (stateValues.selectedType === "math") {

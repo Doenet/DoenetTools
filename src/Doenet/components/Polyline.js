@@ -29,6 +29,7 @@ export default class Polyline extends GraphicalComponent {
       componentType: 'vertices',
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
       setAsBase: true,
     });
 
@@ -133,7 +134,7 @@ export default class Polyline extends GraphicalComponent {
           // vertex or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {

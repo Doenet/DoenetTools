@@ -460,8 +460,8 @@ export class DependencyHandler {
       this.updateAncestorDependencies(component, updatesNeeded, compositesBeingExpanded);
 
       updatesNeeded.parentsToUpdateDescendants.add(component.componentName);
-      for (let ancestor of component.ancestors) {
-        updatesNeeded.parentsToUpdateDescendants.add(ancestor.componentName);
+      for (let ancestorName of ancestorsIncludingComposites(component, this.components)) {
+        updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
       }
     }
 
@@ -1121,10 +1121,6 @@ class Dependency {
 
     if (dependencyDefinition.__isDetermineDependencyStateVariable) {
       this.__isDetermineDependencyStateVariable = true;
-    }
-
-    if (dependencyDefinition.triggerParentChildLogicWhenResolved) {
-      this.triggerParentChildLogicWhenResolved = true;
     }
 
     if (dependencyDefinition.publicStateVariablesOnly) {
@@ -1881,8 +1877,11 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
               if (stateVarObj.isArray) {
                 // if array, use componentType from wrapping components, if exist
                 if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
-                  let wrapCs = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1];
-                  componentObj.stateValues[nameForOutput] = wrapCs[0];
+                  let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
+                  if(typeof wrapCT === "object") {
+                    wrapCT = wrapCT.componentType;
+                  }
+                  componentObj.stateValues[nameForOutput] = wrapCT;
                 }
               }
 
@@ -2881,6 +2880,8 @@ class ReplacementDependency extends Dependency {
       this.componentIndex = this.definition.componentIndex;
     }
 
+    this.expandReplacements = true;
+
   }
 
   determineDownstreamComponents() {
@@ -3455,3 +3456,27 @@ class VariantsDependency extends Dependency {
 
 dependencyTypeArray.push(VariantsDependency);
 
+
+function ancestorsIncludingComposites(comp, components) {
+  if (comp.ancestors === undefined || comp.ancestors.length === 0) {
+    return [];
+  }
+
+  let comps = [comp.ancestors[0].componentName];
+
+  let parent = components[comp.ancestors[0].componentName];
+  comps.push(...ancestorsIncludingComposites(parent, components));
+
+  if (comp.replacementOf) {
+    comps.push(comp.replacementOf.componentName);
+    let replacementAs = ancestorsIncludingComposites(comp.replacementOf, components)
+    for (let a of replacementAs) {
+      if (!comps.includes(a)) {
+        comps.push(a);
+      }
+    }
+  }
+
+  return comps;
+
+}

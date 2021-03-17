@@ -178,7 +178,7 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
     }
 
     if (s.length > beginInd) {
-      let newString = s.substring(beginInd, s.length);
+      let newString = s.substring(beginInd, s.length).trim();
       currentPiece.push({
         componentType: "string",
         state: { value: newString },
@@ -193,6 +193,85 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
   }
 
   pieces.push(currentPiece);
+
+  return {
+    success: true,
+    pieces: pieces,
+  }
+}
+
+export function breakEmbeddedStringIntoParensPieces({ componentList }) {
+  let Nparens = 0;
+  let pieces = [];
+  let currentPiece = [];
+
+  for (let component of componentList) {
+
+    if (component.componentType !== "string") {
+      if (Nparens === 0) {
+        // if not in a parenthesis, just add as a separate piece
+        pieces.push([component])
+      } else {
+        currentPiece.push(component);
+      }
+      continue;
+    }
+
+    let s = component.state.value.trim();
+
+    let beginInd = 0;
+
+    for (let ind = 0; ind < s.length; ind++) {
+      let char = s[ind];
+
+      if (char === "(") {
+        Nparens++;
+      } else if (char === ")") {
+        if (Nparens === 0) {
+          // parens didn't match, so return failure
+          return { success: false };
+        }
+        if (Nparens === 1) {
+          // found end of piece in parens
+          if (ind + 1 > beginInd) {
+            let newString = s.substring(beginInd, ind + 1).trim()
+            currentPiece.push({
+              componentType: "string",
+              state: { value: newString },
+            });
+          }
+
+          pieces.push(currentPiece);
+          currentPiece = [];
+          beginInd = ind + 1;
+
+        }
+        Nparens--
+      } else if (Nparens === 0 && !char.match(/\s/)) {
+        // starting a new piece
+        // each piece must begin with parens
+        return { success: false }
+      }
+    }
+
+    if (s.length > beginInd) {
+      let newString = s.substring(beginInd, s.length).trim();
+      currentPiece.push({
+        componentType: "string",
+        state: { value: newString },
+      });
+    }
+
+  }
+
+  // parens didn't match, so return failure
+  if (Nparens !== 0) {
+    return { success: false };
+  }
+
+  if (currentPiece.length > 0) {
+    pieces.push(currentPiece);
+  }
 
   return {
     success: true,
