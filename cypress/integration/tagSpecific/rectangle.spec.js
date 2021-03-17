@@ -57,8 +57,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only center', () => {
 
     setupScene({
-      rectangleProperties: '',
-      rectangleChildren: "<center>(-1,5)</center>",
+      rectangleProperties: 'center="(-1,5)"',
+      rectangleChildren: "",
     });
 
     runTests({
@@ -73,8 +73,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only center and width', () => {
 
     setupScene({
-      rectangleProperties: 'width="-2"',
-      rectangleChildren: "<center>(-4,2)</center>",
+      rectangleProperties: 'width="-2" center="(-4,2)"',
+      rectangleChildren: "",
     });
 
     runTests({
@@ -89,8 +89,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only 1 vertex', () => {
 
     setupScene({
-      rectangleProperties: "",
-      rectangleChildren: '<vertices>(2,3)</vertices>',
+      rectangleProperties: 'vertices="(2,3)"',
+      rectangleChildren: '',
     });
 
     runTests({
@@ -105,8 +105,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with only 1 vertex and height', () => {
 
     setupScene({
-      rectangleProperties: 'height="6"',
-      rectangleChildren: '<vertices>(-3,4)</vertices>',
+      rectangleProperties: 'height="6" vertices="(-3,4)"',
+      rectangleChildren: '',
     });
 
     runTests({
@@ -121,8 +121,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with center, width and height', () => {
 
     setupScene({
-      rectangleProperties: 'width="6" height="-3"',
-      rectangleChildren: "<center>(-3,-4)</center>",
+      rectangleProperties: 'width="6" height="-3" center="(-3,-4)"',
+      rectangleChildren: "",
     });
 
     runTests({
@@ -137,8 +137,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with vertex, width and height', () => {
 
     setupScene({
-      rectangleProperties: 'width="7" height="4"',
-      rectangleChildren: "<vertices>(-1, 2)</vertices>",
+      rectangleProperties: 'width="7" height="4" vertices="(-1,2)"',
+      rectangleChildren: "",
     });
 
     runTests({
@@ -153,8 +153,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with 1 vertex and center', () => {
 
     setupScene({
-      rectangleProperties: '',
-      rectangleChildren: "<vertices>(-2, -4)</vertices><center>(1,-1)</center>",
+      rectangleProperties: 'vertices="(-2,-4)" center="(1,-1)"',
+      rectangleChildren: "",
     });
 
     runTests({
@@ -169,8 +169,8 @@ describe('Rectangle Tag Tests', function () {
   it('rectangle with 2 vertices', () => {
 
     setupScene({
-      rectangleProperties: "",
-      rectangleChildren: '<vertices>(-5, -9), (-1, -2)</vertices>',
+      rectangleProperties: 'vertices="(-5,-9) (-1,-2)"',
+      rectangleChildren: '',
     });
 
     runTests({
@@ -203,8 +203,8 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   <copy name="v4" tname="_rectangle1" prop="vertex4"/>
   </graph>
 
-  <mathinput><bindValueTo><copy tname="_rectangle1" prop="width"/></bindValueTo></mathinput>
-  <mathinput><bindValueTo><copy tname="_rectangle1" prop="height"/></bindValueTo></mathinput>
+  <mathinput bindValueTo="$(_rectangle1{prop='width'})" />
+  <mathinput bindValueTo="$(_rectangle1{prop='height'})" />
 
   <graph name="graph3">
     <copy name="rectangleCopy" tname="_rectangle1"/>

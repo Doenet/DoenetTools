@@ -19,7 +19,7 @@ describe('Booleanlist Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <p><booleanlist hide="true">false, true, false</booleanlist></p>
+    <p><booleanlist hide="true">false true false</booleanlist></p>
 
     <p><copy hide="false" tname="_booleanlist1" /></p>
 
@@ -49,26 +49,26 @@ describe('Booleanlist Tag Tests', function () {
         <text>a</text>
         <booleanlist>
           <boolean>true</boolean>
-          <booleanlist>false, false</booleanlist>
+          <booleanlist>false false</booleanlist>
           <boolean>false</boolean>
           <booleanlist>
             <booleanlist>
               <boolean>false</boolean>
-              <booleanlist>true, false</booleanlist>
+              <booleanlist>true false</booleanlist>
             </booleanlist>
-            <booleanlist>false,true</booleanlist>
+            <booleanlist>false   true</booleanlist>
           </booleanlist>
         </booleanlist>
     
-        <booleaninput><bindValueTo><copy prop="boolean1" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean2" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean3" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean4" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean5" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean6" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean7" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean8" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean9" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean1'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean2'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean3'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean4'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean5'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean6'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean7'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean8'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean9'})" />
     
         ` }, "*");
     });
@@ -191,27 +191,27 @@ describe('Booleanlist Tag Tests', function () {
         doenetML: `
         <text>a</text>
         <booleanlist>
-          true,
-          <booleanlist>false, false</booleanlist>,
+          true
+          <booleanlist>false false</booleanlist>
           <boolean>false</boolean>
           <booleanlist>
             <booleanlist>
               false
-              <booleanlist>true, false</booleanlist>
+              <booleanlist>true false</booleanlist>
             </booleanlist>
-            <booleanlist>false,true</booleanlist>
+            <booleanlist>false   true</booleanlist>
           </booleanlist>
         </booleanlist>
     
-        <booleaninput><bindValueTo><copy prop="boolean1" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean2" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean3" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean4" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean5" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean6" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean7" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean8" tname="_booleanlist1" /></bindValueTo></booleaninput>
-        <booleaninput><bindValueTo><copy prop="boolean9" tname="_booleanlist1" /></bindValueTo></booleaninput>
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean1'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean2'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean3'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean4'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean5'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean6'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean7'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean8'})" />
+        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean9'})" />
     
         ` }, "*");
     });

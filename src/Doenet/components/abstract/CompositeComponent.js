@@ -39,6 +39,19 @@ export default class CompositeComponent extends BaseComponent {
       })
     }
 
+    stateVariableDefinitions.fullRecursiveReplacements = {
+      returnDependencies: () => ({
+        recursiveReplacements: {
+          dependencyType: "replacement",
+          recursive: true,
+          recurseNonStandardComposites: true,
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { fullRecursiveReplacements: dependencyValues.recursiveReplacements }
+      })
+    }
+
     return stateVariableDefinitions;
   }
 

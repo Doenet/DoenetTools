@@ -460,8 +460,8 @@ export class DependencyHandler {
       this.updateAncestorDependencies(component, updatesNeeded, compositesBeingExpanded);
 
       updatesNeeded.parentsToUpdateDescendants.add(component.componentName);
-      for (let ancestor of component.ancestors) {
-        updatesNeeded.parentsToUpdateDescendants.add(ancestor.componentName);
+      for (let ancestorName of ancestorsIncludingComposites(component, this.components)) {
+        updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
       }
     }
 
@@ -1123,10 +1123,6 @@ class Dependency {
       this.__isDetermineDependencyStateVariable = true;
     }
 
-    if (dependencyDefinition.triggerParentChildLogicWhenResolved) {
-      this.triggerParentChildLogicWhenResolved = true;
-    }
-
     if (dependencyDefinition.publicStateVariablesOnly) {
       this.publicStateVariablesOnly = true;
     }
@@ -1602,7 +1598,7 @@ class Dependency {
 
   deleteFromUpdateTriggers() { }
 
-  getValue({ verbose = false } = {}) {
+  getValue({ verbose = false, skipProxy = false } = {}) {
 
     let value = [];
     let changes = {};
@@ -1688,7 +1684,9 @@ class Dependency {
       }
     }
 
-    if (!this.doNotProxy && value !== null && typeof value === 'object') {
+    if (!this.doNotProxy && !skipProxy &&
+      value !== null && typeof value === 'object'
+    ) {
       value = new Proxy(value, readOnlyProxyHandler)
     }
 
@@ -1879,8 +1877,11 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
               if (stateVarObj.isArray) {
                 // if array, use componentType from wrapping components, if exist
                 if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
-                  let wrapCs = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1];
-                  componentObj.stateValues[nameForOutput] = wrapCs[0];
+                  let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
+                  if(typeof wrapCT === "object") {
+                    wrapCT = wrapCT.componentType;
+                  }
+                  componentObj.stateValues[nameForOutput] = wrapCT;
                 }
               }
 
@@ -2307,10 +2308,53 @@ class ChildDependency extends Dependency {
         .filter((x, i) => this.childIndices.includes(i));
     }
 
-    return {
-      downstreamComponentNames: activeChildrenIndices.map(x => parent.activeChildren[x].componentName),
-      downstreamComponentTypes: activeChildrenIndices.map(x => parent.activeChildren[x].componentType),
+    let activeChildrenMatched = activeChildrenIndices.map(x => parent.activeChildren[x]);
+    let downstreamComponentNames = activeChildrenMatched.map(x => x.componentName);
+
+    this.compositeIndices = [];
+    for (let [definingInd, definingChild] of parent.definingChildren.entries()) {
+      if (this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: definingChild.componentType,
+        baseComponentType: "_composite",
+      })) {
+        if (definingChild.isExpanded) {
+          let recursiveReplacementAdapterNames =
+            definingChild.stateValues.fullRecursiveReplacements
+              .map(x => this.dependencyHandler.components[x.componentName])
+              .map(x => x.adapterUsed ? x.adapterUsed : x)
+              .map(x => x.componentName);
+
+          for (let [ind, childName] of downstreamComponentNames.entries()) {
+            if (recursiveReplacementAdapterNames.includes(childName)) {
+              this.compositeIndices[ind] = definingInd;
+            }
+          }
+        }
+      }
     }
+
+    return {
+      downstreamComponentNames,
+      downstreamComponentTypes: activeChildrenMatched.map(x => x.componentType),
+    }
+
+  }
+
+  getValue({ verbose } = {}) {
+
+    let result = super.getValue({ verbose, skipProxy: true });
+
+    for (let [ind, compositeInd] of this.compositeIndices.entries()) {
+      if (compositeInd !== undefined) {
+        result.value[ind].compositeInd = compositeInd;
+      }
+    }
+
+    if (!this.doNotProxy) {
+      result.value = new Proxy(result.value, readOnlyProxyHandler)
+    }
+
+    return result;
 
   }
 
@@ -2830,9 +2874,13 @@ class ReplacementDependency extends Dependency {
 
     this.recursive = this.definition.recursive;
 
+    this.recurseNonStandardComposites = this.definition.recurseNonStandardComposites;
+
     if (Number.isInteger(this.definition.componentIndex)) {
       this.componentIndex = this.definition.componentIndex;
     }
+
+    this.expandReplacements = true;
 
   }
 
@@ -2870,6 +2918,7 @@ class ReplacementDependency extends Dependency {
     } else if (this.recursive) {
       let result = this.dependencyHandler.core.recursivelyReplaceCompositesWithReplacements({
         replacements,
+        recurseNonStandardComposites: this.recurseNonStandardComposites,
       });
       replacements = result.newReplacements;
       this.compositesFound.push(...result.compositesFound);
@@ -3407,3 +3456,27 @@ class VariantsDependency extends Dependency {
 
 dependencyTypeArray.push(VariantsDependency);
 
+
+function ancestorsIncludingComposites(comp, components) {
+  if (comp.ancestors === undefined || comp.ancestors.length === 0) {
+    return [];
+  }
+
+  let comps = [comp.ancestors[0].componentName];
+
+  let parent = components[comp.ancestors[0].componentName];
+  comps.push(...ancestorsIncludingComposites(parent, components));
+
+  if (comp.replacementOf) {
+    comps.push(comp.replacementOf.componentName);
+    let replacementAs = ancestorsIncludingComposites(comp.replacementOf, components)
+    for (let a of replacementAs) {
+      if (!comps.includes(a)) {
+        comps.push(a);
+      }
+    }
+  }
+
+  return comps;
+
+}

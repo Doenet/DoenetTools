@@ -38,7 +38,11 @@ export default class Line extends GraphicalComponent {
       childrenRegex: "s",
       replacementFunction: ({ matchedChildren }) => ({
         success: true,
-        newChildren: [{ componentType: "equation", children: matchedChildren }],
+        newChildren: [{
+          componentType: "equation",
+          doenetAttributes: { isPropertyChild: true },
+          children: matchedChildren
+        }],
       })
     });
 
@@ -54,7 +58,8 @@ export default class Line extends GraphicalComponent {
     let exactlyOneEquation = childLogic.newLeaf({
       name: "exactlyOneEquation",
       componentType: 'equation',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
 
@@ -62,7 +67,8 @@ export default class Line extends GraphicalComponent {
       name: "atMostOneThrough",
       componentType: 'through',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let equationXorThrough = childLogic.newOperator({
@@ -258,7 +264,7 @@ export default class Line extends GraphicalComponent {
           // point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {

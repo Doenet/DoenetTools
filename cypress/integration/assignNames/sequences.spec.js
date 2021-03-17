@@ -22,7 +22,7 @@ describe('sequence and map assignName Tests', function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="s1"><aslist>
-  <sequence assignNames="a,b" type="letters" count="$n" />
+  <sequence assignNames="a,b" type="letters" length="$n" />
   </aslist></p>
 
   <p name="pa">a: <copy name="cpa" tname="a" /></p>
@@ -569,7 +569,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="m1"><map assignNames="a,b">
     <template newNamespace>Letter <copy tname="_sourceindex" name="n" /> is <copy tname="_source" name="v" />. </template>
     <sources>
-      <sequence type="letters" count="$n" />
+      <sequence type="letters" length="$n" />
    </sources>
   </map></p>
 
@@ -1518,7 +1518,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="m1"><map assignNames="a,b">
     <template newNamespace>Letter <copy tname="_sourceindex" assignNames="n1,n2" /> is <copy tname="_source" assignnames="v1, v2" />. </template>
     <sources>
-      <sequence type="letters" count="$n" />
+      <sequence type="letters" length="$n" />
    </sources>
   </map></p>
 

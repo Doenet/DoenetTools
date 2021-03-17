@@ -171,6 +171,15 @@ export default class Line extends DoenetRenderer {
   }
 
   calculatePointPositions(e) {
+
+    // the reason we calculate point position with this algorithm,
+    // rather than using .X() and .Y() directly
+    // is so that points don't get trapped on an attracting object
+    // if you move the mouse slowly.
+    // The attributes .X() and .Y() are affected by
+    // .setCoordinates functions called in update()
+    // so will get modified to go back to the attracting object
+
     var o = this.props.board.origin.scrCoords;
 
     let pointCoords = []

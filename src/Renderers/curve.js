@@ -8,10 +8,8 @@ export default class FunctionCurve extends DoenetRenderer {
     this.dragThroughPoint = this.dragThroughPoint.bind(this);
     this.dragControlPoint = this.dragControlPoint.bind(this);
     this.downThroughPoint = this.downThroughPoint.bind(this);
-    this.upThroughPoint = this.upThroughPoint.bind(this);
     this.upBoard = this.upBoard.bind(this);
     this.downOther = this.downOther.bind(this);
-    this.upOther = this.upOther.bind(this);
 
     if (props.board) {
       this.createGraphicalObject();
@@ -70,12 +68,8 @@ export default class FunctionCurve extends DoenetRenderer {
 
     if (this.doenetSvData.curveType === "bezier") {
 
-      this.startClickOnPoint = [];
-      this.positionStartClick = [];
-
       this.props.board.on('up', this.upBoard);
       this.curveJXG.on('down', this.downOther);
-      this.curveJXG.on('up', this.upOther);
 
       this.segmentAttributes = {
         visible: false,
@@ -147,23 +141,6 @@ export default class FunctionCurve extends DoenetRenderer {
     this.throughPointsJXG = [];
     this.controlPointsJXG = [];
     this.segmentsJXG = [];
-    // // this.throughControlsVisible = [];
-    // // first through point has one control
-    // let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[0]], this.throughPointAttributes);
-    // this.throughPointsJXG.push(tp);
-    // let cp = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[0][1]], this.controlPointAttributes);
-    // this.controlPointsJXG.push([null, cp]);
-    // let seg = this.props.board.create('segment', [tp, cp], this.segmentAttributes);
-    // this.segmentsJXG.push([null, seg]);
-    // // this.throughControlsVisible.push(false);
-    // tp.on('drag', e => this.dragThroughPoint(0, e));
-    // tp.on('down', e => this.downThroughPoint(0, e));
-    // tp.on('up', e => this.upThroughPoint(0, e));
-    // cp.on('drag', e => this.dragControlPoint(0, 1, e));
-    // cp.on('down', this.downOther);
-    // seg.on('down', this.downOther);
-    // cp.on('up', this.upOther);
-    // seg.on('up', this.upOther);
     for (let i = 0; i < this.doenetSvData.numericalThroughPoints.length; i++) {
       // middle through points have two controls
       let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], this.throughPointAttributes);
@@ -174,36 +151,18 @@ export default class FunctionCurve extends DoenetRenderer {
       let seg1 = this.props.board.create('segment', [tp, cp1], this.segmentAttributes);
       let seg2 = this.props.board.create('segment', [tp, cp2], this.segmentAttributes);
       this.segmentsJXG.push([seg1, seg2]);
-      tp.on('drag', e => this.dragThroughPoint(i, e));
+      tp.on('drag', e => this.dragThroughPoint(i, true, e));
       tp.on('down', e => this.downThroughPoint(i, e));
-      tp.on('up', e => this.upThroughPoint(i, e));
-      cp1.on('drag', e => this.dragControlPoint(i, 0, e));
-      cp2.on('drag', e => this.dragControlPoint(i, 1, e));
+      tp.on('up', e => this.dragThroughPoint(i, false, e));
+      cp1.on('drag', e => this.dragControlPoint(i, 0, true, e));
+      cp2.on('drag', e => this.dragControlPoint(i, 1, true, e));
       cp1.on('down', this.downOther);
       cp2.on('down', this.downOther);
       seg1.on('down', this.downOther);
       seg1.on('down', this.downOther);
-      cp1.on('up', this.upOther);
-      cp2.on('up', this.upOther);
-      seg1.on('up', this.upOther);
-      seg1.on('up', this.upOther);
+      cp1.on('up',  e => this.dragControlPoint(i, 0, false, e));
+      cp2.on('up', e => this.dragControlPoint(i, 1, false, e));
     }
-    // // last throughPoint has one control
-    // let n = this.doenetSvData.numericalThroughPoints.length - 1;
-    // tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[n]], this.throughPointAttributes);
-    // this.throughPointsJXG.push(tp);
-    // cp = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[n][0]], this.controlPointAttributes);
-    // this.controlPointsJXG.push([cp, null]);
-    // seg = this.props.board.create('segment', [tp, cp], this.segmentAttributes);
-    // this.segmentsJXG.push([seg, null]);
-    // tp.on('drag', e => this.dragThroughPoint(n, e));
-    // tp.on('down', e => this.downThroughPoint(n, e));
-    // tp.on('up', e => this.upThroughPoint(n, e));
-    // cp.on('drag', e => this.dragControlPoint(n, 0, e));
-    // cp.on('down', this.downOther);
-    // seg.on('down', this.downOther);
-    // cp.on('up', this.upOther);
-    // seg.on('up', this.upOther);
 
     this.vectorControlsVisible = [];
 
@@ -242,21 +201,36 @@ export default class FunctionCurve extends DoenetRenderer {
 
 
 
-  dragThroughPoint(i) {
+  dragThroughPoint(i, transient) {
+    if (transient) {
+      this.draggedThroughPoint = i;
+    } else if (this.draggedThroughPoint !== i) {
+      return;
+    }
+
     let tpcoords = [this.throughPointsJXG[i].X(), this.throughPointsJXG[i].Y()];
     this.actions.moveThroughPoint({
       throughPoint: tpcoords,
       throughPointInd: i,
+      transient,
     });
 
   }
 
-  dragControlPoint(point, i) {
+  dragControlPoint(point, i, transient) {
     // console.log(`drag control point ${point}, ${i}`)
+
+    if (transient) {
+      this.draggedControlPoint = point + "_" + i;
+    } else if (this.draggedControlPoint !== point + "_" + i) {
+      return;
+    }
+
     this.actions.moveControlVector({
       controlVector: [this.controlPointsJXG[point][i].X() - this.throughPointsJXG[point].X(),
       this.controlPointsJXG[point][i].Y() - this.throughPointsJXG[point].Y()],
       controlVectorInds: [point, i],
+      transient
     });
 
   }
@@ -317,37 +291,22 @@ export default class FunctionCurve extends DoenetRenderer {
 
   downThroughPoint(i, e) {
 
+    if (!this.doenetSvData.draggable) {
+      return;
+    }
+
+    this.draggedThroughPoint = null;
+    this.draggedControlPoint = null;
+
     // console.log(`down through point: ${i}`)
     this.hitObject = true;
-    let recordClickStart = true;
-    if (this.throughPointsJXG[i].getAttribute("fillcolor") !==
-      this.throughPointAlwaysVisible.fillcolor) {
-      recordClickStart = false;
-    }
-    // console.log(`recordClickStart ${recordClickStart}`)
-    if (recordClickStart) {
-      if (this.doenetSvData.vectorControlDirections[i] !== "none") {
-        if (i === 0) {
-          recordClickStart = this.controlPointsJXG[0][1].getAttribute("visible");
-        } else {
-          recordClickStart = this.controlPointsJXG[i][0].getAttribute("visible");
-        }
-      }
-    }
-    // console.log(`recordClickStart ${recordClickStart}`)
 
-    if (recordClickStart) {
-      this.startClickOnPoint[i] = Date.now();
-    }
-    // this.positionStartClick[i] = [this.throughPointsJXG[i].X(), this.throughPointsJXG[i].Y()];
-    this.positionStartClick[i] = [e.clientX, e.clientY];
     this.makeThroughPointsAlwaysVisible();
     this.makeVectorControlVisible(i);
     this.props.board.updateRenderer();
   }
 
   makeVectorControlVisible(i) {
-
 
     if (this.controlPointsJXG[i][0]) {
       let isVisible = (i > 0 || this.doenetSvData.extrapolateBackward)
@@ -378,32 +337,16 @@ export default class FunctionCurve extends DoenetRenderer {
     this.vectorControlsVisible[i] = true;
   }
 
-  upThroughPoint(i, e) {
-    if (this.startClickOnPoint[i] === undefined ||
-      Date.now() - this.startClickOnPoint[i] > 1000 ||
-      this.positionStartClick[i] === undefined ||
-      this.positionStartClick[i][0] !== e.clientX ||
-      this.positionStartClick[i][1] !== e.clientY) {
-      return
-    }
-
-    this.startClickOnPoint[i] = undefined;
-
-
-    // this.actions.togglePointControl(i);
-  }
-
   downOther() {
     if (!this.doenetSvData.draggable) {
       return;
     }
-    this.hitObject = true;
-  }
 
-  upOther() {
-    if (!this.doenetSvData.draggable) {
-      return;
-    }
+    this.draggedThroughPoint = null;
+    this.draggedControlPoint = null;
+
+    this.hitObject = true;
+
     this.makeThroughPointsAlwaysVisible();
     this.props.board.updateRenderer();
   }
@@ -532,19 +475,17 @@ export default class FunctionCurve extends DoenetRenderer {
         cp2.visProp.visible = false;
         seg2.visProp.visible = false;
 
-        tp.on('drag', e => this.dragThroughpoint(i, e));
+        tp.on('drag', e => this.dragThroughpoint(i, true, e));
         tp.on('down', e => this.downThroughpoint(i, e));
-        tp.on('up', e => this.upThroughpoint(i, e));
-        cp1.on('drag', e => this.dragControlPoint(i, 0, e));
+        tp.on('up', e => this.dragThroughpoint(i, false, e));
+        cp1.on('drag', e => this.dragControlPoint(i, 0, true, e));
         cp1.on('down', this.downOther);
-        cp1.on('up', this.upOther);
-        cp2.on('drag', e => this.dragControlPoint(i, 1, e));
+        cp1.on('up', e => this.dragControlPoint(i, 0, false, e));
+        cp2.on('drag', e => this.dragControlPoint(i, 1, true, e));
         cp2.on('down', this.downOther);
-        cp2.on('up', this.upOther);
+        cp2.on('up', e => this.dragControlPoint(i, 1, false, e));
         seg1.on('down', this.downOther);
-        seg1.on('up', this.upOther);
         seg2.on('down', this.downOther);
-        seg2.on('up', this.upOther);
 
       }
     } else if (this.doenetSvData.numericalThroughPoints.length < this.previousNumberOfPoints) {

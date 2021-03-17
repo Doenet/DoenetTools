@@ -28,18 +28,15 @@ export default class MathList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoMathsByCommas = function ({ matchedChildren }) {
+    let breakStringsIntoMathsBySpaces = function ({ matchedChildren }) {
 
-      // break any string by commas,
-      // removing any empty (white space only) pieces
-      // and wrap pieces with math
+      // break any string by white space and wrap pieces with math
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
           return [
             ...a,
-            ...c.state.value.split(",")
-              .map(s => s.trim())
+            ...c.state.value.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: "math",
@@ -59,7 +56,7 @@ export default class MathList extends InlineComponent {
 
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoMathsByCommas
+      replacementFunction: breakStringsIntoMathsBySpaces
     });
 
     return sugarInstructions;
