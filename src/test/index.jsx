@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetTest from '../Tools/DoenetTest';
+import DoenetTest from '../Tools/DoenetTest.jsx';
 
     ReactDOM.render(
       <DoenetTest/>
