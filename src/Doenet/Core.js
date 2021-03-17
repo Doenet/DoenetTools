@@ -110,7 +110,7 @@ export default class Core {
       componentTypeWithPotentialVariants: this.componentTypeWithPotentialVariants,
       allPossibleProperties: this.allPossibleProperties,
       isInheritedComponentType: this.isInheritedComponentType,
-      isStandardComposite: this.isStandardComposite,
+      isCompositeComponent: this.isCompositeComponent,
       stateVariableInfo: this.stateVariableInfo,
       publicStateVariableInfo: this.publicStateVariableInfo,
     };
@@ -1598,6 +1598,26 @@ export default class Core {
       comp.replacementOf = component;
     }
 
+    // resolve replacement state variables
+    let stateVariables = [];
+    for (let varName of ["replacements", "recursiveReplacements", "fullRecursiveReplacements"]) {
+      stateVariables.push(varName);
+      if (component.state["__determine_dependencies_" + varName]) {
+        stateVariables.push("__determine_dependencies_" + varName)
+      }
+    }
+
+    let resolveResult = this.resolveStateVariables({
+      component,
+      stateVariables,
+      updatesNeeded, compositesBeingExpanded
+    });
+
+    if (Object.keys(resolveResult.varsUnresolved).length > 0) {
+      console.log(resolveResult)
+      throw Error(`Couldn't resolve replacement variables after expanding!`)
+    }
+
   }
 
   replaceCompositeChildren(component, updatesNeeded, compositesBeingExpanded) {
@@ -1620,11 +1640,10 @@ export default class Core {
         }
 
         // expand composite if it isn't already
-        if (!child.isExpanded || child.needToDryRunExpansion) {
+        if (!child.isExpanded) {
 
           let expandResult = this.expandCompositeComponent({
             component: child,
-            dryRun: child.needToDryRunExpansion,
             updatesNeeded,
             compositesBeingExpanded
           });
@@ -3074,7 +3093,7 @@ export default class Core {
     stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
-    stateVarObj.wrappingComponents = mapDeep(arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix), x => x.toLowerCase());
+    stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
 
@@ -3598,7 +3617,7 @@ export default class Core {
       stateVarObj.returnWrappingComponents = prefix => [];
     }
 
-    stateVarObj.wrappingComponents = mapDeep(stateVarObj.returnWrappingComponents(), x => x.toLowerCase());
+    stateVarObj.wrappingComponents = stateVarObj.returnWrappingComponents();
 
     // for array, keep track if each arrayKey is essential
     stateVarObj.essentialByArrayKey = {};
@@ -4295,15 +4314,19 @@ export default class Core {
   }
 
 
-  recursivelyReplaceCompositesWithReplacements({ replacements }) {
+  recursivelyReplaceCompositesWithReplacements({ replacements, recurseNonStandardComposites = false }) {
     let compositesFound = [];
     let newReplacements = [];
     for (let replacement of replacements) {
-      if (this.isStandardComposite(replacement.componentType)) {
+      if (this.isCompositeComponent({
+        componentType: replacement.componentType,
+        includeNonStandard: recurseNonStandardComposites
+      })) {
         compositesFound.push(replacement.componentName);
         if (replacement.replacements) {
           let recursionResult = this.recursivelyReplaceCompositesWithReplacements({
             replacements: replacement.replacements,
+            recurseNonStandardComposites,
           });
           compositesFound.push(...recursionResult.compositesFound);
           newReplacements.push(...recursionResult.newReplacements);
@@ -5051,8 +5074,6 @@ export default class Core {
     let numInternalUnresolved = Infinity;
     let prevUnresolved = [];
 
-    let triggerParentChildLogic = false;
-
     if (!stateVariables) {
       stateVariables = Object.keys(component.state);
     }
@@ -5100,6 +5121,26 @@ export default class Core {
               componentName: componentName,
               stateVariable: "__childLogic"
             })
+          }
+
+          if (dep.expandReplacements) {
+            let composite = this._components[dep.compositeName];
+            if (!composite.isExpanded) {
+              let expandResult = this.expandCompositeComponent({
+                component: composite,
+                updatesNeeded,
+                compositesBeingExpanded
+              });
+
+              if (!expandResult.success) {
+                resolved = false;
+
+                unresolvedDependencies.push({
+                  componentName: dep.compositeName,
+                  stateVariable: "__replacements"
+                })
+              }
+            }
           }
 
           let downstreamComponentNames = dep.downstreamComponentNames;
@@ -5193,24 +5234,6 @@ export default class Core {
                     })
                   }
                 }
-              } else if (dep.expandReplacements) {
-                if (!depComponent.isExpanded) {
-                  let expandResult = this.expandCompositeComponent({
-                    component: depComponent,
-                    updatesNeeded,
-                    compositesBeingExpanded
-                  });
-
-                  if (!expandResult.success) {
-                    resolved = false;
-
-                    unresolvedDependencies.push({
-                      componentName: downstreamComponentName,
-                      stateVariable: "__replacements"
-                    })
-                  }
-                }
-
               } else if (dep.downstreamAttribute) {
                 throw Error(`Unrecognized downstream attribute ${dep.downstreamAttribute} for state variable ${varName} of ${componentName}`)
               }
@@ -5224,10 +5247,6 @@ export default class Core {
 
         if (resolved) {
           delete varsUnresolved[varName];
-
-          if (component.state[varName].triggerParentChildLogicWhenResolved) {
-            triggerParentChildLogic = true;
-          }
 
           if (component.state[varName].actionOnResolved) {
 
@@ -5276,7 +5295,7 @@ export default class Core {
 
     }
 
-    return { varsUnresolved, triggerParentChildLogic };
+    return { varsUnresolved };
 
   }
 
@@ -5357,6 +5376,13 @@ export default class Core {
 
       if (varName in stateVarInfo.aliases) {
         varName = stateVarInfo.aliases[varName];
+
+        // check again to see if alias is public
+        if (varName in stateVarInfo.stateVariableDescriptions) {
+          // found public
+          newVariables.push(varName);
+          continue;
+        }
       }
 
       let foundMatch = false;
@@ -5701,31 +5727,8 @@ export default class Core {
                 // Once this variable is newly resolved,
                 // we might be able to expand the composite component into its replacements
 
-                let processParentChildLogic = dep.stateVariable === "readyToExpand" &&
-                  depComponent instanceof this._allComponentClasses['_composite'];
-
-                if (resolveResult.triggerParentChildLogic) {
-                  // could also trigger parent child logic if all additional state variables defined
-                  // are resolved
-
-                  let allAdditionalResolved = true;
-
-                  let depStateVarObj = depComponent.state[dep.stateVariable];
-                  if (depStateVarObj.additionalStateVariablesDefined) {
-                    for (let vName of depStateVarObj.additionalStateVariablesDefined) {
-                      if (!depComponent.state[vName].isResolved) {
-                        allAdditionalResolved = false;
-                        break;
-                      }
-                    }
-                  }
-
-                  if (allAdditionalResolved) {
-                    processParentChildLogic = true;
-                  }
-                }
-
-                if (processParentChildLogic) {
+                if (dep.stateVariable === "readyToExpand" &&
+                  depComponent instanceof this._allComponentClasses['_composite']) {
 
                   this.processNewDefiningChildren({
                     parent: this._components[depComponent.parentName],
@@ -7788,16 +7791,19 @@ export default class Core {
     );
   }
 
-  isStandardComposite(componentType) {
+  isCompositeComponent({ componentType, includeNonStandard = true }) {
     let componentClass = this.allComponentClasses[componentType];
     if (!componentClass) {
       return false;
     }
-    return this.isInheritedComponentType({
+
+    let isComposite = this.isInheritedComponentType({
       inheritedComponentType: componentType,
       baseComponentType: "_composite"
     })
-      && !componentClass.treatAsComponentForRecursiveReplacements
+
+    return isComposite &&
+      (includeNonStandard || !componentClass.treatAsComponentForRecursiveReplacements)
   }
 
   get componentTypesCreatingVariants() {

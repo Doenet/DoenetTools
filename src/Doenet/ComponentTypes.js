@@ -6,7 +6,6 @@ import * as BooleanOperatorsOfMath from './components/BooleanOperatorsOfMath';
 import * as MathOperators from './components/MathOperators';
 import * as FunctionOperators from './components/FunctionOperators';
 import * as Extrema from './components/Extrema';
-import * as NumberOperators from './components/NumberOperators';
 import * as PatternReplace from './components/PatternReplace';
 import * as ParagraphMarkup from './components/ParagraphMarkup';
 import * as SingleCharacterComponents from './components/SingleCharacterComponents';
@@ -148,7 +147,6 @@ import ComponentSize from './components/abstract/ComponentSize';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
 import MathWithVariable from './components/abstract/MathWithVariable';
-import NumberBaseOperatorOrNumber from './components/abstract/NumberBaseOperatorOrNumber';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
 
@@ -162,7 +160,6 @@ const componentTypeArray = [
   ...Object.values(MathOperators),
   ...Object.values(FunctionOperators),
   ...Object.values(Extrema),
-  ...Object.values(NumberOperators),
   ...Object.values(PatternReplace),
   ...Object.values(ParagraphMarkup),
   ...Object.values(SingleCharacterComponents),
@@ -281,7 +278,6 @@ const componentTypeArrayExtended = [
   SectioningComponent,
   TextFromSingleStringChild,
   MathWithVariable,
-  NumberBaseOperatorOrNumber,
   InlineRenderInlineChildren,
   TextOrInline,
 ];

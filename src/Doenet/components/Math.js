@@ -4,6 +4,28 @@ import { convertValueToMathExpression, normalizeMathExpression } from '../utils/
 import { flattenDeep } from '../utils/array';
 
 
+let appliedFunctionSymbols = [
+  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
+  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
+  "asech", "asin", "asinh", "atan", "atanh",
+  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
+  "sech", "sin", "sinh", "tan", "tanh",
+  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  'arg',
+  'min', 'max', 'mean', 'median', //'mode',
+  'floor', 'ceil', 'round',
+  'sum', 'prod', 'var', 'std',
+  'count', 'mod'
+];
+
+var textToAst = new me.converters.textToAstObj({
+  appliedFunctionSymbols
+});
+var latexToAst = new me.converters.latexToAstObj({
+  appliedFunctionSymbols
+});
+
+
 export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
@@ -240,6 +262,46 @@ export default class MathComponent extends InlineComponent {
           }]
         }
       }
+    }
+
+    // isNumber is true if the value of the math is an actual number
+    stateVariableDefinitions.isNumber = {
+      public: true,
+      componentType: "boolean",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            isNumber: Number.isFinite(dependencyValues.value.tree)
+          }
+        }
+      },
+    }
+
+    // isNumeric is weaker than isNumber
+    // isNumeric is true if the value can be evaluated as a number,
+    // i.e., if the number state variable is a number
+    stateVariableDefinitions.isNumeric = {
+      public: true,
+      componentType: "boolean",
+      returnDependencies: () => ({
+        number: {
+          dependencyType: "stateVariable",
+          variableName: "number"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            isNumeric: Number.isFinite(dependencyValues.number)
+          }
+        }
+      },
     }
 
     stateVariableDefinitions.valueForDisplay = {
@@ -503,28 +565,103 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   let inputString = "";
   let mathInd = 0;
+  let lastCompositeInd;
+  let compositeGroupString = "";
+  let nComponentsInGroup = 0;
 
   for (let child of dependencyValues.stringMathChildren) {
+    if (nComponentsInGroup > 0 && child.compositeInd !== lastCompositeInd) {
+      // found end of composite group
+      if (nComponentsInGroup > 1) {
+        // compositeGroupString contains components separated by commas
+        // will wrap in parenthesis unless already contains
+        // delimeters before and after
+        // TODO: \rangle and \langle?
+        let iString = inputString.trimEnd();
+        let wrap = false;
+        if (iString.length === 0) {
+          wrap = true;
+        } else {
+          let lastChar = iString[iString.length - 1];
+          if (!["{", "[", "(", "|", ","].includes(lastChar)) {
+            wrap = true;
+          } else if (child.componentType !== "string") {
+            wrap = true;
+          } else {
+            let nextString = child.stateValues.value.trimStart();
+            if (nextString.length === 0) {
+              wrap = true;
+            } else {
+              let nextChar = nextString[0];
+              if (dependencyValues.format === 'latex' && nextChar === "\\"
+                && nextString.length > 1
+              ) {
+                nextChar = nextString[1];
+              }
+              if (!["}", "]", ")", "|", ","].includes(nextChar)) {
+                wrap = true;
+              }
+            }
+          }
+        }
+
+        if (wrap) {
+          compositeGroupString = "(" + compositeGroupString + ")";
+        }
+
+      }
+
+      inputString += compositeGroupString;
+      compositeGroupString = "";
+      nComponentsInGroup = 0;
+    }
+
     if (child.componentType === "string") {
       inputString += " " + child.stateValues.value + " ";
-    }
-    else { // a math
+      compositeGroupString = "";
+      nComponentsInGroup = 0;
+    } else { // a math
       let code = dependencyValues.codePre + mathInd;
       mathInd++;
 
+      let nextString;
       if (dependencyValues.format === 'latex') {
         // for latex, must explicitly denote that code
         // is a multicharacter variable
-        inputString += '\\var{' + code + '}';
+        nextString = '\\var{' + code + '}';
       }
       else {
         // for text, just make sure code is surrounded by spaces
         // (the presence of numbers inside code will ensure that
         // it is parsed as a multicharcter variable)
-        inputString += " " + code + " ";
+        nextString = " " + code + " ";
       }
 
+      if (child.compositeInd !== undefined) {
+        if (child.compositeInd === lastCompositeInd) {
+          // continuing a composite group
+          compositeGroupString += ",";
+        }
+        compositeGroupString += nextString;
+        nComponentsInGroup++;
+      } else {
+        inputString += nextString;
+        compositeGroupString = "";
+        nComponentsInGroup = 0;
+      }
+
+
     }
+
+    lastCompositeInd = child.compositeInd;
+  }
+
+  // if ended with a composite, wrap in parens and append
+  if (nComponentsInGroup > 0) {
+    if (nComponentsInGroup > 1) {
+      compositeGroupString = "(" + compositeGroupString + ")";
+    }
+    inputString += compositeGroupString;
   }
 
   let expressionWithCodes = null;
@@ -534,7 +671,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
   } else {
     if (dependencyValues.format === "text") {
       try {
-        expressionWithCodes = me.fromText(inputString);
+        expressionWithCodes = me.fromAst(textToAst.convert(inputString));
       } catch (e) {
         expressionWithCodes = me.fromAst('\uFF3F');  // long underscore
         console.log("Invalid value for a math of text format: " + inputString);
@@ -542,7 +679,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
     else if (dependencyValues.format === "latex") {
       try {
-        expressionWithCodes = me.fromLatex(inputString);
+        expressionWithCodes = me.fromAst(latexToAst.convert(inputString));
       } catch (e) {
         expressionWithCodes = me.fromAst('\uFF3F');  // long underscore
         console.log("Invalid value for a math of latex format: " + inputString);

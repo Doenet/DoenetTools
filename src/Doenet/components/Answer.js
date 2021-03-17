@@ -60,7 +60,7 @@ export default class Answer extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let replaceFromOneString = function ({ matchedChildren, componentProps, uniqueId }) {
+    let replaceFromOneString = function ({ matchedChildren, componentProps }) {
       // answer where only child is a string (other than activeChildren from properties)
       // wrap string with award and math/text
 

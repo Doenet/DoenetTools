@@ -52,15 +52,28 @@ export default class Point extends DoenetRenderer {
 
     this.pointJXG = this.props.board.create('point', coords, jsxPointAttributes);
 
-    this.pointJXG.on('drag', function () {
+    this.pointJXG.on('drag', function (e) {
+      this.dragged = true;
       //board.suspendUpdate();
-      this.onDragHandler(true);
+      this.onDragHandler(e, true);
       //board.unsuspendUpdate();
     }.bind(this));
 
-    this.pointJXG.on('up', function () {
-      this.onDragHandler(false);
+    this.pointJXG.on('up', function (e) {
+      this.onDragHandler(e, false);
     }.bind(this));
+
+    // this.pointJXG.on('down', function () {
+    //   this.dragged = false;
+    // }.bind(this));
+
+    this.pointJXG.on('down', function (e) {
+      this.dragged = false;
+      this.pointerAtDown = [e.x, e.y];
+      this.pointAtDown =
+        [...this.pointJXG.coords.scrCoords];
+    }.bind(this));
+
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
@@ -156,9 +169,43 @@ export default class Point extends DoenetRenderer {
 
   }
 
-  onDragHandler(transient) {
-    this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y(), transient });
+  onDragHandler(e, transient) {
+    if (this.dragged) {
+      let pointCoords = this.calculatePointPosition(e);
+
+      this.actions.movePoint({
+        x: pointCoords[0],
+        y: pointCoords[1],
+        transient
+      });
+      // this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y(), transient });
+
+    }
   }
+
+  calculatePointPosition(e) {
+
+    // the reason we calculate point position with this algorithm,
+    // rather than using .X() and .Y() directly
+    // is that attributes .X() and .Y() are affected by the
+    // .setCoordinates function called in update(),
+    // for the .up event.
+    // Due to this dependence, the location of .X() and .Y()
+    // can be affected by constaints of objects that the points depends on,
+    // leading to a different location on up than on drag
+    // (as dragging uses the mouse location)
+
+    var o = this.props.board.origin.scrCoords;
+
+    let calculatedX = (this.pointAtDown[1] + e.x - this.pointerAtDown[0]
+      - o[1]) / this.props.board.unitX;
+    let calculatedY = (o[2] -
+      (this.pointAtDown[2] + e.y - this.pointerAtDown[1]))
+      / this.props.board.unitY;
+
+    return [calculatedX, calculatedY]
+  }
+
 
   componentDidMount() {
     if (!this.props.board) {

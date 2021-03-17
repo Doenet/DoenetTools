@@ -29,7 +29,7 @@ export default class Angle extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: true,//this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
       radius: this.doenetSvData.numericalRadius,
       fillColor: angleColor,

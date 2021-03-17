@@ -8,22 +8,12 @@ export default class ComponentWithSelectableType extends BaseComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "selectedType"] };
 
-  static modifySharedParameters({ sharedParameters }) {
-    // since sequence turns defaultToPrescribedParameters on,
-    // turn it off here so it doesn't propagate further
-    sharedParameters.defaultToPrescribedParameters = false;
-  }
-
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    function addType({ matchedChildren, componentProps, parentProps, componentInfoObjects }) {
+    function addType({ matchedChildren, parentProps, componentInfoObjects }) {
 
-      let selectedType = componentProps.type;
-      if (!selectedType) {
-        selectedType = parentProps.type;
-      }
+      let selectedType = parentProps.type;
 
       if (!selectedType) {
         if (matchedChildren.length === 1) {
