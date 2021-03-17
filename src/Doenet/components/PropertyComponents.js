@@ -461,6 +461,11 @@ export class DisplayDigits extends Integer {
   static rendererType = "number";
 }
 
+export class DisplayDecimals extends Integer {
+  static componentType = "displaydecimals";
+  static rendererType = "number";
+}
+
 export class SelectWeight extends NumberComponent {
   static componentType = "selectweight";
   static rendererType = "number";
@@ -668,7 +673,6 @@ export class NumberDigits extends Integer {
 
 export class ComponentTypes extends TextList {
   static componentType = "componenttypes";
-  static rendererType = "textlist";
 }
 
 export class Source extends TextComponent {
@@ -803,7 +807,6 @@ export class FeedbackText extends TextComponent {
 
 export class FeedbackCodes extends TextList {
   static componentType = "feedbackcodes";
-  static rendererType = "textlist";
 }
 
 export class TextType extends TextComponent {
@@ -828,7 +831,6 @@ export class Target extends TextComponent {
 
 export class targetPropertiesToIgnore extends TextList {
   static componentType = "targetPropertiesToIgnore";
-  static rendererType = "textlist";
 }
 
 export class PluralForm extends TextComponent {

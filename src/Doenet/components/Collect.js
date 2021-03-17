@@ -596,14 +596,6 @@ export default class Collect extends CompositeComponent {
 
   }
 
-  static deleteRemainingReplacements({ collectedNum, numReplacementsSoFar }) {
-
-
-    return replacementInstruction;
-
-  }
-
-
   static recreateReplacements({ component, collectedNum, numReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, componentInfoObjects

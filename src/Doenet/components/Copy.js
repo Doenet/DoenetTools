@@ -816,29 +816,6 @@ export default class Copy extends CompositeComponent {
 
   }
 
-  get allPotentialRendererTypes() {
-
-
-    // TODO: do we need this since allPotentialRendererTypes of base component
-    // should get any possible replacement renderer types?
-
-    let allPotentialRendererTypes = [];
-
-    if (this.replacements) {
-      for (let replacement of this.replacements) {
-        for (let rendererType of replacement.allPotentialRendererTypes) {
-          if (!allPotentialRendererTypes.includes(rendererType)) {
-            allPotentialRendererTypes.push(rendererType);
-          }
-        }
-
-      }
-    }
-
-    return allPotentialRendererTypes;
-
-  }
-
   processNewDoenetML({ newDoenetMLs, message, success }) {
 
     if (!success) {
