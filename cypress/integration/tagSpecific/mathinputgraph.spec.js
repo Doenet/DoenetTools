@@ -26,7 +26,7 @@ describe('Mathinput Graph Tests', function () {
     <mathinput name="x" prefill="1"/>
     <mathinput name="y" prefill="2"/>
     <graph>
-    <point><coords>(<copy prop="value" tname="x" />,<copy prop="value" tname="y" />)</coords></point>
+    <point>(<copy prop="value" tname="x" />,<copy prop="value" tname="y" />)</point>
     </graph>
     <copy prop="coords" tname="_point1" name="coords" />`}, "*");
     });
@@ -120,7 +120,7 @@ describe('Mathinput Graph Tests', function () {
     <mathinput name="x" prefill="3"/>
     <mathinput name="y" prefill="2"/>
     <graph>
-    <point><coords simplify>(<copy prop="value" tname="x" />^2,<copy prop="value" tname="y" />)</coords></point>
+    <point>(<copy prop="value" tname="x" />^2,<copy prop="value" tname="y" />)</point>
     </graph>
     <copy prop="coords" tname="_point1" name="coords" />
     `}, "*");
@@ -197,7 +197,7 @@ describe('Mathinput Graph Tests', function () {
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>
-    <point><coords simplify>(<copy prop="value" tname="a" /><copy prop="value" tname="b" />, -7)</coords></point>
+    <point>(<copy prop="value" tname="a" /><copy prop="value" tname="b" />, -7)</point>
     </graph>
     <copy prop="coords" tname="_point1" name="coords" />`}, "*");
     });
@@ -273,7 +273,7 @@ describe('Mathinput Graph Tests', function () {
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>
-    <point><coords simplify>(<copy prop="value" tname="a" /><copy prop="value" modifyIndirectly="false" tname="b" />, -7)</coords></point>
+    <point>(<copy prop="value" tname="a" /><copy prop="value" modifyIndirectly="false" tname="b" />, -7)</point>
     </graph>
     <copy prop="coords" tname="_point1" name="coords" />`}, "*");
     });

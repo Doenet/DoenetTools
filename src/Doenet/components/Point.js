@@ -47,6 +47,7 @@ export default class Point extends GraphicalComponent {
           success: true,
           newChildren: [{
             componentType: "x",
+            doenetAttributes: { isPropertyChild: true },
             children: matchedChildren
           }]
         }
@@ -57,6 +58,7 @@ export default class Point extends GraphicalComponent {
         // wrap xs around the x children
         result.newChildren = [{
           componentType: "xs",
+          doenetAttributes: { isPropertyChild: true },
           children: result.newChildren
         }];
       }
@@ -81,24 +83,28 @@ export default class Point extends GraphicalComponent {
       name: "exactlyOneX",
       componentType: 'x',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneY = childLogic.newLeaf({
       name: "exactlyOneY",
       componentType: 'y',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneZ = childLogic.newLeaf({
       name: "exactlyOneZ",
       componentType: 'z',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneXs = childLogic.newLeaf({
       name: "exactlyOneXs",
       componentType: "xs",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     })
 
     let coordinatesViaComponents = childLogic.newOperator({
@@ -111,6 +117,7 @@ export default class Point extends GraphicalComponent {
       name: "exactlyOneCoords",
       componentType: 'coords',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOnePoint = childLogic.newLeaf({

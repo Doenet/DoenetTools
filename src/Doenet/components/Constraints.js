@@ -144,9 +144,13 @@ export default class Constraints extends BaseComponent {
             }
           }
         } else {
+          // convert variableName to "__null" on null
+          // as variableName must be defined
+          // (an invalid variable name is OK)
+          let variableName = stateValues.arrayVariableForConstraints ? stateValues.arrayVariableForConstraints : "__null";
           globalDependencies.xs = {
             dependencyType: "parentStateVariable",
-            variableName: stateValues.arrayVariableForConstraints,
+            variableName
           }
         }
 

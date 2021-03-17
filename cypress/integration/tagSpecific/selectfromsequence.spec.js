@@ -591,13 +591,13 @@ describe('SelectFromSequence Tag Tests', function () {
     <mathinput prefill="5" name="numbertoselect"/>
     <mathinput prefill="3" name="maxnum"/>
     <p><aslist>
-    <selectfromsequence name="sample1" withReplacement count="$maxnum" numbertoselect="$numbertoselect" />
+    <selectfromsequence name="sample1" withReplacement length="$maxnum" numbertoselect="$numbertoselect" />
     </aslist></p>
 
     <mathinput prefill="2" name="numbertoselect2"/>
     <mathinput prefill="10" name="maxnum2"/>
     <p><aslist>
-    <selectfromsequence name="sample2" withReplacement count="$maxnum2" numbertoselect="$numbertoselect2" />
+    <selectfromsequence name="sample2" withReplacement length="$maxnum2" numbertoselect="$numbertoselect2" />
     </aslist></p>
     `}, "*");
     });
@@ -657,7 +657,7 @@ describe('SelectFromSequence Tag Tests', function () {
         <selectfromsequence assignnames="n" to="100" />
       </template>
       <sources>
-      <sequence count="$_mathinput1" />
+      <sequence length="$_mathinput1" />
       </sources>
     </map>
     </aslist></p>
@@ -944,9 +944,9 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="u"/></p>
-    <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="v"/></p>
-    <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="w"/></p>
+    <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="u"/></p>
+    <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="v"/></p>
+    <p><selectfromsequence type="math" from="x" step="y" length="3" assignnames="w"/></p>
     <p><copy name="u2" tname="u" /></p>
     <p><copy name="v2" tname="v" /></p>
     <p><copy name="w2" tname="w" /></p>
@@ -993,7 +993,7 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <p><aslist>
-      <selectfromsequence name="s" type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
+      <selectfromsequence name="s" type="math" from="x" step="y" length="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
     </aslist></p>
     <p><copy name="u2" tname="u" /></p>
     <p><copy name="v2" tname="v" /></p>
@@ -1049,7 +1049,7 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <p><aslist>
-      <selectfromsequence name="s" newnamespace type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
+      <selectfromsequence name="s" newnamespace type="math" from="x" step="y" length="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
     </aslist></p>
     <p><copy name="u2" tname="s/u" /></p>
     <p><copy name="v2" tname="s/v" /></p>
@@ -1130,26 +1130,26 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample2"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample3"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample4"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample5"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample6"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample7"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample8"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample9"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample10"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample11"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample12"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample13"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample14"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample15"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample16"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample17"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample18"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample19"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample20"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample1"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample2"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample3"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample4"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample5"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample6"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample7"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample8"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample9"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample10"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample11"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample12"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample13"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample14"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample15"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample16"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample17"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample18"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample19"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample20"><excludecombination>x,x+y</excludecombination><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     `}, "*");
     });
 
@@ -1173,26 +1173,26 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample2" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample3" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample4" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample5" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample6" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample7" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample8" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample9" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample10" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample11" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample12" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample13" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample14" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample15" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample16" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample17" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample18" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample19" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
-    <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample20" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample1" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample2" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample3" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample4" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample5" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample6" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample7" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample8" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample9" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample10" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample11" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample12" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample13" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample14" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample15" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample16" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample17" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample19" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
+    <p><aslist><selectfromsequence from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" ><excludecombination>m,v</excludecombination><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     `}, "*");
     });
 

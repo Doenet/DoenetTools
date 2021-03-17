@@ -451,6 +451,11 @@ export class WithReplacement extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class length extends Integer {
+  static componentType = "length";
+  static rendererType = "number";
+}
+
 export class DisplayDigits extends Integer {
   static componentType = "displaydigits";
   static rendererType = "number";
@@ -611,8 +616,8 @@ export class MaxIterations extends Integer {
   static rendererType = "number";
 }
 
-export class Unbiased extends BooleanComponent {
-  static componentType = "unbiased";
+export class Population extends BooleanComponent {
+  static componentType = "population";
   static rendererType = "boolean";
 }
 

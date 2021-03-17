@@ -3,6 +3,7 @@ import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/
 import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import me from 'math-expressions';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
@@ -16,45 +17,7 @@ export default class Select extends CompositeComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
-
-  // static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
-  //   if (serializedComponent.children === undefined) {
-  //     return [];
-  //   }
-
-  //   let propertyClasses = [];
-  //   for (let componentType in this.createPropertiesObject({})) {
-  //     let ct = componentType.toLowerCase();
-  //     propertyClasses.push({
-  //       componentType: ct,
-  //       class: componentInfoObjects.allComponentClasses[ct]
-  //     });
-  //   }
-
-  //   let nonPropertyChildInds = [];
-
-  //   // first occurence of a property component class
-  //   // will be created
-  //   // any other component will stay serialized
-  //   for (let [ind, child] of serializedComponent.children.entries()) {
-  //     let propFound = false;
-  //     for (let propObj of propertyClasses) {
-  //       if (componentInfoObjects.isInheritedComponentType({
-  //         inheritedComponentType: child.componentType,
-  //         baseComponentType: propObj.componentType
-  //       }) && !propObj.propFound) {
-  //         propFound = propObj.propFound = true;
-  //         break;
-  //       }
-  //     }
-  //     if (!propFound) {
-  //       nonPropertyChildInds.push(ind);
-  //     }
-  //   }
-
-  //   return nonPropertyChildInds;
-
-  // }
+  static acceptType = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -64,27 +27,37 @@ export default class Select extends CompositeComponent {
   }
 
 
-
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    function numbersOrTextsFromString({ matchedChildren }) {
-      let pieces = matchedChildren[0].state.value.split(",").map(x => x.trim());
+    function optionsFromString({ matchedChildren, componentProps }) {
 
-      let foundNumbers = pieces.every(x => Number.isFinite(Number(x)));
-      if (foundNumbers) {
-        pieces = pieces.map(Number)
+      let type;
+      if (componentProps.type) {
+        type = componentProps.type
+      } else {
+        type = "math";
       }
 
-      let componentType = foundNumbers ? "number" : "text";
+      if (!["math", "text", "number"].includes(type)) {
+        console.warn(`Invalid type ${type}`);
+        type = "math";
+      }
+
+      let pieces = matchedChildren[0].state.value.split(",").map(x => x.trim());
+
+      if (type === "math") {
+        pieces = pieces.map(x => me.fromText(x))
+      } else if (type === "number") {
+        pieces = pieces.map(Number)
+      }
 
       return {
         success: true,
         newChildren: pieces.map(x => ({
           componentType: "option",
           children: [{
-            componentType: componentType,
+            componentType: type,
             state: { value: x }
           }]
         }))
@@ -94,7 +67,7 @@ export default class Select extends CompositeComponent {
 
     sugarInstructions.push({
       childrenRegex: "s",
-      replacementFunction: numbersOrTextsFromString
+      replacementFunction: optionsFromString
     });
 
     return sugarInstructions;

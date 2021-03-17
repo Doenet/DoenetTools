@@ -474,9 +474,9 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
           // check here if additionalAttributes is undefined
           // (even though know it is falsy)
-          // so that an empty string removes the default prop="value"
-          if (nDollarSigns === 1 && result.additionalAttributes === undefined) {
-            doenetAttributes.propName = "value";
+          // so that an empty string removes the default isPlainMacro
+          if (result.additionalAttributes === undefined) {
+            doenetAttributes.isPlainMacro = true;
           }
 
           componentsFromMacro = [{
@@ -492,48 +492,55 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
           let matchOpeningParens = str.slice(firstIndMatched + matchLength).match(/^\s*\(/);
 
-          if (matchOpeningParens) {
-
-            let matchLengthWithOpeningParens = matchLength + matchOpeningParens[0].length;
-
-            // look for a closing parenthesis
-
-            // get array of the component with the rest of this string
-            // plus the rest of the components in the array
-            let remainingComponents = [];
-            let includeFirstInRemaining = false;
-
-            if (str.length > firstIndMatched + matchLengthWithOpeningParens) {
-              includeFirstInRemaining = true;
-              remainingComponents.push({
-                componentType: "string",
-                state: { value: str.substring(firstIndMatched + matchLengthWithOpeningParens) }
-              })
-            }
-
-            remainingComponents.push(...serializedComponents.slice(componentInd + 1));
-
-            let evaluateResult = createEvaluateIfFindMatchedClosingParens({
-              componentsFromMacro,
-              remainingComponents,
-              includeFirstInRemaining,
-              componentInfoObjects
-            })
-
-            if (evaluateResult.success) {
-              componentsFromMacro = evaluateResult.componentsFromMacro;
-
-              nComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
-              if (!includeFirstInRemaining) {
-                nComponentsToRemove++;
-              }
-
-              // leftover string already included in componentsFromMacro
-              stringToAddAtEnd = "";
-            }
-
-
+          if (!matchOpeningParens) {
+            // if don't match function,
+            // don't replace double dollar sign macro
+            continue;
           }
+
+          let matchLengthWithOpeningParens = matchLength + matchOpeningParens[0].length;
+
+          // look for a closing parenthesis
+
+          // get array of the component with the rest of this string
+          // plus the rest of the components in the array
+          let remainingComponents = [];
+          let includeFirstInRemaining = false;
+
+          if (str.length > firstIndMatched + matchLengthWithOpeningParens) {
+            includeFirstInRemaining = true;
+            remainingComponents.push({
+              componentType: "string",
+              state: { value: str.substring(firstIndMatched + matchLengthWithOpeningParens) }
+            })
+          }
+
+          remainingComponents.push(...serializedComponents.slice(componentInd + 1));
+
+          let evaluateResult = createEvaluateIfFindMatchedClosingParens({
+            componentsFromMacro,
+            remainingComponents,
+            includeFirstInRemaining,
+            componentInfoObjects
+          })
+
+          if (!evaluateResult.success) {
+            // if couldn't create evaluate,
+            // don't replace double dollar macro
+            continue;
+          }
+
+          componentsFromMacro = evaluateResult.componentsFromMacro;
+
+          nComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
+          if (!includeFirstInRemaining) {
+            nComponentsToRemove++;
+          }
+
+          // leftover string already included in componentsFromMacro
+          stringToAddAtEnd = "";
+
+
         }
 
         let replacements = [];
@@ -887,18 +894,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
       componentProps = new Proxy(componentProps, readOnlyProxyHandler);
 
-      // normalize type
-      let typeForSugar;
-      if (componentClass.acceptType) {
-        typeForSugar = componentProps.type;
-        if (typeForSugar) {
-          typeForSugar = typeForSugar.toLowerCase();
-        } else if (componentClass.defaultType) {
-          typeForSugar = componentClass.defaultType;
-        }
-      }
-
-
       for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
         let nonPropertyChildren = component.children.filter(x =>
@@ -915,12 +910,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
         let nonPropertyTypes = nonPropertyChildren
           .map(x => x.componentType === "string" ? "s" : "n")
           .join("");
-
-        if (sugarInstruction.forType && sugarInstruction.forType !== typeForSugar) {
-          // type property of component doesn't match sugar's type
-          console.log(`type doesn't match`)
-          continue;
-        }
 
         if (sugarInstruction.childrenRegex) {
           let match = nonPropertyTypes.match(sugarInstruction.childrenRegex);

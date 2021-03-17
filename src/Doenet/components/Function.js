@@ -796,7 +796,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap minimumLocation(s) or minimumValues(s)
           return [];
@@ -1119,7 +1119,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap maximumLocation(s) or maximumValues(s)
           return [];
@@ -1461,7 +1461,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap extremumLocation(s) or extremumValues(s)
           return [];

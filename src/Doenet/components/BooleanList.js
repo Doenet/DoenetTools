@@ -15,19 +15,15 @@ export default class BooleanList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
+    let breakStringsIntoBooleansBySpaces = function ({ matchedChildren }) {
 
-    let breakStringsIntoBooleansByCommas = function ({ matchedChildren }) {
-
-      // break any string by commas,
-      // removing any empty (white space only) pieces
-      // and wrap pieces with boolean
+      // break any string by white space and wrap pieces with boolean
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
           return [
             ...a,
-            ...c.state.value.split(",")
-              .map(s => s.trim())
+            ...c.state.value.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: "boolean",
@@ -45,9 +41,8 @@ export default class BooleanList extends InlineComponent {
       }
     }
 
-
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoBooleansByCommas
+      replacementFunction: breakStringsIntoBooleansBySpaces
     });
 
     return sugarInstructions;

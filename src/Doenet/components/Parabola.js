@@ -127,7 +127,7 @@ export default class Parabola extends Curve {
           // through point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -920,7 +920,7 @@ export default class Parabola extends Curve {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       returnArraySizeDependencies: () => ({}),

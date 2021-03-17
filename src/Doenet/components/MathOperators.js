@@ -9,12 +9,24 @@ export class Sum extends MathBaseOperator {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return inputs.reduce((a, c) => a + c);
+          }
+        }
+      })
+    }
+
+
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
-          mathOperator: function (values) {
-            return values.reduce((a, c) => a.add(c)).simplify();
+          mathOperator: function (inputs) {
+            return inputs.reduce((a, c) => a.add(c));
           }
         }
       })
@@ -33,12 +45,23 @@ export class Product extends MathBaseOperator {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return inputs.reduce((a, c) => a * c);
+          }
+        }
+      })
+    }
+
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
           mathOperator: function (values) {
-            return values.reduce((a, c) => a.multiply(c)).simplify();
+            return values.reduce((a, c) => a.multiply(c));
           }
         }
       })
@@ -63,6 +86,10 @@ export class ClampNumber extends MathBaseOperatorOneInput {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.isNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isNumericOperator: true } })
+    }
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({
@@ -89,7 +116,7 @@ export class ClampNumber extends MathBaseOperatorOneInput {
     }
 
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -102,7 +129,7 @@ export class ClampNumber extends MathBaseOperatorOneInput {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          reverseMathOperator: function (value) {
+          inverseMathOperator: function (value) {
             return clamp({
               value,
               lowerValue: dependencyValues.lowerValue,
@@ -123,9 +150,8 @@ export class ClampNumber extends MathBaseOperatorOneInput {
 function clamp({ value, lowerValue, upperValue }) {
   let numericValue = value.evaluate_to_constant();
 
-  // if don't have a number, just return value unchanged
   if (!Number.isFinite(numericValue)) {
-    return value;
+    return me.fromAst(NaN);
   }
   return me.fromAst(Math.max(lowerValue, Math.min(upperValue, numericValue)));
 }
@@ -145,6 +171,11 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.isNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isNumericOperator: true } })
+    }
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({
@@ -171,7 +202,7 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
     }
 
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -184,7 +215,7 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          reverseMathOperator: function (value) {
+          inverseMathOperator: function (value) {
             return makePeriodic({
               value,
               lowerValue: dependencyValues.lowerValue,
@@ -205,9 +236,8 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
 function makePeriodic({ value, lowerValue, upperValue }) {
   let numericValue = value.evaluate_to_constant();
 
-  // if don't have a number, just return value unchanged
   if (!Number.isFinite(numericValue)) {
-    return value;
+    return me.fromAst(NaN);
   }
 
   // if bounds are the same, clamp to that value
@@ -274,11 +304,11 @@ export class Round extends MathBaseOperatorOneInput {
     }
 
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
-          reverseMathOperator: value => value
+          inverseMathOperator: value => value
         }
       })
     }
@@ -377,11 +407,11 @@ export class Ceil extends MathBaseOperatorOneInput {
     }
 
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
-          reverseMathOperator: value => value
+          inverseMathOperator: value => value
         }
       })
     }
@@ -428,11 +458,11 @@ export class Floor extends MathBaseOperatorOneInput {
     }
 
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
-          reverseMathOperator: value => value
+          inverseMathOperator: value => value
         }
       })
     }
@@ -471,11 +501,20 @@ export class Abs extends MathBaseOperatorOneInput {
       })
     }
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: {
-          reverseMathOperator: value => value
+          inverseMathOperator: function (value) {
+            let desiredValue = value;
+            let valueNumeric = value.evaluate_to_constant();
+            if (Number.isFinite(valueNumeric)) {
+              if (valueNumeric < 0) {
+                desiredValue = me.fromAst(0)
+              }
+            }
+            return desiredValue;
+          }
         }
       })
     }
@@ -484,4 +523,312 @@ export class Abs extends MathBaseOperatorOneInput {
 
   }
 
+}
+
+
+export class Mean extends MathBaseOperator {
+  static componentType = "mean";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            let mean = inputs.reduce((a, c) => a + c);
+            mean /= inputs.length;
+            return mean;
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return inputs.reduce((a, c) => a.add(c))
+              .divide(inputs.length);
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+
+export class Variance extends MathBaseOperator {
+  static componentType = "variance";
+
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.population = { default: false };
+    return properties;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({
+        population: {
+          dependencyType: "stateVariable",
+          variableName: "population",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return calculateNumericVariance(inputs, dependencyValues.population)
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        population: {
+          dependencyType: "stateVariable",
+          variableName: "population",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return calculateSymbolicVariance(inputs, dependencyValues.population)
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+function calculateNumericVariance(inputs, population) {
+  let sum = 0, variance = 0;
+  for (let num of inputs) {
+    sum += num;
+    variance += num * num;
+  }
+
+  let n = inputs.length;
+  // variance /= n;
+
+  variance -= sum ** 2 / n;
+
+  if (population) {
+    variance /= n;
+  } else {
+    variance /= n - 1;
+  }
+  return variance;
+
+}
+
+function calculateSymbolicVariance(inputs, population) {
+
+  let n = inputs.length;
+
+  let sum = inputs.reduce((a, c) => a.add(c));
+
+  let variance = inputs.slice(1).reduce((a, c) => a.add(c.pow(2)), inputs[0].pow(2))
+    .subtract(sum.pow(2).divide(n));
+
+  if (population) {
+    variance = variance.divide(n);
+  } else {
+    variance = variance.divide(n - 1);
+  }
+
+  return variance;
+
+}
+
+export class StandardDeviation extends Variance {
+  static componentType = "standarddeviation";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator.definition = ({ dependencyValues }) => ({
+      newValues: {
+        numericOperator: function (inputs) {
+          return Math.sqrt(calculateNumericVariance(inputs, dependencyValues.population))
+        }
+      }
+    })
+
+    stateVariableDefinitions.mathOperator.definition = ({ dependencyValues }) => ({
+      newValues: {
+        mathOperator: function (inputs) {
+          return me.fromAst([
+            "apply", "sqrt",
+            calculateSymbolicVariance(inputs, dependencyValues.population).tree
+          ])
+        }
+      }
+    })
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+export class Count extends MathBaseOperator {
+  static componentType = "count";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.isNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isNumericOperator: true } })
+    }
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return inputs.length;
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+export class Min extends MathBaseOperator {
+  static componentType = "min";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return inputs.reduce((a, c) => Math.min(a, c), Infinity)
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return me.fromAst([
+              "apply", "min", ["tuple", ...inputs.map(x => x.tree)]
+            ])
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+export class Max extends MathBaseOperator {
+  static componentType = "max";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            return inputs.reduce((a, c) => Math.max(a, c), -Infinity)
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            return me.fromAst([
+              "apply", "max", ["tuple", ...inputs.map(x => x.tree)]
+            ])
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+}
+
+export class Mod extends MathBaseOperator {
+  static componentType = "mod";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          numericOperator: function (inputs) {
+            if (inputs.length !== 2) {
+              return NaN;
+            }
+            return me.math.mod(inputs[0], inputs[1]);
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (inputs) {
+            if (inputs.length !== 2) {
+              return me.fromAst('\uff3f');
+            }
+            return me.fromAst([
+              "apply", "mod", ["tuple", ...inputs.map(x => x.tree)]
+            ])
+          }
+        }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
 }

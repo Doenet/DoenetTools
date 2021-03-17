@@ -46,6 +46,7 @@ export default class LineSegment extends GraphicalComponent {
       componentType: 'endpoints',
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
       setAsBase: true
     });
 
@@ -129,7 +130,7 @@ export default class LineSegment extends GraphicalComponent {
           // endpoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {

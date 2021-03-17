@@ -31,14 +31,16 @@ export default class Circle extends Curve {
     let exactlyOneThrough = childLogic.newLeaf({
       name: "exactlyOneThrough",
       componentType: 'through',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneCenter = childLogic.newLeaf({
       name: "atMostOneCenter",
       componentType: 'center',
       comparison: "atMost",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneRadius = childLogic.newLeaf({
@@ -137,7 +139,7 @@ export default class Circle extends Curve {
           // point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -1694,6 +1696,32 @@ export default class Circle extends Curve {
       }
     }
 
+    stateVariableDefinitions.diameter = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        radius: {
+          dependencyType: "stateVariable",
+          variableName: "radius"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            diameter: dependencyValues.radius.multiply(2).simplify()
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "radius",
+            desiredValue: desiredStateVariableValues.diameter.divide(2).simplify()
+          }]
+        }
+      }
+    }
 
     stateVariableDefinitions.center = {
       forRenderer: true,
@@ -1708,7 +1736,7 @@ export default class Circle extends Curve {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       stateVariablesDeterminingDependencies: [

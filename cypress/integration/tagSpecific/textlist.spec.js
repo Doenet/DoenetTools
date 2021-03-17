@@ -19,7 +19,7 @@ describe('Textlist Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <p><textlist hide="true">a,b,c</textlist></p>
+    <p><textlist hide="true">a b c</textlist></p>
 
     <p><copy hide="false" tname="_textlist1" /></p>
 
@@ -53,26 +53,26 @@ describe('Textlist Tag Tests', function () {
       <letters>a</letters>
       <textlist>
         <text>a</text>
-        <textlist>q,r</textlist>
+        <textlist>q r</textlist>
         <text>h</text>
         <textlist>
           <textlist>
             <text>b</text>
-            <textlist>u,v</textlist>
+            <textlist>u v</textlist>
           </textlist>
-          <textlist>i,j</textlist>
+          <textlist>i j</textlist>
         </textlist>
       </textlist>
   
-      <textinput><bindValueTo><copy prop="text1" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text2" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text3" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text4" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text5" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text6" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text7" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text8" tname="_textlist1" /></bindValueTo></textinput>
-      <textinput><bindValueTo><copy prop="text9" tname="_textlist1" /></bindValueTo></textinput>
+      <textinput bindValueTo="$(_textlist1{prop='text1'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text2'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text3'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text4'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text5'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text6'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text7'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text8'})" />
+      <textinput bindValueTo="$(_textlist1{prop='text9'})" />
   
       ` }, "*");
     });

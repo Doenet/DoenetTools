@@ -60,7 +60,7 @@ export default class CobwebPolyline extends Polyline {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       returnArraySizeDependencies: () => ({}),

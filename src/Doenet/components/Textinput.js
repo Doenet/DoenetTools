@@ -37,6 +37,12 @@ export default class Textinput extends Input {
   }
   static componentType = "textinput";
 
+  static variableForPlainMacro = "value";
+
+  static get stateVariablesShadowedForReference() {
+    return ["value"]
+  };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
@@ -52,6 +58,7 @@ export default class Textinput extends Input {
       componentType: "bindValueTo",
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
       setAsBase: true,
     })
 
