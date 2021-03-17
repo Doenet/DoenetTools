@@ -886,7 +886,7 @@ export default class Copy extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    console.log(`create serialized replacements of ${component.componentName}`)
+    // console.log(`create serialized replacements of ${component.componentName}`)
 
     // console.log(component.stateValues.targetComponent);
     // console.log(component.stateValues.effectivePropNameBySource);
@@ -1048,7 +1048,7 @@ export default class Copy extends CompositeComponent {
     componentInfoObjects
   }) {
 
-    console.log("Calculating replacement changes for " + component.componentName);
+    // console.log("Calculating replacement changes for " + component.componentName);
 
     // for prop="_sourceIndex", the replacements never change
     if (component.stateValues.sourceIndex !== null) {

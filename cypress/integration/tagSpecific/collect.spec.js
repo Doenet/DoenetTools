@@ -485,7 +485,7 @@ describe('Collect Tag Tests', function () {
   });
 
 
-  it.only('collect dynamic points from groups', () => {
+  it('collect dynamic points from groups', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

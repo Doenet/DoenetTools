@@ -13,6 +13,7 @@ import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
+import { ancestorsIncludingComposites } from './utils/descendants';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -1506,7 +1507,12 @@ export default class Core {
       // TODO: make this more specific so just updates descendants
       // of direct parent of composite, as that's the only one that would see
       // replacements as a descendant?
-      this.dependencies.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
+      // this.dependencies.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
+      updatesNeeded.parentsToUpdateDescendants.add(component.componentName);
+      console.log(component)
+      for (let ancestorName of ancestorsIncludingComposites(component, this.components)) {
+        updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
+      }
 
       // record that are finished expanding the composite
       let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -1555,7 +1561,11 @@ export default class Core {
     // TODO: make this more specific so just updates descendants
     // of direct parent of composite, as that's the only one that would see
     // replacements as a descendant?
-    this.dependencies.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
+    // this.dependencies.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
+    updatesNeeded.parentsToUpdateDescendants.add(component.componentName);
+    for (let ancestorName of ancestorsIncludingComposites(component, this.components)) {
+      updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
+    }
 
     // record that are finished expanding the composite
     let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -6912,9 +6922,14 @@ export default class Core {
         // TODO: make this more specific so just updates descendants
         // of direct parent of composite, as that's the only one that would see
         // replacements as a descendant?
-        this.dependencies.updateDescendantDependencies(
-          this._components[compositeName], updatesNeeded, compositesBeingExpanded
-        );
+        // this.dependencies.updateDescendantDependencies(
+        //   this._components[compositeName], updatesNeeded, compositesBeingExpanded
+        // );
+
+        updatesNeeded.parentsToUpdateDescendants.add(compositeName);
+        for (let ancestorName of ancestorsIncludingComposites(this._components[compositeName], this.components)) {
+          updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
+        }
 
       }
     }
@@ -7347,8 +7362,11 @@ export default class Core {
       // TODO: make this more specific so just updates descendants
       // of direct parent of composite, as that's the only one that would see
       // replacements as a descendant?
-      this.dependencies.updateDescendantDependencies(composite, updatesNeeded, compositesBeingExpanded);
-
+      // this.dependencies.updateDescendantDependencies(composite, updatesNeeded, compositesBeingExpanded);
+      updatesNeeded.parentsToUpdateDescendants.add(composite.componentName);
+      for (let ancestorName of ancestorsIncludingComposites(composite, this.components)) {
+        updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
+      }
     }
 
     let results = {

@@ -1,6 +1,6 @@
 import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 import { deepClone, deepCompare } from "./utils/deepFunctions";
-import { gatherDescendants } from "./utils/descendants";
+import { ancestorsIncludingComposites, gatherDescendants } from "./utils/descendants";
 
 const dependencyTypeArray = [];
 
@@ -3456,27 +3456,3 @@ class VariantsDependency extends Dependency {
 
 dependencyTypeArray.push(VariantsDependency);
 
-
-function ancestorsIncludingComposites(comp, components) {
-  if (comp.ancestors === undefined || comp.ancestors.length === 0) {
-    return [];
-  }
-
-  let comps = [comp.ancestors[0].componentName];
-
-  let parent = components[comp.ancestors[0].componentName];
-  comps.push(...ancestorsIncludingComposites(parent, components));
-
-  if (comp.replacementOf) {
-    comps.push(comp.replacementOf.componentName);
-    let replacementAs = ancestorsIncludingComposites(comp.replacementOf, components)
-    for (let a of replacementAs) {
-      if (!comps.includes(a)) {
-        comps.push(a);
-      }
-    }
-  }
-
-  return comps;
-
-}

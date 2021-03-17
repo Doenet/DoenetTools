@@ -200,8 +200,8 @@ export default class Collect extends CompositeComponent {
       },
       definition: function ({ dependencyValues }) {
 
-        console.log(`definition of collectedComponents`)
-        console.log(dependencyValues)
+        // console.log(`definition of collectedComponents for ${componentName}`)
+        // console.log(dependencyValues)
 
         let collectedComponents = dependencyValues.descendants;
         if (!collectedComponents) {
