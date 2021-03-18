@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect, Suspense} from 'react';
+import React, {useContext, useRef, useEffect, Suspense, useCallback} from 'react';
 import { IsNavContext } from "./Tool/Panels/NavPanel";
 import axios from "axios";
 import { nanoid } from 'nanoid';
@@ -237,7 +237,8 @@ const dragStateAtom = atom({
     draggedOverDriveId: null,
     isDraggedOverBreadcrumb: false,
     dragShadowDriveId: null,
-    dragShadowParentId: null
+    dragShadowParentId: null,
+    openedFoldersInfo: null
   }
 })
 const dragShadowId = "dragShadow";
@@ -350,7 +351,7 @@ export const folderDictionarySelector = selectorFamily({
   },
   set: (driveIdFolderId) => async ({set,get},instructions)=>{
     const fInfo = get(folderDictionary(driveIdFolderId))
-    const { dragShadowDriveId, dragShadowParentId, draggedItemsId } = get(dragStateAtom);
+    const { dragShadowDriveId, dragShadowParentId, draggedItemsId, openedFoldersInfo } = get(dragStateAtom);
     let dragShadowParentFolderInfoObj = null;
     
     let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
@@ -802,7 +803,7 @@ export const folderDictionarySelector = selectorFamily({
               if (index <= 0) {
                 nextItemId = contentIdsArr[0];
               } else if (index >= contentIdsArr.length) {
-                prevItemId = contentIdsArr[defaultFolderChildrenIds.length - 1];
+                prevItemId = contentIdsArr[contentIdsArr.length - 1];
               } else {
                 prevItemId = contentIdsArr[index - 1];
                 nextItemId = contentIdsArr[index];
@@ -894,6 +895,11 @@ export const folderDictionarySelector = selectorFamily({
           set(folderDictionarySelector(driveIdFolderId), instructions);
         }
       break;
+      case folderInfoSelectorActions.CLEAN_UP_DRAG:
+        for (let openedFolders of openedFoldersInfo) {
+          set(folderOpenAtom(openedFolders), false);
+        }
+      break;
       default:
         console.warn(`Instruction ${instructions.instructionType} not currently handled`)
     }
@@ -928,7 +934,8 @@ export const folderInfoSelectorActions = Object.freeze({
   REMOVE_DRAG_SHADOW: "removeDragShadow",
   REPLACE_DRAG_SHADOW: "replaceDragShadow",
   INVALIDATE_SORT_CACHE: "invalidate sort cache",
-  RENAME_ITEM: "rename item"
+  RENAME_ITEM: "rename item",
+  CLEAN_UP_DRAG: "clean up drag"
 });
 
 export const folderInfoSelector = selectorFamily({
@@ -1342,7 +1349,7 @@ function Folder(props){
   const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
-  const [dragState] = useRecoilState(dragStateAtom);
+  const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
 
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
@@ -1418,6 +1425,17 @@ function Folder(props){
     });
   };
 
+  const markFolderDraggedOpened = useCallback(() => {
+    setDragState((old) => {
+      let newOpenedFoldersInfo = [...old.openedFoldersInfo];
+      newOpenedFoldersInfo.push({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId});
+      return {
+        ...old,
+        openedFoldersInfo: newOpenedFoldersInfo
+      }
+    })
+  }, [props.driveInstanceId, props.driveId, props.folderId]);
+
   const onDragOver = ({x, y, dropTargetRef}) => {
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
 
@@ -1435,9 +1453,12 @@ function Folder(props){
     const dropTargetHeight = dropTargetRef?.clientHeight;
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-    // open folder if initially closed
+    
+    // Open folder if initially closed
     if (!isOpenRef.current && !isSelectedRef.current) {
       toggleOpen();
+      // Mark current folder to close on dragEnd
+      markFolderDraggedOpened();
     }
     
     if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
@@ -1479,6 +1500,7 @@ function Folder(props){
   const onDragEndCb = () => {
     setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
     setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
+    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
   }
 
@@ -2379,7 +2401,8 @@ function useDnDCallbacks() {
       ...dragState,
       isDragging: true,
       draggedOverDriveId: driveId,
-      draggedItemsId
+      draggedItemsId,
+      openedFoldersInfo: []
     }));
     onDragStartCallback?.();
   };
@@ -2404,7 +2427,8 @@ function useDnDCallbacks() {
       ...dragState,
       isDragging: false,
       draggedOverDriveId: null,
-      draggedItemsId: null
+      draggedItemsId: null,
+      openedFoldersInfo: []
     }));
     dropActions.handleDrop();
   };
