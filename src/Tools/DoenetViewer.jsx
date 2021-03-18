@@ -192,7 +192,11 @@ class DoenetViewer extends Component {
 
       this.forceUpdate();
     });
-
+    
+    //Let viewer know we are ready
+    if (this.props.onCoreReady){
+      this.props.onCoreReady(); 
+    }
   }
 
   localStateChanged({

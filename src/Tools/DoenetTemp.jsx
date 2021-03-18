@@ -12,7 +12,8 @@ import React, { useRef, useState } from "react";
 export default function DoenetTemp(props){
   const wrapperRef = useRef(null);
   const [height,setHeight] = useState(0)
-  const wheight = useRef(0)
+  const wrapheight = useRef(0)
+  const maxheight = useRef(0)
 
   let tall = [];
   for (let i = 1; i < 100; i++){
@@ -23,31 +24,25 @@ export default function DoenetTemp(props){
     <div style={{position:"sticky",top:"0px"}}>
     <button
     onClick={()=>{
-        console.log("Sample")
-        let top = document.documentElement.scrollTop;
-        let left = document.documentElement.scrollLeft;
-        setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample height</button>
-       <button
-    onClick={()=>{
-        window.scrollTo(0,height)
-    }}>return to sampled height</button>
-     <button
-    onClick={()=>{
-        console.log("Wrapper")
-        let ref = wrapperRef.current;
-        let top = ref.scrollTop;
-        console.log(wrapperRef.current.scrollTop)
-        console.log(100)
-        ref.scrollTo(0,100)
-
+        // console.log("Sample")
+        // let top = document.documentElement.scrollTop;
         // let left = document.documentElement.scrollLeft;
         // setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample wrapper</button>
+        wrapperRef.current.scrollTo(0,maxheight.current);
+        console.log(`maxheight.current ${maxheight.current}`)
+    }}>return to max</button>
+    
     </div>
-        <div ref={wrapperRef}>
+        <div
+        style={{height:'500px',overflow: 'scroll'}}
+         ref={wrapperRef} 
+         onScroll={()=>{
+            wrapheight.current = wrapperRef.current.scrollTop;
+            if (maxheight.current < wrapheight.current){maxheight.current = wrapheight.current}
+            //  console.log(">>>scrolling",wrapperRef.current.scrollTop)}
+            }}
+        //  onScroll={()=>{console.log(">>>scrolling",wrapperRef.current.scrollTop.scrollY)}}
+        >
             {tall}
         </div>
         </>
