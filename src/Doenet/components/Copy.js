@@ -441,7 +441,7 @@ export default class Copy extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.replacementSourceIdentities = {
+    stateVariableDefinitions.preliminaryReplacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
         "targetComponent", "componentIndex",
       ],
@@ -475,34 +475,41 @@ export default class Copy extends CompositeComponent {
       },
       definition({ dependencyValues }) {
 
-        let replacementSourceIdentities = null;
+        let preliminaryReplacementSourceIdentities = null;
         if (dependencyValues.targets) {
-          replacementSourceIdentities = dependencyValues.targets;
-          if (!Array.isArray(replacementSourceIdentities)) {
-            replacementSourceIdentities = [replacementSourceIdentities];
+          preliminaryReplacementSourceIdentities = dependencyValues.targets;
+          if (!Array.isArray(preliminaryReplacementSourceIdentities)) {
+            preliminaryReplacementSourceIdentities = [preliminaryReplacementSourceIdentities];
           }
         }
-        return { newValues: { replacementSourceIdentities } };
+        return { newValues: { preliminaryReplacementSourceIdentities } };
       },
     }
 
 
-    stateVariableDefinitions.effectivePropNameBySource = {
+    // Note: replacementSourceIdentities is exactly the same as 
+    // preliminaryReplacementSourceIdentities,
+    // however it is always in sync with replacementSources
+    // as it is defined in the same way.
+    // (When dependencies haven't been updated, preliminaryReplacementSourceIdentities
+    // is out of sync, causing problems in the replacement calculation)
+    stateVariableDefinitions.replacementSourceIdentities = {
+      additionalStateVariablesDefined: ["effectivePropNameBySource"],
       stateVariablesDeterminingDependencies: [
-        "replacementSourceIdentities", "propName", "isPlainMacro"
+        "preliminaryReplacementSourceIdentities", "propName", "isPlainMacro"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
         let dependencies = {
-          replacementSourceIdentities: {
+          preliminaryReplacementSourceIdentities: {
             dependencyType: "stateVariable",
-            variableName: "replacementSourceIdentities"
+            variableName: "preliminaryReplacementSourceIdentities"
           },
         }
 
-        if (stateValues.replacementSourceIdentities !== null) {
+        if (stateValues.preliminaryReplacementSourceIdentities !== null) {
 
-          for (let [ind, source] of stateValues.replacementSourceIdentities.entries()) {
+          for (let [ind, source] of stateValues.preliminaryReplacementSourceIdentities.entries()) {
 
             let thisPropName = stateValues.propName;
 
@@ -518,6 +525,11 @@ export default class Copy extends CompositeComponent {
               }
             }
 
+            dependencies["target" + ind] = {
+              dependencyType: "componentIdentity",
+              componentName: source.componentName
+            }
+
           }
 
         }
@@ -526,34 +538,44 @@ export default class Copy extends CompositeComponent {
       },
       definition({ dependencyValues }) {
 
+        let replacementSourceIdentities = null;
         let effectivePropNameBySource = null;
-
-        if (dependencyValues.replacementSourceIdentities !== null) {
+        if (dependencyValues.preliminaryReplacementSourceIdentities !== null) {
+          replacementSourceIdentities = [];
           effectivePropNameBySource = [];
 
-          for (let ind in dependencyValues.replacementSourceIdentities) {
+          for (let ind in dependencyValues.preliminaryReplacementSourceIdentities) {
+            if (dependencyValues["target" + ind]) {
+              replacementSourceIdentities.push(dependencyValues["target" + ind]);
+            }
             if (dependencyValues["propName" + ind]) {
               effectivePropNameBySource[ind] = dependencyValues["propName" + ind];
             }
           }
+
         }
 
-        return { newValues: { effectivePropNameBySource } };
+        return {
+          newValues: {
+            replacementSourceIdentities,
+            effectivePropNameBySource
+          }
+        };
       },
     }
 
 
     stateVariableDefinitions.replacementSources = {
       stateVariablesDeterminingDependencies: [
-        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro",
+        "preliminaryReplacementSourceIdentities", "propName", "propIndex", "isPlainMacro",
         "effectivePropNameBySource"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
         let dependencies = {
-          replacementSourceIdentities: {
+          preliminaryReplacementSourceIdentities: {
             dependencyType: "stateVariable",
-            variableName: "replacementSourceIdentities"
+            variableName: "preliminaryReplacementSourceIdentities"
           },
         }
 
@@ -562,9 +584,9 @@ export default class Copy extends CompositeComponent {
         }
 
 
-        if (stateValues.replacementSourceIdentities !== null) {
+        if (stateValues.preliminaryReplacementSourceIdentities !== null) {
 
-          for (let [ind, source] of stateValues.replacementSourceIdentities.entries()) {
+          for (let [ind, source] of stateValues.preliminaryReplacementSourceIdentities.entries()) {
 
             let thisPropName = stateValues.effectivePropNameBySource[ind];
 
@@ -600,10 +622,10 @@ export default class Copy extends CompositeComponent {
       definition({ dependencyValues }) {
         let replacementSources = null;
 
-        if (dependencyValues.replacementSourceIdentities !== null) {
+        if (dependencyValues.preliminaryReplacementSourceIdentities !== null) {
           replacementSources = [];
 
-          for (let ind in dependencyValues.replacementSourceIdentities) {
+          for (let ind in dependencyValues.preliminaryReplacementSourceIdentities) {
             if (dependencyValues["target" + ind]) {
               replacementSources.push(dependencyValues["target" + ind]);
             }
@@ -748,10 +770,6 @@ export default class Copy extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "replacementSourceIdentities",
           },
-          replacementSources: {
-            dependencyType: "stateVariable",
-            variableName: "replacementSources",
-          },
         }
 
         if (stateValues.effectivePropNameBySource !== null) {
@@ -768,12 +786,21 @@ export default class Copy extends CompositeComponent {
               let source = stateValues.replacementSourceIdentities[ind];
 
               dependencies["sourceArraySize" + ind] = {
-                dependencyType: "stateVariable",
+                dependencyType: "stateVariableArraySize",
                 componentName: source.componentName,
-                variableName: "__array_size_" + propName,
+                variableName: propName,
                 variablesOptional: true,
                 caseInsensitiveVariableMatch: true,
               }
+
+              dependencies["sourceComponentType" + ind] = {
+                dependencyType: "stateVariableComponentType",
+                componentName: source.componentName,
+                variableName: propName,
+                variablesOptional: true,
+                caseInsensitiveVariableMatch: true,
+              }
+
             }
 
 
@@ -1095,14 +1122,14 @@ export default class Copy extends CompositeComponent {
     }
 
 
-    // if replacementSources is a different length than replacementSourceIdentities
-    // it means that haven't updated dependencies of replacementSources yet
-    // Don't make changes yet.
-    if (component.stateValues.replacementSourceIdentities.length
-      !== component.stateValues.replacementSources.length
-    ) {
-      return [];
-    }
+    // // if replacementSources is a different length than replacementSourceIdentities
+    // // it means that haven't updated dependencies of replacementSources yet
+    // // Don't make changes yet.
+    // if (component.stateValues.replacementSourceIdentities.length
+    //   !== component.stateValues.replacementSources.length
+    // ) {
+    //   return [];
+    // }
 
 
     if (component.replacementsToWithhold > 0) {
