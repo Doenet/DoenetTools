@@ -6,7 +6,10 @@ export default class Function extends InlineComponent {
   static componentType = "function";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() { return ["variable"] };
+  static get stateVariablesShadowedForReference() { return [
+    "variable", "f", "numericalf", "symbolicf",
+    "isInterpolatedFunction", "formula"
+  ] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -38,7 +41,11 @@ export default class Function extends InlineComponent {
       childrenRegex: /s/,
       replacementFunction: ({ matchedChildren }) => ({
         success: true,
-        newChildren: [{ componentType: "formula", children: matchedChildren }],
+        newChildren: [{
+          componentType: "formula",
+          doenetAttributes: { isPropertyChild: true },
+          children: matchedChildren
+        }],
       })
     });
 
@@ -53,40 +60,49 @@ export default class Function extends InlineComponent {
       name: "exactlyOneFormula",
       componentType: "formula",
       number: 1,
+      takePropertyChildren: true,
     })
 
-    let atLeastOneMaximum = childLogic.newLeaf({
-      name: "atLeastOneMaximum",
-      componentType: "maximum",
-      comparison: 'atLeast',
+    let exactlyOneMinima = childLogic.newLeaf({
+      name: "exactlyOneMinima",
+      componentType: "minima",
       number: 1,
+      takePropertyChildren: true,
     })
 
-    let atLeastOneMinimum = childLogic.newLeaf({
-      name: "atLeastOneMinimum",
-      componentType: "minimum",
-      comparison: 'atLeast',
+    let exactlyOneMaxima = childLogic.newLeaf({
+      name: "exactlyOneMaxima",
+      componentType: "maxima",
       number: 1,
+      takePropertyChildren: true,
     })
 
-    let atLeastOneExtremum = childLogic.newLeaf({
-      name: "atLeastOneExtremum",
-      componentType: "extremum",
-      comparison: 'atLeast',
+    let exactlyOneExtrema = childLogic.newLeaf({
+      name: "exactlyOneExtrema",
+      componentType: "extrema",
       number: 1,
+      takePropertyChildren: true,
     })
 
-    let atLeastOneThrough = childLogic.newLeaf({
-      name: "atLeastOneThrough",
+    let exactlyOneThrough = childLogic.newLeaf({
+      name: "exactlyOneThrough",
       componentType: "through",
-      comparison: 'atLeast',
       number: 1,
+      takePropertyChildren: true,
     })
+
+    let exactlyOneThroughSlopes = childLogic.newLeaf({
+      name: "exactlyOneThroughSlopes",
+      componentType: "throughSlopes",
+      number: 1,
+      takePropertyChildren: true,
+    })
+
 
     let throughCriteria = childLogic.newOperator({
       name: "throughCriteria",
       operator: "or",
-      propositions: [atLeastOneMaximum, atLeastOneMinimum, atLeastOneExtremum, atLeastOneThrough],
+      propositions: [exactlyOneMinima, exactlyOneMaxima, exactlyOneExtrema, exactlyOneThrough, exactlyOneThroughSlopes],
     })
 
     let atMostOneFunction = childLogic.newLeaf({
@@ -306,32 +322,21 @@ export default class Function extends InlineComponent {
     // variables for interpolated function
 
     stateVariableDefinitions.nPrescribedPoints = {
-      additionalStateVariablesDefined: ["throughInfoForArrayKey"],
       returnDependencies: () => ({
-        throughChildren: {
+        throughChild: {
           dependencyType: "child",
-          childLogicName: "atLeastOneThrough",
+          childLogicName: "exactlyOneThrough",
           variableNames: ["nPoints"]
         }
       }),
       definition({ dependencyValues }) {
 
         let nPrescribedPoints = 0;
-        let throughInfoForArrayKey = [];
-        for (let [throughIndex, throughChild] of dependencyValues.throughChildren.entries()) {
-          let nPoints = throughChild.stateValues.nPoints;
-          nPrescribedPoints += nPoints;
-          for (let i = 0; i < nPoints; i++) {
-            throughInfoForArrayKey.push({
-              throughIndex,
-              pointVariable: "point" + (i + 1)
-            })
-          }
+        if (dependencyValues.throughChild.length === 1) {
+          nPrescribedPoints = dependencyValues.throughChild[0].stateValues.nPoints;
         }
         return {
-          newValues: {
-            nPrescribedPoints, throughInfoForArrayKey
-          }
+          newValues: { nPrescribedPoints }
         }
       }
     }
@@ -339,7 +344,6 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.prescribedPoints = {
       isArray: true,
       entryPrefixes: ["prescribedPoint"],
-      stateVariablesDeterminingDependencies: ["throughInfoForArrayKey"],
       returnArraySizeDependencies: () => ({
         nPrescribedPoints: {
           dependencyType: "stateVariable",
@@ -349,32 +353,29 @@ export default class Function extends InlineComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nPrescribedPoints];
       },
-      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
-        let globalDependencies = {
-          throughInfoForArrayKey: {
-            dependencyType: "stateVariable",
-            variableName: "throughInfoForArrayKey"
-          }
-        }
+      returnArrayDependenciesByKey({ arrayKeys }) {
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let pointVariable = stateValues.throughInfoForArrayKey[arrayKey].pointVariable;
-          let throughIndex = stateValues.throughInfoForArrayKey[arrayKey].throughIndex;
+          let pointNum = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
             throughChild: {
               dependencyType: "child",
-              childLogicName: "atLeastOneThrough",
-              variableNames: [pointVariable, "slope"],
-              childIndices: [throughIndex]
+              childLogicName: "exactlyOneThrough",
+              variableNames: ["point" + pointNum],
+            },
+            throughSlopesChild: {
+              dependencyType: "child",
+              childLogicName: "exactlyOneThroughSlopes",
+              variableNames: ["math" + pointNum],
             },
           }
 
         }
 
-        return { globalDependencies, dependenciesByKey }
+        return { dependenciesByKey }
       },
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
 
         // console.log('array definition of prescribed points')
         // console.log(dependencyValuesByKey);
@@ -383,11 +384,19 @@ export default class Function extends InlineComponent {
         let prescribedPoints = {};
 
         for (let arrayKey of arrayKeys) {
-          let pointVariable = globalDependencyValues.throughInfoForArrayKey[arrayKey].pointVariable;
           let throughChild = dependencyValuesByKey[arrayKey].throughChild;
           if (throughChild.length === 1) {
-            let point = throughChild[0].stateValues[pointVariable];
-            let slope = throughChild[0].stateValues.slope;
+            let pointNum = Number(arrayKey) + 1;
+            let point = throughChild[0].stateValues["point" + pointNum];
+            let slope = null;
+
+            let throughSlopesChild = dependencyValuesByKey[arrayKey].throughSlopesChild;
+            if (throughSlopesChild.length === 1) {
+              slope = throughSlopesChild[0].stateValues["math" + pointNum]
+              if (slope === undefined) {
+                slope = null;
+              }
+            }
 
             prescribedPoints[arrayKey] = {
               x: point[0],
@@ -402,56 +411,71 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.prescribedMinima = {
       returnDependencies: () => ({
-        minimumChildren: {
+        minimaChild: {
           dependencyType: "child",
-          childLogicName: "atLeastOneMinimum",
-          variableNames: ["location", "value"]
+          childLogicName: "exactlyOneMinima",
+          variableNames: ["minima"]
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          prescribedMinima: dependencyValues.minimumChildren.map(x => ({
-            x: x.stateValues.location,
-            y: x.stateValues.value,
+      definition({ dependencyValues }) {
+        let prescribedMinima = [];
+        if (dependencyValues.minimaChild.length == 1) {
+          prescribedMinima = dependencyValues.minimaChild[0].stateValues.minima.map(v => ({
+            x: v[0],
+            y: v[1]
           }))
         }
-      })
+        return {
+          newValues: { prescribedMinima }
+        }
+      }
     }
+
 
     stateVariableDefinitions.prescribedMaxima = {
       returnDependencies: () => ({
-        maximumChildren: {
+        maximaChild: {
           dependencyType: "child",
-          childLogicName: "atLeastOneMaximum",
-          variableNames: ["location", "value"]
+          childLogicName: "exactlyOneMaxima",
+          variableNames: ["maxima"]
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          prescribedMaxima: dependencyValues.maximumChildren.map(x => ({
-            x: x.stateValues.location,
-            y: x.stateValues.value,
+      definition({ dependencyValues }) {
+        let prescribedMaxima = [];
+        if (dependencyValues.maximaChild.length == 1) {
+          prescribedMaxima = dependencyValues.maximaChild[0].stateValues.maxima.map(v => ({
+            x: v[0],
+            y: v[1]
           }))
         }
-      })
+        return {
+          newValues: { prescribedMaxima }
+        }
+      }
     }
+
+
 
     stateVariableDefinitions.prescribedExtrema = {
       returnDependencies: () => ({
-        extremumChildren: {
+        extremaChild: {
           dependencyType: "child",
-          childLogicName: "atLeastOneExtremum",
-          variableNames: ["location", "value"]
+          childLogicName: "exactlyOneExtrema",
+          variableNames: ["extrema"]
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          prescribedExtrema: dependencyValues.extremumChildren.map(x => ({
-            x: x.stateValues.location,
-            y: x.stateValues.value,
+      definition({ dependencyValues }) {
+        let prescribedExtrema = [];
+        if (dependencyValues.extremaChild.length == 1) {
+          prescribedExtrema = dependencyValues.extremaChild[0].stateValues.extrema.map(v => ({
+            x: v[0],
+            y: v[1]
           }))
         }
-      })
+        return {
+          newValues: { prescribedExtrema }
+        }
+      }
     }
 
 
@@ -782,76 +806,8 @@ export default class Function extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.minima = {
+    stateVariableDefinitions.allMinima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
-      public: true,
-      componentType: "number",
-      isArray: true,
-      entireArrayAtOnce: true,
-      nDimensions: 2,
-      entryPrefixes: ["minimum", "minimumLocations", "minimumLocation", "minimumValues", "minimumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "minimum" || prefix === undefined) {
-          // minimum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
-        } else {
-          // don't wrap minimumLocation(s) or minimumValues(s)
-          return [];
-        }
-      },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
-        if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0) {
-            // if don't know array size, just guess that the entry is OK
-            // It will get corrected once array size is known.
-            // TODO: better to return empty array?
-            if (!arraySize || pointInd < arraySize[0]) {
-              if (arrayEntryPrefix === "minimum") {
-                return [pointInd + ",0", pointInd + ",1"];
-              } else if (arrayEntryPrefix === "minimumLocation") {
-                return [pointInd + ",0"]
-              } else {
-                return [pointInd + ",1"]
-              }
-            } else {
-              return []
-            }
-          } else {
-            return [];
-          }
-        } else if (arrayEntryPrefix === "minimumLocations") {
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
-            return [];
-          }
-          // array of "i,0"", where i=0, ..., arraySize[0]-1
-          return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
-        } else if (arrayEntryPrefix === "minimumValues") {
-
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
-            return [];
-          }
-          // array of "i,1"", where i=0, ..., arraySize[0]-1
-          return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
-        } else {
-          return [];
-        }
-
-      },
-      arrayVarNameFromArrayKey(arrayKey) {
-        let [ind1, ind2] = arrayKey.split(',');
-
-        if (ind2 === "0") {
-          return "minimumLocation" + (Number(ind1) + 1)
-        } else {
-          return "minimumValue" + (Number(ind1) + 1)
-        }
-      },
       returnDependencies({ stateValues }) {
 
         if (stateValues.isInterpolatedFunction) {
@@ -886,7 +842,7 @@ export default class Function extends InlineComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atMostOneFunction",
-              variableNames: ["minima"],
+              variableNames: ["allMinima"],
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
@@ -895,9 +851,9 @@ export default class Function extends InlineComponent {
           }
         }
       },
-      entireArrayDefinition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues }) {
 
-        // console.log(`entire array definition of minima`)
+        // console.log(`entire array definition of allMinima`)
         // console.log(dependencyValues);
 
         if (dependencyValues.isInterpolatedFunction) {
@@ -909,7 +865,7 @@ export default class Function extends InlineComponent {
           let minimaList = [];
 
           if (xs === null) {
-            return { newValues: { minima: minimaList } }
+            return { newValues: { allMinima: minimaList } }
           }
 
           let minimumAtPreviousRight = false;
@@ -1024,7 +980,7 @@ export default class Function extends InlineComponent {
             }
           }
 
-          return { newValues: { minima: minimaList } }
+          return { newValues: { allMinima: minimaList } }
 
         } else {
 
@@ -1035,7 +991,7 @@ export default class Function extends InlineComponent {
 
             return {
               newValues: {
-                minima: dependencyValues.functionChild[0].stateValues.minima
+                allMinima: dependencyValues.functionChild[0].stateValues.allMinima
               }
             }
           }
@@ -1045,7 +1001,7 @@ export default class Function extends InlineComponent {
           if (dependencyValues.symbolic) {
             // haven't implemented minima for symbolic functions
             return {
-              newValues: { minima: [] }
+              newValues: { allMinima: [] }
             }
           }
 
@@ -1099,43 +1055,59 @@ export default class Function extends InlineComponent {
             }
           }
 
-          return { newValues: { minima: minimaList } }
+          return { newValues: { allMinima: minimaList } }
 
         }
       }
     }
 
-    stateVariableDefinitions.maxima = {
+    stateVariableDefinitions.numberMinima = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        allMinima: {
+          dependencyType: "stateVariable",
+          variableName: "allMinima"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: { numberMinima: dependencyValues.allMinima.length },
+          checkForActualChange: { numberMinima: true }
+        }
+      }
+    }
+
+    stateVariableDefinitions.minima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
       componentType: "number",
       isArray: true,
-      entireArrayAtOnce: true,
       nDimensions: 2,
-      entryPrefixes: ["maximum", "maximumLocations", "maximumLocation", "maximumValues", "maximumValue"],
+      entryPrefixes: ["minimum", "minimumLocations", "minimumLocation", "minimumValues", "minimumValue"],
       returnWrappingComponents(prefix) {
-        if (prefix === "maximum" || prefix === undefined) {
-          // maximum or entire array
+        if (prefix === "minimum" || prefix === undefined) {
+          // minimum or entire array
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
           return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
-          // don't wrap maximumLocation(s) or maximumValues(s)
+          // don't wrap minimumLocation(s) or minimumValues(s)
           return [];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
-        if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
+        if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
             // if don't know array size, just guess that the entry is OK
             // It will get corrected once array size is known.
             // TODO: better to return empty array?
             if (!arraySize || pointInd < arraySize[0]) {
-              if (arrayEntryPrefix === "maximum") {
+              if (arrayEntryPrefix === "minimum") {
                 return [pointInd + ",0", pointInd + ",1"];
-              } else if (arrayEntryPrefix === "maximumLocation") {
+              } else if (arrayEntryPrefix === "minimumLocation") {
                 return [pointInd + ",0"]
               } else {
                 return [pointInd + ",1"]
@@ -1146,14 +1118,14 @@ export default class Function extends InlineComponent {
           } else {
             return [];
           }
-        } else if (arrayEntryPrefix === "maximumLocations") {
+        } else if (arrayEntryPrefix === "minimumLocations") {
           // can't guess at arrayKeys if don't have arraySize
           if (!arraySize || varEnding !== "") {
             return [];
           }
           // array of "i,0"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
-        } else if (arrayEntryPrefix === "maximumValues") {
+        } else if (arrayEntryPrefix === "minimumValues") {
 
           // can't guess at arrayKeys if don't have arraySize
           if (!arraySize || varEnding !== "") {
@@ -1170,11 +1142,51 @@ export default class Function extends InlineComponent {
         let [ind1, ind2] = arrayKey.split(',');
 
         if (ind2 === "0") {
-          return "maximumLocation" + (Number(ind1) + 1)
+          return "minimumLocation" + (Number(ind1) + 1)
         } else {
-          return "maximumValue" + (Number(ind1) + 1)
+          return "minimumValue" + (Number(ind1) + 1)
         }
       },
+      returnArraySizeDependencies: () => ({
+        numberMinima: {
+          dependencyType: "stateVariable",
+          variableName: "numberMinima",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberMinima, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allMinima: {
+            dependencyType: "stateVariable",
+            variableName: "allMinima"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function minima`)
+        // console.log(globalDependencyValues)
+
+        let minima = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            minima[arrayKey] = globalDependencyValues.allMinima[ptInd][i];
+          }
+        }
+
+        return { newValues: { minima } }
+      }
+    }
+
+    stateVariableDefinitions.allMaxima = {
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       returnDependencies({ stateValues }) {
 
         if (stateValues.isInterpolatedFunction) {
@@ -1211,7 +1223,7 @@ export default class Function extends InlineComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atMostOneFunction",
-              variableNames: ["maxima"],
+              variableNames: ["allMaxima"],
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
@@ -1220,7 +1232,7 @@ export default class Function extends InlineComponent {
           }
         }
       },
-      entireArrayDefinition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues }) {
 
         if (dependencyValues.isInterpolatedFunction) {
 
@@ -1231,7 +1243,7 @@ export default class Function extends InlineComponent {
           let maximaList = [];
 
           if (xs === null) {
-            return { newValues: { maxima: maximaList } }
+            return { newValues: { allMaxima: maximaList } }
           }
 
           let maximumAtPreviousRight = false;
@@ -1346,7 +1358,7 @@ export default class Function extends InlineComponent {
             }
           }
 
-          return { newValues: { maxima: maximaList } }
+          return { newValues: { allMaxima: maximaList } }
 
 
         } else {
@@ -1357,7 +1369,7 @@ export default class Function extends InlineComponent {
           if (dependencyValues.functionChild && dependencyValues.functionChild.length === 1) {
             return {
               newValues: {
-                maxima: dependencyValues.functionChild[0].stateValues.maxima
+                allMaxima: dependencyValues.functionChild[0].stateValues.allMaxima
               }
             }
           }
@@ -1367,7 +1379,7 @@ export default class Function extends InlineComponent {
           if (dependencyValues.symbolic) {
             // haven't implemented maxima for symbolic functions
             return {
-              newValues: { maxima: [] }
+              newValues: { allMaxima: [] }
             }
           }
 
@@ -1421,38 +1433,185 @@ export default class Function extends InlineComponent {
             }
           }
 
-          return { newValues: { maxima: maximaList } }
+          return { newValues: { allMaxima: maximaList } }
 
         }
       }
     }
 
-
-    // we make function child be a state variable
-    // as we need a state variable to determine other dependencies
-    // using stateVariablesDeterminingDependencies
-    stateVariableDefinitions.functionChild = {
+    stateVariableDefinitions.numberMaxima = {
+      public: true,
+      componentType: "number",
       returnDependencies: () => ({
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunction"
+        allMaxima: {
+          dependencyType: "stateVariable",
+          variableName: "allMaxima"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: { numberMaxima: dependencyValues.allMaxima.length },
+          checkForActualChange: { numberMaxima: true }
+        }
+      }
+    }
+
+    stateVariableDefinitions.maxima = {
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      public: true,
+      componentType: "number",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["maximum", "maximumLocations", "maximumLocation", "maximumValues", "maximumValue"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "maximum" || prefix === undefined) {
+          // maximum or entire array
+          // These are points,
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+        } else {
+          // don't wrap maximumLocation(s) or maximumValues(s)
+          return [];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0) {
+            // if don't know array size, just guess that the entry is OK
+            // It will get corrected once array size is known.
+            // TODO: better to return empty array?
+            if (!arraySize || pointInd < arraySize[0]) {
+              if (arrayEntryPrefix === "maximum") {
+                return [pointInd + ",0", pointInd + ",1"];
+              } else if (arrayEntryPrefix === "maximumLocation") {
+                return [pointInd + ",0"]
+              } else {
+                return [pointInd + ",1"]
+              }
+            } else {
+              return []
+            }
+          } else {
+            return [];
+          }
+        } else if (arrayEntryPrefix === "maximumLocations") {
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,0"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
+        } else if (arrayEntryPrefix === "maximumValues") {
+
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,1"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
+        } else {
+          return [];
+        }
+
+      },
+      arrayVarNameFromArrayKey(arrayKey) {
+        let [ind1, ind2] = arrayKey.split(',');
+
+        if (ind2 === "0") {
+          return "maximumLocation" + (Number(ind1) + 1)
+        } else {
+          return "maximumValue" + (Number(ind1) + 1)
+        }
+      },
+      returnArraySizeDependencies: () => ({
+        numberMaxima: {
+          dependencyType: "stateVariable",
+          variableName: "numberMaxima",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberMaxima, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allMaxima: {
+            dependencyType: "stateVariable",
+            variableName: "allMaxima"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function maxima`)
+        // console.log(globalDependencyValues)
+
+        let maxima = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            maxima[arrayKey] = globalDependencyValues.allMaxima[ptInd][i];
+          }
+        }
+
+        return { newValues: { maxima } }
+      }
+    }
+
+    stateVariableDefinitions.numberExtrema = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        numberMinima: {
+          dependencyType: "stateVariable",
+          variableName: "numberMinima"
+        },
+        numberMaxima: {
+          dependencyType: "stateVariable",
+          variableName: "numberMaxima"
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
-          return { newValues: { functionChild: dependencyValues.functionChild[0] } }
-        } else {
-          return { newValues: { functionChild: null } }
+        return {
+          newValues: {
+            numberExtrema: dependencyValues.numberMinima + dependencyValues.numberMaxima
+          },
+          checkForActualChange: { numberExtrema: true }
         }
       }
     }
 
+    stateVariableDefinitions.allExtrema = {
+      returnDependencies: () => ({
+        allMinima: {
+          dependencyType: "stateVariable",
+          variableName: "allMinima"
+        },
+        allMaxima: {
+          dependencyType: "stateVariable",
+          variableName: "allMaxima"
+        }
+      }),
+      definition({ dependencyValues }) {
+        // console.log(`definition of allExtrema of function`)
+        // console.log(dependencyValues)
+        let allExtrema = [...dependencyValues.allMinima, ...dependencyValues.allMaxima]
+          .sort((a, b) => a[0] - b[0]);
+
+        return { newValues: { allExtrema } }
+
+      }
+    }
 
     stateVariableDefinitions.extrema = {
       public: true,
       componentType: "number",
       isArray: true,
-      entireArrayAtOnce: true,
       nDimensions: 2,
       entryPrefixes: ["extremum", "extremumLocations", "extremumLocation", "extremumValues", "extremumValue"],
       returnWrappingComponents(prefix) {
@@ -1517,23 +1676,39 @@ export default class Function extends InlineComponent {
           return "extremumValue" + (Number(ind1) + 1)
         }
       },
-      returnDependencies: function () {
-        return {
-          minima: {
+      returnArraySizeDependencies: () => ({
+        numberExtrema: {
+          dependencyType: "stateVariable",
+          variableName: "numberExtrema",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberExtrema, 2];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allExtrema: {
             dependencyType: "stateVariable",
-            variableName: "minima"
-          },
-          maxima: {
-            dependencyType: "stateVariable",
-            variableName: "maxima"
+            variableName: "allExtrema"
           }
         }
+
+        return { globalDependencies }
+
       },
-      entireArrayDefinition: function ({ dependencyValues }) {
-        // console.log(`entire array definition of extrema of function`)
-        // console.log(dependencyValues)
-        let extrema = [...dependencyValues.minima, ...dependencyValues.maxima]
-          .sort((a, b) => a[0] - b[0]);
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function extrema`)
+        // console.log(globalDependencyValues)
+
+        let extrema = {};
+
+        for (let ptInd = 0; ptInd < globalDependencyValues.__array_size[0]; ptInd++) {
+          for (let i = 0; i < 2; i++) {
+            let arrayKey = `${ptInd},${i}`;
+
+            extrema[arrayKey] = globalDependencyValues.allExtrema[ptInd][i];
+          }
+        }
 
         return { newValues: { extrema } }
 
@@ -1541,61 +1716,21 @@ export default class Function extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.numberMinima = {
-      public: true,
-      componentType: "number",
+    // we make function child be a state variable
+    // as we need a state variable to determine other dependencies
+    // using stateVariablesDeterminingDependencies
+    stateVariableDefinitions.functionChild = {
       returnDependencies: () => ({
-        minima: {
-          dependencyType: "stateVariable",
-          variableName: "minima"
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction"
         }
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            numberMinima: dependencyValues.minima.length,
-          },
-          checkForActualChange: { numberMinima: true }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.numberMaxima = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        maxima: {
-          dependencyType: "stateVariable",
-          variableName: "maxima"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            numberMaxima: dependencyValues.maxima.length,
-          },
-          checkForActualChange: { numberMaxima: true }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.numberExtrema = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        extrema: {
-          dependencyType: "stateVariable",
-          variableName: "extrema"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            numberExtrema: dependencyValues.extrema.length,
-          },
-          checkForActualChange: { numberExtrema: true }
+        if (dependencyValues.functionChild.length === 1) {
+          return { newValues: { functionChild: dependencyValues.functionChild[0] } }
+        } else {
+          return { newValues: { functionChild: null } }
         }
       }
     }

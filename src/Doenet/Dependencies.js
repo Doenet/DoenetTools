@@ -1933,7 +1933,7 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
             this.valuesChanged[0][mappedVarName] = {};
 
             let hasVariableComponentType = stateVarObj.hasVariableComponentType;
-            if(!hasVariableComponentType && stateVarObj.isArrayEntry) {
+            if (!hasVariableComponentType && stateVarObj.isArrayEntry) {
               let arrayStateVarObj = depComponent.state[stateVarObj.arrayStateVariable];
               hasVariableComponentType = arrayStateVarObj.hasVariableComponentType
             }

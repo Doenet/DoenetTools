@@ -90,11 +90,10 @@ export class PossiblePoints extends NumberComponent {
 
 export class Through extends PointListComponent {
   static componentType = "through"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.slope = { default: null };
-    return properties;
-  }
+}
+
+export class ThroughSlopes extends MathList {
+  static componentType = "throughSlopes"
 }
 
 export class Endpoints extends PointListComponent {

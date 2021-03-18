@@ -1502,8 +1502,6 @@ export default class Core {
         compositesBeingExpanded,
       });
 
-      this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
-
       // TODO: make this more specific so just updates descendants
       // of direct parent of composite, as that's the only one that would see
       // replacements as a descendant?
@@ -1555,8 +1553,6 @@ export default class Core {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
 
-    this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
-
     // TODO: make this more specific so just updates descendants
     // of direct parent of composite, as that's the only one that would see
     // replacements as a descendant?
@@ -1600,6 +1596,8 @@ export default class Core {
     this.parameterStack.pop();
 
     component.replacements = replacementResult.components;
+    this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
+
     component.isExpanded = true;
 
     // record for top level replacement that they are a replacement of composite
@@ -3720,6 +3718,8 @@ export default class Core {
       // don't need to change inverseDefinition
 
     } else {
+      // not entireArrayAtOnce
+
       // create returnDependencies function from returnArrayDependenciesByKey
       stateVarObj.returnDependencies = function (args) {
         // console.log(`return dependencies for array ${stateVariable} of ${component.componentName}`)
@@ -6817,6 +6817,7 @@ export default class Core {
             }
             rdObj.push({ ind: ind, replacement: composite.replacements[ind] });
             composite.replacements.splice(ind, 1);
+            this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
 
             // TODO: if have stateVariable dependencies that depend on replacements
             // these will need to be modified
@@ -6892,6 +6893,7 @@ export default class Core {
         while (rdObj.length > 0) {
           let rdInfo = rdObj.pop();
           downDepComponent.replacements.splice(rdInfo.ind, 0, rdInfo.replacement)
+          this.dependencies.updateReplacementDependencies(downDepComponent, updatesNeeded, compositesBeingExpanded);
         }
       }
 
@@ -6930,9 +6932,6 @@ export default class Core {
 
     for (let compositeName in replacementsDeleted) {
       if (!(compositeName in componentsToDelete)) {
-        this.dependencies.updateReplacementDependencies(
-          this._components[compositeName], updatesNeeded, compositesBeingExpanded
-        );
 
         // TODO: make this more specific so just updates descendants
         // of direct parent of composite, as that's the only one that would see
@@ -7122,7 +7121,10 @@ export default class Core {
       if (change.changeType === "add") {
 
         if (change.replacementsToWithhold !== undefined) {
-          this.adjustReplacementsToWithhold(component, change, componentChanges);
+          this.adjustReplacementsToWithhold({
+            component, change, componentChanges,
+            updatesNeeded, compositesBeingExpanded
+          });
         }
 
         let unproxiedComponent = this._components[component.componentName];
@@ -7246,6 +7248,7 @@ export default class Core {
 
             // splice in new replacements
             composite.replacements.splice(firstIndex, 0, ...newReplacements);
+            this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
 
             // record for top level replacement that they are a replacement of composite
             for (let comp of newReplacements) {
@@ -7300,7 +7303,10 @@ export default class Core {
       } else if (change.changeType === "delete") {
 
         if (change.replacementsToWithhold !== undefined) {
-          this.adjustReplacementsToWithhold(component, change, componentChanges);
+          this.adjustReplacementsToWithhold({
+            component, change, componentChanges,
+            updatesNeeded, compositesBeingExpanded
+          });
         }
 
         let compsitesDeletedFrom = this.deleteReplacementsFromShadowsThenComposite({
@@ -7358,7 +7364,10 @@ export default class Core {
 
         if (change.replacementsToWithhold !== undefined) {
           let compositesWithAdjustedReplacements =
-            this.adjustReplacementsToWithhold(component, change, componentChanges);
+            this.adjustReplacementsToWithhold({
+              component, change, componentChanges,
+              updatesNeeded, compositesBeingExpanded
+            });
 
           changedReplacementIdentitiesOfComposites.push(...compositesWithAdjustedReplacements);
 
@@ -7372,12 +7381,6 @@ export default class Core {
 
     for (let compositeName of changedReplacementIdentitiesOfComposites) {
       let composite = this._components[compositeName]
-      this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
-
-      // TODO: make this more specific so just updates descendants
-      // of direct parent of composite, as that's the only one that would see
-      // replacements as a descendant?
-      // this.dependencies.updateDescendantDependencies(composite, updatesNeeded, compositesBeingExpanded);
       updatesNeeded.parentsToUpdateDescendants.add(composite.componentName);
       for (let ancestorName of ancestorsIncludingComposites(composite, this.components)) {
         updatesNeeded.parentsToUpdateDescendants.add(ancestorName);
@@ -7461,6 +7464,7 @@ export default class Core {
 
       // delete from replacements
       let replacementsToDelete = composite.replacements.splice(firstIndex, numberToDelete);
+      this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
 
       // TODO: why does this delete delete upstream components
       // but the non toplevel delete doesn't?
@@ -7730,7 +7734,9 @@ export default class Core {
 
   }
 
-  adjustReplacementsToWithhold(component, change, componentChanges) {
+  adjustReplacementsToWithhold({ component, change, componentChanges,
+    updatesNeeded, compositesBeingExpanded
+  }) {
 
     let compositesWithAdjustedReplacements = [];
 
@@ -7784,11 +7790,15 @@ export default class Core {
       componentChanges.push(newChange);
     }
     component.replacementsToWithhold = replacementsToWithhold;
+    this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
         let additionalcompositesWithAdjustedReplacements =
-          this.adjustReplacementsToWithhold(shadowingComponent, change, componentChanges);
+          this.adjustReplacementsToWithhold({
+            component: shadowingComponent, change, componentChanges,
+            updatesNeeded, compositesBeingExpanded
+          });
         compositesWithAdjustedReplacements.push(...additionalcompositesWithAdjustedReplacements)
       }
     }
