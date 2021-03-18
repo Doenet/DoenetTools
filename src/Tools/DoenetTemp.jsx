@@ -1,4 +1,9 @@
 import React, { useRef, useState } from "react";
+import { useToolControlHelper } from "../imports/Tool/ToolRoot";
+import Tool from "../imports/Tool/Tool";
+import Button from "../imports/PanelHeaderComponents/Button";
+import MenuPanel from "../imports/Tool/Panels/MenuPanel";
+import {useStackId} from "../imports/Tool/ToolRoot"
 
 // import { DateInput } from "@blueprintjs/datetime";
 
@@ -10,6 +15,8 @@ import React, { useRef, useState } from "react";
 
 
 export default function DoenetTemp(props){
+//     const stackId = useStackId();
+//   console.log("stackId",stackId);
   const wrapperRef = useRef(null);
   const [height,setHeight] = useState(0)
   const wheight = useRef(0)
@@ -18,41 +25,27 @@ export default function DoenetTemp(props){
   for (let i = 1; i < 100; i++){
       tall.push(<p key={`p${i}`}>{i}</p>)
   }
+  const { openOverlay } = useToolControlHelper();
 
+  const gotoOverlay = () =>{
+ 
+  }
     return (<>
-    <div style={{position:"sticky",top:"0px"}}>
-    <button
-    onClick={()=>{
-        console.log("Sample")
-        let top = document.documentElement.scrollTop;
-        let left = document.documentElement.scrollLeft;
-        setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample height</button>
-       <button
-    onClick={()=>{
-        window.scrollTo(0,height)
-    }}>return to sampled height</button>
-     <button
-    onClick={()=>{
-        console.log("Wrapper")
-        let ref = wrapperRef.current;
-        let top = ref.scrollTop;
-        console.log(wrapperRef.current.scrollTop)
-        console.log(100)
-        ref.scrollTo(0,100)
+    <Tool>
+        <headerPanel>
 
-        // let left = document.documentElement.scrollLeft;
-        // setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample wrapper</button>
-    </div>
-        <div ref={wrapperRef}>
-            {tall}
-        </div>
-        </>
+        </headerPanel>
+        <navPanel></navPanel>
+        <mainPanel>
+                {/* <Button value="Overlay" callback={()=> {openOverlay({type:"editor",branchId:"branch123",title:"test"})}} /> */}
+                <Button value="Overlay" callback={()=> {openOverlay({type:"overlay",branchId:"branch123",contentId:"content123",title:"test"})}} />
+        </mainPanel>
+        <menuPanel>
+
+        </menuPanel>
+    </Tool>
        
-    )
+    </>)
 }
 
 
