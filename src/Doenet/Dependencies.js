@@ -1292,7 +1292,7 @@ class Dependency {
         for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
           if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
             let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
-            return downCompUpDeps.state[arrayVarName].arraySizeStateVariable
+            return downComponent.state[arrayVarName].arraySizeStateVariable
           }
         }
         return `__${vName}_is_not_an_array`;

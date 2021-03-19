@@ -17,13 +17,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Function: <mathinput name="formula" prefill="sin(x)"/></p>
   <p>Input value: <mathinput name="input" prefill="0" /></p>
 
-  <function name="f_symbolic" variable="$variable" symbolic>
-    <formula>$formula</formula>
-  </function>
+  <function name="f_symbolic" variable="$variable" symbolic formula="$formula" />
 
-  <function name="f_numeric" variable="$variable">
-    <formula>$formula</formula>
-  </function>
+  <function name="f_numeric" variable="$variable" formula="$formula" />
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic">
@@ -287,7 +283,7 @@ describe('Evaluate Tag Tests', function () {
   Let <m>u = </m> <mathinput name="u" prefill="3v" />.
   Then <m name="result">f(u) = f($u) = $$f($u)</m>.</p>
 
-  <p hide><function name="f" variable="$x" symbolic simplify expand><formula>$fformula</formula></function></p>
+  <p hide><function name="f" variable="$x" symbolic simplify expand formula="$fformula" /></p>
   
 
   `}, "*");

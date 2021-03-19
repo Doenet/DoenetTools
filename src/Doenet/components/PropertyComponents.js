@@ -9,6 +9,7 @@ import ComponentListWithSelectableType from './abstract/ComponentListWithSelecta
 import ComponentWithAnyChildren from './abstract/ComponentWithAnyChildren';
 import PointListComponent from './abstract/PointListComponent';
 import VectorListComponent from './abstract/VectorListComponent';
+import LineListComponent from './abstract/LineListComponent';
 import AngleListComponent from './abstract/AngleListComponent';
 import Point from './Point';
 import Vector from './Vector';
@@ -978,4 +979,23 @@ export class ComponentIndex extends NumberComponent {
 export class PropIndex extends NumberList {
   static componentType = "propIndex";
   static rendererType = "number";
+}
+
+export class Radians extends MathComponent {
+  static componentType = "radians";
+  static rendererType = "math";
+}
+
+export class Degrees extends MathComponent {
+  static componentType = "degrees";
+  static rendererType = "math";
+}
+
+export class InDegrees extends BooleanComponent {
+  static componentType = "inDegrees";
+  static rendererType = "boolean";
+}
+
+export class BetweenLines extends LineListComponent {
+  static componentType = "betweenLines"
 }

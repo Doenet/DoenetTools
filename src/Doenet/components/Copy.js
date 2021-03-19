@@ -1196,9 +1196,28 @@ export default class Copy extends CompositeComponent {
       let prevSourceName = workspace.sourceNames[sourceNum];
 
       // check if replacementSource has changed
-      if (prevSourceName === undefined || replacementSource.componentName !== prevSourceName
-        || recreateRemaining
-      ) {
+      let needToRecreate = prevSourceName === undefined || replacementSource.componentName !== prevSourceName
+        || recreateRemaining;
+
+      if (!needToRecreate) {
+        // make sure the current replacements still shadow the replacement source
+        for (let ind = 0; ind < workspace.numReplacementsBySource[sourceNum]; ind++) {
+          let currentReplacement = component.replacements[numReplacementsSoFar + ind];
+          console.log(currentReplacement)
+          if (!currentReplacement) {
+            needToRecreate = true;
+            break;
+          } else if (
+            !component.stateValues.effectivePropNameBySource[sourceNum]
+            && currentReplacement.shadows.componentName !== component.stateValues.replacementSourceIdentities[sourceNum].componentName
+          ) {
+            needToRecreate = true;
+            break;
+          }
+        }
+      }
+
+      if (needToRecreate) {
 
         let prevNumReplacements = 0;
         if (prevSourceName !== undefined) {
@@ -1329,7 +1348,7 @@ export default class Copy extends CompositeComponent {
         for (let ind = 0; ind < nNewReplacements; ind++) {
           if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedBySource[sourceNum][ind].length ||
             workspace.propVariablesCopiedBySource[sourceNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i]) ||
-            component.replacements[ind].componentType !== newSerializedReplacements[ind].componentType
+            component.replacements[numReplacementsSoFar + ind].componentType !== newSerializedReplacements[ind].componentType
           ) {
 
             let replacementInstruction = {
