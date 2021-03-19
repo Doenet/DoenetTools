@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Tool, { openOverlayByName } from "../Tool";
-import { Styles, Table, studentData, attemptData, getUserIdFromName } from "../../../Tools/DoenetGradebook"
+import Tool from "../Tool";
+import { Styles, Table, studentData, attemptData } from "../../../Tools/DoenetGradebook"
 import { useToolControlHelper } from "../ToolRoot";
 
 import {

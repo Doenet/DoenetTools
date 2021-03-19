@@ -13,7 +13,7 @@ import {
     useRecoilStateLoadable,
   } from "recoil";
 
-import Tool, { openOverlayByName } from "../Tool";
+import Tool from "../Tool";
 
 export default function GradebookDoenetMLView(props){
     let assignmentId = props.assignmentId;

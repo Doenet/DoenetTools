@@ -1,6 +1,17 @@
 import React, { useEffect, useRef, useState, Suspense } from "react"
 import styled from 'styled-components'
 import { useTable, useSortBy, useFilters, useGlobalFilter, useAsyncDebounce} from 'react-table'
+import Drive, { 
+    folderDictionarySelector, 
+    folderInfoSelectorActions,
+    globalSelectedNodesAtom, 
+    folderDictionary, 
+    clearDriveAndItemSelections,
+    fetchDrivesSelector,
+    encodeParams,
+    fetchDriveUsers,
+    fetchDrivesQuery
+  } from "../imports/Drive";
 import {
     atom,
     RecoilRoot,
@@ -33,6 +44,7 @@ import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 import { useToolControlHelper } from "../imports/Tool/ToolRoot";
 
+import DriveCards from "../imports/DriveCards";
 // React Table Styling
 export const Styles = styled.div`
   padding: 1rem;
@@ -590,15 +602,40 @@ function CourseSelector(props){
 export default function DoenetGradebook(props){
 
     let [courseIdVal, setCourseIdVal] = useRecoilState(courseId);
-    let courseList = useRecoilValueLoadable(coursesData);
-    console.log(courseList.contents)
+    const history = useHistory();
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+
+    useEffect(()=>{
+        if(urlParamsObj.courseId){
+            setCourseIdVal(urlParamsObj.courseId);
+        }else{
+            setCourseIdVal('');
+        }
+      },[urlParamsObj]);
+    
+    // let courseList = useRecoilValueLoadable(coursesData);
+    // console.log(courseList.contents)
 
     return (
       <Tool>
           <headerPanel title="Gradebook">
           </headerPanel>
           <mainPanel>
-              {courseIdVal != '' ? <GradebookOverview /> : courseList.state == 'hasValue' ? <CourseSelector callback = {setCourseIdVal} courseList = {courseList.contents.courseInfo}/> : <p>Loading...</p>}
+
+            {/* {courseIdVal != '' ? <GradebookOverview /> : courseList.state == 'hasValue' ? <CourseSelector callback = {setCourseIdVal} courseList = {courseList.contents.courseInfo}/> : <p>Loading...</p>} */}
+            {courseIdVal != '' ? <GradebookOverview /> :
+                <DriveCards
+                types={['course']}
+                subTypes={['Administrator']}
+                routePathDriveId={''}
+                driveDoubleClickCallback={({item})=>{
+                    let newParams = {};
+                    newParams["courseId"] = `${item.courseId}`;
+                    history.push("?" + encodeParams(newParams));
+                    setCourseIdVal(item.courseId)
+                }}
+                />
+            }
           </mainPanel>
       </Tool>
     )
