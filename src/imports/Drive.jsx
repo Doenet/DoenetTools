@@ -19,9 +19,7 @@ import { faTrashAlt,
   faChalkboard
  } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import  VisibilitySensor from 'react-visibility-sensor';
-// import { useResizeDetector } from 'react-resize-detector';
-// import { withContentRect } from 'react-measure'
+
 import Measure from 'react-measure'
 
 import {
