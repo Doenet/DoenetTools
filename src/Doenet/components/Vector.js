@@ -39,99 +39,36 @@ export default class Vector extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    // let createHeadTailList = function ({ matchedChildren }) {
-
-    //   let results = breakEmbeddedStringByCommas({
-    //     childrenList: matchedChildren,
-    //   });
-
-    //   if (results.success !== true) {
-    //     return { success: false }
-    //   }
-
-    //   let pieces = results.pieces;
-
-    //   let newChildren = [];
-
-
-    //   if (pieces.length < 0 || pieces.length > 2) {
-    //     return { success: false }
-    //   }
-
-    //   for (let ind = 0; ind < pieces.length; ind++) {
-    //     let piece = pieces[ind];
-
-    //     // each piece must be a vector (if not, we won't sugar)
-    //     // the next step is to find the vector components
-    //     // so that we can see if the components themselves are vectors
-
-    //     let result = breakIntoVectorComponents(piece);
-    //     if (result.foundVector !== true) {
-    //       return { success: false };
-    //     }
-
-    //     let vectorComponents = result.vectorComponents;
-
-    //     let children = vectorComponents.map(x => ({
-    //       componentType: "x",
-    //       children: x
-    //     }));
-
-    //     if (pieces.length === 2 && ind == 0) {
-    //       newChildren.push({
-    //         componentType: "tail",
-    //         children: [{
-    //           componentType: "xs",
-    //           children
-    //         }]
-    //       })
-    //     } else {
-    //       newChildren.push({
-    //         componentType: "head",
-    //         children: [{
-    //           componentType: "xs",
-    //           children
-    //         }]
-    //       })
-    //     }
-
-    //   }
-
-    //   return {
-    //     success: true,
-    //     newChildren: newChildren,
-    //   }
-
-    // }
-
-    // sugarInstructions.push({
-    //   childrenRegex: /s/,
-    //   replacementFunction: createHeadTailList
-    // });
-
 
     let breakIntoXsByCommas = function ({ matchedChildren }) {
       let childrenToComponentFunction = x => ({
         componentType: "x", children: x
       });
 
-      let mustStripOffOuterParentheses = true;
-      if (matchedChildren.length === 1 && !matchedChildren[0].state.value.includes(",")) {
-        // if have just one string and that string doesn't have a comma,
-        // then don't strip off outer parentheses
-        mustStripOffOuterParentheses = false;
-      }
-
       let breakFunction = returnBreakStringsSugarFunction({
         childrenToComponentFunction,
-        mustStripOffOuterParentheses
+        mustStripOffOuterParentheses: true
       })
 
       let result = breakFunction({ matchedChildren });
 
+      if (!result.success && matchedChildren.length === 1) {
+        // if didn't succeed and just have a single string child,
+        // then just wrap string with a x
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "x",
+            doenetAttributes: { isPropertyChild: true },
+            children: matchedChildren
+          }]
+        }
+      }
+
       // wrap xs around the x children
       result.newChildren = [{
         componentType: "xs",
+        doenetAttributes: { isPropertyChild: true },
         children: result.newChildren
       }];
 
@@ -156,24 +93,28 @@ export default class Vector extends GraphicalComponent {
       name: "exactlyOneX",
       componentType: 'x',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneY = childLogic.newLeaf({
       name: "exactlyOneY",
       componentType: 'y',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneZ = childLogic.newLeaf({
       name: "exactlyOneZ",
       componentType: 'z',
       number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneXs = childLogic.newLeaf({
       name: "exactlyOneXs",
       componentType: "xs",
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     })
 
     let displacementViaComponents = childLogic.newOperator({
@@ -185,7 +126,8 @@ export default class Vector extends GraphicalComponent {
     let exactlyOneDisplacement = childLogic.newLeaf({
       name: "exactlyOneDisplacement",
       componentType: 'vector',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let displacementOptions = childLogic.newOperator({
@@ -197,13 +139,15 @@ export default class Vector extends GraphicalComponent {
     let exactlyOneHead = childLogic.newLeaf({
       name: "exactlyOneHead",
       componentType: 'head',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneTail = childLogic.newLeaf({
       name: "exactlyOneTail",
       componentType: 'tail',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let vectorDefiningPieces = childLogic.newOperator({
@@ -219,10 +163,17 @@ export default class Vector extends GraphicalComponent {
       number: 1
     });
 
+    let atMostOneVector = childLogic.newLeaf({
+      name: "atMostOneVector",
+      componentType: 'vector',
+      comparison: "atMost",
+      number: 1
+    });
+
     childLogic.newOperator({
       name: "normalDefinitionXorPoints",
       operator: "xor",
-      propositions: [vectorDefiningPieces, atMostOnePoint],
+      propositions: [vectorDefiningPieces, atMostOnePoint, atMostOneVector],
       setAsBase: true
     })
 
@@ -359,6 +310,10 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "child",
           childLogicName: "atMostOnePoint"
         },
+        vectorChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneVector"
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -383,7 +338,9 @@ export default class Vector extends GraphicalComponent {
           }
         }
 
-        if (dependencyValues.pointChild.length === 1) {
+        if (dependencyValues.pointChild.length === 1 ||
+          dependencyValues.vectorChild.length === 1
+        ) {
           return {
             newValues: { basedOnHead: false },
             checkForActualChange: { basedOnHead: true }
@@ -436,6 +393,10 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "displacementShadow"
         },
+        vectorChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneVector"
+        },
         pointChild: {
           dependencyType: "child",
           childLogicName: "atMostOnePoint"
@@ -443,6 +404,7 @@ export default class Vector extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.displacementOptions.length > 0 ||
+          dependencyValues.vectorChild.length === 1 ||
           dependencyValues.pointChild.length === 1
         ) {
           return {
@@ -473,6 +435,22 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
+
+    stateVariableDefinitions.nVectorChildren = {
+      returnDependencies: () => ({
+        vectorChildren: {
+          dependencyType: "child",
+          childLogicName: "atMostOneVector"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: { nVectorChildren: dependencyValues.vectorChildren.length },
+        }
+      }
+    }
+
+
     // Note: if vector created via a copy (with no prop) of another vector
     // definition of nDimensions will be overwritten to shadow nDimensions
     // of the other vector
@@ -500,6 +478,11 @@ export default class Vector extends GraphicalComponent {
         displacementChild: {
           dependencyType: "child",
           childLogicName: "exactlyOneDisplacement",
+          variableNames: ["nDimensions"],
+        },
+        vectorChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneVector",
           variableNames: ["nDimensions"],
         },
         xChild: {
@@ -552,6 +535,8 @@ export default class Vector extends GraphicalComponent {
         if (dependencyValues.basedOnDisplacement) {
           if (dependencyValues.displacementChild.length === 1) {
             displacementNDimensions = dependencyValues.displacementChild[0].stateValues.nDimensions;
+          } else if (dependencyValues.vectorChild.length === 1) {
+            displacementNDimensions = dependencyValues.vectorChild[0].stateValues.nDimensions;
           } else if (dependencyValues.xsChild.length === 1) {
             displacementNDimensions = dependencyValues.xsChild[0].stateValues.nComponents;
           } else if (dependencyValues.zChild.length === 1) {
@@ -652,10 +637,10 @@ export default class Vector extends GraphicalComponent {
         } else {
           // entire array
           // wrap by both <vector> and <xs>
-          return [["vector", "xs"]];
+          return [["vector", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
-      stateVariablesDeterminingDependencies: ["basedOnDisplacement", "nPointChildren"],
+      stateVariablesDeterminingDependencies: ["basedOnDisplacement", "nPointChildren", "nVectorChildren"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -697,6 +682,12 @@ export default class Vector extends GraphicalComponent {
             dependenciesByKey[arrayKey].displacementChild = {
               dependencyType: "child",
               childLogicName: "atMostOnePoint",
+              variableNames: ["x" + varEnding],
+            };
+          } else if (stateValues.nVectorChildren === 1) {
+            dependenciesByKey[arrayKey].displacementChild = {
+              dependencyType: "child",
+              childLogicName: "atMostOneVector",
               variableNames: ["x" + varEnding],
             };
           } else {
@@ -892,7 +883,7 @@ export default class Vector extends GraphicalComponent {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],
@@ -1133,7 +1124,7 @@ export default class Vector extends GraphicalComponent {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],

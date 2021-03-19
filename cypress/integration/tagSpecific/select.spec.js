@@ -616,7 +616,7 @@ describe('Select Tag Tests', function () {
         </select>
       </template>
       <sources>
-      <sequence count="$_mathinput1"/>
+      <sequence length="$_mathinput1"/>
       </sources>
     </map>
     </aslist></p>
@@ -1596,13 +1596,75 @@ describe('Select Tag Tests', function () {
     })
   });
 
+  it('select math as sugar', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist>
+    <select type="math" assignnames="(m1),(m2),(m3),(m4),(m5)" numbertoselect="5">
+      x^2, x/y, u, a, b-c, s+t, mn, -1
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
+      .map(x => me.fromText(x))
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathsSoFar = [];
+      for (let ind = 1; ind <= 5; ind++) {
+        let math = components['/m' + ind].stateValues.value;
+        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        mathsSoFar.push(math);
+      }
+    })
+  });
+
+  it('select math as sugar, no type specified', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist>
+    <select assignnames="(m1),(m2),(m3),(m4),(m5)" numbertoselect="5">
+      x^2, x/y, u, a, b-c, s+t, mn, -1
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
+      .map(x => me.fromText(x))
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathsSoFar = [];
+      for (let ind = 1; ind <= 5; ind++) {
+        let math = components['/m' + ind].stateValues.value;
+        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        mathsSoFar.push(math);
+      }
+    })
+  });
+
   it('select text as sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
-    <select assignnames="(w1),(w2),(w3),(w4),(w5)" numbertoselect="5">
+    <select type="text" assignnames="(w1),(w2),(w3),(w4),(w5)" numbertoselect="5">
       Lorem, ipsum ,dolor, sit, amet, consectetur, adipiscing, elit
     </select>
     </aslist>
@@ -1610,9 +1672,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1626,13 +1686,13 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select numbers as sugar', () => {
+  it('select number as sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
-    <select assignnames="(n1),(n2),(n3),(n4),(n5),(n6),(n7),(n8),(n9),(n10)" numbertoselect="10" withReplacement>
+    <select type="number" assignnames="(n1),(n2),(n3),(n4),(n5),(n6),(n7),(n8),(n9),(n10)" numbertoselect="10" withReplacement>
       2,3,5,7,11,13,17,19
     </select>
     </aslist>
@@ -1640,9 +1700,7 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);

@@ -14,9 +14,9 @@ export default class MathOperatorOneInput extends MathComponent {
       definition: () => ({ newValues: { mathOperator: x => me.fromAst('\uff3f') } })
     }
 
-    stateVariableDefinitions.reverseMathOperator = {
+    stateVariableDefinitions.inverseMathOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { reverseMathOperator: null } })
+      definition: () => ({ newValues: { inverseMathOperator: null } })
     }
 
     // rename unnormalizedValue to unnormalizedValuePreOperator
@@ -37,9 +37,9 @@ export default class MathOperatorOneInput extends MathComponent {
           dependencyType: "stateVariable",
           variableName: "mathOperator"
         },
-        reverseMathOperator: {
+        inverseMathOperator: {
           dependencyType: "stateVariable",
-          variableName: "mathOperator"
+          variableName: "inverseMathOperator"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -52,9 +52,9 @@ export default class MathOperatorOneInput extends MathComponent {
           }
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.reverseMathOperator) {
-          let newValue = dependencyValues.reverseMathOperator(
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentName }) {
+        if (dependencyValues.inverseMathOperator) {
+          let newValue = dependencyValues.inverseMathOperator(
             desiredStateVariableValues.unnormalizedValue
           )
           return {
@@ -78,14 +78,14 @@ export default class MathOperatorOneInput extends MathComponent {
     });
 
     // create new version on canBeModified that is false 
-    // if don't have reverseMathOperator
+    // if don't have inverseMathOperator
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({
         canBeModifiedPreOperator: {
           dependencyType: "stateVariable",
           variableName: "canBeModifiedPreOperator"
         },
-        reverseMathOperator: {
+        inverseMathOperator: {
           dependencyType: "stateVariable",
           variableName: "mathOperator"
         }
@@ -93,7 +93,7 @@ export default class MathOperatorOneInput extends MathComponent {
       definition: function ({ dependencyValues }) {
         let canBeModified = dependencyValues.canBeModifiedPreOperator;
 
-        if (!dependencyValues.reverseMathOperator) {
+        if (!dependencyValues.inverseMathOperator) {
           canBeModified = false;
         }
 

@@ -373,6 +373,12 @@ export default class Angle extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.value = {
+      isAlias: true,
+      targetVariableName: "angle"
+    };
+
+
     stateVariableDefinitions.degrees = {
       public: true,
       componentType: "number",

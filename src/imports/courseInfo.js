@@ -1,6 +1,7 @@
-import { useIndexedDB, initDB } from 'react-indexed-db';
+//TODO fubar'd because of lack of react-indexed-db
+// import { useIndexedDB, initDB } from 'react-indexed-db';
 import axios from 'axios';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 
 //callback(courseListArray,selectedCourseObj)
 export function getCourses_CI(callback){

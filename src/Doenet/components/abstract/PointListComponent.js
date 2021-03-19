@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from '../commonsugar/breakstrings';
+import { breakEmbeddedStringByCommas, breakEmbeddedStringIntoParensPieces, breakIntoVectorComponents } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -12,52 +12,30 @@ export default class PointListComponent extends BaseComponent {
 
     let createPointList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringByCommas({
-        childrenList: matchedChildren,
+      let results = breakEmbeddedStringIntoParensPieces({
+        componentList: matchedChildren,
       });
+
+      console.log(`results from breaking by parens`)
+      console.log(JSON.parse(JSON.stringify(results)));
 
       if (results.success !== true) {
         return { success: false }
       }
 
-      let pieces = results.pieces;
-
-      let newChildren = [];
-
-      for (let ind = 0; ind < pieces.length; ind++) {
-        let piece = pieces[ind];
-
-        // each piece must be a vector (if not, we won't sugar)
-
-        let result = breakIntoVectorComponents(piece);
-        if (result.foundVector !== true) {
-          return { success: false };
-        }
-
-        let vectorComponents = result.vectorComponents;
-
-        let children = vectorComponents.map(x => ({
-          componentType: "x",
-          children: x
-        }));
-
-
-
-        newChildren.push({
-          componentType: "point",
-          children: [{
-            componentType: "xs",
-            children
-          }]
-        })
-
-      }
-
       return {
         success: true,
-        newChildren: newChildren,
+        newChildren: results.pieces.map(function (piece) {
+          if (piece.length > 1 || piece[0].componentType === "string") {
+            return {
+              componentType: "point",
+              children: piece
+            }
+          } else {
+            return piece[0]
+          }
+        })
       }
-
     }
 
     sugarInstructions.push({
@@ -145,7 +123,7 @@ export default class PointListComponent extends BaseComponent {
           // point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {

@@ -428,7 +428,7 @@ export default class Curve extends GraphicalComponent {
           // throughPoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -743,7 +743,7 @@ export default class Curve extends GraphicalComponent {
           // controlVector or entire array
           // wrap inner dimension by both <vector> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["vector", "xs"]];
+          return [["vector", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -1109,7 +1109,7 @@ export default class Curve extends GraphicalComponent {
           // controlPoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -1627,7 +1627,7 @@ export default class Curve extends GraphicalComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atLeastZeroFunctions",
-              variableNames: ["f"],
+              variableNames: ["numericalf"],
               childIndices: [arrayKey]
             }
           };
@@ -1653,7 +1653,7 @@ export default class Curve extends GraphicalComponent {
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
-            fs[arrayKey] = functionChild[0].stateValues.f;
+            fs[arrayKey] = functionChild[0].stateValues.numericalf;
           } else {
             if (Number(arrayKey) === 0 && dependencyValuesByKey[arrayKey].fShadow) {
               fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;

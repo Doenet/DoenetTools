@@ -10,10 +10,6 @@ export default class Sequence extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static modifySharedParameters({ sharedParameters }) {
-    sharedParameters.defaultToPrescribedParameters = true;
-  }
-
   // don't actually need to shadow these, as replacements for shadows
   // ignore state variables
   // but, shadow them so that state variables are consistent
@@ -22,7 +18,7 @@ export default class Sequence extends CompositeComponent {
     return [
       "specifiedFrom", "typeOfFrom",
       "specifiedTo", "typeOfTo",
-      "specifiedCount", "specifiedStep", "specifiedExclude"
+      "specifiedlength", "specifiedStep", "specifiedExclude"
     ]
   };
 
@@ -54,9 +50,9 @@ export default class Sequence extends CompositeComponent {
       takePropertyChildren: true,
     });
 
-    let atMostOneCount = childLogic.newLeaf({
-      name: "atMostOneCount",
-      componentType: 'count',
+    let atMostOnelength = childLogic.newLeaf({
+      name: "atMostOnelength",
+      componentType: 'length',
       comparison: "atMost",
       number: 1,
       takePropertyChildren: true,
@@ -73,7 +69,7 @@ export default class Sequence extends CompositeComponent {
     childLogic.newOperator({
       name: "sequenceLogic",
       operator: 'and',
-      propositions: [atMostOneFrom, atMostOneTo, atMostOneStep, atMostOneCount, atMostOneExclude],
+      propositions: [atMostOneFrom, atMostOneTo, atMostOneStep, atMostOnelength, atMostOneExclude],
       setAsBase: true,
     });
 
@@ -200,36 +196,36 @@ export default class Sequence extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.specifiedCount = {
+    stateVariableDefinitions.specifiedlength = {
       returnDependencies: () => ({
-        countChild: {
+        lengthChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneCount",
+          childLogicName: "atMostOnelength",
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
         },
       }),
       defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.countChild.length === 0) {
+        if (dependencyValues.lengthChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              specifiedCount: { variablesToCheck: ["count", "specifiedCount"] }
+              specifiedlength: { variablesToCheck: ["length", "specifiedlength"] }
             }
           }
         }
-        if (dependencyValues.countChild[0].stateValues.value === null) {
-          // if have a count child, but its value is null,
-          // it means we have an invalid count
+        if (dependencyValues.lengthChild[0].stateValues.value === null) {
+          // if have a length child, but its value is null,
+          // it means we have an invalid length
           // Can't return null, as that indicates value wasn't specified
           // so return NaN
           return {
             newValues: {
-              specifiedCount: NaN,
+              specifiedlength: NaN,
             }
           }
         }
-        return { newValues: { specifiedCount: dependencyValues.countChild[0].stateValues.value } }
+        return { newValues: { specifiedlength: dependencyValues.lengthChild[0].stateValues.value } }
       },
     };
 
@@ -335,9 +331,9 @@ export default class Sequence extends CompositeComponent {
 
     stateVariableDefinitions.validSequence = {
       returnDependencies: () => ({
-        specifiedCount: {
+        specifiedlength: {
           dependencyType: "stateVariable",
-          variableName: "specifiedCount",
+          variableName: "specifiedlength",
         },
         specifiedStep: {
           dependencyType: "stateVariable",
@@ -364,9 +360,9 @@ export default class Sequence extends CompositeComponent {
 
         let validSequence = true;
 
-        if (dependencyValues.specifiedCount !== null) {
-          if (!Number.isInteger(dependencyValues.specifiedCount) || dependencyValues.specifiedCount < 0) {
-            console.log("Invalid count of sequence.  Must be a non-negative integer.")
+        if (dependencyValues.specifiedlength !== null) {
+          if (!Number.isInteger(dependencyValues.specifiedlength) || dependencyValues.specifiedlength < 0) {
+            console.log("Invalid length of sequence.  Must be a non-negative integer.")
             validSequence = false;
           }
         }
@@ -416,7 +412,7 @@ export default class Sequence extends CompositeComponent {
     let componentConstructor = this;
 
     stateVariableDefinitions.from = {
-      additionalStateVariablesDefined: ["step", "count", "exclude"],
+      additionalStateVariablesDefined: ["step", "length", "exclude"],
 
       returnDependencies: () => ({
         specifiedFrom: {
@@ -427,9 +423,9 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "specifiedTo",
         },
-        specifiedCount: {
+        specifiedlength: {
           dependencyType: "stateVariable",
-          variableName: "specifiedCount",
+          variableName: "specifiedlength",
         },
         specifiedStep: {
           dependencyType: "stateVariable",
@@ -453,7 +449,7 @@ export default class Sequence extends CompositeComponent {
         let from = dependencyValues.specifiedFrom;
         let to = dependencyValues.specifiedTo;
         let step = dependencyValues.specifiedStep;
-        let count = dependencyValues.specifiedCount;
+        let length = dependencyValues.specifiedlength;
         let exclude = [...dependencyValues.specifiedExclude];
         let selectedType = dependencyValues.selectedType;
 
@@ -533,7 +529,7 @@ export default class Sequence extends CompositeComponent {
 
         if (dependencyValues.validSequence) {
           let results = componentConstructor.calculateSequenceParameters({
-            from, to, step, count, selectedType
+            from, to, step, length, selectedType
           });
           results.exclude = exclude;
 
@@ -541,11 +537,11 @@ export default class Sequence extends CompositeComponent {
 
         }
 
-        if (!Number.isInteger(count) || count < 0) {
-          count = 0;
+        if (!Number.isInteger(length) || length < 0) {
+          length = 0;
         }
 
-        return { newValues: { from, step, count, exclude } };
+        return { newValues: { from, step, length, exclude } };
       },
     };
 
@@ -556,9 +552,9 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "from",
         },
-        count: {
+        length: {
           dependencyType: "stateVariable",
-          variableName: "count",
+          variableName: "length",
         },
         step: {
           dependencyType: "stateVariable",
@@ -588,9 +584,9 @@ export default class Sequence extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static calculateSequenceParameters({ from, to, step, count, selectedType }) {
+  static calculateSequenceParameters({ from, to, step, length, selectedType }) {
 
-    // calculate from, count and step from combinatons of from/to/count/step specified
+    // calculate from, length and step from combinatons of from/to/length/step specified
 
     if (from === null) {
       if (to === null) {
@@ -606,13 +602,13 @@ export default class Sequence extends CompositeComponent {
           } else {
             step = 1;
           }
-          if (count === null) {
-            count = 10;
+          if (length === null) {
+            length = 10;
           }
         } else {
           // no from or to, but step
-          if (count === null) {
-            count = 10;
+          if (length === null) {
+            length = 10;
           }
         }
       } else {
@@ -624,25 +620,25 @@ export default class Sequence extends CompositeComponent {
             step = 1;
           }
         }
-        if (count === null) {
+        if (length === null) {
           if (selectedType === "math") {
-            count = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
+            length = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
           } else {
-            count = Math.floor((to - 1) / step + 1)
+            length = Math.floor((to - 1) / step + 1)
           }
         }
 
         // no from, but to
-        // defined step and count even if none
+        // defined step and length even if none
         if (selectedType === "math") {
-          from = to.subtract(step.multiply(count - 1)).simplify();
+          from = to.subtract(step.multiply(length - 1)).simplify();
         } else {
-          from = to - step * (count - 1);
+          from = to - step * (length - 1);
           if (selectedType === "letters") {
             if (from < 1) {
-              // adjust count so that have valid letters
-              count = Math.floor((to - 1) / step + 1)
-              from = to - step * (count - 1);
+              // adjust length so that have valid letters
+              length = Math.floor((to - 1) / step + 1)
+              from = to - step * (length - 1);
 
             }
           }
@@ -659,25 +655,25 @@ export default class Sequence extends CompositeComponent {
             step = 1;
           }
         }
-        if (count === null) {
-          count = 10;
+        if (length === null) {
+          length = 10;
         }
       } else {
         // from and to defined
         if (step === null) {
-          if (count === null) {
+          if (length === null) {
             if (selectedType === "math") {
               step = me.fromAst(1);
-              count = to.subtract(from).add(1).evaluate_to_constant();
+              length = to.subtract(from).add(1).evaluate_to_constant();
             } else {
               step = 1;
-              count = (to - from + 1);
+              length = (to - from + 1);
             }
           } else {
             if (selectedType === "math") {
-              step = to.subtract(from).divide(count - 1);
+              step = to.subtract(from).divide(length - 1);
             } else {
-              step = (to - from) / (count - 1);
+              step = (to - from) / (length - 1);
               // for letters, step must be integer
               if (selectedType === "letters") {
                 step = Math.floor(step);
@@ -685,28 +681,28 @@ export default class Sequence extends CompositeComponent {
             }
           }
         } else {
-          if (count === null) {
-            // from, to, and step, no count
+          if (length === null) {
+            // from, to, and step, no length
             if (selectedType === "math") {
-              count = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
+              length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
             } else {
-              count = Math.floor((to - from) / step + 1);
+              length = Math.floor((to - from) / step + 1);
             }
           } else {
-            // from, to, step, and count defined
-            throw Error("Can't define from, to, step, and count for sequence");
+            // from, to, step, and length defined
+            throw Error("Can't define from, to, step, and length for sequence");
           }
         }
       }
     }
 
-    if (!Number.isInteger(count) || count < 0) {
-      console.log("Invalid count of sequence.  Must be a non-negative integer.")
-      count = 0;
+    if (!Number.isInteger(length) || length < 0) {
+      console.log("Invalid length of sequence.  Must be a non-negative integer.")
+      length = 0;
     }
 
     return {
-      from, step, count,
+      from, step, length,
     }
   }
 
@@ -721,7 +717,7 @@ export default class Sequence extends CompositeComponent {
     if (!component.stateValues.validSequence) {
       workspace.lastReplacementParameters = {
         from: null,
-        count: null,
+        length: null,
         step: null,
         selectedType: null,
         exclude: null,
@@ -732,7 +728,7 @@ export default class Sequence extends CompositeComponent {
 
     workspace.lastReplacementParameters = {
       from: component.stateValues.from,
-      count: component.stateValues.count,
+      length: component.stateValues.length,
       step: component.stateValues.step,
       selectedType: component.stateValues.selectedType,
       exclude: component.stateValues.exclude,
@@ -740,7 +736,7 @@ export default class Sequence extends CompositeComponent {
 
     let replacements = [];
 
-    let nReplacementsToAttempt = component.stateValues.count;
+    let nReplacementsToAttempt = component.stateValues.length;
 
     for (let ind = 0; ind < nReplacementsToAttempt; ind++) {
       let componentValue = component.stateValues.from;
@@ -814,10 +810,10 @@ export default class Sequence extends CompositeComponent {
       }
 
       // leave all previous replacement parameters as they were before
-      // except make count zero.
+      // except make length zero.
       // That way, if later restore to previous parameter set,
       // we can restore the old replacements
-      lrp.count = 0;
+      lrp.length = 0;
 
       return replacementChanges;
     }
@@ -862,18 +858,18 @@ export default class Sequence extends CompositeComponent {
         }
       }
 
-      let prevCount = lrp.count;
+      let prevlength = lrp.length;
       let numReplacementsToAdd = 0;
       let numToModify = 0;
-      let firstToModify = prevCount;
+      let firstToModify = prevlength;
       let newReplacementsToWithhold;
 
       // if have fewer replacements than before
       // mark old replacements as hidden
-      if (component.stateValues.count < prevCount) {
+      if (component.stateValues.length < prevlength) {
 
         // since use number of replacements directly, it accounts for empties
-        newReplacementsToWithhold = component.replacements.length - component.stateValues.count;
+        newReplacementsToWithhold = component.replacements.length - component.stateValues.length;
 
         let replacementInstruction = {
           changeType: "changeReplacementsToWithhold",
@@ -881,8 +877,8 @@ export default class Sequence extends CompositeComponent {
         };
         replacementChanges.push(replacementInstruction);
 
-      } else if (component.stateValues.count > prevCount) {
-        numReplacementsToAdd = component.stateValues.count - prevCount;
+      } else if (component.stateValues.length > prevlength) {
+        numReplacementsToAdd = component.stateValues.length - prevlength;
 
         if (component.replacementsToWithhold > 0) {
           let nonEmptiesWithheld = component.replacementsToWithhold;
@@ -893,7 +889,7 @@ export default class Sequence extends CompositeComponent {
           if (nonEmptiesWithheld >= numReplacementsToAdd) {
             newReplacementsToWithhold = component.replacementsToWithhold - numReplacementsToAdd;
             numToModify += numReplacementsToAdd;
-            prevCount += numReplacementsToAdd;
+            prevlength += numReplacementsToAdd;
             numReplacementsToAdd = 0;
 
             let replacementInstruction = {
@@ -905,7 +901,7 @@ export default class Sequence extends CompositeComponent {
           } else {
             numReplacementsToAdd -= nonEmptiesWithheld;
             numToModify += nonEmptiesWithheld;
-            prevCount += nonEmptiesWithheld;
+            prevlength += nonEmptiesWithheld;
             newReplacementsToWithhold = 0;
             // don't need to send changedReplacementsToWithold instructions
             // since will send add instructions,
@@ -916,12 +912,12 @@ export default class Sequence extends CompositeComponent {
       }
 
       if (modifyExistingValues === true) {
-        numToModify = prevCount;
+        numToModify = prevlength;
         firstToModify = 0;
       }
 
       if (numToModify > 0) {
-        // need to modify values of the first prevCount components
+        // need to modify values of the first prevlength components
 
         for (let ind = firstToModify; ind < firstToModify + numToModify; ind++) {
           let componentValue = component.stateValues.from;
@@ -949,7 +945,7 @@ export default class Sequence extends CompositeComponent {
 
         let newSerializedReplacements = [];
 
-        for (let ind = prevCount; ind < component.stateValues.count; ind++) {
+        for (let ind = prevlength; ind < component.stateValues.length; ind++) {
           let componentValue = component.stateValues.from;
           if (ind > 0) {
             if (component.stateValues.selectedType === "math") {
@@ -975,18 +971,18 @@ export default class Sequence extends CompositeComponent {
           parentName: component.componentName,
           parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
           componentInfoObjects,
-          indOffset: prevCount,
+          indOffset: prevlength,
         });
 
 
         let replacementInstruction = {
           changeType: "add",
           changeTopLevelReplacements: true,
-          firstReplacementInd: prevCount,
+          firstReplacementInd: prevlength,
           numberReplacementsToReplace: workspace.nEmptiesAdded,
           serializedReplacements: processResult.serializedComponents,
           replacementsToWithhold: 0,
-          assignNamesOffset: prevCount
+          assignNamesOffset: prevlength
         }
         replacementChanges.push(replacementInstruction);
         workspace.nEmptiesAdded = processResult.nEmptiesAdded;
@@ -995,7 +991,7 @@ export default class Sequence extends CompositeComponent {
 
     lrp.selectedType = component.stateValues.selectedType;
     lrp.from = component.stateValues.from;
-    lrp.count = component.stateValues.count;
+    lrp.length = component.stateValues.length;
     lrp.step = component.stateValues.step;
     lrp.exclude = component.stateValues.exclude;
 

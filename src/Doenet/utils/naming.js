@@ -1,16 +1,15 @@
-import crypto from 'crypto';
+import sha1 from 'crypto-js/sha1';
+import Base64 from 'crypto-js/enc-base64';
 
 let rePlus = /\+/g;
 let reSlash = /\//g;
 
 export function createUniqueName(componentType, longNameId) {
 
-  const hash = crypto.createHash('sha1');
-  hash.update(longNameId);
-
   // use base64 encoding, but replace + with _ and / with -
   // so that the name is a valid CSS identifier
-  let hashStringShortened = hash.digest('base64').slice(0, 10)
+  //T
+  let hashStringShortened = Base64.stringify(sha1(longNameId))
     .replace(rePlus, '_').replace(reSlash, '-');
 
   // console.log(`componentType: ${componentType}, longNameID: ${longNameId}, hashString: ${hashStringShortened}`)

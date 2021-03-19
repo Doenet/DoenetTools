@@ -35,6 +35,12 @@ export default class Booleaninput extends Input {
   }
   static componentType = "booleaninput";
 
+  static variableForPlainMacro = "value";
+
+  static get stateVariablesShadowedForReference() {
+    return ["value"]
+  };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "false" };
@@ -52,6 +58,7 @@ export default class Booleaninput extends Input {
       comparison: "atMost",
       number: 1,
       setAsBase: true,
+      takePropertyChildren: true,
     })
 
     return childLogic;

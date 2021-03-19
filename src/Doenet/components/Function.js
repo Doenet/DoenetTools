@@ -616,46 +616,140 @@ export default class Function extends InlineComponent {
               f: dependencyValues.functionChild[0].stateValues.f
             }
           }
+        } else if (dependencyValues.symbolic) {
+          return {
+            newValues: {
+              f: returnSymbolicFunction({ dependencyValues })
+            }
+          }
         } else {
+          return {
+            newValues: {
+              f: returnNumericalFunction({ dependencyValues })
+            }
+          }
+        }
+      }
+    }
 
-          if (dependencyValues.symbolic) {
-            let formula = dependencyValues.formula;
-            let varString = dependencyValues.variable.tree;
-            let simplify = dependencyValues.simplify;
-            let expand = dependencyValues.expand;
-            return {
-              newValues: {
-                f: (x) => normalizeMathExpression({
-                  value: formula.substitute({ [varString]: x }),
-                  simplify,
-                  expand
 
-                })
+    stateVariableDefinitions.symbolicf = {
+      returnDependencies() {
+        return {
+          isInterpolatedFunction: {
+            dependencyType: "stateVariable",
+            variableName: "isInterpolatedFunction"
+          },
+          symbolic: {
+            dependencyType: "stateVariable",
+            variableName: "symbolic",
+          },
+          f: {
+            dependencyType: "stateVariable",
+            variableName: "f",
+          },
+          formula: {
+            dependencyType: "stateVariable",
+            variableName: "formula",
+          },
+          variable: {
+            dependencyType: "stateVariable",
+            variableName: "variable",
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
+            variableNames: ["symbolicf"],
+          },
+          simplify: {
+            dependencyType: "stateVariable",
+            variableName: "simplify"
+          },
+          expand: {
+            dependencyType: "stateVariable",
+            variableName: "expand"
+          },
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.isInterpolatedFunction) {
+          return {
+            newValues: {
+              symbolicf: function (x) {
+                me.fromAst(dependencyValues.f(x.evaluate_to_constant()))
               }
             }
-          } else {
-
-            let formula_f;
-            try {
-              formula_f = dependencyValues.formula.f();
-            } catch (e) {
-              formula_f = () => NaN;
-            }
-            let varString = dependencyValues.variable.tree;
-            return {
-              newValues: {
-                f: function (x) {
-                  try {
-                    return formula_f({ [varString]: x });
-                  } catch (e) {
-                    return NaN;
-                  }
-                }
-              }
-            }
-
           }
 
+        } else if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              symbolicf: dependencyValues.functionChild[0].stateValues.symbolicf
+            }
+          }
+        } else if (dependencyValues.symbolic) {
+          return { newValues: { symbolicf: dependencyValues.f } }
+        } else {
+
+          return {
+            newValues: {
+              symbolicf: returnSymbolicFunction({ dependencyValues })
+            }
+          }
+
+        }
+
+      }
+    }
+
+
+    stateVariableDefinitions.numericalf = {
+      returnDependencies() {
+        return {
+          isInterpolatedFunction: {
+            dependencyType: "stateVariable",
+            variableName: "isInterpolatedFunction"
+          },
+          symbolic: {
+            dependencyType: "stateVariable",
+            variableName: "symbolic",
+          },
+          f: {
+            dependencyType: "stateVariable",
+            variableName: "f",
+          },
+          formula: {
+            dependencyType: "stateVariable",
+            variableName: "formula",
+          },
+          variable: {
+            dependencyType: "stateVariable",
+            variableName: "variable",
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
+            variableNames: ["numericalf"],
+          },
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.isInterpolatedFunction || !dependencyValues.symbolic) {
+          return { newValues: { numericalf: dependencyValues.f } }
+        } else if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              numericalf: dependencyValues.functionChild[0].stateValues.numericalf
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              numericalf: returnNumericalFunction({ dependencyValues })
+            }
+          }
         }
       }
     }
@@ -702,7 +796,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap minimumLocation(s) or minimumValues(s)
           return [];
@@ -1025,7 +1119,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap maximumLocation(s) or maximumValues(s)
           return [];
@@ -1367,7 +1461,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", "xs"]];
+          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
         } else {
           // don't wrap extremumLocation(s) or extremumValues(s)
           return [];
@@ -1654,7 +1748,7 @@ export default class Function extends InlineComponent {
   }
 
   adapters = [{
-    stateVariable: "f",
+    stateVariable: "numericalf",
     componentType: "curve"
   },
   {
@@ -1665,6 +1759,37 @@ export default class Function extends InlineComponent {
 }
 
 
+function returnSymbolicFunction({ dependencyValues }) {
+
+  let formula = dependencyValues.formula;
+  let varString = dependencyValues.variable.tree;
+  let simplify = dependencyValues.simplify;
+  let expand = dependencyValues.expand;
+  return (x) => normalizeMathExpression({
+    value: formula.substitute({ [varString]: x }),
+    simplify,
+    expand
+  })
+}
+
+function returnNumericalFunction({ dependencyValues }) {
+
+  let formula_f;
+  try {
+    formula_f = dependencyValues.formula.f();
+  } catch (e) {
+    formula_f = () => NaN;
+  }
+  let varString = dependencyValues.variable.tree;
+  return function (x) {
+    try {
+      return formula_f({ [varString]: x });
+    } catch (e) {
+      return NaN;
+    }
+  }
+
+}
 
 function calculateInterpolationPoints({ dependencyValues, numerics }) {
 

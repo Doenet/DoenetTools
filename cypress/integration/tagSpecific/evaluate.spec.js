@@ -49,6 +49,36 @@ describe('Evaluate Tag Tests', function () {
 
   <p>Evaluated numeric result again: <copy prop="evaluatedResult" tname="result_numeric" assignNames="result_numeric3" /></p>
 
+
+  <p>Force evaluate symbolic: 
+  <evaluate forceSymbolic name="result_force_symbolic">
+    <copy tname="f_symbolic" />
+    <input>$input</input>
+  </evaluate>
+  </p>
+
+  <p>Force evaluate symbolic numeric function: 
+  <evaluate forceSymbolic name="result_force_symbolic_numeric">
+    <copy tname="f_numeric" />
+    <input>$input</input>
+  </evaluate>
+  </p>
+
+  <p>Force evaluate numeric: 
+  <evaluate forceNumeric name="result_force_numeric">
+    <copy tname="f_numeric" />
+    <input>$input</input>
+  </evaluate>
+  </p>
+
+  <p>Force evaluate numeric symbolic function: 
+  <evaluate forceNumeric name="result_force_numeric_symbolic">
+    <copy tname="f_symbolic" />
+    <input>$input</input>
+  </evaluate>
+  </p>
+
+
   `}, "*");
     });
 
@@ -73,6 +103,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
+    cy.get('#\\/result_force_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(0)')
+    })
+    cy.get('#\\/result_force_symbolic_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(0)')
+    })
+    cy.get('#\\/result_force_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/result_force_numeric_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -82,6 +124,10 @@ describe('Evaluate Tag Tests', function () {
       expect(components['/result_numeric'].stateValues.value.tree).eq(0);
       expect(components['/result_numeric2'].stateValues.value.tree).eq(0);
       expect(components['/result_numeric3'].stateValues.value.tree).eq(0);
+      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", 0]);
+      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", 0]);
+      expect(components['/result_force_numeric'].stateValues.value.tree).eq(0);
+      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).eq(0);
     })
 
 
@@ -105,6 +151,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
+    cy.get('#\\/result_force_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/result_force_symbolic_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/result_force_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+    cy.get('#\\/result_force_numeric_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -114,6 +172,10 @@ describe('Evaluate Tag Tests', function () {
       expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
       expect(components['/result_numeric2'].stateValues.value.tree).closeTo(0, 1E-10);
       expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
+      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
+      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
+      expect(components['/result_force_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
+      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
     })
 
 
@@ -137,6 +199,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('NaN')
     })
+    cy.get('#\\/result_force_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(x)')
+    })
+    cy.get('#\\/result_force_symbolic_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(x)')
+    })
+    cy.get('#\\/result_force_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/result_force_numeric_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
 
 
     cy.window().then((win) => {
@@ -147,6 +221,10 @@ describe('Evaluate Tag Tests', function () {
       assert.isNaN(components['/result_numeric'].stateValues.value.tree);
       assert.isNaN(components['/result_numeric2'].stateValues.value.tree);
       assert.isNaN(components['/result_numeric3'].stateValues.value.tree);
+      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "x"]);
+      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "x"]);
+      assert.isNaN(components['/result_force_numeric'].stateValues.value.tree);
+      assert.isNaN(components['/result_force_numeric_symbolic'].stateValues.value.tree);
 
     })
 
@@ -170,6 +248,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result_numeric3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
+    cy.get('#\\/result_force_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/result_force_symbolic_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(π)')
+    })
+    cy.get('#\\/result_force_numeric').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
+    cy.get('#\\/result_force_numeric_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
+    })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -179,9 +269,64 @@ describe('Evaluate Tag Tests', function () {
       expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
       expect(components['/result_numeric2'].stateValues.value.tree).closeTo(0, 1E-10);
       expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
+      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
+      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
+      expect(components['/result_force_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
+      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
     })
 
   })
+
+  it('user-defined function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Choose variable for function: <mathinput name="x" prefill="x" />.
+  Let <m>f($x) =</m> <mathinput name="fformula" prefill="ax" />.
+  Let <m>u = </m> <mathinput name="u" prefill="3v" />.
+  Then <m name="result">f(u) = f($u) = $$f($u)</m>.</p>
+
+  <p hide><function name="f" variable="$x" symbolic simplify expand><formula>$fformula</formula></function></p>
+  
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('initial state');
+
+    cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(u)=f(3v)=3av')
+    })
+
+    cy.log('change function')
+    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}bx^2{enter}", { force: true });
+    cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(u)=f(3v)=9bv2')
+    })
+
+    cy.log('change u')
+    cy.get('#\\/u textarea').type("{end}{backspace}{backspace}cq^2{enter}", { force: true });
+    cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(u)=f(cq2)=bc2q4')
+    })
+
+    cy.log('change variable')
+    cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(u)=f(cq2)=bx2')
+    })
+
+    cy.log('change function to match variable')
+    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}ay+by^2{enter}", { force: true });
+    cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(u)=f(cq2)=acq2+bc2q4')
+    })
+
+  })
+
 
 })
 

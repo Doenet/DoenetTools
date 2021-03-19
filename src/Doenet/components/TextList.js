@@ -19,11 +19,27 @@ export default class TextList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringIntoTextsByCommas = function ({ matchedChildren }) {
-      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
-        componentType: "text",
-        state: { value: x.trim() }
-      }));
+
+    let breakStringsIntoTextsBySpaces = function ({ matchedChildren }) {
+
+      // break any string by white space and wrap pieces with text
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(/\s+/)
+              .filter(s => s)
+              .map(s => ({
+                componentType: "text",
+                children: [{ componentType: "string", state: { value: s } }]
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
       return {
         success: true,
         newChildren: newChildren,
@@ -31,8 +47,7 @@ export default class TextList extends InlineComponent {
     }
 
     sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: breakStringIntoTextsByCommas
+      replacementFunction: breakStringsIntoTextsBySpaces
     });
 
     return sugarInstructions;

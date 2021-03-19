@@ -10,6 +10,9 @@ export function gatherDescendants({ ancestor, descendantClasses,
   init = true
 }) {
 
+  // console.log("descendantClasses")
+  // console.log(descendantClasses)
+
   let childrenToCheck = [];
 
   if (useReplacementsForComposites && ancestor instanceof compositeClass) {
@@ -132,7 +135,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
   }
 
   let descendants = [];
-  let replacementsNamesOfMatchedComposites = [];
+  let replacementNamesOfMatchedComposites = [];
 
   for (let child of childrenToCheck) {
     let matchedChild = descendantClasses.some(x => child instanceof x);
@@ -161,7 +164,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
   }
 
   if (ignoreReplacementsOfMatchedComposites) {
-    descendants = descendants.filter(x => !replacementsNamesOfMatchedComposites.includes(x))
+    descendants = descendants.filter(x => !replacementNamesOfMatchedComposites.includes(x))
   }
 
   return descendants;
