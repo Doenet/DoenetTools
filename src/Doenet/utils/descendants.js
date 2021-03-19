@@ -10,8 +10,8 @@ export function gatherDescendants({ ancestor, descendantClasses,
   init = true
 }) {
 
-  console.log("descendantClasses")
-  console.log(descendantClasses)
+  // console.log("descendantClasses")
+  // console.log(descendantClasses)
 
   let childrenToCheck = [];
 

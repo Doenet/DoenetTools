@@ -430,7 +430,7 @@ function DoenetViewerUpdateButton(){
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
   const setLastHeight = useRecoilCallback(({snapshot,set})=> async ()=>{
     const height = await snapshot.getPromise(editorViewerScrollHeightAtom);
-    set(editorViewerScrollBeforeUpdateHeightAtom,height)
+    set(editorViewerScrollBeforeUpdateHeightAtom,{height,updatePushedFlag:true})
   })
   if (selectedVersionId !== "") {return null;}
   
@@ -492,10 +492,13 @@ function DoenetViewerPanel(props){
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
   const onCoreReady = useRecoilCallback(({set,snapshot})=> async ()=>{
-      let lastHeight = await snapshot.getPromise(editorViewerScrollBeforeUpdateHeightAtom);
-         setTimeout(()=>{
-        props.setScrollHeight(lastHeight)
-      } ,500);
+      const {height,updatePushedFlag} = await snapshot.getPromise(editorViewerScrollBeforeUpdateHeightAtom);
+    console.log(">>>",{height,updatePushedFlag})
+      if (updatePushedFlag){
+        setTimeout(()=>{
+          props.setScrollHeight(height)
+        } ,500);
+      }
   })
 
   if (!editorInit){ return null; }
@@ -536,7 +539,7 @@ const editorViewerScrollHeightAtom = atom({
 
 const editorViewerScrollBeforeUpdateHeightAtom = atom({
   key:"editorViewerScrollBeforeUpdateHeight",
-  default:0
+  default:{height:0,updatePushedFlag:false}
 })
 
 export default function Editor({ branchId, title }) {
