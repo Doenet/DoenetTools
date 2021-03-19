@@ -60,7 +60,7 @@ return(
   url={imageURL}
   color={props.color}>
   <Image url={imageURL} color={props.color} />
-  <Info>
+  <Info style={{backgroundColor:props.selectedCard ? 'rgb(184, 210, 234)' : ''}}>
     <LabelContainer><b>{props.label}</b></LabelContainer>
   </Info>
 </DriveCardContainer>

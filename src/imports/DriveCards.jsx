@@ -243,7 +243,7 @@ const DriveCardWrapper = (props) => {
         {...bind}
         style={{
           width: "100%",
-          height:"100%"
+          height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`
           // height:Math.max(...heights)+50,
         }}
         className={`list`}
@@ -256,18 +256,12 @@ const DriveCardWrapper = (props) => {
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
                 transform: props.xy.interpolate((x, y) => {
-                  return `translate(${x}px,${y}px) scale(${
-                    selectedCard ? 1.02 : props.scale.value
-                  })`;
+                  return `translate(${x}px,${y}px)`;
                 }),
-                transitionDuration: '0.2s' ,
-                transitionDelay:'0s',
                 ...props,
                 height: 250,
                 opacity: 1,
-                zIndex:selectedCard ? 2 : 0,
-                padding: selectedCard ? 5 : 15,
-                boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
+                padding:15,
               }}
             >
               <div
@@ -295,6 +289,7 @@ const DriveCardWrapper = (props) => {
                     image={item.image}
                     color={item.color}
                     label={item.label}
+                    selectedCard={selectedCard}
                   />
               </div>
             </animated.div>
