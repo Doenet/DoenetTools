@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect, Suspense, useCallback} from 'react';
+import React, {useContext, useRef, useEffect, Suspense, useCallback, useState} from 'react';
 import { IsNavContext } from "./Tool/Panels/NavPanel";
 import axios from "axios";
 import { nanoid } from 'nanoid';
@@ -20,6 +20,7 @@ import { faTrashAlt,
  } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import Measure from 'react-measure'
 
 import {
   DropTargetsContext,
@@ -1060,8 +1061,85 @@ const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] })
   return sortOrder;
 }
 
+
+function DriveHeader(props){
+  const [width,setWidth] = useState(0);
+  const [numColumns,setNumColumns] = useState(4);
+
+  let columns = '250px repeat(3,1fr)';
+  if (numColumns === 3){
+    columns = '250px 1fr 1fr';
+  }else if (numColumns === 2){
+    columns = '250px 1fr';
+  }else if (numColumns === 1){
+    columns = '100%';
+  }
+
+  //update number of columns in header
+  const breakpoints = [375,500,650];
+  if (width >= breakpoints[2] && numColumns !== 4){
+    if (props.setNumColumns){props.setNumColumns(4)}
+    setNumColumns(4);
+  }else if(width < breakpoints[2] && width >= breakpoints[1] && numColumns !== 3){
+    if (props.setNumColumns){props.setNumColumns(3)}
+    setNumColumns(3);
+  }else if(width < breakpoints[1] && width >= breakpoints[0] && numColumns !== 2){
+    if (props.setNumColumns){props.setNumColumns(2)}
+    setNumColumns(2);
+  }else if(width < breakpoints[0] && numColumns !== 1){
+    if (props.setNumColumns){props.setNumColumns(1)}
+    setNumColumns(1);
+  }
+
+
+  return (
+    <Measure
+    bounds
+    onResize={contentRect =>{
+      setWidth(contentRect.bounds.width)
+    }}
+    >
+      {({ measureRef }) => (
+          <div 
+          ref={measureRef} 
+          data-doenet-driveinstanceid={props.driveInstanceId}
+          className="noselect nooutline" 
+          style={{
+            padding: "8px",
+            border: "0px",
+            borderBottom: "1px solid grey",
+            backgroundColor: "#f6f8ff",
+            maxWidth: "850px",
+            margin: "0px",
+          }} 
+          >
+
+            <div 
+              style={{
+                display: 'grid',
+                gridTemplateColumns: columns,
+                gridTemplateRows: '1fr',
+                alignContent: 'center'
+              }}>
+                <span>Name</span> 
+              {numColumns >= 2 ? <span>Date</span> : null}  
+              {numColumns >= 3 ? <span>Published</span> : null}  
+              {numColumns >= 4 ? <span>Assigned</span> : null}  
+           
+              </div>
+          </div>
+        )}
+    </Measure>
+  )
+
+} 
+
+
 function DriveRouted(props){
+
   // console.log("=== DriveRouted")
+  const [numColumns,setNumColumns] = useState(1);
+
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
@@ -1101,9 +1179,19 @@ function DriveRouted(props){
   
   if (!props.isNav && (routePathDriveId === "" || props.driveId !== routePathDriveId)) return <></>;
 
+  let heading = null;
+  if (!props.isNav){
+    heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
+  }
+   
+  
+
+
   return <>
-  {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
-  {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
+
+   {heading}
+  
+  {/* <CustomComponent /> */}
   <Folder 
   driveId={props.driveId} 
   folderId={rootFolderId} 
@@ -1118,7 +1206,10 @@ function DriveRouted(props){
   hideUnpublished={hideUnpublished}
   foldersOnly={props.foldersOnly}
   doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
+  numColumns={numColumns}
   />
+
+ 
   </>
 }
 
@@ -1557,7 +1648,7 @@ function Folder(props){
         border: "0px",
         borderBottom: "2px solid black", 
         backgroundColor: bgcolor,
-        width: widthSize,
+        // width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize,
         borderLeft: borderSide
@@ -1637,7 +1728,7 @@ function Folder(props){
         border: "0px",
         borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        width: widthSize,
+        // width: widthSize,
         // marginLeft: `${(props.indentLevel * indentPx)}px`,
         marginLeft: marginSize,
         fontSize: "24px",
@@ -1669,7 +1760,7 @@ function Folder(props){
           border: "0px",
           borderBottom: "2px solid black",
           backgroundColor: bgcolor,
-          width: widthSize,
+          // width: widthSize,
           // marginLeft: `${(props.indentLevel * indentPx)}px`,
           marginLeft: marginSize,
           fontSize: "24px",
@@ -1783,6 +1874,7 @@ function Folder(props){
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
             doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
+            numColumns={props.numColumns}
             />)
           break;
           case "Url":
@@ -1797,6 +1889,7 @@ function Folder(props){
               urlClickBehavior={props.urlClickBehavior}
               pathItemId={props.pathItemId}
               deleteItem={deleteItem}
+              numColumns={props.numColumns}
             />)
           break;
           case "DoenetML":
@@ -1811,6 +1904,7 @@ function Folder(props){
               pathItemId={props.pathItemId}
               doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItem}
+              numColumns={props.numColumns}
             />)
           break;
           case "DragShadow":
@@ -1841,7 +1935,7 @@ function Folder(props){
 const EmptyNode =  React.memo(function Node(props){
 
   return (<div style={{
-    width: "840px",
+    // width: "840px",
     padding: "8px",
     backgroundColor: "#f6f8ff",
     marginLeft: '47.5%',
@@ -1852,7 +1946,7 @@ const EmptyNode =  React.memo(function Node(props){
 const DragShadow =  React.memo(function Node(props){
   const indentPx = 20;
   return (<div style={{
-    width: "840px",
+    // width: "840px",
     padding: "8px",
     backgroundColor: "#8dff45",
     margin: "2px",
@@ -2051,15 +2145,26 @@ const DoenetML = React.memo((props)=>{
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
 
+  let columns = '250px repeat(3,1fr)';
+  if (props.numColumns === 3){
+    columns = '250px 1fr 1fr';
+  }else if (props.numColumns === 2){
+    columns = '250px 1fr';
+  }else if (props.numColumns === 1){
+    columns = '100%';
+  }
+
+
+
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
-  let widthSize = "60vw";
+  let widthSize = "auto";
   let marginSize = "0";
   let date = props.item.creationDate.slice(0,10)
   let published = <FontAwesomeIcon icon={faUsersSlash}/>
   let assigned = '-'
-  let columns = 'repeat(4,25%)'
+  // let columns = 'repeat(4,25%)'
   if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='1fr'}
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
@@ -2184,7 +2289,11 @@ const DoenetML = React.memo((props)=>{
         gridTemplateRows: '1fr',
         alignContent: 'center'
       }}>
-<p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label}</p> <span>{date}</span> <span>{published}</span> <span>{assigned}</span></div></div>
+      <p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label} </p> 
+      {props.numColumns >= 2 ? <span>{date}</span> : null }
+      {props.numColumns >= 3 ? <span>{published}</span> : null }
+      {props.numColumns >= 4 ? <span>{assigned}</span> : null }
+      </div></div>
 
     if (!props.isNav) {
       const onDragStartCallback = () => {
