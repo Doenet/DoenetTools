@@ -243,7 +243,8 @@ const DriveCardWrapper = (props) => {
         {...bind}
         style={{
           width: "100%",
-          height:Math.max(...heights)+50,
+          height:"100%"
+          // height:Math.max(...heights)+50,
         }}
         className={`list`}
       >
