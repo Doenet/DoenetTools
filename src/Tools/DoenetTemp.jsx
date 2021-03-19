@@ -14,7 +14,7 @@ import {
     return <div
     style={{
         maxWidth: "850px",
-        border: "1px red solid",
+        // border: "1px red solid",
         margin: "20px",
     }
     }
