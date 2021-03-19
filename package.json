@@ -76,6 +76,7 @@
     "react-is": "^17.0.1",
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
+    "react-measure": "^2.5.2",
     "react-query": "^2.0.0",
     "react-query-devtools": "^2.6.3",
     "react-router": "^5.2.0",
