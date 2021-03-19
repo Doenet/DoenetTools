@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect, Suspense, useCallback} from 'react';
+import React, {useContext, useRef, useEffect, Suspense, useCallback, useState} from 'react';
 import { IsNavContext } from "./Tool/Panels/NavPanel";
 import axios from "axios";
 import { nanoid } from 'nanoid';
@@ -19,7 +19,10 @@ import { faTrashAlt,
   faChalkboard
  } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+// import  VisibilitySensor from 'react-visibility-sensor';
+// import { useResizeDetector } from 'react-resize-detector';
+// import { withContentRect } from 'react-measure'
+import Measure from 'react-measure'
 
 import {
   DropTargetsContext,
@@ -1040,8 +1043,119 @@ const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenIds=[] })
   return sortOrder;
 }
 
+
+function DriveHeader(props){
+  const [width,setWidth] = useState(0);
+  const [numColumns,setNumColumns] = useState(4);
+
+  let bgcolor = "#f6f8ff";
+
+  let columns = 'repeat(4,25%)';
+  // let columns = 'repeat(4,25%)';
+  if (numColumns === 3){
+    columns = 'repeat(3,33%)';
+    // columns = 'repeat(3,33%)';
+  }else if (numColumns === 2){
+    columns = 'repeat(2,50%)';
+    // columns = 'repeat(2,50%)';
+  }else if (numColumns === 1){
+    columns = '100%';
+  }
+
+  //update number of columns in header
+  const breakpoints = [300,500,700];
+  if (width >= breakpoints[2] && numColumns !== 4){
+    if (props.setNumColumns){props.setNumColumns(4)}
+    setNumColumns(4);
+  }else if(width < breakpoints[2] && width >= breakpoints[1] && numColumns !== 3){
+    if (props.setNumColumns){props.setNumColumns(3)}
+    setNumColumns(3);
+  }else if(width < breakpoints[1] && width >= breakpoints[0] && numColumns !== 2){
+    if (props.setNumColumns){props.setNumColumns(2)}
+    setNumColumns(2);
+  }else if(width < breakpoints[0] && numColumns !== 1){
+    if (props.setNumColumns){props.setNumColumns(1)}
+    setNumColumns(1);
+  }
+
+
+  return (
+    <Measure
+    bounds
+    onResize={contentRect =>{
+      setWidth(contentRect.bounds.width)
+    }}
+    >
+      {({ measureRef }) => (
+          <div 
+          ref={measureRef} 
+          data-doenet-driveinstanceid={props.driveInstanceId}
+          className="noselect nooutline" 
+          style={{
+            padding: "8px",
+            border: "0px",
+            borderBottom: "1px solid grey",
+            backgroundColor: "#f6f8ff",
+            maxWidth: "850px",
+            margin: "0px",
+          }} 
+          >
+            <div 
+              style={{
+                display: 'grid',
+                gridTemplateColumns: columns,
+                gridTemplateRows: '1fr',
+                alignContent: 'center'
+              }}>
+                <span>Name</span> 
+              {numColumns >= 2 ? <span>Date</span> : null}  
+              {numColumns >= 3 ? <span>Published</span> : null}  
+              {numColumns >= 4 ? <span>Assigned</span> : null}  
+           
+              </div>
+          </div>
+        )}
+    </Measure>
+  )
+
+} 
+
+
+
+// heading = <div
+// data-doenet-driveinstanceid={props.driveInstanceId}
+// className="noselect nooutline" 
+// style={{
+//   padding: "8px",
+//   border: "0px",
+//   borderBottom: "1px solid grey",
+//   backgroundColor: bgcolor,
+//   width: widthSize,
+//   // boxShadow: borderSide,
+//   marginLeft: marginSize
+// }} 
+// >
+//   <div 
+// style={{
+//   marginLeft: `0px`, 
+//   display: 'grid',
+//   gridTemplateColumns: columns,
+//   gridTemplateRows: '1fr',
+//   alignContent: 'center'
+// }}>
+//   <span>Name</span> 
+//   <span>Date</span>
+//   <span>Published</span>
+//   <span>Assigned</span>
+ 
+// </div>
+// </div>
+
 function DriveRouted(props){
+
   // console.log("=== DriveRouted")
+  const [numColumns,setNumColumns] = useState(1);
+
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
@@ -1081,9 +1195,20 @@ function DriveRouted(props){
   
   if (!props.isNav && (routePathDriveId === "" || props.driveId !== routePathDriveId)) return <></>;
 
+  let heading = null;
+  if (!props.isNav){
+    heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
+  }
+   
+  
+
+
   return <>
-  {/* <LogVisible driveInstanceId={driveInstanceId.current} /> */}
-  {/* <Folder driveId={props.driveId} folderId={rootFolderId} indentLevel={0} rootCollapsible={true}/> */}
+
+  <div style={{background:"lightblue"}}>TEMP numcolumns={numColumns} </div>
+   {heading}
+  
+  {/* <CustomComponent /> */}
   <Folder 
   driveId={props.driveId} 
   folderId={rootFolderId} 
@@ -1099,6 +1224,8 @@ function DriveRouted(props){
   foldersOnly={props.foldersOnly}
   doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
   />
+
+ 
   </>
 }
 
