@@ -3,6 +3,8 @@ import DriveCard from './DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import "./drivecard.css";
 import useMeasure  from "../Tools/useMeasure";
+import Measure from 'react-measure'
+
 import {
   useHistory
 } from "react-router-dom";
@@ -66,7 +68,17 @@ const DriveCardWrapper = (props) => {
   let driveCardItems =[];
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
-  const [bind, { width },columns] = useMeasure();
+  // const [bind, { width },columns] = useMeasure();
+  const [width, setWidth] = useState(0);
+  const getColumns = (width) => {
+    if(width > 1500){return 5;}
+    else if(width > 1000){return 4;}
+    else if(width > 600){return 3;}
+    else if(width > 400){return 2;}
+    else if(width > 200){return 1;}
+    else{return 1;}
+  }
+  const columns = getColumns(width);
   heights = new Array(columns).fill(0);
   let showCards = [];
          if(types[0] === 'course'){
@@ -239,8 +251,14 @@ const DriveCardWrapper = (props) => {
  }
   return (
     <div className="drivecardContainer">
-      <div
-        {...bind}
+       <Measure
+    bounds
+    onResize={contentRect =>{
+      setWidth(contentRect.bounds.width)
+    }}
+    >
+      {({ measureRef }) => (
+      <div ref={measureRef}
         style={{
           width: "100%",
           height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`
@@ -296,6 +314,8 @@ const DriveCardWrapper = (props) => {
           );
         })}
       </div>
+       )}
+       </Measure>
      </div>
   );
 };
