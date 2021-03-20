@@ -1,5 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
-import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from './commonsugar/breakstrings';
+import { breakEmbeddedStringIntoParensPieces } from './commonsugar/breakstrings';
 import me from 'math-expressions';
 
 export default class BezierControls extends BaseComponent {
@@ -13,106 +13,43 @@ export default class BezierControls extends BaseComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
 
-    let createVectorList = function ({ matchedChildren }) {
+    let createControlVectorsList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringByCommas({
-        childrenList: matchedChildren,
+      let results = breakEmbeddedStringIntoParensPieces({
+        componentList: matchedChildren,
       });
+
 
       if (results.success !== true) {
         return { success: false }
       }
 
-      let pieces = results.pieces;
-
-      let newChildren = [];
-
-      for (let ind = 0; ind < pieces.length; ind++) {
-        let piece = pieces[ind];
-
-        // each piece must be a vector (if not, we won't sugar)
-        // the next step is to find the vector components
-        // so that we can see if the components themselves are vectors
-
-        let result = breakIntoVectorComponents(piece);
-        if (!result.foundVector) {
-          return { success: false };
-        }
-
-        let vectorComponents = result.vectorComponents;
-
-        let vectorComponentsBrokenIntoComponents = [];
-
-        // check if each component is itself a vector
-        let componentsAreVectors = true;
-        for (let compList of vectorComponents) {
-          let result2 = breakIntoVectorComponents(compList);
-
-          if (!result2.foundVector) {
-            componentsAreVectors = false;
-            break;
-          }
-          vectorComponentsBrokenIntoComponents.push(result2.vectorComponents)
-        }
-
-        let children;
-
-        if (componentsAreVectors) {
-          // found a piece that is a vector of vectors
-          // Instead of using the piece itself as the children for the control,
-          // we'll use the vector components of the piece
-
-          children = vectorComponentsBrokenIntoComponents.map(innerComps => ({
-            componentType: "vector",
-            children: [{
-              componentType: "xs",
-              children: innerComps.map(x => ({
-                componentType: "x",
-                children: x
-              }))
-            }]
-          }));
-
-        } else {
-          // not vector of vectors
-          children = [{
-            componentType: "vector",
-            children: [{
-              componentType: "xs",
-              children: vectorComponents.map(x => ({
-                componentType: "x",
-                children: x
-              }))
-            }]
-          }]
-        }
-
-        let direction = children.length === 1 ? "symmetric" : "both";
-
-        newChildren.push({
-          componentType: "controlvectors",
-          children: children,
-          state: { direction }
-        })
-
-      }
-
       return {
         success: true,
-        newChildren: newChildren,
+        newChildren: results.pieces.map(function (piece) {
+          if (piece.length > 1 || piece[0].componentType === "string") {
+            return {
+              componentType: "controlvectors",
+              children: [{
+                componentType: "vector",
+                children: piece
+              }]
+            }
+          } else {
+            return piece[0]
+          }
+        })
       }
-
     }
 
     sugarInstructions.push({
       // childrenRegex: /s+(.*s)?/,
-      replacementFunction: createVectorList
+      replacementFunction: createControlVectorsList
     });
 
     return sugarInstructions;
 
   }
-
 
 
   static returnChildLogic(args) {
@@ -298,7 +235,7 @@ export default class BezierControls extends BaseComponent {
     }
 
     // if have an essential symmetric control
-    // need on vector that both control vectors depend on
+    // need one vector that both control vectors depend on
     stateVariableDefinitions.essentialSymmetricControls = {
       isArray: true,
       entryPrefixes: ["essentialSymmetricControl"],
@@ -395,7 +332,9 @@ export default class BezierControls extends BaseComponent {
             }
           }
 
+
           let direction = stateValues.directions[arrayIndices[0]];
+          console.log(`direction: ${direction}`)
           if (direction && direction !== "none" &&
             (arrayIndices[1] === 0 || arrayIndices[1] === 1)
           ) {
@@ -432,11 +371,11 @@ export default class BezierControls extends BaseComponent {
 
         return { dependenciesByKey };
       },
-      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, componentName }) {
 
-        // console.log('definition of controls for beziercontrols')
-        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
-        // console.log(JSON.parse(JSON.stringify(arrayKeys)))
+        console.log(`definition of controls for beziercontrols of ${componentName}`)
+        console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
+        console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
         let newControlValues = {};
         let essentialControls = {};
@@ -522,7 +461,9 @@ export default class BezierControls extends BaseComponent {
 
                 if (useEssential) {
                   if (direction === "symmetric") {
-                    newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
+                    if (dependencyValuesByKey[arrayKey].essentialSymmetricControl) {
+                      newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
+                    }
                   } else {
                     essentialControls[arrayKey] = {
                       variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]

@@ -6,16 +6,16 @@ export default class Function extends InlineComponent {
   static componentType = "function";
   static rendererType = "math";
 
-  static get stateVariablesShadowedForReference() { return [
-    "variable", "f", "numericalf", "symbolicf",
-    "isInterpolatedFunction", "formula"
-  ] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "variable", "numericalf", "symbolicf", "symbolic",
+      "isInterpolatedFunction", "formula",
+      "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema"
+    ]
+  };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.symbolic = { default: false };
-    // let simply==="" be full simplify so that can simplify <math simplify /> to get full simplification
-    // TODO: do we want to support simplify===""?
     properties.simplify = {
       default: "none",
       toLowerCase: true,
@@ -27,7 +27,7 @@ export default class Function extends InlineComponent {
     properties.xscale = { default: 1, propagateToDescendants: true };
     properties.yscale = { default: 1, propagateToDescendants: true };
     // include properties of graphical components
-    // for case when function is adapted into functionCurve
+    // for case when function is adapted into a curve
     properties.label = { default: "", forRenderer: true };
     properties.showLabel = { default: true, forRenderer: true };
     properties.layer = { default: 0, forRenderer: true };
@@ -128,10 +128,18 @@ export default class Function extends InlineComponent {
       takePropertyChildren: true,
     })
 
+    let atMostOneSymbolic = childLogic.newLeaf({
+      name: "atMostOneSymbolic",
+      componentType: 'symbolic',
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
+    });
+
     childLogic.newOperator({
       name: "formulaWithVariable",
       operator: "and",
-      propositions: [atMostOneVariable, functionXorFormula],
+      propositions: [atMostOneVariable, functionXorFormula, atMostOneSymbolic],
       setAsBase: true,
     })
 
@@ -204,6 +212,33 @@ export default class Function extends InlineComponent {
         curveDescription += dependencyValues.selectedStyle.lineColor;
 
         return { newValues: { styleDescription: curveDescription } };
+      }
+    }
+
+    stateVariableDefinitions.symbolic = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: false,
+      returnDependencies: () => ({
+        symbolicChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneSymbolic",
+          variableNames: ["value"],
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["symbolic"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.symbolicChild.length === 1) {
+          return { newValues: { symbolic: dependencyValues.symbolicChild[0].stateValues.value } }
+        } else if (dependencyValues.functionChild.length === 1) {
+          return { newValues: { symbolic: dependencyValues.functionChild[0].stateValues.symbolic } }
+        } else {
+          return { useEssentialOrDefaultValue: { symbolic: { variablesToCheck: ["symbolic"] } } }
+        }
       }
     }
 
@@ -455,7 +490,6 @@ export default class Function extends InlineComponent {
     }
 
 
-
     stateVariableDefinitions.prescribedExtrema = {
       returnDependencies: () => ({
         extremaChild: {
@@ -522,8 +556,7 @@ export default class Function extends InlineComponent {
     }
 
 
-
-    stateVariableDefinitions.f = {
+    stateVariableDefinitions.symbolicf = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       returnDependencies({ stateValues }) {
 
@@ -548,10 +581,6 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            symbolic: {
-              dependencyType: "stateVariable",
-              variableName: "symbolic",
-            },
             formula: {
               dependencyType: "stateVariable",
               variableName: "formula",
@@ -563,7 +592,7 @@ export default class Function extends InlineComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atMostOneFunction",
-              variableNames: ["f"],
+              variableNames: ["symbolicf"],
             },
             simplify: {
               dependencyType: "stateVariable",
@@ -583,186 +612,85 @@ export default class Function extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.isInterpolatedFunction) {
-          return {
-            newValues: {
-              f: function (x) {
-
-                if (isNaN(x)) {
-                  return NaN;
-                }
-
-                let xs = dependencyValues.xs;
-                let coeffs = dependencyValues.coeffs;
-
-                if (xs === null) {
-                  return NaN;
-                }
-
-                if (x <= xs[0]) {
-                  // Extrapolate
-                  x -= xs[0];
-                  let c = coeffs[0];
-                  return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
-                }
-
-                if (x >= xs[xs.length - 1]) {
-                  let i = xs.length - 2;
-                  // Extrapolate
-                  x -= xs[i];
-                  let c = coeffs[i];
-                  return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
-                }
-
-                // Search for the interval x is in,
-                // returning the corresponding y if x is one of the original xs
-                var low = 0, mid, high = xs.length - 1;
-                while (low <= high) {
-                  mid = Math.floor(0.5 * (low + high));
-                  let xHere = xs[mid];
-                  if (xHere < x) { low = mid + 1; }
-                  else if (xHere > x) { high = mid - 1; }
-                  else { return dependencyValues.interpolationPoints[mid].y; }
-                }
-                let i = Math.max(0, high);
-
-                // Interpolate
-                x -= xs[i];
-                let c = coeffs[i];
-                return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
-
-              }
-            }
-          }
-
-        } else if (dependencyValues.functionChild.length === 1) {
-          return {
-            newValues: {
-              f: dependencyValues.functionChild[0].stateValues.f
-            }
-          }
-        } else if (dependencyValues.symbolic) {
-          return {
-            newValues: {
-              f: returnSymbolicFunction({ dependencyValues })
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              f: returnNumericalFunction({ dependencyValues })
-            }
-          }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.symbolicf = {
-      returnDependencies() {
-        return {
-          isInterpolatedFunction: {
-            dependencyType: "stateVariable",
-            variableName: "isInterpolatedFunction"
-          },
-          symbolic: {
-            dependencyType: "stateVariable",
-            variableName: "symbolic",
-          },
-          f: {
-            dependencyType: "stateVariable",
-            variableName: "f",
-          },
-          formula: {
-            dependencyType: "stateVariable",
-            variableName: "formula",
-          },
-          variable: {
-            dependencyType: "stateVariable",
-            variableName: "variable",
-          },
-          functionChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneFunction",
-            variableNames: ["symbolicf"],
-          },
-          simplify: {
-            dependencyType: "stateVariable",
-            variableName: "simplify"
-          },
-          expand: {
-            dependencyType: "stateVariable",
-            variableName: "expand"
-          },
-        }
-      },
-      definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.isInterpolatedFunction) {
+          let numericalf = returnInterpolatedFunction(dependencyValues);
           return {
             newValues: {
               symbolicf: function (x) {
-                me.fromAst(dependencyValues.f(x.evaluate_to_constant()))
+                me.fromAst(numericalf(x.evaluate_to_constant()))
               }
             }
           }
-
         } else if (dependencyValues.functionChild.length === 1) {
           return {
             newValues: {
               symbolicf: dependencyValues.functionChild[0].stateValues.symbolicf
             }
           }
-        } else if (dependencyValues.symbolic) {
-          return { newValues: { symbolicf: dependencyValues.f } }
         } else {
-
           return {
             newValues: {
-              symbolicf: returnSymbolicFunction({ dependencyValues })
+              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
             }
           }
-
         }
-
       }
     }
 
 
     stateVariableDefinitions.numericalf = {
-      returnDependencies() {
-        return {
-          isInterpolatedFunction: {
-            dependencyType: "stateVariable",
-            variableName: "isInterpolatedFunction"
-          },
-          symbolic: {
-            dependencyType: "stateVariable",
-            variableName: "symbolic",
-          },
-          f: {
-            dependencyType: "stateVariable",
-            variableName: "f",
-          },
-          formula: {
-            dependencyType: "stateVariable",
-            variableName: "formula",
-          },
-          variable: {
-            dependencyType: "stateVariable",
-            variableName: "variable",
-          },
-          functionChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneFunction",
-            variableNames: ["numericalf"],
-          },
+      stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
+      returnDependencies({ stateValues }) {
+
+        if (stateValues.isInterpolatedFunction) {
+          return {
+            xs: {
+              dependencyType: "stateVariable",
+              variableName: "xs"
+            },
+            coeffs: {
+              dependencyType: "stateVariable",
+              variableName: "coeffs"
+            },
+            interpolationPoints: {
+              dependencyType: "stateVariable",
+              variableName: "interpolationPoints"
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            }
+          }
+        } else {
+          return {
+            formula: {
+              dependencyType: "stateVariable",
+              variableName: "formula",
+            },
+            variable: {
+              dependencyType: "stateVariable",
+              variableName: "variable",
+            },
+            functionChild: {
+              dependencyType: "child",
+              childLogicName: "atMostOneFunction",
+              variableNames: ["numericalf"],
+            },
+            isInterpolatedFunction: {
+              dependencyType: "stateVariable",
+              variableName: "isInterpolatedFunction"
+            }
+          }
         }
       },
       definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.isInterpolatedFunction || !dependencyValues.symbolic) {
-          return { newValues: { numericalf: dependencyValues.f } }
-        } else if (dependencyValues.functionChild.length === 1) {
+        if (dependencyValues.isInterpolatedFunction) {
+          return {
+            newValues: {
+              numericalf: returnInterpolatedFunction(dependencyValues)
+            }
+          }
+        }
+        else if (dependencyValues.functionChild.length === 1) {
           return {
             newValues: {
               numericalf: dependencyValues.functionChild[0].stateValues.numericalf
@@ -771,7 +699,40 @@ export default class Function extends InlineComponent {
         } else {
           return {
             newValues: {
-              numericalf: returnNumericalFunction({ dependencyValues })
+              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
+            }
+          }
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.f = {
+      returnDependencies: () => ({
+        symbolic: {
+          dependencyType: "stateVariable",
+          variableName: "symbolic",
+        },
+        symbolicf: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicf",
+        },
+        numericalf: {
+          dependencyType: "stateVariable",
+          variableName: "numericalf",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.symbolic) {
+          return {
+            newValues: {
+              f: dependencyValues.symbolicf
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              f: dependencyValues.numericalf
             }
           }
         }
@@ -827,13 +788,9 @@ export default class Function extends InlineComponent {
           }
         } else {
           return {
-            symbolic: {
+            numericalf: {
               dependencyType: "stateVariable",
-              variableName: "symbolic",
-            },
-            f: {
-              dependencyType: "stateVariable",
-              variableName: "f",
+              variableName: "numericalf",
             },
             xscale: {
               dependencyType: "stateVariable",
@@ -851,10 +808,7 @@ export default class Function extends InlineComponent {
           }
         }
       },
-      definition: function ({ dependencyValues }) {
-
-        // console.log(`entire array definition of allMinima`)
-        // console.log(dependencyValues);
+      definition: function ({ dependencyValues, componentName }) {
 
         if (dependencyValues.isInterpolatedFunction) {
 
@@ -998,14 +952,7 @@ export default class Function extends InlineComponent {
 
           // no function child
 
-          if (dependencyValues.symbolic) {
-            // haven't implemented minima for symbolic functions
-            return {
-              newValues: { allMinima: [] }
-            }
-          }
-
-          let f = dependencyValues.f;
+          let f = dependencyValues.numericalf;
 
           // for now, look for minima in interval -100*xscale to 100*xscale
           // dividing interval into 1000 subintervals
@@ -1208,13 +1155,9 @@ export default class Function extends InlineComponent {
         } else {
 
           return {
-            symbolic: {
+            numericalf: {
               dependencyType: "stateVariable",
-              variableName: "symbolic",
-            },
-            f: {
-              dependencyType: "stateVariable",
-              variableName: "f",
+              variableName: "numericalf",
             },
             xscale: {
               dependencyType: "stateVariable",
@@ -1376,14 +1319,7 @@ export default class Function extends InlineComponent {
 
           // no function child
 
-          if (dependencyValues.symbolic) {
-            // haven't implemented maxima for symbolic functions
-            return {
-              newValues: { allMaxima: [] }
-            }
-          }
-
-          let f = (x) => -dependencyValues.f(x);
+          let f = (x) => -dependencyValues.numericalf(x);
 
           // for now, look for maxima in interval -100*xscale to 100*xscale
           // dividing interval into 1000 subintervals
@@ -1735,7 +1671,7 @@ export default class Function extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.returnDerivativesOfF = {
+    stateVariableDefinitions.returnNumericalDerivatives = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       returnDependencies({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -1762,7 +1698,7 @@ export default class Function extends InlineComponent {
             functionChild: {
               dependencyType: "child",
               childLogicName: "atMostOneFunction",
-              variableNames: ["returnDerivativesOfF"],
+              variableNames: ["returnNumericalDerivatives"],
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
@@ -1776,102 +1712,20 @@ export default class Function extends InlineComponent {
         if (dependencyValues.isInterpolatedFunction) {
           return {
             newValues: {
-              returnDerivativesOfF: function (order = 1) {
-
-                if (order > 3) {
-                  return x => 0
-                }
-
-                if (order < 1 || !Number.isInteger(order)) {
-                  return x => NaN
-                }
-
-                return function (x) {
-
-                  if (isNaN(x)) {
-                    return NaN;
-                  }
-
-                  let xs = dependencyValues.xs;
-                  let coeffs = dependencyValues.coeffs;
-
-                  if (xs === null) {
-                    return NaN;
-                  }
-
-                  if (x <= xs[0]) {
-                    // Extrapolate
-                    x -= xs[0];
-                    let c = coeffs[0];
-                    if (order === 1) {
-                      return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-                    } else if (order === 2) {
-                      return 6 * c[3] * x + 2 * c[2];
-                    } else {
-                      return 6 * c[3]
-                    }
-                  }
-
-                  if (x >= xs[xs.length - 1]) {
-                    let i = xs.length - 2;
-                    // Extrapolate
-                    x -= xs[i];
-                    let c = coeffs[i];
-                    if (order === 1) {
-                      return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-                    } else if (order === 2) {
-                      return 6 * c[3] * x + 2 * c[2];
-                    } else {
-                      return 6 * c[3]
-                    }
-                  }
-
-                  // Search for the interval x is in,
-                  // returning the corresponding y if x is one of the original xs
-                  var low = 0, mid, high = xs.length - 1;
-                  while (low <= high) {
-                    mid = Math.floor(0.5 * (low + high));
-                    let xHere = xs[mid];
-                    if (xHere < x) { low = mid + 1; }
-                    else if (xHere > x) { high = mid - 1; }
-                    else {
-                      // at a grid point
-                      if (order === 1) {
-                        return coeffs[mid][1]
-                      } else if (order === 2) {
-                        return 2 * coeffs[mid][2];
-                      } else {
-                        return 6 * coeffs[mid][3];
-                      }
-                    }
-                  }
-                  let i = Math.max(0, high);
-
-                  // Interpolate
-                  x -= xs[i];
-                  let c = coeffs[i];
-                  if (order === 1) {
-                    return (3 * c[3] * x + 2 * c[2]) * x + c[1];
-                  } else if (order === 2) {
-                    return 6 * c[3] * x + 2 * c[2];
-                  } else {
-                    return 6 * c[3]
-                  }
-                }
-              }
+              returnNumericalDerivatives: returnReturnDerivativesOfInterpolatedFunction(dependencyValues)
             }
           }
 
         } else {
 
           if (dependencyValues.functionChild.length === 1 &&
-            dependencyValues.functionChild[0].stateValues.returnDerivativesOfF
+            dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives
           ) {
             return {
-              newValues: { returnDerivativesOfF: dependencyValues.functionChild[0].stateValues.returnDerivativesOfF }
+              newValues: { returnNumericalDerivatives: dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives }
             }
           } else {
-            return { newValues: { returnDerivativesOfF: null } }
+            return { newValues: { returnNumericalDerivatives: null } }
           }
         }
       }
@@ -1894,7 +1748,7 @@ export default class Function extends InlineComponent {
 }
 
 
-function returnSymbolicFunction({ dependencyValues }) {
+export function returnSymbolicFunctionFromFormula(dependencyValues) {
 
   let formula = dependencyValues.formula;
   let varString = dependencyValues.variable.tree;
@@ -1907,7 +1761,7 @@ function returnSymbolicFunction({ dependencyValues }) {
   })
 }
 
-function returnNumericalFunction({ dependencyValues }) {
+export function returnNumericalFunctionFromFormula(dependencyValues) {
 
   let formula_f;
   try {
@@ -3006,4 +2860,147 @@ function computeSplineParamCoeffs({ dependencyValues }) {
     }
   }
 
+}
+
+function returnInterpolatedFunction(dependencyValues) {
+
+  let xs = dependencyValues.xs;
+  let coeffs = dependencyValues.coeffs;
+  let interpolationPointYs = [];
+  if (dependencyValues.interpolationPoints) {
+    interpolationPointYs = dependencyValues.interpolationPoints.map(x => x.y);
+  }
+
+  if (xs === null) {
+    return x => NaN;
+  }
+
+  let x0 = xs[0], xL = xs[xs.length - 1];
+
+  return function (x) {
+
+    if (isNaN(x)) {
+      return NaN;
+    }
+
+    if (x <= x0) {
+      // Extrapolate
+      x -= x0;
+      let c = coeffs[0];
+      return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
+    }
+
+    if (x >= xL) {
+      let i = xs.length - 2;
+      // Extrapolate
+      x -= xs[i];
+      let c = coeffs[i];
+      return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
+    }
+
+    // Search for the interval x is in,
+    // returning the corresponding y if x is one of the original xs
+    var low = 0, mid, high = xs.length - 1;
+    while (low <= high) {
+      mid = Math.floor(0.5 * (low + high));
+      let xHere = xs[mid];
+      if (xHere < x) { low = mid + 1; }
+      else if (xHere > x) { high = mid - 1; }
+      else { return interpolationPointYs[mid]; }
+    }
+    let i = Math.max(0, high);
+
+    // Interpolate
+    x -= xs[i];
+    let c = coeffs[i];
+    return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
+
+  }
+
+}
+
+function returnReturnDerivativesOfInterpolatedFunction(dependencyValues) {
+
+  let xs = dependencyValues.xs;
+  let coeffs = dependencyValues.coeffs;
+
+  let x0 = xs[0], xL = xs[xs.length - 1];
+
+  return function (order = 1) {
+
+    if (order > 3) {
+      return x => 0
+    }
+
+    if (order < 1 || !Number.isInteger(order) || xs == null) {
+      return x => NaN
+    }
+
+    return function (x) {
+
+      if (isNaN(x)) {
+        return NaN;
+      }
+
+
+      if (x <= x0) {
+        // Extrapolate
+        x -= x0;
+        let c = coeffs[0];
+        if (order === 1) {
+          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+        } else if (order === 2) {
+          return 6 * c[3] * x + 2 * c[2];
+        } else {
+          return 6 * c[3]
+        }
+      }
+
+      if (x >= xL) {
+        let i = xs.length - 2;
+        // Extrapolate
+        x -= xs[i];
+        let c = coeffs[i];
+        if (order === 1) {
+          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+        } else if (order === 2) {
+          return 6 * c[3] * x + 2 * c[2];
+        } else {
+          return 6 * c[3]
+        }
+      }
+
+      // Search for the interval x is in,
+      // returning the corresponding y if x is one of the original xs
+      var low = 0, mid, high = xs.length - 1;
+      while (low <= high) {
+        mid = Math.floor(0.5 * (low + high));
+        let xHere = xs[mid];
+        if (xHere < x) { low = mid + 1; }
+        else if (xHere > x) { high = mid - 1; }
+        else {
+          // at a grid point
+          if (order === 1) {
+            return coeffs[mid][1]
+          } else if (order === 2) {
+            return 2 * coeffs[mid][2];
+          } else {
+            return 6 * coeffs[mid][3];
+          }
+        }
+      }
+      let i = Math.max(0, high);
+
+      // Interpolate
+      x -= xs[i];
+      let c = coeffs[i];
+      if (order === 1) {
+        return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+      } else if (order === 2) {
+        return 6 * c[3] * x + 2 * c[2];
+      } else {
+        return 6 * c[3]
+      }
+    }
+  }
 }

@@ -14,22 +14,19 @@ export default class NumberList extends InlineComponent {
     return properties;
   }
 
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
+    let breakStringsIntoNumbersBySpaces = function ({ matchedChildren }) {
 
-    let breakStringsIntoNumbersByCommas = function ({ matchedChildren }) {
-
-      // break any string by commas,
-      // removing any empty (white space only) pieces
-      // and wrap pieces with number
+      // break any string by white space and wrap pieces with number
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
           return [
             ...a,
-            ...c.state.value.split(",")
-              .map(s => s.trim())
+            ...c.state.value.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: "number",
@@ -49,7 +46,7 @@ export default class NumberList extends InlineComponent {
 
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoNumbersByCommas
+      replacementFunction: breakStringsIntoNumbersBySpaces
     });
 
     return sugarInstructions;

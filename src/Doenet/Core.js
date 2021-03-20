@@ -2824,6 +2824,8 @@ export default class Core {
           // have an array variable name that is created on the fly
           // rather than being specified in original definition.
           stateDef = stateVariableDefinitions[varName] = {};
+        } else {
+          continue;
         }
       }
 
