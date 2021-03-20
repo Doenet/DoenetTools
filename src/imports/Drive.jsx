@@ -897,8 +897,24 @@ export const folderDictionarySelector = selectorFamily({
         }
       break;
       case folderInfoSelectorActions.CLEAN_UP_DRAG:
-        for (let openedFolders of openedFoldersInfo) {
-          set(folderOpenAtom(openedFolders), false);
+        // If valid dragShadow, filter path of folders to dragShadow
+        let openedFolders = [...openedFoldersInfo];
+        let filteredOpenedFolders = [];
+        if (dragShadowDriveId && dragShadowParentId) {
+          let foldersOnPath = get(nodePathSelector({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+          let folderOnPathSet = new Set(foldersOnPath.map(obj => obj.folderId));
+          for (let openedFolder of openedFolders) {
+            const notFolderOnPath = !(openedFolder.driveId === dragShadowDriveId && folderOnPathSet.has(openedFolder.itemId)); 
+            if (notFolderOnPath) {
+              filteredOpenedFolders.push(openedFolder);
+            }
+          }
+        } else {
+          filteredOpenedFolders = openedFolders;
+        }
+
+        for (let openedFolder of filteredOpenedFolders) {
+          set(folderOpenAtom(openedFolder), false);
         }
       break;
       default:
@@ -938,6 +954,10 @@ export const folderInfoSelectorActions = Object.freeze({
   RENAME_ITEM: "rename item",
   CLEAN_UP_DRAG: "clean up drag"
 });
+
+const useFolderSelectorCallbacks = () => {
+
+}
 
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
@@ -1589,9 +1609,9 @@ function Folder(props){
   }
 
   const onDragEndCb = () => {
+    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
     setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
-    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
   }
 
