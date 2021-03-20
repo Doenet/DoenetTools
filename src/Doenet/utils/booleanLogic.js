@@ -498,7 +498,7 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
     return [operator, ...operands.map(x => splitSymbolsIfMath({
       logicTree: x,
       nonMathCodes, foundNonMath,
-      init: false
+      init
     }))]
   }
 
