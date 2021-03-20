@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { normalizeMathExpression } from '../utils/math';
+import { returnDefaultStyleDefinitions } from '../utils/style';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -166,9 +167,14 @@ export default class Function extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        let styleDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
+        if(!styleDefinitions) {
+          styleDefinitions = returnDefaultStyleDefinitions();
+        }
+
         let selectedStyle;
 
-        for (let styleDefinition of dependencyValues.ancestorWithStyle.stateValues.styleDefinitions) {
+        for (let styleDefinition of styleDefinitions) {
           if (dependencyValues.styleNumber === styleDefinition.styleNumber) {
             if (selectedStyle === undefined) {
               selectedStyle = styleDefinition;
@@ -180,7 +186,7 @@ export default class Function extends InlineComponent {
         }
 
         if (selectedStyle === undefined) {
-          selectedStyle = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions[0];
+          selectedStyle = styleDefinitions[0];
         }
         return { newValues: { selectedStyle } };
       }

@@ -184,8 +184,10 @@ describe('Point location validation tests',function() {
     <point name="goal">(-4.1, 7.4)</point>
     <p>Move point to <copy prop="coords" tname="goal" /></p>
     <graph>
-      <point name="A">(4.9, -1.1)
-        <attractTo><copy tname="goal" /></attractTo>
+      <point name="A" x="4.9" y="-1.1">
+        <constraints>
+          <attractTo><copy tname="goal" /></attractTo>
+        </constraints>
       </point>
     </graph>
     <p><answer><award><when>
@@ -386,7 +388,7 @@ describe('Point location validation tests',function() {
 
 
     cy.log("change criterion")
-    cy.get("#\\/criterion_input").clear().type('1').blur();
+    cy.get("#\\/criterion textarea").type('{end}{backspace}{backspace}{backspace}1', {force:true}).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -441,7 +443,7 @@ describe('Point location validation tests',function() {
     });
   
     cy.log("change partial criterion")
-    cy.get("#\\/partialcriterion_input").clear().type('2').blur();
+    cy.get("#\\/partialcriterion textarea").type('{end}{backspace}{backspace}{backspace}2', {force:true}).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })

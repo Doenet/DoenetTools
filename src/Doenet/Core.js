@@ -5659,6 +5659,13 @@ export default class Core {
             && varName !== "__childLogic" && !componentDeleted
             && !(varName in this.components[componentName].state) && !stateVariableDeleted
           ) {
+            // if component was recreated, wait to see if the state variable
+            // (presumably an array entry) is recreated
+            // TODO: will there be a case where the state variable is not recreatd
+            // such as when have a different component?
+            if(updatesNeeded.recreatedComponents[componentName]) {
+              continue;
+            }
             throw Error(`Reference to invalid state variable ${varName} of ${componentName}`);
           }
 
