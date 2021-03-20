@@ -13,13 +13,52 @@ export default class Extract extends CompositeComponent {
 
   static get stateVariablesShadowedForReference() { return ["propName"] };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+
+  static createPropertiesObject({ allPossibleProperties }) {
+
+    if (allPossibleProperties === undefined) {
+      return {};
+    }
+
+
+    // Note: putting all possible properties as state variables
+    // risks a collision between a newly defined property
+    // and one of the state variables of Copy.
+    // TODO: is there a better way to organize to avoid this potential collision
+    // (Naming state variables beginning with a _ is not an option
+    // as the idea is to exclude such state variable names to avoid
+    // collision with internal state variables that core creates.)
+
+    // Allow all standard component types to be entered as a property
+    // at this stage with no defaults.
+    // Will check validity depending on copy target
+
+    // TODO: have check validity of properties again?
+
+    let properties = {};
+    for (let componentType of allPossibleProperties) {
+      properties[componentType] = { ignorePropagationFromAncestors: true, default: null };
+    }
+
+    // Just in case there is a component that added these as a property, delete them
+
+    // delete string and contentid
+    delete properties.string;
+    delete properties.contentid;
+
+    // delete basic types, in case they were used as property
+    delete properties.math;
+    delete properties.number;
+    delete properties.text;
+
     properties.includeUndefinedObjects = { default: false };
     properties.componentIndex = { default: null };
     properties.propIndex = { default: null };
+
     return properties;
+
   }
+
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -293,10 +332,23 @@ export default class Extract extends CompositeComponent {
 
       let prevSourceName = workspace.sourceNames[sourceNum];
 
+
       // check if source has changed
-      if (prevSourceName === undefined || source.componentName !== prevSourceName
-        || recreateRemaining
-      ) {
+      let needToRecreate = prevSourceName === undefined || source.componentName !== prevSourceName
+        || recreateRemaining;
+
+      if (!needToRecreate) {
+        // make sure the current replacements still shadow the replacement source
+        for (let ind = 0; ind < workspace.numReplacementsBySource[sourceNum]; ind++) {
+          let currentReplacement = component.replacements[numReplacementsSoFar + ind];
+          if (!currentReplacement) {
+            needToRecreate = true;
+            break;
+          }
+        }
+      }
+
+      if (needToRecreate) {
 
         let prevNumReplacements = 0;
         if (prevSourceName !== undefined) {

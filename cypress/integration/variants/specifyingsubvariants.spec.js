@@ -552,7 +552,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it.only('selected problems', () => {
+  it('selected problems', () => {
 
     let titlesToInd = {
       "A word problem": 0,

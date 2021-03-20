@@ -27,7 +27,10 @@ export default class Curve extends GraphicalComponent {
   };
 
   static primaryStateVariableForDefinition = "fShadow";
-  static get stateVariablesShadowedForReference() { return ["variableForChild", "parmin", "parmax"] };
+  static get stateVariablesShadowedForReference() { return [
+    "variableForChild", "parmin", "parmax",
+    "curveType", "nThroughPoints", "nDimensions", "throughPoints"
+  ] };
 
 
   static createPropertiesObject(args) {
@@ -108,10 +111,12 @@ export default class Curve extends GraphicalComponent {
       number: 0
     })
 
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
+    let atMostOneThrough = childLogic.newLeaf({
+      name: "atMostOneThrough",
       componentType: 'through',
-      number: 1
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneBezierControls = childLogic.newLeaf({
@@ -124,7 +129,7 @@ export default class Curve extends GraphicalComponent {
     let throughAndControls = childLogic.newOperator({
       name: "throughAndControls",
       operator: 'and',
-      propositions: [exactlyOneThrough, atMostOneBezierControls],
+      propositions: [atMostOneThrough, atMostOneBezierControls],
     });
 
     let functionsXorThrough = childLogic.newOperator({
@@ -242,7 +247,7 @@ export default class Curve extends GraphicalComponent {
         },
         throughChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneThrough"
+          childLogicName: "atMostOneThrough"
         }
       }),
       definition({ dependencyValues }) {
@@ -373,7 +378,7 @@ export default class Curve extends GraphicalComponent {
       returnDependencies: () => ({
         throughChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneThrough",
+          childLogicName: "atMostOneThrough",
           variableNames: ["nPoints"]
         }
       }),
@@ -393,7 +398,7 @@ export default class Curve extends GraphicalComponent {
         return {
           throughChild: {
             dependencyType: "child",
-            childLogicName: "exactlyOneThrough",
+            childLogicName: "atMostOneThrough",
             variableNames: ["nDimensions"],
           }
         }
@@ -490,7 +495,7 @@ export default class Curve extends GraphicalComponent {
           dependenciesByKey[arrayKey] = {
             throughChild: {
               dependencyType: "child",
-              childLogicName: "exactlyOneThrough",
+              childLogicName: "atMostOneThrough",
               variableNames: ["pointX" + varEnding]
             }
           }

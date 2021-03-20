@@ -6,7 +6,9 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static get stateVariablesShadowedForReference() { return [] };
+  static get stateVariablesShadowedForReference() { return [
+    "nThroughPoints", "throughPoints",
+  ] };
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -18,13 +20,15 @@ export default class Parabola extends Curve {
       componentType: 'through',
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
     });
 
     let atMostOneVariables = childLogic.newLeaf({
       name: "atMostOneVariables",
       componentType: 'variables',
       comparison: 'atMost',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({

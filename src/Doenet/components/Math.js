@@ -50,6 +50,7 @@ export default class MathComponent extends InlineComponent {
     };
     properties.expand = { default: false };
     properties.displayDigits = { default: 10 };
+    properties.displayDecimals = { default: null };
     properties.displaySmallAsZero = { default: false };
     properties.renderMode = { default: "inline", forRenderer: true };
     properties.unordered = { default: false };
@@ -314,6 +315,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDigits"
         },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
         displaySmallAsZero: {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
@@ -327,12 +332,18 @@ export default class MathComponent extends InlineComponent {
           variableName: "expand"
         },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
-        // determined by displaydigits
-        let rounded = dependencyValues.value.round_numbers_to_precision(dependencyValues.displayDigits);
-        if (dependencyValues.displaySmallAsZero) {
-          rounded = rounded.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
+        // determined by displaydigits or displaydecimals
+        let rounded;
+
+        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+          rounded = dependencyValues.value.round_numbers_to_decimals(dependencyValues.displayDecimals);
+        } else {
+          rounded = dependencyValues.value.round_numbers_to_precision(dependencyValues.displayDigits);
+          if (dependencyValues.displaySmallAsZero) {
+            rounded = rounded.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
+          }
         }
         return {
           newValues: {

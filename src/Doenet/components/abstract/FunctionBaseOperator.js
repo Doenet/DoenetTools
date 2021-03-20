@@ -1,4 +1,4 @@
-import Function from '../Function';
+import Function, { returnSymbolicFunctionFromFormula, returnNumericalFunctionFromFormula } from '../Function';
 import me from 'math-expressions';
 
 export default class FunctionOperator extends Function {
@@ -9,66 +9,15 @@ export default class FunctionOperator extends Function {
 
     childLogic.deleteAllLogic();
 
-    // let addFunction = function ({ activeChildrenMatched }) {
-    //   // add <function> around variable and math
-    //   let functionChildren = [];
-    //   for (let child of activeChildrenMatched) {
-    //     functionChildren.push({
-    //       createdComponent: true,
-    //       componentName: child.componentName
-    //     });
-    //   }
-    //   return {
-    //     success: true,
-    //     newChildren: [{ componentType: "function", children: functionChildren }],
-    //   }
-    // }
-
-    // let atMostOneVariableForSugar = childLogic.newLeaf({
-    //   name: "atMostOneVariableForSugar",
-    //   componentType: 'variable',
-    //   comparison: "atMost",
-    //   number: 1,
-    // });
-
-    // let atLeastOneString = childLogic.newLeaf({
-    //   name: "atLeastOneString",
-    //   componentType: 'string',
-    //   comparison: 'atLeast',
-    //   number: 1,
-    // });
-    // let atLeastOneMath = childLogic.newLeaf({
-    //   name: "atLeastOneMath",
-    //   componentType: 'math',
-    //   comparison: 'atLeast',
-    //   number: 1,
-    // });
-
-    // let stringsAndMaths = childLogic.newOperator({
-    //   name: "stringsAndMaths",
-    //   operator: 'or',
-    //   propositions: [atLeastOneString, atLeastOneMath],
-    //   requireConsecutive: true,
-    // });
-
-    // let variableStringsAndMaths = childLogic.newOperator({
-    //   name: "variableStringsAndMaths",
-    //   operator: 'and',
-    //   propositions: [atMostOneVariableForSugar, stringsAndMaths],
-    //   requireConsecutive: true,
-    //   isSugar: true,
-    //   logicToWaitOnSugar: ["atMostOneFunction"],
-    //   replacementFunction: addFunction,
-    // });
-
-    let exactlyOneFormula = childLogic.newLeaf({
-      name: "exactlyOneFormula",
+    let exactlyOneFormulaForOperator = childLogic.newLeaf({
+      name: "exactlyOneFormulaForOperator",
       componentType: 'formula',
       number: 1,
+      takePropertyChildren: true,
     });
 
-    let atMostOneFunction = childLogic.newLeaf({
-      name: "atMostOneFunction",
+    let atMostOneFunctionForOperator = childLogic.newLeaf({
+      name: "atMostOneFunctionForOperator",
       componentType: 'function',
       comparison: "atMost",
       number: 1,
@@ -77,7 +26,7 @@ export default class FunctionOperator extends Function {
     let functionXorFormula = childLogic.newOperator({
       name: "functionXorFormula",
       operator: "xor",
-      propositions: [exactlyOneFormula, atMostOneFunction]
+      propositions: [exactlyOneFormulaForOperator, atMostOneFunctionForOperator]
     })
 
     let atMostOneVariable = childLogic.newLeaf({
@@ -88,10 +37,18 @@ export default class FunctionOperator extends Function {
       takePropertyChildren: true,
     });
 
+    let atMostOneSymbolic = childLogic.newLeaf({
+      name: "atMostOneSymbolic",
+      componentType: 'symbolic',
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
+    });
+
     childLogic.newOperator({
       name: "functionAndVariable",
       operator: "and",
-      propositions: [functionXorFormula, atMostOneVariable],
+      propositions: [functionXorFormula, atMostOneVariable, atMostOneSymbolic],
       setAsBase: true
     })
 
@@ -118,6 +75,20 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
 
+    let originalVariableReturnDependences = stateVariableDefinitions.variable.returnDependencies;
+    stateVariableDefinitions.variable.returnDependencies = function () {
+      let dependencies = originalVariableReturnDependences();
+      dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
+      return dependencies;
+    }
+
+    let originalSymbolicReturnDependences = stateVariableDefinitions.symbolic.returnDependencies;
+    stateVariableDefinitions.symbolic.returnDependencies = function () {
+      let dependencies = originalSymbolicReturnDependences();
+      dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
+      return dependencies;
+    }
+
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: false } })
@@ -133,14 +104,24 @@ export default class FunctionOperator extends Function {
       definition: () => ({ newValues: { operatorComposesWithOriginal: true } })
     }
 
-    stateVariableDefinitions.functionOperator = {
+    stateVariableDefinitions.symbolicFunctionOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { functionOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ newValues: { symbolicFunctionOperator: x => me.fromAst('\uff3f') } })
+    }
+
+    stateVariableDefinitions.numericalFunctionOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numericalFunctionOperator: x => NaN } })
     }
 
     stateVariableDefinitions.formulaOperator = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { formulaOperator: x => me.fromAst('\uff3f') } })
+    }
+
+    stateVariableDefinitions.returnNumericalDerivatives = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { returnNumericalDerivatives: null } })
     }
 
     stateVariableDefinitions.formula = {
@@ -155,12 +136,12 @@ export default class FunctionOperator extends Function {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childLogicName: "atMostOneFunctionForOperator",
           variableNames: ["formula"],
         },
         formulaChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneFormula",
+          childLogicName: "exactlyOneFormulaForOperator",
           variableNames: ["value"],
         },
         formulaOperator: {
@@ -203,7 +184,96 @@ export default class FunctionOperator extends Function {
 
     }
 
-    stateVariableDefinitions.f = {
+    stateVariableDefinitions.symbolicf = {
+      returnDependencies: () => ({
+        operatorBasedOnFormula: {
+          dependencyType: "stateVariable",
+          variableName: "operatorBasedOnFormula"
+        },
+        formula: {
+          dependencyType: "stateVariable",
+          variableName: "formula"
+        },
+        variable: {
+          dependencyType: "stateVariable",
+          variableName: "variable",
+        },
+        simplify: {
+          dependencyType: "stateVariable",
+          variableName: "simplify",
+        },
+        expand: {
+          dependencyType: "stateVariable",
+          variableName: "expand",
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunctionForOperator",
+          variableNames: ["symbolicf"]
+        },
+        formulaChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneFormulaForOperator",
+          variableNames: ["value"],
+        },
+        symbolicFunctionOperator: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicFunctionOperator"
+        },
+        operatorComposesWithOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "operatorComposesWithOriginal"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.operatorBasedOnFormula) {
+          return {
+            newValues: {
+              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
+            }
+          }
+        } else if (dependencyValues.operatorComposesWithOriginal) {
+
+          if (dependencyValues.functionChild.length === 0) {
+            if (dependencyValues.formulaChild.length === 0) {
+              return {
+                newValues: { symbolicf: x => me.fromAst('\uff3f') }
+              }
+            } else {
+
+              let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
+              dependencyValuesWithChildFormula.formula = dependencyValues.formulaChild[0].stateValues.value;
+
+              let childF = returnSymbolicFunctionFromFormula(dependencyValues)
+              return {
+                newValues: {
+                  symbolicf: x => dependencyValues.symbolicFunctionOperator(childF(x))
+                }
+              }
+
+            }
+          } else {
+            let childF = dependencyValues.functionChild[0].stateValues.symbolicf;
+            return {
+              newValues: {
+                symbolicf: x => dependencyValues.symbolicFunctionOperator(childF(x))
+              }
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              symbolicf: function (x) {
+                return dependencyValues.symbolicFunctionOperator(x)
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.numericalf = {
       returnDependencies: () => ({
         operatorBasedOnFormula: {
           dependencyType: "stateVariable",
@@ -219,17 +289,17 @@ export default class FunctionOperator extends Function {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
-          variableNames: ["f", "symbolic"]
+          childLogicName: "atMostOneFunctionForOperator",
+          variableNames: ["numericalf"]
         },
         formulaChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneFormula",
+          childLogicName: "exactlyOneFormulaForOperator",
           variableNames: ["value"],
         },
-        functionOperator: {
+        numericalFunctionOperator: {
           dependencyType: "stateVariable",
-          variableName: "functionOperator"
+          variableName: "numericalFunctionOperator"
         },
         operatorComposesWithOriginal: {
           dependencyType: "stateVariable",
@@ -239,35 +309,9 @@ export default class FunctionOperator extends Function {
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.operatorBasedOnFormula) {
-
-          let symbolic = false;
-
-          if (dependencyValues.functionChild.length === 0) {
-            symbolc = dependencyValues.functionChild[0].stateValues.symbolic;
-          }
-
-          if (symbolic) {
-            let formula = dependencyValues.formula;
-            let varString = dependencyValues.variable.tree;
-            return {
-              newValues: {
-                f: (x) => formula.substitute({ [varString]: x })
-              }
-            }
-          } else {
-
-            let formula_f = dependencyValues.formula.f();
-            let varString = dependencyValues.variable.tree;
-            return {
-              newValues: {
-                f: function (x) {
-                  try {
-                    return formula_f({ [varString]: x });
-                  } catch (e) {
-                    return NaN;
-                  }
-                }
-              }
+          return {
+            newValues: {
+              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
             }
           }
         } else if (dependencyValues.operatorComposesWithOriginal) {
@@ -275,40 +319,27 @@ export default class FunctionOperator extends Function {
           if (dependencyValues.functionChild.length === 0) {
             if (dependencyValues.formulaChild.length === 0) {
               return {
-                newValues: { f: x => me.fromAst('\uff3f') }
+                newValues: { numericalf: x => NaN }
               }
             } else {
 
-              let formula_f;
-              try {
-                formula_f = dependencyValues.formulaChild[0].stateValues.value.f();
-              } catch (e) {
-                formula_f = () => NaN;
-              }
-              let varString = dependencyValues.variable.tree;
+              let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
+              dependencyValuesWithChildFormula.formula = dependencyValues.formulaChild[0].stateValues.value;
+
+              let childF = returnNumericalFunctionFromFormula(dependencyValues)
               return {
                 newValues: {
-                  f: function (x) {
-                    try {
-                      return dependencyValues.functionOperator(formula_f({ [varString]: x }));
-                    } catch (e) {
-                      return NaN;
-                    }
-                  }
+                  numericalf: x => dependencyValues.numericalFunctionOperator(childF(x))
                 }
               }
+
             }
           } else {
 
-            let functionChild = dependencyValues.functionChild[0];
-
+            let childF = dependencyValues.functionChild[0].stateValues.numericalf;
             return {
               newValues: {
-                f: function (x) {
-                  return dependencyValues.functionOperator(
-                    functionChild.stateValues.f(x)
-                  )
-                }
+                numericalf: x => dependencyValues.numericalFunctionOperator(childF(x))
               }
             }
           }
@@ -316,8 +347,8 @@ export default class FunctionOperator extends Function {
         } else {
           return {
             newValues: {
-              f: function (x) {
-                return dependencyValues.functionOperator(x)
+              numericalf: function (x) {
+                return dependencyValues.numericalFunctionOperator(x)
               }
             }
           }
@@ -325,7 +356,6 @@ export default class FunctionOperator extends Function {
 
       }
     }
-
 
     // make functionChild null
     // as base Function component uses it to determine if extrema
@@ -336,10 +366,10 @@ export default class FunctionOperator extends Function {
     }
 
     // remove function child dependency from minima
-    stateVariableDefinitions.minima.returnDependencies = () => ({
-      f: {
+    stateVariableDefinitions.allMinima.returnDependencies = () => ({
+      numericalf: {
         dependencyType: "stateVariable",
-        variableName: "f",
+        variableName: "numericalf",
       },
       xscale: {
         dependencyType: "stateVariable",
@@ -349,10 +379,10 @@ export default class FunctionOperator extends Function {
 
 
     // remove function child dependency from maxima
-    stateVariableDefinitions.maxima.returnDependencies = () => ({
-      f: {
+    stateVariableDefinitions.allMaxima.returnDependencies = () => ({
+      numericalf: {
         dependencyType: "stateVariable",
-        variableName: "f",
+        variableName: "numericalf",
       },
       xscale: {
         dependencyType: "stateVariable",
