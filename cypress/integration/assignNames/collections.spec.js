@@ -1050,8 +1050,8 @@ describe('Collection assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
-    <line><through>(4,3),(2,1)</through></line>
+    <line through="(0,0)(1,1)"/>
+    <line through="(4,3)(2,1)"/>
   </graph>
 
   <graph>
@@ -1937,7 +1937,10 @@ describe('Collection assignName Tests', function () {
   <graph>
     <map>
       <template>
-        <point><x><copy tname="_source" />+<math>0</math></x><y><copy tname="_sourceindex" />+<math>0</math></y></point>
+        <point>
+          (<copy tname="_source" />+<math>0</math>,
+          <copy tname="_sourceindex" />+<math>0</math>)
+        </point>
       </template>
       <sources>
         <sequence from="2" length="$n1" />
@@ -1945,7 +1948,10 @@ describe('Collection assignName Tests', function () {
     </map>
     <map>
       <template>
-        <point><x>-<copy tname="_source" />+<math>0</math></x><y>-<copy tname="_sourceindex" />+<math>0</math></y></point>
+        <point>
+          (-<copy tname="_source" />+<math>0</math>,
+          -<copy tname="_sourceindex" />+<math>0</math>)
+        </point>
       </template>
       <sources>
         <sequence from="2" length="$n2" />
@@ -4268,18 +4274,15 @@ describe('Collection assignName Tests', function () {
     <p>Number of dimensions 2: <mathinput name="nd2" prefill="3"/></p>
     <map assignNames="pa1,pa2,pa3">
       <template newNamespace>
-        <point>
-          <xs>
-            <map>
-              <template>
-                <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
-              </template>
-              <sources>
-                <sequence length="$(../nd1)" />
-              </sources>
-            </map>
-          </xs>
-        </point>
+        <map hide>
+          <template>
+            <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+          </template>
+          <sources>
+            <sequence length="$(../nd1)" />
+          </sources>
+        </map>
+        <point xs="$_map1" />
       </template>
       <sources>
         <sequence length="$n1" />
@@ -4287,18 +4290,15 @@ describe('Collection assignName Tests', function () {
     </map>
     <map assignNames="pb1,pb2,pb3">
       <template newNamespace>
-        <point>
-          <xs>
-            <map>
-              <template>
-                <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
-              </template>
-              <sources>
-                <sequence length="$(../nd2)" />
-              </sources>
-            </map>
-          </xs>
-        </point>
+        <map>
+          <template>
+            <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+          </template>
+          <sources>
+            <sequence length="$(../nd2)" />
+          </sources>
+        </map>
+        <point xs="$_map1" />
       </template>
       <sources>
         <sequence length="$n2" />

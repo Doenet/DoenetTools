@@ -1,14 +1,22 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import LineSegment from './LineSegment';
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
+
+  static get stateVariablesShadowedForReference() {
+    return [
+      "nPointsSpecified", "points", "radians", "degrees", "numericalPoints"
+    ]
+  };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
     properties.radius = { default: me.fromAst(1) };
     properties.renderAsAcuteAngle = { default: false, forRenderer: true, };
+    properties.inDegrees = { default: false, forRenderer: true };
     return properties;
   }
 
@@ -20,7 +28,11 @@ export default class Angle extends GraphicalComponent {
       childrenRegex: "s",
       replacementFunction: ({ matchedChildren }) => ({
         success: true,
-        newChildren: [{ componentType: "math", children: matchedChildren }],
+        newChildren: [{
+          componentType: "radians",
+          children: matchedChildren,
+          doenetAttributes: { isPropertyChild: true }
+        }],
       })
     });
 
@@ -33,30 +45,41 @@ export default class Angle extends GraphicalComponent {
     let childLogic = super.returnChildLogic(args);
 
 
-    let atMostOneMath = childLogic.newLeaf({
-      name: "atMostOneMath",
-      componentType: 'math',
+    let atMostOneRadians = childLogic.newLeaf({
+      name: "atMostOneRadians",
+      componentType: 'radians',
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
+    });
+
+    let exactlyOneDegrees = childLogic.newLeaf({
+      name: "exactlyOneDegrees",
+      componentType: 'degrees',
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
     });
 
     let exactlyOneThrough = childLogic.newLeaf({
       name: "exactlyOneThrough",
       componentType: 'through',
-      number: 1
+      number: 1,
+      takePropertyChildren: true,
     });
 
-    let exactlyTwoLines = childLogic.newLeaf({
-      name: "exactlyTwoLines",
-      componentType: 'line',
-      number: 2,
+    let exactlyOneBetweenLines = childLogic.newLeaf({
+      name: "exactlyOneBetweenLines",
+      componentType: 'betweenLines',
+      number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
       name: "throughLogic",
       operator: 'xor',
-      propositions: [exactlyOneThrough, exactlyTwoLines,
-        atMostOneMath],
+      propositions: [exactlyOneThrough, exactlyOneBetweenLines, exactlyOneDegrees,
+        atMostOneRadians],
       setAsBase: true
     });
 
@@ -66,6 +89,41 @@ export default class Angle extends GraphicalComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.lineNames = {
+      returnDependencies: () => ({
+        betweenLinesChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneBetweenLines",
+          variableNames: ["lineNames"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        let lineNames = [];
+
+        if (dependencyValues.betweenLinesChild.length === 1) {
+          lineNames = dependencyValues.betweenLinesChild[0].stateValues.lineNames;
+        }
+        return { newValues: { lineNames } }
+      }
+    }
+
+    stateVariableDefinitions.betweenLinesName = {
+      returnDependencies: () => ({
+        betweenLinesChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneBetweenLines",
+        }
+      }),
+      definition({ dependencyValues }) {
+        let betweenLinesName = null;
+
+        if (dependencyValues.betweenLinesChild.length === 1) {
+          betweenLinesName = dependencyValues.betweenLinesChild[0].componentName
+        }
+        return { newValues: { betweenLinesName } }
+      }
+    }
 
     stateVariableDefinitions.nPointsSpecified = {
       returnDependencies: () => ({
@@ -94,15 +152,21 @@ export default class Angle extends GraphicalComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      stateVariablesDeterminingDependencies: ["nPointsSpecified"],
+      stateVariablesDeterminingDependencies: ["nPointsSpecified", "betweenLinesName"],
       returnArraySizeDependencies: () => ({
-        mathChild: {
+        radiansChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneMath"
+          childLogicName: "atMostOneRadians"
+        },
+        degreesChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneDegrees"
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.mathChild.length === 1) {
+        if (dependencyValues.radiansChild.length === 1 ||
+          dependencyValues.degreesChild.length === 1
+        ) {
           return [0, 0]
         } else {
           return [3, 2];
@@ -146,19 +210,30 @@ export default class Angle extends GraphicalComponent {
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
-          lineChildren: {
-            dependencyType: "child",
-            childLogicName: "exactlyTwoLines",
-            variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
-          },
+          // lineChildren: {
+          //   dependencyType: "child",
+          //   childLogicName: "exactlyOneBetweenLines",
+          //   variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
+          // },
           // use value of state variable determining dependency
           // (rather than reference to state variable value)
           // so that this dependency corresponds to the value used to set up dependencies, below
           nPointsSpecified: {
             dependencyType: "value",
             value: stateValues.nPointsSpecified
+          },
+        }
+
+        if (stateValues.betweenLinesName !== null) {
+          globalDependencies.lineChildren = {
+            dependencyType: "child",
+            parentName: stateValues.betweenLinesName,
+            childLogicName: "atLeastZeroLines",
+            variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
           }
         }
+
+
 
         let dependenciesByKey = {};
 
@@ -199,53 +274,57 @@ export default class Angle extends GraphicalComponent {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
 
-        if (globalDependencyValues.lineChildren.length === 2) {
+        if (globalDependencyValues.lineChildren) {
+          if (globalDependencyValues.lineChildren.length !== 2) {
+            console.warn(`Cannot define an angle between ${globalDependencyValues.lineChildren.length} line(s)`)
+          } else {
 
-          let line1 = globalDependencyValues.lineChildren[0];
-          let line2 = globalDependencyValues.lineChildren[1];
+            let line1 = globalDependencyValues.lineChildren[0];
+            let line2 = globalDependencyValues.lineChildren[1];
 
 
-          let lineIntersection = calculateLineIntersection(line1, line2);
+            let lineIntersection = calculateLineIntersection(line1, line2);
 
-          if (lineIntersection === undefined) {
-            let points = {};
-            for (let i = 0; i < 3; i++) {
-              for (let j = 0; j < 2; j++) {
-                points[i + "," + j] = me.fromAst("\uff3f")
+            if (lineIntersection === undefined) {
+              let points = {};
+              for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                  points[i + "," + j] = me.fromAst("\uff3f")
+                }
               }
+              return { newValues: { points } }
             }
-            return { newValues: { points } }
-          }
 
-          let point2 = lineIntersection;
+            let point2 = lineIntersection;
 
-          let a1 = line1.stateValues.points[0][0].evaluate_to_constant();
-          let a2 = line1.stateValues.points[0][1].evaluate_to_constant();
-          let b1 = line1.stateValues.points[1][0].evaluate_to_constant();
-          let b2 = line1.stateValues.points[1][1].evaluate_to_constant();
-          let point1 = [
-            me.fromAst(point2[0].tree + b1 - a1),
-            me.fromAst(point2[1].tree + b2 - a2)
-          ]
+            let a1 = line1.stateValues.points[0][0].evaluate_to_constant();
+            let a2 = line1.stateValues.points[0][1].evaluate_to_constant();
+            let b1 = line1.stateValues.points[1][0].evaluate_to_constant();
+            let b2 = line1.stateValues.points[1][1].evaluate_to_constant();
+            let point1 = [
+              me.fromAst(point2[0].tree + b1 - a1),
+              me.fromAst(point2[1].tree + b2 - a2)
+            ]
 
-          a1 = line2.stateValues.points[0][0].evaluate_to_constant();
-          a2 = line2.stateValues.points[0][1].evaluate_to_constant();
-          b1 = line2.stateValues.points[1][0].evaluate_to_constant();
-          b2 = line2.stateValues.points[1][1].evaluate_to_constant();
-          let point3 = [
-            me.fromAst(point2[0].tree + b1 - a1),
-            me.fromAst(point2[1].tree + b2 - a2),
-          ];
+            a1 = line2.stateValues.points[0][0].evaluate_to_constant();
+            a2 = line2.stateValues.points[0][1].evaluate_to_constant();
+            b1 = line2.stateValues.points[1][0].evaluate_to_constant();
+            b2 = line2.stateValues.points[1][1].evaluate_to_constant();
+            let point3 = [
+              me.fromAst(point2[0].tree + b1 - a1),
+              me.fromAst(point2[1].tree + b2 - a2),
+            ];
 
-          return {
-            newValues: {
-              points: {
-                "0,0": point1[0],
-                "0,1": point1[1],
-                "1,0": point2[0],
-                "1,1": point2[1],
-                "2,0": point3[0],
-                "2,1": point3[1],
+            return {
+              newValues: {
+                points: {
+                  "0,0": point1[0],
+                  "0,1": point1[1],
+                  "1,0": point2[0],
+                  "1,1": point2[1],
+                  "2,0": point3[0],
+                  "2,1": point3[1],
+                }
               }
             }
           }
@@ -317,14 +396,19 @@ export default class Angle extends GraphicalComponent {
 
     }
 
-    stateVariableDefinitions.angle = {
+    stateVariableDefinitions.radians = {
       public: true,
       componentType: "math",
       forRenderer: true,
       returnDependencies: () => ({
-        mathChild: {
+        radiansChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneMath",
+          childLogicName: "atMostOneRadians",
+          variableNames: ["value"]
+        },
+        degreesChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneDegrees",
           variableNames: ["value"]
         },
         points: {
@@ -335,10 +419,16 @@ export default class Angle extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
 
-        if (dependencyValues.mathChild.length === 1) {
+        if (dependencyValues.radiansChild.length === 1) {
           return {
             newValues: {
-              angle: dependencyValues.mathChild[0].stateValues.value.simplify()
+              radians: dependencyValues.radiansChild[0].stateValues.value.simplify()
+            }
+          }
+        } else if (dependencyValues.degreesChild.length === 1) {
+          return {
+            newValues: {
+              radians: dependencyValues.degreesChild[0].stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify()
             }
           }
         }
@@ -355,48 +445,52 @@ export default class Angle extends GraphicalComponent {
           }
         }
 
-        let angle;
+        let radians;
 
         if (foundNull) {
-          return { newValues: { angle: me.fromAst('\uff3f') } }
+          return { newValues: { radians: me.fromAst('\uff3f') } }
         } else {
-          angle = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
+          radians = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
             Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0])
         }
 
-        // make angle be between 0 and 2pi
-        if (angle < 0) {
-          angle += 2 * Math.PI;
+        // make radians be between 0 and 2pi
+        if (radians < 0) {
+          radians += 2 * Math.PI;
         }
 
-        return { newValues: { angle: me.fromAst(angle) } }
+        return { newValues: { radians: me.fromAst(radians) } }
       }
     }
 
     stateVariableDefinitions.value = {
       isAlias: true,
-      targetVariableName: "angle"
+      targetVariableName: "radians"
+    };
+
+    stateVariableDefinitions.angle = {
+      isAlias: true,
+      targetVariableName: "radians"
     };
 
 
     stateVariableDefinitions.degrees = {
       public: true,
-      componentType: "number",
+      componentType: "math",
       forRenderer: true,
       returnDependencies: () => ({
-        angle: {
+        radians: {
           dependencyType: "stateVariable",
-          variableName: "angle",
+          variableName: "radians",
         }
       }),
       definition({ dependencyValues }) {
-        let numericalAngle = dependencyValues.angle.evaluate_to_constant();
-
         let degrees;
-        if (Number.isFinite(numericalAngle)) {
-          degrees = numericalAngle / Math.PI * 180;
+
+        if (dependencyValues.radians.tree === "\uff3f" || Number.isNaN(dependencyValues.radians.tree)) {
+          degrees = dependencyValues.radians;
         } else {
-          degrees = NaN;
+          degrees = dependencyValues.radians.multiply(me.fromAst(["/", 180, 'pi'])).simplify()
         }
         return { newValues: { degrees } }
       }
@@ -407,14 +501,20 @@ export default class Angle extends GraphicalComponent {
       entryPrefixes: ["numericalPoint"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        mathChild: {
+        radiansChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneMath"
+          childLogicName: "atMostOneRadians"
+        },
+        degreesChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneDegrees"
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.mathChild.length === 1) {
-          return [0, 0]
+        if (dependencyValues.radiansChild.length === 1 ||
+          dependencyValues.degreesChild.length === 1
+        ) {
+          return [0]
         } else {
           return [3];
         }
@@ -477,7 +577,7 @@ export default class Angle extends GraphicalComponent {
   }
 
 
-  adapters = ["angle"];
+  adapters = ["radians"];
 
 }
 

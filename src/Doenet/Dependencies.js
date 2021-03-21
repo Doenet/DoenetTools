@@ -1,6 +1,6 @@
 import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 import { deepClone, deepCompare } from "./utils/deepFunctions";
-import { gatherDescendants } from "./utils/descendants";
+import { ancestorsIncludingComposites, gatherDescendants } from "./utils/descendants";
 
 const dependencyTypeArray = [];
 
@@ -183,7 +183,10 @@ export class DependencyHandler {
           } else {
             // Note: this keeps the downstream dependency in the upstream component
             // even if this is the last downstream component
-            upDep.removeDownstreamComponent(upDep.downstreamComponentNames.indexOf(componentName), updatesNeeded)
+            upDep.removeDownstreamComponent({
+              indexToRemove: upDep.downstreamComponentNames.indexOf(componentName),
+              updatesNeeded
+            })
           }
         }
       }
@@ -1272,6 +1275,30 @@ class Dependency {
       componentClass: downComponent.constructor,
     });
 
+    if (this.constructor.convertToArraySize) {
+      mappedVarNames = mappedVarNames.map(function (vName) {
+        let stateVarObj = downComponent.state[vName];
+        if (stateVarObj) {
+          if (stateVarObj.arraySizeStateVariable) {
+            return stateVarObj.arraySizeStateVariable
+          } else {
+            return `__${vName}_is_not_an_array`;
+          }
+        }
+
+        // check if vName begins when an arrayEntry
+        let arrayEntryPrefixesLongestToShortest = Object.keys(downComponent.arrayEntryPrefixes)
+          .sort((a, b) => b.length - a.length);
+        for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
+          if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
+            let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
+            return downComponent.state[arrayVarName].arraySizeStateVariable
+          }
+        }
+        return `__${vName}_is_not_an_array`;
+      });
+
+    }
 
     if (this.propIndex !== undefined) {
       console.warn(`Need to implement propIndex!`)
@@ -1415,13 +1442,15 @@ class Dependency {
 
   }
 
-  removeDownstreamComponent(indexToRemove, updatesNeeded) {
+  removeDownstreamComponent({ indexToRemove, updatesNeeded, recordChange = true }) {
     // console.log(`remove downstream ${indexToRemove}, ${this.downstreamComponentNames[indexToRemove]} dependency: ${this.dependencyName}`)
     // console.log(this.upstreamComponentName, this.representativeStateVariable);
 
     // remove downstream component specified by indexToRemove from this dependency
 
-    this.componentIdentitiesChanged = true;
+    if (recordChange) {
+      this.componentIdentitiesChanged = true;
+    }
 
     let componentName = this.downstreamComponentNames[indexToRemove];
 
@@ -1473,13 +1502,15 @@ class Dependency {
       }
     }
 
-    for (let upVarName of this.upstreamVariableNames) {
-      if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].isResolved) {
-        this.dependencyHandler.core.recordActualChangeInStateVariable({
-          componentName: this.upstreamComponentName,
-          varName: upVarName,
-          updatesNeeded,
-        })
+    if (recordChange) {
+      for (let upVarName of this.upstreamVariableNames) {
+        if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].isResolved) {
+          this.dependencyHandler.core.recordActualChangeInStateVariable({
+            componentName: this.upstreamComponentName,
+            varName: upVarName,
+            updatesNeeded,
+          })
+        }
       }
     }
 
@@ -1725,7 +1756,7 @@ class Dependency {
       for (let [ind, downCompName] of [...this.downstreamComponentNames].entries()) {
         if (!newComponentNames.includes(downCompName)) {
           // updatesNeeded.componentsTouched.push(downCompName);
-          this.removeDownstreamComponent(ind - nRemoved, updatesNeeded);
+          this.removeDownstreamComponent({ indexToRemove: ind - nRemoved, updatesNeeded });
           nRemoved++;
         }
       }
@@ -1840,71 +1871,88 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
 
   getValue({ verbose = false } = {}) {
 
+
     let value = [];
     let changes = {};
-    let usedDefault = false;
 
-    if (this.componentIdentitiesChanged) {
-      changes.componentIdentitiesChanged = true;
-      this.componentIdentitiesChanged = false;
-    }
+    if (this.staticValue) {
+      value = [this.staticValue];
+    } else {
 
-    for (let [componentInd, componentName] of this.downstreamComponentNames.entries()) {
-      let depComponent = this.dependencyHandler.components[componentName];
+      if (this.componentIdentitiesChanged) {
+        changes.componentIdentitiesChanged = true;
+        this.componentIdentitiesChanged = false;
+      }
 
-      let componentObj = {
-        componentName: depComponent.componentName,
-        componentType: depComponent.componentType,
-      };
+      if (this.downstreamComponentNames.length === 1) {
+        let componentName = this.downstreamComponentNames[0];
+        let depComponent = this.dependencyHandler.components[componentName];
 
-      if (this.originalDownstreamVariableNames.length > 0) {
+        let componentObj = {
+          componentName: depComponent.componentName,
+          componentType: depComponent.componentType,
+        };
+
 
         componentObj.stateValues = {};
 
-        for (let [varInd, originalVarName] of this.originalDownstreamVariableNames.entries()) {
-          let mappedVarName = this.mappedDownstreamVariableNamesByComponent[componentInd][varInd];
+        let originalVarName = this.originalDownstreamVariableNames[0];
+        let mappedVarName = this.mappedDownstreamVariableNamesByComponent[0][0];
 
-          let nameForOutput = this.useMappedVariableNames ? mappedVarName : originalVarName;
+        let nameForOutput = this.useMappedVariableNames ? mappedVarName : originalVarName;
 
-          if (!this.variablesOptional || mappedVarName in depComponent.state) {
-            if (!depComponent.state[mappedVarName].deferred) {
+        if (!this.variablesOptional || mappedVarName in depComponent.state) {
+          if (!depComponent.state[mappedVarName].deferred) {
 
-              let stateVarObj = depComponent.state[mappedVarName]
-              // call getter to make sure component type is set
-              stateVarObj.value;
-              componentObj.stateValues[nameForOutput] = stateVarObj.componentType;
+            let stateVarObj = depComponent.state[mappedVarName]
+            // call getter to make sure component type is set
+            stateVarObj.value;
+            componentObj.stateValues[nameForOutput] = stateVarObj.componentType;
 
-              if (stateVarObj.isArray) {
-                // if array, use componentType from wrapping components, if exist
-                if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
-                  let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
-                  if(typeof wrapCT === "object") {
-                    wrapCT = wrapCT.componentType;
-                  }
-                  componentObj.stateValues[nameForOutput] = wrapCT;
+            if (stateVarObj.isArray) {
+              // if array, use componentType from wrapping components, if exist
+              if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
+                let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
+                if (typeof wrapCT === "object") {
+                  wrapCT = wrapCT.componentType;
                 }
+                componentObj.stateValues[nameForOutput] = wrapCT;
               }
+            }
 
-              if (this.valuesChanged[componentInd][mappedVarName].changed
-              ) {
-                if (!changes.valuesChanged) {
-                  changes.valuesChanged = {};
-                }
-                if (!changes.valuesChanged[componentInd]) {
-                  changes.valuesChanged[componentInd] = {}
-                }
-                changes.valuesChanged[componentInd][nameForOutput] = this.valuesChanged[componentInd][mappedVarName];
+            if (this.valuesChanged[0][mappedVarName].changed
+            ) {
+              if (!changes.valuesChanged) {
+                changes.valuesChanged = {};
               }
-              this.valuesChanged[componentInd][mappedVarName] = {};
+              if (!changes.valuesChanged[0]) {
+                changes.valuesChanged[0] = {}
+              }
+              changes.valuesChanged[0][nameForOutput] = this.valuesChanged[0][mappedVarName];
+            }
+            this.valuesChanged[0][mappedVarName] = {};
+
+            let hasVariableComponentType = stateVarObj.hasVariableComponentType;
+            if (!hasVariableComponentType && stateVarObj.isArrayEntry) {
+              let arrayStateVarObj = depComponent.state[stateVarObj.arrayStateVariable];
+              hasVariableComponentType = arrayStateVarObj.hasVariableComponentType
+            }
+            if (!hasVariableComponentType) {
+              // since this value won't change,
+              // remove the downstream dependency 
+              // and create static value
+              this.staticValue = componentObj;
+              this.removeDownstreamComponent({ indexToRemove: 0, recordChange: false });
+
             }
           }
         }
+
+        value = [componentObj];
+
       }
 
-      value.push(componentObj);
-
     }
-
 
     if (!verbose) {
       if (this.returnSingleVariableValue) {
@@ -1917,10 +1965,6 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
 
           if (stateVariables.length === 1) {
             value = value.stateValues[stateVariables[0]];
-
-            usedDefault = this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
-              this.mappedDownstreamVariableNamesByComponent[0][0]
-            ].usedDefault;
 
           } else {
             value = null;
@@ -1944,12 +1988,23 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
       value = new Proxy(value, readOnlyProxyHandler)
     }
 
-    return { value, changes, usedDefault }
+
+    return { value, changes, usedDefault: false }
   }
 
 }
 
 dependencyTypeArray.push(StateVariableComponentTypeDependency);
+
+
+class StateVariableArraySizeDependency extends StateVariableDependency {
+  static dependencyType = "stateVariableArraySize";
+
+  static convertToArraySize = true;
+
+}
+
+dependencyTypeArray.push(StateVariableArraySizeDependency);
 
 class RecursiveDependencyValuesDependency extends Dependency {
   static dependencyType = "recursiveDependencyValues";
@@ -3456,27 +3511,3 @@ class VariantsDependency extends Dependency {
 
 dependencyTypeArray.push(VariantsDependency);
 
-
-function ancestorsIncludingComposites(comp, components) {
-  if (comp.ancestors === undefined || comp.ancestors.length === 0) {
-    return [];
-  }
-
-  let comps = [comp.ancestors[0].componentName];
-
-  let parent = components[comp.ancestors[0].componentName];
-  comps.push(...ancestorsIncludingComposites(parent, components));
-
-  if (comp.replacementOf) {
-    comps.push(comp.replacementOf.componentName);
-    let replacementAs = ancestorsIncludingComposites(comp.replacementOf, components)
-    for (let a of replacementAs) {
-      if (!comps.includes(a)) {
-        comps.push(a);
-      }
-    }
-  }
-
-  return comps;
-
-}

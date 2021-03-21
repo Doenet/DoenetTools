@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakEmbeddedStringByCommas, breakEmbeddedStringIntoParensPieces, breakIntoVectorComponents } from '../commonsugar/breakstrings';
+import { breakEmbeddedStringIntoParensPieces } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -15,9 +15,6 @@ export default class PointListComponent extends BaseComponent {
       let results = breakEmbeddedStringIntoParensPieces({
         componentList: matchedChildren,
       });
-
-      console.log(`results from breaking by parens`)
-      console.log(JSON.parse(JSON.stringify(results)));
 
       if (results.success !== true) {
         return { success: false }

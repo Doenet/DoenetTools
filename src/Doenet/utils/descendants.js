@@ -10,8 +10,8 @@ export function gatherDescendants({ ancestor, descendantClasses,
   init = true
 }) {
 
-  console.log("descendantClasses")
-  console.log(descendantClasses)
+  // console.log("descendantClasses")
+  // console.log(descendantClasses)
 
   let childrenToCheck = [];
 
@@ -198,5 +198,32 @@ function replacementsForComposites({ composite, compositeClass, includeComposite
   }
 
   return replacements;
+
+}
+
+
+export function ancestorsIncludingComposites(comp, components) {
+  if (comp.ancestors === undefined || comp.ancestors.length === 0) {
+    return [];
+  }
+
+  let comps = [comp.ancestors[0].componentName];
+
+  let parent = components[comp.ancestors[0].componentName];
+  if (parent) {
+    comps.push(...ancestorsIncludingComposites(parent, components));
+  }
+
+  if (comp.replacementOf) {
+    comps.push(comp.replacementOf.componentName);
+    let replacementAs = ancestorsIncludingComposites(comp.replacementOf, components)
+    for (let a of replacementAs) {
+      if (!comps.includes(a)) {
+        comps.push(a);
+      }
+    }
+  }
+
+  return comps;
 
 }

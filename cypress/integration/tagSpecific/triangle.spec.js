@@ -108,7 +108,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <triangle><vertices/></triangle>
+    <triangle vertices="" />
     <copy name="vertex1" prop="vertex1" tname="_triangle1" />
     <copy name="vertex2" prop="vertex2" tname="_triangle1" />
     <copy name="vertex3" prop="vertex3" tname="_triangle1" />
@@ -204,9 +204,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <triangle><vertices>
-      (-8,5)
-    </vertices></triangle>
+    <triangle vertices="(-8,5)" />
     <copy name="vertex1" prop="vertex1" tname="_triangle1" />
     <copy name="vertex2" prop="vertex2" tname="_triangle1" />
     <copy name="vertex3" prop="vertex3" tname="_triangle1" />
@@ -302,9 +300,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <triangle><vertices>
-      (-8,5), (6,2)
-    </vertices></triangle>
+    <triangle vertices="(-8,5) (6,2)" />
     <copy name="vertex1" prop="vertex1" tname="_triangle1" />
     <copy name="vertex2" prop="vertex2" tname="_triangle1" />
     <copy name="vertex3" prop="vertex3" tname="_triangle1" />
@@ -400,9 +396,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <triangle><vertices>
-      (-8,5), (6,2), (5,-4)
-    </vertices></triangle>
+    <triangle vertices="(-8,5) (6,2) (5,-4)" />
     <copy name="vertex1" prop="vertex1" tname="_triangle1" />
     <copy name="vertex2" prop="vertex2" tname="_triangle1" />
     <copy name="vertex3" prop="vertex3" tname="_triangle1" />
@@ -498,14 +492,11 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <triangle>
-      <vertices>(0,0),(6,0),(0,6)</vertices>
-    </triangle>
-    <point>
+    <triangle vertices="(0,0) (6,0) (0,6)" />
+    <point x="10" y="10">
       <constraints>
       <constrainTo><copy tname="_triangle1" /></constrainTo>
       </constraints>
-      <x>10</x><y>10</y>
     </point>
   </graph>
   `}, "*");
@@ -588,33 +579,14 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle><vertices>(1,2),(3,4),(-5,6)</vertices></triangle>
+  <triangle vertices="(1,2) (3,4) (-5,6)" />
 
-  <triangle>
-    <vertices><point>
-      <x>
-        <extract prop="y"><copy prop="vertex1" tname="_triangle1" /></extract>
-      </x>
-      <y>
-        <extract prop="x"><copy prop="vertex1" tname="_triangle1" /></extract>
-      </y>
-    </point>
-    <point>
-      <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
-      <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
-    </point>
-    <copy tname="flip3" />
-    </vertices>
-  </triangle>
+  <triangle vertices="($(_triangle1{prop='vertexX1_2'}), $(_triangle1{prop='vertexX1_1'})) ($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) $flip3" />
   </graph>
 
   <point name="flip3">
-  <x>
-    <extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>
-  </x>
-  <y>
-    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>
-  </y>
+    (<extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>,
+    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>)
   </point>
 
   `}, "*");
@@ -689,34 +661,14 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle><vertices>(1,2)</vertices></triangle>
+  <triangle vertices="(1,2)" />
 
-  <triangle>
-    <vertices>
-    <point>
-      <x>
-        <extract prop="y"><copy prop="vertex1" tname="_triangle1" /></extract>
-      </x>
-      <y>
-        <extract prop="x"><copy prop="vertex1" tname="_triangle1" /></extract>
-      </y>
-    </point>
-    <point>
-      <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
-      <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
-    </point>
-    <copy tname="flip3" />
-    </vertices>
-  </triangle>
+  <triangle vertices="($(_triangle1{prop='vertexX1_2'}), $(_triangle1{prop='vertexX1_1'})) ($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) $flip3" />
   </graph>
 
   <point name="flip3">
-  <x>
-    <extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>
-  </x>
-  <y>
-    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>
-  </y>
+    (<extract prop="y"><copy prop="vertex3" tname="_triangle1" /></extract>,
+    <extract prop="x"><copy prop="vertex3" tname="_triangle1" /></extract>)
   </point>
 
   `}, "*");
@@ -791,16 +743,13 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle>
-    <vertices>
-    <point name="A">
-      <x><copy prop="y" tname="B" /></x>
-      <y><copy prop="x" tname="B" /></y>
-    </point>
-    <point name="B">(3,5)</point>
-    <point name="C">(-5,2)</point>
-    </vertices>
-  </triangle>
+  <point name="A" hide>
+    (<copy prop="y" tname="B" />,
+    <copy prop="x" tname="B" />)
+  </point>
+  <point name="B" hide>(3,5)</point>
+  <point name="C" hide>(-5,2)</point>
+  <triangle vertices="$A $B $C" />
   </graph>
   `}, "*");
     });
@@ -842,22 +791,13 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it('triangle with one vertex refection of other with interval references', () => {
+  it('triangle with one vertex refection of other with internal references', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle>
-    <vertices>
-    <point>
-      <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
-      <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
-    </point>
-    <point>(3,5)</point>
-    <point>(-5,2)</point>
-    </vertices>
-  </triangle>
+  <triangle vertices="($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) (3,5) (-5,2)" />
   </graph>
   `}, "*");
     });
@@ -899,20 +839,13 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it('triangle with one vertex refection of other with interval references, one vertex specified', () => {
+  it('triangle with one vertex refection of other with internal references, one vertex specified', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle>
-    <vertices>
-    <point>
-      <x><extract prop="y"><copy prop="vertex2" tname="_triangle1" /></extract></x>
-      <y><extract prop="x"><copy prop="vertex2" tname="_triangle1" /></extract></y>
-    </point>
-    </vertices>
-  </triangle>
+  <triangle vertices="($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'}))" />
   </graph>
   `}, "*");
     });

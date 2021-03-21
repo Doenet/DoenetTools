@@ -14,27 +14,16 @@ describe('Graph Reference Test', function () {
       <point name="pointA">(1,2)</point>
       <point name="pointB">(-2,4)</point>
       <line name="lineA">y=x+1</line>
-      <line name="lineB"><through><copy tname="pointA" /><copy tname="pointB" /></through></line>
+      <line name="lineB" through="$pointA $pointB" />
       <copy name="pointC" tname="pointA" />
-      <point name="pointD">
-        <x><copy prop="x" tname="pointA" /></x>
-        <y><copy prop="y" tname="pointB" /></y>
-      </point>
+      <point name="pointD" x="$(pointA{prop='x'})" y="$(pointB{prop='y'})" />
       <copy name="lineC" tname="lineA" />
       <copy name="lineD" tname="lineB" />
       <intersection name="pointE"><copy tname="lineA" /><copy tname="lineB" /></intersection>
     </graph>
 
     <graph name="graphB">
-      <copy tname="pointA" />
-      <copy tname="pointB" />
-      <copy tname="lineA" />
-      <copy tname="lineB" />
-      <copy tname="pointC" />
-      <copy tname="pointD" />
-      <copy tname="lineC" />
-      <copy tname="lineD" />
-      <copy tname="pointE" />
+      $pointA$pointB$lineA$lineB$pointC$pointD$lineC$lineD$pointE
     </graph>
 
     <copy name="graphC" tname="graphA" />
@@ -55,8 +44,8 @@ describe('Graph Reference Test', function () {
       let graphB = components["/graphB"];
       let graphC = components["/graphC"].replacements[0];
       let graphD = components["/graphD"].replacements[0];
-      let graphE = components["/graphE"].replacements[0].replacements[0];
-      let graphF = components["/graphF"].replacements[0].replacements[0];
+      let graphE = components["/graphE"].replacements[0];
+      let graphF = components["/graphF"].replacements[0];
       let pointsA = [
         '/pointA', 
         components['/pointC'].replacements[0].componentName,

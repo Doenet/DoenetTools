@@ -448,6 +448,7 @@ export default class Answer extends InlineComponent {
       public: true,
       isArray: true,
       entryPrefixes: ["currentResponse"],
+      hasVariableComponentType: true,
       defaultEntryValue: '\uFF3F',
       stateVariablesDeterminingDependencies: ["awardInputResponseChildren"],
       returnArraySizeDependencies: () => ({
@@ -668,6 +669,7 @@ export default class Answer extends InlineComponent {
       defaultEntryValue: '\uFF3F',
       essential: true,
       componentType: "math",
+      hasVariableComponentType: true,
       returnArraySizeDependencies: () => ({
         nSubmittedResponses: {
           dependencyType: "stateVariable",

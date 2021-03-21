@@ -2449,14 +2449,14 @@ describe('Select Tag Tests', function () {
 
     <select assignnames="q,r,s" numbertoselect="3" withreplacement>
       <option newNamespace><select assignnames="q,r,s" numbertoselect="3" withreplacement>
-        <option newNamespace><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
+        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
         <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
       </select></option>
       <option newNamespace><select assignnames="q,r,s" numbertoselect="3">
-        <option newNamespace><select assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
+        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
         <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
         <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
-        <option newNamespace><select assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">p,d,q</select></option>
       </select></option>
     </select>
 
@@ -2510,14 +2510,14 @@ describe('Select Tag Tests', function () {
 
     <select name="a" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
       <option><select name="b" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
-        <option><select name="c" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
+        <option><select name="c" newnamespace type="text" assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
         <option><selectfromsequence name="d" newnamespace assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
       </select></option>
       <option><select name="e" newnamespace assignnames="(q),(r),(s)" numbertoselect="3">
-        <option><select name="f" newnamespace assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
+        <option><select name="f" newnamespace type="text" assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
         <option><selectfromsequence name="g" newnamespace assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
         <option><selectfromsequence name="h" newnamespace assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
-        <option><select name="i" newnamespace assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+        <option><select name="i" newnamespace type="text" assignnames="q,r" numbertoselect="2">p,d,q</select></option>
       </select></option>
     </select>
 
