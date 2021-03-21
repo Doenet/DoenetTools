@@ -1,5 +1,3 @@
-const { IntType } = require("three");
-
 describe('Polyline Tag Tests', function () {
 
   beforeEach(() => {

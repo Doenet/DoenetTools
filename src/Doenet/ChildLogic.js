@@ -425,31 +425,35 @@ class ChildLogicLeaf extends ChildLogicBase {
         }
         else {
           // if didn't match child, attempt to match with child's adapters
+          if ((this.takePropertyChildren && child.doenetAttributes.isPropertyChild)
+            || (!this.takePropertyChildren && !child.doenetAttributes.isPropertyChild)) {
+            // only adapt if isPropertyChild matches
 
-          let maxAdapt = Math.min(maxAdapterNumber, child.nAdapters);
-          for (let n = 0; n < maxAdapt; n++) {
-            let adapter = child.getAdapter(n);
-            let adapterClass = this.allComponentClasses[adapter.componentType.toLowerCase()];
-            if (adapterClass !== undefined &&
-              (adapterClass === this.componentClass ||
-                this.componentClass.isPrototypeOf(adapterClass))
-            ) {
-              matched = true;
-              if (this.condition && !this.condition(child)) {
-                matched = false;
-              } else if (this.excludeComponentTypes) {
-                for (let ct of this.excludeComponentTypes) {
-                  let ctClass = this.allComponentClasses[ct];
-                  if (adapterClass === ctClass || ctClass.isPrototypeOf(adapterClass)) {
-                    matched = false;
-                    break;
+            let maxAdapt = Math.min(maxAdapterNumber, child.nAdapters);
+            for (let n = 0; n < maxAdapt; n++) {
+              let adapter = child.getAdapter(n);
+              let adapterClass = this.allComponentClasses[adapter.componentType.toLowerCase()];
+              if (adapterClass !== undefined &&
+                (adapterClass === this.componentClass ||
+                  this.componentClass.isPrototypeOf(adapterClass))
+              ) {
+                matched = true;
+                if (this.condition && !this.condition(child)) {
+                  matched = false;
+                } else if (this.excludeComponentTypes) {
+                  for (let ct of this.excludeComponentTypes) {
+                    let ctClass = this.allComponentClasses[ct];
+                    if (adapterClass === ctClass || ctClass.isPrototypeOf(adapterClass)) {
+                      matched = false;
+                      break;
+                    }
                   }
                 }
-              }
-              if (matched) {
-                childMatches.push(childNum);
-                adapterResults[childNum] = adapter;
-                break;
+                if (matched) {
+                  childMatches.push(childNum);
+                  adapterResults[childNum] = adapter;
+                  break;
+                }
               }
             }
           }

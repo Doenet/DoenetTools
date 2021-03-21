@@ -230,16 +230,14 @@ describe('Function curve Tag Tests', function () {
 
   });
 
-  it('a function with math and copy', () => {
+  it('a function with copy', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <mathinput prefill="1" name="a" />
     <graph>
-    <curve><function><formula>
-      <math>x</math>^3-x$a
-    </formula></function></curve>
+    <curve><function formula='x^3-x$a'/></curve>
     </graph>
     `}, "*");
     });
@@ -303,8 +301,7 @@ describe('Function curve Tag Tests', function () {
       </function>
     </curve>
     
-    <point>
-      <x>3</x><y>5</y>
+    <point x='3' y='5'>
     <constraints>
       <constrainTo><copy tname="_curve1" /></constrainTo>
     </constraints>
@@ -366,8 +363,7 @@ describe('Function curve Tag Tests', function () {
       u^4-5u^2
     </function></curve>
     
-    <point>
-      <x>5</x><y>3</y>
+    <point x='5' y='3'>
     <constraints>
       <constrainTo><copy tname="_curve1" /></constrainTo>
     </constraints>

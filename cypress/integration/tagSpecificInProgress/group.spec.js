@@ -4,7 +4,7 @@ describe('Group Tag Tests',function() {
     cy.visit('/test')
   })
 
-  it.only('nested groups, copied', () => {
+  it('nested groups, copied', () => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>Animal: <textinput name="animal" prefill="fox"/></p>
     <p>Plant: <textinput name="plant" prefill="tree"/></p>

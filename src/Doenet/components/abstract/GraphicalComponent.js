@@ -1,4 +1,5 @@
 import BaseComponent from './BaseComponent';
+import { returnDefaultStyleDefinitions } from '../../utils/style';
 
 export default class GraphicalComponent extends BaseComponent {
   static componentType = "_graphical";
@@ -19,6 +20,7 @@ export default class GraphicalComponent extends BaseComponent {
 
     stateVariableDefinitions.selectedStyle = {
       forRenderer: true,
+      willNeverBeEssential: true,
       returnDependencies: () => ({
         styleNumber: {
           dependencyType: "stateVariable",
@@ -31,9 +33,14 @@ export default class GraphicalComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        let styleDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
+        if (!styleDefinitions) {
+          styleDefinitions = returnDefaultStyleDefinitions();
+        }
+
         let selectedStyle;
 
-        for (let styleDefinition of dependencyValues.ancestorWithStyle.stateValues.styleDefinitions) {
+        for (let styleDefinition of styleDefinitions) {
           if (dependencyValues.styleNumber === styleDefinition.styleNumber) {
             if (selectedStyle === undefined) {
               selectedStyle = styleDefinition;
@@ -45,7 +52,7 @@ export default class GraphicalComponent extends BaseComponent {
         }
 
         if (selectedStyle === undefined) {
-          selectedStyle = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions[0];
+          selectedStyle = styleDefinitions[0];
         }
         return { newValues: { selectedStyle } };
       }

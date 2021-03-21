@@ -13,10 +13,7 @@ describe('Function answer validation tests', function () {
   <p>Enter a number close to an integer:
   <answer>
     <mathinput name="x" />
-    <award>
-      <credit>
-        <evaluate><copy tname="f" /><copy prop="immediateValue" tname="x" /></evaluate>
-      </credit>
+    <award credit="$$f($(x{prop='immediateValue' isResponse}))">
       <when>true</when>
     </award>
   </answer>
@@ -45,31 +42,31 @@ describe('Function answer validation tests', function () {
     });
 
     cy.log("Submit correct answers")
-    cy.get('#\\/x_input').clear().type('7{enter}');
+    cy.get('#\\/x textarea').type('7{enter}', { force: true });
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
-    cy.get('#\\/x_input').clear().type('0{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}0{enter}', { force: true });
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
-    cy.get('#\\/x_input').clear().type('-14{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}-14{enter}', { force: true });
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
-    cy.get('#\\/x_input').clear().type('33{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}33{enter}', { force: true });
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
-    cy.get('#\\/x_input').clear().type('-102351{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}-102351{enter}', { force: true });
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -77,25 +74,25 @@ describe('Function answer validation tests', function () {
     });
 
     cy.log("Submit incorrect answers")
-    cy.get('#\\/x_input').clear().type('9.5{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9.5{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
-    cy.get('#\\/x_input').clear().type('x^2{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}x^2{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
-    cy.get('#\\/x_input').clear().type('-253.3{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}-253.3{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
-    cy.get('#\\/x_input').clear().type('23.6{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}23.6{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -103,25 +100,25 @@ describe('Function answer validation tests', function () {
     });
 
     cy.log("Submit partially correct answers")
-    cy.get('#\\/x_input').clear().type('11.9{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}11.9{enter}', { force: true });
     cy.get('#\\/x_partial').should('have.text', `${partialCredit01Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit01, 1E-12);
     });
-    cy.get('#\\/x_input').clear().type('73.15{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}73.15{enter}', { force: true });
     cy.get('#\\/x_partial').should('have.text', `${partialCredit015Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit015, 1E-12);
     });
-    cy.get('#\\/x_input').clear().type('-103.8{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}-103.8{enter}', { force: true });
     cy.get('#\\/x_partial').should('have.text', `${partialCredit02Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_answer1'].stateValues.creditAchieved).closeTo(partialCredit02, 1E-12);
     });
-    cy.get('#\\/x_input').clear().type('-0.05{enter}');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0.05{enter}', { force: true });
     cy.get('#\\/x_partial').should('have.text', `${partialCredit005Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -139,15 +136,11 @@ describe('Function answer validation tests', function () {
   <p>Offset: <mathinput name="offset" prefill="0"/></p>
   <p>Period: <mathinput name="period" prefill="1"/></p>
   <p>Magnitude <mathinput name="magnitude" prefill="1"/></p>
-  <function name="f"><copy prop="value" tname="magnitude" />cos(2*pi*(x-<copy prop="value" tname="offset" />)/<copy prop="value" tname="period" />)</function>
-
+  <function name="f" formula="$magnitude cos(2*pi*(x-$offset)/$period)" />
   <p>Enter a number:
   <answer>
     <mathinput name="x" />
-    <award>
-      <credit>
-        <evaluate><copy tname="f" /><copy prop="immediateValue" tname="x" /></evaluate>
-      </credit>
+    <award credit="$$f($(x{prop='immediateValue' isResponse}))">
       <when>true</when>
     </award>
   </answer>
@@ -177,18 +170,18 @@ describe('Function answer validation tests', function () {
 
 
     for (let offset of offsets) {
-      cy.get('#\\/offset_input').clear().type(`${offset}{enter}`);
+      cy.get('#\\/offset textarea').type(`{end}{backspace}{backspace}{backspace}${offset}{enter}`, { force: true });
       for (let period of periods) {
-        cy.get('#\\/period_input').clear().type(`${period}{enter}`);
+        cy.get('#\\/period textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}${period}{enter}`, { force: true });
         for (let magnitude of magnitudes) {
-          cy.get('#\\/magnitude_input').clear().type(`${magnitude}{enter}`);
+          cy.get('#\\/magnitude textarea').type(`{end}{backspace}{backspace}{backspace}${magnitude}{enter}`, { force: true });
 
           let maximals = [offset, offset + 2 * period, offset - 7 * period];
           let minimals = [offset + 1.5 * period, offset + 5.5 * period, offset - 7.5 * period];
 
           cy.log("Submit answers");
           for (let ans of [...maximals, ...minimals, ...numberAnswers]) {
-            cy.get('#\\/x_input').clear().type(`${ans}{enter}`);
+            cy.get('#\\/x textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}${ans}{enter}`, { force: true });
             let credit = partialCredit(offset, period, magnitude, ans);
             if (credit === 1) {
               cy.get('#\\/x_correct').should('be.visible');

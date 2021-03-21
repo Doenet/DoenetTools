@@ -19,7 +19,7 @@ describe('Numberlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <numberlist>5,1+1,pi</numberlist>
+    <numberlist>5 1+1 pi</numberlist>
     ` }, "*");
     });
 
@@ -59,7 +59,7 @@ describe('Numberlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <numberlist>5,(, 1+1,</numberlist>
+    <numberlist>5 (  1+1 </numberlist>
     ` }, "*");
     });
 
@@ -127,8 +127,8 @@ describe('Numberlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <numberlist>
-      -1, 8/2
-      <number>5</number>, 9
+      -1 8/2
+      <number>5</number> 9
       <number>1+1</number>
     </numberlist>
     ` }, "*");
@@ -211,26 +211,26 @@ describe('Numberlist Tag Tests', function () {
     <text>a</text>
     <numberlist>
       <number>1</number>
-      <numberlist>2,3</numberlist>
+      <numberlist>2 3</numberlist>
       <number>4</number>
       <numberlist>
         <numberlist>
           <number>5</number>
-          <numberlist>6,7</numberlist>
+          <numberlist>6 7</numberlist>
         </numberlist>
-        <numberlist>8,9</numberlist>
+        <numberlist>8 9</numberlist>
       </numberlist>
     </numberlist>
 
-    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
 
     ` }, "*");
     });
@@ -353,27 +353,27 @@ describe('Numberlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <numberlist>
-      1,
-      <numberlist>2,3</numberlist>,
+      1
+      <numberlist>2 3</numberlist> 
       <number>4</number>
       <numberlist>
         <numberlist>
           5
-          <numberlist>6,7</numberlist>
+          <numberlist>6 7</numberlist>
         </numberlist>
-        <numberlist>8,9</numberlist>
+        <numberlist>8 9</numberlist>
       </numberlist>
     </numberlist>
 
-    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
 
     ` }, "*");
     });
@@ -501,12 +501,12 @@ describe('Numberlist Tag Tests', function () {
     <text>a</text>
     <numberlist>
       <number>1</number>
-      <numberlist>2,3</numberlist>
+      <numberlist>2 3</numberlist>
       <copy prop="number3" tname="_numberlist1" />
       <numberlist>
         <numberlist name="mid">
           <number><copy prop="number1" tname="_numberlist1"/></number>
-          <numberlist>4,5</numberlist>
+          <numberlist>4 5</numberlist>
         </numberlist>
         <numberlist>
           <copy prop="number2" tname="_numberlist1"/>
@@ -516,18 +516,18 @@ describe('Numberlist Tag Tests', function () {
       <copy tname="mid" />
     </numberlist>
 
-    <mathinput><bindValueTo><copy prop="number1" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number2" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number3" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number4" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number5" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number6" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number7" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number8" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number9" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number10" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number11" tname="_numberlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="number12" tname="_numberlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number10'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number11'})"/>
+    <mathinput bindValueTo="$(_numberlist1{prop='number12'})"/>
     ` }, "*");
     });
 
@@ -623,14 +623,14 @@ describe('Numberlist Tag Tests', function () {
     <text>a</text>
     <numberlist maximumnumber="7">
       <number>1</number>
-      <numberlist maximumnumber="2">2,3,4,5</numberlist>
+      <numberlist maximumnumber="2">2 3 4 5</numberlist>
       <number>6</number>
       <numberlist maximumnumber="4">
         <numberlist maximumnumber="2">
           <number>7</number>
-          <numberlist>8,9</numberlist>
+          <numberlist>8 9</numberlist>
         </numberlist>
-        <numberlist>10,11,12</numberlist>
+        <numberlist>10 11 12</numberlist>
       </numberlist>
     </numberlist>
     ` }, "*");
@@ -697,7 +697,7 @@ describe('Numberlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><numberlist hide="true">1,2,3</numberlist></p>
+    <p><numberlist hide="true">1 2 3</numberlist></p>
 
     <p><copy name="numberlist1a" hide="false" tname="_numberlist1" /></p>
 

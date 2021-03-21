@@ -609,8 +609,14 @@ export default class BaseComponent {
       adapterComponentType = stateFromAdapter.componentType;
     }
 
+    let doenetAttributes = {};
+    if(this.doenetAttributes.isPropertyChild) {
+      doenetAttributes.isPropertyChild = true;
+    }
+
     return {
       componentType: adapterComponentType,
+      doenetAttributes,
       downstreamDependencies: {
         [this.componentName]: [{
           dependencyType: "adapter",

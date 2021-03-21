@@ -11,12 +11,7 @@ describe('Curve Tag Tests', function () {
     <text>a</text>
     <mathinput prefill="-2"/>
     <graph>
-    <curve>
-      <through>
-        (-1,2),(2, <copy prop="value" tname="_mathinput1" />),
-        (2<copy prop="value" tname="_mathinput1" />, -4), (5,6)
-      </through>
-    </curve>
+    <curve through="(-1,2) (2, $_mathinput1) (2$_mathinput1, -4) (5,6)" />
     </graph>
     `}, "*");
     });
@@ -62,12 +57,7 @@ describe('Curve Tag Tests', function () {
     <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
     <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
-    <curve><through>
-    <copy tname="_point1" />
-    <copy tname="_point2" />
-    <copy tname="_point3" />
-    <copy tname="_point4" />
-    </through></curve>
+    <curve through="$_point1 $_point2 $_point3 $_point4" />
     </graph>
     `}, "*");
     });
@@ -126,12 +116,7 @@ describe('Curve Tag Tests', function () {
     <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
     <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
-    <curve splineForm="uniform" splineTension="0.4"><through>
-    <copy tname="_point1" />
-    <copy tname="_point2" />
-    <copy tname="_point3" />
-    <copy tname="_point4" />
-    </through></curve>
+    <curve splineForm="uniform" splineTension="0.4" through="$_point1 $_point2 $_point3 $_point4" />
     </graph>
     `}, "*");
     });
@@ -191,17 +176,9 @@ describe('Curve Tag Tests', function () {
     <point>(2.5,6)</point>
     <point>(3, 5.8)</point>
     <point>(8,-6)</point>
-    <curve splineForm="$_textinput1" splineTension="$_mathinput1">
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-        <copy tname="_point3" />
-        <copy tname="_point4" />
-      </through>
-    </curve>
+    <curve splineForm="$_textinput1" splineTension="$_mathinput1" through="$_point1 $_point2 $_point3 $_point4" />
     
-    <point>
-      <x>5</x><y>10</y>
+    <point x="5" y="10">
       <constraints>
         <constrainTo><copy tname="_curve1" /></constrainTo>
       </constraints>
@@ -334,24 +311,16 @@ describe('Curve Tag Tests', function () {
     <point>(-4, 3)</point>
     <point>(4, 3)</point>
     <point>(7,-4)</point>
-    <curve extrapolatebackward="$_booleaninput1" extrapolateforward="$_booleaninput2">
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-        <copy tname="_point3" />
-        <copy tname="_point4" />
-      </through>
+    <curve extrapolatebackward="$_booleaninput1" extrapolateforward="$_booleaninput2" through="$_point1 $_point2 $_point3 $_point4">
       <beziercontrols/>
     </curve>
     
-    <point>
-      <x>8</x><y>-8</y>
+    <point x="8" y="-8">
       <constraints>
         <constrainTo><copy tname="_curve1" /></constrainTo>
       </constraints>
     </point>
-    <point>
-      <x>-8</x><y>-8</y>
+    <point x="-8" y="-8">
       <constraints>
         <constrainTo><copy tname="_curve1" /></constrainTo>
       </constraints>
@@ -359,25 +328,27 @@ describe('Curve Tag Tests', function () {
     
     </graph>
 
-    <p>Temp way to change controls:
-    <choiceInput name="dir1" fixedOrder>
-      <bindValueTo><copy prop="vectorcontroldirection1" tname="_curve1" /></bindValueTo>
-      <choice>none</choice>
-      <choice>symmetric</choice>
-      <choice>previous</choice>
-      <choice>next</choice>
-      <choice>both</choice>
+
+    <p>Temp way to change controls 1:
+    <choiceInput name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+      <group>
+        <choice>none</choice>
+        <choice>symmetric</choice>
+        <choice>both</choice>
+        <choice>previous</choice>
+        <choice>next</choice>
+      </group>
     </choiceInput>
-    <choiceInput name="dir4" fixedOrder>
-      <bindValueTo><copy prop="vectorcontroldirection4" tname="_curve1" /></bindValueTo>
-      <choice>none</choice>
-      <choice>symmetric</choice>
-      <choice>previous</choice>
-      <choice>next</choice>
-      <choice>both</choice>
+    <choiceInput name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+      <group>
+        <choice>none</choice>
+        <choice>symmetric</choice>
+        <choice>both</choice>
+        <choice>previous</choice>
+        <choice>next</choice>
+      </group>
     </choiceInput>
     </p>
-
     `}, "*");
     });
 
@@ -479,17 +450,14 @@ describe('Curve Tag Tests', function () {
     <p>Number of points: <mathinput /></p>
     <p>Step size: <mathinput /></p>
     
+    <map hide>
+      <template><point>(<copy tname="_source" />, sin(<copy tname="_source" />))</point></template>
+      <sources>
+        <sequence from="0" length="$_mathinput1" step="$_mathinput2" />
+      </sources>
+    </map>
     <graph>
-    <curve>
-      <through>
-      <map>
-        <template><point>(<copy tname="_source" />, sin(<copy tname="_source" />))</point></template>
-        <sources>
-          <sequence from="0" length="$_mathinput1" step="$_mathinput2" />
-        </sources>
-      </map>
-      </through>
-    </curve>
+    <curve through="$_map1" />
     </graph>
     `}, "*");
     });
@@ -590,21 +558,10 @@ describe('Curve Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <curve><through>(-9,6),(-3,7),(4,0),(8,5)</through></curve>
+    <curve through="(-9,6) (-3,7) (4,0) (8,5)" />
     </graph>
     <graph>
-    <curve><through>
-      <copy prop="throughpoint1" tname="_curve1" />
-      <point>
-        (<extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract>,
-        <extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract>)
-      </point>
-      <copy prop="throughpoint3" tname="_curve1" />
-      <point>
-        <x><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract></x>
-        <y><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract></y>
-      </point>
-    </through></curve>
+    <curve through="$(_curve1{prop='throughPoint1'}) ($(_curve1{prop='throughPointX2_2'}),$(_curve1{prop='throughPointX2_1'})) $(_curve1{prop='throughPoint3'}) ($(_curve1{prop='throughPointX4_2'}),$(_curve1{prop='throughPointX4_1'}))" />
     </graph>
     `}, "*");
     });
@@ -713,29 +670,15 @@ describe('Curve Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <math hide fixed name="fixed3">3</math>
+    <math hide fixed name="fixed4">4</math>
+    <point hide>(1,2)</point>
     <graph>
-    <curve><through>
-      <point>(1,2)</point>
-      <point>
-        (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
-      </point>
-    </through></curve> 
-    <point name="x1">
-      <x><extract prop="x"><copy prop="throughpoint1" tname="_curve1" /></extract></x>
-      <y fixed>3</y>
-    </point>
-    <point name="x2">
-      <x><extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract></x>
-      <y fixed>4</y>
-    </point>
-    <point name="y1">
-      <y><extract prop="y"><copy prop="throughpoint1" tname="_curve1" /></extract></y>
-      <x fixed>3</x>
-    </point>
-    <point name="y2">
-      <y><extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract></y>
-      <x fixed>4</x>
-    </point>
+    <curve through="$_point1 ($(_point1{prop='y'}), $(_point1{prop='x'}))" /> 
+    <point name="x1" x="$(_curve1{prop='throughPointX1_1'})" y="$fixed3" />
+    <point name="x2" x="$(_curve1{prop='throughPointX2_1'})" y="$fixed4" />
+    <point name="y1" y="$(_curve1{prop='throughPointX1_2'})" x="$fixed3" />
+    <point name="y2" y="$(_curve1{prop='throughPointX2_2'})" x="$fixed4" />
   </graph>
     `}, "*");
     });

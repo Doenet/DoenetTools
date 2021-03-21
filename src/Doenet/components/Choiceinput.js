@@ -37,10 +37,16 @@ export default class Choiceinput extends Input {
 
   static componentType = "choiceinput";
 
+  static variableForPlainMacro = "values";
+
   static createsVariants = true;
 
   // used when referencing this component without prop
-  static get stateVariablesShadowedForReference() { return ["choiceOrder"] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "choiceOrder", "allSelectedIndices", "indexMatchedByBoundValue"
+    ]
+  };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -55,7 +61,7 @@ export default class Choiceinput extends Input {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroChoices = atLeastZeroChoices = childLogic.newLeaf({
+    let atLeastZeroChoices = childLogic.newLeaf({
       name: "atLeastZeroChoices",
       componentType: "choice",
       comparison: "atLeast",
@@ -67,6 +73,7 @@ export default class Choiceinput extends Input {
       componentType: "bindValueTo",
       comparison: "atMost",
       number: 1,
+      takePropertyChildren: true,
     })
 
     childLogic.newOperator({
@@ -223,8 +230,6 @@ export default class Choiceinput extends Input {
 
       }
     }
-
-
 
 
     stateVariableDefinitions.choiceChildrenOrdered = {
