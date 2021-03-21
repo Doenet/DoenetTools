@@ -100,7 +100,7 @@ const DriveCardWrapper = (props) => {
   driveCardItems = showCards.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: (width / columns)-10, height: 250};
+    return { ...child, xy, width: (width / columns), height: 250};
   });
    const transitions = useTransition(driveCardItems, (item) => item.driveId, {
       from: ({ 
