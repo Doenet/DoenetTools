@@ -337,7 +337,7 @@ export default class Sequence extends CompositeComponent {
 
         if (dependencyValues.specifiedLength !== null) {
           if (!Number.isInteger(dependencyValues.specifiedLength) || dependencyValues.specifiedLength < 0) {
-            console.log("Invalid length of sequence.  Must be a non-negative integer.")
+            console.warn("Invalid length of sequence.  Must be a non-negative integer.")
             validSequence = false;
           }
         }
@@ -347,7 +347,7 @@ export default class Sequence extends CompositeComponent {
           if (dependencyValues.type !== "math") {
             let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
             if (!Number.isFinite(numericalStep)) {
-              console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.type + ".")
+              console.warn("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.type + ".")
               validSequence = false;
             }
           }
@@ -357,11 +357,11 @@ export default class Sequence extends CompositeComponent {
           if (dependencyValues.type === "number") {
             let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
             if (!Number.isFinite(numericalFrom)) {
-              console.log("Invalid from of number sequence.  Must be a number")
+              console.warn("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
           } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-            console.log("Invalid from of sequence")
+            console.warn("Invalid from of sequence")
             validSequence = false;
           }
 
@@ -371,11 +371,11 @@ export default class Sequence extends CompositeComponent {
           if (dependencyValues.type === "number") {
             let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
             if (!Number.isFinite(numericalTo)) {
-              console.log("Invalid from of number sequence.  Must be a number")
+              console.warn("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
           } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-            console.log("Invalid to of sequence")
+            console.warn("Invalid to of sequence")
             validSequence = false;
           }
         }
@@ -639,10 +639,10 @@ export default class Sequence extends CompositeComponent {
           if (length === null) {
             if (type === "math") {
               step = me.fromAst(1);
-              length = to.subtract(from).add(1).evaluate_to_constant();
+              length = Math.floor(to.subtract(from).add(1).evaluate_to_constant());
             } else {
               step = 1;
-              length = (to - from + 1);
+              length = Math.floor(to - from + 1);
             }
           } else {
             if (type === "math") {
@@ -672,7 +672,7 @@ export default class Sequence extends CompositeComponent {
     }
 
     if (!Number.isInteger(length) || length < 0) {
-      console.log("Invalid length of sequence.  Must be a non-negative integer.")
+      console.warn("Invalid length of sequence.  Must be a non-negative integer.")
       length = 0;
     }
 
@@ -996,7 +996,7 @@ export function lettersToNumber(letters) {
   while ((pos -= 1) > -1) {
     let numForLetter = letters.charCodeAt(pos) - 64;
     if (numForLetter < 1 || numForLetter > 26) {
-      console.log("Cannot convert " + letters + " to a number");
+      console.warn("Cannot convert " + letters + " to a number");
       return undefined;
     }
     number += numForLetter * Math.pow(26, len - 1 - pos);
