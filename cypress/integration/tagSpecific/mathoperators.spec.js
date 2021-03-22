@@ -4247,7 +4247,7 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
-  isStyledComponent('count additional cases', () => {
+  it('count additional cases', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

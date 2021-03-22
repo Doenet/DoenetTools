@@ -11,6 +11,8 @@ export default class Slider extends BaseComponent {
   }
   static componentType = "slider";
 
+  static variableForPlainMacro = "value";
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.width = { default: 300, forRenderer: true };

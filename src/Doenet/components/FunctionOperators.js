@@ -15,7 +15,7 @@ export class ClampFunction extends FunctionBaseOperator {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
-    stateVariableDefinitions.functionOperator = {
+    stateVariableDefinitions.numericalFunctionOperator = {
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -30,24 +30,35 @@ export class ClampFunction extends FunctionBaseOperator {
 
         return {
           newValues: {
-            functionOperator: function (x) {
-              let numericValue = x;
-              if (numericValue.tree) {
-                numericValue = numericValue.evaluate_to_constant();
-              }
-
+            numericalFunctionOperator: function (x) {
               // if don't have a number, return NaN
-              if (!Number.isFinite(numericValue)) {
+              if (!Number.isFinite(x)) {
                 return NaN;
               }
               return Math.max(dependencyValues.lowerValue,
-                Math.min(dependencyValues.upperValue, numericValue)
+                Math.min(dependencyValues.upperValue, x)
               );
-
             }
           }
         }
 
+      }
+    }
+
+    stateVariableDefinitions.symbolicFunctionOperator = {
+      returnDependencies: () => ({
+        numericalFunctionOperator: {
+          dependencyType: "stateVariable",
+          variableName: "numericalFunctionOperator"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            symbolicFunctionOperator:
+              x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
+          }
+        }
       }
     }
 
@@ -71,7 +82,7 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
-    stateVariableDefinitions.functionOperator = {
+    stateVariableDefinitions.numericalFunctionOperator = {
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -86,13 +97,9 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
 
         return {
           newValues: {
-            functionOperator: function (x) {
-              let numericValue = x;
-              if (numericValue.tree) {
-                numericValue = numericValue.evaluate_to_constant();
-              }
+            numericalFunctionOperator: function (x) {
               // if don't have a number, return NaN
-              if (!Number.isFinite(numericValue)) {
+              if (!Number.isFinite(x)) {
                 return NaN;
               }
 
@@ -110,7 +117,7 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
               }
 
               return (lower + me.math.mod(
-                numericValue - lower,
+                x - lower,
                 upper - lower
               )
               )
@@ -119,6 +126,23 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
           }
         }
 
+      }
+    }
+
+    stateVariableDefinitions.symbolicFunctionOperator = {
+      returnDependencies: () => ({
+        numericalFunctionOperator: {
+          dependencyType: "stateVariable",
+          variableName: "numericalFunctionOperator"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            symbolicFunctionOperator:
+              x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
+          }
+        }
       }
     }
 
@@ -163,34 +187,51 @@ export class Derivative extends FunctionBaseOperator {
       }
     }
 
-    stateVariableDefinitions.functionOperator = {
+    stateVariableDefinitions.numericalFunctionOperator = {
       returnDependencies: () => ({
 
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
-          variableNames: ["returnDerivativesOfF"],
+          childLogicName: "atMostOneFunctionForOperator",
+          variableNames: ["returnNumericalDerivatives"],
           variablesOptional: true,
         },
       }),
-      additionalStateVariablesDefined: ["returnDerivativesOfF"],
+      additionalStateVariablesDefined: ["returnNumericalDerivatives"],
       definition: function ({ dependencyValues }) {
 
         if (dependencyValues.functionChild.length === 0
-          || !dependencyValues.functionChild[0].stateValues.returnDerivativesOfF
+          || !dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives
         ) {
           return {
             newValues: {
-              functionOperator: x => NaN,
-              returnDerivativesOfF: null,
+              numericalFunctionOperator: x => NaN,
+              returnNumericalDerivatives: null,
             }
           }
         }
 
         return {
           newValues: {
-            functionOperator: dependencyValues.functionChild[0].stateValues.returnDerivativesOfF(1),
-            returnDerivativesOfF: (i = 1) => dependencyValues.functionChild[0].stateValues.returnDerivativesOfF(i + 1)
+            numericalFunctionOperator: dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives(1),
+            returnNumericalDerivatives: (i = 1) => dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives(i + 1)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.symbolicFunctionOperator = {
+      returnDependencies: () => ({
+        numericalFunctionOperator: {
+          dependencyType: "stateVariable",
+          variableName: "numericalFunctionOperator"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            symbolicFunctionOperator:
+              x => me.fromAst(dependencyValues.numericalFunctionOperator(x.evaluate_to_constant()))
           }
         }
       }

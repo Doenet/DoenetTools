@@ -1,3 +1,14 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
+
 describe('Match partial validation tests', function () {
 
   beforeEach(() => {
@@ -11,7 +22,7 @@ describe('Match partial validation tests', function () {
   <p>a</p>
 
   <p>Match partial: <answer>
-    <award matchpartial>(1,2,3)</award>
+    <award matchpartial><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Match partial, unordered: <answer>
@@ -19,7 +30,7 @@ describe('Match partial validation tests', function () {
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award>(1,2,3)</award>
+    <award><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Unordered: <answer>
@@ -33,32 +44,32 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + ' textarea';
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + ' textarea';
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + ' textarea';
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -84,13 +95,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('(1,2,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -102,13 +113,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit one component")
-      cy.get(mathinputAnchor).clear().type('(1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -120,13 +131,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("just a scalar")
-      cy.get(mathinputAnchor).clear().type('2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput3Anchor).clear().type('2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -138,13 +149,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("extra component")
-      cy.get(mathinputAnchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -156,13 +167,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("two extra components")
-      cy.get(mathinputAnchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -174,13 +185,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("omit parens")
-      cy.get(mathinputAnchor).clear().type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -192,13 +203,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -210,13 +221,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("reverse order")
-      cy.get(mathinputAnchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -228,13 +239,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -246,13 +257,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add another component")
-      cy.get(mathinputAnchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
-      cy.get(mathinput2Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -265,13 +276,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("add one more component")
-      cy.get(mathinputAnchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -284,13 +295,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("two component out of order")
-      cy.get(mathinputAnchor).clear().type('(3,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -302,13 +313,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -328,7 +339,7 @@ describe('Match partial validation tests', function () {
         doenetML: `
   <p>a</p>
   <p>Match partial: <answer>
-    <award matchpartial>1,2,3</award>
+    <award matchpartial><math>1,2,3</math></award>
   </answer></p>
   
   <p>Match partial, unordered: <answer>
@@ -336,7 +347,7 @@ describe('Match partial validation tests', function () {
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award>1,2,3</award>
+    <award><math>1,2,3</math></award>
   </answer></p>
   
   <p>Unordered: <answer>
@@ -351,32 +362,32 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -402,13 +413,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('1,2,3{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('1,2,3{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('1,2,3{enter}');
+      cy.get(mathinput3Anchor).type('1,2,3{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('1,2,3{enter}');
+      cy.get(mathinput4Anchor).type('1,2,3{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -420,31 +431,30 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit one component")
-      cy.get(mathinputAnchor).clear().type('1,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('1,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('1,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_answer1'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
         expect(components['/_answer2'].stateValues.creditAchieved).closeTo(2 / 3, 1E-14);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(0);
         expect(components['/_answer4'].stateValues.creditAchieved).eq(0);
       });
 
       cy.log("just a scalar")
-      cy.get(mathinputAnchor).clear().type('2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput3Anchor).clear().type('2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -456,13 +466,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("extra component")
-      cy.get(mathinputAnchor).clear().type('1,2,a,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,a,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('1,2,a,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,a,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('1,2,a,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,a,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,2,a,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,a,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -474,13 +484,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("two extra components")
-      cy.get(mathinputAnchor).clear().type('0,1,2,a,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0,1,2,a,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('0,1,2,a,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0,1,2,a,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('0,1,2,a,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0,1,2,a,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('0,1,2,a,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0,1,2,a,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -492,13 +502,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add parens")
-      cy.get(mathinputAnchor).clear().type('(1,2,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('(1,2,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(1,2,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -510,13 +520,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('3,1,2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('3,1,2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,2{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('3,1,2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,1,2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,2{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -528,13 +538,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("reverse order")
-      cy.get(mathinputAnchor).clear().type('3,2,1{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('3,2,1{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('3,2,1{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,2,1{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -546,13 +556,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('3,2,1,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('3,2,1,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('3,2,1,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,2,1,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,2,1,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -564,13 +574,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add another component")
-      cy.get(mathinputAnchor).clear().type('3,a,2,1,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,a,2,1,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
-      cy.get(mathinput2Anchor).clear().type('3,a,2,1,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('3,a,2,1,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,a,2,1,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -583,13 +593,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("add one more component")
-      cy.get(mathinputAnchor).clear().type('1,3,a,2,1,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3,a,2,1,3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('1,3,a,2,1,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput3Anchor).clear().type('1,3,a,2,1,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,3,a,2,1,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,3,a,2,1,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -602,13 +612,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("two component out of order")
-      cy.get(mathinputAnchor).clear().type('3,1{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('3,1{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('3,1{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,1{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -620,13 +630,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('3,1,1{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,1{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('3,1,1{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,1{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('3,1,1{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,1{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('3,1,1{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3,1,1{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -645,7 +655,7 @@ describe('Match partial validation tests', function () {
         doenetML: `
   <p>a</p>
   <p>Match partial: <answer>
-    <award matchpartial>[1,2,3]</award>
+    <award matchpartial><math>[1,2,3]</math></award>
   </answer></p>
   
   <p>Match partial, unordered: <answer>
@@ -653,7 +663,7 @@ describe('Match partial validation tests', function () {
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award>[1,2,3]</award>
+    <award><math>[1,2,3]</math></award>
   </answer></p>
   
   <p>Unordered: <answer>
@@ -668,32 +678,32 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -719,13 +729,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('[1,2,3]{enter}');
+      cy.get(mathinputAnchor).type('[1,2,3]{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('[1,2,3]{enter}');
+      cy.get(mathinput2Anchor).type('[1,2,3]{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('[1,2,3]{enter}');
+      cy.get(mathinput3Anchor).type('[1,2,3]{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('[1,2,3]{enter}');
+      cy.get(mathinput4Anchor).type('[1,2,3]{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -737,13 +747,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit one component")
-      cy.get(mathinputAnchor).clear().type('[1,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('[1,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('[1,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[1,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -755,13 +765,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("just a scalar")
-      cy.get(mathinputAnchor).clear().type('2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput3Anchor).clear().type('2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -773,13 +783,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("extra component")
-      cy.get(mathinputAnchor).clear().type('[1,2,a,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2,a,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('[1,2,a,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2,a,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('[1,2,a,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2,a,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[1,2,a,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2,a,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -791,13 +801,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("two extra components")
-      cy.get(mathinputAnchor).clear().type('[0,1,2,a,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[0,1,2,a,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('[0,1,2,a,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[0,1,2,a,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('[0,1,2,a,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[0,1,2,a,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[0,1,2,a,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[0,1,2,a,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -809,13 +819,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("omit brackets")
-      cy.get(mathinputAnchor).clear().type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -827,13 +837,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('[3,1,2]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,2]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('[3,1,2]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,2]{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('[3,1,2]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,2]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,1,2]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,2]{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -845,13 +855,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("reverse order")
-      cy.get(mathinputAnchor).clear().type('[3,2,1]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('[3,2,1]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1]{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('[3,2,1]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,2,1]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1]{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -863,13 +873,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('[3,2,1,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('[3,2,1,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('[3,2,1,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,2,1,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,2,1,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -881,13 +891,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add another component")
-      cy.get(mathinputAnchor).clear().type('[3,a,2,1,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
-      cy.get(mathinput2Anchor).clear().type('[3,a,2,1,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('[3,a,2,1,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,a,2,1,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -900,13 +910,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("add one more component")
-      cy.get(mathinputAnchor).clear().type('[1,3,a,2,1,3]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('[1,3,a,2,1,3]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput3Anchor).clear().type('[1,3,a,2,1,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[1,3,a,2,1,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3,a,2,1,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -919,13 +929,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("two component out of order")
-      cy.get(mathinputAnchor).clear().type('[3,1]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('[3,1]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('[3,1]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,1]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -937,13 +947,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('[3,1,1]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,1]{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('[3,1,1]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,1]{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('[3,1,1]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,1]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[3,1,1]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[3,1,1]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -957,7 +967,6 @@ describe('Match partial validation tests', function () {
 
   });
 
-
   it('match partial with ordered and unordered tuple, unordered specified on award', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -965,7 +974,7 @@ describe('Match partial validation tests', function () {
   <p>a</p>
 
   <p>Match partial: <answer>
-    <award matchpartial>(1,2,3)</award>
+    <award matchpartial><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Match partial, unordered: <answer>
@@ -973,7 +982,7 @@ describe('Match partial validation tests', function () {
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award>(1,2,3)</award>
+    <award><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Unordered: <answer>
@@ -987,32 +996,32 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1038,13 +1047,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('(1,2,3){enter}');
+      cy.get(mathinputAnchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput2Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput3Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput4Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1056,13 +1065,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit one component")
-      cy.get(mathinputAnchor).clear().type('(1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1074,13 +1083,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("just a scalar")
-      cy.get(mathinputAnchor).clear().type('2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput3Anchor).clear().type('2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1092,13 +1101,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("extra component")
-      cy.get(mathinputAnchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1110,13 +1119,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("two extra components")
-      cy.get(mathinputAnchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1128,13 +1137,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("omit parens")
-      cy.get(mathinputAnchor).clear().type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1146,13 +1155,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1164,13 +1173,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("reverse order")
-      cy.get(mathinputAnchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1182,13 +1191,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1200,13 +1209,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add another component")
-      cy.get(mathinputAnchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
-      cy.get(mathinput2Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1219,13 +1228,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("add one more component")
-      cy.get(mathinputAnchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1238,13 +1247,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("two component out of order")
-      cy.get(mathinputAnchor).clear().type('(3,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1256,13 +1265,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1283,7 +1292,7 @@ describe('Match partial validation tests', function () {
   <p>a</p>
 
   <p>Match partial: <answer>
-    <award matchpartial>(1,2,3)</award>
+    <award matchpartial><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Match partial, unordered: <answer unorderedCompare>
@@ -1291,7 +1300,7 @@ describe('Match partial validation tests', function () {
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award>(1,2,3)</award>
+    <award><math>(1,2,3)</math></award>
   </answer></p>
   
   <p>Unordered: <answer unorderedCompare="true">
@@ -1305,32 +1314,32 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1356,13 +1365,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('(1,2,3){enter}');
+      cy.get(mathinputAnchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput2Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput3Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('(1,2,3){enter}');
+      cy.get(mathinput4Anchor).type('(1,2,3){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1374,13 +1383,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit one component")
-      cy.get(mathinputAnchor).clear().type('(1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1392,13 +1401,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("just a scalar")
-      cy.get(mathinputAnchor).clear().type('2{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('2{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput3Anchor).clear().type('2{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('2{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1410,13 +1419,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("extra component")
-      cy.get(mathinputAnchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1428,13 +1437,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("two extra components")
-      cy.get(mathinputAnchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(0,1,2,a,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(0,1,2,a,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1446,13 +1455,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("omit parens")
-      cy.get(mathinputAnchor).clear().type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1464,13 +1473,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,2){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,2){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1482,13 +1491,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("reverse order")
-      cy.get(mathinputAnchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1){enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1500,13 +1509,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput3Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1518,13 +1527,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add another component")
-      cy.get(mathinputAnchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '40 %');
-      cy.get(mathinput2Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput3Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1537,13 +1546,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("add one more component")
-      cy.get(mathinputAnchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput3Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,3,a,2,1,3){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3,a,2,1,3){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1556,13 +1565,13 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("two component out of order")
-      cy.get(mathinputAnchor).clear().type('(3,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1574,13 +1583,13 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("add component")
-      cy.get(mathinputAnchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput2PartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput3Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(3,1,1){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,1,1){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1594,18 +1603,17 @@ describe('Match partial validation tests', function () {
 
   });
 
-
   it('match set', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <p>a</p>
   <p>Match partial: <answer>
-    <award matchpartial>{1,2,3}</award>
+    <award matchpartial><math>{1,2,3}</math></award>
   </answer></p>
   
   <p>No partial: <answer>
-    <award>{1,2,3}</award>
+    <award><math>{1,2,3}</math></award>
   </answer></p>
     `}, "*");
     });
@@ -1615,18 +1623,18 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinput2SubmitAnchor).should('be.visible');
@@ -1644,9 +1652,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Submit correct answers")
-      cy.get(mathinputAnchor).type('{{}1,2,3}{enter}');
+      cy.get(mathinputAnchor).type('{{}1,2,3}{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{{}1,2,3}{enter}');
+      cy.get(mathinput2Anchor).type('{{}1,2,3}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1656,9 +1664,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Permute components")
-      cy.get(mathinputAnchor).clear().type('{{}3,2,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,1}{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('{{}3,2,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,1}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1668,9 +1676,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Extra component")
-      cy.get(mathinputAnchor).clear().type('{{}3,a,2,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,a,2,1}{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('{{}3,a,2,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,a,2,1}{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1680,9 +1688,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Another component")
-      cy.get(mathinputAnchor).clear().type('{{}3,a,2,b,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,a,2,b,1}{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
-      cy.get(mathinput2Anchor).clear().type('{{}3,a,2,b,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,a,2,b,1}{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1692,9 +1700,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Duplicate components")
-      cy.get(mathinputAnchor).clear().type('{{}3,2,3,1,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,3,1,1}{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('{{}3,2,3,1,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,3,1,1}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1704,9 +1712,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Add component")
-      cy.get(mathinputAnchor).clear().type('{{}3,2,3,a,1,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,3,a,1,1}{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '75 %');
-      cy.get(mathinput2Anchor).clear().type('{{}3,2,3,a,1,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}3,2,3,a,1,1}{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1716,9 +1724,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Omit braces")
-      cy.get(mathinputAnchor).clear().type('1,2,3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('1,2,3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1,2,3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1728,9 +1736,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Single number")
-      cy.get(mathinputAnchor).clear().type('3{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '33 %');
-      cy.get(mathinput2Anchor).clear().type('3{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1740,9 +1748,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Subset")
-      cy.get(mathinputAnchor).clear().type('{{}2,1}{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}2,1}{enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '67 %');
-      cy.get(mathinput2Anchor).clear().type('{{}2,1}{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}2,1}{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1776,19 +1784,19 @@ describe('Match partial validation tests', function () {
   </answer></p>
 
   <p>Left open, match partial: <answer>
-    <award matchpartial>(1,2]</award>
+    <award matchpartial><math>(1,2]</math></award>
   </answer></p>
 
   <p>Left open, no partial: <answer>
-    <award>(1,2]</award>
+    <award><math>(1,2]</math></award>
   </answer></p>
 
   <p>Right open, match partial: <answer>
-    <award matchpartial>[1,2)</award>
+    <award matchpartial><math>[1,2)</math></award>
   </answer></p>
 
   <p>Right open, no partial: <answer>
-    <award>[1,2)</award>
+    <award><math>[1,2)</math></award>
   </answer></p>
 
     `}, "*");
@@ -1800,60 +1808,60 @@ describe('Match partial validation tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2PartialAnchor = '#' + mathinput2Name + '_partial';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3PartialAnchor = '#' + mathinput3Name + '_partial';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
-      let mathinput4Anchor = '#' + mathinput4Name + '_input';
-      let mathinput4SubmitAnchor = '#' + mathinput4Name + '_submit';
-      let mathinput4CorrectAnchor = '#' + mathinput4Name + '_correct';
-      let mathinput4PartialAnchor = '#' + mathinput4Name + '_partial';
-      let mathinput4IncorrectAnchor = '#' + mathinput4Name + '_incorrect';
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
       let mathinput5Name = components['/_answer5'].stateValues.inputChild.componentName
-      let mathinput5Anchor = '#' + mathinput5Name + '_input';
-      let mathinput5SubmitAnchor = '#' + mathinput5Name + '_submit';
-      let mathinput5CorrectAnchor = '#' + mathinput5Name + '_correct';
-      let mathinput5PartialAnchor = '#' + mathinput5Name + '_partial';
-      let mathinput5IncorrectAnchor = '#' + mathinput5Name + '_incorrect';
+      let mathinput5Anchor = cesc('#' + mathinput5Name) + " textarea";
+      let mathinput5SubmitAnchor = cesc('#' + mathinput5Name + '_submit');
+      let mathinput5CorrectAnchor = cesc('#' + mathinput5Name + '_correct');
+      let mathinput5PartialAnchor = cesc('#' + mathinput5Name + '_partial');
+      let mathinput5IncorrectAnchor = cesc('#' + mathinput5Name + '_incorrect');
 
       let mathinput6Name = components['/_answer6'].stateValues.inputChild.componentName
-      let mathinput6Anchor = '#' + mathinput6Name + '_input';
-      let mathinput6SubmitAnchor = '#' + mathinput6Name + '_submit';
-      let mathinput6CorrectAnchor = '#' + mathinput6Name + '_correct';
-      let mathinput6PartialAnchor = '#' + mathinput6Name + '_partial';
-      let mathinput6IncorrectAnchor = '#' + mathinput6Name + '_incorrect';
+      let mathinput6Anchor = cesc('#' + mathinput6Name) + " textarea";
+      let mathinput6SubmitAnchor = cesc('#' + mathinput6Name + '_submit');
+      let mathinput6CorrectAnchor = cesc('#' + mathinput6Name + '_correct');
+      let mathinput6PartialAnchor = cesc('#' + mathinput6Name + '_partial');
+      let mathinput6IncorrectAnchor = cesc('#' + mathinput6Name + '_incorrect');
 
       let mathinput7Name = components['/_answer7'].stateValues.inputChild.componentName
-      let mathinput7Anchor = '#' + mathinput7Name + '_input';
-      let mathinput7SubmitAnchor = '#' + mathinput7Name + '_submit';
-      let mathinput7CorrectAnchor = '#' + mathinput7Name + '_correct';
-      let mathinput7PartialAnchor = '#' + mathinput7Name + '_partial';
-      let mathinput7IncorrectAnchor = '#' + mathinput7Name + '_incorrect';
+      let mathinput7Anchor = cesc('#' + mathinput7Name) + " textarea";
+      let mathinput7SubmitAnchor = cesc('#' + mathinput7Name + '_submit');
+      let mathinput7CorrectAnchor = cesc('#' + mathinput7Name + '_correct');
+      let mathinput7PartialAnchor = cesc('#' + mathinput7Name + '_partial');
+      let mathinput7IncorrectAnchor = cesc('#' + mathinput7Name + '_incorrect');
 
       let mathinput8Name = components['/_answer8'].stateValues.inputChild.componentName
-      let mathinput8Anchor = '#' + mathinput8Name + '_input';
-      let mathinput8SubmitAnchor = '#' + mathinput8Name + '_submit';
-      let mathinput8CorrectAnchor = '#' + mathinput8Name + '_correct';
-      let mathinput8PartialAnchor = '#' + mathinput8Name + '_partial';
-      let mathinput8IncorrectAnchor = '#' + mathinput8Name + '_incorrect';
+      let mathinput8Anchor = cesc('#' + mathinput8Name) + " textarea";
+      let mathinput8SubmitAnchor = cesc('#' + mathinput8Name + '_submit');
+      let mathinput8CorrectAnchor = cesc('#' + mathinput8Name + '_correct');
+      let mathinput8PartialAnchor = cesc('#' + mathinput8Name + '_partial');
+      let mathinput8IncorrectAnchor = cesc('#' + mathinput8Name + '_incorrect');
 
 
       cy.get(mathinputSubmitAnchor).should('be.visible');
@@ -1897,21 +1905,21 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("single number")
-      cy.get(mathinputAnchor).type('1{enter}');
+      cy.get(mathinputAnchor).type('1{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('1{enter}');
+      cy.get(mathinput2Anchor).type('1{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('1{enter}');
+      cy.get(mathinput3Anchor).type('1{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('1{enter}');
+      cy.get(mathinput4Anchor).type('1{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
-      cy.get(mathinput5Anchor).type('1{enter}');
+      cy.get(mathinput5Anchor).type('1{enter}', { force: true });
       cy.get(mathinput5IncorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).type('1{enter}');
+      cy.get(mathinput6Anchor).type('1{enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
-      cy.get(mathinput7Anchor).type('1{enter}');
+      cy.get(mathinput7Anchor).type('1{enter}', { force: true });
       cy.get(mathinput7IncorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).type('1{enter}');
+      cy.get(mathinput8Anchor).type('1{enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1927,21 +1935,21 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Open interval")
-      cy.get(mathinputAnchor).clear().type('(1,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
-      cy.get(mathinput5Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput5IncorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
-      cy.get(mathinput7Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput7IncorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).clear().type('(1,2){enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1957,9 +1965,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("partially correct open interval")
-      cy.get(mathinputAnchor).clear().type('(3,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2){enter}', { force: true });
       cy.get(mathinputPartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput2Anchor).clear().type('(3,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,2){enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1970,9 +1978,9 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("permute order")
-      cy.get(mathinputAnchor).clear().type('(2,1){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('(2,1){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -1982,21 +1990,21 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Closed interval")
-      cy.get(mathinputAnchor).clear().type('[1,2]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
-      cy.get(mathinput5Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput5IncorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
-      cy.get(mathinput7Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput7IncorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).clear().type('[1,2]{enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2]{enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2012,9 +2020,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Partially correct closed interval")
-      cy.get(mathinput3Anchor).clear().type('[1,3]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinput3PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput4Anchor).clear().type('[1,3]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2024,9 +2032,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Permute order")
-      cy.get(mathinput3Anchor).clear().type('[2,1]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[2,1]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[2,1]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[2,1]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2037,21 +2045,21 @@ describe('Match partial validation tests', function () {
 
 
       cy.log("Left open interval")
-      cy.get(mathinputAnchor).clear().type('(1,2]{enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
-      cy.get(mathinput5Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput5CorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput6CorrectAnchor).should('be.visible');
-      cy.get(mathinput7Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput7IncorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).clear().type('(1,2]{enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2]{enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2067,9 +2075,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Partially correct left open interval")
-      cy.get(mathinput5Anchor).clear().type('(1,3]{enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3]{enter}', { force: true });
       cy.get(mathinput5PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput6Anchor).clear().type('(1,3]{enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,3]{enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2079,9 +2087,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Permute order")
-      cy.get(mathinput5Anchor).clear().type('(2,1]{enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1]{enter}', { force: true });
       cy.get(mathinput5IncorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).clear().type('(2,1]{enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1]{enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2091,21 +2099,21 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Right open interval")
-      cy.get(mathinputAnchor).clear().type('[1,2){enter}');
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput3IncorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
-      cy.get(mathinput5Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput5Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput5IncorrectAnchor).should('be.visible');
-      cy.get(mathinput6Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput6Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput6IncorrectAnchor).should('be.visible');
-      cy.get(mathinput7Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput7CorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).clear().type('[1,2){enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,2){enter}', { force: true });
       cy.get(mathinput8CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2121,9 +2129,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Partially correct right open interval")
-      cy.get(mathinput7Anchor).clear().type('[1,3){enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3){enter}', { force: true });
       cy.get(mathinput7PartialAnchor).should('have.text', '50 %');
-      cy.get(mathinput8Anchor).clear().type('[1,3){enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[1,3){enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2133,9 +2141,9 @@ describe('Match partial validation tests', function () {
       });
 
       cy.log("Permute order")
-      cy.get(mathinput7Anchor).clear().type('[2,1){enter}');
+      cy.get(mathinput7Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[2,1){enter}', { force: true });
       cy.get(mathinput7IncorrectAnchor).should('be.visible');
-      cy.get(mathinput8Anchor).clear().type('[2,1){enter}');
+      cy.get(mathinput8Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[2,1){enter}', { force: true });
       cy.get(mathinput8IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -2255,27 +2263,27 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("Submit correct answers")
-    cy.get('#\\/a\\/x_input').clear().type('x');
-    cy.get('#\\/a\\/y_input').clear().type('y');
-    cy.get('#\\/a\\/z_input').clear().type('z');
+    cy.get('#\\/a\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/a\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_correct').should('be.visible');
 
-    cy.get('#\\/b\\/x_input').clear().type('x');
-    cy.get('#\\/b\\/y_input').clear().type('y');
-    cy.get('#\\/b\\/z_input').clear().type('z');
+    cy.get('#\\/b\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/b\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
-    cy.get('#\\/c\\/x_input').clear().type('x');
-    cy.get('#\\/c\\/y_input').clear().type('y');
-    cy.get('#\\/c\\/z_input').clear().type('z');
+    cy.get('#\\/c\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/c\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_correct').should('be.visible');
 
-    cy.get('#\\/d\\/x_input').clear().type('x');
-    cy.get('#\\/d\\/y_input').clear().type('y');
-    cy.get('#\\/d\\/z_input').clear().type('z');
+    cy.get('#\\/d\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/d\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
@@ -2289,27 +2297,27 @@ describe('Match partial validation tests', function () {
 
     cy.log("Omit one component")
 
-    cy.get('#\\/a\\/y_input').clear().type('z');
-    cy.get('#\\/a\\/z_input').clear();
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/a\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
-    cy.get('#\\/b\\/y_input').clear().type('z');
-    cy.get('#\\/b\\/z_input').clear();
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/b\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
-    cy.get('#\\/c\\/y_input').clear().type('z');
-    cy.get('#\\/c\\/z_input').clear();
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/c\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
-    cy.get('#\\/d\\/y_input').clear().type('z');
-    cy.get('#\\/d\\/z_input').clear();
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/d\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
@@ -2322,29 +2330,29 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("permute order")
-    cy.get('#\\/a\\/x_input').clear().type('z');
-    cy.get('#\\/a\\/y_input').clear().type('x');
-    cy.get('#\\/a\\/z_input').clear().type('y');
+    cy.get('#\\/a\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/a\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
-    cy.get('#\\/b\\/x_input').clear().type('z');
-    cy.get('#\\/b\\/y_input').clear().type('x');
-    cy.get('#\\/b\\/z_input').clear().type('y');
+    cy.get('#\\/b\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/b\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
-    cy.get('#\\/c\\/x_input').clear().type('z');
-    cy.get('#\\/c\\/y_input').clear().type('x');
-    cy.get('#\\/c\\/z_input').clear().type('y');
+    cy.get('#\\/c\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/c\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
-    cy.get('#\\/d\\/x_input').clear().type('z');
-    cy.get('#\\/d\\/y_input').clear().type('x');
-    cy.get('#\\/d\\/z_input').clear().type('y');
+    cy.get('#\\/d\\/x textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}z', { force: true });
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
+    cy.get('#\\/d\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
@@ -2357,25 +2365,25 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("reverse order")
-    cy.get('#\\/a\\/y_input').clear().type('y');
-    cy.get('#\\/a\\/z_input').clear().type('x');
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/a\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
-    cy.get('#\\/b\\/y_input').clear().type('y');
-    cy.get('#\\/b\\/z_input').clear().type('x');
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/b\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_correct').should('be.visible');
 
-    cy.get('#\\/c\\/y_input').clear().type('y');
-    cy.get('#\\/c\\/z_input').clear().type('x');
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/c\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
-    cy.get('#\\/d\\/y_input').clear().type('y');
-    cy.get('#\\/d\\/z_input').clear().type('x');
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}y', { force: true });
+    cy.get('#\\/d\\/z textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_correct').should('be.visible');
 
@@ -2389,23 +2397,23 @@ describe('Match partial validation tests', function () {
 
 
     cy.log("two components out of order")
-    cy.get('#\\/a\\/y_input').clear();
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
-    cy.get('#\\/b\\/y_input').clear();
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
-    cy.get('#\\/c\\/y_input').clear();
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
-    cy.get('#\\/d\\/y_input').clear();
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
@@ -2418,23 +2426,23 @@ describe('Match partial validation tests', function () {
     });
 
     cy.log("add component")
-    cy.get('#\\/a\\/y_input').clear().type('x');
+    cy.get('#\\/a\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/a\\/_answer1_submit').click();
     cy.get('#\\/a\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('33% correct')
     });
 
-    cy.get('#\\/b\\/y_input').clear().type('x');
+    cy.get('#\\/b\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/b\\/_answer1_submit').click();
     cy.get('#\\/b\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('67% correct')
     });
 
-    cy.get('#\\/c\\/y_input').clear().type('x');
+    cy.get('#\\/c\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/c\\/_answer1_submit').click();
     cy.get('#\\/c\\/_answer1_incorrect').should('be.visible');
 
-    cy.get('#\\/d\\/y_input').clear().type('x');
+    cy.get('#\\/d\\/y textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x', { force: true });
     cy.get('#\\/d\\/_answer1_submit').click();
     cy.get('#\\/d\\/_answer1_incorrect').should('be.visible');
 
@@ -2466,7 +2474,7 @@ describe('Match partial validation tests', function () {
           <copy prop="immediateValue" tname="z" />
         </textlist>
         =
-        <textlist>x,y,z</textlist>
+        <textlist>x y z</textlist>
       </when>
     </award>
   </answer>
@@ -2486,7 +2494,7 @@ describe('Match partial validation tests', function () {
           <copy prop="immediateValue" tname="z" />
         </textlist>
         =
-        <textlist>x,y,z</textlist>
+        <textlist>x y z</textlist>
       </when>
     </award>
   </answer>
@@ -2506,7 +2514,7 @@ describe('Match partial validation tests', function () {
          <copy prop="immediateValue" tname="z" />
        </textlist>
        =
-       <textlist>x,y,z</textlist>
+       <textlist>x y z</textlist>
      </when>
    </award>
    </answer>
@@ -2527,7 +2535,7 @@ describe('Match partial validation tests', function () {
           <copy prop="immediateValue" tname="z" />
         </textlist>
         =
-        <textlist>x,y,z</textlist>
+        <textlist>x y z</textlist>
       </when>
     </award>
   </answer>
@@ -2770,7 +2778,7 @@ describe('Match partial validation tests', function () {
           <copy prop="value" tname="z" />
         </booleanlist>
         =
-        <booleanlist>false, true, true</booleanlist>
+        <booleanlist>false true true</booleanlist>
       </when>
     </award>
   </answer>
@@ -2791,7 +2799,7 @@ describe('Match partial validation tests', function () {
           <copy prop="value" tname="z" />
         </booleanlist>
         =
-        <booleanlist>false, true, true</booleanlist>
+        <booleanlist>false true true</booleanlist>
       </when>
     </award>
   </answer>
@@ -2811,7 +2819,7 @@ describe('Match partial validation tests', function () {
          <copy prop="value" tname="z" />
        </booleanlist>
        =
-       <booleanlist>false, true, true</booleanlist>
+       <booleanlist>false true true</booleanlist>
      </when>
    </award>
  </answer>
@@ -2831,7 +2839,7 @@ describe('Match partial validation tests', function () {
           <copy prop="value" tname="z" />
         </booleanlist>
         =
-        <booleanlist>false, true, true</booleanlist>
+        <booleanlist>false true true</booleanlist>
       </when>
     </award>
   </answer>

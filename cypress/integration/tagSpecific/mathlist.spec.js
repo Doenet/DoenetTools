@@ -829,7 +829,7 @@ describe('Mathlist Tag Tests', function () {
       <math name="ee" simplify="none">e+e</math>
       <math name="ff" simplify="full">f+f</math>
     </p>
-    <p><textinput><bindValueTo><copy prop="simplify" tname="_mathlist1" /></bindValueTo></textinput></p>
+    <p><textinput bindValueTo="$(_mathlist1{prop='simplify'})"/></p>
     ` }, "*");
     });
 

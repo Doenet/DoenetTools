@@ -676,7 +676,7 @@ function findFirstFullMacroInString(str) {
     // return match found in rest of string, with indices adjusted to be for original string
     return {
       success: true,
-      firstIndMatched: lastIndMatched + findAnotherResult.firstIndMatched,
+      firstIndMatched: firstIndMatched + matchLength + findAnotherResult.firstIndMatched,
       matchLength: findAnotherResult.matchLength,
       targetName: findAnotherResult.targetName,
       nDollarSigns: findAnotherResult.nDollarSigns,

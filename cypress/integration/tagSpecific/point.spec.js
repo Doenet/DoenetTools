@@ -3897,24 +3897,24 @@ describe('Point Tag Tests', function () {
     </section>
 
     <section><title>For point 1</title>
-    <p>Change coords: <mathinput name="coords1b"><bindValueTo><copy prop="coords" tname="_point1"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point1x1b"><bindValueTo><copy prop="x1" tname="_point1"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point1x2b"><bindValueTo><copy prop="x2" tname="_point1" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point1x3b"><bindValueTo><copy prop="x3" tname="_point1" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords1b" bindValueTo="$(_point1{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point1x1b" bindValueTo="$(_point1{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point1x2b" bindValueTo="$(_point1{prop='x2' includeUndefinedObjects})" /></p>
+    <p>Change z-coordinate: <mathinput name="point1x3b" bindValueTo="$(_point1{prop='x3' includeUndefinedObjects})" /></p>    
     </section>
 
     <section><title>For point 2</title>
-    <p>Change coords: <mathinput name="coords2b"><bindValueTo><copy prop="coords" tname="point2"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point2x1b"><bindValueTo><copy prop="x1" tname="point2"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point2x2b"><bindValueTo><copy prop="x2" tname="point2" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point2x3b"><bindValueTo><copy prop="x3" tname="point2" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords2b" bindValueTo="$(point2{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point2x1b" bindValueTo="$(point2{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point2x2b" bindValueTo="$(point2{prop='x2' includeUndefinedObjects})" /></p>
+    <p>Change z-coordinate: <mathinput name="point2x3b" bindValueTo="$(point2{prop='x3' includeUndefinedObjects})" /></p>    
     </section>
 
     <section><title>For point 3</title>
-    <p>Change coords: <mathinput name="coords3b"><bindValueTo><copy prop="coords" tname="point3"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point3x1b"><bindValueTo><copy prop="x1" tname="point3"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point3x2b"><bindValueTo><copy prop="x2" tname="point3" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point3x3b"><bindValueTo><copy prop="x3" tname="point3" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords3b" bindValueTo="$(point3{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point3x1b" bindValueTo="$(point3{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point3x2b" bindValueTo="$(point3{prop='x2' includeUndefinedObjects})" /></p>
+    <p>Change z-coordinate: <mathinput name="point3x3b" bindValueTo="$(point3{prop='x3' includeUndefinedObjects})" /></p>    
     </section>
 
     <section><title>collecting</title>

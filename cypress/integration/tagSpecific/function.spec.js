@@ -49,9 +49,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>2</minimum>
-    </function>
+    <function minima="(2)" />
     </graph>
     `}, "*");
     });
@@ -78,9 +76,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>( ,2)</minimum>
-    </function>
+    <function minima="( ,2)" />
     </graph>
     `}, "*");
     });
@@ -107,38 +103,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(,2)</minimum>
-    </function>
-    </graph>
-    `}, "*");
-    });
-
-    //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      expect(f(0)).closeTo(2, 1E-12);
-      expect(f(1)).closeTo(2 + 1, 1E-12);
-      expect(f(2)).closeTo(2 + 4, 1E-12);
-      expect(f(-1)).closeTo(2 + 1, 1E-12);
-      expect(f(-2)).closeTo(2 + 4, 1E-12);
-
-    })
-
-  });
-
-  it('function with single non-sugared minimum', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <graph>
-    <function>
-    <minimum><value>2</value></minimum>
-    </function>
+    <function minima="(,2)" />
     </graph>
     `}, "*");
     });
@@ -165,9 +130,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function xscale="3">
-    <minimum>2</minimum>
-    </function>
+    <function xscale="3" minima="(2)" />
     </graph>
     `}, "*");
     });
@@ -194,9 +157,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function xscale="3" yscale="5">
-    <minimum>2</minimum>
-    </function>
+    <function xscale="3" yscale="5" minima="(2)" />
     </graph>
     `}, "*");
     });
@@ -223,9 +184,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <maximum>3</maximum>
-    </function>
+    <function maxima="(3)" />
     </graph>
     `}, "*");
     });
@@ -252,9 +211,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function xscale="3">
-    <maximum>3</maximum>
-    </function>
+    <function xscale="3" maxima="(3)" />
     </graph>
     `}, "*");
     });
@@ -281,9 +238,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function xscale="3" yscale="5">
-    <maximum>3</maximum>
-    </function>
+    <function xscale="3" yscale="5" maxima="(3)" />
     </graph>
     `}, "*");
     });
@@ -304,42 +259,13 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it('function with single minimum, specify location', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <graph>
-    <function>
-    <minimum><location>2</location></minimum>
-    </function>
-    </graph>
-    `}, "*");
-    });
-
-    //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      expect(f(0)).closeTo(4, 1E-12);
-      expect(f(1)).closeTo(1, 1E-12);
-      expect(f(2)).closeTo(0, 1E-12);
-      expect(f(3)).closeTo(1, 1E-12);
-      expect(f(4)).closeTo(4, 1E-12);
-    })
-  });
-
   it('function with single minimum, specify location as half-empty tuple', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(2, )</minimum>
-    </function>
+    <function minima="(2, )" />
     </graph>
     `}, "*");
     });
@@ -364,9 +290,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(2,)</minimum>
-    </function>
+    <function minima="(2,)" />
     </graph>
     `}, "*");
     });
@@ -391,39 +315,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(2, -3)</minimum>
-    </function>
-    </graph>
-    `}, "*");
-    });
-
-    //wait for window to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      expect(f(0)).closeTo(4 - 3, 1E-12);
-      expect(f(1)).closeTo(1 - 3, 1E-12);
-      expect(f(2)).closeTo(0 - 3, 1E-12);
-      expect(f(3)).closeTo(1 - 3, 1E-12);
-      expect(f(4)).closeTo(4 - 3, 1E-12);
-    })
-  });
-
-  it('function with single minimum, specify location and value with no sugar', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <graph>
-    <function>
-    <minimum>
-      <location>2</location>
-      <value>-3</value>
-    </minimum>
-    </function>
+    <function minima="(2, -3)" />
     </graph>
     `}, "*");
     });
@@ -448,9 +340,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <extremum>(2, -3)</extremum>
-    </function>
+    <function extrema="(2, -3)" />
     </graph>
     `}, "*");
     });
@@ -475,10 +365,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(0,0)</minimum>
-    <maximum>(1,1)</maximum>
-    </function>
+    <function minima="(0,0)" maxima="(1,1)" />
     </graph>
     `}, "*");
     });
@@ -509,10 +396,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(0,0)</minimum>
-    <extremum>(1,1)</extremum>
-    </function>
+    <function minima="(0,0)" extrema="(1,1)" />
     </graph>
     `}, "*");
     });
@@ -543,10 +427,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <extremum>(0,0)</extremum>
-    <maximum>(1,1)</maximum>
-    </function>
+    <function extrema="(0,0)" maxima="(1,1)" />
     </graph>
     `}, "*");
     });
@@ -577,10 +458,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(-2, )</minimum>
-    <minimum>(2, 1)</minimum>
-    </function>
+    <function minima='(-2, ) (2, 1)' />
     </graph>
     `}, "*");
     });
@@ -611,11 +489,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(-2, )</minimum>
-    <minimum>(2,1)</minimum>
-    <maximum>( , 5)</maximum>
-    </function>
+    <function minima="(-2, )  (2,1)" maxima="( , 5)" />
     </graph>
     `}, "*");
     });
@@ -646,11 +520,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(-2,)</minimum>
-    <minimum>(2, 1)</minimum>
-    <extremum>(,5)</extremum>
-    </function>
+    <function minima="(-2,) (2, 1) " extrema="(,5)" />
     </graph>
     `}, "*");
     });
@@ -681,10 +551,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <maximum>(-2,1)</maximum>
-    <minimum>(2,2)</minimum>
-    </function>
+    <function maxima="(-2,1)" minima="(2,2)" />
     </graph>
     `}, "*");
     });
@@ -713,10 +580,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <maximum>(-2,1)</maximum>
-    <extremum>(2,2)</extremum>
-    </function>
+    <function maxima="(-2,1)" extrema="(2,2)" />
     </graph>
     `}, "*");
     });
@@ -742,10 +606,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(-2,3)</minimum>
-    <maximum>(2,2)</maximum>
-    </function>
+    <function minima="(-2,3)" maxima="(2,2)" />
     </graph>
     `}, "*");
     });
@@ -774,10 +635,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <minimum>(-2,3)</minimum>
-    <extremum>(2,2)</extremum>
-    </function>
+    <function minima="(-2,3)" extrema="(2,2)" />
     </graph>
     `}, "*");
     });
@@ -803,10 +661,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <extremum>(-2,3)</extremum>
-    <maximum>(2,2)</maximum>
-    </function>
+    <function extrema="(-2,3)" maxima="(2,2)" />
     </graph>
     `}, "*");
     });
@@ -832,11 +687,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <maximum>(-2,2)</maximum>
-    <through>(-5,0), (-6,-1)</through>
-    <through>(0,0), (1,0)</through>
-    </function>
+    <function maxima="(-2,2)" through="(-5,0) (-6,-1)(0,0) (1,0)" />
     </graph>
     `}, "*");
     });
@@ -871,9 +722,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <through>(-6,-1)</through>
-    </function>
+    <function through="(-6,-1)" />
     </graph>
     `}, "*");
     });
@@ -897,9 +746,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <through slope="3">(-6,-1)</through>
-    </function>
+    <function through="(-6,-1)" throughSlopes="3" />
     </graph>
     `}, "*");
     });
@@ -924,9 +771,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <p>slope: <mathinput/></p>
     <graph>
-    <function>
-    <through slope="$_mathinput1">(-6,-1)</through>
-    </function>
+    <function throughSlopes="$_mathinput1" through="(-6,-1)" />
     </graph>
     `}, "*");
     });
@@ -983,9 +828,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <p>slope: <mathinput/></p>
     <graph>
-    <function>
-    <through slope="$_mathinput1">(-6,-1),(3,8)</through>
-    </function>
+    <function throughSlopes="$_mathinput1 $_mathinput1" through="(-6,-1) (3,8)" />
     </graph>
     `}, "*");
     });
@@ -1059,9 +902,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <through>(0,2), (2,1), (3,2)</through>
-    </function>
+    <function through="(0,2) (2,1) (3,2)" />
     </graph>
     `}, "*");
     });
@@ -1095,11 +936,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,1)</point>
-    <function>
-    <through slope="0.5">(0,2)</through>
-    <through slope="2">(2,1)</through>
-    <through slope="-1">(3,2)</through>
-    </function>
+    <function through="(0,2) (2,1) (3,2)" throughSlopes="0.5 2 -1" />
     </graph>
     `}, "*");
     });
@@ -1141,9 +978,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <through>(0,2), (2,1), (2,2)</through>
-    </function>
+    <function through="(0,2) (2,1) (2,2)" />
     </graph>
     `}, "*");
     });
@@ -1166,10 +1001,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <through>(-5,0), (-4,0.1), (-3,0.3), (-2,3), (-1,3.1), (0,3.2), (1,5)</through>
-    <maximum>(6,6)</maximum>
-    </function>
+    <function through="(-5,0) (-4,0.1) (-3,0.3) (-2,3) (-1,3.1) (0,3.2) (1,5)" maxima="(6,6)" />
     </graph>
     `}, "*");
     });
@@ -1202,16 +1034,12 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-    <maximum>(5,6)</maximum>
-    <through>(0,5),(8,4)</through>
-    </function>
+    <function maxima="(5,6)" through="(0,5) (8,4)" />
 
-    <point>
+    <point x="1" y="2">
       <constraints>
         <constrainTo><copy tname="_function1" /></constrainTo>
       </constraints>
-      <x>1</x><y>2</y>
     </point>
     </graph>
     `}, "*");
@@ -1247,7 +1075,7 @@ describe('Function Tag Tests', function () {
     })
   });
 
-  it('function determined by formula', () => {
+  it('function determined by formula via sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1273,7 +1101,31 @@ describe('Function Tag Tests', function () {
     })
   });
 
-  it('function determined by formula in different variable', () => {
+  it('function determined by formula', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function formula="3/(1+e^(-x/2))" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.f;
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+
+    })
+  });
+
+  it('function determined by sugar formula in different variable', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1282,6 +1134,31 @@ describe('Function Tag Tests', function () {
     <function variable="q">
       q^2 sin(pi q/2)/100
     </function>
+
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.f;
+
+      expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+
+    })
+  });
+
+  it('function determined by formula in different variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function variable="q" formula="q^2 sin(pi q/2)/100" />
 
     </graph>
     `}, "*");
@@ -1309,11 +1186,10 @@ describe('Function Tag Tests', function () {
     <function variable="u">
       log(2u)
     </function>
-    <point>
+    <point x="-3" y="5">
       <constraints>
         <constrainTo><copy tname="_function1" /></constrainTo>
       </constraints>
-      <x>-3</x><y>5</y>
     </point>
 
     </graph>
@@ -1361,15 +1237,7 @@ describe('Function Tag Tests', function () {
     <point>(3,4)</point>
     <point>(5,6)</point>
     <point>(-5,6)</point>
-    <function>
-      <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-      </through>
-
-      <maximum><copy tname="_point3" /></maximum>
-      <minimum><copy tname="_point4" /></minimum>
-    </function>
+    <function through="$_point1 $_point2" maxima="$_point3" minima="$_point4" />
     <copy prop="maxima" tname="_function1" />
     <copy prop="minima" tname="_function1" />
     </graph>
@@ -1395,16 +1263,16 @@ describe('Function Tag Tests', function () {
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−2.15,7)(5,6)');
+        expect(text.trim()).equal('((−2.15,7),(5,6))');
       });
       cy.get(numberMinimaAnchor).should('have.text', '2');
       cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(3,4)');
+        expect(text.trim()).equal('((−5,6),(3,4))');
       });
       cy.get(numberExtremaAnchor).should('have.text', '4');
 
       cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(−2.15,7)(3,4)(5,6)');
+        expect(text.trim()).equal('((−5,6),(−2.15,7),(3,4),(5,6))');
       });
 
 
@@ -1415,15 +1283,15 @@ describe('Function Tag Tests', function () {
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−1.5,7)(5,6)');
+          expect(text.trim()).equal('((−1.5,7),(5,6))');
         });
         cy.get(numberMinimaAnchor).should('have.text', '2');
         cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(2,2)');
+          expect(text.trim()).equal('((−5,6),(2,2))');
         });
         cy.get(numberExtremaAnchor).should('have.text', '4');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(−1.5,7)(2,2)(5,6)');
+          expect(text.trim()).equal('((−5,6),(−1.5,7),(2,2),(5,6))');
         });
 
       });
@@ -1435,15 +1303,15 @@ describe('Function Tag Tests', function () {
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−1,7)(3.6,5.1)(5,6)');
+          expect(text.trim()).equal('((−1,7),(3.6,5.1),(5,6))');
         });
         cy.get(numberMinimaAnchor).should('have.text', '3');
         cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(3,4)(4.3,5)');
+          expect(text.trim()).equal('((−5,6),(3,4),(4.3,5))');
         });
         cy.get(numberExtremaAnchor).should('have.text', '6');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(3.6,5.1)(4.3,5)(5,6)');
+          expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))');
         });
 
       });
@@ -1455,15 +1323,15 @@ describe('Function Tag Tests', function () {
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−1,7)(5,6)');
+          expect(text.trim()).equal('((−1,7),(5,6))');
         });
         cy.get(numberMinimaAnchor).should('have.text', '3');
         cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(3,4)(6.5,5)');
+          expect(text.trim()).equal('((−5,6),(3,4),(6.5,5))');
         });
         cy.get(numberExtremaAnchor).should('have.text', '5');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(5,6)(6.5,5)');
+          expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(5,6),(6.5,5))');
         });
 
       });
@@ -1495,15 +1363,15 @@ describe('Function Tag Tests', function () {
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−7,7)(−1,7)(5,6)');
+          expect(text.trim()).equal('((−7,7),(−1,7),(5,6))');
         });
         cy.get(numberMinimaAnchor).should('have.text', '2');
         cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−5,6)(3,4)');
+          expect(text.trim()).equal('((−5,6),(3,4))');
         });
         cy.get(numberExtremaAnchor).should('have.text', '5');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(−7,7)(−5,6)(−1,7)(3,4)(5,6)');
+          expect(text.trim()).equal('((−7,7),(−5,6),(−1,7),(3,4),(5,6))');
         });
 
       });
@@ -1524,7 +1392,7 @@ describe('Function Tag Tests', function () {
         });
         cy.get(numberExtremaAnchor).should('have.text', '2');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(5,6)(8,3)');
+          expect(text.trim()).equal('((5,6),(8,3))');
         });
 
       });
@@ -1536,15 +1404,15 @@ describe('Function Tag Tests', function () {
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(5,6)(7,7)');
+          expect(text.trim()).equal('((5,6),(7,7))');
         });
         cy.get(numberMinimaAnchor).should('have.text', '2');
         cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(6,5)(8,6)');
+          expect(text.trim()).equal('((6,5),(8,6))');
         });
         cy.get(numberExtremaAnchor).should('have.text', '4');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(5,6)(6,5)(7,7)(8,6)');
+          expect(text.trim()).equal('((5,6),(6,5),(7,7),(8,6))');
         });
 
       });
@@ -1560,13 +1428,7 @@ describe('Function Tag Tests', function () {
     <graph>
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
-    <function><formula>
-      <copy prop="y" tname="_point1" />
-      exp(-(x-<copy prop="x" tname="_point1" />)^2)
-      + 
-      <copy prop="y" tname="_point2" />
-      exp(-(x-<copy prop="x" tname="_point2" />)^2)
-    </formula></function>
+    <function formula="$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)" />
     <copy prop="extrema" tname="_function1" />
     </graph>
     
@@ -1774,9 +1636,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     Period: <mathinput />
     <graph>
-    <function><formula>
-      sin(2*pi*x/<copy prop="value" tname="_mathinput1" />)
-    </formula></function>
+    <function formula="sin(2*pi*x/$_mathinput1)" />
     <copy prop="extrema" tname="_function1" />
     </graph>
     <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
@@ -1988,11 +1848,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function>
-      <through>
-     (-8,7), (-7,2), (-6,2), (-4,3), (-2,5), (8,5), (10,4)
-      </through>
-    </function>
+    <function through="(-8,7) (-7,2) (-6,2) (-4,3) (-2,5) (8,5) (10,4)" />
     <copy prop="extrema" tname="_function1" />
     </graph>
     `}, "*");
@@ -2064,22 +1920,9 @@ describe('Function Tag Tests', function () {
     <point>(3,4)</point>
     <point>(-5,7)</point>
     <point>(8,-1)</point>
-    <function yscale="5">
-      <maximum>(<copy prop="numbermaxima" tname="_function2" />,
-      <copy prop="numberminima" tname="_function2" />)
-      </maximum>
-      <through >(-8,5),(9,10)</through>
-    </function>
+    <function yscale="5" maxima="($(_function2{prop='numbermaxima'}),$(_function2{prop='numberminima'}))" through="(-8,5) (9,10)" />
     
-    <function yscale="$(_function1{prop='yscale'})">
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-        <copy tname="_point3" />
-        <copy tname="_point4" />
-      </through>
-      <maximum>(0, )</maximum>
-    </function>
+    <function yscale="$(_function1{prop='yscale'})" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
     </graph>
     
     <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function2" /></p>
@@ -2188,12 +2031,7 @@ describe('Function Tag Tests', function () {
     <mathinput />
     <mathinput />
     
-    <function xscale="$_mathinput1">
-      <formula>
-        <copy prop="value" tname="_mathinput2" />x^3
-        +1
-      </formula>
-    </function>
+    <function xscale="$_mathinput1" formula="$_mathinput2 x^3+1" />
     
     <graph>
       <copy name="f1a" tname="_function1" />
@@ -2237,7 +2075,7 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it('extrema of quartic, reffed multipled times', () => {
+  it('extrema of quartic, copied multiple times', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2246,14 +2084,7 @@ describe('Function Tag Tests', function () {
     <mathinput prefill="0" />
     <mathinput prefill="-2" />
     
-    <function>
-      <formula>
-        <copy prop="value" tname="_mathinput1" />x^4
-        +<copy prop="value" tname="_mathinput2" />x^3
-        +<copy prop="value" tname="_mathinput3" />x^2
-        + 1
-      </formula>
-    </function>
+    <function formula="$_mathinput1 x^4 + $_mathinput2 x^3 +$_mathinput3 x^2 +1" />
     
     <graph>
       <copy name="f1a" tname="_function1" />
@@ -2417,7 +2248,6 @@ describe('Function Tag Tests', function () {
     });
 
   });
-
 
 
 });

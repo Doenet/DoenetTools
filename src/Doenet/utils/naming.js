@@ -9,7 +9,7 @@ export function createUniqueName(componentType, longNameId) {
   // use base64 encoding, but replace + with _ and / with -
   // so that the name is a valid CSS identifier
   //T
-  let hashStringShortened = Base64.stringify(sha1(longNameId))
+  let hashStringShortened = Base64.stringify(sha1(longNameId)).slice(0,10)
     .replace(rePlus, '_').replace(reSlash, '-');
 
   // console.log(`componentType: ${componentType}, longNameID: ${longNameId}, hashString: ${hashStringShortened}`)
