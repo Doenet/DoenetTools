@@ -16,7 +16,8 @@ import Drive, {
   fetchDrivesSelector,
   encodeParams,
   fetchDriveUsers,
-  fetchDrivesQuery
+  fetchDrivesQuery,
+  useFolderSelectorCallbacks
 } from "../imports/Drive";
 import { nanoid } from 'nanoid';
 
@@ -720,6 +721,7 @@ function AddMenuPanel(props){
   }
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
+  const { addItem } = useFolderSelectorCallbacks();
 
 
   let addDrives = <>
@@ -736,19 +738,21 @@ function AddMenuPanel(props){
    {addDrives}
   <h3>Folder</h3>
   <Button value="Add Folder" callback={()=>{
-    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
-    label:"Untitled",
-    itemType:"Folder"
-    })
+    addItem({
+      driveIdFolderId: {driveId: driveId, folderId: folderId},
+      label: "Untitled",
+      itemType: "Folder"
+    });
   }
   } />
 
   <h3>DoenetML</h3>
   <Button value="Add DoenetML" callback={()=>{
-    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
-    label:"Untitled",
-    itemType:"DoenetML"
-    })
+    addItem({
+      driveIdFolderId: {driveId: driveId, folderId: folderId},
+      label:"Untitled",
+      itemType:"DoenetML"
+    });
   }
   } />
  

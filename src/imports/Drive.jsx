@@ -955,8 +955,85 @@ export const folderInfoSelectorActions = Object.freeze({
   CLEAN_UP_DRAG: "clean up drag"
 });
 
-const useFolderSelectorCallbacks = () => {
+export function useFolderSelectorCallbacks() {
+  const addItem = useRecoilCallback(({set})=> 
+    async ({driveIdFolderId, label, itemType, selectedItemId=null, url=null})=>{
+      /* Item creation */
+      const dt = new Date();
+      const creationDate = `${
+        dt.getFullYear().toString().padStart(2, '0')}-${
+        (dt.getMonth()+1).toString().padStart(2, '0')}-${
+        dt.getDate().toString().padStart(2, '0')} ${
+        dt.getHours().toString().padStart(2, '0')}:${
+        dt.getMinutes().toString().padStart(2, '0')}:${
+        dt.getSeconds().toString().padStart(2, '0')}`
+      const itemId = nanoid();
+      const branchId = nanoid();
+      const newItem = {
+        assignmentId: null,
+        branchId,
+        contentId: null,
+        creationDate,
+        isPublished: "0",
+        itemId,
+        itemType: itemType,
+        label: label,
+        parentFolderId: driveIdFolderId.folderId,
+        url: url,
+        urlDescription: null,
+        urlId: null,
+        sortOrder: "",
+      }
+      
+      /* Insert item into destination folder */
+      // TODO: update to use fInfo
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = JSON.parse(JSON.stringify(old));
+        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+        let index = newDefaultOrder.indexOf(selectedItemId);
+        const newOrder = getLexicographicOrder({
+          index, 
+          nodeObjs: newObj.contentsDictionary, 
+          defaultFolderChildrenIds: newDefaultOrder 
+        });
+        newItem.sortOrder = newOrder;
+        newDefaultOrder.splice(index+1, 0, itemId);
+        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+        newObj.contentsDictionary[itemId] = newItem;
+        return newObj;
+      })
 
+      /* Update folderDictionary when new item is of type Folder */
+      if (itemType === "Folder"){
+        set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}), {
+          folderInfo:newItem, 
+          contentsDictionary:{},
+          contentIds:{ [sortOptions.DEFAULT]: [] }
+        });
+      }
+      const versionId = nanoid();
+
+      const data = { 
+        driveId: driveIdFolderId.driveId,
+        parentFolderId: driveIdFolderId.folderId,
+        itemId,
+        branchId,
+        versionId,
+        label: label,
+        type: itemType,
+        sortOrder: newItem.sortOrder,
+       };
+      const payload = { 
+        params: data 
+      };
+
+      return axios.get('/api/AddItem.php', payload);
+    }
+  );
+
+  return {
+    addItem
+  };
 }
 
 export const folderInfoSelector = selectorFamily({
