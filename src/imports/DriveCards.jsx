@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import DriveCard from './DoenetDriveCard';
 import { useTransition, animated, interpolate } from "react-spring";
 import "./drivecard.css";
-import useMeasure  from "../Tools/useMeasure";
+// import useMeasure  from "../Tools/useMeasure";
+import Measure from 'react-measure'
 import {
   useHistory
 } from "react-router-dom";
@@ -66,8 +67,18 @@ const DriveCardWrapper = (props) => {
   let driveCardItems =[];
   let heights = [];
   // console.log(">>>> props.driveInfo",props.driveInfo );
-  const [bind, { width },columns] = useMeasure();
-  heights = new Array(columns).fill(0);
+  // const [bind, { width },columns] = useMeasure();
+  const [width, setWidth] = useState(0);
+  const getColumns = (width) => {
+    if(width > 1500){return 5;}
+    else if(width > 1000){return 4;}
+    else if(width > 600){return 3;}
+    else if(width > 400){return 2;}
+    else if(width > 200){return 1;}
+    else{return 1;}
+  }
+  const columns = getColumns(width);
+    heights = new Array(columns).fill(0);
   let showCards = [];
          if(types[0] === 'course'){
           if(subTypes.length > 1)
@@ -239,8 +250,14 @@ const DriveCardWrapper = (props) => {
  }
   return (
     <div className="drivecardContainer">
-      <div
-        {...bind}
+         <Measure
+    bounds
+    onResize={contentRect =>{
+      setWidth(contentRect.bounds.width)
+    }}
+    >
+      {({ measureRef }) => (
+      <div ref={measureRef}
         style={{
           width: "100%",
           height:Math.max(...heights)+50,
@@ -255,18 +272,19 @@ const DriveCardWrapper = (props) => {
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
                 transform: props.xy.interpolate((x, y) => {
-                  return `translate(${x}px,${y}px) scale(${
-                    selectedCard ? 1.02 : props.scale.value
-                  })`;
+                  return `translate(${x}px,${y}px) 
+                  scale(${
+                    selectedCard ? 1 : props.scale.value
+                  })`
+                  ;
                 }),
                 transitionDuration: '0.2s' ,
                 transitionDelay:'0s',
                 ...props,
                 height: 250,
                 opacity: 1,
-                zIndex:selectedCard ? 2 : 0,
-                padding: selectedCard ? 5 : 15,
-                boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
+                // zIndex:selectedCard ? 2 : 0,
+                // boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
               }}
             >
               <div
@@ -300,6 +318,8 @@ const DriveCardWrapper = (props) => {
           );
         })}
       </div>
+             )}
+      </Measure>
      </div>
   );
 };
