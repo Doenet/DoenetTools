@@ -355,80 +355,10 @@ export const folderDictionarySelector = selectorFamily({
     const { dragShadowDriveId, dragShadowParentId, draggedItemsId, openedFoldersInfo } = get(dragStateAtom);
     let dragShadowParentFolderInfoObj = null;
     
-    let item = {driveId:driveIdFolderId.driveId,driveInstanceId:instructions.driveInstanceId,itemId:instructions.itemId}
     let newFInfo = {...fInfo}
 
     // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
-      case folderInfoSelectorActions.ADD_ITEM:
-        const dt = new Date();
-        const creationDate = `${
-          dt.getFullYear().toString().padStart(2, '0')}-${
-            (dt.getMonth()+1).toString().padStart(2, '0')}-${
-            dt.getDate().toString().padStart(2, '0')} ${
-          dt.getHours().toString().padStart(2, '0')}:${
-          dt.getMinutes().toString().padStart(2, '0')}:${
-          dt.getSeconds().toString().padStart(2, '0')}`
-        const itemId = nanoid();
-        const branchId = nanoid();
-        const newItem = {
-          assignmentId: null,
-          branchId,
-          contentId: null,
-          creationDate,
-          isPublished: "0",
-          itemId,
-          itemType: instructions.itemType,
-          label: instructions.label,
-          parentFolderId: driveIdFolderId.folderId,
-          url: instructions.url,
-          urlDescription: null,
-          urlId: null,
-          sortOrder: "",
-        }
-        //TODO: update to use fInfo
-        set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = JSON.parse(JSON.stringify(old));
-          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-          let index = newDefaultOrder.indexOf(instructions.selectedItemId);
-          const newOrder = getLexicographicOrder({
-            index, 
-            nodeObjs: newObj.contentsDictionary, 
-            defaultFolderChildrenIds: newDefaultOrder 
-          });
-          newItem.sortOrder = newOrder;
-          newDefaultOrder.splice(index+1, 0, itemId);
-          newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-          newObj.contentsDictionary[itemId] = newItem;
-          // newObj.folderInfo.dirty = 1;
-          return newObj;
-        })
-        if (instructions.itemType === "Folder"){
-          //If a folder set folderInfo and zero items
-          set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}),{
-            folderInfo:newItem,contentsDictionary:{},contentIds:{[sortOptions.DEFAULT]:[]}
-          })
-        }
-        const versionId = nanoid();
-
-        const data = { 
-          driveId:driveIdFolderId.driveId,
-          parentFolderId:driveIdFolderId.folderId,
-          itemId,
-          label:instructions.label,
-          type:instructions.itemType,
-          branchId,
-          versionId,
-          sortOrder: newItem.sortOrder,
-         };
-        const payload = { params: data };
-
-        axios.get('/api/AddItem.php', payload)
-        .then(resp=>{
-          //Not sure how to handle errors when saving data yet
-          // throw Error("made up error")
-        })
-      break;
       case folderInfoSelectorActions.SORT:
         const { sortKey } = instructions;
         set(folderDictionary(driveIdFolderId),(old)=>{
@@ -496,35 +426,6 @@ export const folderDictionarySelector = selectorFamily({
         const { renamedata } = await axios.get("/api/updateItem.php", renamepayload)
         // .then((resp)=>console.log(">>>resp",resp.data))
       break;
-      case folderInfoSelectorActions.DELETE_ITEM:
-        //Remove from folder
-        newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
-        delete newFInfo["contentsDictionary"][instructions.itemId];
-        newFInfo.folderInfo = {...fInfo.folderInfo}
-        newFInfo.contentIds = {}
-        newFInfo.contentIds[sortOptions.DEFAULT] = [...fInfo.contentIds[sortOptions.DEFAULT]]
-        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(instructions.itemId)
-        newFInfo.contentIds[sortOptions.DEFAULT].splice(index,1)
-        set(folderDictionary(driveIdFolderId),newFInfo);
-        //Remove from selection
-        if (get(selectedDriveItemsAtom(item))){
-          set(selectedDriveItemsAtom(item),false)
-          let newGlobalItems = [];
-          for(let gItem of get(globalSelectedNodesAtom)){
-            if (gItem.itemId !== instructions.itemId){
-              newGlobalItems.push(gItem)
-            }
-          }
-          set(globalSelectedNodesAtom,newGlobalItems)
-        }
-        //Remove from database
-        const pdata = {driveId:driveIdFolderId.driveId,itemId:instructions.itemId}
-        const deletepayload = {
-          params: pdata
-        }
-        const { deletedata } = await axios.get("/api/deleteItem.php", deletepayload)
-
-      break;
       case folderInfoSelectorActions.MOVE_ITEMS:
         //Don't move if nothing selected or draging folder to itself
         let canMove = true;
@@ -576,7 +477,7 @@ export const folderDictionarySelector = selectorFamily({
               newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
             }
 
-            /* generate and update sortOrder */
+            // Generate and update sortOrder
             const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
             newSortOrder = getLexicographicOrder({
               index: insertIndex, 
@@ -586,10 +487,10 @@ export const folderDictionarySelector = selectorFamily({
             newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
             newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = instructions.itemId;
 
-            // insert item into contentIds of destination
+            // Insert item into contentIds of destination
             newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
 
-            /* if moved item is a folder, update folder info */
+            // If moved item is a folder, update folder info
             if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
               // retrieval from folderDictionary necessary when moving to different drive
               const gItemFolderInfoObj = get(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
@@ -601,16 +502,16 @@ export const folderDictionarySelector = selectorFamily({
               })
             }
 
-            /* if moved between drives, handle update driveId */
+            // If moved between drives, handle update driveId
             if (gItem.driveId !== instructions.driveId) {
               driveIdChanged.push(gItem.itemId)
 
-              /* update driveId of all children in the subtree */
+              // Update driveId of all children in the subtree
               if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
                 let gItemChildIds = [];
                 let queue = [gItem.itemId];
 
-                /* BFS tree-walk to iterate through all child nodes */
+                // BFS tree-walk to iterate through all child nodes
                 while (queue.length) {
                   let size = queue.length;
                   for (let i = 0; i < size; i++) {
@@ -634,12 +535,13 @@ export const folderDictionarySelector = selectorFamily({
               }
             }
           }
-          //Add all to destination
+          // Add all to destination
           set(folderDictionary({driveId:instructions.driveId, folderId:instructions.itemId}), newDestinationFolderObj);
-          //Clear global selection
-          set(globalSelectedNodesAtom,[])
-          //Remove from sources
           
+          // Clear global selection
+          set(globalSelectedNodesAtom,[])
+          
+          // Remove from sources
           for (let driveId of Object.keys(editedCache)){
             for (let parentFolderId of Object.keys(editedCache[driveId])) {
               set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
@@ -647,7 +549,7 @@ export const folderDictionarySelector = selectorFamily({
               set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
             }
           }
-          //Mark current folder as dirty
+          // Mark current folder as dirty
           set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:instructions.itemId}), true);
 
           let selectedItemIds = [];
@@ -792,7 +694,7 @@ export const folderDictionarySelector = selectorFamily({
            * insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
            */
 
-          /* Helper function to verify if position of insertion is valid */
+          // Helper function to verify if position of insertion is valid
           const isValidPosition = ({draggedItemsId, contentIdsArr, index}) => {
             // Allow any position if multiple items are being dragged
             if (draggedItemsId?.size > 1) return true;
@@ -958,7 +860,7 @@ export const folderInfoSelectorActions = Object.freeze({
 export function useFolderSelectorCallbacks() {
   const addItem = useRecoilCallback(({set})=> 
     async ({driveIdFolderId, label, itemType, selectedItemId=null, url=null})=>{
-      /* Item creation */
+      // Item creation
       const dt = new Date();
       const creationDate = `${
         dt.getFullYear().toString().padStart(2, '0')}-${
@@ -985,7 +887,7 @@ export function useFolderSelectorCallbacks() {
         sortOrder: "",
       }
       
-      /* Insert item into destination folder */
+      // Insert item into destination folder
       // TODO: update to use fInfo
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
@@ -1003,7 +905,7 @@ export function useFolderSelectorCallbacks() {
         return newObj;
       })
 
-      /* Update folderDictionary when new item is of type Folder */
+      // Update folderDictionary when new item is of type Folder
       if (itemType === "Folder"){
         set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}), {
           folderInfo:newItem, 
@@ -1031,8 +933,55 @@ export function useFolderSelectorCallbacks() {
     }
   );
 
+  const deleteItem = useRecoilCallback(({snapshot, set})=> 
+    async ({driveIdFolderId, driveInstanceId, itemId})=>{
+      const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
+      const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
+      const item = { 
+        driveId: driveIdFolderId.driveId, 
+        driveInstanceId: driveInstanceId,
+        itemId: itemId
+      }
+      const selectedDriveItems = await snapshot.getPromise(selectedDriveItemsAtom(item));
+
+      // Remove from selection
+      if (selectedDriveItems){
+        set(selectedDriveItemsAtom(item),false)
+        let newGlobalItems = [];
+        for(let gItem of globalSelectedNodes){
+          if (gItem.itemId !== itemId){
+            newGlobalItems.push(gItem);
+          }
+        }
+        set(globalSelectedNodesAtom, newGlobalItems);
+      }
+
+      // Remove from folder
+      let newFInfo = {...fInfo};
+      newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
+      delete newFInfo["contentsDictionary"][itemId];
+      newFInfo.folderInfo = {...fInfo.folderInfo}
+      newFInfo.contentIds = {}
+      newFInfo.contentIds[sortOptions.DEFAULT] = [...fInfo.contentIds[sortOptions.DEFAULT]]
+      const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId)
+      newFInfo.contentIds[sortOptions.DEFAULT].splice(index,1)
+      set(folderDictionary(driveIdFolderId), newFInfo);
+      
+      // Remove from database
+      const pdata = {
+        driveId: driveIdFolderId.driveId,
+        itemId: itemId
+      }
+      const deletepayload = {
+        params: pdata
+      }
+
+      return axios.get("/api/deleteItem.php", deletepayload);
+  });
+
   return {
-    addItem
+    addItem,
+    deleteItem
   };
 }
 
@@ -1545,7 +1494,15 @@ function Folder(props){
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
-  const deleteItem = (itemId) =>{setFolderInfo({instructionType: folderInfoSelectorActions.DELETE_ITEM,driveInstanceId:props.driveInstanceId,itemId})}
+  const { deleteItem } = useFolderSelectorCallbacks();
+  const deleteItemCallback = (itemId) => {
+    deleteItem({
+      driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
+      driveInstanceId: props.driveInstanceId,
+      itemId
+    }
+  )};
+  
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
@@ -1572,7 +1529,7 @@ function Folder(props){
   if (dropState.activeDropTargetId === itemId) { bgcolor = "hsl(209,54%,82%)"; }
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
 
-  /* Update refs for variables used in DnD callbacks to eliminate re-registration */
+  // Update refs for variables used in DnD callbacks to eliminate re-registration
   useEffect(() => {
     isOpenRef.current = isOpen;
     isSelectedRef.current = isSelected;
@@ -1582,7 +1539,7 @@ function Folder(props){
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder])
 
-  /* Cache invalidation when folder is dirty */
+  // Cache invalidation when folder is dirty
   useEffect(() => {
     if (folderCacheDirty) {
       setFolderInfo({ instructionType: folderInfoSelectorActions.INVALIDATE_SORT_CACHE});
@@ -1926,7 +1883,7 @@ function Folder(props){
             isNav={props.isNav}
             urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
-            deleteItem={deleteItem}
+            deleteItem={deleteItemCallback}
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
@@ -1946,7 +1903,7 @@ function Folder(props){
             isNav={props.isNav}
             urlClickBehavior={props.urlClickBehavior}
             pathItemId={props.pathItemId}
-            deleteItem={deleteItem}
+            deleteItem={deleteItemCallback}
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
@@ -1965,7 +1922,7 @@ function Folder(props){
               isNav={props.isNav} 
               urlClickBehavior={props.urlClickBehavior}
               pathItemId={props.pathItemId}
-              deleteItem={deleteItem}
+              deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
             />)
           break;
@@ -1980,7 +1937,7 @@ function Folder(props){
               isNav={props.isNav} 
               pathItemId={props.pathItemId}
               doubleClickCallback={props.doenetMLDoubleClickCallback}
-              deleteItem={deleteItem}
+              deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
             />)
           break;

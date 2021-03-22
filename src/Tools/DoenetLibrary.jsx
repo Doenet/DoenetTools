@@ -471,6 +471,7 @@ const FolderInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const { deleteItem } = useFolderSelectorCallbacks();
 
   const [label,setLabel] = useState(itemInfo.label);
 
@@ -506,8 +507,8 @@ const FolderInfoPanel = function(props){
   <br />
   <br />
   <Button value="Delete Folder" callback={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.DELETE_ITEM,
+    deleteItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     })
@@ -519,6 +520,8 @@ const DoenetMLInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const { deleteItem } = useFolderSelectorCallbacks();
+  
 
   const [label,setLabel] = useState(itemInfo.label);
 
@@ -562,8 +565,8 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Delete DoenetML" callback={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.DELETE_ITEM,
+    deleteItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     })
