@@ -3,7 +3,7 @@ import Text from '../Text';
 export default class TextFromSingleStringChild extends Text {
   static componentType = "_textfromsinglestringchild";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
@@ -44,7 +44,7 @@ export default class TextFromSingleStringChild extends Text {
             }
           }
         }
-        let value = dependencyValues.stringChild[0].state.value
+        let value = dependencyValues.stringChild[0].stateValues.value
         return { newValues: { value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {

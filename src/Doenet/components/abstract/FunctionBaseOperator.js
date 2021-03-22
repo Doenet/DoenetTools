@@ -4,16 +4,33 @@ import me from 'math-expressions';
 export default class FunctionOperator extends Function {
   static componentType = "_functionoperator";
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
+
+    sugarInstructions.push({
+      childrenRegex: /s/,
+      replacementFunction: ({ matchedChildren }) => ({
+        success: true,
+        newChildren: [{
+          componentType: "math",
+          children: matchedChildren
+        }],
+      })
+    });
+
+    return sugarInstructions;
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
-    let exactlyOneFormulaForOperator = childLogic.newLeaf({
-      name: "exactlyOneFormulaForOperator",
-      componentType: 'formula',
+    let exactlyOneMath = childLogic.newLeaf({
+      name: "exactlyOneMath",
+      componentType: 'math',
       number: 1,
-      takePropertyChildren: true,
     });
 
     let atMostOneFunctionForOperator = childLogic.newLeaf({
@@ -23,10 +40,10 @@ export default class FunctionOperator extends Function {
       number: 1,
     });
 
-    let functionXorFormula = childLogic.newOperator({
-      name: "functionXorFormula",
+    let functionXorMath = childLogic.newOperator({
+      name: "functionXorMath",
       operator: "xor",
-      propositions: [exactlyOneFormulaForOperator, atMostOneFunctionForOperator]
+      propositions: [exactlyOneMath, atMostOneFunctionForOperator]
     })
 
     let atMostOneVariable = childLogic.newLeaf({
@@ -48,7 +65,7 @@ export default class FunctionOperator extends Function {
     childLogic.newOperator({
       name: "functionAndVariable",
       operator: "and",
-      propositions: [functionXorFormula, atMostOneVariable, atMostOneSymbolic],
+      propositions: [functionXorMath, atMostOneVariable, atMostOneSymbolic],
       setAsBase: true
     })
 
@@ -139,9 +156,9 @@ export default class FunctionOperator extends Function {
           childLogicName: "atMostOneFunctionForOperator",
           variableNames: ["formula"],
         },
-        formulaChild: {
+        mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneFormulaForOperator",
+          childLogicName: "exactlyOneMath",
           variableNames: ["value"],
         },
         formulaOperator: {
@@ -155,8 +172,8 @@ export default class FunctionOperator extends Function {
           || (
             (dependencyValues.functionChild.length === 0
               || dependencyValues.functionChild[0].stateValues.formula.tree === "\uff3f")
-            && (dependencyValues.formulaChild.length === 0
-              || dependencyValues.formulaChild[0].stateValues.value.tree === "\uff3f")
+            && (dependencyValues.mathChild.length === 0
+              || dependencyValues.mathChild[0].stateValues.value.tree === "\uff3f")
           )
         ) {
           return {
@@ -170,7 +187,7 @@ export default class FunctionOperator extends Function {
         let formulaPreOperator;
 
         if (dependencyValues.functionChild.length === 0) {
-          formulaPreOperator = dependencyValues.formulaChild[0].stateValues.value;
+          formulaPreOperator = dependencyValues.mathChild[0].stateValues.value;
         } else {
           formulaPreOperator = dependencyValues.functionChild[0].stateValues.formula;
         }
@@ -211,9 +228,9 @@ export default class FunctionOperator extends Function {
           childLogicName: "atMostOneFunctionForOperator",
           variableNames: ["symbolicf"]
         },
-        formulaChild: {
+        mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneFormulaForOperator",
+          childLogicName: "exactlyOneMath",
           variableNames: ["value"],
         },
         symbolicFunctionOperator: {
@@ -236,14 +253,14 @@ export default class FunctionOperator extends Function {
         } else if (dependencyValues.operatorComposesWithOriginal) {
 
           if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.formulaChild.length === 0) {
+            if (dependencyValues.mathChild.length === 0) {
               return {
                 newValues: { symbolicf: x => me.fromAst('\uff3f') }
               }
             } else {
 
               let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
-              dependencyValuesWithChildFormula.formula = dependencyValues.formulaChild[0].stateValues.value;
+              dependencyValuesWithChildFormula.formula = dependencyValues.mathChild[0].stateValues.value;
 
               let childF = returnSymbolicFunctionFromFormula(dependencyValues)
               return {
@@ -292,9 +309,9 @@ export default class FunctionOperator extends Function {
           childLogicName: "atMostOneFunctionForOperator",
           variableNames: ["numericalf"]
         },
-        formulaChild: {
+        mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneFormulaForOperator",
+          childLogicName: "exactlyOneMath",
           variableNames: ["value"],
         },
         numericalFunctionOperator: {
@@ -317,14 +334,14 @@ export default class FunctionOperator extends Function {
         } else if (dependencyValues.operatorComposesWithOriginal) {
 
           if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.formulaChild.length === 0) {
+            if (dependencyValues.mathChild.length === 0) {
               return {
                 newValues: { numericalf: x => NaN }
               }
             } else {
 
               let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
-              dependencyValuesWithChildFormula.formula = dependencyValues.formulaChild[0].stateValues.value;
+              dependencyValuesWithChildFormula.formula = dependencyValues.mathChild[0].stateValues.value;
 
               let childF = returnNumericalFunctionFromFormula(dependencyValues)
               return {

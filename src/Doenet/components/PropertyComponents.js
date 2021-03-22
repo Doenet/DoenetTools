@@ -4,8 +4,7 @@ import Integer from './Integer';
 import TextComponent from './Text';
 import MathComponent from './Math';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
-import ComponentWithSelectableType from './abstract/ComponentWithSelectableType';
-import ComponentListWithSelectableType from './abstract/ComponentListWithSelectableType';
+import { ComponentWithSelectableType, ComponentListWithSelectableType, ComponentListOfListsWithSelectableType } from './abstract/ComponentWithSelectableType';
 import ComponentWithAnyChildren from './abstract/ComponentWithAnyChildren';
 import PointListComponent from './abstract/PointListComponent';
 import VectorListComponent from './abstract/VectorListComponent';
@@ -229,6 +228,11 @@ export class Exclude extends ComponentListWithSelectableType {
 
 export class ExcludeCombination extends ComponentListWithSelectableType {
   static componentType = "excludecombination";
+}
+
+export class ExcludeCombinations extends ComponentListOfListsWithSelectableType {
+  static componentType = "excludecombinations";
+  static componentTypeSingular = "excludecombination";
 }
 
 export class Step extends MathComponent {

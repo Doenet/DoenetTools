@@ -502,12 +502,12 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <map assignnames="u,v">
+    <map assignnames="u v">
     <template newNamespace>
       <graph>
-        <map assignnames="u,v">
+        <map assignnames="u v">
           <template newNamespace>
-            <map assignnames="u,v">
+            <map assignnames="u v">
               <template newNamespace>
                 <point name="A">(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="3"/>, <copy tname="_source" fromMapAncestor="2"/>)</point>
               </template>
@@ -964,7 +964,7 @@ describe('Map Tag Tests', function () {
     <copy tname="/hi/q/_point1" prop="coords" />
     
     <grapH Name="hi" newNamespace >
-    <map assignnames="q, c,s">
+    <map assignnames="q  c s">
       <template newnamespace><point>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />)</point></template>
       <sources><sequence from="1" to="2"/></sources>
       <sources><sequence from="-3" to="-2"/></sources>
@@ -1020,11 +1020,11 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <map assignnames="u,v,w">
+    <map assignnames="u v w">
       <template newNamespace><math>(<copy tname="_source"/>, <copy tname="../e/_copy1" />)</math></template>
       <sources><sequence from="1" to="3"/></sources>
     </map>
-    <map assignnames="c,d,e">
+    <map assignnames="c d e">
       <template newNamespace><math>sin(<copy tname="_source"/>)</math></template>
       <sources><sequence from="4" to="6"/></sources>
     </map>
@@ -1438,7 +1438,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <map assignnames="a,b,c">
+      <map assignnames="a b c">
         <template newNamespace><point>
             (<copy tname="../q" /><copy tname="_source"/>^2,
             <copy prop="x" tname="_point2" />)
@@ -1654,7 +1654,7 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <map assignnames="a,b,c">
+      <map assignnames="a b c">
         <template newNamespace><point>
             (-<copy tname="_source"/>,
             <copy tname="_source"/><copy prop="x" tname="../q/_point1" />)
@@ -1663,7 +1663,7 @@ describe('Map Tag Tests', function () {
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
       </sources>
       </map>
-      <map assignnames="q,r,s">
+      <map assignnames="q r s">
         <template newNamespace><point>
             (<copy tname="_source"/>,
             <copy tname="_source"/><copy prop="x" tname="../a/_point1" />)
@@ -2041,14 +2041,14 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <p>Number of points: <mathinput name="number"/></p>
     
-    <map name="m1" assignNames="p1,p2,p3">
+    <map name="m1" assignNames="p1 p2 p3">
       <template newNamespace><point name="pt">(<copy tname="_source"/>, 2<copy tname="_source"/>)</point></template>
       <sources>
         <sequence length="$number" />
       </sources>
     </map>
 
-    <map name="m2" assignNames="q1,q2,q3">
+    <map name="m2" assignNames="q1 q2 q3">
       <template newNamespace>
         <point name="pt">(<copy tname="_source" prop="x" />^2, <copy tname="_source" prop="y" />^2)</point>
       </template>

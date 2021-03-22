@@ -13,7 +13,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>1</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -37,7 +37,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>a</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -56,7 +56,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>b</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -75,7 +75,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>c</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -94,7 +94,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>d</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -114,7 +114,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>e</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 1 },
@@ -138,7 +138,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>f</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 1 },
@@ -157,7 +157,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>g</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 1 },
@@ -177,7 +177,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>g</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 101 },
@@ -196,7 +196,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>h</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 101 },
@@ -216,7 +216,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>i</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: -299 },
@@ -235,7 +235,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>j</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: -299 },
@@ -255,7 +255,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>k</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 83057200 },
@@ -274,7 +274,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>l</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 83057200 },
@@ -294,7 +294,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>m</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'a' },
@@ -313,7 +313,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>n</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'a' },
@@ -333,7 +333,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>o</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'b' },
@@ -352,7 +352,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>q</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'b' },
@@ -372,7 +372,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>r</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '300' },
@@ -392,7 +392,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>s</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '94' },
@@ -416,7 +416,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>t</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'cQ' },
@@ -436,7 +436,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>u</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'nonexistent one' },
@@ -458,7 +458,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>v</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'nonexistent one' },
@@ -477,7 +477,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>w</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'nonexistent one' },
@@ -498,7 +498,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>x</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
@@ -520,7 +520,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>y</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
@@ -539,7 +539,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       <text>z</text>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
@@ -562,14 +562,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>1</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -587,7 +587,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -600,14 +600,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>2</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -625,7 +625,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -639,14 +639,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>3</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -664,7 +664,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -678,14 +678,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>4</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -703,7 +703,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -717,14 +717,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>5</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -742,7 +742,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -756,14 +756,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>6</text>
-    <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
-    <select assignnames="x">
-      <math variants="Dill">d</math>
-      <math variants="carrot">c</math>
-      <math variants="eggplant">e</math>
-      <math variants="avocado">a</math>
-      <math variants="broccoli">b</math>
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -781,7 +781,7 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = components['/x'].stateValues.value.tree;
       expect(x).eq(expectedx);
-      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
       let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
@@ -798,10 +798,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -821,10 +821,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>b</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -843,10 +843,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>c</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 124081 },
@@ -867,10 +867,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>d</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 124081 },
@@ -888,10 +888,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>e</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'c' },
@@ -913,10 +913,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>f</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'c' },
@@ -934,10 +934,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>g</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '820572308' },
@@ -966,10 +966,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>h</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '820572308' },
@@ -988,10 +988,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>i</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '-820572306' },
@@ -1020,10 +1020,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>j</text>
-    <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '-820572306' },
@@ -1043,10 +1043,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>k</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -1064,10 +1064,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>l</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 0 },
@@ -1085,10 +1085,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>m</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: 124081 },
@@ -1108,10 +1108,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>n</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { value: 'c' },
@@ -1130,10 +1130,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>o</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '820572308' },
@@ -1152,10 +1152,10 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>p</text>
-    <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
+    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
     <p>
       Selected number: 
-      <selectfromsequence assignnames="n">10000000000</selectfromsequence>
+      <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
         requestedVariant: { index: '-820572306' },
@@ -1195,24 +1195,24 @@ describe('Specifying single variant document tests', function () {
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
     
-        <select assignnames="p">
-          <p>Favorite color:
+        <select assignnames="(p)">
+          <option><p>Favorite color:
             <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>green</text>
-              <text>white</text>
-              <text>chartreuse</text>
+              <option><text>red</text></option>
+              <option><text>orange</text></option>
+              <option><text>green</text></option>
+              <option><text>white</text></option>
+              <option><text>chartreuse</text></option>
             </select>
-          </p>
-          <p>Selected number: 
+          </p></option>
+          <option><p>Selected number: 
             <select>
-              <selectfromsequence>1000, 2000</selectfromsequence>
-              <selectfromsequence>-1000,-900</selectfromsequence>
+              <option><selectfromsequence from="1000" to="2000" /></option>
+              <option><selectfromsequence from="-1000" to="-900" /></option>
             </select>
-          </p>
-          <p>Chosen letter: <selectfromsequence type="letters">g</selectfromsequence></p>
-          <p>Variable: <select>u,v,w,x,z,y</select></p>
+          </p></option>
+          <option><p>Chosen letter: <selectfromsequence type="letters" to="g" /></p></option>
+          <option><p>Variable: <select type="text">u v w x z y</select></p></option>
         </select>
         `,
             requestedVariant: { index: ind },
@@ -1285,23 +1285,23 @@ describe('Specifying single variant document tests', function () {
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
     
-        <select assignnames="problem1, problem2, problem3" numbertoselect="3" withReplacement>
-          <problem><title>A word problem</title>
-            <variantControl nvariants="5" variants="a,b,c,d,e" />
+        <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+          <option><problem><title>A word problem</title>
+            <variantControl nvariants="5" variants="a b c d e" />
             <p>Word:
               <select>
-                <text variants="a">angry</text>
-                <text variants="b">bad</text>
-                <text variants="c">churlish</text>
-                <text variants="d">drab</text>
-                <text variants="e">excoriated</text>
+                <option selectForVariants="a"><text>angry</text></option>
+                <option selectForVariants="b"><text>bad</text></option>
+                <option selectForVariants="c"><text>churlish</text></option>
+                <option selectForVariants="d"><text>drab</text></option>
+                <option selectForVariants="e"><text>excoriated</text></option>
               </select>
             </p>
-          </problem>
-          <problem><title>A number problem</title>
+          </problem></option>
+          <option><problem><title>A number problem</title>
             <variantControl nvariants="10" />
-            <p>Number: <selectfromsequence>10</selectfromsequence></p>
-          </problem>
+            <p>Number: <selectfromsequence to="10"/></p>
+          </problem></option>
         </select>
         `,
             requestedVariant: { index: ind },
