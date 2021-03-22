@@ -635,9 +635,9 @@ function AddCourseDriveButton(props){
   const toast = useToast();
 
   const createNewDrive = useRecoilCallback(({set})=> 
-  async ({label,newDriveId,image,color})=>{
+  async ({label,newDriveId,newCourseId,image,color})=>{
     let newDrive = {
-      courseId:null,
+      courseId:newCourseId,
       driveId:newDriveId,
       isShared:"0",
       label,
@@ -653,6 +653,7 @@ function AddCourseDriveButton(props){
     })
     const payload = { params:{
       driveId:newDriveId,
+      courseId:newCourseId,
       label,
       type:"new course drive",
       image,
@@ -691,10 +692,11 @@ function AddCourseDriveButton(props){
   return <Button value="Create a New Course" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
+    let newCourseId = nanoid();
     let label = "Untitled";
     let image = driveImages[Math.floor(Math.random() * driveImages.length)];
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    const result = createNewDrive({label,driveId,newDriveId,image,color});
+    const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
     result.then((resp)=>{
       if (resp.data.success){
         toast(`Created a new course named '${label}'`, 0, null, 3000);

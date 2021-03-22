@@ -12,6 +12,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 $sourceDriveId = mysqli_real_escape_string($conn,$_REQUEST["sourceDriveId"]);
@@ -30,7 +31,7 @@ $sql = "
 INSERT INTO drive
 (driveId,label,driveType,isShared,courseId,image,color)
 VALUES
-('$driveId','$label','$contentOrCourse','0',null,'$image','$color')
+('$driveId','$label','$contentOrCourse','0','$courseId','$image','$color')
 ";
 echo $sql;
 $result = $conn->query($sql); 
