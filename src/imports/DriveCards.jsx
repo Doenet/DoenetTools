@@ -271,7 +271,7 @@ const DriveCardWrapper = (props) => {
       {({ measureRef }) => (
       <div ref={measureRef}
         style={{
-          height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`,
+          // height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`,
           // height:Math.max(...heights)+50,
            width: '100%'
         }}
@@ -287,7 +287,8 @@ const DriveCardWrapper = (props) => {
                 transform: props.xy.interpolate((x, y) => {
                   return `translate(${0}px,${0}px)`;
                 }),
-                ...props,
+                // ...props,
+                width:250,
                 height: 250,
                 opacity: 1,
                 padding:15,
