@@ -17,7 +17,6 @@ import Drive, {
   encodeParams,
   fetchDriveUsers,
   fetchDrivesQuery,
-  useFolderSelectorCallbacks
 } from "../imports/Drive";
 import { nanoid } from 'nanoid';
 
@@ -59,6 +58,10 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import "../imports/drivecard.css";
 import DriveCards from "../imports/DriveCards";
+import { 
+  useAddItem,
+  useDeleteItem
+} from "../imports/DriveActions";
 
 
 function Container(props){
@@ -471,7 +474,8 @@ const FolderInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
-  const { deleteItem } = useFolderSelectorCallbacks();
+  const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const toast = useToast();
 
   const [label,setLabel] = useState(itemInfo.label);
 
@@ -507,10 +511,19 @@ const FolderInfoPanel = function(props){
   <br />
   <br />
   <Button value="Delete Folder" callback={()=>{
-    deleteItem({
+    const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+      }else{
+        onDeleteItemError({});
+      }
+    }).catch((errorObj)=>{
+      onDeleteItemError({});
     })
   }} />
   </>
@@ -520,7 +533,8 @@ const DoenetMLInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
-  const { deleteItem } = useFolderSelectorCallbacks();
+  const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const toast = useToast();
   
 
   const [label,setLabel] = useState(itemInfo.label);
@@ -565,10 +579,19 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Delete DoenetML" callback={()=>{
-    deleteItem({
+    const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+      }else{
+        onDeleteItemError({});
+      }
+    }).catch((errorObj)=>{
+      onDeleteItemError({});
     })
   }} />
   </>
@@ -707,7 +730,6 @@ function AddCourseDriveButton(props){
       }
     }).catch((errorObj)=>{
       onError({newDriveId,errorMessage:errorObj.message});
-      
     })
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
@@ -724,8 +746,8 @@ function AddMenuPanel(props){
   }
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-  const { addItem } = useFolderSelectorCallbacks();
-
+  const { addItem, onAddItemError } = useAddItem();
+  const toast = useToast();
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
@@ -741,21 +763,39 @@ function AddMenuPanel(props){
    {addDrives}
   <h3>Folder</h3>
   <Button value="Add Folder" callback={()=>{
-    addItem({
+    const result = addItem({
       driveIdFolderId: {driveId: driveId, folderId: folderId},
       label: "Untitled",
       itemType: "Folder"
     });
+    result.then(resp => {
+      if (resp.data.success){
+        toast(`Add new item 'Untitled'`, 0, null, 3000);
+      }else{
+        onAddItemError();
+      }
+    }).catch( errorObj => {
+      onAddItemError();
+    })
   }
   } />
 
   <h3>DoenetML</h3>
   <Button value="Add DoenetML" callback={()=>{
-    addItem({
+    const result = addItem({
       driveIdFolderId: {driveId: driveId, folderId: folderId},
       label:"Untitled",
       itemType:"DoenetML"
     });
+    result.then(resp => {
+      if (resp.data.success){
+        toast(`Add new item 'Untitled'`, 0, null, 3000);
+      }else{
+        onAddItemError();
+      }
+    }).catch( errorObj => {
+      onAddItemError();
+    })
   }
   } />
  
