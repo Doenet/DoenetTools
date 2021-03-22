@@ -1,5 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
-import { breakEmbeddedStringIntoParensPieces } from './commonsugar/breakstrings';
+import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings';
 import me from 'math-expressions';
 
 export default class BezierControls extends BaseComponent {
@@ -15,7 +15,7 @@ export default class BezierControls extends BaseComponent {
 
     let createControlVectorsList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringIntoParensPieces({
+      let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
       });
 

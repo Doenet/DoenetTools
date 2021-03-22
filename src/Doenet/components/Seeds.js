@@ -7,11 +7,26 @@ export default class Seeds extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringIntoSeedsByCommas = function ({ matchedChildren }) {
-      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
-        componentType: "seed",
-        state: { value: x.trim() }
-      }));
+    let breakStringsIntoSeedsBySpaces = function ({ matchedChildren }) {
+
+      // break any string by white space and wrap pieces with seed
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(/\s+/)
+              .filter(s => s)
+              .map(s => ({
+                componentType: "seed",
+                state: { value: s }
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
       return {
         success: true,
         newChildren: newChildren,
@@ -19,8 +34,7 @@ export default class Seeds extends InlineComponent {
     }
 
     sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: breakStringIntoSeedsByCommas
+      replacementFunction: breakStringsIntoSeedsBySpaces
     });
 
     return sugarInstructions;

@@ -3409,7 +3409,7 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <map assignNames="a,b,c">
+    <map assignNames="a b c">
       <template newNamespace>
         <p>Enter <m>x^<copy tname="_source" /></m>: <answer><award><math>x^<copy tname="_source" /></math></award></answer></p>
         <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" tname="_answer1" /></p>

@@ -1,6 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
 import {
-  returnBreakStringsSugarFunction, breakEmbeddedStringIntoParensPieces
+  returnBreakStringsSugarFunction, breakEmbeddedStringsIntoParensPieces
 } from './commonsugar/breakstrings';
 
 export class Extremum extends BaseComponent {
@@ -245,7 +245,7 @@ export class Extrema extends BaseComponent {
 
     let createExtremumList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringIntoParensPieces({
+      let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
       });
 
