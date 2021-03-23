@@ -11,6 +11,9 @@
 }
 
 .list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   position: relative;
   font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
     segoe ui, arial, sans-serif;
@@ -24,7 +27,7 @@
   outline:none;
 }
 .adiv {
-  position: absolute;
+  /* position: absolute; */
   will-change: transform, width, height, opacity;
   padding: 15px;
 }
