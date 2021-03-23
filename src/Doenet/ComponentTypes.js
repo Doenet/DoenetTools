@@ -15,6 +15,7 @@ import * as DynamicalSystems from './components/dynamicalSystems';
 import * as FeedbackDefinition from './components/FeedbackDefinition';
 import * as StyleDefinition from './components/StyleDefinition';
 import * as StyleDefinitionComponents from './components/StyleDefinitionComponents';
+import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -136,8 +137,6 @@ import ConstraintComponent from './components/abstract/ConstraintComponent';
 import Input from './components/abstract/Input';
 import CompositeComponent from './components/abstract/CompositeComponent';
 import ComponentWithAnyChildren from './components/abstract/ComponentWithAnyChildren';
-import ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
-import ComponentListWithSelectableType from './components/abstract/ComponentListWithSelectableType';
 import BooleanBaseOperator from './components/abstract/BooleanBaseOperator';
 import BooleanBaseOperatorOfMath from './components/abstract/BooleanBaseOperatorOfMath';
 import MathBaseOperator from './components/abstract/MathBaseOperator';
@@ -257,6 +256,7 @@ const componentTypeArray = [
 
 const componentTypeArrayExtended = [
   ...componentTypeArray,
+  ...Object.values(ComponentWithSelectableType),
   BaseComponent,
   InlineComponent,
   BlockComponent,
@@ -265,8 +265,6 @@ const componentTypeArrayExtended = [
   Input,
   CompositeComponent,
   ComponentWithAnyChildren,
-  ComponentWithSelectableType,
-  ComponentListWithSelectableType,
   PointListComponent,
   VectorListComponent,
   AngleListComponent,

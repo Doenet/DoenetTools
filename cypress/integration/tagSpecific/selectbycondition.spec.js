@@ -211,7 +211,7 @@ describe('SelectByCondition Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p name="pa">a,aa: <selectByCondition assignNames="a,aa">
+    <p name="pa">a,aa: <selectByCondition assignNames="a aa">
       <case>
         <condition>
           <copy prop="value" tname="n" /> < 0
@@ -232,7 +232,7 @@ describe('SelectByCondition Tag Tests', function () {
     <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
     <p name="paa1">aa1: <copy tname="aa" assignNames="(aa1)" /></p>
 
-    <p name="pb" >b,bb: <copy tname="_selectbycondition1" assignNames="(b),(bb)" /></p>
+    <p name="pb" >b,bb: <copy tname="_selectbycondition1" assignNames="(b) (bb)" /></p>
 
     <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
     <p name="pbb1">bb1: <copy tname="bb" assignNames="bb1" /></p>
@@ -429,7 +429,7 @@ describe('SelectByCondition Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p>original: <selectByCondition assignNames="(a,b,c,d)" maximumNumberToSelect="1">
+    <p>original: <selectByCondition assignNames="(a b c d)" maximumNumberToSelect="1">
       <case>
         <condition>
           <copy prop="value" tname="n" /> < 0
@@ -460,7 +460,7 @@ describe('SelectByCondition Tag Tests', function () {
     <p>c1: <copy tname="c" assignNames="c1" /></p>
     <p>d1: <copy tname="d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="cp1" tname="_selectbycondition1" assignNames="(e,f,g,h,i)" /></p>
+    <p>copy: <copy name="cp1" tname="_selectbycondition1" assignNames="(e f g h i)" /></p>
 
     <p>e1: <copy tname="e" assignNames="e1" /></p>
     <p>f1: <copy tname="f" assignNames="f1" /></p>
@@ -468,7 +468,7 @@ describe('SelectByCondition Tag Tests', function () {
     <p>h1: <copy tname="h" assignNames="h1" /></p>
     <p>i1: <copy tname="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy tname="cp1" assignNames="(j,k,l)" /></p>
+    <p>copied copy: <copy tname="cp1" assignNames="(j k l)" /></p>
 
     <p>j1: <copy tname="j" assignNames="j1" /></p>
     <p>k1: <copy tname="k" assignNames="k1" /></p>
@@ -704,7 +704,7 @@ describe('SelectByCondition Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p>original: <selectByCondition assignNames="(a,b,c,d)" name="s1" newnamespace>
+    <p>original: <selectByCondition assignNames="(a b c d)" name="s1" newnamespace>
       <case>
         <condition>
           <copy prop="value" tname="../n" /> < 0
@@ -735,7 +735,7 @@ describe('SelectByCondition Tag Tests', function () {
     <p>c1: <copy tname="s1/c" assignNames="c1" /></p>
     <p>d1: <copy tname="s1/d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="s2" tname="s1" assignNames="(e,f,g,h,i)" /></p>
+    <p>copy: <copy name="s2" tname="s1" assignNames="(e f g h i)" /></p>
 
     <p>e1: <copy tname="e" assignNames="e1" /></p>
     <p>f1: <copy tname="f" assignNames="f1" /></p>
@@ -743,7 +743,7 @@ describe('SelectByCondition Tag Tests', function () {
     <p>h1: <copy tname="h" assignNames="h1" /></p>
     <p>i1: <copy tname="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy name="s3" tname="s2" assignNames="(j,k,l)" newNamespace /></p>
+    <p>copied copy: <copy name="s3" tname="s2" assignNames="(j k l)" newNamespace /></p>
 
     <p>j1: <copy tname="s3/j" assignNames="j1" /></p>
     <p>k1: <copy tname="s3/k" assignNames="k1" /></p>
@@ -983,7 +983,7 @@ describe('SelectByCondition Tag Tests', function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <selectByCondition assignNames="(a,b,c)" maximumNumberToSelect="1">
+    <p>original: <selectByCondition assignNames="(a b c)" maximumNumberToSelect="1">
       <case>
         <condition>
           <copy prop="value" tname="n" /> < 0
@@ -1021,7 +1021,7 @@ describe('SelectByCondition Tag Tests', function () {
     <copy assignNames="cc" tname="c" />
 
     <p>Whole thing repeated</p>
-    <copy tname="_selectbycondition1" assignNames="(d,e,f)" />
+    <copy tname="_selectbycondition1" assignNames="(d e f)" />
 
     <p>Selected options repeated from copy</p>
     <copy assignNames="dd" tname="d" />
@@ -1953,7 +1953,7 @@ describe('SelectByCondition Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput name="n" prefill="1" />
-    <selectByCondition assignNames="(a,b)" maximumNumberToSelect="1">
+    <selectByCondition assignNames="(a b)" maximumNumberToSelect="1">
       <case>
         <condition>
           <copy prop="value" tname="n" /> < 0
@@ -1980,7 +1980,7 @@ describe('SelectByCondition Tag Tests', function () {
     
     <p name="pResponse">The response: <copy tname="a/response" prop="value" /></p>
     
-    <copy name="sc2" tname="_selectbycondition1" assignNames="(c,d)" />
+    <copy name="sc2" tname="_selectbycondition1" assignNames="(c d)" />
     
     <p name="pResponse2">The response one more time: <copy tname="c/response" prop="value" /></p>
     `}, "*");

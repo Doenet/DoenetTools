@@ -205,7 +205,7 @@ export function breakEmbeddedStringByCommas({ childrenList }) {
   }
 }
 
-export function breakEmbeddedStringIntoParensPieces({ componentList }) {
+export function breakEmbeddedStringsIntoParensPieces({ componentList, removeParens = false }) {
   let Nparens = 0;
   let pieces = [];
   let currentPiece = [];
@@ -230,6 +230,9 @@ export function breakEmbeddedStringIntoParensPieces({ componentList }) {
       let char = s[ind];
 
       if (char === "(") {
+        if (Nparens === 0 && removeParens) {
+          beginInd = ind + 1;
+        }
         Nparens++;
       } else if (char === ")") {
         if (Nparens === 0) {
@@ -239,11 +242,14 @@ export function breakEmbeddedStringIntoParensPieces({ componentList }) {
         if (Nparens === 1) {
           // found end of piece in parens
           if (ind + 1 > beginInd) {
-            let newString = s.substring(beginInd, ind + 1).trim()
-            currentPiece.push({
-              componentType: "string",
-              state: { value: newString },
-            });
+            let lastInd = removeParens ? ind : ind + 1;
+            let newString = s.substring(beginInd, lastInd).trim()
+            if (newString.length > 0) {
+              currentPiece.push({
+                componentType: "string",
+                state: { value: newString },
+              });
+            }
           }
 
           pieces.push(currentPiece);

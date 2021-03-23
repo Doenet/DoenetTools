@@ -30,7 +30,7 @@ export default class Select extends CompositeComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    function optionsFromString({ matchedChildren, componentProps }) {
+    function breakStringsIntoOptionsBySpaces({ matchedChildren, componentProps }) {
 
       let type;
       if (componentProps.type) {
@@ -44,30 +44,37 @@ export default class Select extends CompositeComponent {
         type = "math";
       }
 
-      let pieces = matchedChildren[0].state.value.split(",").map(x => x.trim());
+      // break any string by white space and wrap pieces with option and type
 
-      if (type === "math") {
-        pieces = pieces.map(x => me.fromText(x))
-      } else if (type === "number") {
-        pieces = pieces.map(Number)
-      }
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(/\s+/)
+              .filter(s => s)
+              .map(s => type === "math" ? me.fromText(s) : (type === "number" ? Number(s) : s))
+              .map(s => ({
+                componentType: "option",
+                children: [{
+                  componentType: type,
+                  state: { value: s }
+                }]
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
 
       return {
         success: true,
-        newChildren: pieces.map(x => ({
-          componentType: "option",
-          children: [{
-            componentType: type,
-            state: { value: x }
-          }]
-        }))
-      };
+        newChildren: newChildren,
+      }
 
     }
 
     sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: optionsFromString
+      replacementFunction: breakStringsIntoOptionsBySpaces
     });
 
     return sugarInstructions;
@@ -663,10 +670,10 @@ export default class Select extends CompositeComponent {
       return { success: false }
     }
 
-    // if have one string child, it will be broken into children by commas
+    // if have one string child, it will be broken into children by spaces
     // account for number of resulting children, each with one variant
     if (stringChild !== undefined && numberOfVariantsByChild.length === 1) {
-      let numPieces = stringChild.state.value.split(",").length;
+      let numPieces = stringChild.state.value.split(/s+/).length;
       numberOfVariantsByChild = Array(numPieces).fill(1);
     }
 
