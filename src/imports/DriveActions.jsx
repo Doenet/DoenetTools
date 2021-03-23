@@ -11,10 +11,31 @@ import Drive, {
   folderDictionary, 
   selectedDriveItemsAtom,
   sortOptions,
-  getLexicographicOrder
+  getLexicographicOrder,
+  folderCacheDirtyAtom,
+  dragStateAtom
 } from "../imports/Drive";
 import { createComponentNamesFromParentName } from '../Doenet/utils/serializedStateProcessing';
 
+const dragShadowId = "dragShadow";
+
+// TODO: Remove this, only for reference as todo list
+export const folderInfoSelectorActions = Object.freeze({
+  ADD_ITEM: "addItem",
+  DELETE_ITEM: "delete item",
+  MOVE_ITEMS: "move items",
+  SORT: "sort",
+  PUBLISH_ASSIGNMENT: "assignment was published",
+  PUBLISH_CONTENT: "content was published",
+  ASSIGNMENT_TO_CONTENT: "assignment to content",
+  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
+  INSERT_DRAG_SHADOW: "insertDragShadow",
+  REMOVE_DRAG_SHADOW: "removeDragShadow",
+  REPLACE_DRAG_SHADOW: "replaceDragShadow",
+  INVALIDATE_SORT_CACHE: "invalidate sort cache",
+  RENAME_ITEM: "rename item",
+  CLEAN_UP_DRAG: "clean up drag"
+});
 
 export const useAddItem = () => {
   const addItem = useRecoilCallback(({set})=> 
@@ -109,7 +130,6 @@ export const useDeleteItem = () => {
         driveInstanceId: driveInstanceId,
         itemId: itemId
       }
-      console.log("HERE")
       const selectedDriveItems = await snapshot.getPromise(selectedDriveItemsAtom(item));
       console.log(selectedDriveItems)
       
@@ -153,4 +173,198 @@ export const useDeleteItem = () => {
   }
 
   return { deleteItem, onDeleteItemError };
+}
+
+export const useMoveItems = () => {
+  const moveItems = useRecoilCallback(({snapshot, set})=> 
+    async ({targetDriveId, targetFolderId, index})=>{
+      const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
+
+      // Interrupt move action if nothing selected
+      if (globalSelectedNodes.length === 0){ 
+        throw "No items selected"
+      }
+      
+      // TODO: Does this catch every case of folder into itself?
+      // Interrupt move action if dragging folder to itself
+      for (let gItem of globalSelectedNodes){
+        if (gItem.itemId === targetFolderId){
+          throw "Cannot move folder into itself"
+        }
+      }
+
+      // if (canMove){ 
+        // Add to destination at index
+        let destinationFolderObj = await snapshot.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
+        let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
+        let editedCache = {};
+        let driveIdChanged = [];
+        const insertIndex = index ?? 0;
+        let newSortOrder = "";
+
+        for(let gItem of globalSelectedNodes){
+          // Deselect Item
+          let selectedItem = {
+            driveId: gItem.driveId,
+            driveInstanceId: gItem.driveInstanceId,
+            itemId: gItem.itemId
+          };
+          set(selectedDriveItemsAtom(selectedItem), false);
+
+          // Get parentInfo from edited cache or derive from oldSource
+          const oldSourceFInfo = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.parentFolderId}));
+          let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
+          if (!newSourceFInfo) newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
+
+          // Handle moving item out of folder
+          if (gItem.parentFolderId !== targetFolderId) {  
+            // Remove item from original parent contentIds
+            let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
+            newSourceFInfo["contentIds"]["defaultOrder"].splice(index, 1)
+
+            // Add item to destination dictionary
+            newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]}
+
+            // Remove item from original dictionary
+            delete newSourceFInfo["contentsDictionary"][gItem.itemId];
+
+            // Ensure item removed from cached parent and added to edited cache
+            if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
+            editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
+          } else {
+            // Ensure item not duplicated in destination contentIds
+            newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
+          }
+
+          // Generate and update sortOrder
+          const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
+          newSortOrder = getLexicographicOrder({
+            index: insertIndex, 
+            nodeObjs: newDestinationFolderObj.contentsDictionary, 
+            defaultFolderChildrenIds: cleanDefaultOrder 
+          });
+          newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
+          newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = targetFolderId;
+
+          // Insert item into contentIds of destination
+          newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
+
+          // If moved item is a folder, update folder info
+          if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
+            // Retrieval from folderDictionary necessary when moving to different drive
+            const gItemFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
+            set(folderDictionary({driveId: targetDriveId, folderId: gItem.itemId}),()=>{
+              let newFolderInfo = {...gItemFolderInfoObj}
+              newFolderInfo.folderInfo = {...gItemFolderInfoObj.folderInfo}
+              newFolderInfo.folderInfo.parentFolderId = targetFolderId;
+              return newFolderInfo;
+            })
+          }
+
+          // If moved between drives, handle update driveId
+          if (gItem.driveId !== targetDriveId) {
+            driveIdChanged.push(gItem.itemId)
+
+            // Update driveId of all children in the subtree
+            if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
+              let gItemChildIds = [];
+              let queue = [gItem.itemId];
+
+              // BFS tree-walk to iterate through all child nodes
+              while (queue.length) {
+                let size = queue.length;
+                for (let i = 0; i < size; i++) {
+                  let currentNodeId = queue.shift();
+                  const folderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: currentNodeId}));
+                  gItemChildIds.push(currentNodeId);
+                  for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
+                    if (folderInfoObj?.contentsDictionary[childId].itemType === "Folder") {
+                      // migrate child folderInfo into destination driveId
+                      const childFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: childId}));
+                      set(folderDictionary({driveId: targetDriveId, folderId: childId}), childFolderInfoObj);
+                      queue.push(childId);
+                    } else {
+                      gItemChildIds.push(childId);
+                    }
+                  }
+                }
+              }
+
+              driveIdChanged = [...driveIdChanged, ...gItemChildIds]
+            }
+          }
+        }
+        // Add all to destination
+        set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
+        
+        // Clear global selection
+        set(globalSelectedNodesAtom,[])
+        
+        // Remove from sources
+        for (let driveId of Object.keys(editedCache)){
+          for (let parentFolderId of Object.keys(editedCache[driveId])) {
+            set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
+            // Mark modified folders as dirty
+            set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
+          }
+        }
+        // Mark current folder as dirty
+        set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
+
+        let selectedItemIds = [];
+        for (let item of globalSelectedNodes){
+          selectedItemIds.push(item.itemId);
+        }
+
+        const payload = {
+          sourceDriveId: globalSelectedNodes[0].driveId,
+          selectedItemIds,
+          selectedItemChildrenIds: driveIdChanged,
+          destinationItemId: targetFolderId,
+          destinationParentFolderId: destinationFolderObj.folderInfo.parentFolderId,
+          destinationDriveId: targetDriveId,
+          newSortOrder,
+        }
+
+        return axios.post("/api/moveItems.php", payload);
+      // }
+    }
+  );
+
+  const onMoveItemsError = () => {
+    // TODO: revert changes
+  }
+
+  return { moveItems, onMoveItemsError };
+}
+
+export const useReplaceDragShadow = () => {
+  const replaceDragShadow = useRecoilCallback(({snapshot})=> 
+    async () => {
+      const { 
+        dragShadowDriveId,
+        dragShadowParentId, 
+      } = await snapshot.getPromise(dragStateAtom);
+      const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
+      
+      // Check if drag shadow valid
+      if (!dragShadowDriveId || !dragShadowParentId) return;
+
+      let dragShadowParentFolderInfoObj = null;
+      if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = await snapshot.getPromise(folderDictionary({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));;
+      let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
+      let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
+
+      if (insertIndex < 0) {
+        return {}
+      }
+
+      return {
+        targetDriveId: dragShadowDriveId,
+        targetFolderId: dragShadowParentId,
+        index: insertIndex,
+        numItems: globalSelectedNodes.length
+      }
+    });
+  return {replaceDragShadow};
 }

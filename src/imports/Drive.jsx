@@ -53,7 +53,13 @@ import {
   useRecoilCallback
 } from 'recoil';
 import ChildLogic from '../Doenet/ChildLogic';
-import { useDeleteItem } from './DriveActions';
+import { 
+  useDeleteItem,
+  useMoveItems,
+  useReplaceDragShadow
+} from './DriveActions';
+
+import { useToast } from "../imports/Tool/Toast";
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -231,7 +237,7 @@ export const selectedDriveAtom = atom({
   default: ""
 })
 
-const dragStateAtom = atom({
+export const dragStateAtom = atom({
   key: 'dragStateAtom',
   default: {
     isDragging: false,
@@ -426,154 +432,6 @@ export const folderDictionarySelector = selectorFamily({
         }
         const { renamedata } = await axios.get("/api/updateItem.php", renamepayload)
         // .then((resp)=>console.log(">>>resp",resp.data))
-      break;
-      case folderInfoSelectorActions.MOVE_ITEMS:
-        //Don't move if nothing selected or draging folder to itself
-        let canMove = true;
-        if (get(globalSelectedNodesAtom).length === 0){ canMove = false;}
-        //TODO: Does this catch every case of folder into itself?
-        for(let gItem of get(globalSelectedNodesAtom)){
-          if (gItem.itemId === instructions.itemId){
-            console.log("Can't move folder into itself") //TODO: Toast
-            canMove = false;
-          }
-        }
-        if (canMove){
-          
-          // //Add to destination at end
-          let destinationFolderObj = get(folderDictionary({driveId:instructions.driveId,folderId:instructions.itemId}))
-          let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
-          let globalSelectedItems = get(globalSelectedNodesAtom)
-          let editedCache = {};
-          let driveIdChanged = [];
-          const insertIndex = instructions.index ?? 0;
-          let newSortOrder = "";
-
-          for(let gItem of globalSelectedItems){
-            //Deselect Item
-            let selecteditem = {driveId:gItem.driveId,driveInstanceId:gItem.driveInstanceId,itemId:gItem.itemId}
-            set(selectedDriveItemsAtom(selecteditem),false)
-
-            const oldSourceFInfo = get(folderDictionary({driveId:gItem.driveId, folderId:gItem.parentFolderId}));
-            // get parentInfo from edited cache or derive from oldSource
-            let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
-            if (!newSourceFInfo) newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
-
-            if (gItem.parentFolderId !== instructions.itemId) {  
-              // remove item from original parent contentIds
-              let index = newSourceFInfo["contentIds"]["defaultOrder"].indexOf(gItem.itemId);
-              newSourceFInfo["contentIds"]["defaultOrder"].splice(index, 1)
-
-              // add item to destination dictionary
-              newDestinationFolderObj["contentsDictionary"][gItem.itemId] = {...newSourceFInfo["contentsDictionary"][gItem.itemId]}
-
-              // remove item from original dictionary
-              delete newSourceFInfo["contentsDictionary"][gItem.itemId];
-
-              // item must be removed from parent, add to edited cache
-              if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
-              editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
-            } else {
-              // make sure item not duplicated in destination contentIds
-              newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== gItem.itemId);
-            }
-
-            // Generate and update sortOrder
-            const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
-            newSortOrder = getLexicographicOrder({
-              index: insertIndex, 
-              nodeObjs: newDestinationFolderObj.contentsDictionary, 
-              defaultFolderChildrenIds: cleanDefaultOrder 
-            });
-            newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
-            newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = instructions.itemId;
-
-            // Insert item into contentIds of destination
-            newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId)
-
-            // If moved item is a folder, update folder info
-            if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
-              // retrieval from folderDictionary necessary when moving to different drive
-              const gItemFolderInfoObj = get(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
-              set(folderDictionary({driveId: instructions.driveId, folderId: gItem.itemId}),()=>{
-                let newFolderInfo = {...gItemFolderInfoObj}
-                newFolderInfo.folderInfo = {...gItemFolderInfoObj.folderInfo}
-                newFolderInfo.folderInfo.parentFolderId = instructions.itemId;
-                return newFolderInfo;
-              })
-            }
-
-            // If moved between drives, handle update driveId
-            if (gItem.driveId !== instructions.driveId) {
-              driveIdChanged.push(gItem.itemId)
-
-              // Update driveId of all children in the subtree
-              if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
-                let gItemChildIds = [];
-                let queue = [gItem.itemId];
-
-                // BFS tree-walk to iterate through all child nodes
-                while (queue.length) {
-                  let size = queue.length;
-                  for (let i = 0; i < size; i++) {
-                    let currentNodeId = queue.shift();
-                    const folderInfoObj = get(folderDictionarySelector({ driveId: gItem.driveId, folderId: currentNodeId}));
-                    gItemChildIds.push(currentNodeId);
-                    for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
-                      if (folderInfoObj?.contentsDictionary[childId].itemType === "Folder") {
-                        // migrate child folderInfo into destination driveId
-                        const childFolderInfoObj = get(folderDictionary({driveId: gItem.driveId, folderId: childId}));
-                        set(folderDictionary({driveId: instructions.driveId, folderId: childId}), childFolderInfoObj);
-                        queue.push(childId);
-                      } else {
-                        gItemChildIds.push(childId);
-                      }
-                    }
-                  }
-                }
-
-                driveIdChanged = [...driveIdChanged, ...gItemChildIds]
-              }
-            }
-          }
-          // Add all to destination
-          set(folderDictionary({driveId:instructions.driveId, folderId:instructions.itemId}), newDestinationFolderObj);
-          
-          // Clear global selection
-          set(globalSelectedNodesAtom,[])
-          
-          // Remove from sources
-          for (let driveId of Object.keys(editedCache)){
-            for (let parentFolderId of Object.keys(editedCache[driveId])) {
-              set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
-              // Mark modified folders as dirty
-              set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
-            }
-          }
-          // Mark current folder as dirty
-          set(folderCacheDirtyAtom({driveId:instructions.driveId, folderId:instructions.itemId}), true);
-
-          let selectedItemIds = [];
-          for (let item of globalSelectedItems){
-            selectedItemIds.push(item.itemId);
-          }
-
-          const payload = {
-            sourceDriveId:globalSelectedItems[0].driveId,
-            selectedItemIds,
-            selectedItemChildrenIds: driveIdChanged,
-            destinationItemId:instructions.itemId,
-            destinationParentFolderId:destinationFolderObj.folderInfo.parentFolderId,
-            destinationDriveId:instructions.driveId,
-            newSortOrder,
-          }
-          axios.post("/api/moveItems.php", payload)
-          .then((resp)=>{
-            // console.log(resp.data)
-          }
-          )
-          
-        }
       break;
       case folderInfoSelectorActions.PUBLISH_ASSIGNMENT:
         set(folderDictionary(driveIdFolderId),(old)=>{
@@ -781,24 +639,6 @@ export const folderDictionarySelector = selectorFamily({
           }
         })
       break;
-      case folderInfoSelectorActions.REPLACE_DRAG_SHADOW:
-        // check if drag shadow valid
-        if (!dragShadowDriveId || !dragShadowParentId) return;
-
-        if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
-        let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
-        let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
-        
-        if (insertIndex >= 0) {
-          const instructions = {
-            instructionType: folderInfoSelectorActions.MOVE_ITEMS,
-            driveId: dragShadowDriveId,
-            itemId: dragShadowParentId,
-            index: insertIndex
-          }
-          set(folderDictionarySelector(driveIdFolderId), instructions);
-        }
-      break;
       case folderInfoSelectorActions.CLEAN_UP_DRAG:
         // If valid dragShadow, filter path of folders to dragShadow
         let openedFolders = [...openedFoldersInfo];
@@ -831,12 +671,12 @@ export const folderDictionarySelector = selectorFamily({
   // }
 })
 
-const folderSortOrderAtom = atomFamily({
+export const folderSortOrderAtom = atomFamily({
   key:"folderSortOrderAtom",
   default:sortOptions.DEFAULT
 })
 
-const folderCacheDirtyAtom = atomFamily({
+export const folderCacheDirtyAtom = atomFamily({
   key:"foldedCacheDirtyAtom",
   default:false
 })
@@ -1394,12 +1234,15 @@ function Folder(props){
   const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
   const isSelectedRef = useRef(isSelected);  // for memoized DnD callbacks
 
+  const toast = useToast();
+  const {replaceDragShadow} = useReplaceDragShadow();
+  const {moveItems, onMoveItemsError} = useMoveItems();
+
   //Set only when parentFolderId changes
   const setInstanceParentId = useSetRecoilState(driveInstanceParentFolderIdAtom(props.driveInstanceId));
   useEffect(() => {
     setInstanceParentId(props.pathItemId);
   },[props.pathItemId])
-
 
   const indentPx = 20;
   let bgcolor = "#f6f8ff";
@@ -1525,8 +1368,21 @@ function Folder(props){
   }
 
   const onDragEndCb = () => {
+    replaceDragShadow().then(replaceDragShadowResp => {
+      if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
+      const result = moveItems(replaceDragShadowResp);
+      result.then((resp)=>{
+        if (resp.data.success){
+          toast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, 0, null, 3000);
+        }else{
+          onMoveItemsError({});
+        }
+      }).catch( e => {
+        console.log(e);
+        onMoveItemsError({});
+      })
+    });
     setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
-    setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
     setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
     onDragEnd();
   }
