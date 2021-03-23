@@ -1,8 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import ResizeObserver from 'resize-observer-polyfill'
 
-
-
 const getColumns = (width) => {
     if(width > 1500){return 5;}
     else if(width > 1000){return 4;}
