@@ -6,17 +6,18 @@ proxy.on('proxyReq', function(proxyReq, req, res, options) {
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
+  // sets what directories should be mounted where
   mount: {
-    src: "/"
+    "src": "/"
+    // "desired/path" : "desired/endpoint"
   },
   plugins: [
     ["snowpack-plugin-raw-file-loader", {
       exts: [".doenet",".txt"], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
     }],
   ],
+  //any and all requests to apache must have a section here.
   routes: [
-    /* Enable an SPA Fallback in development: */
-    // {"match": "routes", "src": ".*", "dest": "/index.html"},
     {
       src: '/api/.*',
       dest: (req, res) => {
@@ -31,11 +32,6 @@ module.exports = {
     {
       src: '/open_api/.*',
       dest: (req, res) => {
-        // remove /api prefix (optional)
-        // req.url = req.url.replace(/^\/api/, '');
-        // console.log("api call!");
-        // console.log(req.url);
-        
         proxy.web(req, res);
       },
     },
@@ -43,11 +39,6 @@ module.exports = {
     {
       src: '/media/.*',
       dest: (req, res) => {
-        // remove /api prefix (optional)
-        // req.url = req.url.replace(/^\/api/, '');
-        // console.log("api call!");
-        // console.log(req.url);
-        
         proxy.web(req, res);
       },
     },
