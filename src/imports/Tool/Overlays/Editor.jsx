@@ -401,7 +401,7 @@ function TextEditor(props){
     }
   
   return <>
-  <button onClick={()=>{
+  {/* <button onClick={()=>{
     console.log(">>>editorRef.current",editorRef.current)
     // editorRef.current.options.readOnly = true;
     // editorRef.current.doc.undo();
@@ -420,7 +420,7 @@ function TextEditor(props){
     console.log(">>>editorRef.current",editorRef.current)
     // editorRef.current.options.readOnly = false;
     // editorRef.current.doc.redo();
-  }}>Redo</button>
+  }}>Redo</button> */}
 
   <VisibilitySensor onChange={(visible)=>{
     if (visible){
