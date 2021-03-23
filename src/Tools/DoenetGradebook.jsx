@@ -172,7 +172,7 @@ const assignmentData = selector({
         return assignmentArray
     },
     set: ({set, get}, newValue)=>{
-        console.log("New Value: ", newValue);
+        //console.log("New Value: ", newValue);
     }
 })
 

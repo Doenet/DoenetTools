@@ -19,7 +19,7 @@ import {
 
 const getUserId = (students, name) => {
     for(let userId in students){
-        console.log(userId, students[userId].firstName);
+        //console.log(userId, students[userId].firstName);
         
         if(students[userId].firstName + " " + students[userId].lastName == name){
           return userId;
@@ -36,7 +36,7 @@ export default function GradebookAssignmentView(props){
 
     let maxAttempts = 0;
 
-    attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
+    //attempts.state == 'hasValue' ? console.log(attempts.contents): console.log(attempts.state)
     if(attempts.state == 'hasValue'){
         for (let userId in attempts.contents) {
             let len = Object.keys(attempts.contents[userId].attempts).length;
@@ -109,7 +109,7 @@ export default function GradebookAssignmentView(props){
         }
     }
 
-    console.log("in component");
+    //console.log("in component");
     
 
     return(
