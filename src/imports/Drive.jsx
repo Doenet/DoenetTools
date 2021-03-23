@@ -2405,6 +2405,7 @@ function useUpdateBreadcrumb(props) {
   }
   const [nodesOnPath, _] = useRecoilState(nodePathSelector({driveId: routePathDriveId, folderId: routePathFolderId}));
   const driveLabel = props.driveLabel ?? "/";
+  const { moveItems } = useMoveItems();
 
   useEffect(() => {
     updateBreadcrumb({routePathDriveId, routePathFolderId});
@@ -2446,7 +2447,7 @@ function useUpdateBreadcrumb(props) {
         dropCallbacks={{
           onDragOver: () => onDragOverContainer({ id: currentNodeId, driveId: props.driveId, isBreadcrumb: true }),
           onDrop: () => {
-            setFolderInfo({instructionType: folderInfoSelectorActions.MOVE_ITEMS, driveId: props.driveId, itemId: currentNodeId});
+            moveItems({targetDriveId: props.driveId, targetFolderId: currentNodeId})
           }
         }}
         >
@@ -2473,7 +2474,7 @@ function useUpdateBreadcrumb(props) {
       unregisterDropTarget={dropActions.unregisterDropTarget}
       dropCallbacks={{
         onDragOver: () => onDragOverContainer({ id: routePathDriveId, driveId: props.driveId, isBreadcrumb: true }),
-        onDrop: () => {setFolderInfo({instructionType: folderInfoSelectorActions.MOVE_ITEMS, driveId: props.driveId, itemId: props.driveId});}
+        onDrop: () => {moveItems({targetDriveId: props.driveId, targetFolderId: props.driveId})}
       }}
       >
       <Link 

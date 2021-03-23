@@ -131,7 +131,6 @@ export const useDeleteItem = () => {
         itemId: itemId
       }
       const selectedDriveItems = await snapshot.getPromise(selectedDriveItemsAtom(item));
-      console.log(selectedDriveItems)
       
       // Remove from selection
       if (selectedDriveItems){
