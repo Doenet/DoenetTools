@@ -2207,6 +2207,7 @@ const DoenetML = React.memo((props)=>{
   }
 
   const onDragEndCb = () => {
+    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
     setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
     onDragEnd();
