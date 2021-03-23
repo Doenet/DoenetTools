@@ -1368,23 +1368,9 @@ function Folder(props){
   }
 
   const onDragEndCb = () => {
-    replaceDragShadow().then(replaceDragShadowResp => {
-      if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
-      const result = moveItems(replaceDragShadowResp);
-      result.then((resp)=>{
-        if (resp.data.success){
-          toast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, 0, null, 3000);
-        }else{
-          onMoveItemsError({});
-        }
-      }).catch( e => {
-        console.log(e);
-        onMoveItemsError({});
-      })
-    });
     setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
-    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
     onDragEnd();
+    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
   }
 
   const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
@@ -1979,9 +1965,9 @@ const DoenetML = React.memo((props)=>{
   }
 
   const onDragEndCb = () => {
-    setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
-    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
+    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
+    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
   }
 
   let doenetMLJSX = <div
@@ -2165,9 +2151,9 @@ const Url = React.memo((props)=>{
   }
 
   const onDragEndCb = () => {
-    setFolderInfo({instructionType: folderInfoSelectorActions.REPLACE_DRAG_SHADOW});
-    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
+    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
+    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
   }
 
   let urlJSX = <div
@@ -2286,6 +2272,9 @@ function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
+  const toast = useToast();
+  const {replaceDragShadow} = useReplaceDragShadow();
+  const {moveItems, onMoveItemsError} = useMoveItems();
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
@@ -2324,6 +2313,21 @@ function useDnDCallbacks() {
   };
 
   const onDragEnd = () => {
+    replaceDragShadow().then(replaceDragShadowResp => {
+      if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
+      const result = moveItems(replaceDragShadowResp);
+      result.then((resp)=>{
+        if (resp.data.success){
+          toast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, 0, null, 3000);
+        }else{
+          onMoveItemsError({});
+        }
+      }).catch( e => {
+        console.log(e);
+        onMoveItemsError({});
+      })
+    });
+
     setDragState((dragState) => ({
       ...dragState,
       isDragging: false,
