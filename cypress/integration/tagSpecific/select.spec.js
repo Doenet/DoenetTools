@@ -131,7 +131,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="3">
+    <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="3">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -139,7 +139,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="3">
+    <select name="s2" assignnames="(x2)  (y2)  (z2)" numberToSelect="3">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -147,7 +147,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="3">
+    <select name="s3" assignnames="(x3)  (y3)  (z3)" numberToSelect="3">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -155,7 +155,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="3">
+    <select name="s4" assignnames="(x4)  (y4)  (z4)" numberToSelect="3">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -163,7 +163,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="3">
+    <select name="s5" assignnames="(x5)  (y5)  (z5)" numberToSelect="3">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -200,7 +200,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="$n" >
+    <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="$n" >
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -208,7 +208,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="$n">
+    <select name="s2" assignnames="(x2)  (y2)  (z2)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -216,7 +216,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="$n">
+    <select name="s3" assignnames="(x3)  (y3)  (z3)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -224,7 +224,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="$n">
+    <select name="s4" assignnames="(x4)  (y4)  (z4)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -232,7 +232,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="$n">
+    <select name="s5" assignnames="(x5)  (y5)  (z5)" numberToSelect="$n">
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -280,7 +280,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="3" newNameSpace>
+    <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="3" newNameSpace>
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -288,7 +288,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="3" newNameSpace>
+    <select name="s2" assignnames="(x2)  (y2)  (z2)" numberToSelect="3" newNameSpace>
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -296,7 +296,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="3" newNameSpace>
+    <select name="s3" assignnames="(x3)  (y3)  (z3)" numberToSelect="3" newNameSpace>
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -304,7 +304,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="3" newNameSpace>
+    <select name="s4" assignnames="(x4)  (y4)  (z4)" numberToSelect="3" newNameSpace>
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -312,7 +312,7 @@ describe('Select Tag Tests', function () {
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="3" newNameSpace>
+    <select name="s5" assignnames="(x5)  (y5)  (z5)" numberToSelect="3" newNameSpace>
       <option><math>u</math></option>
       <option><math>v</math></option>
       <option><math>w</math></option>
@@ -350,27 +350,27 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="(x1), (y1), (z1)" numberToSelect="5" withReplacement>
+    <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="5" withReplacement>
       <option><math>x</math></option>
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s2" assignnames="(x2), (y2), (z2)" numberToSelect="5" withReplacement>
+    <select name="s2" assignnames="(x2)  (y2)  (z2)" numberToSelect="5" withReplacement>
       <option><math>x</math></option>
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s3" assignnames="(x3), (y3), (z3)" numberToSelect="5" withReplacement>
+    <select name="s3" assignnames="(x3)  (y3)  (z3)" numberToSelect="5" withReplacement>
       <option><math>x</math></option>
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s4" assignnames="(x4), (y4), (z4)" numberToSelect="5" withReplacement>
+    <select name="s4" assignnames="(x4)  (y4)  (z4)" numberToSelect="5" withReplacement>
       <option><math>x</math></option>
       <option><math>y</math></option>
       <option><math>z</math></option>
     </select>
-    <select name="s5" assignnames="(x5), (y5), (z5)" numberToSelect="5" withReplacement>
+    <select name="s5" assignnames="(x5)  (y5)  (z5)" numberToSelect="5" withReplacement>
       <option><math>x</math></option>
       <option><math>y</math></option>
       <option><math>z</math></option>
@@ -599,7 +599,7 @@ describe('Select Tag Tests', function () {
     <text>a</text>
     How many variables do you want? <mathinput />
     <p name="p1"><aslist>
-    <map assignnames="a,b,c,d,e,f">
+    <map assignnames="a b c d e f">
       <template newNamespace>
         <select assignnames="(n)">
           <option><math>u</math></option>
@@ -902,19 +902,19 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>1</math>
-    <p name="p1"><aslist><select assignnames="(x1,y1,z1)">
+    <p name="p1"><aslist><select assignnames="(x1 y1 z1)">
       <option><math>u</math><math>v</math><math>w</math></option>
       <option><math>x</math><math>y</math><math>z</math></option>
       <option><math>a</math><math>b</math><math>c</math></option>
       <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="p2"><aslist><select assignnames="(x2,y2,z2)">
+    <p name="p2"><aslist><select assignnames="(x2 y2 z2)">
       <option><math>u</math><math>v</math><math>w</math></option>
       <option><math>x</math><math>y</math><math>z</math></option>
       <option><math>a</math><math>b</math><math>c</math></option>
       <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="p3"><aslist><select assignnames="(x3,y3,z3)">
+    <p name="p3"><aslist><select assignnames="(x3 y3 z3)">
       <option><math>u</math><math>v</math><math>w</math></option>
       <option><math>x</math><math>y</math><math>z</math></option>
       <option><math>a</math><math>b</math><math>c</math></option>
@@ -989,19 +989,19 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>1</math>
-    <p name="p1"><aslist><select assignnames="(x,y,z)" name="s1" newnamespace>
+    <p name="p1"><aslist><select assignnames="(x y z)" name="s1" newnamespace>
       <option><math>u</math><math>v</math><math>w</math></option>
       <option><math>x</math><math>y</math><math>z</math></option>
       <option><math>a</math><math>b</math><math>c</math></option>
       <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="p2"><aslist><select assignnames="(x,y,z)" name="s2" newnamespace>
+    <p name="p2"><aslist><select assignnames="(x y z)" name="s2" newnamespace>
     <option><math>u</math><math>v</math><math>w</math></option>
     <option><math>x</math><math>y</math><math>z</math></option>
     <option><math>a</math><math>b</math><math>c</math></option>
     <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="p3"><aslist><select assignnames="(x,y,z)" name="s3" newnamespace>
+    <p name="p3"><aslist><select assignnames="(x y z)" name="s3" newnamespace>
     <option><math>u</math><math>v</math><math>w</math></option>
     <option><math>x</math><math>y</math><math>z</math></option>
     <option><math>a</math><math>b</math><math>c</math></option>
@@ -1078,7 +1078,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <math>1</math>
     <p name="p1"><aslist>
-      <select assignnames="(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)" numbertoselect="3">
+      <select assignnames="(x1 y1 z1) (x2 y2 z2) (x3 y3 z3)" numbertoselect="3">
         <option><math>u</math><math>v</math><math>w</math></option>
         <option><math>x</math><math>y</math><math>z</math></option>
         <option><math>a</math><math>b</math><math>c</math></option>
@@ -1155,7 +1155,7 @@ describe('Select Tag Tests', function () {
     <math hide name="x2">y</math>
     <math hide name="x3">z</math>
 
-    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+    <select assignnames="q r s t u" numbertoselect="5" withreplacement>
       <option newNamespace><p>Option 1: <math>3<copy tname="../x1" /><copy tname="../y1" /></math></p></option>
       <option><p name="h" newnamespace>Option 2: <math>4<copy tname="../x2" /><copy tname="../y2" /></math></p></option>
       <option newNamespace><p name="l">Option 3: <math>5<copy tname="../x3" /><copy tname="../y3" /></math></p></option>
@@ -1226,7 +1226,7 @@ describe('Select Tag Tests', function () {
     <math hide name="x2">y</math>
     <math hide name="x3">z</math>
 
-    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+    <select assignnames="q r s t u" numbertoselect="5" withreplacement>
       <option><p>Option 1: <math>3<copy tname="x1" /><copy tname="y1" /></math></p></option>
       <option><p name="h">Option 2: <math>4<copy tname="x2" /><copy tname="y2" /></math></p></option>
       <option><p name="l">Option 3: <math>5<copy tname="x3" /><copy tname="y3" /></math></p></option>
@@ -1294,7 +1294,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+    <select assignnames="q r s t u" numbertoselect="5" withreplacement>
       <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
       <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy tname="x" />^2<copy tname="z2" />^3</math></p></option>
       <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy tname="x" />^2<copy tname="z3" />^3</math></p></option>
@@ -1393,7 +1393,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
+    <select assignnames="q r s t u" numbertoselect="5" withreplacement>
       <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy tname="x" />^2<copy tname="z1" />^3</math></p></option>
       <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + <copy tname="y" />^2<copy tname="z2" />^3</math></p></option>
       <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + <copy tname="z" />^2<copy tname="z3" />^3</math></p></option>
@@ -1474,7 +1474,7 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="aVocado, broCColi , carrot ,Dill,eggplanT"/>
+    <variantControl nvariants="5" variants="aVocado  broCColi   carrot  Dill eggplanT"/>
 
     <p>Selected variable:
     <select assignnames="(x)">
@@ -1521,16 +1521,16 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="avocado, brOccoli , carrot ,dill,   eggPlant  "/>
+    <variantControl nvariants="5" variants="avocado  brOccoli   carrot  dill    eggPlant  "/>
 
     <p>Selected variables:
     <aslist>
-    <select assignnames="(x), (y), (z)" numbertoselect="3">
-      <option selectForVariants="dill, carrot, avocado"><math>d</math></option>
-      <option selectForVariants="cArrOt,eggplant,eggplant"><math>c</math></option>
-      <option selectForVariants="eggplant ,broccoli ,dilL"><math>e</math></option>
-      <option selectForVariants="aVocado , avocado , broccoli"><math>a</math></option>
-      <option selectForVariants="  broccoli   , caRRot   , dill    "><math>b</math></option>
+    <select assignnames="(x)  (y)  (z)" numbertoselect="3">
+      <option selectForVariants="dill  carrot  avocado"><math>d</math></option>
+      <option selectForVariants="cArrOt eggplant eggplant"><math>c</math></option>
+      <option selectForVariants="eggplant  broccoli  dilL"><math>e</math></option>
+      <option selectForVariants="aVocado   avocado   broccoli"><math>a</math></option>
+      <option selectForVariants="  broccoli     caRRot     dill    "><math>b</math></option>
     </select>
     </aslist>
     </p>
@@ -1602,8 +1602,8 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="math" assignnames="(m1),(m2),(m3),(m4),(m5)" numbertoselect="5">
-      x^2, x/y, u, a, b-c, s+t, mn, -1
+    <select type="math" assignnames="(m1) (m2) (m3) (m4) (m5)" numbertoselect="5">
+      x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
     `}, "*");
@@ -1633,8 +1633,8 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select assignnames="(m1),(m2),(m3),(m4),(m5)" numbertoselect="5">
-      x^2, x/y, u, a, b-c, s+t, mn, -1
+    <select assignnames="(m1) (m2) (m3) (m4) (m5)" numbertoselect="5">
+      x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
     `}, "*");
@@ -1664,8 +1664,8 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="text" assignnames="(w1),(w2),(w3),(w4),(w5)" numbertoselect="5">
-      Lorem, ipsum ,dolor, sit, amet, consectetur, adipiscing, elit
+    <select type="text" assignnames="(w1) (w2) (w3) (w4) (w5)" numbertoselect="5">
+      Lorem  ipsum  dolor  sit  amet  consectetur  adipiscing  elit
     </select>
     </aslist>
     `}, "*");
@@ -1692,8 +1692,8 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="number" assignnames="(n1),(n2),(n3),(n4),(n5),(n6),(n7),(n8),(n9),(n10)" numbertoselect="10" withReplacement>
-      2,3,5,7,11,13,17,19
+    <select type="number" assignnames="(n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (n9) (n10)" numbertoselect="10" withReplacement>
+      2 3 5 7 11 13 17 19
     </select>
     </aslist>
     `}, "*");
@@ -1822,7 +1822,7 @@ describe('Select Tag Tests', function () {
         <text>${ind}</text>
         <variantcontrol nvariants="200"/>
         <aslist>
-        <select assignnames="(x),(y)" numbertoselect="2">
+        <select assignnames="(x) (y)" numbertoselect="2">
           <option selectweight="0.1"><text>u</text></option>
           <option selectweight="0.1"><text>v</text></option>
           <option selectweight="0.1"><text>w</text></option>
@@ -1883,10 +1883,10 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <select name="original" assignnames="(q),(r),(s),(t),(u),(v),(w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
-      <option><p newNamespace><text name="q">z</text><selectfromsequence assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+    <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
+      <option><p newNamespace><select assignnames="(q) (r)" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
       <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
     </select>
 
@@ -1999,10 +1999,10 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <select name="original" assignnames="(q),(r),(s),(t),(u),(v),(w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select name="s" newnamespace assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence name="s" newnamespace assignnames="q,r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+    <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
+      <option><p newNamespace><select name="s" newnamespace assignnames="(q) (r)" numbertoselect="2">a e i o u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -2140,9 +2140,9 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>1</math>
-    <select name="original" assignnames="(q,qq, qr),(r, rq,rr),(s, sq, sr),(t, tq, tr),(u,uq,ur)" numbertoselect="5" withreplacement>
-      <p><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
-      <p><selectfromsequence assignnames="q,r" numbertoselect="2">a,z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
+    <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
+      <p><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
+      <p><selectfromsequence type="letters" assignnames="q r" numbertoselect="2">a z</selectfromsequence><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p>
     </select>
 
     <p>Selected options repeated</p>
@@ -2253,9 +2253,9 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>1</math>
-        <select name="original" assignnames="(q,qq, qr),(r, rq,rr),(s, sq, sr),(t, tq, tr),(u,uq,ur)" numbertoselect="5" withreplacement>
-      <p><select name="a" assignnames="q,r" numbertoselect="2" newnamespace>a,e,i,o,u</select><copy name="q2" tname="a/q" /><copy name="r2" tname="a/r" /></p>
-      <p><selectfromsequence name="b" assignnames="q,r" numbertoselect="2" newnamespace>a,z</selectfromsequence><copy name="q2" tname="b/q" /><copy name="r2" tname="b/r" /></p>
+        <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
+      <p><select name="a" assignnames="q r" numbertoselect="2" newnamespace>a e i o u</select><copy name="q2" tname="a/q" /><copy name="r2" tname="a/r" /></p>
+      <p><selectfromsequence type="letters" name="b" assignnames="q r" numbertoselect="2" newnamespace>a z</selectfromsequence><copy name="q2" tname="b/q" /><copy name="r2" tname="b/r" /></p>
     </select>
 
     <p>Selected options repeated</p>
@@ -2366,9 +2366,9 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <select name="original" assignnames="(q),(r),(s),(t),(u)" numbertoselect="5" withreplacement>
-      <option><select newNamespace assignnames="(q),(r)" numbertoselect="2">a,e,i,o,u</select></option>
-      <option><selectfromsequence newNamespace assignnames="q,r" numbertoselect="2" from="a" to="z" /></option>
+    <select name="original" assignnames="(q) (r) (s) (t) (u)" numbertoselect="5" withreplacement>
+      <option><select newNamespace assignnames="(q) (r)" numbertoselect="2">a e i o u</select></option>
+      <option><selectfromsequence type="letters" newNamespace assignnames="q r" numbertoselect="2" from="a" to="z" /></option>
     </select>
 
     <p>Selected options repeated</p>
@@ -2447,16 +2447,16 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <select assignnames="q,r,s" numbertoselect="3" withreplacement>
-      <option newNamespace><select assignnames="q,r,s" numbertoselect="3" withreplacement>
-        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
-        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
+    <select assignnames="q r s" numbertoselect="3" withreplacement>
+      <option newNamespace><select assignnames="q r s" numbertoselect="3" withreplacement>
+        <option newNamespace><select type="text" assignnames="q r" numbertoselect="2">a e i o u</select></option>
+        <option newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="a" to="j" /></option>
       </select></option>
-      <option newNamespace><select assignnames="q,r,s" numbertoselect="3">
-        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
-        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
-        <option newNamespace><selectfromsequence assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
-        <option newNamespace><select type="text" assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+      <option newNamespace><select assignnames="q r s" numbertoselect="3">
+        <option newNamespace><select type="text" assignnames="q r" numbertoselect="2">v w x y z</select></option>
+        <option newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="k" to="n" /></option>
+        <option newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="x" to="z" /></option>
+        <option newNamespace><select type="text" assignnames="q r" numbertoselect="2">p d q</select></option>
       </select></option>
     </select>
 
@@ -2508,16 +2508,16 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <select name="a" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
-      <option><select name="b" newnamespace assignnames="(q),(r),(s)" numbertoselect="3" withreplacement>
-        <option><select name="c" newnamespace type="text" assignnames="q,r" numbertoselect="2">a,e,i,o,u</select></option>
-        <option><selectfromsequence name="d" newnamespace assignnames="q,r" numbertoselect="2" from="a" to="j" /></option>
+    <select name="a" newnamespace assignnames="(q) (r) (s)" numbertoselect="3" withreplacement>
+      <option><select name="b" newnamespace assignnames="(q) (r) (s)" numbertoselect="3" withreplacement>
+        <option><select name="c" newnamespace type="text" assignnames="q r" numbertoselect="2">a e i o u</select></option>
+        <option><selectfromsequence type="letters" name="d" newnamespace assignnames="q r" numbertoselect="2" from="a" to="j" /></option>
       </select></option>
-      <option><select name="e" newnamespace assignnames="(q),(r),(s)" numbertoselect="3">
-        <option><select name="f" newnamespace type="text" assignnames="q,r" numbertoselect="2">v,w,x,y,z</select></option>
-        <option><selectfromsequence name="g" newnamespace assignnames="q,r" numbertoselect="2" from="k" to="n" /></option>
-        <option><selectfromsequence name="h" newnamespace assignnames="q,r" numbertoselect="2" from="x" to="z" /></option>
-        <option><select name="i" newnamespace type="text" assignnames="q,r" numbertoselect="2">p,d,q</select></option>
+      <option><select name="e" newnamespace assignnames="(q) (r) (s)" numbertoselect="3">
+        <option><select name="f" newnamespace type="text" assignnames="q r" numbertoselect="2">v w x y z</select></option>
+        <option><selectfromsequence type="letters" name="g" newnamespace assignnames="q r" numbertoselect="2" from="k" to="n" /></option>
+        <option><selectfromsequence type="letters" name="h" newnamespace assignnames="q r" numbertoselect="2" from="x" to="z" /></option>
+        <option><select name="i" newnamespace type="text" assignnames="q r" numbertoselect="2">p d q</select></option>
       </select></option>
     </select>
 
@@ -2569,7 +2569,7 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <select assignnames="(a,b,c,d)">
+    <select assignnames="(a b c d)">
     <option>
       <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
       <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" tname="q" /></math>
@@ -2652,10 +2652,10 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><aslist name="list1">
-    <select assignnames="(j),(k),(l)" numbertoselect="3" withreplacement>
-    <option><map assignnames="a,b" newNamespace>
+    <select assignnames="(j) (k) (l)" numbertoselect="3" withreplacement>
+    <option><map assignnames="a b" newNamespace>
       <template newNamespace>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
+        <select assignnames="(p q) (r s)" numbertoselect="2">
           <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
           <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
           <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
@@ -2666,9 +2666,9 @@ describe('Select Tag Tests', function () {
         <math>x</math><math>y</math>
       </sources>
     </map></option>
-    <option><map assignnames="a,b" newNamespace>
+    <option><map assignnames="a b" newNamespace>
       <template newNamespace>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
+        <select assignnames="(p q) (r s)" numbertoselect="2">
           <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
           <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
           <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
@@ -2727,10 +2727,10 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><aslist name="list1">
-    <select name="s" newnamespace assignnames="(j),(k),(l)" numbertoselect="3" withreplacement>
-    <option><map name="m" newnamespace assignnames="a,b">
+    <select name="s" newnamespace assignnames="(j) (k) (l)" numbertoselect="3" withreplacement>
+    <option><map name="m" newnamespace assignnames="a b">
       <template newnamespace>
-        <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
+        <select name="v" newnamespace assignnames="(p q) (r s)" numbertoselect="2">
           <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
           <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
           <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
@@ -2741,9 +2741,9 @@ describe('Select Tag Tests', function () {
         <math>x</math><math>y</math>
       </sources>
     </map></option>
-    <option><map name="n" newnamespace assignnames="a,b">
+    <option><map name="n" newnamespace assignnames="a b">
       <template newnamespace>
-        <select name="v" newnamespace assignnames="(p,q),(r,s)" numbertoselect="2">
+        <select name="v" newnamespace assignnames="(p q) (r s)" numbertoselect="2">
           <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
           <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
           <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
@@ -2839,7 +2839,7 @@ describe('Select Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <p>Selects and hide</p>
-      <p><aslist><select assignnames="(a,b,c)">
+      <p><aslist><select assignnames="(a b c)">
         <option>
           <text>a</text>
           <text>b</text>
@@ -2850,7 +2850,7 @@ describe('Select Tag Tests', function () {
           <text>e</text>
           <text>f</text>
         </option>
-      </select><select assignnames="(d,e)" hide>
+      </select><select assignnames="(d e)" hide>
         <option>
           <text>a</text>
           <text>b</text>

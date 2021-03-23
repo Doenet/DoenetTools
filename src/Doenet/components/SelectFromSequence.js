@@ -11,6 +11,10 @@ export default class SelectFromSequence extends Sequence {
 
   static createsVariants = true;
 
+  static get stateVariablesShadowedForReference() {
+    return [...super.stateVariablesShadowedForReference, "excludedCombinations"]
+  }
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.numberToSelect = { default: 1 };
@@ -24,17 +28,18 @@ export default class SelectFromSequence extends Sequence {
 
     let sequenceBase = childLogic.baseLogic;
 
-    let atLeastZeroExcludeCombinations = childLogic.newLeaf({
-      name: "atLeastZeroExcludeCombinations",
-      componentType: 'excludecombination',
-      comparison: "atLeast",
-      number: 0
+    let atMostOneExcludeCombinations = childLogic.newLeaf({
+      name: "atMostOneExcludeCombinations",
+      componentType: 'excludecombinations',
+      comparison: "atMost",
+      number: 1,
+      takePropertyChildren: true,
     });
 
     childLogic.newOperator({
       name: "selectFromSequenceLogic",
       operator: 'and',
-      propositions: [sequenceBase, atLeastZeroExcludeCombinations],
+      propositions: [sequenceBase, atMostOneExcludeCombinations],
       setAsBase: true,
     });
 
@@ -48,20 +53,25 @@ export default class SelectFromSequence extends Sequence {
 
     stateVariableDefinitions.excludedCombinations = {
       returnDependencies: () => ({
-        excludeCombinationChildren: {
+        excludeCombinationsChild: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroExcludeCombinations",
-          variableNames: ["values"]
+          childLogicName: "atMostOneExcludeCombinations",
+          variableNames: ["lists"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-          {
-            excludedCombinations:
-              dependencyValues.excludeCombinationChildren.map(x => x.stateValues.values)
+        if (dependencyValues.excludeCombinationsChild.length === 1) {
+          return {
+            newValues:
+            {
+              excludedCombinations:
+                dependencyValues.excludeCombinationsChild[0].stateValues.lists
+            }
           }
+        } else {
+          return { newValues: { excludedCombinations: [] } }
         }
+
       }
     }
 
@@ -112,9 +122,9 @@ export default class SelectFromSequence extends Sequence {
           dependencyType: "stateVariable",
           variableName: "excludedCombinations"
         },
-        selectedType: {
+        type: {
           dependencyType: "stateVariable",
-          variableName: "selectedType"
+          variableName: "type"
         },
         lowercase: {
           dependencyType: "stateVariable",
@@ -197,7 +207,7 @@ export default class SelectFromSequence extends Sequence {
       }
 
       replacements.push({
-        componentType: component.stateValues.selectedType,
+        componentType: component.stateValues.type,
         state
       });
 
@@ -410,7 +420,7 @@ export default class SelectFromSequence extends Sequence {
     let nOptions = sequencePars.length;
     let excludeIndices = [];
     if (excludes.length > 0) {
-      if (sequencePars.selectedType !== math) {
+      if (sequencePars.type !== math) {
         excludes.sort();
         excludes = excludes.filter((x, ind, a) => x != a[ind - 1]);
         for (let item of excludes) {
@@ -565,19 +575,19 @@ function makeSelection({ dependencyValues }) {
       for (let index of desiredIndices) {
         let componentValue = dependencyValues.from;
         if (index > 0) {
-          if (dependencyValues.selectedType === "math") {
+          if (dependencyValues.type === "math") {
             componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(index))).expand().simplify();
           } else {
             componentValue += dependencyValues.step * index;
           }
         }
 
-        if (dependencyValues.selectedType === "letters") {
+        if (dependencyValues.type === "letters") {
           componentValue = numberToLetters(componentValue, dependencyValues.lowercase);
         }
 
         // throw error if asked for an excluded value
-        if (dependencyValues.selectedType === "math") {
+        if (dependencyValues.type === "math") {
           if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
             throw Error("Specified index of selectfromsequence that was excluded")
           }
@@ -589,7 +599,7 @@ function makeSelection({ dependencyValues }) {
 
         // check if matches the corresponding component of an excluded combination
         let matchedExcludedCombinationIndex = false
-        if (dependencyValues.selectedType === "math") {
+        if (dependencyValues.type === "math") {
           if (dependencyValues.excludedCombinations.some(x => [x, index].equals(componentValue))) {
             matchedExcludedCombinationIndex = true;
           }
@@ -670,7 +680,7 @@ function makeSelection({ dependencyValues }) {
 
 
       // try again if hit excluded combination
-      if (dependencyValues.selectedType === "math") {
+      if (dependencyValues.type === "math") {
         if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v.equals(selectedValues[i])))) {
           continue;
         }
@@ -700,9 +710,9 @@ function makeSelection({ dependencyValues }) {
       combinedList.push({ value: val, index: selectedIndices[ind] })
     }
 
-    if (dependencyValues.selectedType === "number") {
+    if (dependencyValues.type === "number") {
       combinedList.sort((a, b) => a.value - b.value);
-    } else if (dependencyValues.selectedType === 'letters') {
+    } else if (dependencyValues.type === 'letters') {
       // sort according to their numerical value, not as words
       combinedList.sort((a, b) => lettersToNumber(a.value) - lettersToNumber(b.value));
     }
@@ -710,7 +720,7 @@ function makeSelection({ dependencyValues }) {
     selectedValues = combinedList.map(x => x.value);
     selectedIndices = combinedList.map(x => x.index);
 
-    // don't sort selectedType math
+    // don't sort type math
   }
 
   return {
@@ -752,7 +762,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
         componentValue = stateValues.from;
         if (selectedIndex > 0) {
-          if (stateValues.selectedType === "math") {
+          if (stateValues.type === "math") {
             componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(selectedIndex))).expand().simplify();
           } else {
             componentValue += stateValues.step * selectedIndex;
@@ -760,7 +770,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
         }
 
         // try again if hit excluded value
-        if (stateValues.selectedType === "math") {
+        if (stateValues.type === "math") {
           if (stateValues.exclude.some(x => x.equals(componentValue))) {
             continue;
           }
@@ -779,7 +789,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
         throw Error("By extremely unlikely fluke, couldn't select random value");
       }
 
-      if (stateValues.selectedType === "letters") {
+      if (stateValues.type === "letters") {
         componentValue = numberToLetters(componentValue, stateValues.lowercase);
       }
       selectedValues.push(componentValue);
@@ -798,14 +808,14 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   for (let ind = 0; ind < stateValues.length; ind++) {
     let componentValue = stateValues.from;
     if (ind > 0) {
-      if (stateValues.selectedType === "math") {
+      if (stateValues.type === "math") {
         componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
       } else {
         componentValue += stateValues.step * ind;
       }
     }
 
-    if (stateValues.selectedType === "math") {
+    if (stateValues.type === "math") {
       if (stateValues.exclude.some(x => x.equals(componentValue))) {
         continue;
       }
@@ -815,7 +825,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
       }
     }
 
-    if (stateValues.selectedType === "letters") {
+    if (stateValues.type === "letters") {
       componentValue = numberToLetters(componentValue, stateValues.lowercase);
     }
 

@@ -987,7 +987,8 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 //   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
 // }
 
-function breakStringByCommasWithParens(string) {
+
+function breakStringInPiecesBySpacesOrParens(string) {
   let Nparens = 0;
   let pieces = [];
 
@@ -997,30 +998,46 @@ function breakStringByCommasWithParens(string) {
   for (let ind = 0; ind < string.length; ind++) {
     let char = string[ind];
     if (char === "(") {
+      if (Nparens === 0) {
+        // beginning new parens piece
+        // what have so far is a new piece
+        let newPiece = string.substring(beginInd, ind).trim();
+        if (newPiece.length > 0) {
+          pieces.push(newPiece);
+        }
+        beginInd = ind;
+      }
+
       Nparens++;
-    }
-    if (char === ")") {
+    } else if (char === ")") {
       if (Nparens === 0) {
         // parens didn't match, so return failure
         return { success: false };
       }
-      Nparens--
-    }
-    if (char === "," && Nparens === 0) {
-      let newPiece = string.substring(beginInd, ind).trim();
-      if (newPiece[0] === "(" && newPiece[newPiece.length - 1] === ")") {
-        // piece is in parens, try to break further
-        let result = breakStringByCommasWithParens(newPiece.substring(1, newPiece.length - 1));
-        if (result.success === true) {
-          pieces.push(result.pieces);
-        } else {
-          pieces.push(newPiece);
+      if (Nparens === 1) {
+        // found end of piece in parens
+        let newPiece = string.substring(beginInd + 1, ind).trim();
+        if (newPiece.length > 0) {
+          // try to break further
+          let result = breakStringInPiecesBySpacesOrParens(newPiece);
+          if (result.success === true) {
+            pieces.push(result.pieces);
+          } else {
+            pieces.push(newPiece);
+          }
         }
-      } else {
+        beginInd = ind + 1;
+      }
+      Nparens--
+    } else if (Nparens === 0 && char.match(/\s/)) {
+      // not in parens and found a space so potentially have a new piece
+      let newPiece = string.substring(beginInd, ind).trim();
+      if (newPiece.length > 0) {
         pieces.push(newPiece);
       }
-      beginInd = ind + 1;
+      beginInd = ind;
     }
+
   }
 
   // parens didn't match, so return failure
@@ -1029,15 +1046,7 @@ function breakStringByCommasWithParens(string) {
   }
 
   let newPiece = string.substring(beginInd, string.length).trim();
-  if (newPiece[0] === "(" && newPiece[newPiece.length - 1] === ")") {
-    // piece is in parens, try to break further
-    let result = breakStringByCommasWithParens(newPiece.substring(1, newPiece.length - 1));
-    if (result.success === true) {
-      pieces.push(result.pieces);
-    } else {
-      pieces.push(newPiece);
-    }
-  } else {
+  if (newPiece.length > 0) {
     pieces.push(newPiece);
   }
 
@@ -1120,7 +1129,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
-            let result = breakStringByCommasWithParens(props[key]);
+            let result = breakStringInPiecesBySpacesOrParens(props[key]);
+            console.log(`result for assignNames`)
+            console.log(result)
             if (result.success) {
               assignNames = result.pieces;
             } else {

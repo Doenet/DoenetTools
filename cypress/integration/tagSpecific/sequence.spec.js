@@ -331,7 +331,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('letters sequence, lowercase, explicit type', () => {
+  it('letters sequence, lowercase', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -354,35 +354,12 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it('letters sequence, lowercase', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence from="c" to="Q" length="5" /></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(5);
-      expect(children[0].stateValues.value).eq('c');
-      expect(children[1].stateValues.value).eq('f');
-      expect(children[2].stateValues.value).eq('i');
-      expect(children[3].stateValues.value).eq('l');
-      expect(children[4].stateValues.value).eq('o');
-    })
-  });
-
   it('letters sequence, uppercase', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence from="Y" to="f" step="-4" /></aslist>
+    <aslist><sequence type="letters" from="Y" to="f" step="-4" /></aslist>
     `}, "*");
     });
 
@@ -405,7 +382,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence from="aZ" step="3" length="4" /></aslist>
+    <aslist><sequence type="letters" from="aZ" step="3" length="4" /></aslist>
     `}, "*");
     });
 
@@ -427,7 +404,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence to="q" step="3" length="10" /></aslist>
+    <aslist><sequence type="letters" to="q" step="3" length="10" /></aslist>
     `}, "*");
     });
 
@@ -446,70 +423,7 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
-  it.skip('number sequence, sugar to', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence>7</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(7);
-      for (let i = 0; i < 7; i++) {
-        expect(children[i].stateValues.value).eq(7 + i - 6);
-      }
-    })
-  });
-
-  it.skip('number sequence, sugar from and to', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence>-4,1</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(6);
-      for (let i = 0; i < 6; i++) {
-        expect(children[i].stateValues.value).eq(-4 + i);
-      }
-    })
-  });
-
-  it.skip('number sequence, step with sugar from and to', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence step="-3">4,-6</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(4);
-      for (let i = 0; i < 4; i++) {
-        expect(children[i].stateValues.value).eq(4 - 3 * i);
-      }
-    })
-  });
-
-  it('letters sequence, explicit type but no parameters', () => {
+  it('letters sequence, no parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -534,77 +448,6 @@ describe('Sequence Tag Tests', function () {
       expect(children[7].stateValues.value).eq('h');
       expect(children[8].stateValues.value).eq('i');
       expect(children[9].stateValues.value).eq('j');
-    })
-  });
-
-  it.skip('letters sequence, sugar to', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence>e</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(5);
-      expect(children[0].stateValues.value).eq('a');
-      expect(children[1].stateValues.value).eq('b');
-      expect(children[2].stateValues.value).eq('c');
-      expect(children[3].stateValues.value).eq('d');
-      expect(children[4].stateValues.value).eq('e');
-    })
-  });
-
-  it.skip('letters sequence, sugar from and to, explicit type', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence type="letters">bw, cb</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(6);
-      expect(children[0].stateValues.value).eq('bw');
-      expect(children[1].stateValues.value).eq('bx');
-      expect(children[2].stateValues.value).eq('by');
-      expect(children[3].stateValues.value).eq('bz');
-      expect(children[4].stateValues.value).eq('ca');
-      expect(children[5].stateValues.value).eq('cb');
-    })
-  });
-
-  it.skip('letters sequence, sugar from and to', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <aslist><sequence>bw, cb</sequence></aslist>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
-      expect(children.length).eq(6);
-      expect(children[0].stateValues.value).eq('bw');
-      expect(children[1].stateValues.value).eq('bx');
-      expect(children[2].stateValues.value).eq('by');
-      expect(children[3].stateValues.value).eq('bz');
-      expect(children[4].stateValues.value).eq('ca');
-      expect(children[5].stateValues.value).eq('cb');
     })
   });
 
@@ -635,7 +478,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence from="1" length="10" exclude="$exclude2, 2,6" />
+    <aslist><sequence from="1" length="10" exclude="$exclude2  2 6" />
     </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
     `}, "*");
@@ -746,7 +589,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <aslist><sequence type="letters" length="10" exclude="$e, b,f" />
+    <aslist><sequence type="letters" length="10" exclude="$e  b f" />
     </aslist>
     <p>Also exclude: <textinput name="e" /></p>
     `}, "*");
@@ -858,7 +701,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-      <sequence type="math" length="10" from="x" step="x" exclude="2x,6x, $e" />
+      <sequence type="math" length="10" from="x" step="x" exclude="2x 6x  $e" />
     </aslist>
     <p>Also exclude: <mathinput name="e" /></p>
     `}, "*");
