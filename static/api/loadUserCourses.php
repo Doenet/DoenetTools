@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId']; 
+$userId = $jwtArray['userId'];
 
 
 $courseInfo = array();
