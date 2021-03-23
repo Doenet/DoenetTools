@@ -1,10 +1,9 @@
-import React, { useState , useRef } from "react";
+import React, { useState, useRef } from "react";
 import DriveCard from './DoenetDriveCard';
 import { useTransition, animated,useSpring, useChain ,config} from "react-spring";
 import "./drivecard.css";
 // import useMeasure  from "../Tools/useMeasure";
 import Measure from 'react-measure'
-
 import {
   useHistory
 } from "react-router-dom";
@@ -79,7 +78,7 @@ const DriveCardWrapper = (props) => {
     else{return 1;}
   }
   const columns = getColumns(width);
-  heights = new Array(columns).fill(0);
+    heights = new Array(columns).fill(0);
   let showCards = [];
          if(types[0] === 'course'){
           if(subTypes.length > 1)
@@ -262,7 +261,7 @@ const DriveCardWrapper = (props) => {
  }
   return (
     <div className="drivecardContainer">
-       <Measure
+         <Measure
     bounds
     onResize={contentRect =>{
       setWidth(contentRect.bounds.width)
@@ -326,8 +325,8 @@ const DriveCardWrapper = (props) => {
           );
         })}
       </div>
-       )}
-       </Measure>
+             )}
+      </Measure>
      </div>
   );
 };

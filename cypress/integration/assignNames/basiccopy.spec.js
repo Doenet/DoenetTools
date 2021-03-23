@@ -203,10 +203,10 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
+    <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="b,c" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="b c" tname="_line1" />
 
   <graph>
     <copy tname="b" assignNames="b1" />
@@ -214,7 +214,7 @@ describe('Basic copy assignName Tests', function () {
   </graph>
 
   <graph>
-    <copy assignNames="d,e" tname="cp1" />
+    <copy assignNames="d e" tname="cp1" />
   </graph>
 
   <copy tname="d" assignNames="f" />
@@ -477,7 +477,7 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
+    <line through="(0,0) (1,1)" />
   </graph>
 
   <copy name="cp1" prop="point1" assignNames="b" tname="_line1" />
@@ -594,14 +594,14 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
+    <line through="(0,0) (1,1)" />
   </graph>
 
   <graph>
-     <copy name="cp1" prop="points" assignNames="b,c" tname="_line1" />
+     <copy name="cp1" prop="points" assignNames="b c" tname="_line1" />
   </graph>
 
-  <p>xs of points: <copy prop="x" tname="cp1" assignNames="d,e" /></p>
+  <p>xs of points: <copy prop="x" tname="cp1" assignNames="d e" /></p>
 
   <p>
     xs again: <copy tname="d" assignNames="f" />
@@ -701,10 +701,10 @@ describe('Basic copy assignName Tests', function () {
   <text>a</text>
 
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
+    <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" tname="_line1" />
   
   <p name="n1">nothing 1: <copy tname="a1" /></p>
   <p name="n2">nothing 2: <copy tname="a2" /></p>
@@ -712,20 +712,20 @@ describe('Basic copy assignName Tests', function () {
   <p name="n4">nothing 4: <copy tname="b2" /></p>
 
   <graph>
-    <copy name="cp2" assignNames="c,d" tname="cp1" />
+    <copy name="cp2" assignNames="c d" tname="cp1" />
   </graph>
 
   <copy tname="c" assignNames="e" />
   <copy tname="d" assignNames="f" />
 
-  <copy name="cp3" assignNames="(g1,g2),(h1,h2)" tname="cp1" />
+  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" tname="cp1" />
   
   <p name="n5">nothing 5: <copy tname="g1" /></p>
   <p name="n6">nothing 6: <copy tname="g2" /></p>
   <p name="n7">nothing 7: <copy tname="h1" /></p>
   <p name="n8">nothing 8: <copy tname="h2" /></p>
 
-  <copy name="cp4" assignNames="(i1,i2),(j1,j2)" tname="cp2" />
+  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" tname="cp2" />
   
   <p name="n9">nothing 9: <copy tname="i1" /></p>
   <p name="n10">nothing 10: <copy tname="i2" /></p>
@@ -1006,10 +1006,10 @@ describe('Basic copy assignName Tests', function () {
 
   <section name="hello" newNamespace ><title>hello</title>
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
+    <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1,a2),(b1,b2)" tname="_line1" />
+  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" tname="_line1" />
   
   <p name="n1">nothing 1: <copy tname="a1" /></p>
   <p name="n2">nothing 2: <copy tname="a2" /></p>
@@ -1017,20 +1017,20 @@ describe('Basic copy assignName Tests', function () {
   <p name="n4">nothing 4: <copy tname="b2" /></p>
 
   <graph>
-    <copy name="cp2" assignNames="c,d" tname="cp1" />
+    <copy name="cp2" assignNames="c d" tname="cp1" />
   </graph>
 
   <copy tname="c" assignNames="e" />
   <copy tname="d" assignNames="f" />
 
-  <copy name="cp3" assignNames="(g1,g2),(h1,h2)" tname="cp1" />
+  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" tname="cp1" />
   
   <p name="n5">nothing 5: <copy tname="g1" /></p>
   <p name="n6">nothing 6: <copy tname="g2" /></p>
   <p name="n7">nothing 7: <copy tname="h1" /></p>
   <p name="n8">nothing 8: <copy tname="h2" /></p>
 
-  <copy name="cp4" assignNames="(i1,i2),(j1,j2)" tname="cp2" />
+  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" tname="cp2" />
   
   <p name="n9">nothing 9: <copy tname="i1" /></p>
   <p name="n10">nothing 10: <copy tname="i2" /></p>

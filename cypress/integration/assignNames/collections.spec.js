@@ -26,34 +26,34 @@ describe('Collection assignName Tests', function () {
     <point>(3,4)</point>
   </graph>
 
-  <collect name="cl1" componentTypes="point" tname="_graph1" assignNames="a,b" />
+  <collect name="cl1" componentTypes="point" tname="_graph1" assignNames="a b" />
 
   <p>a: <copy tname="a" prop="coords" assignNames="ashadow" /></p>
   <p>b: <copy tname="b" prop="coords" assignNames="bshadow" /></p>
 
-  <collect name="cl2" componentTypes="point" prop="x" tname="_graph1" assignNames="u,v" />
+  <collect name="cl2" componentTypes="point" prop="x" tname="_graph1" assignNames="u v" />
 
   <p>u: <copy tname="u" assignNames="ushadow" /></p>
   <p>v: <copy tname="v" assignNames="vshadow" /></p>
 
   <graph>
-    <copy name="cp1" tname="cl1" assignNames="a1,b1" />
+    <copy name="cp1" tname="cl1" assignNames="a1 b1" />
   </graph>
 
   <p>a1: <copy tname="a1" prop="coords" assignNames="a1shadow" /></p>
   <p>b1: <copy tname="b1" prop="coords" assignNames="b1shadow" /></p>
 
-  <copy name="cp2" prop="x" tname="cl1" assignNames="u1,v1" />
+  <copy name="cp2" prop="x" tname="cl1" assignNames="u1 v1" />
 
   <p>u1: <copy tname="u1" assignNames="u1shadow" /></p>
   <p>v1: <copy tname="v1" assignNames="v1shadow" /></p>
 
-  <copy name="cp3" prop="x" tname="cp1" assignNames="u2,v2" />
+  <copy name="cp3" prop="x" tname="cp1" assignNames="u2 v2" />
 
   <p>u2: <copy tname="u2" assignNames="u2shadow" /></p>
   <p>v2: <copy tname="v2" assignNames="v2shadow" /></p>
 
-  <extract prop="x" assignNames="u3,v3"><copy tname="cl1"/></extract>
+  <extract prop="x" assignNames="u3 v3"><copy tname="cl1"/></extract>
 
   <p>u3: <copy tname="u3" assignNames="u3shadow" /></p>
   <p>v3: <copy tname="v3" assignNames="v3shadow" /></p>
@@ -514,47 +514,47 @@ describe('Collection assignName Tests', function () {
     <point>(3,4)</point>
   </graph>
 
-  <collect name="cl1" componentTypes="point" tname="_graph1" assignNames="a,b,c" />
+  <collect name="cl1" componentTypes="point" tname="_graph1" assignNames="a b c" />
 
   <p>a: <copy tname="a" prop="coords" assignNames="ashadow" /></p>
   <p>b: <copy tname="b" prop="coords" assignNames="bshadow" /></p>
   <p name="pc">c: <copy tname="c" prop="coords" assignNames="cshadow" /></p>
 
-  <collect name="cl2" componentTypes="point" prop="x" tname="_graph1" assignNames="u,v,w" />
+  <collect name="cl2" componentTypes="point" prop="x" tname="_graph1" assignNames="u v w" />
 
   <p>u: <copy tname="u" assignNames="ushadow" /></p>
   <p>v: <copy tname="v" assignNames="vshadow" /></p>
   <p name="pw">w: <copy tname="w" assignNames="wshadow" /></p>
 
   <graph>
-    <copy name="cp1" tname="cl1" assignNames="a1,b1,c1" />
+    <copy name="cp1" tname="cl1" assignNames="a1 b1 c1" />
   </graph>
 
   <p>a1: <copy tname="a1" prop="coords" assignNames="a1shadow" /></p>
   <p>b1: <copy tname="b1" prop="coords" assignNames="b1shadow" /></p>
   <p name="pc1">c1: <copy tname="c1" prop="coords" assignNames="c1shadow" /></p>
 
-  <copy name="cp2" prop="x" tname="cl1" assignNames="u1,v1,w1,x1" />
+  <copy name="cp2" prop="x" tname="cl1" assignNames="u1 v1 w1 x1" />
 
   <p>u1: <copy tname="u1" assignNames="u1shadow" /></p>
   <p>v1: <copy tname="v1" assignNames="v1shadow" /></p>
   <p name="pv1">v1: <copy tname="w1" assignNames="w1shadow" /></p>
   <p name="px1">x1: <copy tname="x1" assignNames="x1shadow" /></p>
 
-  <copy name="cp3" prop="x" tname="cp1" assignNames="u2,v2" />
+  <copy name="cp3" prop="x" tname="cp1" assignNames="u2 v2" />
 
   <p>u2: <copy tname="u2" assignNames="u2shadow" /></p>
   <p>v2: <copy tname="v2" assignNames="v2shadow" /></p>
 
-  <extract prop="x" assignNames="u3,v3,w3,x3"><copy tname="cl1"/></extract>
+  <extract prop="x" assignNames="u3 v3 w3 x3"><copy tname="cl1"/></extract>
 
   <p>u3: <copy tname="u3" assignNames="u3shadow" /></p>
   <p>v3: <copy tname="v3" assignNames="v3shadow" /></p>
   <p name="pv3">v3: <copy tname="w3" assignNames="w3shadow" /></p>
   <p name="px3">x3: <copy tname="x3" assignNames="x3shadow" /></p>
 
-  <extract prop="x" assignNames="u4,w4"><copy tname="a1"/></extract>
-  <extract prop="x" assignNames="v4,x4"><copy tname="b1"/></extract>
+  <extract prop="x" assignNames="u4 w4"><copy tname="a1"/></extract>
+  <extract prop="x" assignNames="v4 x4"><copy tname="b1"/></extract>
 
   <p>u4: <copy tname="u4" assignNames="u4shadow" /></p>
   <p>v4: <copy tname="v4" assignNames="v4shadow" /></p>
@@ -1050,12 +1050,12 @@ describe('Collection assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line><through>(0,0),(1,1)</through></line>
-    <line><through>(4,3),(2,1)</through></line>
+    <line through="(0,0)(1,1)"/>
+    <line through="(4,3)(2,1)"/>
   </graph>
 
   <graph>
-    <collect name="cl1" componentTypes="line" prop="points" tname="_graph1" assignNames="a,b,c,d" />
+    <collect name="cl1" componentTypes="line" prop="points" tname="_graph1" assignNames="a b c d" />
   </graph>
   
   <p>a: <copy tname="a" prop="coords" assignNames="ashadow" /></p>
@@ -1063,21 +1063,21 @@ describe('Collection assignName Tests', function () {
   <p>c: <copy tname="c" prop="coords" assignNames="cshadow" /></p>
   <p>d: <copy tname="d" prop="coords" assignNames="dshadow" /></p>
 
-  <copy prop="x" tname="cl1" assignNames="p,q,r,s" />
+  <copy prop="x" tname="cl1" assignNames="p q r s" />
 
   <p>p: <copy tname="p" assignNames="pshadow" /></p>
   <p>q: <copy tname="q" assignNames="qshadow" /></p>
   <p>r: <copy tname="r" assignNames="rshadow" /></p>
   <p>s: <copy tname="s" assignNames="sshadow" /></p>
 
-  <extract prop="x" assignNames="p1,q1,r1,s1" ><copy tname="cl1" /></extract>
+  <extract prop="x" assignNames="p1 q1 r1 s1" ><copy tname="cl1" /></extract>
 
   <p>p1: <copy tname="p1" assignNames="p1shadow" /></p>
   <p>q1: <copy tname="q1" assignNames="q1shadow" /></p>
   <p>r1: <copy tname="r1" assignNames="r1shadow" /></p>
   <p>s1: <copy tname="s1" assignNames="s1shadow" /></p>
 
-  <copy prop="xs" tname="cl1" assignNames="x11,x12,x21,x22,x31,x32,x41,x42" />
+  <copy prop="xs" tname="cl1" assignNames="x11 x12 x21 x22 x31 x32 x41 x42" />
 
   <p>x11: <copy tname="x11" assignNames="x11shadow" /></p>
   <p>x12: <copy tname="x12" assignNames="x12shadow" /></p>
@@ -1088,7 +1088,7 @@ describe('Collection assignName Tests', function () {
   <p>x41: <copy tname="x41" assignNames="x41shadow" /></p>
   <p>x42: <copy tname="x42" assignNames="x42shadow" /></p>
 
-  <extract prop="xs" assignNames="y11,y12,y21,y22,y31,y32,y41,y42" ><copy tname="cl1" /></extract>
+  <extract prop="xs" assignNames="y11 y12 y21 y22 y31 y32 y41 y42" ><copy tname="cl1" /></extract>
 
   <p>y11: <copy tname="y11" assignNames="y11shadow" /></p>
   <p>y12: <copy tname="y12" assignNames="y12shadow" /></p>
@@ -1937,7 +1937,10 @@ describe('Collection assignName Tests', function () {
   <graph>
     <map>
       <template>
-        <point><x><copy tname="_source" />+<math>0</math></x><y><copy tname="_sourceindex" />+<math>0</math></y></point>
+        <point>
+          (<copy tname="_source" />+<math>0</math>,
+          <copy tname="_sourceindex" />+<math>0</math>)
+        </point>
       </template>
       <sources>
         <sequence from="2" length="$n1" />
@@ -1945,7 +1948,10 @@ describe('Collection assignName Tests', function () {
     </map>
     <map>
       <template>
-        <point><x>-<copy tname="_source" />+<math>0</math></x><y>-<copy tname="_sourceindex" />+<math>0</math></y></point>
+        <point>
+          (-<copy tname="_source" />+<math>0</math>,
+          -<copy tname="_sourceindex" />+<math>0</math>)
+        </point>
       </template>
       <sources>
         <sequence from="2" length="$n2" />
@@ -1954,14 +1960,14 @@ describe('Collection assignName Tests', function () {
   </graph>
 
 
-  <collect name="allpoints" componentTypes="point" tname="_graph1" assignNames="p1,p2,p3,p4"/>
+  <collect name="allpoints" componentTypes="point" tname="_graph1" assignNames="p1 p2 p3 p4"/>
 
   <p>p1: <copy tname="p1" prop="coords" assignNames="p1shadow" /></p>
   <p>p2: <copy tname="p2" prop="coords" assignNames="p2shadow" /></p>
   <p>p3: <copy tname="p3" prop="coords" assignNames="p3shadow" /></p>
   <p>p4: <copy tname="p4" prop="coords" assignNames="p4shadow" /></p>
 
-  <copy name="allpoints2" tname="allpoints" assignNames="q1,q2,q3,q4,q5,q6"/>
+  <copy name="allpoints2" tname="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
 
   <p>q1: <copy tname="q1" prop="coords" assignNames="q1shadow" /></p>
   <p>q2: <copy tname="q2" prop="coords" assignNames="q2shadow" /></p>
@@ -1970,7 +1976,7 @@ describe('Collection assignName Tests', function () {
   <p>q5: <copy tname="q5" prop="coords" assignNames="q5shadow" /></p>
   <p>q6: <copy tname="q6" prop="coords" assignNames="q6shadow" /></p>
 
-  <collect name="allxs1" componentTypes="point" prop="x" tname="_graph1" assignNames="x11,x12,x13,x14,x15,x16" />
+  <collect name="allxs1" componentTypes="point" prop="x" tname="_graph1" assignNames="x11 x12 x13 x14 x15 x16" />
 
   <p>x11: <copy tname="x11" assignNames="x11shadow" /></p>
   <p>x12: <copy tname="x12" assignNames="x12shadow" /></p>
@@ -1979,28 +1985,28 @@ describe('Collection assignName Tests', function () {
   <p>x15: <copy tname="x15" assignNames="x15shadow" /></p>
   <p>x16: <copy tname="x16" assignNames="x16shadow" /></p>
 
-  <copy name="allxs2" tname="allxs1" assignNames="x21,x22,x23,x24"/>
+  <copy name="allxs2" tname="allxs1" assignNames="x21 x22 x23 x24"/>
 
   <p>x21: <copy tname="x21" assignNames="x21shadow" /></p>
   <p>x22: <copy tname="x22" assignNames="x22shadow" /></p>
   <p>x23: <copy tname="x23" assignNames="x23shadow" /></p>
   <p>x24: <copy tname="x24" assignNames="x24shadow" /></p>
 
-  <copy name="allxs3" prop="x" tname="allpoints" assignNames="x31,x32,x33,x34" />
+  <copy name="allxs3" prop="x" tname="allpoints" assignNames="x31 x32 x33 x34" />
 
   <p>x31: <copy tname="x31" assignNames="x31shadow" /></p>
   <p>x32: <copy tname="x32" assignNames="x32shadow" /></p>
   <p>x33: <copy tname="x33" assignNames="x33shadow" /></p>
   <p>x34: <copy tname="x34" assignNames="x34shadow" /></p>
 
-  <copy name="allxs4" prop="x" tname="allpoints2" assignNames="x41,x42,x43,x44" />
+  <copy name="allxs4" prop="x" tname="allpoints2" assignNames="x41 x42 x43 x44" />
 
   <p>x41: <copy tname="x41" assignNames="x41shadow" /></p>
   <p>x42: <copy tname="x42" assignNames="x42shadow" /></p>
   <p>x43: <copy tname="x43" assignNames="x43shadow" /></p>
   <p>x44: <copy tname="x44" assignNames="x44shadow" /></p>
 
-  <extract name="allxs5" prop="x" assignNames="x51,x52,x53,x54,x55,x56"><copy tname="allpoints" /></extract>
+  <extract name="allxs5" prop="x" assignNames="x51 x52 x53 x54 x55 x56"><copy tname="allpoints" /></extract>
 
   <p>x51: <copy tname="x51" assignNames="x51shadow" /></p>
   <p>x52: <copy tname="x52" assignNames="x52shadow" /></p>
@@ -4266,39 +4272,33 @@ describe('Collection assignName Tests', function () {
     <p>Number for second set of points: <mathinput name="n2" /></p>
     <p>Number of dimensions 1: <mathinput name="nd1" prefill="2"/></p>
     <p>Number of dimensions 2: <mathinput name="nd2" prefill="3"/></p>
-    <map assignNames="pa1,pa2,pa3">
+    <map assignNames="pa1 pa2 pa3">
       <template newNamespace>
-        <point>
-          <xs>
-            <map>
-              <template>
-                <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
-              </template>
-              <sources>
-                <sequence length="$(../nd1)" />
-              </sources>
-            </map>
-          </xs>
-        </point>
+        <map hide>
+          <template>
+            <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+          </template>
+          <sources>
+            <sequence length="$(../nd1)" />
+          </sources>
+        </map>
+        <point xs="$_map1" />
       </template>
       <sources>
         <sequence length="$n1" />
       </sources>
     </map>
-    <map assignNames="pb1,pb2,pb3">
+    <map assignNames="pb1 pb2 pb3">
       <template newNamespace>
-        <point>
-          <xs>
-            <map>
-              <template>
-                <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
-              </template>
-              <sources>
-                <sequence length="$(../nd2)" />
-              </sources>
-            </map>
-          </xs>
-        </point>
+        <map>
+          <template>
+            <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+          </template>
+          <sources>
+            <sequence length="$(../nd2)" />
+          </sources>
+        </map>
+        <point xs="$_map1" />
       </template>
       <sources>
         <sequence length="$n2" />
@@ -4306,14 +4306,14 @@ describe('Collection assignName Tests', function () {
     </map>
   </section>
 
-  <collect name="allpoints" componentTypes="point" tname="originals" assignNames="p1,p2,p3,p4"/>
+  <collect name="allpoints" componentTypes="point" tname="originals" assignNames="p1 p2 p3 p4"/>
 
   <p>p1: <copy tname="p1" prop="coords" assignNames="p1shadow" /></p>
   <p>p2: <copy tname="p2" prop="coords" assignNames="p2shadow" /></p>
   <p>p3: <copy tname="p3" prop="coords" assignNames="p3shadow" /></p>
   <p>p4: <copy tname="p4" prop="coords" assignNames="p4shadow" /></p>
 
-  <copy name="allpoints2" tname="allpoints" assignNames="q1,q2,q3,q4,q5,q6"/>
+  <copy name="allpoints2" tname="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
 
   <p>q1: <copy tname="q1" prop="coords" assignNames="q1shadow" /></p>
   <p>q2: <copy tname="q2" prop="coords" assignNames="q2shadow" /></p>
@@ -4322,7 +4322,7 @@ describe('Collection assignName Tests', function () {
   <p>q5: <copy tname="q5" prop="coords" assignNames="q5shadow" /></p>
   <p>q6: <copy tname="q6" prop="coords" assignNames="q6shadow" /></p>
 
-  <collect name="allxs1" componentTypes="point" prop="xs" tname="originals" assignNames="xs11,xs12,xs13,xs14,xs15,xs16,xs17,xs18" />
+  <collect name="allxs1" componentTypes="point" prop="xs" tname="originals" assignNames="xs11 xs12 xs13 xs14 xs15 xs16 xs17 xs18" />
 
   <p>xs11: <copy tname="xs11" assignNames="xs11shadow" /></p>
   <p>xs12: <copy tname="xs12" assignNames="xs12shadow" /></p>
@@ -4333,7 +4333,7 @@ describe('Collection assignName Tests', function () {
   <p>xs17: <copy tname="xs17" assignNames="xs17shadow" /></p>
   <p>xs18: <copy tname="xs18" assignNames="xs18shadow" /></p>
 
-  <copy name="allxs2" tname="allxs1" assignNames="xs21,xs22,xs23,xs24,xs25,xs26"/>
+  <copy name="allxs2" tname="allxs1" assignNames="xs21 xs22 xs23 xs24 xs25 xs26"/>
 
   <p>xs21: <copy tname="xs21" assignNames="xs21shadow" /></p>
   <p>xs22: <copy tname="xs22" assignNames="xs22shadow" /></p>
@@ -4342,7 +4342,7 @@ describe('Collection assignName Tests', function () {
   <p>xs25: <copy tname="xs25" assignNames="xs25shadow" /></p>
   <p>xs26: <copy tname="xs26" assignNames="xs26shadow" /></p>
 
-  <copy name="allxs3" prop="xs" tname="allpoints" assignNames="xs31,xs32,xs33,xs34,xs35,xs36" />
+  <copy name="allxs3" prop="xs" tname="allpoints" assignNames="xs31 xs32 xs33 xs34 xs35 xs36" />
 
   <p>xs31: <copy tname="xs31" assignNames="xs31shadow" /></p>
   <p>xs32: <copy tname="xs32" assignNames="xs32shadow" /></p>
@@ -4351,7 +4351,7 @@ describe('Collection assignName Tests', function () {
   <p>xs35: <copy tname="xs35" assignNames="xs35shadow" /></p>
   <p>xs36: <copy tname="xs36" assignNames="xs36shadow" /></p>
 
-  <copy name="allxs4" prop="xs" tname="allpoints2" assignNames="xs41,xs42,xs43,xs44,xs45,xs46" />
+  <copy name="allxs4" prop="xs" tname="allpoints2" assignNames="xs41 xs42 xs43 xs44 xs45 xs46" />
 
   <p>xs41: <copy tname="xs41" assignNames="xs41shadow" /></p>
   <p>xs42: <copy tname="xs42" assignNames="xs42shadow" /></p>
@@ -4360,7 +4360,7 @@ describe('Collection assignName Tests', function () {
   <p>xs45: <copy tname="xs45" assignNames="xs45shadow" /></p>
   <p>xs46: <copy tname="xs46" assignNames="xs46shadow" /></p>
 
-  <extract name="allxs5" prop="xs" assignNames="xs51,xs52,xs53,xs54,xs55,xs56,xs57,xs58"><copy tname="allpoints" /></extract>
+  <extract name="allxs5" prop="xs" assignNames="xs51 xs52 xs53 xs54 xs55 xs56 xs57 xs58"><copy tname="allpoints" /></extract>
 
   <p>xs51: <copy tname="xs51" assignNames="xs51shadow" /></p>
   <p>xs52: <copy tname="xs52" assignNames="xs52shadow" /></p>

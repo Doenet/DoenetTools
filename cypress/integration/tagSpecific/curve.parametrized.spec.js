@@ -382,7 +382,7 @@ describe('Curve Tag Tests', function () {
 
   });
 
-  it('a parameterization with math and ref', () => {
+  it('a parameterization with copy', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -390,15 +390,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve>
-    <function variable="t">
-      <formula><math>t</math><copy prop="value" tname="_mathinput1" />+1
-      </formula>
-    </function>
-    <function variable="t">
-      <formula>
-        <math>t^3</math>-<copy prop="value" tname="_mathinput1" />
-      </formula>
-    </function>
+    <function variable="t" formula='t$_mathinput1+1' />
+    <function variable="t" formula='t^3-$_mathinput1' />
     </curve>
     </graph>
     `}, "*");
@@ -441,8 +434,7 @@ describe('Curve Tag Tests', function () {
     <function variable="s">sin(2s)</function>
     </curve>
     
-    <point>
-      <x>7</x><y>1</y>
+    <point x='7' y='1'>
       <constraints>
         <constrainTo><copy tname="_curve1" /></constrainTo>
       </constraints>

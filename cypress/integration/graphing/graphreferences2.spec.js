@@ -12,7 +12,7 @@ describe('Graph Reference Test 2', function () {
     <text>a</text>
     <panel columns="4">
     <graph width="150px" height="150px" name="graph1">
-    <vector><head>(-4,2)</head><tail>(3,5)</tail></vector>
+    <vector head="(-4,2)" tail="(3,5)" />
     </graph>
   
     <graph width="150px" height="150px" name="graph2">
@@ -77,10 +77,10 @@ describe('Graph Reference Test 2', function () {
       let graph6 = components['/graph6'].replacements[0];
       let graph7 = components['/graph7'].replacements[0];
       let graph8 = components['/graph8'].replacements[0];
-      let graph9 = components['/graph9'].replacements[0].replacements[0];
-      let graph10 = components['/graph10'].replacements[0].replacements[0];
-      let graph11 = components['/graph11'].replacements[0].replacements[0];
-      let graph12 = components['/graph12'].replacements[0].replacements[0];
+      let graph9 = components['/graph9'].replacements[0];
+      let graph10 = components['/graph10'].replacements[0];
+      let graph11 = components['/graph11'].replacements[0];
+      let graph12 = components['/graph12'].replacements[0];
 
       let graph1A = components['/panel2'].replacements[0].activeChildren[0];
       let graph2A = components['/panel2'].replacements[0].activeChildren[1];

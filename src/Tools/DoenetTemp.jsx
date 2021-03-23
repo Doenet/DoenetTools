@@ -1,58 +1,132 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect } from "react";
+import Tool from "../imports/Tool/Tool";
+import { useToolControlHelper } from "../imports/Tool/ToolRoot";
+import Drive, {encodeParams} from "../imports/Drive";
+import DriveCards from "../imports/DriveCards";
 
-// import { DateInput } from "@blueprintjs/datetime";
+import { BreadcrumbContainer } from "../imports/Breadcrumb";
+import { useToast } from "../imports/Tool/Toast";
+import {
+    useHistory
+  } from "react-router-dom";
 
-// import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
-// import "@blueprintjs/core/lib/css/blueprint.css";
-// import "./dateTime.css";
-
-//Passes up the selected date through a onDateChange(selectedDate: Date) prop
-
-
-export default function DoenetTemp(props){
-  const wrapperRef = useRef(null);
-  const [height,setHeight] = useState(0)
-  const wheight = useRef(0)
-
-  let tall = [];
-  for (let i = 1; i < 100; i++){
-      tall.push(<p key={`p${i}`}>{i}</p>)
+  function Container(props){
+    return <div
+    style={{
+        maxWidth: "850px",
+        // border: "1px red solid",
+        margin: "20px",
+    }
+    }
+    >
+        {props.children}
+    </div>
   }
 
-    return (<>
-    <div style={{position:"sticky",top:"0px"}}>
-    <button
-    onClick={()=>{
-        console.log("Sample")
-        let top = document.documentElement.scrollTop;
-        let left = document.documentElement.scrollLeft;
-        setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample height</button>
-       <button
-    onClick={()=>{
-        window.scrollTo(0,height)
-    }}>return to sampled height</button>
-     <button
-    onClick={()=>{
-        console.log("Wrapper")
-        let ref = wrapperRef.current;
-        let top = ref.scrollTop;
-        console.log(wrapperRef.current.scrollTop)
-        console.log(100)
-        ref.scrollTo(0,100)
+export default function DoenetExampleTool(props) {
+  // console.log("=== DoenetExampleTool");
 
-        // let left = document.documentElement.scrollLeft;
-        // setHeight(top)
-        console.log(`Top ${top}`)
-    }}>sample wrapper</button>
-    </div>
-        <div ref={wrapperRef}>
-            {tall}
-        </div>
-        </>
-       
-    )
+  const { openOverlay, activateMenuPanel } = useToolControlHelper();
+  const toast = useToast();
+  const history = useHistory();
+
+  useEffect(() => {
+    activateMenuPanel(1);
+  }, [activateMenuPanel]);
+
+  let routePathDriveId = "";
+  let urlParamsObj = Object.fromEntries(
+    new URLSearchParams(props.route.location.search)
+  );
+  if (urlParamsObj?.path !== undefined) {
+    [
+      routePathDriveId
+    ] = urlParamsObj.path.split(":");
+  }
+
+  const driveCardSelection = ({item}) => {
+    let newParams = {};
+    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+    history.push("?" + encodeParams(newParams));
+  }
+
+  let driveOrDriveDriveCards = null;
+  if (routePathDriveId === ""){
+      driveOrDriveDriveCards = <DriveCards
+      types={['course']}
+      subTypes={['Administrator']}
+      routePathDriveId={routePathDriveId}
+      driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
+      />
+  }else{
+    driveOrDriveDriveCards = <Container>
+        <Drive types={['course']}  urlClickBehavior="select" 
+        doenetMLDoubleClickCallback={(info)=>{
+            console.log(">>>info",info)
+        //   openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+          }}/>
+    </Container>
+  }
+
+  return (
+    <Tool>
+      <navPanel>
+        {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
+      </navPanel>
+
+      <headerPanel title="Doenet Example Tool"></headerPanel>
+
+      <mainPanel>
+        <BreadcrumbContainer />
+        {/* <div style={{marginBottom:"40px",height:"100vh"}} 
+       onClick={useOutsideDriveSelector} > */}
+       {driveOrDriveDriveCards}
+      {/* </div> */}
+      </mainPanel>
+
+      {/* <supportPanel isInitOpen>
+        <p>Support Panel</p>
+      </supportPanel> */}
+
+      <menuPanel title="edit">
+        <button
+          onClick={() => {
+            toast("hello from Toast!", 0, null, 3000);
+          }}
+        >
+          Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("Other Toast!", 0, null, 1000);
+          }}
+        >
+          Other Toast!
+        </button>
+        <button
+          onClick={() => {
+            toast("hello from Toast!", 0, null, 2000);
+          }}
+        >
+          Toast Test!
+        </button>
+        <button
+          onClick={() => {
+            openOverlay({ type: "calendar", title: "Cal", branchId: "fdsa" });
+          }}
+        >
+          Go to calendar
+        </button>
+        <p>control important stuff</p>
+      </menuPanel>
+
+      <menuPanel title="other">
+        <p>control more important stuff</p>
+      </menuPanel>
+    </Tool>
+  );
 }
+
+
 
 

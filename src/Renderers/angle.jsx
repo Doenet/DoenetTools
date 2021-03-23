@@ -177,7 +177,13 @@ export default class Angle extends DoenetRenderer {
       return null;
     }
 
-    let mathJaxify = "\\(" + this.doenetSvData.angle + "\\)";
+    let mathJaxify;
+    if(this.doenetSvData.inDegrees) {
+      mathJaxify = "\\(" + this.doenetSvData.degrees + "^\\circ \\)";
+    } else {
+      mathJaxify = "\\(" + this.doenetSvData.radians + "\\)";
+    }
+
     return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
   }
 }

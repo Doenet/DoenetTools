@@ -22,21 +22,21 @@ describe('sequence and map assignName Tests', function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="s1"><aslist>
-  <sequence assignNames="a,b" type="letters" length="$n" />
+  <sequence assignNames="a b" type="letters" length="$n" />
   </aslist></p>
 
   <p name="pa">a: <copy name="cpa" tname="a" /></p>
   <p name="pb">b: <copy name="cpb" tname="b" /></p>
 
   <p name="s2"><aslist>
-  <copy name="cpall" tname="_sequence1" assignNames="a1,b1,c1" />
+  <copy name="cpall" tname="_sequence1" assignNames="a1 b1 c1" />
   </aslist></p>
   <p name="pa1">a1: <copy name="cpa1" tname="a1" /></p>
   <p name="pb1">b1: <copy name="cpb1" tname="b1" /></p>
   <p name="pc1">c1: <copy name="cpc1" tname="c1" /></p>
 
   <p name="s3"><aslist>
-  <copy name="cpall2" tname="cpall" assignNames="a2,b2,c2,d2,e2" />
+  <copy name="cpall2" tname="cpall" assignNames="a2 b2 c2 d2 e2" />
   </aslist></p>
   <p name="pa2">a2: <copy name="cpa2" tname="a2" /></p>
   <p name="pb2">b2: <copy name="cpb2" tname="b2" /></p>
@@ -45,7 +45,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="pe2">e2: <copy name="cpe2" tname="e2" /></p>
 
   <p name="s4"><aslist>
-  <copy name="cpall3" tname="cpall2" assignNames="a3,b3,c3,d3" />
+  <copy name="cpall3" tname="cpall2" assignNames="a3 b3 c3 d3" />
   </aslist></p>
   <p name="pa3">a3: <copy name="cpa3" tname="a3" /></p>
   <p name="pb3">b3: <copy name="cpb3" tname="b3" /></p>
@@ -566,7 +566,7 @@ describe('sequence and map assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1"><map assignNames="a,b">
+  <p name="m1"><map assignNames="a b">
     <template newNamespace>Letter <copy tname="_sourceindex" name="n" /> is <copy tname="_source" name="v" />. </template>
     <sources>
       <sequence type="letters" length="$n" />
@@ -583,7 +583,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="pbv">b/v: <copy name="cpbv" tname="b/v" /></p>
 
 
-  <p name="m2"><copy name="cpall" tname="_map1" assignNames="a1,b1,c1" /></p>
+  <p name="m2"><copy name="cpall" tname="_map1" assignNames="a1 b1 c1" /></p>
   <p name="pa1">a1: <copy name="cpa1" tname="a1" /></p>
   <p name="pb1">b1: <copy name="cpb1" tname="b1" /></p>
   <p name="pc1">c1: <copy name="cpc1" tname="c1" /></p>
@@ -597,7 +597,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="pcv1">c1/v: <copy name="cpcv1" tname="c1/v" /></p>
 
 
-  <p name="m3"><copy name="cpall2" tname="cpall" assignNames="a2,b2,c2,d2,e2" /></p>
+  <p name="m3"><copy name="cpall2" tname="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
   <p name="pa2">a2: <copy name="cpa2" tname="a2" /></p>
   <p name="pb2">b2: <copy name="cpb2" tname="b2" /></p>
   <p name="pc2">c2: <copy name="cpc2" tname="c2" /></p>
@@ -617,7 +617,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="pev2">e2/v: <copy name="cpev2" tname="e2/v" /></p>
 
 
-  <p name="m4"><copy name="cpall3" tname="cpall2" assignNames="a3,b3,c3,d3" /></p>
+  <p name="m4"><copy name="cpall3" tname="cpall2" assignNames="a3 b3 c3 d3" /></p>
   <p name="pa3">a3: <copy name="cpa3" tname="a3" /></p>
   <p name="pb3">b3: <copy name="cpb3" tname="b3" /></p>
   <p name="pc3">c3: <copy name="cpc3" tname="c3" /></p>
@@ -1515,8 +1515,8 @@ describe('sequence and map assignName Tests', function () {
         doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1"><map assignNames="a,b">
-    <template newNamespace>Letter <copy tname="_sourceindex" assignNames="n1,n2" /> is <copy tname="_source" assignnames="v1, v2" />. </template>
+  <p name="m1"><map assignNames="a b">
+    <template newNamespace>Letter <copy tname="_sourceindex" assignNames="n1 n2" /> is <copy tname="_source" assignnames="v1  v2" />. </template>
     <sources>
       <sequence type="letters" length="$n" />
    </sources>
@@ -1537,7 +1537,7 @@ describe('sequence and map assignName Tests', function () {
   <p name="pbv2">b/v2: <copy name="cpbv2" tname="b/v2" /></p>
 
 
-  <p name="m2"><copy name="cpall" tname="_map1" assignNames="a1,b1,c1" /></p>
+  <p name="m2"><copy name="cpall" tname="_map1" assignNames="a1 b1 c1" /></p>
   <p name="pa1">a1: <copy name="cpa1" tname="a1" /></p>
   <p name="pb1">b1: <copy name="cpb1" tname="b1" /></p>
   <p name="pc1">c1: <copy name="cpc1" tname="c1" /></p>

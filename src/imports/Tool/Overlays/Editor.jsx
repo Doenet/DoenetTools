@@ -428,14 +428,22 @@ function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
+  const setLastHeight = useRecoilCallback(({snapshot,set})=> async ()=>{
+    const height = await snapshot.getPromise(editorViewerScrollHeightAtom);
+    set(editorViewerScrollBeforeUpdateHeightAtom,{height,updatePushedFlag:true})
+  })
   if (selectedVersionId !== "") {return null;}
+  
 
-  return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
+  return <Button value="Update" callback={()=>{
+    setLastHeight();
+    setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
     newInfo.updateNumber = old.updateNumber+1;
     return newInfo;
-  })}} />
+  })
+}} /> 
 }
 
 function NameCurrentVersionControl(props){
@@ -479,10 +487,19 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
-function DoenetViewerPanel(){
+function DoenetViewerPanel(props){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
+  const onCoreReady = useRecoilCallback(({set,snapshot})=> async ()=>{
+      const {height,updatePushedFlag} = await snapshot.getPromise(editorViewerScrollBeforeUpdateHeightAtom);
+    console.log(">>>",{height,updatePushedFlag})
+      if (updatePushedFlag){
+        setTimeout(()=>{
+          props.setScrollHeight(height)
+        } ,500);
+      }
+  })
 
   if (!editorInit){ return null; }
 
@@ -491,8 +508,10 @@ function DoenetViewerPanel(){
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
 
+
   return <DoenetViewer
       key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      onCoreReady={onCoreReady}
       doenetML={viewerDoenetML?.doenetML}
       flags={{
         showCorrectness: true,
@@ -513,8 +532,20 @@ const editorInitAtom = atom({
   default:false
 })
 
+const editorViewerScrollHeightAtom = atom({
+  key:"editorViewerScrollHeight",
+  default:0
+})
+
+const editorViewerScrollBeforeUpdateHeightAtom = atom({
+  key:"editorViewerScrollBeforeUpdateHeight",
+  default:{height:0,updatePushedFlag:false}
+})
+
 export default function Editor({ branchId, title }) {
   // console.log("===Editor!");
+  const viewerRef = useRef(null);
+  const setEditorViewerScrollHeight = useSetRecoilState(editorViewerScrollHeightAtom);
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (contentId)=>{
     const response = await snapshot.getPromise(fileByContentId(contentId));
@@ -536,6 +567,12 @@ export default function Editor({ branchId, title }) {
 }, []);
 
 
+function setScrollHeight(height){
+  console.log(">>>HERE",height)
+  viewerRef.current.scrollTo(0,height);
+}
+
+
   return (
     <Tool>
       <headerPanel title={title}>
@@ -543,8 +580,15 @@ export default function Editor({ branchId, title }) {
       </headerPanel>
 
       <mainPanel>
-        <div><DoenetViewerUpdateButton  /></div>
-        <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
+        <div><DoenetViewerUpdateButton /></div>
+        <div
+        ref={viewerRef}
+         onScroll={()=>{
+           setEditorViewerScrollHeight(viewerRef.current.scrollTop)
+          }}
+         style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}>
+           <DoenetViewerPanel setScrollHeight={setScrollHeight} />
+         </div>
       </mainPanel>
 
       <supportPanel isInitOpen>

@@ -35,7 +35,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("number");
+        expect(components['/_from1'].stateValues.type).eq("number");
         expect(components['/_from1'].stateValues.value).eq(7);
 
       })
@@ -47,7 +47,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <from>q</from>
+    <from type="letters">q</from>
     <copy prop="value" tname="_from1" />
     `}, "*");
     });
@@ -63,7 +63,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("letters");
+        expect(components['/_from1'].stateValues.type).eq("letters");
         expect(components['/_from1'].stateValues.value).eq('q');
       })
     })
@@ -74,7 +74,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <from>z3</from>
+    <from type="text">z3</from>
     <copy prop="value" tname="_from1" />
     `}, "*");
     });
@@ -90,7 +90,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("text");
+        expect(components['/_from1'].stateValues.type).eq("text");
         expect(components['/_from1'].stateValues.value).eq('z3');
       })
     })
@@ -101,7 +101,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <from><boolean>false</boolean></from>
+    <from type="boolean"><boolean>false</boolean></from>
     <copy prop="value" tname="_from1" />
     `}, "*");
     });
@@ -117,7 +117,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.type).eq("boolean");
         expect(components['/_from1'].stateValues.value).eq(false);
       })
     })
@@ -128,7 +128,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <from><copy prop="value" tname="b" /></from>
+    <from type="boolean"><copy prop="value" tname="b" /></from>
     <copy prop="value" tname="_from1" />
     <booleaninput name="b"/>
     `}, "*");
@@ -145,7 +145,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.type).eq("boolean");
         expect(components['/_from1'].stateValues.value).eq(false);
       })
 
@@ -156,7 +156,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.type).eq("boolean");
         expect(components['/_from1'].stateValues.value).eq(true);
       })
 
@@ -167,7 +167,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.type).eq("boolean");
         expect(components['/_from1'].stateValues.value).eq(false);
       })
     })
@@ -178,7 +178,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <exclude>3,7</exclude>
+    <exclude>3 7</exclude>
     <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
     `}, "*");
     });
@@ -196,7 +196,7 @@ describe('Selectable Type Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_exclude1'].stateValues.selectedType).eq("number");
+        expect(components['/_exclude1'].stateValues.type).eq("number");
         expect(components['/_exclude1'].stateValues.values).eqls([3, 7]);
 
       })
@@ -208,7 +208,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <exclude>q,u</exclude>
+    <exclude type="letters">q u</exclude>
     <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
     `}, "*");
     });
@@ -225,7 +225,7 @@ describe('Selectable Type Tag Tests', function () {
       cy.get(text2Anchor).should('have.text', 'u')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_exclude1'].stateValues.selectedType).eq("letters");
+        expect(components['/_exclude1'].stateValues.type).eq("letters");
         expect(components['/_exclude1'].stateValues.values).eqls(['q', 'u']);
       })
     })
@@ -237,7 +237,7 @@ describe('Selectable Type Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <exclude>2,i</exclude>
+    <exclude type="text">2 i</exclude>
     <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
     `}, "*");
     });
@@ -254,7 +254,7 @@ describe('Selectable Type Tag Tests', function () {
       cy.get(text2Anchor).should('have.text', 'i')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_exclude1'].stateValues.selectedType).eq("text");
+        expect(components['/_exclude1'].stateValues.type).eq("text");
         expect(components['/_exclude1'].stateValues.values).eqls(['2', 'i']);
       })
     })

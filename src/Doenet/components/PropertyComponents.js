@@ -4,11 +4,11 @@ import Integer from './Integer';
 import TextComponent from './Text';
 import MathComponent from './Math';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
-import ComponentWithSelectableType from './abstract/ComponentWithSelectableType';
-import ComponentListWithSelectableType from './abstract/ComponentListWithSelectableType';
+import { ComponentWithSelectableType, ComponentListWithSelectableType, ComponentListOfListsWithSelectableType } from './abstract/ComponentWithSelectableType';
 import ComponentWithAnyChildren from './abstract/ComponentWithAnyChildren';
 import PointListComponent from './abstract/PointListComponent';
 import VectorListComponent from './abstract/VectorListComponent';
+import LineListComponent from './abstract/LineListComponent';
 import AngleListComponent from './abstract/AngleListComponent';
 import Point from './Point';
 import Vector from './Vector';
@@ -90,11 +90,10 @@ export class PossiblePoints extends NumberComponent {
 
 export class Through extends PointListComponent {
   static componentType = "through"
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.slope = { default: null };
-    return properties;
-  }
+}
+
+export class ThroughSlopes extends MathList {
+  static componentType = "throughSlopes"
 }
 
 export class Endpoints extends PointListComponent {
@@ -229,6 +228,11 @@ export class Exclude extends ComponentListWithSelectableType {
 
 export class ExcludeCombination extends ComponentListWithSelectableType {
   static componentType = "excludecombination";
+}
+
+export class ExcludeCombinations extends ComponentListOfListsWithSelectableType {
+  static componentType = "excludecombinations";
+  static componentTypeSingular = "excludecombination";
 }
 
 export class Step extends MathComponent {
@@ -461,6 +465,11 @@ export class DisplayDigits extends Integer {
   static rendererType = "number";
 }
 
+export class DisplayDecimals extends Integer {
+  static componentType = "displaydecimals";
+  static rendererType = "number";
+}
+
 export class SelectWeight extends NumberComponent {
   static componentType = "selectweight";
   static rendererType = "number";
@@ -668,7 +677,6 @@ export class NumberDigits extends Integer {
 
 export class ComponentTypes extends TextList {
   static componentType = "componenttypes";
-  static rendererType = "textlist";
 }
 
 export class Source extends TextComponent {
@@ -803,7 +811,6 @@ export class FeedbackText extends TextComponent {
 
 export class FeedbackCodes extends TextList {
   static componentType = "feedbackcodes";
-  static rendererType = "textlist";
 }
 
 export class TextType extends TextComponent {
@@ -828,7 +835,6 @@ export class Target extends TextComponent {
 
 export class targetPropertiesToIgnore extends TextList {
   static componentType = "targetPropertiesToIgnore";
-  static rendererType = "textlist";
 }
 
 export class PluralForm extends TextComponent {
@@ -977,4 +983,23 @@ export class ComponentIndex extends NumberComponent {
 export class PropIndex extends NumberList {
   static componentType = "propIndex";
   static rendererType = "number";
+}
+
+export class Radians extends MathComponent {
+  static componentType = "radians";
+  static rendererType = "math";
+}
+
+export class Degrees extends MathComponent {
+  static componentType = "degrees";
+  static rendererType = "math";
+}
+
+export class InDegrees extends BooleanComponent {
+  static componentType = "inDegrees";
+  static rendererType = "boolean";
+}
+
+export class BetweenLines extends LineListComponent {
+  static componentType = "betweenLines"
 }

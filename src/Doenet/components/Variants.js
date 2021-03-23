@@ -10,11 +10,26 @@ export default class Variants extends BaseComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringIntoVariantsByCommas = function ({ matchedChildren }) {
-      let newChildren = matchedChildren[0].state.value.split(",").map(x => ({
-        componentType: "variant",
-        state: { value: x.trim() }
-      }));
+    let breakStringsIntoVariantsBySpaces = function ({ matchedChildren }) {
+
+      // break any string by white space and wrap pieces with variant
+
+      let newChildren = matchedChildren.reduce(function (a, c) {
+        if (c.componentType === "string") {
+          return [
+            ...a,
+            ...c.state.value.split(/\s+/)
+              .filter(s => s)
+              .map(s => ({
+                componentType: "variant",
+                state: { value: s }
+              }))
+          ]
+        } else {
+          return [...a, c]
+        }
+      }, []);
+
       return {
         success: true,
         newChildren: newChildren,
@@ -22,8 +37,7 @@ export default class Variants extends BaseComponent {
     }
 
     sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: breakStringIntoVariantsByCommas
+      replacementFunction: breakStringsIntoVariantsBySpaces
     });
 
     return sugarInstructions;
