@@ -427,29 +427,33 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <excludecombination name="ec">-4 -2</excludecombination>
-    <number name="e1">-2</number>
+    <exclude name="e1">-2</exclude>
     <number name="e2">2</number>
     <math name="e3">-4</math>
+    <exclude type="numbers" name="ec2">-4 -2</exclude>
+    <numberlist name="ec3">-2 2</numberlist>
+    <mathlist name="ec4">2 -4</mathlist>
+
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     `}, "*");
     });
 
@@ -1221,29 +1225,32 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <excludecombination type="math" name="ec">x x+y</excludecombination>
-    <math name="e1">x+y</math>
+    <exclude type="math" name="e1">x+y</exclude>
     <math name="e2">x+3y</math>
     <math name="e3">x</math>
+    <exclude type="math" name="ec2">x x+y</exclude>
+    <mathlist name="ec3">x+y x+3y</mathlist>
+
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample3" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample4" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample4" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample5" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample6" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample6" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample7" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample8" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample8" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample9" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample10" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample10" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample11" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample12" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample12" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample13" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample14" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample14" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample15" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample16" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample16" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample17" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample18" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample18" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample19" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample20" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample20" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     `}, "*");
     });
 
@@ -1311,30 +1318,32 @@ describe('SelectFromSequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <excludecombination type="letters" name="ec">m v</excludecombination>
-    <text name="e1">s</text>
+    <exclude type="letters" name="e1">s</exclude>
     <text name="e2">v</text>
     <text name="e3">s</text>
+    <exclude type="letters" name="ec2">m v</exclude>
+    <textlist name="ec3">s m</textlist>
 
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample2" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample2" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample3" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample4" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample4" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample5" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample6" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample6" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample7" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample8" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample8" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample9" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample10" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample10" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample11" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample12" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample12" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample13" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample14" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample14" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample15" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample16" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample16" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample17" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample19" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     `}, "*");
     });
 

@@ -257,6 +257,15 @@ export default class TextList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nValues = {
+      isAlias: true,
+      targetVariableName: "nComponents"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "texts"
+    };
 
     stateVariableDefinitions.text = {
       public: true,

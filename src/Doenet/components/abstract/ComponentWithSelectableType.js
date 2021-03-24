@@ -1,5 +1,7 @@
-import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 import BaseComponent from './BaseComponent';
+import me from 'math-expressions';
+import { convertValueToMathExpression } from '../../utils/math';
+import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentwithselectabletype";
@@ -11,41 +13,6 @@ export class ComponentWithSelectableType extends BaseComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "type"] };
 
-  static returnSugarInstructions() {
-    let sugarInstructions = super.returnSugarInstructions();
-
-    function addType({ matchedChildren, componentProps, parentProps }) {
-
-      let type = componentProps.type;
-      if (!type) {
-        type = parentProps.type;
-      }
-      if (!type) {
-        type = "number";
-      } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
-        console.warn(`Invalid type ${type}, setting type to number`);
-        type = "number";
-      }
-
-      // if already have a single child of the correct type
-      // don't match sugar: child will be matched by atMostOneChild.
-      if (matchedChildren.length === 1 && matchedChildren[0].componentType === type) {
-        return { success: false }
-      }
-
-      return {
-        success: true,
-        newChildren: [{ componentType: type, children: matchedChildren }],
-      }
-    }
-
-    sugarInstructions.push({
-      replacementFunction: addType
-    })
-
-    return sugarInstructions;
-
-  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -113,7 +80,10 @@ export class ComponentWithSelectableType extends BaseComponent {
         let value;
 
         if (dependencyValues.atMostOneChild.length === 1) {
-          value = dependencyValues.atMostOneChild[0].stateValues.value;
+          value = convertValueToType(
+            dependencyValues.atMostOneChild[0].stateValues.value,
+            dependencyValues.type
+          );
         } else {
           value = null;
         }
@@ -169,7 +139,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       // wrap components with type if they aren't that type already
       return {
         success: true,
-        newChildren: matchedChildren.map(x => x.componentType === type ? x : ({ componentType: type, children: [x] })),
+        newChildren: matchedChildren
       }
     }
 
@@ -207,14 +177,28 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     delete stateVariableDefinitions.value;
 
     stateVariableDefinitions.nValues = {
+      additionalStateVariablesDefined: ["childForValue"],
       returnDependencies: () => ({
         anythingForSelectedType: {
           dependencyType: "child",
           childLogicName: "anythingForSelectedType",
+          variableNames: ["nValues"],
+          variablesOptional: true,
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { nValues: dependencyValues.anythingForSelectedType.length } }
+        let nValues = 0;
+        let childForValue = [];
+        for (let [ind, child] of dependencyValues.anythingForSelectedType.entries()) {
+          let n = Number.isInteger(child.stateValues.nValues) ? child.stateValues.nValues : 1;
+          nValues += n;
+          for (let i = 0; i < n; i++) {
+            childForValue.push({ child: ind, valueIndex: i })
+          }
+        }
+        return {
+          newValues: { nValues, childForValue },
+        }
       }
     }
 
@@ -222,6 +206,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       public: true,
       isArray: true,
       entryPrefixes: ["value"],
+      stateVariablesDeterminingDependencies: ["childForValue"],
       returnArraySizeDependencies: () => ({
         nValues: {
           dependencyType: "stateVariable",
@@ -231,7 +216,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nValues];
       },
-      returnArrayDependenciesByKey({ arrayKeys }) {
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
           type: {
             dependencyType: "stateVariable",
@@ -241,22 +226,28 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
+          let childInfo = stateValues.childForValue[arrayKey]
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
               dependencyType: "child",
               childLogicName: "anythingForSelectedType",
-              variableNames: ["value"],
-              childIndices: [arrayKey]
+              variableNames: ["value", "values"],
+              childIndices: [childInfo.child],
+              variablesOptional: true,
             },
+            valueIndex: {
+              dependencyType: "value",
+              value: childInfo.valueIndex
+            }
           }
         }
 
         return { globalDependencies, dependenciesByKey }
 
       },
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, componentName }) {
 
-        // console.log(`array definition for value of component list with selectable type`)
+        // console.log(`array definition for value of component list with selectable type, ${componentName}`)
         // console.log(globalDependencyValues)
         // console.log(dependencyValuesByKey);
         // console.log(arrayKeys)
@@ -267,7 +258,17 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           if (dependencyValuesByKey[arrayKey].anythingForSelectedType &&
             dependencyValuesByKey[arrayKey].anythingForSelectedType.length === 1
           ) {
-            values[arrayKey] = dependencyValuesByKey[arrayKey].anythingForSelectedType[0].stateValues.value
+            let child = dependencyValuesByKey[arrayKey].anythingForSelectedType[0];
+            let value;
+            if (child.stateValues.values) {
+              value = child.stateValues.values[dependencyValuesByKey[arrayKey].valueIndex]
+            } else {
+              value = child.stateValues.value;
+            }
+            values[arrayKey] = convertValueToType(
+              value,
+              globalDependencyValues.type
+            )
           }
         }
 
@@ -278,10 +279,6 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       }
     }
 
-    stateVariableDefinitions.value = {
-      isAlias: true,
-      targetVariableName: "values"
-    };
 
     return stateVariableDefinitions;
   }
@@ -323,17 +320,11 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
       return {
         success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || piece[0].componentType === "string") {
-            return {
-              componentType: listClass.componentTypeSingular,
-              props: { type: type },
-              children: piece,
-            }
-          } else {
-            return piece[0]
-          }
-        })
+        newChildren: results.pieces.map(x => ({
+          componentType: listClass.componentTypeSingular,
+          props: { type },
+          children: x,
+        }))
       }
 
     }
@@ -429,16 +420,8 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
               lists[arrayKey] = listChild.stateValues.values
             } else {
               // have a list child of the wrong type, attempt to convert
-              if (globalDependencyValues.type === "number") {
-                lists[arrayKey] = listChild.stateValues.values.map(Number)
-              } else if (globalDependencyValues.type === "math") {
-                lists[arrayKey] = listChild.stateValues.values.map(convertValueToMathExpression)
-              } else if (globalDependencyValues.type === "boolean") {
-                lists[arrayKey] = listChild.stateValues.values.map(Boolean)
-              } else {
-                // type is letters or text
-                lists[arrayKey] = listChild.stateValues.values.map(String)
-              }
+              lists[arrayKey] = listChild.stateValues.values.map(
+                x => convertValueToType(x, globalDependencyValues.type))
             }
           }
         }
@@ -453,4 +436,34 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
     return stateVariableDefinitions;
   }
 
+}
+
+
+function convertValueToType(value, type) {
+  if (Array.isArray(value)) {
+    value = value[0];
+  }
+  if (type === "number") {
+    if (value instanceof me.class) {
+      let num = value.evaluate_to_constant();
+      if (!Number.isFinite(num)) {
+        num = NaN;
+      }
+      return num;
+    }
+    return Number(value);
+  } else if (type === "math") {
+    if (typeof value === "string") {
+      try {
+        return me.fromText(value);
+      } catch (e) {
+      }
+    }
+    return convertValueToMathExpression(value);
+  } else if (type === "boolean") {
+    return Booean(value);
+  } else {
+    // type is letters or text
+    return String(value);
+  }
 }
