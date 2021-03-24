@@ -697,7 +697,6 @@ export default class Sequence extends CompositeComponent {
         type: null,
         exclude: null,
       }
-      workspace.nEmptiesAdded = 0;
       return { replacements: [] };
     }
 
@@ -740,6 +739,11 @@ export default class Sequence extends CompositeComponent {
       let serializedComponent = {
         componentType: component.stateValues.type,
         state: { value: componentValue, fixed: true },
+        downstreamDependencies: {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        },
       }
       replacements.push(serializedComponent);
     }
@@ -754,8 +758,6 @@ export default class Sequence extends CompositeComponent {
       parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
       componentInfoObjects,
     });
-
-    workspace.nEmptiesAdded = processResult.nEmptiesAdded;
 
     return { replacements: processResult.serializedComponents };
   }
@@ -843,7 +845,6 @@ export default class Sequence extends CompositeComponent {
       // mark old replacements as hidden
       if (component.stateValues.length < prevlength) {
 
-        // since use number of replacements directly, it accounts for empties
         newReplacementsToWithhold = component.replacements.length - component.stateValues.length;
 
         let replacementInstruction = {
@@ -856,12 +857,8 @@ export default class Sequence extends CompositeComponent {
         numReplacementsToAdd = component.stateValues.length - prevlength;
 
         if (component.replacementsToWithhold > 0) {
-          let nonEmptiesWithheld = component.replacementsToWithhold;
-          if (workspace.nEmptiesAdded) {
-            nonEmptiesWithheld -= workspace.nEmptiesAdded;
-          }
 
-          if (nonEmptiesWithheld >= numReplacementsToAdd) {
+          if (component.replacementsToWithhold >= numReplacementsToAdd) {
             newReplacementsToWithhold = component.replacementsToWithhold - numReplacementsToAdd;
             numToModify += numReplacementsToAdd;
             prevlength += numReplacementsToAdd;
@@ -874,9 +871,9 @@ export default class Sequence extends CompositeComponent {
             replacementChanges.push(replacementInstruction);
 
           } else {
-            numReplacementsToAdd -= nonEmptiesWithheld;
-            numToModify += nonEmptiesWithheld;
-            prevlength += nonEmptiesWithheld;
+            numReplacementsToAdd -= component.replacementsToWithhold;
+            numToModify += component.replacementsToWithhold;
+            prevlength += component.replacementsToWithhold;
             newReplacementsToWithhold = 0;
             // don't need to send changedReplacementsToWithold instructions
             // since will send add instructions,
@@ -936,6 +933,11 @@ export default class Sequence extends CompositeComponent {
           let serializedComponent = {
             componentType: component.stateValues.type,
             state: { value: componentValue, fixed: true },
+            downstreamDependencies: {
+              [component.componentName]: [{
+                dependencyType: "nonShadowingReplacement",
+              }]
+            },
           }
           newSerializedReplacements.push(serializedComponent);
         }
@@ -954,13 +956,11 @@ export default class Sequence extends CompositeComponent {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevlength,
-          numberReplacementsToReplace: workspace.nEmptiesAdded,
           serializedReplacements: processResult.serializedComponents,
           replacementsToWithhold: 0,
           assignNamesOffset: prevlength
         }
         replacementChanges.push(replacementInstruction);
-        workspace.nEmptiesAdded = processResult.nEmptiesAdded;
       }
     }
 

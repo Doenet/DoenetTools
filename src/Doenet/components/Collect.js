@@ -20,6 +20,7 @@ export default class Collect extends CompositeComponent {
     properties.maximumNumber = { default: null };
     properties.componentIndex = { default: null };
     properties.propIndex = { default: null };
+    properties.targetPropertiesToIgnore = { default: ["hide"] };
     return properties;
   }
 
@@ -265,8 +266,8 @@ export default class Collect extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    console.log(`create serialized replacements for ${component.componentName}`)
-    console.log(component.stateValues.collectedComponents)
+    // console.log(`create serialized replacements for ${component.componentName}`)
+    // console.log(component.stateValues.collectedComponents)
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;

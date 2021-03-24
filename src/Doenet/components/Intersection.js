@@ -146,7 +146,17 @@ export default class Intersection extends CompositeComponent {
     let y = (c1 * a2 - c2 * a1) / d;
     let coords = me.fromAst(["vector", x, y]);
 
-    return { replacements: [{ componentType: "point", state: { coords, draggable: false, fixed: true } }] };
+    return {
+      replacements: [{
+        componentType: "point",
+        state: { coords, draggable: false, fixed: true },
+        downstreamDependencies: {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        },
+      }]
+    };
 
   }
 

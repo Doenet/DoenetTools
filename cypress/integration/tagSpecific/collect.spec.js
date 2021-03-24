@@ -2008,4 +2008,100 @@ describe('Collect Tag Tests', function () {
 
   });
 
+  it('collect ignores hide by default', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <section>
+      <text hide>secret</text>
+      <text>public</text>
+    </section>
+    <p>Revealed by default: <collect componentTypes="text" tname="_section1" /></p>
+    <p>Force to stay hidden: <collect componentTypes="text" tname="_section1" targetPropertiesToIgnore="" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/_section1').should('contain.text', 'public');
+    cy.get('#\\/_section1').should('not.contain.text', 'secret');
+
+    cy.get('#\\/_p1').should('have.text', 'Revealed by default: secretpublic');
+    cy.get('#\\/_p2').should('have.text', 'Force to stay hidden: public');
+
+
+  });
+
+
+  it('copies hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>
+      <map>
+        <template><text>Hello, $_source! </text></template>
+        <sources><sequence type="letters" from="a" length="$n" /></sources>
+      </map>
+    </p>
+
+    <booleaninput name='h1' prefill="false" label="Hide first collect" />
+    <booleaninput name='h2' prefill="true" label="Hide second collect" />
+    <p>Number of points <mathinput name="n" prefill="4" /></p>
+
+    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" tname="_p1" /></p>
+    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" tname="_p1" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! Hello, d! ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: ')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}6{enter}", { force: true })
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! ')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}8{enter}", { force: true })
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! Hello, g! Hello, h! ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! Hello, d! Hello, e! Hello, f! Hello, g! Hello, h! ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: ')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: Hello, a! Hello, b! Hello, c! ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! ')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/c1').should('have.text', 'collect 1: ')
+    cy.get('#\\/c2').should('have.text', 'collect 2: Hello, a! Hello, b! Hello, c! Hello, d! ')
+
+
+  })
+
+
 });

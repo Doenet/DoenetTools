@@ -461,7 +461,7 @@ function convertValueToType(value, type) {
     }
     return convertValueToMathExpression(value);
   } else if (type === "boolean") {
-    return Booean(value);
+    return Boolean(value);
   } else {
     // type is letters or text
     return String(value);
