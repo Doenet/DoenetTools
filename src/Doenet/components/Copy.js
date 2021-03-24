@@ -63,7 +63,7 @@ export default class Copy extends CompositeComponent {
     properties.componentIndex = { default: null };
     properties.propIndex = { default: null };
 
-    // properties.targetPropertiesToIgnore = { default: [] };
+    properties.targetPropertiesToIgnore = { default: ["hide"] };
 
     return properties;
 
@@ -941,6 +941,11 @@ export default class Copy extends CompositeComponent {
       let replacements = [{
         componentType: "number",
         state: { value: component.stateValues.sourceIndex, fixed: true },
+        downstreamDependencies: {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        },
       }];
 
       let processResult = serializeFunctions.processAssignNames({
@@ -1086,8 +1091,6 @@ export default class Copy extends CompositeComponent {
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
     let replacementChanges = [];
-
-    let assignNames = component.doenetAttributes.assignNames;
 
     if (!component.stateValues.targetComponent || !component.stateValues.replacementSources) {
       if (component.replacements.length > 0) {

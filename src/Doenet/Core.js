@@ -1869,6 +1869,11 @@ export default class Core {
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.property] = dep.ancestorIdentity;
+          } else if(dep.dependencyType === "nonShadowingReplacement") {
+            redefineDependencies = {
+              linkSource: "nonShadowingReplacement",
+              compositeName: name,
+            }
           }
         }
       }
@@ -2402,6 +2407,8 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
+    let isNonShadowingReplacement = redefineDependencies.linkSource === "nonShadowingReplacement";
+
     let additionalPropertiesFromStateVariables = {};
 
     if (redefineDependencies.propVariable) {
@@ -2426,7 +2433,7 @@ export default class Core {
           variableName: property,
         }
       }
-      if (
+      if (!isNonShadowingReplacement &&
         (!redefineDependencies.propVariable || propertySpecification.propagateToProps)
         && (property in targetComponent.state)
       ) {
@@ -2641,6 +2648,10 @@ export default class Core {
             = propertySpecification[attribute];
         }
       }
+    }
+
+    if(isNonShadowingReplacement) {
+      return;
     }
 
     if (redefineDependencies.propVariable) {

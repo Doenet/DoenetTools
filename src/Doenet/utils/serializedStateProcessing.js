@@ -1130,8 +1130,6 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
             let result = breakStringInPiecesBySpacesOrParens(props[key]);
-            console.log(`result for assignNames`)
-            console.log(result)
             if (result.success) {
               assignNames = result.pieces;
             } else {
@@ -1313,6 +1311,43 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           currentNamespace.namesUsed[name] = true;
         }
       }
+    }
+
+
+    if (serializedComponent.doenetAttributes.createUniqueAssignNames &&
+      serializedComponent.originalName
+    ) {
+      let assignNames = serializedComponent.doenetAttributes.assignNames = [];
+      let longNameIdBase = componentName + "|createUniqueName|assignNames|";
+
+      let namespace = '';
+      let oldNamespace;
+      if (!newNamespace) {
+        for (let l = 0; l <= level; l++) {
+          namespace += namespaceStack[l].namespace + '/';
+        }
+        let lastInd = serializedComponent.originalName.lastIndexOf("/");
+        oldNamespace = serializedComponent.originalName.slice(0, lastInd+1)
+      } else {
+        namespace = componentName + '/';
+        oldNamespace = serializedComponent.originalName + '/';
+      }
+
+
+      for (let [ind, originalName] of serializedComponent.doenetAttributes.originalAssignNames.entries()) {
+        let longNameId = longNameIdBase + ind;
+        let newName = createUniqueName("fromAssignNames", longNameId);
+        assignNames.push(newName);
+
+        let infoForRenaming = {
+          componentName: namespace + newName,
+          originalName: oldNamespace + originalName
+        }
+
+        renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName);
+
+      }
+
     }
 
     renameMatchingTNames(serializedComponent, doenetAttributesByFullTName);
@@ -1700,7 +1735,7 @@ export function processAssignNames({
 
     if (originalNamespace !== null) {
       for (let component of serializedComponents) {
-        setTNamesOutsideNamespaceToAbsolute({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1720,7 +1755,7 @@ export function processAssignNames({
       }
 
       if (originalNamespace !== null) {
-        setTNamesOutsideNamespaceToAbsolute({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1909,7 +1944,7 @@ export function createComponentNamesFromParentName({
 }
 
 
-function setTNamesOutsideNamespaceToAbsolute({ namespace, components, doenetAttributesByFullTName }) {
+function setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components, doenetAttributesByFullTName }) {
 
   let namespaceLength = namespace.length;
   for (let component of components) {
@@ -1925,7 +1960,7 @@ function setTNamesOutsideNamespaceToAbsolute({ namespace, components, doenetAttr
     }
 
     if (component.children) {
-      setTNamesOutsideNamespaceToAbsolute({ namespace, components: component.children, doenetAttributesByFullTName })
+      setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components: component.children, doenetAttributesByFullTName })
     }
   }
 }
@@ -1966,7 +2001,11 @@ function markToCreateAllUniqueNames(components) {
       component.doenetAttributes = {};
     }
     component.doenetAttributes.createUniqueName = true;
-    delete component.doenetAttributes.assignNames;
+    if (component.doenetAttributes.assignNames) {
+      component.doenetAttributes.createUniqueAssignNames = true;
+      component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
+      delete component.doenetAttributes.assignNames;
+    }
     delete component.doenetAttributes.prescribedName;
     if (component.children) {
       markToCreateAllUniqueNames(component.children);

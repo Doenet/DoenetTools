@@ -321,6 +321,16 @@ export default class MathList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nValues = {
+      isAlias: true,
+      targetVariableName: "nComponents"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "maths"
+    };
+
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: ["latexs"],
       public: true,

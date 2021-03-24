@@ -2319,5 +2319,142 @@ describe('Map Tag Tests', function () {
 
   });
 
+  it('can override fixed of source index', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <map assignNames="a b">
+      <template newNamespace>
+      <copy tname="_sourceindex" assignNames="ind" />
+      <mathinput bindValueTo="$ind" />
+      </template>
+      <sources><text>red</text><text>yellow</text></sources>
+    </map>
+    <map assignNames="c d">
+      <template newNamespace>
+      <copy tname="_sourceindex" assignNames="ind" fixed="false"  />
+      <mathinput bindValueTo="$ind" />
+      </template>
+      <sources><text>red</text><text>yellow</text></sources>
+    </map>
+
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '1');
+    cy.get(cesc('#/d/ind')).should('have.text', '2');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}5{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}6{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '5');
+    cy.get(cesc('#/d/ind')).should('have.text', '6');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', 'NaN');
+    cy.get(cesc('#/d/ind')).should('have.text', 'NaN');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}7{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}8{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}10{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '9');
+    cy.get(cesc('#/d/ind')).should('have.text', '10');
+
+
+  });
+
+  it('maps hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first map" />
+    <booleaninput name='h2' prefill="true" label="Hide second map" />
+    <p>Length of map 1: <mathinput name="n1" prefill="4" /></p>
+    <p>Length of map 2: <mathinput name="n2" prefill="4" /></p>
+
+    <p name="m1">map 1: <map hide="$h1">
+    <template>hi$_source </template>
+    <sources><sequence length="$n1" /></sources>
+    </map></p>
+    <p name="m2">map 2: <map hide="$h2">
+    <template>hi$_source </template>
+    <sources><sequence length="$n2" /></sources>
+    </map></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}6{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}8{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 ')
+
+
+  });
+
+
 
 });

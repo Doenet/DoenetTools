@@ -142,6 +142,27 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+  it('number sequence, from and to, not matching', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence from="-3" to="4.1"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(8);
+      for (let i = 0; i < 8; i++) {
+        expect(children[i].stateValues.value).eq(-3 + i);
+      }
+    })
+  });
+
   it('number sequence, from and step', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -918,6 +939,149 @@ describe('Sequence Tag Tests', function () {
     })
   })
 
+  it('number sequence, excluding every 3 plus another', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><sequence name="every3" hide from="2" to="10" step="3" /><aslist><sequence from="1" to="10" exclude="$every3 9" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', '1, 3, 4, 6, 7, 10')
+
+  });
+
+  it('number sequence, excluding from different sources', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist name="e1">4 6</mathlist><exclude name="e2">2 8</exclude><number name="e3">7</number>
+    <p><aslist><sequence from="1" to="10" exclude="$e1 $e2 $e3" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/_p1').should('have.text', '1, 3, 5, 9, 10')
+
+  });
+
+  it('sequences hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first sequence" />
+    <booleaninput name='h2' prefill="true" label="Hide second sequence" />
+    <p>Length of sequence 1: <mathinput name="n1" prefill="4" /></p>
+    <p>Length of sequence 2: <mathinput name="n2" prefill="4" /></p>
+
+    <p name="s1">sequence 1: <sequence hide="$h1" length="$n1" /></p>
+    <p name="s2">sequence 2: <sequence hide="$h2" length="$n2" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: 1234')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}6{enter}", { force: true })
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: 123456')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: ')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: 123456')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}8{enter}", { force: true })
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: ')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: 12345678')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: 12345678')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: 123')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: ')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: 123')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/s1').should('have.text', 'sequence 1: ')
+    cy.get('#\\/s2').should('have.text', 'sequence 2: 1234')
+
+
+  });
+
+  it('can override fixed property', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>From: <mathinput name="from" prefill="1" /></p>
+    <p>Step: <mathinput name="step" prefill="2" /></p>
+
+    <p name="thelist"><aslist><sequence assignNames="a b" from="$from" step="$step" to="7" fixed="false" /></aslist></p>
+
+    <p>Change first: <mathinput name="a2" bindValueTo="$a" /></p>
+    <p>Change second: <mathinput name="b2" bindValueTo="$b" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}21{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '21, 3, 5, 7')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '21, 0, 5, 7')
+
+    cy.get('#\\/from textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '8, 6')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '8, 2')
+
+    cy.get('#\\/step textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '9')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '9')
+
+  });
 
 });
 

@@ -77,6 +77,29 @@ describe('Number Tag Tests', function () {
   })
 
 
+  it(`number becomes non-numeric through inverse`, () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <number name="n">5</number>
+      <mathinput bindValueTo="$n" />
+      ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '5');
+
+    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', {force:true})
+    cy.get('#\\/n').should('have.text', 'NaN');
+
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}9{enter}', {force:true})
+    cy.get('#\\/n').should('have.text', '9');
+
+  })
+
+
   it('number in math', () => {
     cy.window().then((win) => {
       win.postMessage({ doenetML: `

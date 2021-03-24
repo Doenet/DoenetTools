@@ -1771,5 +1771,94 @@ describe('sequence and map assignName Tests', function () {
 
   })
 
+  it('copy _source and _sourceindex assign names, no new template namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" prefill="1" />
+  <p name="m1"><map>
+    <template>Letter <copy tname="_sourceindex" assignNames="n1" /> is <copy tname="_source" assignnames="v1" />. Repeat: letter $n1 is $v1. </template>
+    <sources>
+      <sequence type="letters" length="$n" />
+   </sources>
+  </map></p>
+
+  <p name="m2"><copy name="cpall" tname="_map1" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. ');
+
+    cy.log('change n to 2')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. ');
+
+    cy.log('change n to 0')
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
+
+
+    cy.get('#\\/m1').should('have.text', '');
+    cy.get('#\\/m2').should('have.text', '');
+
+    cy.log('change n to 3')
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. Letter 3 is c. Repeat: letter 3 is c. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. Letter 3 is c. Repeat: letter 3 is c. ');
+
+
+  })
+
+  it('copy _source and _sourceindex assign names, no new template namespace, inside namespace', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" prefill="1" />
+  <p name="m1" newNamespace><map>
+    <template>Letter <copy tname="_sourceindex" assignNames="n1" /> is <copy tname="_source" assignnames="v1" />. Repeat: letter $n1 is $v1. </template>
+    <sources>
+      <sequence type="letters" length="$(../n)" />
+   </sources>
+  </map></p>
+
+  <p name="m2"><copy name="cpall" tname="m1/_map1" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. ');
+
+    cy.log('change n to 2')
+    cy.get('#\\/n textarea').type('{end}{backspace}2{enter}', { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. ');
+
+    cy.log('change n to 0')
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
+
+
+    cy.get('#\\/m1').should('have.text', '');
+    cy.get('#\\/m2').should('have.text', '');
+
+    cy.log('change n to 3')
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. Letter 3 is c. Repeat: letter 3 is c. ');
+    cy.get('#\\/m2').should('have.text', 'Letter 1 is a. Repeat: letter 1 is a. Letter 2 is b. Repeat: letter 2 is b. Letter 3 is c. Repeat: letter 3 is c. ');
+
+
+  })
 
 });

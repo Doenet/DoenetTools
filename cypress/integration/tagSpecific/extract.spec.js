@@ -592,5 +592,57 @@ describe('Extract Tag Tests', function () {
     })
   });
 
+  // not sure if this is desired, but it is current behavior
+  it('extract ignores hide', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>See hidden text: <extract prop="value"><text name="hidden" hide>secret</text></extract></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', 'See hidden text: secret');
+
+
+  });
+
+  it('extracts hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first extract" />
+    <booleaninput name='h2' prefill="true" label="Hide second extract" />
+
+    <p name="e1">extract 1: <extract hide="$h1" prop="value" ><text>hello</text></extract></p>
+    <p name="e2">extract 2: <extract hide="$h2" prop="value" ><text>hello</text></extract></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: hello')
+    cy.get('#\\/e2').should('have.text', 'extract 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: ')
+    cy.get('#\\/e2').should('have.text', 'extract 2: hello')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: hello')
+    cy.get('#\\/e2').should('have.text', 'extract 2: ')
+
+  })
+
 
 });

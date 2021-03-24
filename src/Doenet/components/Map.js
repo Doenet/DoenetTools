@@ -228,32 +228,6 @@ export default class Map extends CompositeComponent {
 
     }
 
-    // let nAssignNames = 0;
-    // if (component.doenetAttributes.assignNames) {
-    //   nAssignNames = component.doenetAttributes.assignNames.length;
-    // }
-    // let nReplacements = replacements.length;
-
-    // if (nAssignNames > nReplacements) {
-    //   let empties = this.createEmptiesFromTemplate({
-    //     nEmptiesToAdd: nAssignNames - nReplacements,
-    //     firstInd: nReplacements,
-    //     assignNames: component.doenetAttributes.assignNames,
-    //     parentName: component.componentName,
-    //     parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-    //     componentInfoObjects,
-    //     additionalArgs: {
-    //       template: component.stateValues.template
-    //     }
-    //   });
-    //   replacements.push(...empties);
-
-    //   workspace.nEmptiesAdded = empties.length;
-
-    // } else {
-    //   workspace.nEmptiesAdded = 0;
-    // }
-
 
     // console.log(`replacements of map`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
@@ -263,7 +237,12 @@ export default class Map extends CompositeComponent {
   static parallelReplacement({ component, iter, componentInfoObjects }) {
 
     let replacements = [deepClone(component.stateValues.template)];
-
+    replacements[0].downstreamDependencies = {
+      [component.componentName]: [{
+        dependencyType: "nonShadowingReplacement",
+      }]
+    };
+    
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
@@ -294,78 +273,6 @@ export default class Map extends CompositeComponent {
 
   }
 
-  // static createEmptiesFromTemplate({ nEmptiesToAdd, firstInd,
-  //   assignNames, parentName, parentCreatesNewNamespace,
-  //   componentInfoObjects, additionalArgs
-  // }) {
-  //   let setToEmptyAndDeleteUnreachable = function (comps) {
-  //     for (let i = comps.length - 1; i >= 0; i--) {
-  //       let comp = comps[i];
-  //       // Since these empties are just for creating names,
-  //       // delete component if it has an unreachable name
-  //       // unless it assignNames.
-  //       let deleteComp = true;
-  //       if (comp.doenetAttributes) {
-  //         if (comp.doenetAttributes.assignNames) {
-  //           deleteComp = false;
-  //         } else {
-  //           let cName = comp.componentName;
-  //           if (cName) {
-  //             let lastSlash = cName.lastIndexOf("/");
-  //             cName = cName.slice(lastSlash + 1);
-  //             if (cName.slice(0, 2) !== "__") {
-  //               deleteComp = false;
-  //             }
-  //           }
-  //         }
-  //       }
-  //       if (deleteComp) {
-  //         comps.splice(i, 1);
-  //       } else {
-  //         comp.componentType = "empty";
-  //         if (comp.children) {
-  //           setToEmptyAndDeleteUnreachable(comp.children);
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   let empties = [];
-
-  //   for (let i = 0; i < nEmptiesToAdd; i++) {
-  //     empties.push(deepClone(additionalArgs.template));
-  //   }
-
-  //   let processResult = processAssignNames({
-  //     assignNames,
-  //     serializedComponents: empties,
-  //     parentName,
-  //     parentCreatesNewNamespace,
-  //     componentInfoObjects,
-  //     indOffset: firstInd,
-  //     addEmpties: false,
-  //   });
-
-  //   empties = processResult.serializedComponents;
-
-  //   for (let i = 0; i < nEmptiesToAdd; i++) {
-  //     empties[i].componentType = "empty";
-  //     if (empties[i].children) {
-  //       setToEmptyAndDeleteUnreachable(empties[i].children);
-  //     }
-  //   }
-
-  //   return empties;
-  // }
-
-  // static returnEmptiesFunctionAndAdditionalArgs(component) {
-  //   return {
-  //     createEmptiesFunction: this.createEmptiesFromTemplate,
-  //     additionalArgs: {
-  //       template: component.stateValues.template
-  //     }
-  //   }
-  // }
 
   static recurseThroughCombinations({ component, sourcesNumber,
     childnumberArray = [], iterateNumber, componentInfoObjects }) {
@@ -377,9 +284,16 @@ export default class Map extends CompositeComponent {
       if (sourcesNumber >= component.stateValues.nSources - 1) {
         iterateNumber++;
 
+        let serializedComponents = [deepClone(component.stateValues.template)];
+        serializedComponents[0].downstreamDependencies = {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        };
+
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,
-          serializedComponents: [deepClone(component.stateValues.template)],
+          serializedComponents,
           parentName: component.componentName,
           parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
           componentInfoObjects,
@@ -686,27 +600,6 @@ export default class Map extends CompositeComponent {
         if (component.doenetAttributes.assignNames) {
           nAssignNames = component.doenetAttributes.assignNames.length;
         }
-        // let nReplacements = replacements.length + prevMinNIterates;
-
-        // let newNEmptiesAdded = 0;
-
-        // if (nAssignNames > nReplacements) {
-        //   let empties = this.createEmptiesFromTemplate({
-        //     nEmptiesToAdd: nAssignNames - nReplacements,
-        //     firstInd: nReplacements,
-        //     assignNames: component.doenetAttributes.assignNames,
-        //     parentName: component.componentName,
-        //     parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-        //     componentInfoObjects,
-        //     additionalArgs: {
-        //       template: component.stateValues.template
-        //     }
-        //   });
-        //   replacements.push(...empties);
-
-        //   newNEmptiesAdded = empties.length;
-
-        // }
 
         let replacementInstruction = {
           changeType: "add",

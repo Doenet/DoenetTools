@@ -129,6 +129,9 @@ export default class NumberComponent extends InlineComponent {
         let desiredValue = desiredStateVariableValues.value;
         if (desiredValue instanceof me.class) {
           desiredValue = desiredValue.evaluate_to_constant();
+          if(!Number.isFinite(desiredValue)) {
+            desiredValue = NaN;
+          }
         } else {
           desiredValue = Number(desiredValue);
         }
