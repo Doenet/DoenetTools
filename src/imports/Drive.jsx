@@ -2144,19 +2144,21 @@ const DoenetML = React.memo((props)=>{
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
+  
+  const indentPx = 20;
 
-  let columns = '250px repeat(3,1fr)';
+  let woIndent = 250 - props.indentLevel * indentPx;
+  let columns = `${woIndent}px repeat(3,1fr)`;
   if (props.numColumns === 3){
-    columns = '250px 1fr 1fr';
+    columns = `${woIndent}px 1fr 1fr`;
   }else if (props.numColumns === 2){
-    columns = '250px 1fr';
+    columns = `${woIndent}px 1fr`;
   }else if (props.numColumns === 1){
     columns = '100%';
   }
 
 
 
-  const indentPx = 20;
   let bgcolor = "#f6f8ff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
