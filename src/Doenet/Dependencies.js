@@ -3033,6 +3033,94 @@ class ReplacementDependency extends Dependency {
 
 dependencyTypeArray.push(ReplacementDependency);
 
+class SourceCompositeDependency extends Dependency {
+  static dependencyType = "sourceCompositeStateVariable";
+
+  setUpParameters() {
+
+    if (this.definition.replacementName) {
+      this.replacementName = this.definition.replacementName
+      this.specifiedComponentName = this.replacementName;
+    } else {
+      this.replacementName = this.upstreamComponentName;
+    }
+
+    if (!this.definition.variableName) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: must have a variableName`)
+    } else {
+      this.originalDownstreamVariableNames = [this.definition.variableName];
+    }
+
+    this.returnSingleVariableValue = true;
+
+    // for source composite state variable
+    // always make variables optional so that don't get error
+    // depending on source composite (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let replacement = this.dependencyHandler._components[this.replacementName];
+
+    if (!replacement) {
+      if (this.specifiedComponentName) {
+        let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+        if (!dependenciesMissingComponent) {
+          dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName] = [];
+        }
+        if (!dependenciesMissingComponent.includes(this)) {
+          dependenciesMissingComponent.push(this);
+        }
+
+        this.unresolvedSpecifiedComponent = this.specifiedComponentName;
+
+      }
+
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    delete this.unresolvedSpecifiedComponent;
+
+    if (!replacement.replacementOf) {
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = replacement.replacementOf;
+
+    return {
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(SourceCompositeDependency);
+
 
 class CountAmongSiblingsDependency extends Dependency {
   static dependencyType = "countAmongSiblingsOfSameType";

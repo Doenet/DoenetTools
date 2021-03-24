@@ -104,23 +104,13 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static createSerializedReplacements({ component }) {
 
     if (!component.stateValues.rendered) {
       return { replacements: [] };
     } else {
 
       let replacements = deepClone(component.state.serializedChildren.value);
-
-      if (component.stateValues.hide) {
-        // if template is hidden, then make each of its replacements hidden
-        for (let rep of replacements) {
-          if (!rep.state) {
-            rep.state = {};
-          }
-          rep.state.hide = true;
-        }
-      }
 
       return { replacements }
     }

@@ -784,7 +784,7 @@ export default class Core {
 
   createIsolatedComponentsSub({ serializedComponents, ancestors,
     applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
-    createNameContext = "", namespaceForUnamed = "/",
+    createNameContext = "", namespaceForUnamed = "/", componentsReplacementOf,
   }
   ) {
 
@@ -853,6 +853,7 @@ export default class Core {
         componentClass,
         applyAdapters, shadow, updatesNeeded, compositesBeingExpanded,
         namespaceForUnamed,
+        componentsReplacementOf,
       });
 
       let newComponent = createResult.newComponent;
@@ -874,7 +875,7 @@ export default class Core {
     ancestors, componentClass,
     applyAdapters = true, shadow = false,
     updatesNeeded, compositesBeingExpanded,
-    namespaceForUnamed = "/",
+    namespaceForUnamed = "/", componentsReplacementOf
   }) {
 
     // first recursively create children
@@ -1117,6 +1118,10 @@ export default class Core {
     });
 
     this.registerComponent(newComponent);
+
+    if (componentsReplacementOf) {
+      newComponent.replacementOf = componentsReplacementOf
+    }
 
     for (let name in prescribedDependencies) {
       let depArray = prescribedDependencies[name];
@@ -1591,6 +1596,7 @@ export default class Core {
       compositesBeingExpanded,
       createNameContext: component.componentName + "|replacements",
       namespaceForUnamed,
+      componentsReplacementOf: component
     });
 
     this.parameterStack.pop();
@@ -1599,11 +1605,6 @@ export default class Core {
     this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     component.isExpanded = true;
-
-    // record for top level replacement that they are a replacement of composite
-    for (let comp of component.replacements) {
-      comp.replacementOf = component;
-    }
 
     // resolve replacement state variables
     let stateVariables = [];
@@ -1869,7 +1870,7 @@ export default class Core {
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.property] = dep.ancestorIdentity;
-          } else if(dep.dependencyType === "nonShadowingReplacement") {
+          } else if (dep.dependencyType === "nonShadowingReplacement") {
             redefineDependencies = {
               linkSource: "nonShadowingReplacement",
               compositeName: name,
@@ -2650,7 +2651,7 @@ export default class Core {
       }
     }
 
-    if(isNonShadowingReplacement) {
+    if (isNonShadowingReplacement) {
       return;
     }
 
@@ -5674,7 +5675,7 @@ export default class Core {
             // (presumably an array entry) is recreated
             // TODO: will there be a case where the state variable is not recreatd
             // such as when have a different component?
-            if(updatesNeeded.recreatedComponents[componentName]) {
+            if (updatesNeeded.recreatedComponents[componentName]) {
               continue;
             }
             throw Error(`Reference to invalid state variable ${varName} of ${componentName}`);
@@ -7191,6 +7192,7 @@ export default class Core {
             compositesBeingExpanded,
             createNameContext: component.componentName + "|replacements",
             namespaceForUnamed,
+            componentsReplacementOf: component
           });
 
           newComponents = createResult.components;
@@ -7269,11 +7271,6 @@ export default class Core {
             // splice in new replacements
             composite.replacements.splice(firstIndex, 0, ...newReplacements);
             this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
-
-            // record for top level replacement that they are a replacement of composite
-            for (let comp of newReplacements) {
-              comp.replacementOf = composite;
-            }
 
             let newChange = {
               changeType: "addedReplacements",
@@ -7700,6 +7697,7 @@ export default class Core {
           compositesBeingExpanded,
           createNameContext: shadowingComponent.componentName + "|replacements",
           namespaceForUnamed,
+          componentsReplacementOf: shadowingComponent
         });
 
         this.parameterStack.pop();
