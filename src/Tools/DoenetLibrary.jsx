@@ -900,7 +900,10 @@ export default function DoenetLibraryTool(props) {
           
         </mainPanel>
       <supportPanel>
+      <Container>
+
       <Drive types={['content','course']}  urlClickBehavior="select" />
+      </Container>
       </supportPanel>
 
       <menuPanel title="Selected">
