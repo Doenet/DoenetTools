@@ -1812,9 +1812,9 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
   <point xs="3 2">
@@ -1888,9 +1888,9 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
   <point xs="3 2">

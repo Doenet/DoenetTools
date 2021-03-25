@@ -3084,12 +3084,12 @@ describe('Answer Tag Tests', function () {
     <text>a</text>
     <map>
       <template>
-        <p>Enter <m>x^<copy tname="_source" /></m>: <answer><award><math>x^<copy tname="_source" /></math></award></answer></p>
+        <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
         <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" /></p>
         <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
         <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
       </template>
-      <sources><sequence from="1" to="3" /></sources>
+      <sources alias="n"><sequence from="1" to="3" /></sources>
     </map>
     `}, "*");
     });
@@ -3411,12 +3411,12 @@ describe('Answer Tag Tests', function () {
     <text>a</text>
     <map assignNames="a b c">
       <template newNamespace>
-        <p>Enter <m>x^<copy tname="_source" /></m>: <answer><award><math>x^<copy tname="_source" /></math></award></answer></p>
+        <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
         <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" tname="_answer1" /></p>
         <p>Current response: <copy assignNames="cr" prop="currentResponse" tname="_answer1" /></p>
         <p>Submitted response: <copy assignNames="sr" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
       </template>
-      <sources><sequence from="1" to="3" /></sources>
+      <sources alias="n"><sequence from="1" to="3" /></sources>
     </map>
     `}, "*");
     });
@@ -6140,10 +6140,10 @@ describe('Answer Tag Tests', function () {
     <choiceinput>
       <map>
         <template>
-          <choice credit="$_source">
-          Get <number displaydigits="3"><copy tname="_source" /></number>, plus a bit is <math displaydigits="3" simplify><copy tname="_source" />+0.001</math></choice>
+          <choice credit="$m">
+          Get <number displaydigits="3"><copy tname="m" /></number>, plus a bit is <math displaydigits="3" simplify><copy tname="m" />+0.001</math></choice>
         </template>
-        <sources>
+        <sources alias="m">
           <sequence from="0" to="1" length="$num" />
         </sources>
       </map>

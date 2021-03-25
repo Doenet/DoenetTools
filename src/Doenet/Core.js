@@ -900,8 +900,7 @@ export default class Core {
       componentClass.modifySharedParameters({ sharedParameters, serializedComponent });
     }
 
-    if (serializedComponent.doenetAttributes.pushSharedParameters
-    ) {
+    if (serializedComponent.doenetAttributes.pushSharedParameters) {
       for (let parInstruction of serializedComponent.doenetAttributes.pushSharedParameters) {
         let pName = parInstruction.parameterName;
         if (pName in sharedParameters) {
@@ -911,6 +910,19 @@ export default class Core {
           sharedParameters[pName] = [];
         }
         sharedParameters[pName].push(parInstruction.value);
+      }
+    }
+
+    if (serializedComponent.doenetAttributes.addToSharedParameters) {
+      for (let parInstruction of serializedComponent.doenetAttributes.addToSharedParameters) {
+        let pName = parInstruction.parameterName;
+        if (pName in sharedParameters) {
+          sharedParameters[pName] = Object.assign({}, sharedParameters[pName]);
+        }
+        else {
+          sharedParameters[pName] = {};
+        }
+        sharedParameters[pName][parInstruction.key] = parInstruction.value;
       }
     }
 

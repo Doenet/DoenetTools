@@ -46,18 +46,21 @@ export default class Map extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSources = {
-      additionalStateVariablesDefined: ["sourcesNames"],
+      additionalStateVariablesDefined: ["sourcesNames", "sourceAliases", "sourceIndexAliases"],
       returnDependencies: () => ({
         sourcesChildren: {
           dependencyType: "child",
           childLogicName: "atLeastOneSources",
+          variableNames: ["alias", "indexAlias"]
         },
       }),
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
             nSources: dependencyValues.sourcesChildren.length,
-            sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName)
+            sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName),
+            sourceAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.alias),
+            sourceIndexAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.indexAlias),
           }
         }
       },
@@ -242,7 +245,7 @@ export default class Map extends CompositeComponent {
         dependencyType: "nonShadowingReplacement",
       }]
     };
-    
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
@@ -255,19 +258,7 @@ export default class Map extends CompositeComponent {
 
     replacements = processResult.serializedComponents;
 
-    replacements[0].doenetAttributes.pushSharedParameters = [
-      {
-        parameterName: "sourcesInfo",
-        value: component.stateValues.sourcesNames.map(x => ({
-          name: x,
-          childNumber: iter
-        })),
-      },
-      {
-        parameterName: "sourcesChildIndices",
-        value: Array(component.stateValues.nSources).fill(iter + 1),
-      }
-    ];
+    addSharedParameters(replacements[0], component, Array(component.stateValues.nSources).fill(iter));
 
     return replacements;
 
@@ -303,19 +294,7 @@ export default class Map extends CompositeComponent {
 
         let thisRepl = processResult.serializedComponents[0];
 
-        thisRepl.doenetAttributes.pushSharedParameters = [
-          {
-            parameterName: "sourcesInfo",
-            value: component.stateValues.sourcesNames.map((x, i) => ({
-              name: x,
-              childNumber: newChildnumberArray[i]
-            })),
-          },
-          {
-            parameterName: "sourcesChildIndices",
-            value: newChildnumberArray.map(i => i + 1),
-          }
-        ];
+        addSharedParameters(thisRepl, component, newChildnumberArray);
 
         replacements.push(thisRepl)
 
@@ -667,3 +646,37 @@ export default class Map extends CompositeComponent {
   }
 
 }
+function addSharedParameters(thisRepl, component, newChildnumberArray) {
+
+  let addToPars = thisRepl.doenetAttributes.addToSharedParameters = [];
+
+  for (let [ind, alias] of component.stateValues.sourceAliases.entries()) {
+    if (alias) {
+      let sourcesName = component.stateValues.sourcesNames[ind];
+
+      addToPars.push({
+        parameterName: "sourceNameMappings",
+        key: alias,
+        value: {
+          name: sourcesName,
+          childNumber: newChildnumberArray[ind]
+        },
+      })
+    }
+
+  }
+
+  for (let [ind, indexAlias] of component.stateValues.sourceIndexAliases.entries()) {
+
+    if (indexAlias) {
+      addToPars.push({
+        parameterName: "sourceIndexMappings",
+        key: indexAlias,
+        value: newChildnumberArray[ind] + 1,
+      })
+
+    }
+  }
+
+}
+

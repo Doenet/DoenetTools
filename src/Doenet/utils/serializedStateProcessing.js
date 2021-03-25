@@ -382,8 +382,11 @@ export function createComponentsFromProps(serializedComponents, standardComponen
           }
           newChildren.push(newComponent);
           delete component.props[prop];
-        } else if (!["name", "assignnames", "newnamespace", "tname", "prop", "type", "frommapancestor", "fromsources"].includes(propLower)) {
-          throw Error("Invalid property: " + prop);
+        } else if (![
+          "name", "assignnames", "newnamespace", "tname", "prop",
+          "type", "alias", "indexalias"
+        ].includes(propLower)) {
+          throw Error("Invalid attribute: " + prop);
         }
       }
       component.children.unshift(...newChildren);
@@ -1094,8 +1097,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     let tName = doenetAttributes.tName;
     let propName = doenetAttributes.propName;
     let type = doenetAttributes.type;
-    let fromMapAncestor = doenetAttributes.fromMapAncestor;
-    let fromSources = doenetAttributes.fromSources;
+    let alias = doenetAttributes.alias;
+    let indexAlias = doenetAttributes.indexAlias;
 
     let mustCreateUniqueName =
       componentType === "string"
@@ -1116,7 +1119,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     if (props === undefined) {
       props = serializedComponent.props = {};
     } else {
-      // look for a property that matches name, assignNames, or newNamespace
+      // look for a property that matches an attribute
       // but case insensitive
       for (let key in props) {
         let lowercaseKey = key.toLowerCase();
@@ -1173,19 +1176,19 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           } else {
             throw Error("Cannot define type twice for a component");
           }
-        } else if (lowercaseKey === "frommapancestor") {
-          if (fromMapAncestor === undefined) {
-            fromMapAncestor = props[key].toLowerCase();
+        } else if (lowercaseKey === "alias") {
+          if (alias === undefined) {
+            alias = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define fromMapAncestor twice for a component");
+            throw Error("Cannot define alias twice for a component");
           }
-        } else if (lowercaseKey === "fromsources") {
-          if (fromSources === undefined) {
-            fromSources = props[key].toLowerCase();
+        } else if (lowercaseKey === "indexalias") {
+          if (indexAlias === undefined) {
+            indexAlias = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define fromSources twice for a component");
+            throw Error("Cannot define indexAlias twice for a component");
           }
         }
       }
@@ -1252,6 +1255,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         throw Error("Duplicate assigned names");
       }
     }
+
+
     if (newNamespace) {
       // newNamespace was specified
       // put in doenetAttributes as boolean
@@ -1327,7 +1332,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           namespace += namespaceStack[l].namespace + '/';
         }
         let lastInd = serializedComponent.originalName.lastIndexOf("/");
-        oldNamespace = serializedComponent.originalName.slice(0, lastInd+1)
+        oldNamespace = serializedComponent.originalName.slice(0, lastInd + 1)
       } else {
         namespace = componentName + '/';
         oldNamespace = serializedComponent.originalName + '/';
@@ -1386,19 +1391,36 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       doenetAttributes.type = componentClass.defaultType;
     }
 
-    if (fromMapAncestor) {
-      if (!componentClass.acceptFromMapAncestor) {
-        throw Error(`Component type ${componentType} does not accept a fromMapAncestor property`);
+    if (alias) {
+
+      if (!componentClass.acceptAlias) {
+        throw Error("Cannot specify alias for component type " + serializedComponent.componentType);
       }
-      doenetAttributes.fromMapAncestor = fromMapAncestor
+      doenetAttributes.alias = alias;
+
+      if (!(/[a-zA-Z_]/.test(alias.substring(0, 1)))) {
+        throw Error("All aliases must begin with a letter or an underscore");
+      }
+      if (!(/^[a-zA-Z0-9_-]+$/.test(alias))) {
+        throw Error("Aliases can contain only letters, numbers, hyphens, and underscores");
+      }
     }
 
-    if (fromSources) {
-      if (!componentClass.acceptFromSources) {
-        throw Error(`Component type ${componentType} does not accept a fromSources property`);
+    if (indexAlias) {
+
+      if (!componentClass.acceptIndexAlias) {
+        throw Error("Cannot specify index alias for component type " + serializedComponent.componentType);
       }
-      doenetAttributes.fromSources = fromSources
+      doenetAttributes.indexAlias = indexAlias;
+
+      if (!(/[a-zA-Z_]/.test(indexAlias.substring(0, 1)))) {
+        throw Error("All index aliases must begin with a letter or an underscore");
+      }
+      if (!(/^[a-zA-Z0-9_-]+$/.test(indexAlias))) {
+        throw Error("Index aliases can contain only letters, numbers, hyphens, and underscores");
+      }
     }
+
 
     if (serializedComponent.children !== undefined) {
 

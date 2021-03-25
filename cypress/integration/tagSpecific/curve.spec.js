@@ -451,8 +451,8 @@ describe('Curve Tag Tests', function () {
     <p>Step size: <mathinput /></p>
     
     <map hide>
-      <template><point>(<copy tname="_source" />, sin(<copy tname="_source" />))</point></template>
-      <sources>
+      <template><point>($x, sin($x))</point></template>
+      <sources alias="x">
         <sequence from="0" length="$_mathinput1" step="$_mathinput2" />
       </sources>
     </map>

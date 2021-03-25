@@ -1938,22 +1938,22 @@ describe('Collection assignName Tests', function () {
     <map>
       <template>
         <point>
-          (<copy tname="_source" />+<math>0</math>,
-          <copy tname="_sourceindex" />+<math>0</math>)
+          ($n+<math>0</math>,
+          $i+<math>0</math>)
         </point>
       </template>
-      <sources>
+      <sources alias="n" indexAlias="i">
         <sequence from="2" length="$n1" />
       </sources>
     </map>
     <map>
       <template>
         <point>
-          (-<copy tname="_source" />+<math>0</math>,
-          -<copy tname="_sourceindex" />+<math>0</math>)
+          (-$n+<math>0</math>,
+          -$i+<math>0</math>)
         </point>
       </template>
-      <sources>
+      <sources alias="n" indexAlias="i">
         <sequence from="2" length="$n2" />
       </sources>
     </map>
@@ -4276,15 +4276,15 @@ describe('Collection assignName Tests', function () {
       <template newNamespace>
         <map hide>
           <template>
-            <math><copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+            <math>$b$a + <math>0</math></math>
           </template>
-          <sources>
+          <sources alias="a">
             <sequence length="$(../nd1)" />
           </sources>
         </map>
         <point xs="$_map1" />
       </template>
-      <sources>
+      <sources alias="b">
         <sequence length="$n1" />
       </sources>
     </map>
@@ -4292,15 +4292,15 @@ describe('Collection assignName Tests', function () {
       <template newNamespace>
         <map>
           <template>
-            <math>-<copy tname="_source" fromMapAncestor="2" /><copy tname="_source" /> + <math>0</math></math>
+            <math>-$b$a + <math>0</math></math>
           </template>
-          <sources>
+          <sources alias="a">
             <sequence length="$(../nd2)" />
           </sources>
         </map>
         <point xs="$_map1" />
       </template>
-      <sources>
+      <sources alias="b">
         <sequence length="$n2" />
       </sources>
     </map>
