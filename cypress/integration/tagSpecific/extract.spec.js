@@ -354,8 +354,8 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template newnamespace><point>(<copy tname="_source" />+<copy prop="value" tname="../m" />,0)</point></template>
-        <sources>
+        <template newnamespace><point>($a+<copy prop="value" tname="../m" />,0)</point></template>
+        <sources alias="a">
           <sequence length="$n" />
         </sources>
       </map>

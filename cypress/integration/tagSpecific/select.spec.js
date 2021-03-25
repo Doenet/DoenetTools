@@ -2656,26 +2656,26 @@ describe('Select Tag Tests', function () {
     <option><map assignnames="a b" newNamespace>
       <template newNamespace>
         <select assignnames="(p q) (r s)" numbertoselect="2">
-          <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
-          <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
-          <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
-          <option><math><copy tname="_source" />^5</math><math><copy tname="_source" />^9</math></option>
+          <option><math>$x^2</math><math>$x^6</math></option>
+          <option><math>$x^3</math><math>$x^7</math></option>
+          <option><math>$x^4</math><math>$x^8</math></option>
+          <option><math>$x^5</math><math>$x^9</math></option>
         </select>
       </template>
-      <sources>
+      <sources alias="x">
         <math>x</math><math>y</math>
       </sources>
     </map></option>
     <option><map assignnames="a b" newNamespace>
       <template newNamespace>
         <select assignnames="(p q) (r s)" numbertoselect="2">
-          <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
-          <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
-          <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
-          <option><math><copy tname="_source" />5</math><math><copy tname="_source" />9</math></option>
+          <option><math>$x 2</math><math>$x 6</math></option>
+          <option><math>$x 3</math><math>$x 7</math></option>
+          <option><math>$x 4</math><math>$x 8</math></option>
+          <option><math>$x 5</math><math>$x 9</math></option>
         </select>
       </template>
-      <sources>
+      <sources alias="x">
         <math>u</math><math>v</math>
       </sources>
     </map></option>
@@ -2731,26 +2731,26 @@ describe('Select Tag Tests', function () {
     <option><map name="m" newnamespace assignnames="a b">
       <template newnamespace>
         <select name="v" newnamespace assignnames="(p q) (r s)" numbertoselect="2">
-          <option><math><copy tname="_source" />^2</math><math><copy tname="_source" />^6</math></option>
-          <option><math><copy tname="_source" />^3</math><math><copy tname="_source" />^7</math></option>
-          <option><math><copy tname="_source" />^4</math><math><copy tname="_source" />^8</math></option>
-          <option><math><copy tname="_source" />^5</math><math><copy tname="_source" />^9</math></option>
+          <option><math>$x^2</math><math>$x^6</math></option>
+          <option><math>$x^3</math><math>$x^7</math></option>
+          <option><math>$x^4</math><math>$x^8</math></option>
+          <option><math>$x^5</math><math>$x^9</math></option>
         </select>
       </template>
-      <sources>
+      <sources alias="x">
         <math>x</math><math>y</math>
       </sources>
     </map></option>
     <option><map name="n" newnamespace assignnames="a b">
       <template newnamespace>
         <select name="v" newnamespace assignnames="(p q) (r s)" numbertoselect="2">
-          <option><math><copy tname="_source" />2</math><math><copy tname="_source" />6</math></option>
-          <option><math><copy tname="_source" />3</math><math><copy tname="_source" />7</math></option>
-          <option><math><copy tname="_source" />4</math><math><copy tname="_source" />8</math></option>
-          <option><math><copy tname="_source" />5</math><math><copy tname="_source" />9</math></option>
+          <option><math>$x 2</math><math>$x 6</math></option>
+          <option><math>$x 3</math><math>$x 7</math></option>
+          <option><math>$x 4</math><math>$x 8</math></option>
+          <option><math>$x 5</math><math>$x 9</math></option>
         </select>
       </template>
-      <sources>
+      <sources alias="x">
         <math>u</math><math>v</math>
       </sources>
     </map></option>

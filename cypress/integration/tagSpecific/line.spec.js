@@ -2653,11 +2653,11 @@ describe('Line Tag Tests', function () {
   <map hide>
     <template>
       <point>
-        (<copy tname="_source" /> + <math>0</math>,
-        2<copy tname="_source" /> + <math>0</math>)
+        ($x + <math>0</math>,
+        2$x + <math>0</math>)
       </point>
     </template>
-    <sources>
+    <sources alias="x">
       <sequence length="$_mathinput1" />
     </sources>
   </map>
@@ -3801,10 +3801,10 @@ describe('Line Tag Tests', function () {
   <map hide>
     <template>
       <point>
-        (<copy tname="_source" />, 2<copy tname="_source" />)
+        ($x, 2$x)
       </point>
     </template>
-    <sources>
+    <sources alias="x">
       <sequence length="$_mathinput1" />
     </sources>
   </map>

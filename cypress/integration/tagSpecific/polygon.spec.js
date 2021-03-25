@@ -157,8 +157,8 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="length" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-    <sources><sequence from="0" length="$length" /></sources>
+    <template><point>($x, 5sin($x))</point></template>
+    <sources alias="x"><sequence from="0" length="$length" /></sources>
   </map>
   <polygon vertices="$_map1" />
   </graph>
@@ -281,8 +281,8 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="length" prefill="0" />
   <graph>
   <map>
-    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-    <sources><sequence from="0" length="$length" /></sources>
+    <template><point>($x, 5sin($x))</point></template>
+    <sources alias="x"><sequence from="0" length="$length" /></sources>
   </map>
   <polygon vertices="$_map1" />
   </graph>
@@ -403,8 +403,8 @@ describe('Polygon Tag Tests', function () {
 
   <graph>
   <map hide>
-    <template><point>(<copy tname="_source" />, 5sin(<copy tname="_source" />))</point></template>
-    <sources><sequence from="-5" to="5"/></sources>
+    <template><point>($x, 5sin($x))</point></template>
+    <sources alias="x"><sequence from="-5" to="5"/></sources>
   </map>
   <polygon vertices="$_map1" />
   </graph>
@@ -532,8 +532,8 @@ describe('Polygon Tag Tests', function () {
 
   <graph>
   <map hide>
-    <template><point>(<copy tname="_source" /> + <math>0</math>, 5sin(<copy tname="_source" />) + <math>0</math>)</point></template>
-    <sources><sequence from="-5" to="5"/></sources>
+    <template><point>($x + <math>0</math>, 5sin($x) + <math>0</math>)</point></template>
+    <sources alias="x"><sequence from="-5" to="5"/></sources>
   </map>
   <polygon vertices='$_map1' />
   </graph>
@@ -890,13 +890,13 @@ describe('Polygon Tag Tests', function () {
     <polygon vertices=" (0,0) (3,-4) (1,-6) (-5,-6) " />
     <map hide>
       <template newNamespace>
-        <point>(<extract prop="x"><copy tname="_source"  fixed="false"/></extract>+
+        <point>(<extract prop="x"><copy tname="x" fixed="false"/></extract>+
           <copy prop="value" modifyIndirectly="false" tname="../transx" />,
-        <extract prop="y"><copy tname="_source"  fixed="false" /></extract>+
+        <extract prop="y"><copy tname="x" fixed="false" /></extract>+
         <copy prop="value" modifyIndirectly="false" tname="../transy" />)
         </point>
       </template>
-      <sources>
+      <sources alias="x">
         <copy prop="vertices" name="vs" tname="_polygon1" />
       </sources>
     </map>

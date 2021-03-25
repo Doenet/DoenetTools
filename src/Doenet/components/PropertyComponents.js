@@ -1001,5 +1001,5 @@ export class InDegrees extends BooleanComponent {
 }
 
 export class BetweenLines extends LineListComponent {
-  static componentType = "betweenLines"
+  static componentType = "betweenLines";
 }

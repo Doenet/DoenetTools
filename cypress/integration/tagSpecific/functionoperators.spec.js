@@ -27,20 +27,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate><copy tname="../clamp01" /><input>$x</input></evaluate></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../clampn35)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -117,20 +117,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate><copy tname="../wrap01" /><input>$x</input></evaluate></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../wrapn23)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../wrapn23)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>

@@ -282,16 +282,16 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
-        <sources><sequence to="$length" /></sources>
+        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template newNamespace><point>(<extract prop="x"><copy tname="_source" /></extract>+1, 1.5*<extract prop="y"><copy tname="_source" /></extract>)</point></template>
-      <sources><collect componentTypes="point" tname="_map1"/></sources>
+      <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
+      <sources alias="p"><collect componentTypes="point" tname="_map1"/></sources>
     </map>
 
     </graph>
@@ -495,16 +495,16 @@ describe('Collect Tag Tests', function () {
     <section>
     <group>
       <map>
-        <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
-        <sources><sequence to="$length" /></sources>
+        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
     </group>
 
     <group>
       <map>
-      <template newNamespace><point>(<extract prop="x"><copy tname="_source" /></extract>+1, 1.5*<extract prop="y"><copy tname="_source" /></extract>)</point></template>
-      <sources><collect componentTypes="point" tname="_map1"/></sources>
+      <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
+      <sources alias="p"><collect componentTypes="point" tname="_map1"/></sources>
     </map>
 
     </group>
@@ -993,16 +993,16 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map>
-        <template newNamespace><point>(<copy tname="_source" />, <copy prop="value" tname="../mult" /><copy tname="_source" />)</point></template>
-        <sources><sequence to="$length" /></sources>
+        <template newNamespace><point>($x, <copy prop="value" tname="../mult" />$x)</point></template>
+        <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template newNamespace><point>(<extract prop="x"><copy tname="_source" /></extract>+1, 1.5*<extract prop="y"><copy tname="_source" /></extract>)</point></template>
-      <sources><collect componentTypes="point" tname="_map1" maximumnumber="$maxnumber" /></sources>
+      <template newNamespace><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
+      <sources alias="p"><collect componentTypes="point" tname="_map1" maximumnumber="$maxnumber" /></sources>
     </map>
 
     </graph>
@@ -2043,8 +2043,8 @@ describe('Collect Tag Tests', function () {
 
     <p>
       <map>
-        <template><text>Hello, $_source! </text></template>
-        <sources><sequence type="letters" from="a" length="$n" /></sources>
+        <template><text>Hello, $l! </text></template>
+        <sources alias="l"><sequence type="letters" from="a" length="$n" /></sources>
       </map>
     </p>
 

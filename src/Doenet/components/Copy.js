@@ -16,8 +16,6 @@ export default class Copy extends CompositeComponent {
 
   static acceptTname = true;
   static acceptProp = true;
-  static acceptFromMapAncestor = true;
-  static acceptFromSources = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
 
@@ -88,30 +86,6 @@ export default class Copy extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.fromMapAncestor = {
-      returnDependencies: () => ({
-        fromMapAncestor: {
-          dependencyType: "doenetAttribute",
-          attributeName: "fromMapAncestor"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { fromMapAncestor: dependencyValues.fromMapAncestor }
-      })
-    }
-
-    stateVariableDefinitions.fromSources = {
-      returnDependencies: () => ({
-        fromSources: {
-          dependencyType: "doenetAttribute",
-          attributeName: "fromSources"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { fromSources: dependencyValues.fromSources }
-      })
-    }
-
     stateVariableDefinitions.tName = {
       returnDependencies: () => ({
         tName: {
@@ -126,43 +100,26 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.targetSourcesName = {
       additionalStateVariablesDefined: ["sourcesChildNumber"],
-      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSources", "tName"],
+      stateVariablesDeterminingDependencies: ["tName"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
-        if (stateValues.tName !== "_source") {
+        let sourceNameMappings = sharedParameters.sourceNameMappings;
+        if (!sourceNameMappings) {
           return {};
         }
 
-        let sourcesInfo = sharedParameters.sourcesInfo;
-
-        if (sourcesInfo === undefined) {
-          console.error(`Cannot copy _source when not inside a map template.`);
+        let theMapping = sourceNameMappings[stateValues.tName];
+        if (!theMapping) {
           return {};
         }
-
-        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
-        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
-
-        let level = sourcesInfo.length - fromMapAncestor;
-        let infoForLevel = sourcesInfo[level];
-        if (infoForLevel === undefined) {
-          console.error(`For copy of _source, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
-          return {};
-        }
-        let infoForSources = infoForLevel[fromSources - 1];
-        if (infoForSources === undefined) {
-          console.error(`For copy of _source, invalid value of fromSources: ${stateValues.fromSources}`);
-          return {};
-        };
-
         return {
           targetSourcesName: {
             dependencyType: "value",
-            value: infoForSources.name,
+            value: theMapping.name,
           },
           sourcesChildNumber: {
             dependencyType: "value",
-            value: infoForSources.childNumber
+            value: theMapping.childNumber
           }
         }
 
@@ -205,40 +162,24 @@ export default class Copy extends CompositeComponent {
 
 
     stateVariableDefinitions.sourceIndex = {
-      stateVariablesDeterminingDependencies: ["tName", "fromMapAncestor", "fromSources"],
+      stateVariablesDeterminingDependencies: ["tName"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
-        if (stateValues.tName !== "_sourceindex") {
+
+        let sourceIndexMappings = sharedParameters.sourceIndexMappings;
+        if (!sourceIndexMappings) {
           return {};
         }
 
-        let sourcesChildIndices = sharedParameters.sourcesChildIndices;
-
-        if (sourcesChildIndices === undefined) {
-          console.error(`Cannot copy _sourceindex when not inside a map template.`);
+        let theMapping = sourceIndexMappings[stateValues.tName];
+        if (theMapping === undefined) {
           return {};
         }
-
-        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
-        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
-
-        let level = sourcesChildIndices.length - fromMapAncestor;
-        let childIndices = sourcesChildIndices[level];
-        if (childIndices === undefined) {
-          console.error(`For copy of _sourceindex, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
-          return {};
-        }
-        let childIndex = childIndices[fromSources - 1];
-        if (childIndex === undefined) {
-          console.error(`For copy of _sourceindex, invalid value of fromSources: ${stateValues.fromSources}`);
-          return {};
-        };
 
         return {
           sourceIndex: {
             dependencyType: "value",
-            value: childIndex,
-          }
-
+            value: theMapping,
+          },
         }
 
       },
