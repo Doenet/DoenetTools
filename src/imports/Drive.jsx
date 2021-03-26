@@ -56,7 +56,7 @@ import ChildLogic from '../Doenet/ChildLogic';
 import { 
   useDeleteItem,
   useMoveItems,
-  useReplaceDragShadow,
+  useDragShadowCallbacks,
   useSortFolder
 } from './DriveActions';
 
@@ -1091,7 +1091,7 @@ export const fetchDrivesSelector = selector({
   }
 })
 
-const folderOpenAtom = atomFamily({
+export const folderOpenAtom = atomFamily({
   key:"folderOpenAtom",
   default:false
 })
@@ -1174,6 +1174,7 @@ function Folder(props){
 
   const toast = useToast();
   const {sortFolder, invalidateSortCache, onSortFolderError} = useSortFolder();
+  const {insertDragShadow, removeDragShadow} = useDragShadowCallbacks();
 
   //Set only when parentFolderId changes
   const setInstanceParentId = useSetRecoilState(driveInstanceParentFolderIdAtom(props.driveInstanceId));
@@ -1281,6 +1282,12 @@ function Folder(props){
           itemId: props.folderId,
           parentId: props.item?.parentFolderId
         });
+        // insertDragShadow({
+        //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
+        //   position: "beforeCurrent",
+        //   itemId: props.folderId,
+        //   parentId: props.item?.parentFolderId
+        // });
       }else if (cursorArea < 1.0000) {
         // insert shadow to bottom of current dropTarget
         setFolderInfo({
@@ -1289,9 +1296,16 @@ function Folder(props){
           itemId: props.folderId,
           parentId: props.item?.parentFolderId
         });
+        // insertDragShadow({
+        //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
+        //   position: "afterCurrent",
+        //   itemId: props.folderId,
+        //   parentId: props.item?.parentFolderId
+        // });
       }
     } else {
       setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
+      // removeDragShadow();
     }
   }
 
@@ -1303,6 +1317,11 @@ function Folder(props){
       parentId: props.folderId,
       position: "intoCurrent"
     });
+    // insertDragShadow({
+    //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
+    //   parentId: props.folderId,
+    //   position: "intoCurrent"
+    // });
   }
 
   const onDrop = () => {
@@ -1843,6 +1862,7 @@ const DoenetML = React.memo((props)=>{
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
+  const {insertDragShadow} = useDragShadowCallbacks();
 
   let columns = '250px repeat(3,1fr)';
   if (props.numColumns === 3){
@@ -1887,16 +1907,16 @@ const DoenetML = React.memo((props)=>{
     if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
       if (cursorArea < 0.5) {
         // insert shadow to top of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+        insertDragShadow({
+          driveIdFolderId: {driveId:props.driveId, folderId:props.driveId},
           position: "beforeCurrent",
           itemId: props.item.itemId,
           parentId: props.item.parentFolderId
         });
       }else if (cursorArea < 1.0000) {
         // insert shadow to bottom of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+        insertDragShadow({
+          driveIdFolderId: {driveId:props.driveId, folderId:props.driveId},
           position: "afterCurrent",
           itemId: props.item.itemId,
           parentId: props.item.parentFolderId
@@ -1906,9 +1926,7 @@ const DoenetML = React.memo((props)=>{
   }
 
   const onDragEndCb = () => {
-    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
-    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
   }
 
   let doenetMLJSX = <div
@@ -2071,30 +2089,12 @@ const Url = React.memo((props)=>{
     const cursorY = y;
     const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
     if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
-      if (cursorArea < 0.5) {
-        // insert shadow to top of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-          position: "beforeCurrent",
-          itemId: props.item.itemId,
-          parentId: props.item.parentFolderId
-        });
-      }else if (cursorArea < 1.0000) {
-        // insert shadow to bottom of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
-          position: "afterCurrent",
-          itemId: props.item.itemId,
-          parentId: props.item.parentFolderId
-        });
-      }
+      
     }
   }
 
   const onDragEndCb = () => {
-    setFolderInfo({instructionType: folderInfoSelectorActions.CLEAN_UP_DRAG});
     onDragEnd();
-    setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
   }
 
   let urlJSX = <div
@@ -2214,7 +2214,7 @@ function useDnDCallbacks() {
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   const toast = useToast();
-  const {replaceDragShadow} = useReplaceDragShadow();
+  const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, onMoveItemsError} = useMoveItems();
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
@@ -2269,6 +2269,9 @@ function useDnDCallbacks() {
       })
     });
 
+    // cleanUpDragShadow();
+    // removeDragShadow();
+    
     setDragState((dragState) => ({
       ...dragState,
       isDragging: false,
@@ -2296,7 +2299,7 @@ function useDnDCallbacks() {
   }
 }
 
-const nodePathSelector = selectorFamily({
+export const nodePathSelector = selectorFamily({
   key:"nodePathSelector",
   get: (driveIdFolderId) => ({get})=>{
     
