@@ -42,7 +42,7 @@ export const folderInfoSelectorActions = Object.freeze({
 });
 
 export const useAddItem = () => {
-  const addItem = useRecoilCallback(({set})=> 
+  const addItem = useRecoilCallback(({snapshot, set})=> 
     async ({driveIdFolderId, label, itemType, selectedItemId=null, url=null})=>{
       // Item creation
       const dt = new Date();
@@ -73,21 +73,21 @@ export const useAddItem = () => {
       
       // Insert item into destination folder
       // TODO: update to use fInfo
-      set(folderDictionary(driveIdFolderId),(old)=>{
-        let newObj = JSON.parse(JSON.stringify(old));
-        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-        let index = newDefaultOrder.indexOf(selectedItemId);
-        const newOrder = getLexicographicOrder({
-          index, 
-          nodeObjs: newObj.contentsDictionary, 
-          defaultFolderChildrenIds: newDefaultOrder 
-        });
-        newItem.sortOrder = newOrder;
-        newDefaultOrder.splice(index+1, 0, itemId);
-        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-        newObj.contentsDictionary[itemId] = newItem;
-        return newObj;
-      })
+      const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
+      console.log("HERE")
+      let newObj = JSON.parse(JSON.stringify(fInfo));
+      let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+      let index = newDefaultOrder.indexOf(selectedItemId);
+      const newOrder = getLexicographicOrder({
+        index, 
+        nodeObjs: newObj.contentsDictionary, 
+        defaultFolderChildrenIds: newDefaultOrder 
+      });
+      newItem.sortOrder = newOrder;
+      newDefaultOrder.splice(index+1, 0, itemId);
+      newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+      newObj.contentsDictionary[itemId] = newItem;
+      set(folderDictionary(driveIdFolderId), newObj)
 
       // Update folderDictionary when new item is of type Folder
       if (itemType === "Folder"){
@@ -98,7 +98,6 @@ export const useAddItem = () => {
         });
       }
       const versionId = nanoid();
-
       const data = { 
         driveId: driveIdFolderId.driveId,
         parentFolderId: driveIdFolderId.folderId,
