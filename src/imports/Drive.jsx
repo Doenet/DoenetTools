@@ -56,7 +56,8 @@ import ChildLogic from '../Doenet/ChildLogic';
 import { 
   useDeleteItem,
   useMoveItems,
-  useReplaceDragShadow
+  useReplaceDragShadow,
+  useSortFolder
 } from './DriveActions';
 
 import { useToast } from "../imports/Tool/Toast";
@@ -366,34 +367,6 @@ export const folderDictionarySelector = selectorFamily({
 
     // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
-      case folderInfoSelectorActions.SORT:
-        const { sortKey } = instructions;
-        set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = JSON.parse(JSON.stringify(old));
-          let { contentsDictionary, contentIds } = newObj;
-          let newFolderInfo = { ...newObj.folderInfo }
-
-          // sort folder child array
-          const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds[sortOptions.DEFAULT]});
-
-          // update folder data
-          newObj.folderInfo = newFolderInfo;
-          newObj.contentIds[sortKey] = sortedFolderChildrenIds;
-          
-          return newObj;
-        })
-
-        break;
-      case folderInfoSelectorActions.INVALIDATE_SORT_CACHE:
-        set(folderDictionary(driveIdFolderId),(old)=>{
-          let newObj = { ...old };
-          let { contentIds } = old;
-
-          newObj.contentIds = { [sortOptions.DEFAULT]: [...contentIds[sortOptions.DEFAULT]] };
-          return newObj;
-        });
-
-        break;
       case folderInfoSelectorActions.RENAME_ITEM:
         //Rename Item in folder
         newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
@@ -740,7 +713,7 @@ export const folderInfoSelector = selectorFamily({
   }
 });
 
-const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
+export const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
   let tempArr = [...defaultFolderChildrenIds];
   switch (sortKey) {
     case sortOptions.DEFAULT:
@@ -1235,8 +1208,7 @@ function Folder(props){
   const isSelectedRef = useRef(isSelected);  // for memoized DnD callbacks
 
   const toast = useToast();
-  const {replaceDragShadow} = useReplaceDragShadow();
-  const {moveItems, onMoveItemsError} = useMoveItems();
+  const {sortFolder, invalidateSortCache, onSortFolderError} = useSortFolder();
 
   //Set only when parentFolderId changes
   const setInstanceParentId = useSetRecoilState(driveInstanceParentFolderIdAtom(props.driveInstanceId));
@@ -1267,7 +1239,7 @@ function Folder(props){
   // Cache invalidation when folder is dirty
   useEffect(() => {
     if (folderCacheDirty) {
-      setFolderInfo({ instructionType: folderInfoSelectorActions.INVALIDATE_SORT_CACHE});
+      invalidateSortCache({driveId: props.driveId, folderId: props.folderId});
       setFolderCacheDirty(false);
     }    
   }, [folderCacheDirty])
@@ -1288,11 +1260,15 @@ function Folder(props){
   }}>{openCloseText}</button>
 
   const sortHandler = ({ sortKey }) => {
-    // dispatch sort instruction
-    setFolderInfo({
-      instructionType: folderInfoSelectorActions.SORT,
+    const result = sortFolder({
+      driveIdInstanceIdFolderId: {driveInstanceId: props.driveInstanceId, driveId: props.driveId, folderId: props.folderId},
       sortKey: sortKey
     });
+    result.then((resp)=>{
+    }).catch( e => {
+      console.log(e);
+      onSortFolderError({});
+    })
   };
 
   const markFolderDraggedOpened = useCallback(() => {

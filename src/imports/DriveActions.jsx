@@ -13,7 +13,8 @@ import Drive, {
   sortOptions,
   getLexicographicOrder,
   folderCacheDirtyAtom,
-  dragStateAtom
+  dragStateAtom,
+  sortItems
 } from "../imports/Drive";
 import { createComponentNamesFromParentName } from '../Doenet/utils/serializedStateProcessing';
 
@@ -21,17 +22,17 @@ const dragShadowId = "dragShadow";
 
 // TODO: Remove this, only for reference as todo list
 export const folderInfoSelectorActions = Object.freeze({
-  ADD_ITEM: "addItem",
-  DELETE_ITEM: "delete item",
-  MOVE_ITEMS: "move items",
-  SORT: "sort",
+  // ADD_ITEM: "addItem",
+  // DELETE_ITEM: "delete item",
+  // MOVE_ITEMS: "move items",
+  // SORT: "sort",
   PUBLISH_ASSIGNMENT: "assignment was published",
   PUBLISH_CONTENT: "content was published",
   ASSIGNMENT_TO_CONTENT: "assignment to content",
   UPDATE_ASSIGNMENT_TITLE: "assignment title update",
   INSERT_DRAG_SHADOW: "insertDragShadow",
   REMOVE_DRAG_SHADOW: "removeDragShadow",
-  REPLACE_DRAG_SHADOW: "replaceDragShadow",
+  // REPLACE_DRAG_SHADOW: "replaceDragShadow",
   INVALIDATE_SORT_CACHE: "invalidate sort cache",
   RENAME_ITEM: "rename item",
   CLEAN_UP_DRAG: "clean up drag"
@@ -366,4 +367,48 @@ export const useReplaceDragShadow = () => {
       }
     });
   return {replaceDragShadow};
+}
+
+export const useSortFolder = () => {
+  const sortFolder = useRecoilCallback(({set})=> 
+    async ({driveIdInstanceIdFolderId, sortKey})=>{
+      const {contentIds} = get(folderDictionarySelector({driveId, folderId}))
+      set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
+      
+      // if sortOrder not already cached in folderDictionary
+      if (!contentIds[instructions.sortKey]) {
+        set(folderDictionary({driveId, folderId}), (old) => {
+          let newObj = JSON.parse(JSON.stringify(old));
+          let { contentsDictionary, contentIds } = newObj;
+          let newFolderInfo = { ...newObj.folderInfo }
+  
+          const sortedFolderChildrenIds = sortItems({sortKey, nodeObjs: contentsDictionary, defaultFolderChildrenIds: contentIds[sortOptions.DEFAULT]});
+  
+          // Update folder data
+          newObj.folderInfo = newFolderInfo;
+          newObj.contentIds[sortKey] = sortedFolderChildrenIds;
+          
+          return newObj;
+        });
+      }
+    }
+  )
+
+  const invalidateSortCache = useRecoilCallback(({set})=> 
+    async ({driveIdFolderId})=>{
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = { ...old };
+        let { contentIds } = old;
+
+        newObj.contentIds = { [sortOptions.DEFAULT]: [...contentIds[sortOptions.DEFAULT]] };
+        return newObj;
+      });
+    } 
+  )
+
+  const onSortFolderError = () => {
+
+  }
+
+  return { sortFolder, invalidateSortCache, onSortFolderError }
 }
