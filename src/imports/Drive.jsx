@@ -411,193 +411,6 @@ export const folderDictionarySelector = selectorFamily({
           return newObj;
         })
         break;
-      case folderInfoSelectorActions.INSERT_DRAG_SHADOW:
-        if (draggedItemsId && draggedItemsId?.has(instructions.itemId)) {
-          set(folderDictionarySelector(driveIdFolderId), {instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
-          return;
-        }
-
-        const dragShadow = {
-          assignmentId: null,
-          branchId: null,
-          contentId: null,
-          creationDate: "",
-          isPublished: "0",
-          itemId: dragShadowId,
-          itemType: "DragShadow",
-          label: "",
-          parentFolderId: instructions.parentId,
-          url: null,
-          urlDescription: null,
-          urlId: null,
-        }
-        const insertPosition = instructions.position;
-        
-        const dropTargetParentId = instructions.parentId;
-        if (dragShadowDriveId && dragShadowParentId) dragShadowParentFolderInfoObj = get(folderDictionarySelector({ driveId: dragShadowDriveId, folderId: dragShadowParentId}));
-
-        // remove dragShadowId from dragShadowParentId (contentDictionary, contentIds)
-        if (dragShadowParentFolderInfoObj) {
-          set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dragShadowParentId}),(old)=>{
-            let newObj = {...old};
-            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-            newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
-            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
-            newObj.contentIds = defaultOrderObj;
-            return newObj;
-          })
-        }
-        
-        if (insertPosition === "intoCurrent") {
-          /*
-           * Handle drag move: display drag shadow as a child of target item
-           * insert dragShadowId into driveIdFolderId.folderId (contentDictionary, contentIds)
-           */
-          // Handle insertion into dragged items
-          if (draggedItemsId && draggedItemsId?.has(driveIdFolderId.folderId)) return;
-          
-          set(folderDictionary(driveIdFolderId), (old)=>{
-            let newObj = {...old};
-            let newContentsDictionary = {...old.contentsDictionary};
-            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-
-            // Copy dragShadow data into destination dictionary
-            newContentsDictionary[dragShadowId] = dragShadow;
-
-            // Make sure dragShadow not duplicated
-            if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
-            
-            // Insert dragShadow into order array
-            newDefaultOrder.splice(0, 0, dragShadowId);
-            
-            // Update data
-            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
-            newObj.contentIds = defaultOrderObj;
-            newObj.contentsDictionary = newContentsDictionary;
-            return newObj;
-          })
-
-          // Update dragStateAtom.dragShadowParentId to dropTargetParentId
-          set(dragStateAtom, (old) => {
-            return {
-              ...old,
-              dragShadowDriveId: driveIdFolderId.driveId,
-              dragShadowParentId: driveIdFolderId.folderId
-            }
-          })
-        } else {
-          /*
-           * Handle drag re-ordering: display drag shadow before or after target item
-           * insert dragShadowId into dropTargetParent (contentDictionary, contentIds)
-           */
-
-          // Helper function to verify if position of insertion is valid
-          const isValidPosition = ({draggedItemsId, contentIdsArr, index}) => {
-            // Allow any position if multiple items are being dragged
-            if (draggedItemsId?.size > 1) return true;
-
-            let isValid = true;
-            let nextItemId = null, prevItemId = null;
-
-            if (contentIdsArr.length !== 0) {
-              if (index <= 0) {
-                nextItemId = contentIdsArr[0];
-              } else if (index >= contentIdsArr.length) {
-                prevItemId = contentIdsArr[contentIdsArr.length - 1];
-              } else {
-                prevItemId = contentIdsArr[index - 1];
-                nextItemId = contentIdsArr[index];
-              }
-              
-              if (prevItemId && draggedItemsId?.has(prevItemId)) isValid = false;
-              if (nextItemId && draggedItemsId?.has(nextItemId)) isValid = false;
-            }
-            return isValid;
-          }
-
-          let isValid = true;
-
-          set(folderDictionary({driveId: driveIdFolderId.driveId, folderId: dropTargetParentId}),(old)=>{
-            let newObj = {...old};
-            let newContentsDictionary = {...old.contentsDictionary};
-            let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-
-            // Copy dragShadow data into destination dictionary
-            newContentsDictionary[dragShadowId] = dragShadow;
-
-            // Make sure dragShadow not duplicated            
-            if (dragShadowParentId === dropTargetParentId) newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
-            
-            // Compute insertion index
-            let index = newDefaultOrder.indexOf(instructions.itemId);
-            if (insertPosition === "afterCurrent") index += 1;
-
-            // Check if insertion index valid
-            isValid = isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
-
-            // Insert dragShadow into order array
-            if (isValid) newDefaultOrder.splice(index, 0, dragShadowId);
-            
-            // Update data
-            const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
-            newObj.contentIds = defaultOrderObj;
-            newObj.contentsDictionary = newContentsDictionary;
-            return newObj;
-          })
-          
-          // Update dragShadow data in dragStateAtom
-          if (isValid) {
-            set(dragStateAtom, (old) => {
-              return {
-                ...old,
-                dragShadowDriveId: driveIdFolderId.driveId,
-                dragShadowParentId: dropTargetParentId
-              }
-            })  
-          }
-        }
-        break;
-      case folderInfoSelectorActions.REMOVE_DRAG_SHADOW:
-        // check if drag shadow valid
-        if (!dragShadowDriveId || !dragShadowParentId) return;
-
-        set(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}),(old)=>{
-          let newObj = {...old};
-          let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-          newDefaultOrder = newDefaultOrder.filter(itemId => itemId !== dragShadowId);
-          const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};
-          newObj.contentIds = defaultOrderObj;
-          return newObj;
-        })
-        set(dragStateAtom, (old) => {
-          return {
-            ...old,
-            dragShadowDriveId: null,
-            dragShadowParentId: null
-          }
-        })
-      break;
-      case folderInfoSelectorActions.CLEAN_UP_DRAG:
-        // If valid dragShadow, filter path of folders to dragShadow
-        let openedFolders = [...openedFoldersInfo];
-        let filteredOpenedFolders = [];
-        if (dragShadowDriveId && dragShadowParentId) {
-          let foldersOnPath = get(nodePathSelector({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
-          let folderOnPathSet = new Set(foldersOnPath.map(obj => obj.folderId));
-          for (let openedFolder of openedFolders) {
-            const notFolderOnPath = !(openedFolder.driveId === dragShadowDriveId && folderOnPathSet.has(openedFolder.itemId)); 
-            if (notFolderOnPath) {
-              filteredOpenedFolders.push(openedFolder);
-            }
-          }
-        } else {
-          filteredOpenedFolders = openedFolders;
-        }
-
-        for (let openedFolder of filteredOpenedFolders) {
-          set(folderOpenAtom(openedFolder), false);
-        }
-      break;
       default:
         console.warn(`Instruction ${instructions.instructionType} not currently handled`)
     }
@@ -1203,12 +1016,12 @@ function Folder(props){
   }, [parentFolderSortOrder])
 
   // Cache invalidation when folder is dirty
-  useEffect(() => {
-    if (folderCacheDirty) {
-      invalidateSortCache({driveId: props.driveId, folderId: props.folderId});
-      setFolderCacheDirty(false);
-    }    
-  }, [folderCacheDirty])
+  // useEffect(() => {
+  //   if (folderCacheDirty) {
+  //     invalidateSortCache({driveId: props.driveId, folderId: props.folderId});
+  //     setFolderCacheDirty(false);
+  //   }    
+  // }, [folderCacheDirty])
 
   if (props.isNav && itemId === props.pathItemId) {borderSide = "8px solid #1A5A99";}
  
@@ -1252,9 +1065,9 @@ function Folder(props){
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
 
     if (props.isNav) {
-      setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
-      setFolderInfo({
-        instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+      removeDragShadow();
+      insertDragShadow({
+        driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
         parentId: props.folderId,
         position: "intoCurrent"
       });
@@ -1276,52 +1089,34 @@ function Folder(props){
     if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
       if (cursorArea < 0.5) {
         // insert shadow to top of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+        insertDragShadow({
+          driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
           position: "beforeCurrent",
           itemId: props.folderId,
           parentId: props.item?.parentFolderId
         });
-        // insertDragShadow({
-        //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
-        //   position: "beforeCurrent",
-        //   itemId: props.folderId,
-        //   parentId: props.item?.parentFolderId
-        // });
       }else if (cursorArea < 1.0000) {
         // insert shadow to bottom of current dropTarget
-        setFolderInfo({
-          instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+        insertDragShadow({
+          driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
           position: "afterCurrent",
           itemId: props.folderId,
           parentId: props.item?.parentFolderId
         });
-        // insertDragShadow({
-        //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
-        //   position: "afterCurrent",
-        //   itemId: props.folderId,
-        //   parentId: props.item?.parentFolderId
-        // });
       }
     } else {
-      setFolderInfo({instructionType: folderInfoSelectorActions.REMOVE_DRAG_SHADOW});
-      // removeDragShadow();
+      removeDragShadow();
     }
   }
 
   const onDragHover = () => {
     if (props.isNav) return;
 
-    setFolderInfo({
-      instructionType: folderInfoSelectorActions.INSERT_DRAG_SHADOW,
+    insertDragShadow({
+      driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
       parentId: props.folderId,
       position: "intoCurrent"
     });
-    // insertDragShadow({
-    //   driveIdFolderId: {driveId: props.driveId, folderId: props.folderId},
-    //   parentId: props.folderId,
-    //   position: "intoCurrent"
-    // });
   }
 
   const onDrop = () => {
@@ -2269,8 +2064,8 @@ function useDnDCallbacks() {
       })
     });
 
-    // cleanUpDragShadow();
-    // removeDragShadow();
+    cleanUpDragShadow();
+    removeDragShadow();
     
     setDragState((dragState) => ({
       ...dragState,

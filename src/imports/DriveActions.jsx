@@ -585,6 +585,7 @@ export const useDragShadowCallbacks = () => {
 export const useSortFolder = () => {
   const sortFolder = useRecoilCallback(({set})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
+      const {driveId, folderId} = driveIdInstanceIdFolderId;
       const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
       set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
       
@@ -616,6 +617,7 @@ export const useSortFolder = () => {
         newObj.contentIds = { [sortOptions.DEFAULT]: [...contentIds[sortOptions.DEFAULT]] };
         return newObj;
       });
+      return;      
     } 
   )
 
