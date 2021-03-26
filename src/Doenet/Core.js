@@ -1326,6 +1326,12 @@ export default class Core {
       };
     }
 
+    // allChildrenOrder contains same children as allChildren,
+    // but retaining an order that we can use for counters.
+    // If defining children are replaced my composite replacements or adapters,
+    // those children come immediately after the corresponding defining child
+    component.allChildrenOrdered = component.activeChildren.map(x => x.componentName)
+
     // if any of activeChildren are compositeComponents
     // replace with new components given by the composite component
     let replaceCompositeResult = this.replaceCompositeChildren(component, updatesNeeded, compositesBeingExpanded);
@@ -1701,16 +1707,13 @@ export default class Core {
           }
         }
 
-        // // even replacements that are marked as being withheld
-        // // should be in allChildren
-        // if (child.replacementsToWithhold > 0) {
-        //   for (let ind2 = replacements.length; ind2 < child.replacements.length; ind2++) {
-        //     let withheldReplacement = child.replacements[ind2];
-        //     component.allChildren[withheldReplacement.componentName] = {
-        //       component: withheldReplacement,
-        //     }
-        //   }
-        // }
+
+        // find index of child in allChildrenOrdered
+        // and place replacements immediately afterward
+        let childInd = component.allChildrenOrdered.indexOf(child.componentName)
+        component.allChildrenOrdered.splice(childInd + 1, 0,
+          ...replacements.map(x => x.componentName))
+
         if (replacements.length !== 1) {
           // if replaced composite with anything other than one replacement
           // shift activeChildrenIndices of later children
@@ -1827,6 +1830,12 @@ export default class Core {
           activeChildrenIndex: Number(childNum),  // childNum is string since was defined via in
           component: adapter,
         }
+
+        // find index of originalChild in allChildrenOrdered
+        // and place adapter immediately afterward
+        let originalInd = component.allChildrenOrdered.indexOf(originalChild.componentName)
+        component.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+
       }
     }
 

@@ -2103,5 +2103,108 @@ describe('Collect Tag Tests', function () {
 
   })
 
+  it.only('allChildrenOrdered consistent with dynamic collect and adapters', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput prefill="2" name='n' />
+
+    <p>
+      begin
+      <point name="A">(1,2)</point>
+      <map>
+        <template><point>($x, $i)</point></template>
+        <sources alias="x" indexAlias="i"><sequence length="$n" /></sources>
+      </map>
+      <point name="B">(3,4)</point>
+      end
+    </p>
+    
+    <p>Hello <collect componentTypes="point" tname="_p1" /> there</p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    function checkAllChildren(components) {
+      let p1 = components["/_p1"];
+      let p1AllChildren = [];
+      p1AllChildren.push(p1.definingChildren[0].componentName); // string
+      p1AllChildren.push("/A");
+      p1AllChildren.push(components["/A"].adapterUsed.componentName);
+      p1AllChildren.push(p1.definingChildren[2].componentName); // string
+      p1AllChildren.push("/_map1");
+
+      let map = components['/_map1'];
+
+      let nActiveReps = map.replacements.length;
+      if(map.replacementsToWithhold) {
+        nActiveReps -= components["/_map1"].replacementsToWithhold 
+      }
+      for (let template of map.replacements.slice(0, nActiveReps)) {
+        p1AllChildren.push(template.componentName);
+        let point = template.replacements[0];
+        p1AllChildren.push(point.componentName);
+        p1AllChildren.push(point.adapterUsed.componentName);
+      }
+      p1AllChildren.push(p1.definingChildren[4].componentName); // string
+      p1AllChildren.push("/B");
+      p1AllChildren.push(components["/B"].adapterUsed.componentName);
+      p1AllChildren.push(p1.definingChildren[6].componentName); // string
+
+      expect(components['/_p1'].allChildrenOrdered).eqls(p1AllChildren)
+
+      let p2 = components["/_p2"];
+      let p2AllChildren = [];
+      p2AllChildren.push(p2.definingChildren[0].componentName); // string
+      p2AllChildren.push("/_collect1");
+      let collect = components['/_collect1'];
+      nActiveReps = collect.replacements.length;
+      if(collect.replacementsToWithhold) {
+        nActiveReps -= components["/_collect1"].replacementsToWithhold 
+      }
+      for (let rep of collect.replacements.slice(0, nActiveReps)) {
+        p2AllChildren.push(rep.componentName);
+        p2AllChildren.push(rep.adapterUsed.componentName);
+      }
+      p2AllChildren.push(p2.definingChildren[2].componentName); // string
+
+      expect(components['/_p2'].allChildrenOrdered).eqls(p2AllChildren)
+
+    }
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      checkAllChildren(components);
+    });
+
+    cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      checkAllChildren(components);
+    });
+
+
+    cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      checkAllChildren(components);
+    });
+
+    cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      checkAllChildren(components);
+    });
+
+    cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      checkAllChildren(components);
+    });
+
+  })
+
 
 });
