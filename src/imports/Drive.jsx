@@ -368,42 +368,7 @@ export const folderDictionarySelector = selectorFamily({
     // console.log(">>>finfo",fInfo)
     switch(instructions.instructionType){
       case folderInfoSelectorActions.RENAME_ITEM:
-        //Rename Item in folder
-        newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
-        newFInfo["contentsDictionary"][instructions.itemId] = {...fInfo.contentsDictionary[instructions.itemId]};
-        newFInfo["contentsDictionary"][instructions.itemId].label = instructions.label;
-        set(folderDictionary(driveIdFolderId),newFInfo);
-        //If a folder, update the label in the child folder
-        if (instructions.itemType === "Folder"){
-          set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:instructions.itemId}),(old)=>{
-            let newFolderInfo = {...old}
-            newFolderInfo.folderInfo = {...old.folderInfo}
-            newFolderInfo.folderInfo.label = instructions.label;
-            return newFolderInfo;
-          })
-        }
-        //TODO: Rename in selection
-        // if (get(selectedDriveItemsAtom(item))){
-        //   set(selectedDriveItemsAtom(item),false)
-        //   let newGlobalItems = [];
-        //   for(let gItem of get(globalSelectedNodesAtom)){
-        //     if (gItem.itemId !== instructions.itemId){
-        //       newGlobalItems.push(gItem)
-        //     }
-        //   }
-        //   set(globalSelectedNodesAtom,newGlobalItems)
-        // }
-        //Rename in  database
-        const rndata = {
-          instruction:"rename",
-          driveId:driveIdFolderId.driveId,
-          itemId:instructions.itemId,
-          label:instructions.label}
-        
-        const renamepayload = {
-          params: rndata
-        }
-        const { renamedata } = await axios.get("/api/updateItem.php", renamepayload)
+
         // .then((resp)=>console.log(">>>resp",resp.data))
       break;
       case folderInfoSelectorActions.PUBLISH_ASSIGNMENT:

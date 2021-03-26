@@ -60,7 +60,8 @@ import "../imports/drivecard.css";
 import DriveCards from "../imports/DriveCards";
 import { 
   useAddItem,
-  useDeleteItem
+  useDeleteItem,
+  useRenameItem
 } from "../imports/DriveActions";
 
 
@@ -475,11 +476,30 @@ const FolderInfoPanel = function(props){
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const { renameItem, onRenameItemError } = useRenameItem();
   const toast = useToast();
 
   const [label,setLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder}/>
+  
+  const renameItemCallback = (newLabel) => {
+    const result = renameItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
+      itemId: itemInfo.itemId,
+      itemType: itemInfo.itemType,
+      newLabel: newLabel
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+      }else{
+        onRenameItemError({});
+      }
+    }).catch((errorObj)=>{
+      onRenameItemError({});
+    })
+  }
   
   return <>
   <h2>{fIcon} {itemInfo.label}</h2>
@@ -489,24 +509,11 @@ const FolderInfoPanel = function(props){
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
     if (e.key === "Enter"){
-
-      setFolder({
-        instructionType: folderInfoSelectorActions.RENAME_ITEM,
-        itemId:itemInfo.itemId,
-        driveInstanceId:itemInfo.driveInstanceId,
-        itemType:itemInfo.itemType,
-        label
-      })
+      renameItemCallback(label);
     }
   }}
   onBlur={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.RENAME_ITEM,
-      itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId,
-      itemType:itemInfo.itemType,
-      label
-    })
+    renameItemCallback(label);
   }}/></label>
   <br />
   <br />
@@ -535,13 +542,31 @@ const DoenetMLInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
   const toast = useToast();
-  
+  const { renameItem, onRenameItemError } = useRenameItem();
 
   const [label,setLabel] = useState(itemInfo.label);
 
   const { openOverlay } = useToolControlHelper();
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
+
+  const renameItemCallback = (newLabel) => {
+    const result = renameItem({
+      driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+      itemId: itemInfo.itemId,
+      itemType: itemInfo.itemType,
+      newLabel: newLabel
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+      }else{
+        onRenameItemError({});
+      }
+    }).catch((errorObj)=>{
+      onRenameItemError({});
+    })
+  }
   
   return <>
   <h2>{dIcon} {itemInfo.label}</h2>
@@ -552,23 +577,11 @@ const DoenetMLInfoPanel = function(props){
   onKeyDown={(e)=>{
 
     if (e.key === "Enter"){
-      setFolder({
-        instructionType: folderInfoSelectorActions.RENAME_ITEM,
-        itemId:itemInfo.itemId,
-        driveInstanceId:itemInfo.driveInstanceId,
-        itemType:itemInfo.itemType,
-        label
-      })
+      renameItemCallback(label);
     }
   }}
   onBlur={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.RENAME_ITEM,
-      itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId,
-      itemType:itemInfo.itemType,
-      label
-    })
+    renameItemCallback(label);
   }}/></label>
   <br />
   <br />

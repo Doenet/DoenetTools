@@ -34,7 +34,7 @@ export const folderInfoSelectorActions = Object.freeze({
   REMOVE_DRAG_SHADOW: "removeDragShadow",
   // REPLACE_DRAG_SHADOW: "replaceDragShadow",
   INVALIDATE_SORT_CACHE: "invalidate sort cache",
-  RENAME_ITEM: "rename item",
+  // RENAME_ITEM: "rename item",
   CLEAN_UP_DRAG: "clean up drag"
 });
 
@@ -411,4 +411,48 @@ export const useSortFolder = () => {
   }
 
   return { sortFolder, invalidateSortCache, onSortFolderError }
+}
+
+export const useRenameItem = () => {
+  const renameItem = useRecoilCallback(({snapshot, set})=> 
+    async ({driveIdFolderId, itemId, itemType, newLabel})=>{
+      const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
+
+      // Rename in folder
+      let newFInfo = {...fInfo};
+      newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
+      newFInfo["contentsDictionary"][itemId] = {...fInfo.contentsDictionary[itemId]};
+      newFInfo["contentsDictionary"][itemId].label = newLabel;
+      set(folderDictionary(driveIdFolderId), newFInfo);
+      // If a folder, update the label in the child folder
+      if (itemType === "Folder"){
+        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId:itemId}),(old)=>{
+          let newFolderInfo = {...old}
+          newFolderInfo.folderInfo = {...old.folderInfo}
+          newFolderInfo.folderInfo.label = newLabel;
+          return newFolderInfo;
+        })
+      }
+      // TODO: Rename in selection
+      
+      // Rename in database
+      const rndata = {
+        instruction: "rename",
+        driveId: driveIdFolderId.driveId,
+        itemId: itemId,
+        label: newLabel
+      };
+      
+      const renamepayload = {
+        params: rndata
+      };
+      return await axios.get("/api/updateItem.php", renamepayload);
+    } 
+  )
+
+  const onRenameItemError = () => {
+
+  }
+
+  return { renameItem, onRenameItemError }
 }
