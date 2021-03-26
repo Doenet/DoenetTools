@@ -41,7 +41,7 @@ import 'codemirror/theme/xq-light.css';
 // import 'codemirror/theme/neo.css';
 // import 'codemirror/theme/base16-light.css';
 
-import './editor.css';
+import './Editor.css';
 
 const fileByContentId = atomFamily({
   key:"fileByContentId",
