@@ -59,6 +59,8 @@ export default class SectioningComponent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
+    let sectioningClass = this;
+
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.enumeration = {
@@ -131,8 +133,12 @@ export default class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
 
-          let title = dependencyValues.sectionName + " "
-            + dependencyValues.enumeration.join(".")
+          let title = sectioningClass.defaultTitle;
+
+          if (!title) {
+            title = dependencyValues.sectionName + " "
+              + dependencyValues.enumeration.join(".")
+          }
 
           return { newValues: { title } };
         } else {

@@ -42,7 +42,13 @@ module.exports = {
         proxy.web(req, res);
       },
     },
-  ],
+    {
+      src: '/geogebra/.*',
+      dest: (req, res) => {
+        proxy.web(req, res);
+      },
+    },
+ ],
   optimize: {
     /* Example: Bundle your final build: */
     // "bundle": true,
