@@ -32,6 +32,19 @@ export class Md extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.mrowChildNames = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        mrowChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMrows",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { mrowChildNames: dependencyValues.mrowChildren.map(x => x.componentName) }
+      })
+    }
+
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
@@ -92,7 +105,7 @@ export class Md extends InlineComponent {
           let lastLatex = "";
 
           for (let mrow of dependencyValues.mrowChildren) {
-            if(mrow.stateValues.hide) {
+            if (mrow.stateValues.hide) {
               continue;
             }
             if (lastLatex.length > 0) {
