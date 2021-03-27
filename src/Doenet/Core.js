@@ -1196,6 +1196,7 @@ export default class Core {
       });
     }
 
+    this.dependencies.collateCountersAndPropagateToAncestors(newComponent, updatesNeeded);
 
     // remove a level from parameter stack;
     this.parameterStack.pop();
