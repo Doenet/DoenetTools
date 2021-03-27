@@ -239,6 +239,26 @@ export class Men extends M {
     stateVariableDefinitions.renderMode.definition = () => ({
       newValues: { renderMode: "numbered" }
     });
+
+    stateVariableDefinitions.equationTag = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        equationCounter: {
+          dependencyType: "counter",
+          counterName: "equation"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+        console.log(`definition of equationTag of ${componentName}`)
+        console.log(dependencyValues);
+        return {
+          newValues: { equationTag: String(dependencyValues.equationCounter) }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 }

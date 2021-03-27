@@ -232,7 +232,7 @@ describe('Angle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}0{enter}', { force: true });
@@ -262,7 +262,7 @@ describe('Angle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
     })
 
@@ -370,8 +370,8 @@ describe('Angle Tag Tests', function () {
       
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
-        assert.isNaN(components['/_angle1'].stateValues.degrees.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
+        expect(components['/_angle1'].stateValues.degrees.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput1 textarea').type('pi/4{enter}', { force: true });

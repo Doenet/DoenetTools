@@ -40,15 +40,25 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latex", "hide"],
+          variableNames: ["latex", "hide", "equationTag"],
         }
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.mrowChildren.length > 0) {
-          let latex = dependencyValues.mrowChildren
-            .filter(x => !x.stateValues.hide)
-            .map(x => x.stateValues.latex)
-            .join('\\\\');
+          let latex = "";
+          for (let child of dependencyValues.mrowChildren) {
+            if (child.stateValues.hide) {
+              continue;
+            }
+            if (latex.length > 0) {
+              latex += '\\\\'
+            }
+            if (child.stateValues.equationTag) {
+              latex += `\\tag{${child.stateValues.equationTag}}`
+            }
+            latex += child.stateValues.latex;
+
+          }
           return { newValues: { latex } }
 
         } else {
@@ -68,7 +78,7 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latexWithInputChildren"],
+          variableNames: ["latexWithInputChildren", "hide", "equationTag"],
         },
         latex: {
           dependencyType: "stateVariable",
@@ -81,9 +91,18 @@ export class Md extends InlineComponent {
           let inputInd = 0;
           let lastLatex = "";
 
-          for(let mrow of dependencyValues.mrowChildren) {
-            for(let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
-              if(typeof latexOrChildInd === "number") {
+          for (let mrow of dependencyValues.mrowChildren) {
+            if(mrow.stateValues.hide) {
+              continue;
+            }
+            if (lastLatex.length > 0) {
+              lastLatex += '\\\\'
+            }
+            if (mrow.stateValues.equationTag) {
+              lastLatex += `\\tag{${mrow.stateValues.equationTag}}`
+            }
+            for (let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
+              if (typeof latexOrChildInd === "number") {
                 if (lastLatex.length > 0) {
                   latexWithInputChildren.push(lastLatex);
                   lastLatex = "";
@@ -94,7 +113,6 @@ export class Md extends InlineComponent {
                 lastLatex += latexOrChildInd
               }
             }
-            lastLatex += '\\\\'
 
           }
           if (lastLatex.length > 0) {
@@ -155,7 +173,7 @@ export class Md extends InlineComponent {
         return {
           newValues: {
             childrenToRender: dependencyValues.mrowChildren.reduce(
-              (a,c) => [...a, ...c.stateValues.childrenToRender], [])
+              (a, c) => [...a, ...c.stateValues.childrenToRender], [])
           }
         };
       }
@@ -191,6 +209,48 @@ export class Mrow extends M {
     stateVariableDefinitions.renderMode.definition = () => ({
       newValues: { renderMode: "display" }
     });
+
+    stateVariableDefinitions.numbered = {
+      returnDependencies: () => ({
+        parentRenderMode: {
+          dependencyType: "parentStateVariable",
+          variableName: "renderMode"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numbered: dependencyValues.parentRenderMode === "alignnumbered" }
+      })
+    }
+
+    stateVariableDefinitions.equationTag = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["numbered"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.numbered) {
+          return {
+            equationCounter: {
+              dependencyType: "counter",
+              counterName: "equation"
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.equationCounter !== undefined) {
+          return {
+            newValues: { equationTag: String(dependencyValues.equationCounter) }
+          }
+        } else {
+          return { newValues: { equationTag: null } }
+        }
+      }
+    }
+
+
     return stateVariableDefinitions;
   }
-} 
+}

@@ -48,7 +48,7 @@ export default class Ref extends InlineComponent {
         }
       },
     };
-    
+
 
     stateVariableDefinitions.targetInactive = {
       stateVariablesDeterminingDependencies: ["targetComponent"],
@@ -85,10 +85,14 @@ export default class Ref extends InlineComponent {
         uri: {
           dependencyType: "stateVariable",
           variableName: "uri"
+        },
+        targetInactive: {
+          dependencyType: "stateVariable",
+          variableName: "targetInactive"
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.targetComponent === null) {
+        if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
           return { newValues: { targetName: "" } }
         } else {
           if (dependencyValues.uri !== null) {
@@ -99,6 +103,35 @@ export default class Ref extends InlineComponent {
         }
       },
     };
+
+    stateVariableDefinitions.equationTag = {
+      stateVariablesDeterminingDependencies: ["targetName"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.targetName) {
+          return {
+            equationTag: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.targetName,
+              variableName: "equationTag",
+              variablesOptional: true,
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.equationTag !== undefined) {
+          return {
+            newValues: { equationTag: dependencyValues.equationTag }
+          }
+        } else {
+          return {
+            newValues: { equationTag: null }
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.contentId = {
       returnDependencies: () => ({
@@ -140,6 +173,14 @@ export default class Ref extends InlineComponent {
         uri: {
           dependencyType: "stateVariable",
           variableName: "uri"
+        },
+        equationTag: {
+          dependencyType: "stateVariable",
+          variableName: "equationTag"
+        },
+        targetInactive: {
+          dependencyType: "stateVariable",
+          variableName: "targetInactive"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -147,6 +188,10 @@ export default class Ref extends InlineComponent {
         if (dependencyValues.inlineChildren.length === 0) {
           if (dependencyValues.uri !== null) {
             linkText = dependencyValues.uri;
+          } else if (!dependencyValues.targetInactive && dependencyValues.equationTag !== null) {
+            linkText = '(' + dependencyValues.equationTag + ')';
+          } else {
+            linkText = '???'
           }
         } else {
           for (let child of dependencyValues.inlineChildren) {

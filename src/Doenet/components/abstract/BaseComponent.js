@@ -24,6 +24,7 @@ export default class BaseComponent {
 
     this.componentName = componentName;
     this.ancestors = ancestors;
+    this.counters = {};
 
     this.componentInfoObjects = componentInfoObjects;
     this.coreFunctions = coreFunctions;
