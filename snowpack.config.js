@@ -40,7 +40,7 @@ module.exports = {
   },
   buildOptions: {
     watch: true,
-    // out: 'build',
+    out: 'dist_local',
     // clean: true,
     // minify: true
   },

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <h1>This is temp index.jsx</h1>
+    <h1>This is temp index.jsx </h1>
   </React.StrictMode>,
   document.getElementById('root'),
 );
