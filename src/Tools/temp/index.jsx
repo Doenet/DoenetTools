@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App.jsx';
-import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <h1>This is temp index.jsx</h1>
   </React.StrictMode>,
   document.getElementById('root'),
 );
