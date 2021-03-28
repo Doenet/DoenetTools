@@ -5,5 +5,5 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
-echo "<p>TEST!!!</p>";
+echo "<p>TEST</p>";
 ?>

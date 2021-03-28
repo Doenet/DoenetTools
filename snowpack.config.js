@@ -39,6 +39,7 @@ module.exports = {
     openUrl:'exampleTool/',
   },
   buildOptions: {
+    watch: true,
     // out: 'build',
     // clean: true,
     // minify: true
