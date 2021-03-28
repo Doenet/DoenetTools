@@ -41,7 +41,7 @@ module.exports = {
   buildOptions: {
     watch: true,
     out: 'dist_local',
-    // clean: true,
+    clean: false,
     // minify: true
   },
 };
