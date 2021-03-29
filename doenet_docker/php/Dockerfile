@@ -34,9 +34,10 @@ WORKDIR /usr/local/apache2/htdocs/api/
 COPY composer.json /composer.json
 RUN cd / && composer install
 
-RUN composer require firebase/php-jwt
-
 # Link /usr/local/apache2/htdocs/api/vendor to /vendor in dev environment for compatability with prod
 RUN ln -s /vendor ./vendor
+
+RUN composer require firebase/php-jwt
+
 
 EXPOSE 9000
