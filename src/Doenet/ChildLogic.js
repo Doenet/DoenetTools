@@ -399,24 +399,29 @@ class ChildLogicLeaf extends ChildLogicBase {
 
         let matched = false;
 
-        if (child instanceof this.componentClass) {
-          matched = true;
-          if (this.condition && !this.condition(child)) {
-            matched = false;
-          } else if (this.excludeComponentTypes) {
-            for (let ct of this.excludeComponentTypes) {
-              if (child instanceof this.allComponentClasses[ct]) {
-                matched = false;
-                break;
+        if (this.takePropertyChildren) {
+          // for property children, it must be an exact match
+          // to a child set with isPropertyChild
+          matched = child.doenetAttributes.isPropertyChild &&
+            child.componentType === this.componentType
+        } else if (!child.doenetAttributes.isPropertyChild) {
+          // for non-property children, cannot be set with isPropertyChild
+          // and inherited classes are matched
+          if (child instanceof this.componentClass) {
+            matched = true;
+            if (this.condition && !this.condition(child)) {
+              matched = false;
+            } else if (this.excludeComponentTypes) {
+              for (let ct of this.excludeComponentTypes) {
+                if (child instanceof this.allComponentClasses[ct]) {
+                  matched = false;
+                  break;
+                }
               }
             }
-          }
-          if (matched && this.excludeCompositeReplacements && child.replacementOf) {
-            matched = false;
-          }
-          if (matched) {
-            matched = (this.takePropertyChildren && child.doenetAttributes.isPropertyChild)
-              || (!this.takePropertyChildren && !child.doenetAttributes.isPropertyChild)
+            if (matched && this.excludeCompositeReplacements && child.replacementOf) {
+              matched = false;
+            }
           }
         }
 

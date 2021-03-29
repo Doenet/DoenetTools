@@ -1003,3 +1003,8 @@ export class InDegrees extends BooleanComponent {
 export class BetweenLines extends LineListComponent {
   static componentType = "betweenLines";
 }
+
+export class Numbered extends BooleanComponent {
+  static componentType = "numbered";
+  static rendererType = "boolean";
+}

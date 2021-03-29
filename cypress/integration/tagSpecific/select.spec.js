@@ -2796,7 +2796,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide replacements', () => {
+  it('select with hide will hide replacements but not copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2814,7 +2814,7 @@ describe('Select Tag Tests', function () {
         <option><text>d</text></option>
         <option><text>e</text></option>
       </select></p>
-      <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
+      <p><copy tname="c" />, <copy tname="d" /></p>
     `}, "*");
     });
 
@@ -2834,7 +2834,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide named grandchildren replacements', () => {
+  it('select with hide will hide named grandchildren replacements but not copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2885,7 +2885,7 @@ describe('Select Tag Tests', function () {
       expect(["b", "d", "f"].includes(e)).eq(true);
 
       cy.get(`#\\/_p2`).should('have.text', `${a}, ${b}, ${c}`)
-      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, `)
+      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, ${e}`)
 
     })
   });

@@ -1202,8 +1202,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
           throw Error("Component name must begin with a letter");
         }
-        if (!(/^[a-zA-Z0-9_:.\-]+$/.test(prescribedName))) {
-          throw Error("Component name can contain only letters, numbers, hyphens, underscores, colons and periods");
+        if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
+          throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
         }
       }
 
@@ -1241,18 +1241,20 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       // put in doenetAttributes as assignNames array
       doenetAttributes.assignNames = assignNames;
 
-      let flattedNames = flattenDeep(assignNames);
-      for (let name of flattedNames) {
-        if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-          throw Error("All assigned names must begin with a letter");
+      if (!doenetAttributes.createUniqueAssignNames) {
+        let flattedNames = flattenDeep(assignNames);
+        for (let name of flattedNames) {
+          if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
+            throw Error("All assigned names must begin with a letter");
+          }
+          if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
+            throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+          }
         }
-        if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
-          throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+        // check if unique names
+        if (flattedNames.length !== new Set(flattedNames).size) {
+          throw Error("Duplicate assigned names");
         }
-      }
-      // check if unique names
-      if (flattedNames.length !== new Set(flattedNames).size) {
-        throw Error("Duplicate assigned names");
       }
     }
 
@@ -1401,7 +1403,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!(/[a-zA-Z_]/.test(alias.substring(0, 1)))) {
         throw Error("All aliases must begin with a letter or an underscore");
       }
-      if (!(/^[a-zA-Z0-9_-]+$/.test(alias))) {
+      if (!(/^[a-zA-Z0-9_\-]+$/.test(alias))) {
         throw Error("Aliases can contain only letters, numbers, hyphens, and underscores");
       }
     }
@@ -1416,7 +1418,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!(/[a-zA-Z_]/.test(indexAlias.substring(0, 1)))) {
         throw Error("All index aliases must begin with a letter or an underscore");
       }
-      if (!(/^[a-zA-Z0-9_-]+$/.test(indexAlias))) {
+      if (!(/^[a-zA-Z0-9_\-]+$/.test(indexAlias))) {
         throw Error("Index aliases can contain only letters, numbers, hyphens, and underscores");
       }
     }

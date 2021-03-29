@@ -4,6 +4,7 @@ import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
@@ -52,7 +53,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromText(s) : (type === "number" ? Number(s) : s))
+              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
               .map(s => ({
                 componentType: "option",
                 children: [{

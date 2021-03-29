@@ -3,6 +3,7 @@ import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { numberToLetters, lettersToNumber } from './Sequence';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { textToAst } from '../utils/math';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectfromsequence";
@@ -367,7 +368,7 @@ export default class SelectFromSequence extends Sequence {
       if (sequencePars[par] !== undefined) {
         if (sequencePars.type === "math") {
           if (typeof sequencePars[par] === "string") {
-            sequencePars[par] = me.fromText(sequencePars[par]);
+            sequencePars[par] = me.fromAst(textToAst.convert(sequencePars[par]));
           } else if (sequencePars[par].tree === undefined) {
             return { success: false }
           }
@@ -397,7 +398,7 @@ export default class SelectFromSequence extends Sequence {
     for (let [ind, exc] of excludes.entries()) {
       if (sequencePars.type === "math") {
         if (typeof exc === "string") {
-          exc = me.fromText(exc);
+          exc = me.fromAst(textToAst.convert(exc));
         } else if (exc.tree === undefined) {
           return { success: false }
         }

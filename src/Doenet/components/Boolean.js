@@ -1,8 +1,9 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { evaluateLogic, splitSymbolsIfMath } from '../utils/booleanLogic';
+import { appliedFunctionSymbols } from '../utils/math';
 
-var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false });
+var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false, appliedFunctionSymbols });
 
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";

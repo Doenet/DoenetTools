@@ -1,4 +1,27 @@
 import me from 'math-expressions';
+ 
+export var appliedFunctionSymbols = [
+  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
+  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
+  "asech", "asin", "asinh", "atan", "atanh",
+  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
+  "sech", "sin", "sinh", "tan", "tanh",
+  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  'arg',
+  'min', 'max', 'mean', 'median',
+  'floor', 'ceil', 'round',
+  'sum', 'prod', 'var', 'std',
+  'count', 'mod'
+];
+
+export var textToAst = new me.converters.textToAstObj({
+  appliedFunctionSymbols
+});
+
+export var latexToAst = new me.converters.latexToAstObj({
+  appliedFunctionSymbols
+});
+
 
 export function normalizeMathExpression({ value, simplify, expand = false,
   createVectors = false, createIntervals = false
@@ -81,7 +104,7 @@ export function returnNVariables(n, variablesSpecified) {
     } else {
       let variables = [];
       for (let i = 1; i <= n; i++) {
-        variables.push(me.fromText(`x_${i}`))
+        variables.push(me.fromAst(textToAst.convert(`x_${i}`)))
       }
       return variables;
     }
@@ -126,7 +149,7 @@ export function returnNVariables(n, variablesSpecified) {
     let addedVariable = false;
     for (let v of preferredVariables) {
       if (!variablesUsed.includes(v)) {
-        variables.push(me.fromText(v));
+        variables.push(me.fromAst(textToAst.convert(v)));
         variablesUsed.push(v);
         addedVariable = true;
         break;
@@ -134,7 +157,7 @@ export function returnNVariables(n, variablesSpecified) {
     }
     if (!addedVariable) {
       let v = preferredVariables[0]
-      variables.push(me.fromText(v));
+      variables.push(me.fromAst(textToAst.convert(v)));
       variablesUsed.push(v);
       console.warn(`Variables added were not unique`)
     }

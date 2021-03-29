@@ -1,29 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
+import { textToAst, latexToAst, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
 import { flattenDeep } from '../utils/array';
-
-
-let appliedFunctionSymbols = [
-  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
-  "asech", "asin", "asinh", "atan", "atanh",
-  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
-  "sech", "sin", "sinh", "tan", "tanh",
-  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
-  'arg',
-  'min', 'max', 'mean', 'median', //'mode',
-  'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
-  'count', 'mod'
-];
-
-var textToAst = new me.converters.textToAstObj({
-  appliedFunctionSymbols
-});
-var latexToAst = new me.converters.latexToAstObj({
-  appliedFunctionSymbols
-});
 
 
 export default class MathComponent extends InlineComponent {

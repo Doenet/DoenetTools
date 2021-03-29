@@ -33,9 +33,6 @@ export default class MathRenderer extends DoenetRenderer {
       beginDelim = `\\begin{gather}\\tag{${this.doenetSvData.equationTag}}`;
       endDelim = "\\end{gather}";
     } else if (this.doenetSvData.renderMode === "align") {
-      beginDelim = "\\begin{align*}";
-      endDelim = "\\end{align*}";
-    } else if (this.doenetSvData.renderMode === "alignnumbered") {
       beginDelim = "\\begin{align}";
       endDelim = "\\end{align}";
     } else {

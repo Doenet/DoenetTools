@@ -2103,7 +2103,7 @@ describe('Collect Tag Tests', function () {
 
   })
 
-  it.only('allChildrenOrdered consistent with dynamic collect and adapters', () => {
+  it('allChildrenOrdered consistent with dynamic collect and adapters', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

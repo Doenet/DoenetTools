@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, latexToAst, textToAst } from '../utils/math';
 
 export default class Mathinput extends Input {
   constructor(args) {
@@ -325,14 +325,14 @@ function parseValueIntoMath({ inputString, format }) {
   let expression;
   if (format === "latex") {
     try {
-      expression = me.fromLatex(inputString);
+      expression = me.fromAst(latexToAst(inputString));
     } catch (e) {
       console.warn(`Invalid latex for mathinput: ${inputString}`)
       expression = me.fromAst('\uFF3F');
     }
   } else if (format === "text") {
     try {
-      expression = me.fromText(inputString);
+      expression = me.fromAst(textToAst.convert(inputString));
     } catch (e) {
       console.warn(`Invalid text for mathinput: ${inputString}`)
       expression = me.fromAst('\uFF3F');

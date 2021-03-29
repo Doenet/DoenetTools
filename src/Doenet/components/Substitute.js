@@ -2,7 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import MathComponent from './Math';
 import me from 'math-expressions';
 import {breakEmbeddedStringByCommas, breakIntoVectorComponents} from './commonsugar/breakstrings';
-import { normalizeMathExpression } from '../utils/math';
+import { normalizeMathExpression, textToAst } from '../utils/math';
 
 export default class Substitute extends CompositeComponent {
   static componentType = 'substitute';
@@ -401,7 +401,7 @@ export default class Substitute extends CompositeComponent {
   parseMathString(inputString) {
     if(this.state.format === "text"){
       try{
-        return me.fromText(inputString);
+        return me.fromAst(textToAst.convert(inputString));
       }catch(e){
         console.log("Invalid value for a math of text format: " + inputString);
         return me.fromAst('\uFF3F');  // long underscore

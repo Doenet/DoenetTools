@@ -125,7 +125,7 @@ export default class Vector extends GraphicalComponent {
 
     let exactlyOneDisplacement = childLogic.newLeaf({
       name: "exactlyOneDisplacement",
-      componentType: 'vector',
+      componentType: 'displacement',
       number: 1,
       takePropertyChildren: true,
     });

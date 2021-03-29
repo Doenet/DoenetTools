@@ -55,7 +55,7 @@ export default class Text extends InlineComponent {
         },
       }),
       defaultValue: "",
-      set: String,
+      set: x => x === null ? "" : String(x),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.stringTextChildren.length === 0) {
           return {
@@ -91,7 +91,7 @@ export default class Text extends InlineComponent {
           success: true,
           instructions: [{
             setStateVariable: "value",
-            value: String(desiredStateVariableValues.value)
+            value: desiredStateVariableValues.value === null ? "" : String(desiredStateVariableValues.value)
           }]
         };
       }
