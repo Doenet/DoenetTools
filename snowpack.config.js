@@ -10,6 +10,7 @@ module.exports = {
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
     'src/api': '/api',
+    'src/Tools/Tools': '/tools'
     // 'src/Tools': { url: '/', static: true,  resolve: false},
     // public: { url: '/', static: true },
     // src: { url: '/dist' },
@@ -42,6 +43,7 @@ module.exports = {
     treeshake: true,
   },
   packageOptions: {
+    polyfillNode : true
     // cache:'aaa',
   },
   devOptions: {
