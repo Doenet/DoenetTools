@@ -270,11 +270,6 @@ export default class Map extends CompositeComponent {
         iterateNumber++;
 
         let serializedComponents = [deepClone(component.stateValues.template)];
-        // serializedComponents[0].downstreamDependencies = {
-        //   [component.componentName]: [{
-        //     dependencyType: "nonShadowingReplacement",
-        //   }]
-        // };
 
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,
@@ -506,7 +501,6 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSourcesChild) {
-        // since use number of replacements directly, it accounts for empties
         newReplacementsToWithhold = component.replacements.length - currentMinNIterates;
 
         let replacementInstruction = {
@@ -533,11 +527,7 @@ export default class Map extends CompositeComponent {
       let numReplacementsToAdd = currentMinNIterates - prevMinNIterates;
 
       if (currentReplacementsToWithhold > 0) {
-        let nonEmptiesWithheld = currentReplacementsToWithhold;
-        // if (workspace.nEmptiesAdded) {
-        //   nonEmptiesWithheld -= workspace.nEmptiesAdded;
-        // }
-        if (nonEmptiesWithheld >= numReplacementsToAdd) {
+        if (currentReplacementsToWithhold >= numReplacementsToAdd) {
           newReplacementsToWithhold = currentReplacementsToWithhold -
             numReplacementsToAdd;
           numReplacementsToAdd = 0;
@@ -549,8 +539,8 @@ export default class Map extends CompositeComponent {
           replacementChanges.push(replacementInstruction);
 
         } else {
-          numReplacementsToAdd -= nonEmptiesWithheld;
-          prevMinNIterates += nonEmptiesWithheld;
+          numReplacementsToAdd -= currentReplacementsToWithhold;
+          prevMinNIterates += currentReplacementsToWithhold;
           newReplacementsToWithhold = 0;
           // don't need to send changedReplacementsToWithold instructions
           // since will send add instructions,
@@ -577,13 +567,11 @@ export default class Map extends CompositeComponent {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevMinNIterates,
-          // numberReplacementsToReplace: workspace.nEmptiesAdded,
           serializedReplacements: replacements,
           replacementsToWithhold: 0,
           assignNamesOffset: prevMinNIterates,
         }
         replacementChanges.push(replacementInstruction);
-        // workspace.nEmptiesAdded = newNEmptiesAdded;
 
       }
     }

@@ -2,7 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import MathComponent from './Math';
 import me from 'math-expressions';
 import {breakEmbeddedStringByCommas, breakIntoVectorComponents} from './commonsugar/breakstrings';
-import { normalizeMathExpression, textToAst } from '../utils/math';
+import { latexToAst, normalizeMathExpression, textToAst } from '../utils/math';
 
 export default class Substitute extends CompositeComponent {
   static componentType = 'substitute';
@@ -409,7 +409,7 @@ export default class Substitute extends CompositeComponent {
     }
     else if(this.state.format === "latex"){
       try{
-        return me.fromLatex(inputString);
+        return me.fromAst(latexToAst.convert(inputString));
       }catch(e){
         console.log("Invalid value for a math of latex format: " + inputString);
         return me.fromAst('\uFF3F');  // long underscore

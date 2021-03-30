@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { M } from './MMeMen';
 import me from 'math-expressions';
+import { latexToAst } from '../utils/math';
 
 export class Md extends InlineComponent {
   static componentType = "md";
@@ -161,7 +162,7 @@ export class Md extends InlineComponent {
         try {
           expressionText = dependencyValues.stateValues.latex
             .split('\\\\')
-            .map(x => me.fromLatex(x).toString())
+            .map(x => me.fromAst(latexToAst.convert(x)).toString())
             .join('\\\\');
         } catch (e) {
           // just return latex if can't parse with math-expressions

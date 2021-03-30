@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { latexToAst } from '../utils/math';
 
 export class M extends InlineComponent {
   static componentType = "m";
@@ -182,7 +183,7 @@ export class M extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let expression;
         try {
-          expression = me.fromLatex(dependencyValues.latex);
+          expression = me.fromAst(latexToAst.convert(dependencyValues.latex));
         } catch (e) {
           // just return latex if can't parse with math-expressions
           return { newValues: { text: dependencyValues.latex } };

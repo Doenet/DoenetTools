@@ -188,7 +188,7 @@ export default class SelectByCondition extends CompositeComponent {
       let selectedChildName, childComponentType;
       if (selectedIndex < component.stateValues.nCases) {
         selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
-        childComponentType = "result";
+        childComponentType = "case";
 
       } else {
         selectedChildName = component.stateValues.elseChild.componentName;
@@ -259,8 +259,6 @@ export default class SelectByCondition extends CompositeComponent {
 
     workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
-    console.log(`replacementChanges for if ${component.componentName}`);
-    console.log(replacementChanges);
     return replacementChanges;
 
     // let replacementChanges = processChangesForReplacements({

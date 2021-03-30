@@ -325,7 +325,7 @@ function parseValueIntoMath({ inputString, format }) {
   let expression;
   if (format === "latex") {
     try {
-      expression = me.fromAst(latexToAst(inputString));
+      expression = me.fromAst(latexToAst.convert(inputString));
     } catch (e) {
       console.warn(`Invalid latex for mathinput: ${inputString}`)
       expression = me.fromAst('\uFF3F');
