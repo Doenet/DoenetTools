@@ -5,6 +5,10 @@ export default class Feedback extends BlockComponent {
 
   static primaryStateVariableForDefinition = "feedbackText";
 
+  static get stateVariablesShadowedForReference() {
+    return ["hide"]
+  }
+
   static createPropertiesObject() {
     let properties = super.createPropertiesObject();
     delete properties.hide;
@@ -19,6 +23,7 @@ export default class Feedback extends BlockComponent {
       componentType: 'condition',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
       allowSpillover: false,
     });
 
