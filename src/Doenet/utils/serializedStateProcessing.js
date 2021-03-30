@@ -293,55 +293,77 @@ export function doenetMLToSerializedComponents({ doenetML, includeBlankStrings =
   return json;
 }
 
-export function findContentIdRefs({ serializedComponents }) {
+export function findContentCopies({ serializedComponents }) {
 
   let contentIdComponents = {};
+  let contentNameComponents = {};
   for (let serializedComponent of serializedComponents) {
-    if (serializedComponent.componentType === "ref") {
+    if (serializedComponent.componentType === "copy") {
       if (serializedComponent.children !== undefined) {
-        let contentIdComponent;
+        let uriComponent;
         for (let child of serializedComponent.children) {
-          if (child.componentType === "contentid") {
-            contentIdComponent = child;
+          if (child.componentType === "uri" && child.doenetAttributes.isPropertyChild) {
+            uriComponent = child;
             break;
           }
         }
-        if (contentIdComponent) {
-          let contentId;
-          if (contentIdComponent.state !== undefined) {
-            contentId = contentIdComponent.state.value;
+        if (uriComponent) {
+          let uri;
+          if (uriComponent.state !== undefined) {
+            uri = uriComponent.state.value;
           }
-          if (contentIdComponent.children !== undefined) {
-            for (let child of contentIdComponent.children) {
+          // child overrides value from state
+          if (uriComponent.children !== undefined) {
+            for (let child of uriComponent.children) {
               if (child.componentType === "string") {
-                contentId = child.state.value;
+                uri = child.state.value;
                 break;
               }
             }
           }
-          if (contentId !== undefined) {
-            if (contentIdComponents[contentId] === undefined) {
-              contentIdComponents[contentId] = [];
+
+          if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
+
+            let uriEnd = uri.substring(7);
+
+            if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
+              let contentId = uriEnd.substring(10);
+              if (contentIdComponents[contentId] === undefined) {
+                contentIdComponents[contentId] = [];
+              }
+              contentIdComponents[contentId].push(serializedComponent);
+            } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
+              let contentName = uriEnd.substring(12);
+              if (contentNameComponents[contentName] === undefined) {
+                contentNameComponents[contentName] = [];
+              }
+              contentNameComponents[contentName].push(serializedComponent);
             }
-            contentIdComponents[contentId].push(serializedComponent);
+
           }
         }
       }
     } else {
       if (serializedComponent.children !== undefined) {
-        let results = findContentIdRefs({ serializedComponents: serializedComponent.children })
+        let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to contentIdComponents
-        for (let contentID in results) {
-          if (contentIdComponents[contentID] === undefined) {
-            contentIdComponents[contentID] = [];
+        // append results on to contentIdComponents and contentNameComponents
+        for (let contentId in results.contentIdComponents) {
+          if (contentIdComponents[contentId] === undefined) {
+            contentIdComponents[contentId] = [];
           }
-          contentIdComponents[contentID].push(...results[contentID]);
+          contentIdComponents[contentId].push(...results.contentIdComponents[contentId]);
+        }
+        for (let contentName in results.contentNameComponents) {
+          if (contentNameComponents[contentName] === undefined) {
+            contentNameComponents[contentName] = [];
+          }
+          contentNameComponents[contentName].push(...results.contentNameComponents[contentName]);
         }
       }
     }
   }
-  return contentIdComponents;
+  return { contentIdComponents, contentNameComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {

@@ -124,14 +124,14 @@ export default class Text extends InlineComponent {
   }
 
 
-  returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-      this.childLogic.returnMatches("atLeastZeroTexts").length === 0;
-    if (skipChildren) {
-      let stateVariables = ["value"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
+  //     this.childLogic.returnMatches("atLeastZeroTexts").length === 0;
+  //   if (skipChildren) {
+  //     let stateVariables = ["value"];
+  //     return { skipChildren, stateVariables };
+  //   }
+  //   return {};
+  // }
 
 }

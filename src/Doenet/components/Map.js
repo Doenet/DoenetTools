@@ -253,7 +253,6 @@ export default class Map extends CompositeComponent {
       parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
       componentInfoObjects,
       indOffset: iter,
-      addEmpties: false,
     });
 
     replacements = processResult.serializedComponents;
@@ -289,7 +288,6 @@ export default class Map extends CompositeComponent {
           parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
           componentInfoObjects,
           indOffset: iterateNumber,
-          addEmpties: false,
         });
 
         let thisRepl = processResult.serializedComponents[0];

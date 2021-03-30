@@ -21,6 +21,7 @@ import MathList from './MathList';
 import When from './When';
 import TextOrInline from './abstract/TextOrInline';
 import Option from './Option';
+import Template from './Template';
 import Variants from './Variants';
 
 export class Hide extends BooleanComponent {
@@ -709,7 +710,7 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Uri extends TextComponent {
+export class Uri extends TextFromSingleStringChild {
   static componentType = "uri";
   static rendererType = "text";
 }
@@ -820,11 +821,6 @@ export class TextType extends TextComponent {
 
 export class BranchId extends TextComponent {
   static componentType = "branchid";
-  static rendererType = "text";
-}
-
-export class ContentId extends TextComponent {
-  static componentType = "contentid";
   static rendererType = "text";
 }
 
@@ -973,6 +969,10 @@ export class Else extends Option {
 
 export class Result extends Option {
   static componentType = "result";
+}
+
+export class externalContent extends Template {
+  static componentType = "externalContent";
 }
 
 export class ComponentIndex extends NumberComponent {

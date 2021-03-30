@@ -496,15 +496,15 @@ export default class MathComponent extends InlineComponent {
   }
 
 
-  returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-      this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
-    if (skipChildren) {
-      let stateVariables = ["unnormalizedValue"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
+  //     this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
+  //   if (skipChildren) {
+  //     let stateVariables = ["unnormalizedValue"];
+  //     return { skipChildren, stateVariables };
+  //   }
+  //   return {};
+  // }
 
   adapters = ["number", "text"];
 
