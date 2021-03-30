@@ -105,13 +105,14 @@ export const useAddItem = () => {
   );
 
   const onAddItemError = () => {
-    toast(`Add item error, reverting changes`, 0, null, 3000);
+    toast(`Add item error`, 0, null, 3000);
   }
 
   return { addItem, onAddItemError };
 };
 
 export const useDeleteItem = () => {
+  const toast = useToast();
   const deleteItem = useRecoilCallback(({snapshot, set})=> 
     async ({driveIdFolderId, driveInstanceId=null, itemId})=>{
       const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
@@ -144,7 +145,6 @@ export const useDeleteItem = () => {
       newFInfo.contentIds[sortOptions.DEFAULT] = [...fInfo.contentIds[sortOptions.DEFAULT]]
       const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId)
       newFInfo.contentIds[sortOptions.DEFAULT].splice(index,1)
-      set(folderDictionary(driveIdFolderId), newFInfo);
       
       // Remove from database
       const pdata = {
@@ -154,12 +154,19 @@ export const useDeleteItem = () => {
       const deletepayload = {
         params: pdata
       }
+      const result = axios.get("/api/deleteItem.php", deletepayload);
 
-      return axios.get("/api/deleteItem.php", deletepayload);
+      result.then(resp => {
+        if (resp.data.success){
+          set(folderDictionary(driveIdFolderId), newFInfo);
+        }
+      });
+      
+      return result;
   });
 
   const onDeleteItemError = () => {
-    // TODO: re-add new item
+    toast(`Delete item error`, 0, null, 3000);
   }
 
   return { deleteItem, onDeleteItemError };
