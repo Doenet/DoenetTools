@@ -240,11 +240,6 @@ export default class Map extends CompositeComponent {
   static parallelReplacement({ component, iter, componentInfoObjects }) {
 
     let replacements = [deepClone(component.stateValues.template)];
-    replacements[0].downstreamDependencies = {
-      [component.componentName]: [{
-        dependencyType: "nonShadowingReplacement",
-      }]
-    };
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -275,11 +270,11 @@ export default class Map extends CompositeComponent {
         iterateNumber++;
 
         let serializedComponents = [deepClone(component.stateValues.template)];
-        serializedComponents[0].downstreamDependencies = {
-          [component.componentName]: [{
-            dependencyType: "nonShadowingReplacement",
-          }]
-        };
+        // serializedComponents[0].downstreamDependencies = {
+        //   [component.componentName]: [{
+        //     dependencyType: "nonShadowingReplacement",
+        //   }]
+        // };
 
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,

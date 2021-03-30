@@ -499,29 +499,6 @@ export default class Select extends CompositeComponent {
         serializedChild.variants = deepClone(selectedChild.variants);
       }
 
-
-      if (component.stateValues.hide) {
-        // if select is hidden, then make each of its replacements hidden
-        if (!serializedChild.state) {
-          serializedChild.state = {};
-        }
-
-        serializedChild.state.hide = true;
-
-        // // if assigning names to grandchild, then hide those as well
-        // // so that refs of those will be hidden, for consistency
-        // if (Array.isArray(name)) {
-        //   if (serializedChild.children) {
-        //     for (let grandchild of serializedChild.children) {
-        //       if (!grandchild.state) {
-        //         grandchild.state = {};
-        //       }
-        //       grandchild.state.hide = true;
-        //     }
-        //   }
-        // }
-      }
-
       replacements.push(serializedChild);
     }
 

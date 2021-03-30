@@ -18,7 +18,6 @@ import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
 import MathList from './MathList';
-import When from './When';
 import TextOrInline from './abstract/TextOrInline';
 import Option from './Option';
 import Template from './Template';
@@ -965,10 +964,6 @@ export class Rendered extends BooleanComponent {
 
 export class Else extends Option {
   static componentType = "else";
-}
-
-export class Result extends Option {
-  static componentType = "result";
 }
 
 export class externalContent extends Template {

@@ -150,11 +150,6 @@ export default class Intersection extends CompositeComponent {
       replacements: [{
         componentType: "point",
         state: { coords, draggable: false, fixed: true },
-        downstreamDependencies: {
-          [component.componentName]: [{
-            dependencyType: "nonShadowingReplacement",
-          }]
-        },
       }]
     };
 

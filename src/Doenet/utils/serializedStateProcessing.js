@@ -1476,6 +1476,28 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           });
         } else {
 
+
+          // newNamespace does not apply to property children
+
+          let propertyChildren = [], nonPropertyChildren = [];
+          for(let child of serializedComponent.children) {
+            if(child.doenetAttributes && child.doenetAttributes.isPropertyChild) {
+              propertyChildren.push(child);
+            } else {
+              nonPropertyChildren.push(child);
+            }
+          }
+
+          createComponentNames({
+            serializedComponents: propertyChildren,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            parentName: componentName,
+            useOriginalNames,
+            doenetAttributesByFullTName,
+          });
+
           // if newNamespace, then need to make sure that assigned names
           // don't conflict with new names added,
           // so include in namesused
@@ -1487,13 +1509,14 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed };
           namespaceStack.push(newNamespaceInfo);
           createComponentNames({
-            serializedComponents: serializedComponent.children,
+            serializedComponents: nonPropertyChildren,
             namespaceStack,
             componentInfoObjects,
             parentDoenetAttributes: doenetAttributes,
             parentName: componentName,
             useOriginalNames,
             doenetAttributesByFullTName,
+            indOffset: propertyChildren.length
           });
           namespaceStack.pop();
         }

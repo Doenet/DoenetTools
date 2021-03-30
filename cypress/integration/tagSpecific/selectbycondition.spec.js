@@ -22,17 +22,11 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p name="pa">a: <selectByCondition assignNames="a" maximumnumbertoselect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result><text>dog</text></result>
+      <case condition="$n < 0">
+        <text>dog</text>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result><text>cat</text></result>
+      <case condition="$n <=1">
+        <text>cat</text>
       </case>
       <else>
         <text>mouse</text>
@@ -117,17 +111,11 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p name="pa">a: <selectByCondition assignNames="(a)" maximumnumbertoselect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result><text>dog</text></result>
+      <case condition="$n < 0">
+        <text>dog</text>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result><text>cat</text></result>
+      <case condition="$n <=1">
+        <text>cat</text>
       </case>
       <else>
         <text>mouse</text>
@@ -212,17 +200,11 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p name="pa">a,aa: <selectByCondition assignNames="a aa">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result><text>dog</text></result>
+      <case condition="$n < 0">
+        <text>dog</text>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result><text>cat</text></result>
+      <case condition="$n <=1">
+        <text>cat</text>
       </case>
       <else>
         <text>mouse</text>
@@ -334,18 +316,11 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p name="pa">a: <selectByCondition assignNames="a">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result><text>dog</text></result>
+      <case condition="$n < 0">
+        <text>dog</text>
       </case>
-      <case>
-        <condition>
-          <not><copy prop="conditionSatisfied" tname="_case1" /></not> and
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result><text>cat</text></result>
+      <case condition="not $(_case1{prop='conditionSatisfied'}) and $n <=1">
+        <text>cat</text>
       </case>
       <else>
         <text>mouse</text>
@@ -430,24 +405,14 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p>original: <selectByCondition assignNames="(a b c d)" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result>
-          <text>dog</text>
-          <math>x</math>
-          <text>optional text!</text>
-        </result>
+      <case condition="$n<0" >
+        <text>dog</text>
+        <math>x</math>
+        <text>optional text!</text>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result>
-          <text>cat</text>
-          <math>y</math>
-        </result>
+      <case condition="$n <= 1" >
+        <text>cat</text>
+        <math>y</math>
       </case>
       <else>
         <text>mouse</text>
@@ -705,24 +670,14 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" />
     <p>original: <selectByCondition assignNames="(a b c d)" name="s1" newnamespace>
-      <case>
-        <condition>
-          <copy prop="value" tname="../n" /> < 0
-        </condition>
-        <result>
-          <text>dog</text>
-          <math>x</math>
-          <text>optional text!</text>
-        </result>
+      <case condition="$(../n)<0" >
+        <text>dog</text>
+        <math>x</math>
+        <text>optional text!</text>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="../n" /> <= 1
-        </condition>
-        <result>
-          <text>cat</text>
-          <math>y</math>
-        </result>
+      <case condition="$(../n) <= 1" >
+        <text>cat</text>
+        <math>y</math>
       </case>
       <else>
         <text>mouse</text>
@@ -984,25 +939,15 @@ describe('SelectByCondition Tag Tests', function () {
 
     <mathinput name="n" />
     <p>original: <selectByCondition assignNames="(a b c)" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result>
-          <copy tname="x1" />
-          <copy tname="y1" />
-          <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy tname="a1" /><copy tname="b1" /></math>
-        </result>
+      <case condition="$n<0" >
+        <copy tname="x1" />
+        <copy tname="y1" />
+        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy tname="a1" /><copy tname="b1" /></math>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result>
-          <copy tname="x2" />
-          <copy tname="y2" />
-          <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy tname="a2" /><copy tname="b2" /></math>
-        </result>
+      <case condition="$n <= 1" >
+        <copy tname="x2" />
+        <copy tname="y2" />
+        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy tname="a2" /><copy tname="b2" /></math>
       </case>
       <else>
         <copy tname="x3" />
@@ -1166,7 +1111,7 @@ describe('SelectByCondition Tag Tests', function () {
 
   });
 
-  it('references to internal and external components, new namespace at result/else', () => {
+  it('references to internal and external components, new namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1177,25 +1122,15 @@ describe('SelectByCondition Tag Tests', function () {
 
     <mathinput name="n" />
     <p>original: <selectByCondition assignNames="a" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result newNamespace>
-          <copy tname="../x1" assignNames="animal" />
-          <copy tname="../y1" assignNames="plant" />
-          <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
-        </result>
+      <case condition="$n<0" newNamespace >
+        <copy tname="../x1" assignNames="animal" />
+        <copy tname="../y1" assignNames="plant" />
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result newNamespace>
-          <copy tname="../x2" assignNames="animal" />
-          <copy tname="../y2" assignNames="plant" />
-          <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
-        </result>
+      <case condition="$n <= 1" newNamespace >
+        <copy tname="../x2" assignNames="animal" />
+        <copy tname="../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
       </case>
       <else newNamespace>
         <copy tname="../x3" assignNames="animal" />
@@ -1398,30 +1333,20 @@ describe('SelectByCondition Tag Tests', function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <selectByCondition assignNames="a" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result newNamespace>
-          <copy tname="../x1" assignNames="animal" />
-          <copy tname="../y1" assignNames="plant" />
-          <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
-        </result>
+    <p>original: <selectByCondition name="s" assignNames="a" maximumNumberToSelect="1" newNamespace>
+      <case newNamespace condition="$(../n) < 0" >
+        <copy tname="../../x1" assignNames="animal" />
+        <copy tname="../../y1" assignNames="plant" />
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy tname="x" /><copy tname="a" /></math>
       </case>
-      <case newNamespace>
-        <condition>
-          <copy prop="value" tname="../n" /> <= 1
-        </condition>
-        <result newNamespace>
-          <copy tname="../../x2" assignNames="animal" />
-          <copy tname="../../y2" assignNames="plant" />
-          <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
-        </result>
+      <case newNamespace condition="$(../n) <= 1" >
+        <copy tname="../../x2" assignNames="animal" />
+        <copy tname="../../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
       </case>
       <else newNamespace>
-        <copy tname="../x3" assignNames="animal" />
-        <copy tname="../y3" assignNames="plant" />
+        <copy tname="../../x3" assignNames="animal" />
+        <copy tname="../../y3" assignNames="plant" />
         <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy tname="x" /><copy tname="a" /></math>
       </else>
     </selectByCondition></p>
@@ -1431,14 +1356,14 @@ describe('SelectByCondition Tag Tests', function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" tname="a/animal" />
-    <copy assignNames="plant" tname="a/plant" />
-    <copy assignNames="p" tname="a/p" />
-    <copy assignNames="xx" tname="a/x" />
-    <copy assignNames="aa" tname="a/a" />
+    <copy assignNames="animal" tname="s/a/animal" />
+    <copy assignNames="plant" tname="s/a/plant" />
+    <copy assignNames="p" tname="s/a/p" />
+    <copy assignNames="xx" tname="s/a/x" />
+    <copy assignNames="aa" tname="s/a/a" />
 
     <p>Whole thing repeated</p>
-    <copy tname="_selectbycondition1" assignNames="b" />
+    <copy tname="s" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
     <copy assignNames="animalcopy" tname="b/animal" />
@@ -1452,9 +1377,9 @@ describe('SelectByCondition Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
-    cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
-    cy.get(`#\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'mouse')
+    cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'bush')
+    cy.get(`#\\/s\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6cz')
     })
 
@@ -1492,9 +1417,9 @@ describe('SelectByCondition Tag Tests', function () {
     cy.log('enter 1')
     cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
-    cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
-    cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
-    cy.get(`#\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'cat')
+    cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'shrub')
+    cy.get(`#\\/s\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5by')
     })
 
@@ -1531,9 +1456,9 @@ describe('SelectByCondition Tag Tests', function () {
     cy.log('enter -1')
     cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
-    cy.get(`#\\/a\\/animal`).should('have.text', 'dog')
-    cy.get(`#\\/a\\/plant`).should('have.text', 'tree')
-    cy.get(`#\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'dog')
+    cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'tree')
+    cy.get(`#\\/s\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('4ax')
     })
 
@@ -1571,9 +1496,9 @@ describe('SelectByCondition Tag Tests', function () {
     cy.log('enter 10')
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
-    cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
-    cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
-    cy.get(`#\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'mouse')
+    cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'bush')
+    cy.get(`#\\/s\\/a\\/p`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('6cz')
     })
 
@@ -1625,25 +1550,15 @@ describe('SelectByCondition Tag Tests', function () {
 
     <mathinput name="n" />
     <p>original: <selectByCondition assignNames="a" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result>
-          <copy tname="x1" assignNames="theanimal" />
-          <copy tname="y1" assignNames="theplant" />
-          <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy tname="thex" /><copy tname="thea" /></math>
-        </result>
+      <case condition="$n<0" >
+        <copy tname="x1" assignNames="theanimal" />
+        <copy tname="y1" assignNames="theplant" />
+        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy tname="thex" /><copy tname="thea" /></math>
       </case>
-      <case newNamespace>
-        <condition>
-          <copy prop="value" tname="../n" /> <= 1
-        </condition>
-        <result newNamespace>
-          <copy tname="../../x2" assignNames="animal" />
-          <copy tname="../../y2" assignNames="plant" />
-          <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
-        </result>
+      <case newNamespace condition="$n <= 1" >
+        <copy tname="../x2" assignNames="animal" />
+        <copy tname="../y2" assignNames="plant" />
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy tname="x" /><copy tname="a" /></math>
       </case>
       <else newNamespace>
         <copy tname="../x3" assignNames="animal" />
@@ -1865,23 +1780,13 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" prefill="1" />
     <selectByCondition assignNames="a" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result newNamespace>
-          <p>What is your favorite animal? <textinput name="response" /></p>
-          <p>I like <copy prop="value" tname="response" />, too.</p>
-        </result>
+      <case condition="$n<0" newNamespace>
+        <p>What is your favorite animal? <textinput name="response" /></p>
+        <p>I like <copy prop="value" tname="response" />, too.</p>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result newNamespace>
-          <p>What is your name? <textinput name="response" /></p>
-          <p>Hello, <copy prop="value" tname="response" />!</p>
-        </result>
+      <case condition="$n <= 1" newNamespace >
+        <p>What is your name? <textinput name="response" /></p>
+        <p>Hello, <copy prop="value" tname="response" />!</p>
       </case>
       <else newNamespace>
         <p>Anything else? <textinput name="response" /></p>
@@ -1954,23 +1859,13 @@ describe('SelectByCondition Tag Tests', function () {
     <text>a</text>
     <mathinput name="n" prefill="1" />
     <selectByCondition assignNames="(a b)" maximumNumberToSelect="1">
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> < 0
-        </condition>
-        <result>
-          <p newNamespace name="panimal">What is your favorite animal? <textinput name="response" /></p>
-          <p newNamespace>I like <copy prop="value" tname="../panimal/response" />, too.</p>
-        </result>
+      <case condition="$n<0" >
+        <p newNamespace name="panimal">What is your favorite animal? <textinput name="response" /></p>
+        <p newNamespace>I like <copy prop="value" tname="../panimal/response" />, too.</p>
       </case>
-      <case>
-        <condition>
-          <copy prop="value" tname="n" /> <= 1
-        </condition>
-        <result>
-          <p newNamespace name="pname">What is your name? <textinput name="response" /></p>
-          <p newNamespace>Hello, <copy prop="value" tname="../pname/response" />!</p>
-        </result>
+      <case condition="$n <= 1" >
+        <p newNamespace name="pname">What is your name? <textinput name="response" /></p>
+        <p newNamespace>Hello, <copy prop="value" tname="../pname/response" />!</p>
       </case>
       <else>
         <p newNamespace name="pelse">Anything else? <textinput name="response" /></p>
@@ -2043,11 +1938,8 @@ describe('SelectByCondition Tag Tests', function () {
     <mathinput name="n" />
 
     <p><selectByCondition>
-      <case name="positiveCase">
-        <condition><copy prop="value" tname="n" /> > 0</condition>
-        <result>
-          <text>positive</text>
-        </result>
+      <case name="positiveCase" condition="$n>0" >
+        <text>positive</text>
       </case>
       <else>
         <text>non-positive</text>
@@ -2056,11 +1948,8 @@ describe('SelectByCondition Tag Tests', function () {
     
     <p><selectByCondition>
       <copy tname="positiveCase" />
-      <case>
-        <condition><copy prop="value" tname="n" /> < 0</condition>
-        <result>
-          <text>negative</text>
-        </result>
+      <case condition="$n<0" >
+        <text>negative</text>
       </case>
       <else>
         <text>neither</text>
@@ -2109,7 +1998,7 @@ describe('SelectByCondition Tag Tests', function () {
 
   });
 
-  it('copy result and else', () => {
+  it('copy else', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2117,11 +2006,8 @@ describe('SelectByCondition Tag Tests', function () {
     <mathinput name="n" />
 
     <p><selectByCondition>
-      <case>
-        <condition><copy prop="value" tname="n" /> > 0</condition>
-        <result name="hello">
-          <text>hello</text>
-        </result>
+      <case condition="$n>0" >
+        <text>hello</text>
       </case>
       <else name="bye">
         <text>bye</text>
@@ -2129,15 +2015,11 @@ describe('SelectByCondition Tag Tests', function () {
     </selectByCondition></p>
     
     <p><selectByCondition>
-      <case>
-        <condition><copy prop="value" tname="n" /> < 0</condition>
-        <copy tname="hello"/>
+      <case condition="$n<0" >
+        <text>hello</text>
       </case>
-      <case>
-        <condition><copy prop="value" tname="n" /> > 0</condition>
-        <result>
-          <text>oops</text>
-        </result>
+      <case condition="$n>0" >
+        <text>oops</text>
       </case>
       <copy tname="bye"/>
     </selectByCondition></p>
@@ -2180,6 +2062,84 @@ describe('SelectByCondition Tag Tests', function () {
     cy.get('#\\/_p3').should('have.text', 'bye');
     cy.get('#\\/_p2').should('have.text', 'bye');
     cy.get('#\\/_p4').should('have.text', 'bye');
+
+  });
+
+  it('selectbyconditions hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first selectByCondition" />
+    <booleaninput name='h2' prefill="true" label="Hide second selectByCondition" />
+    <mathinput name="n" />
+    <p name="pa">a: <selectByCondition assignNames="a" maximumnumbertoselect="1" hide="$h1">
+      <case condition="$n<0">
+        <text>dog</text>
+      </case>
+      <case condition="$n<=1">
+        <text>cat</text>
+      </case>
+      <else>
+        <text>mouse</text>
+      </else>
+    </selectByCondition></p>
+    <p name="pb">b: <selectByCondition assignNames="b" maximumnumbertoselect="1" hide="$h2">
+      <case condition="$n<0">
+        <text>dog</text>
+      </case>
+      <case condition="$n<=1">
+        <text>cat</text>
+      </case>
+      <else>
+        <text>mouse</text>
+      </else>
+    </selectByCondition></p>
+    <p name="pa1">a1: <copy tname="a" assignNames="(a1)" /></p>
+    <p name="pb1">b1: <copy tname="b" assignNames="(b1)" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/pa').should('have.text', 'a: mouse');
+    cy.get('#\\/pa1').should('have.text', 'a1: mouse');
+    cy.get('#\\/pb').should('have.text', 'b: ');
+    cy.get('#\\/pb1').should('have.text', 'b1: mouse');
+
+    cy.log('enter 1')
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/pa').should('have.text', 'a: cat');
+    cy.get('#\\/pa1').should('have.text', 'a1: cat');
+    cy.get('#\\/pb').should('have.text', 'b: ');
+    cy.get('#\\/pb1').should('have.text', 'b1: cat');
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/pa').should('have.text', 'a: ');
+    cy.get('#\\/pa1').should('have.text', 'a1: cat');
+    cy.get('#\\/pb').should('have.text', 'b: cat');
+    cy.get('#\\/pb1').should('have.text', 'b1: cat');
+
+    cy.log('enter -3')
+    cy.get('#\\/n textarea').type("{end}{backspace}-3{enter}", { force: true })
+
+    cy.get('#\\/pa').should('have.text', 'a: ');
+    cy.get('#\\/pa1').should('have.text', 'a1: dog');
+    cy.get('#\\/pb').should('have.text', 'b: dog');
+    cy.get('#\\/pb1').should('have.text', 'b1: dog');
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/pa').should('have.text', 'a: dog');
+    cy.get('#\\/pa1').should('have.text', 'a1: dog');
+    cy.get('#\\/pb').should('have.text', 'b: ');
+    cy.get('#\\/pb1').should('have.text', 'b1: dog');
+
 
   });
 

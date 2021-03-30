@@ -185,49 +185,25 @@ export default class SelectByCondition extends CompositeComponent {
 
     for (let selectedIndex of component.stateValues.selectedIndices) {
 
-      let selectedChildName, selectedGroupIdentity = {};
+      let selectedChildName, childComponentType;
       if (selectedIndex < component.stateValues.nCases) {
         selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
-        selectedGroupIdentity.componentType = "result";
-        selectedGroupIdentity.componentName = components[selectedChildName].stateValues.resultChild.componentName;
+        childComponentType = "result";
 
       } else {
-        selectedChildName = selectedGroupIdentity.componentName = component.stateValues.elseChild.componentName;
-        selectedGroupIdentity.componentType = "else";
+        selectedChildName = component.stateValues.elseChild.componentName;
+        childComponentType = "else";
       }
       // use state, not stateValues, as read only proxy messes up internal
       // links between descendant variant components and the components themselves
 
       let serializedGrandchildren = deepClone(components[selectedChildName].state.serializedChildren.value);
       let serializedChild = {
-        componentType: selectedGroupIdentity.componentType,
+        componentType: childComponentType,
         state: { rendered: true },
-        doenetAttributes: Object.assign({}, components[selectedGroupIdentity.componentName].doenetAttributes),
+        doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
         children: serializedGrandchildren,
-        originalName: selectedGroupIdentity.componentName,
-      }
-
-
-      if (component.stateValues.hide) {
-        // if select is hidden, then make each of its replacements hidden
-        if (!serializedChild.state) {
-          serializedChild.state = {};
-        }
-
-        serializedChild.state.hide = true;
-
-        // // if assigning names to grandchild, then hide those as well
-        // // so that refs of those will be hidden, for consistency
-        // if (Array.isArray(name)) {
-        //   if (serializedChild.children) {
-        //     for (let grandchild of serializedChild.children) {
-        //       if (!grandchild.state) {
-        //         grandchild.state = {};
-        //       }
-        //       grandchild.state.hide = true;
-        //     }
-        //   }
-        // }
+        originalName: selectedChildName,
       }
 
       replacements.push(serializedChild);

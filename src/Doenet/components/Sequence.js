@@ -736,6 +736,8 @@ export default class Sequence extends CompositeComponent {
         componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
       }
 
+      // make nonShadowingReplacement so properties like fixed
+      // on the sequence can be copied by replacements
       let serializedComponent = {
         componentType: component.stateValues.type,
         state: { value: componentValue, fixed: true },
@@ -930,6 +932,8 @@ export default class Sequence extends CompositeComponent {
             componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
           }
 
+          // make nonShadowingReplacement so properties like fixed
+          // on the sequence can be copied by replacements
           let serializedComponent = {
             componentType: component.stateValues.type,
             state: { value: componentValue, fixed: true },
