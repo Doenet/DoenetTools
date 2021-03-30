@@ -5,6 +5,7 @@
     "dev": "snowpack dev",
     "clean": "snowpack clean",
     "build": "snowpack build",
+    "deploy": "snowpack build --config snowpack.deploy.config.js",
     "test": "web-test-runner \"src/**/*.test.jsx\"",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "prettier --check \"src/**/*.{js,jsx}\""
