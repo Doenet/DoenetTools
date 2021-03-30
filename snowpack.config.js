@@ -9,7 +9,9 @@ module.exports = {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
+    'src/Core': '/core',
     'src/api': '/api',
+    // 'src/Renderers': '/renderers',
     // 'src/Tools': { url: '/', static: true,  resolve: false},
     // public: { url: '/', static: true },
     // src: { url: '/dist' },
@@ -45,7 +47,7 @@ module.exports = {
     // cache:'aaa',
   },
   devOptions: {
-    openUrl: 'exampleTool/',
+    openUrl: 'core/',
   },
   buildOptions: {
     watch: true,

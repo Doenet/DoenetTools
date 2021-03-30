@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 
+
 function DynamicLoad(props){
-  return <p>loading...</p>
+
+  // return <p>short</p>
+
+  const One = lazy(() => import("./one.jsx"));
+  const Two = lazy(() => import("./two.jsx"));
+  const Three = lazy(() => import("./three.jsx"));
+
+  return <>
+  <Suspense fallback={<div>Components are Loading...</div>}>
+    <One />
+    <Two />
+    <Three />
+  </Suspense>
+  <p>Normal stuff</p>
+  </>
 }
 
 ReactDOM.render(
