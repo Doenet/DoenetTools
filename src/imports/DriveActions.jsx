@@ -19,27 +19,8 @@ import Drive, {
   folderOpenAtom
   
 } from "../imports/Drive";
-import { createComponentNamesFromParentName } from '../Doenet/utils/serializedStateProcessing';
 
 const dragShadowId = "dragShadow";
-
-// TODO: Remove this, only for reference as todo list
-export const folderInfoSelectorActions = Object.freeze({
-  // ADD_ITEM: "addItem",
-  // DELETE_ITEM: "delete item",
-  // MOVE_ITEMS: "move items",
-  // SORT: "sort",
-  PUBLISH_ASSIGNMENT: "assignment was published",
-  PUBLISH_CONTENT: "content was published",
-  ASSIGNMENT_TO_CONTENT: "assignment to content",
-  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
-  // INSERT_DRAG_SHADOW: "insertDragShadow",
-  // REMOVE_DRAG_SHADOW: "removeDragShadow",
-  // REPLACE_DRAG_SHADOW: "replaceDragShadow",
-  // INVALIDATE_SORT_CACHE: "invalidate sort cache",
-  // RENAME_ITEM: "rename item",
-  // CLEAN_UP_DRAG: "clean up drag"
-});
 
 export const useAddItem = () => {
   const addItem = useRecoilCallback(({snapshot, set})=> 
@@ -670,4 +651,87 @@ export const useRenameItem = () => {
   }
 
   return { renameItem, onRenameItemError }
+}
+
+// TODO: Remove this, only for reference as todo list
+export const folderInfoSelectorActions = Object.freeze({
+  PUBLISH_ASSIGNMENT: "assignment was published",
+  PUBLISH_CONTENT: "content was published",
+  ASSIGNMENT_TO_CONTENT: "assignment to content",
+  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
+});
+
+export const useAssignmentCallbacks = () => {
+  const publishAssignment = useRecoilCallback(({set})=> 
+    ({driveIdFolderId, itemId, payload})=>{
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = JSON.parse(JSON.stringify(old));
+        let newItemObj = newObj.contentsDictionary[itemId];          
+        newItemObj.assignment_isPublished = "1";
+        newItemObj.isAssignment = "1";
+        newItemObj.assignment_title = payload?.title;
+        newItemObj.assignmentId = payload?.assignmentId;
+        return newObj;
+      })
+    }
+  )
+  
+  const onPublishAssignmentError = () => {
+  }
+
+  const publishContent = useRecoilCallback(({set})=> 
+    ({driveIdFolderId, itemId})=>{
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = JSON.parse(JSON.stringify(old));
+        let newItemObj = newObj.contentsDictionary[itemId];
+        newItemObj.isPublished = "1";
+        return newObj;
+      })
+    }
+  )
+  
+  const onPublishContentError = () => {
+  }
+
+  const updateAssignmentTitle = useRecoilCallback(({set})=> 
+    ({driveIdFolderId, itemId, payloadAssignment})=>{
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = JSON.parse(JSON.stringify(old));
+        let newItemObj = newObj.contentsDictionary[itemId];          
+        newItemObj.isAssignment = "1";
+        newItemObj.assignment_title = payloadAssignment?.title;
+        newItemObj.assignmentId = payloadAssignment?.assignmentId;
+        return newObj;
+      })
+    }
+  )
+  
+  const onUpdateAssignmentTitleError = () => {
+  }
+
+  const convertAssignmentToContent = useRecoilCallback(({set})=> 
+    ({driveIdFolderId, itemId})=>{
+      set(folderDictionary(driveIdFolderId),(old)=>{
+        let newObj = JSON.parse(JSON.stringify(old));
+        let newItemObj = newObj.contentsDictionary[itemId];
+        newItemObj.isAssignment = "0";
+        return newObj;
+      })
+
+    }
+  )
+  
+  const onConvertAssignmentToContentError = () => {
+  }
+
+  return { 
+    publishAssignment, 
+    onPublishAssignmentError,
+    publishContent,
+    onPublishContentError,
+    updateAssignmentTitle,
+    onUpdateAssignmentTitleError,
+    convertAssignmentToContent,
+    onConvertAssignmentToContentError
+  }
 }

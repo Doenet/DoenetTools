@@ -381,7 +381,6 @@ export const folderDictionarySelector = selectorFamily({
           newItemObj.assignmentId=instructions.payload.assignmentId;
           return newObj;
         })
-      
         break;
       case folderInfoSelectorActions.PUBLISH_CONTENT:
         set(folderDictionary(driveIdFolderId),(old)=>{
