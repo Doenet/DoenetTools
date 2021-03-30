@@ -15,7 +15,16 @@ module.exports = {
     // src: { url: '/dist' },
     // "src/Tools": "/",
   },
-  plugins: ['@snowpack/plugin-react-refresh', '@snowpack/plugin-dotenv'],
+  plugins: [
+    '@snowpack/plugin-react-refresh',
+    '@snowpack/plugin-dotenv',
+    [
+      'snowpack-plugin-raw-file-loader',
+      {
+        exts: ['.doenet', '.txt'], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+      },
+    ],
+  ],
   routes: [
     /* Enable an SPA Fallback in development: */
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
@@ -36,7 +45,7 @@ module.exports = {
     // cache:'aaa',
   },
   devOptions: {
-    openUrl:'exampleTool/',
+    openUrl: 'exampleTool/',
   },
   buildOptions: {
     watch: true,
