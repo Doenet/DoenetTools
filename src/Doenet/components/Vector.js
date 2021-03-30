@@ -1489,7 +1489,6 @@ export default class Vector extends GraphicalComponent {
   adapters = [{
     stateVariable: "displacementCoords",
     componentType: "coords",
-    stateVariableForNewComponent: "value",
   }];
 
   moveVector({ tailcoords, headcoords, transient, sourceInformation }) {

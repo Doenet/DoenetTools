@@ -3248,6 +3248,95 @@ class SourceCompositeDependency extends Dependency {
 dependencyTypeArray.push(SourceCompositeDependency);
 
 
+class AdapterSourceDependency extends Dependency {
+  static dependencyType = "adapterSourceDependency";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (!this.definition.variableName) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: must have a variableName`)
+    } else {
+      this.originalDownstreamVariableNames = [this.definition.variableName];
+    }
+
+    this.returnSingleVariableValue = true;
+
+    // for source composite state variable
+    // always make variables optional so that don't get error
+    // depending on source composite (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      if (this.specifiedComponentName) {
+        let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+        if (!dependenciesMissingComponent) {
+          dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName] = [];
+        }
+        if (!dependenciesMissingComponent.includes(this)) {
+          dependenciesMissingComponent.push(this);
+        }
+
+        this.unresolvedSpecifiedComponent = this.specifiedComponentName;
+
+      }
+
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    delete this.unresolvedSpecifiedComponent;
+
+    if (!component.adaptedFrom) {
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = component.adaptedFrom;
+
+    return {
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(AdapterSourceDependency);
+
+
 class CountAmongSiblingsDependency extends Dependency {
   static dependencyType = "countAmongSiblingsOfSameType";
 

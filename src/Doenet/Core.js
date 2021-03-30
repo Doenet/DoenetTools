@@ -1174,6 +1174,12 @@ export default class Core {
       newComponent.replacementOf = componentsReplacementOf
     }
 
+    if(serializedComponent.adaptedFrom) {
+      // record adapter relationship
+      newComponent.adaptedFrom = this._components[serializedComponent.adaptedFrom];
+      newComponent.adaptedFrom.adapterUsed = newComponent;
+    }
+
     for (let name in prescribedDependencies) {
       let depArray = prescribedDependencies[name];
       for (let dep of depArray) {
@@ -1843,6 +1849,8 @@ export default class Core {
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
           }
+          
+          newSerializedChild.adaptedFrom = originalChild.componentName;
           let newChildrenResult = this.createIsolatedComponentsSub({
             serializedComponents: [newSerializedChild],
             shadow: true,
@@ -1854,10 +1862,6 @@ export default class Core {
 
           adapter = newChildrenResult.components[0];
 
-          // put adapter used directly on originalChild for quick access
-          originalChild.adapterUsed = adapter;
-
-          adapter.adaptedFrom = originalChild;
         }
 
         // Replace originalChild with its adapter in activeChildren

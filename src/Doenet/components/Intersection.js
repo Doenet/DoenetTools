@@ -128,6 +128,7 @@ export default class Intersection extends CompositeComponent {
         return { replacements: [] };
       } else {
 
+        // two identical lines, return first line
         let childName = component.stateValues.lineChildren[0].componentName;
         let serializedChild = components[childName].serialize({ forCopy: true });
         if (!serializedChild.state) {
