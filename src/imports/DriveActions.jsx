@@ -19,10 +19,13 @@ import Drive, {
   folderOpenAtom
   
 } from "../imports/Drive";
+import { useToast } from "../imports/Tool/Toast";
 
 const dragShadowId = "dragShadow";
 
 export const useAddItem = () => {
+  const toast = useToast();
+
   const addItem = useRecoilCallback(({snapshot, set})=> 
     async ({driveIdFolderId, label, itemType, selectedItemId=null, url=null})=>{
       // Item creation
@@ -51,11 +54,8 @@ export const useAddItem = () => {
         urlId: null,
         sortOrder: "",
       }
-      
-      // Insert item into destination folder
-      // TODO: update to use fInfo
+       
       const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
-      console.log("HERE")
       let newObj = JSON.parse(JSON.stringify(fInfo));
       let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
       let index = newDefaultOrder.indexOf(selectedItemId);
@@ -68,16 +68,7 @@ export const useAddItem = () => {
       newDefaultOrder.splice(index+1, 0, itemId);
       newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
       newObj.contentsDictionary[itemId] = newItem;
-      set(folderDictionary(driveIdFolderId), newObj)
 
-      // Update folderDictionary when new item is of type Folder
-      if (itemType === "Folder"){
-        set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}), {
-          folderInfo:newItem, 
-          contentsDictionary:{},
-          contentIds:{ [sortOptions.DEFAULT]: [] }
-        });
-      }
       const versionId = nanoid();
       const data = { 
         driveId: driveIdFolderId.driveId,
@@ -92,13 +83,29 @@ export const useAddItem = () => {
       const payload = { 
         params: data 
       };
+      const result = axios.get('/api/AddItem.php', payload);
 
-      return axios.get('/api/AddItem.php', payload);
+      result.then(resp => {
+        if (resp.data.success){
+          // Insert item info into destination folder
+          set(folderDictionary(driveIdFolderId), newObj)
+          
+          // Update folderDictionary when new item is of type Folder
+          if (itemType === "Folder"){
+            set(folderDictionary({driveId:driveIdFolderId.driveId,folderId:itemId}), {
+              folderInfo:newItem, 
+              contentsDictionary:{},
+              contentIds:{ [sortOptions.DEFAULT]: [] }
+            });
+          }
+        }
+      })
+      return result;
     }
   );
 
   const onAddItemError = () => {
-    // TODO: delete new item
+    toast(`Add item error, reverting changes`, 0, null, 3000);
   }
 
   return { addItem, onAddItemError };
@@ -106,7 +113,7 @@ export const useAddItem = () => {
 
 export const useDeleteItem = () => {
   const deleteItem = useRecoilCallback(({snapshot, set})=> 
-    async ({driveIdFolderId, driveInstanceId, itemId})=>{
+    async ({driveIdFolderId, driveInstanceId=null, itemId})=>{
       const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
       const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
       const item = { 
@@ -652,14 +659,6 @@ export const useRenameItem = () => {
 
   return { renameItem, onRenameItemError }
 }
-
-// TODO: Remove this, only for reference as todo list
-export const folderInfoSelectorActions = Object.freeze({
-  PUBLISH_ASSIGNMENT: "assignment was published",
-  PUBLISH_CONTENT: "content was published",
-  ASSIGNMENT_TO_CONTENT: "assignment to content",
-  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
-});
 
 export const useAssignmentCallbacks = () => {
   const publishAssignment = useRecoilCallback(({set})=> 
