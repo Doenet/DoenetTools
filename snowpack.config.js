@@ -12,6 +12,7 @@ module.exports = {
     'src/Core': '/core',
     'src/api': '/api',
     // 'src/Renderers': '/renderers',
+    'src/Tools/Tools': '/tools'
     // 'src/Tools': { url: '/', static: true,  resolve: false},
     // public: { url: '/', static: true },
     // src: { url: '/dist' },
@@ -44,6 +45,7 @@ module.exports = {
     treeshake: true,
   },
   packageOptions: {
+    polyfillNode : true
     // cache:'aaa',
   },
   devOptions: {
