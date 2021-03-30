@@ -1,8 +1,8 @@
-// const httpProxy = require('http-proxy');
-// const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-// proxy.on('proxyReq', function(proxyReq, req, res, options) {
-//   proxyReq.setHeader('Host', 'localhost');
-// });
+const httpProxy = require('http-proxy');
+const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
+proxy.on('proxyReq', function(proxyReq, req, res, options) {
+  proxyReq.setHeader('Host', 'localhost');
+});
 
 module.exports = {
   mount: {
@@ -10,7 +10,8 @@ module.exports = {
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
     'src/Core': '/core',
-    'src/api': '/api',
+    'src/API': '/api',
+    'src/Home': '/',
     // 'src/Renderers': '/renderers',
     // 'src/Tools': { url: '/', static: true,  resolve: false},
     // public: { url: '/', static: true },
@@ -30,12 +31,14 @@ module.exports = {
   routes: [
     /* Enable an SPA Fallback in development: */
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
-    // {
-    //   src: '/api/.*',
-    //   dest: (req, res) => {
-    //     proxy.web(req, res);
-    //   },
-    // },
+    
+    //Using this to map port 80 to 8080 for api requests
+    {
+      src: '/api/.*',
+      dest: (req, res) => {
+        proxy.web(req, res);
+      },
+    },
   ],
   optimize: {
     bundle: true,
@@ -48,7 +51,7 @@ module.exports = {
     // cache:'aaa',
   },
   devOptions: {
-    openUrl: 'core/',
+    openUrl: '/core',
   },
   buildOptions: {
     watch: true,

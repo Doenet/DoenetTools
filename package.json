@@ -3,6 +3,7 @@
     "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack build",
     "docker:build": "cd doenet_docker && docker-compose build",
     "dev": "snowpack dev",
+    "clean": "snowpack clean",
     "build": "snowpack build",
     "test": "web-test-runner \"src/**/*.test.jsx\"",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",

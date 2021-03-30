@@ -1,5 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
+// axios.defaults.baseURL = `http://${window.location.hostname}:80`;
 
 
 function DynamicLoad(props){
@@ -9,14 +11,21 @@ function DynamicLoad(props){
   const One = lazy(() => import("./one.jsx"));
   const Two = lazy(() => import("./two.jsx"));
   const Three = lazy(() => import("./three.jsx"));
+  // axios.get('http://localhost:80/api/test.php')
+  axios.get('/api/test.php')
+  .then((resp)=>console.log(">>>resp",resp.data))
 
   return <>
+  {/* <div>{loaded}</div> */}
   <Suspense fallback={<div>Components are Loading...</div>}>
     <One />
-    <Two />
+    {/* <Two /> */}
+  </Suspense>
+  <Suspense fallback={<div>Three is Loading...</div>}>
     <Three />
   </Suspense>
-  <p>Normal stuff</p>
+
+  <p>This is a p tag</p>
   </>
 }
 
