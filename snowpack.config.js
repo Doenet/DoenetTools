@@ -1,6 +1,6 @@
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-proxy.on('proxyReq', function(proxyReq, req, res, options) {
+proxy.on('proxyReq', function (proxyReq, req, res, options) {
   proxyReq.setHeader('Host', 'localhost');
 });
 
@@ -30,8 +30,7 @@ module.exports = {
   ],
   routes: [
     /* Enable an SPA Fallback in development: */
-    // {"match": "routes", "src": ".*", "dest": "/index.html"},
-    
+    // { match: 'routes', src: '.*', dest: '/index.html' },
     //Using this to map port 80 to 8080 for api requests
     {
       src: '/api/.*',
@@ -43,11 +42,11 @@ module.exports = {
   optimize: {
     bundle: true,
     minify: true,
-    target: 'es2018',
+    target: 'es2020',
     treeshake: true,
   },
   packageOptions: {
-    polyfillNode : true
+    polyfillNode: true,
     // cache:'aaa',
   },
   devOptions: {
