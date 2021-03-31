@@ -6,6 +6,7 @@ module.exports = {
     'src/Tools/library': '/library',
     // 'src/Tools/temp': '/temp',
     'src/Core': '/core',
+    'src/Renderers': '/renderers',
     'src/API': '/api',
     'src/Home': '/',
     // 'src/Renderers': '/renderers',

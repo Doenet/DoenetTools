@@ -1,13 +1,20 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 
 function DynamicLoad(props) {
   // return <p>short</p>
 
+  useEffect(()=>{
+      let a = import("/renderers/aaa.js")
+      a.then((resp)=>{
+        console.log(">>>resp",resp.default(3));
+      })
+  },[])
+
   const One = lazy(() => import('./one.jsx'));
-  const Two = lazy(() => import('./two.jsx'));
-  const Three = lazy(() => import('./three.jsx'));
+  // const Two = lazy(() => import('./two.jsx'));
+  // const Three = lazy(() => import('./three.jsx'));
 
   axios.get('/api/test.php').then((resp) => console.log('>>>resp', resp.data));
 
@@ -16,11 +23,11 @@ function DynamicLoad(props) {
       {/* <div>{loaded}</div> */}
       <Suspense fallback={<div>Components are Loading...</div>}>
         <One />
-        <Two />
+        {/* <Two /> */}
       </Suspense>
-      <Suspense fallback={<div>Three is Loading...</div>}>
+      {/* <Suspense fallback={<div>Three is Loading...</div>}>
         <Three />
-      </Suspense>
+      </Suspense> */}
 
       <p>This is a p tag</p>
     </>

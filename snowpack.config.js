@@ -9,6 +9,7 @@ module.exports = {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
+    'src/Renderers': '/renderers',
     'src/Core': '/core',
     'src/API': '/api',
     'src/Home': '/',

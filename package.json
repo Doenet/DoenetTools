@@ -3,6 +3,7 @@
     "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack build --config snowpack.config.js",
     "docker:build": "cd doenet_docker && docker-compose build",
     "dev": "snowpack dev --config snowpack.config.js",
+    "hot": "snowpack dev --config snowpack.config.js",
     "clean": "snowpack --reload --config snowpack.config.js",
     "build": "snowpack build --config snowpack.deploy.config.js",
     "deploy": "snowpack build --config snowpack.deploy.config.js",
