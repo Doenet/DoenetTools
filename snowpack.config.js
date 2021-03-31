@@ -45,7 +45,7 @@ module.exports = {
     // cache:'aaa',
   },
   devOptions: {
-    openUrl: '/exampleTool',
+    openUrl: '/library',
   },
   buildOptions: {
     watch: true,
