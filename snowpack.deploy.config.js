@@ -2,10 +2,19 @@
 
 module.exports = {
   mount: {
+    'src/Tools/accountSettings': '/accountSettings',
+    'src/Tools/content': '/content',
+    'src/Tools/course': '/course',
+    'src/Tools/dashboard': '/dashboard',
+    'src/Tools/docs': '/docs',
     'src/Tools/exampleTool': '/exampleTool',
+    'src/Tools/gradebook': '/gradebook',
     'src/Tools/library': '/library',
+    'src/Tools/signin': '/signin',
+    'src/Tools/signout': '/signout',
     'src/Tools/temp': '/temp',
     'src/Renderers': '/renderers',
+    'src/Media': '/media',
     'src/API': '/api',
     'src/Home': '/',
   },
