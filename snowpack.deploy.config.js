@@ -1,5 +1,3 @@
-
-
 module.exports = {
   mount: {
     'src/Tools/exampleTool': '/exampleTool',
@@ -27,14 +25,6 @@ module.exports = {
   routes: [
     /* Enable an SPA Fallback in development: */
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
-    
-    //Using this to map port 80 to 8080 for api requests
-    // {
-    //   src: '/api/.*',
-    //   dest: (req, res) => {
-    //     proxy.web(req, res);
-    //   },
-    // },
   ],
   optimize: {
     bundle: true,
@@ -43,7 +33,7 @@ module.exports = {
     treeshake: true,
   },
   packageOptions: {
-    polyfillNode : true
+    polyfillNode: true,
     // cache:'aaa',
   },
   devOptions: {
@@ -52,6 +42,6 @@ module.exports = {
   buildOptions: {
     out: 'dist',
     clean: true,
-    minify: true
+    minify: true,
   },
 };

@@ -41,7 +41,7 @@ module.exports = {
   ],
   optimize: {
     bundle: true,
-    minify: true,
+    minify: false,
     target: 'es2020',
     treeshake: true,
   },
