@@ -1,14 +1,10 @@
-const httpProxy = require('http-proxy');
-const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-proxy.on('proxyReq', function (proxyReq, req, res, options) {
-  proxyReq.setHeader('Host', 'localhost');
-});
+
 
 module.exports = {
   mount: {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
-    'src/Tools/temp': '/temp',
+    // 'src/Tools/temp': '/temp',
     'src/Core': '/core',
     'src/API': '/api',
     'src/Home': '/',
@@ -20,7 +16,7 @@ module.exports = {
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
-    '@snowpack/plugin-dotenv',
+    // '@snowpack/plugin-dotenv',
     [
       'snowpack-plugin-raw-file-loader',
       {
@@ -30,14 +26,15 @@ module.exports = {
   ],
   routes: [
     /* Enable an SPA Fallback in development: */
-    // { match: 'routes', src: '.*', dest: '/index.html' },
+    // {"match": "routes", "src": ".*", "dest": "/index.html"},
+    
     //Using this to map port 80 to 8080 for api requests
-    {
-      src: '/api/.*',
-      dest: (req, res) => {
-        proxy.web(req, res);
-      },
-    },
+    // {
+    //   src: '/api/.*',
+    //   dest: (req, res) => {
+    //     proxy.web(req, res);
+    //   },
+    // },
   ],
   optimize: {
     bundle: true,
@@ -46,16 +43,15 @@ module.exports = {
     treeshake: true,
   },
   packageOptions: {
-    polyfillNode: true,
+    polyfillNode : true
     // cache:'aaa',
   },
   devOptions: {
     openUrl: '/core',
   },
   buildOptions: {
-    watch: true,
-    out: 'dist_local',
-    clean: false,
-    // minify: true
+    out: 'dist',
+    clean: true,
+    minify: true
   },
 };

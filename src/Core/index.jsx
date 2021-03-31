@@ -1,23 +1,30 @@
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 
-
-function DynamicLoad(props){
-
+function DynamicLoad(props) {
   // return <p>short</p>
 
-  const One = lazy(() => import("./one.jsx"));
-  const Two = lazy(() => import("./two.jsx"));
-  const Three = lazy(() => import("./three.jsx"));
+  const One = lazy(() => import('./one.jsx'));
+  const Two = lazy(() => import('./two.jsx'));
+  const Three = lazy(() => import('./three.jsx'));
 
-  return <>
-  <Suspense fallback={<div>Components are Loading...</div>}>
-    <One />
-    <Two />
-    <Three />
-  </Suspense>
-  <p>Normal stuff</p>
-  </>
+  axios.get('/api/test.php').then((resp) => console.log('>>>resp', resp.data));
+
+  return (
+    <>
+      {/* <div>{loaded}</div> */}
+      <Suspense fallback={<div>Components are Loading...</div>}>
+        <One />
+        <Two />
+      </Suspense>
+      <Suspense fallback={<div>Three is Loading...</div>}>
+        <Three />
+      </Suspense>
+
+      <p>This is a p tag</p>
+    </>
+  );
 }
 
 ReactDOM.render(
