@@ -9,7 +9,7 @@ module.exports = {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
-    // 'src/Renderers': '/renderers',
+    'src/Renderers': '/renderers',
     'src/API': '/api',
     'src/Home': '/',
   },
@@ -35,17 +35,16 @@ module.exports = {
     },
   ],
   optimize: {
-    bundle: true,
-    minify: true,
-    target: 'es2020',
-    treeshake: true,
+    // bundle: true,
+    // minify: true,
+    // target: 'es2020',
+    // treeshake: true,
   },
   packageOptions: {
     polyfillNode: true,
-    // cache:'aaa',
   },
   devOptions: {
-    openUrl: '/library',
+    openUrl: '/temp',
   },
   buildOptions: {
     watch: true,

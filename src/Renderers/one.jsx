@@ -1,6 +1,6 @@
 import React from 'react';
 
-
 export default function One(props){
-  return <div>One</div>
+  console.log(">>>props",props)
+  return <div>This is One {props.text}</div>
 }

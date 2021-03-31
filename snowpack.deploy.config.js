@@ -5,12 +5,11 @@ module.exports = {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
-    // 'src/Renderers': '/renderers',
+    'src/Renderers': '/renderers',
     'src/API': '/api',
     'src/Home': '/',
   },
   plugins: [
-    '@snowpack/plugin-react-refresh',
     // '@snowpack/plugin-dotenv',
     [
       'snowpack-plugin-raw-file-loader',
@@ -23,13 +22,6 @@ module.exports = {
     /* Enable an SPA Fallback in development: */
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
     
-    //Using this to map port 80 to 8080 for api requests
-    // {
-    //   src: '/api/.*',
-    //   dest: (req, res) => {
-    //     proxy.web(req, res);
-    //   },
-    // },
   ],
   optimize: {
     bundle: true,
@@ -39,10 +31,6 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode : true
-    // cache:'aaa',
-  },
-  devOptions: {
-    openUrl: '/core',
   },
   buildOptions: {
     out: 'dist',
