@@ -9,15 +9,9 @@ module.exports = {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
     'src/Tools/temp': '/temp',
-    'src/Renderers': '/renderers',
-    'src/Core': '/core',
+    // 'src/Renderers': '/renderers',
     'src/API': '/api',
     'src/Home': '/',
-    // 'src/Renderers': '/renderers',
-    // 'src/Tools': { url: '/', static: true,  resolve: false},
-    // public: { url: '/', static: true },
-    // src: { url: '/dist' },
-    // "src/Tools": "/",
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
@@ -51,7 +45,7 @@ module.exports = {
     // cache:'aaa',
   },
   devOptions: {
-    openUrl: '/core',
+    openUrl: '/exampleTool',
   },
   buildOptions: {
     watch: true,

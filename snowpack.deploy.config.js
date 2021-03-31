@@ -4,16 +4,10 @@ module.exports = {
   mount: {
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/library': '/library',
-    // 'src/Tools/temp': '/temp',
-    'src/Core': '/core',
-    'src/Renderers': '/renderers',
+    'src/Tools/temp': '/temp',
+    // 'src/Renderers': '/renderers',
     'src/API': '/api',
     'src/Home': '/',
-    // 'src/Renderers': '/renderers',
-    // 'src/Tools': { url: '/', static: true,  resolve: false},
-    // public: { url: '/', static: true },
-    // src: { url: '/dist' },
-    // "src/Tools": "/",
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
