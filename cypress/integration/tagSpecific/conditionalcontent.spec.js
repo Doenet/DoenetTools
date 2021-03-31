@@ -11,27 +11,19 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <mathinput />
+  <mathinput name="n" />
 
   <p>You typed 
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> > 0</condition>
+    <conditionalcontent condition="$n > 0">
       a positive number.
     </conditionalcontent>
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> < 0</condition>
+    <conditionalcontent condition="$n < 0">
       a negative number.
     </conditionalcontent>
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> = 0</condition>
+    <conditionalcontent condition="$n=0">
       zero.
     </conditionalcontent>
-    <conditionalcontent>
-      <condition>
-        !(<copy prop="value" tname="_mathinput1" /> > 0 or
-        <copy prop="value" tname="_mathinput1" /> < 0 or
-        <copy prop="value" tname="_mathinput1" /> = 0)
-      </condition>
+    <conditionalcontent condition="not ($n>0 or $n<0 or $n=0)" >
       something else.
     </conditionalcontent>
   </p>
@@ -44,22 +36,22 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
+    cy.get('#\\/n textarea').type("10{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
@@ -71,33 +63,25 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <mathinput />
+  <mathinput name="n" />
 
     <section>
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> > 0</condition>
+    <conditionalcontent condition="$n>0" >
       <p>You typed a positive number.</p>
     </conditionalcontent>
     </section>
     <section>
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> < 0</condition>
+    <conditionalcontent condition="$n<0" >
       <p>You typed a negative number.</p>
     </conditionalcontent>
     </section>
     <section>
-    <conditionalcontent>
-      <condition><copy prop="value" tname="_mathinput1" /> = 0</condition>
+    <conditionalcontent condition="$n=0" >
       <p>You typed zero.</p>
     </conditionalcontent>
     </section>
     <section>
-    <conditionalcontent>
-      <condition>
-        !(<copy prop="value" tname="_mathinput1" /> > 0 or
-        <copy prop="value" tname="_mathinput1" /> < 0 or
-        <copy prop="value" tname="_mathinput1" /> = 0)
-      </condition>
+    <conditionalcontent condition="not ($n>0 or $n<0 or $n=0)" >
       <p>You typed something else.</p>
     </conditionalcontent>
     </section>
@@ -113,7 +97,7 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
 
-    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
+    cy.get('#\\/n textarea').type("10{enter}", { force: true });
     cy.get('#\\/_section1 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
@@ -121,7 +105,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section3 p').should('not.exist');
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
@@ -129,7 +113,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section3 p').should('not.exist');
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').invoke('text').then((text) => {
@@ -137,7 +121,7 @@ describe('Conditional Content Tag Tests', function () {
     });
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').should('not.exist');
@@ -152,7 +136,7 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>Enter a slope: <mathinput /></p>
+  <p>Enter a slope: <mathinput name="m" /></p>
 
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
@@ -161,10 +145,10 @@ describe('Conditional Content Tag Tests', function () {
       <copy prop="selectedvalue" tname="_choiceinput1" />
       =
       <text>
-        <conditionalcontent><condition><abs><copy prop="value" tname="_mathinput1" /></abs> < 1</condition>
+        <conditionalcontent condition="abs($m) < 1" >
           stable
         </conditionalcontent>
-        <conditionalcontent><condition><abs><copy prop="value" tname="_mathinput1" /></abs> > 1</condition>
+        <conditionalcontent condition="abs($m) > 1" >
           unstable
         </conditionalcontent>
       </text>
@@ -183,7 +167,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('3{enter}', { force: true });
+    cy.get('#\\/m textarea').type('3{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -191,7 +175,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-0.8{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{end}{backspace}-0.8{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
@@ -199,7 +183,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1/3{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1/3{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
@@ -208,7 +192,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}-7/5{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}-7/5{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -217,7 +201,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
 
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -233,19 +217,19 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>Require <choiceinput inline="true"><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
+  <p>Require <choiceinput inline="true" name="c"><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
 
   <p>Condition on <m>x</m>:
   <answer>
-    <mathinput />
+    <mathinput name="x" />
     <award><when>
-      <copy prop="immediateValue" tname="_mathinput1" />
+      <copy prop="immediateValue" tname="x" />
       =
       <math>
-        <conditionalcontent><condition><copy prop="selectedvalue" tname="_choiceinput1" /> = positive</condition>
+        <conditionalcontent condition="$c = positive" >
           x > 0
         </conditionalcontent>
-        <conditionalcontent><condition><copy prop="selectedvalue" tname="_choiceinput1" /> = negative</condition>
+        <conditionalcontent condition="$c = negative" >
           x < 0
         </conditionalcontent>
       </math>
@@ -256,30 +240,30 @@ describe('Conditional Content Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.get('#\\/_mathinput1_incorrect').should('be.visible');
+    cy.get('#\\/x_submit').click();
+    cy.get('#\\/x_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('x > 0{enter}', { force: true });
-    cy.get('#\\/_mathinput1_incorrect').should('be.visible');
+    cy.get('#\\/x textarea').type('x > 0{enter}', { force: true });
+    cy.get('#\\/x_incorrect').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
-    cy.get('#\\/_mathinput1_incorrect').should('be.visible');
-
-
-    cy.get('#\\/_choiceinput1').select(`negative`);
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.get('#\\/_mathinput1_correct').should('be.visible');
-
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}> 0{enter}', { force: true });
-    cy.get('#\\/_mathinput1_incorrect').should('be.visible');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
+    cy.get('#\\/x_incorrect').should('be.visible');
 
 
-    cy.get('#\\/_choiceinput1').select(`positive`);
-    cy.get('#\\/_mathinput1_submit').click();
-    cy.get('#\\/_mathinput1_correct').should('be.visible');
+    cy.get('#\\/c').select(`negative`);
+    cy.get('#\\/x_submit').click();
+    cy.get('#\\/x_correct').should('be.visible');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
-    cy.get('#\\/_mathinput1_incorrect').should('be.visible');
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}> 0{enter}', { force: true });
+    cy.get('#\\/x_incorrect').should('be.visible');
+
+
+    cy.get('#\\/c').select(`positive`);
+    cy.get('#\\/x_submit').click();
+    cy.get('#\\/x_correct').should('be.visible');
+
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
+    cy.get('#\\/x_incorrect').should('be.visible');
 
 
   })

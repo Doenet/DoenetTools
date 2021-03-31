@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
 import { normalizeIndex } from "../utils/table";
+import { textToAst } from '../utils/math';
 
 export default class Table extends BaseComponent {
   static componentType = "table";
@@ -478,7 +479,7 @@ export default class Table extends BaseComponent {
         }
         let cellME;
         try {
-          cellME = me.fromText(cellText);
+          cellME = me.fromAst(textToAst.convert(cellText));
         } catch (e) {
           continue;
         }

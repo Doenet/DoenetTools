@@ -6,7 +6,6 @@ export default class Option extends Template {
   static componentType = "option";
 
   static includeBlankStringChildren = false;
-  // static assignArrayOfNamesToChildren = true;
   static assignNamesToReplacements = true;
   static originalNamesAreConsistent = true;
 
@@ -60,16 +59,6 @@ export default class Option extends Template {
     } else {
 
       let replacements = deepClone(component.state.serializedChildren.value);
-
-      if (component.stateValues.hide) {
-        // if option is hidden, then make each of its replacements hidden
-        for (let rep of replacements) {
-          if (!rep.state) {
-            rep.state = {};
-          }
-          rep.state.hide = true;
-        }
-      }
 
       let processResult = processAssignNames({
         assignNames: component.doenetAttributes.assignNames,

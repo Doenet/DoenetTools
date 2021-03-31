@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { M } from './MMeMen';
 import me from 'math-expressions';
+import { latexToAst } from '../utils/math';
 
 export class Md extends InlineComponent {
   static componentType = "md";
@@ -32,6 +33,19 @@ export class Md extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.mrowChildNames = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        mrowChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMrows",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { mrowChildNames: dependencyValues.mrowChildren.map(x => x.componentName) }
+      })
+    }
+
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
@@ -40,7 +54,7 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latex", "hide", "equationTag"],
+          variableNames: ["latex", "hide", "equationTag", "numbered"],
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -53,8 +67,10 @@ export class Md extends InlineComponent {
             if (latex.length > 0) {
               latex += '\\\\'
             }
-            if (child.stateValues.equationTag) {
+            if (child.stateValues.numbered) {
               latex += `\\tag{${child.stateValues.equationTag}}`
+            } else {
+              latex += `\\notag `
             }
             latex += child.stateValues.latex;
 
@@ -78,7 +94,7 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latexWithInputChildren", "hide", "equationTag"],
+          variableNames: ["latexWithInputChildren", "hide", "equationTag", "numbered"],
         },
         latex: {
           dependencyType: "stateVariable",
@@ -92,14 +108,16 @@ export class Md extends InlineComponent {
           let lastLatex = "";
 
           for (let mrow of dependencyValues.mrowChildren) {
-            if(mrow.stateValues.hide) {
+            if (mrow.stateValues.hide) {
               continue;
             }
             if (lastLatex.length > 0) {
               lastLatex += '\\\\'
             }
-            if (mrow.stateValues.equationTag) {
+            if (mrow.stateValues.numbered) {
               lastLatex += `\\tag{${mrow.stateValues.equationTag}}`
+            } else{
+              lastLatex += '\\notag '
             }
             for (let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
               if (typeof latexOrChildInd === "number") {
@@ -144,7 +162,7 @@ export class Md extends InlineComponent {
         try {
           expressionText = dependencyValues.stateValues.latex
             .split('\\\\')
-            .map(x => me.fromLatex(x).toString())
+            .map(x => me.fromAst(latexToAst.convert(x)).toString())
             .join('\\\\');
         } catch (e) {
           // just return latex if can't parse with math-expressions
@@ -160,6 +178,11 @@ export class Md extends InlineComponent {
       definition: () => ({ newValues: { renderMode: "align" } })
     }
 
+
+    stateVariableDefinitions.numbered = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: false } })
+    }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
@@ -191,9 +214,11 @@ export class Mdn extends Md {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "alignnumbered" }
-    });
+    stateVariableDefinitions.numbered = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: true } })
+    }
+
     return stateVariableDefinitions;
   }
 }
@@ -201,6 +226,28 @@ export class Mdn extends Md {
 
 export class Mrow extends M {
   static componentType = "mrow";
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    let atMostOneNumbered = childLogic.newLeaf({
+      name: "atMostOneNumbered",
+      componentType: 'numbered',
+      comparison: 'atMost',
+      number: 1,
+      takePropertyChildren: true,
+    });
+
+    childLogic.newOperator({
+      name: "numberedAndRest",
+      operator: "and",
+      propositions: [childLogic.baseLogic, atMostOneNumbered],
+      setAsBase: true,
+    })
+
+    return childLogic;
+  }
+
 
   static returnStateVariableDefinitions() {
 
@@ -211,15 +258,30 @@ export class Mrow extends M {
     });
 
     stateVariableDefinitions.numbered = {
+      forRenderer: true,
       returnDependencies: () => ({
-        parentRenderMode: {
+        parentNumbered: {
           dependencyType: "parentStateVariable",
-          variableName: "renderMode"
+          variableName: "numbered"
+        },
+        numberedChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneNumbered",
+          variableNames: ["value"]
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { numbered: dependencyValues.parentRenderMode === "alignnumbered" }
-      })
+      definition({ dependencyValues }) {
+        let numbered;
+        if (dependencyValues.numberedChild.length === 1) {
+          numbered = dependencyValues.numberedChild[0].stateValues.value;
+        } else {
+          numbered = dependencyValues.parentNumbered;
+        }
+
+        return {
+          newValues: { numbered }
+        }
+      }
     }
 
     stateVariableDefinitions.equationTag = {

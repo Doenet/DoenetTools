@@ -7,7 +7,7 @@ describe('Boolean Tag Tests', function () {
   })
 
 
-  it.only('basic boolean evaluation', () => {
+  it('basic boolean evaluation', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -126,6 +126,48 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'Hello there!')
 
   })
+
+
+  it('boolean from computation', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <mathinput prefill="1" name="i" />
+
+    <boolean>mod($i,2) = 1</boolean>
+    <boolean>abs(cos(pi*$i/2)) < 1E-12</boolean>
+    <boolean>(-1)^$i = 1</boolean>
+    <boolean>floor(($i+1)/2) = ceil(($i-1)/2)</boolean>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get('#\\/_boolean3').should('have.text', "false")
+    cy.get('#\\/_boolean4').should('have.text', "false")
+
+    cy.get('#\\/i textarea').type('{end}{backspace}4{enter}', { force: true });
+    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get('#\\/_boolean2').should('have.text', "false")
+    cy.get('#\\/_boolean3').should('have.text', "true")
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+    cy.get('#\\/i textarea').type('{end}{backspace}-7{enter}', { force: true });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get('#\\/_boolean3').should('have.text', "false")
+    cy.get('#\\/_boolean4').should('have.text', "false")
+
+    cy.get('#\\/i textarea').type('{end}{backspace}{backspace}0{enter}', { force: true });
+    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get('#\\/_boolean2').should('have.text', "false")
+    cy.get('#\\/_boolean3').should('have.text', "true")
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+
+  })
+
 
 })
 

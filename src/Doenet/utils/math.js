@@ -1,5 +1,28 @@
 import me from 'math-expressions';
 
+export var appliedFunctionSymbols = [
+  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
+  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
+  "asech", "asin", "asinh", "atan", "atanh",
+  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
+  "sech", "sin", "sinh", "tan", "tanh",
+  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  'arg',
+  'min', 'max', 'mean', 'median',
+  'floor', 'ceil', 'round',
+  'sum', 'prod', 'var', 'std',
+  'count', 'mod'
+];
+
+export var textToAst = new me.converters.textToAstObj({
+  appliedFunctionSymbols
+});
+
+export var latexToAst = new me.converters.latexToAstObj({
+  appliedFunctionSymbols
+});
+
+
 export function normalizeMathExpression({ value, simplify, expand = false,
   createVectors = false, createIntervals = false
 }) {
@@ -81,7 +104,7 @@ export function returnNVariables(n, variablesSpecified) {
     } else {
       let variables = [];
       for (let i = 1; i <= n; i++) {
-        variables.push(me.fromText(`x_${i}`))
+        variables.push(me.fromAst(textToAst.convert(`x_${i}`)))
       }
       return variables;
     }
@@ -126,7 +149,7 @@ export function returnNVariables(n, variablesSpecified) {
     let addedVariable = false;
     for (let v of preferredVariables) {
       if (!variablesUsed.includes(v)) {
-        variables.push(me.fromText(v));
+        variables.push(me.fromAst(textToAst.convert(v)));
         variablesUsed.push(v);
         addedVariable = true;
         break;
@@ -134,7 +157,7 @@ export function returnNVariables(n, variablesSpecified) {
     }
     if (!addedVariable) {
       let v = preferredVariables[0]
-      variables.push(me.fromText(v));
+      variables.push(me.fromAst(textToAst.convert(v)));
       variablesUsed.push(v);
       console.warn(`Variables added were not unique`)
     }
@@ -168,4 +191,60 @@ export function mergeVectorsForInverseDefinition({ desiredVector, currentVector,
   }
 
   return desiredVector;
+}
+
+export function substituteUnicodeInLatexString(latexString) {
+
+  let substitutions = [
+    ['\u03B1', '\\alpha '], // 'α'
+    ['\u03B2', '\\beta '], // 'β'
+    ['\u03D0', '\\beta '], // 'ϐ'
+    ['\u0393', '\\Gamma '], // 'Γ'
+    ['\u03B3', '\\gamma '], // 'γ'
+    ['\u0394', '\\Delta '], // 'Δ'
+    ['\u03B4', '\\delta '], // 'δ'
+    ['\u03B5', '\\epsilon '], // 'ε' should this be varepsilon?
+    ['\u03F5', '\\epsilon '], // 'ϵ'
+    ['\u03B6', '\\zeta '], // 'ζ'
+    ['\u03B7', '\\eta '], // 'η'
+    ['\u0398', '\\Theta '], // 'Θ'
+    ['\u03F4', '\\Theta '], // 'ϴ'
+    ['\u03B8', '\\theta '], // 'θ'
+    ['\u1DBF', '\\theta '], // 'ᶿ'
+    ['\u03D1', '\\theta '], // 'ϑ'
+    ['\u03B9', '\\iota '], // 'ι'
+    ['\u03BA', '\\kappa '], // 'κ'
+    ['\u039B', '\\Lambda '], // 'Λ'
+    ['\u03BB', '\\lambda '], // 'λ'
+    ['\u03BC', '\\mu '], // 'μ'
+    ['\u00B5', '\\mu '], // 'µ' should this be micro?
+    ['\u03BD', '\\nu '], // 'ν'
+    ['\u039E', '\\Xi '], // 'Ξ'
+    ['\u03BE', '\\xi '], // 'ξ'
+    ['\u03A0', '\\Pi '], // 'Π'
+    ['\u03C0', '\\pi '], // 'π'
+    ['\u03D6', '\\pi '], // 'ϖ' should this be varpi?
+    ['\u03C1', '\\rho '], // 'ρ'
+    ['\u03F1', '\\rho '], // 'ϱ' should this be varrho?
+    ['\u03A3', '\\Sigma '], // 'Σ'
+    ['\u03C3', '\\sigma '], // 'σ'
+    ['\u03C2', '\\sigma '], // 'ς' should this be varsigma?
+    ['\u03C4', '\\tau '], // 'τ'
+    ['\u03A5', '\\Upsilon '], // 'Υ'
+    ['\u03C5', '\\upsilon '], // 'υ'
+    ['\u03A6', '\\Phi '], // 'Φ'
+    ['\u03C6', '\\phi '], // 'φ' should this be varphi?
+    ['\u03D5', '\\phi '], // 'ϕ'
+    ['\u03A8', '\\Psi '], // 'Ψ'
+    ['\u03C8', '\\psi '], // 'ψ'
+    ['\u03A9', '\\Omega '], // 'Ω'
+    ['\u03C9', '\\omega '], // 'ω'
+  ]
+
+  for(let sub of substitutions) {
+    latexString = latexString.replaceAll(sub[0], sub[1])
+  }
+
+  return latexString;
+
 }

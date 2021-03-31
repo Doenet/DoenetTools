@@ -21,11 +21,11 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>x+y</answer></p>
   <section>
-  <feedback><condition><copy prop="creditAchieved" tname="_answer1" /> = 1</condition>
+  <feedback condition="$(_answer1{prop='creditAchieved'}) = 1">
   <p>You got full credit!</p></feedback>
-  <feedback><condition><copy prop="submittedResponse" tname="_answer1" /> = <math>x+y</math></condition>
+  <feedback condition="$_answer1 = x+y">
   <p>You typed the right answer!</p></feedback>
-  <feedback><condition><copy prop="submittedResponse" tname="_answer1" /> = <math>x</math></condition>
+  <feedback condition="$_answer1 = x" >
   <p>That's a bad answer.</p></feedback>
   </section>
   `}, "*");
@@ -106,10 +106,10 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <section>
-  <feedback><condition><copy tname="_award1" /></condition>
+  <feedback condition="$_award1">
   <p>You got award 1.</p>
   </feedback>
-  <feedback><condition><copy tname="_award2" /></condition>
+  <feedback condition="$_award2">
   <p>You got award 2.</p>
   </feedback>
   </section>
@@ -195,24 +195,19 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
   <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   <section>
-  <feedback>
-    <condition><copy tname="_award1" /></condition>
+  <feedback condition="$_award1">
     <p>Larger than 1</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_award2" /></condition>
+  <feedback condition="$_award2" >
     <p>Larger than 10</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_award3" /></condition>
+  <feedback condition="$_award3">
     <p>Larger than 2</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_award4" /></condition>
+  <feedback condition="$_award4">
     <p>Larger than 0.9</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_award5" /></condition>
+  <feedback condition="$_award5">
     <p>A negative number?</p>
   </feedback>
   </section>
@@ -331,24 +326,19 @@ describe('Feedback Tag Tests', function () {
   </answer></p>
   <p>Credit achieved: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   <section>
-  <feedback>
-    <condition><copy tname="_choice1" /></condition>
+  <feedback condition="$_choice1">
     <p>Meow</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_choice2" /></condition>
+  <feedback condition="$_choice2">
     <p>Ruff</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_choice3" /></condition>
+  <feedback condition="$_choice3">
     <p>Moo</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_choice4" /></condition>
+  <feedback condition="$_choice4">
     <p>Squeak</p>
   </feedback>
-  <feedback>
-    <condition><copy tname="_choice5" /></condition>
+  <feedback condition="$_choice5">
     <p>Huh?</p>
   </feedback>
   </section>
@@ -427,11 +417,7 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <section>
-  <feedback>
-    <condition>
-      <copy prop="creditAchieved" tname="_answer1" /> != 1
-      and <copy prop="responsehasbeensubmitted" tname="_answer1" />
-    </condition>
+  <feedback condition="$(_answer1{prop='creditAchieved'}) != 1 and $(_answer1{prop='responseHasBeenSubmitted'}) ">
     <p>Your response <em><copy prop="submittedresponse" tname="_answer1" /></em> is incorrect.</p>
   </feedback>
   </section>

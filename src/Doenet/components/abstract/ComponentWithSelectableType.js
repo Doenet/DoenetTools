@@ -1,6 +1,6 @@
 import BaseComponent from './BaseComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../../utils/math';
+import { convertValueToMathExpression, textToAst } from '../../utils/math';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export class ComponentWithSelectableType extends BaseComponent {
@@ -455,7 +455,7 @@ function convertValueToType(value, type) {
   } else if (type === "math") {
     if (typeof value === "string") {
       try {
-        return me.fromText(value);
+        return me.fromAst(textToAst.convert(value));
       } catch (e) {
       }
     }

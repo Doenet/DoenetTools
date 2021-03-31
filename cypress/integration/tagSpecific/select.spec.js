@@ -2796,7 +2796,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide replacements', () => {
+  it('select with hide will hide replacements but not copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2814,7 +2814,7 @@ describe('Select Tag Tests', function () {
         <option><text>d</text></option>
         <option><text>e</text></option>
       </select></p>
-      <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
+      <p><copy tname="c" />, <copy tname="d" /></p>
     `}, "*");
     });
 
@@ -2834,7 +2834,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide named grandchildren replacements', () => {
+  it('select with hide will hide named grandchildren replacements but not copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2885,10 +2885,61 @@ describe('Select Tag Tests', function () {
       expect(["b", "d", "f"].includes(e)).eq(true);
 
       cy.get(`#\\/_p2`).should('have.text', `${a}, ${b}, ${c}`)
-      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, `)
+      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, ${e}`)
 
     })
   });
 
+  it('selects hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first select" />
+    <booleaninput name='h2' prefill="true" label="Hide second select" />
+    <p><select assignnames="(c)" hide="$h1">
+      <option><text>a</text></option>
+      <option><text>b</text></option>
+      <option><text>c</text></option>
+      <option><text>d</text></option>
+      <option><text>e</text></option>
+    </select>, <select assignnames="(d)" hide="$h2">
+      <option><text>a</text></option>
+      <option><text>b</text></option>
+      <option><text>c</text></option>
+      <option><text>d</text></option>
+      <option><text>e</text></option>
+    </select></p>
+    <p><copy tname="c" />, <copy tname="d" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let c = components['/c'].stateValues.value;
+      let d = components['/d'].stateValues.value;
+      expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
+      expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
+
+      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+
+      cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+
+      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+    })
+  });
 
 });

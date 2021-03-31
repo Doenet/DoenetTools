@@ -21,7 +21,7 @@ import { ancestorsIncludingComposites } from './utils/descendants';
 
 
 export default class Core {
-  constructor({ doenetML, doenetState, parameters, requestedVariant,
+  constructor({ doenetML, parameters, requestedVariant,
     externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback }) {
     // console.time('start up time');
 
@@ -46,7 +46,7 @@ export default class Core {
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
     this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
 
-    this.expandDoenetMLsToFullSerializedState = this.expandDoenetMLsToFullSerializedState.bind(this);
+    this.expandDoenetMLsToFullSerializedComponents = this.expandDoenetMLsToFullSerializedComponents.bind(this);
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
@@ -135,44 +135,24 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
     this.setUpRng();
 
-
-    let serializedComponents;
-
-    if (doenetState) {
-      serializedComponents = doenetState;
-      let contentId;
-      if (serializedComponents[0].doenetAttributes) {
-        contentId = serializedComponents[0].doenetAttributes.contentId;
-      }
-      if (contentId === undefined) {
-        contentId = "";
-      }
-      console.log(`contentId from doenetState: ${contentId}`)
-      this.finishCoreConstruction({
-        contentIds: [contentId],
-        fullSerializedStates: [serializedComponents],
-        finishSerializedStateProcessing: false
-      });
-    } else {
-      let contentId = Hex.stringify(sha256(JSON.stringify(doenetML)));
-      this.expandDoenetMLsToFullSerializedState({
-        contentIds: [contentId],
-        doenetMLs: [doenetML],
-        callBack: this.finishCoreConstruction
-      })
-    }
+    let contentId = Hex.stringify(sha256(doenetML));
+    this.expandDoenetMLsToFullSerializedComponents({
+      contentIds: [contentId],
+      doenetMLs: [doenetML],
+      callBack: this.finishCoreConstruction
+    })
   }
 
   finishCoreConstruction({
     contentIds,
-    fullSerializedStates,
+    fullSerializedComponents,
     finishSerializedStateProcessing = true,
     calledAsynchronously = false
   }) {
 
     this.contentId = contentIds[0];
 
-    let serializedComponents = fullSerializedStates[0];
+    let serializedComponents = fullSerializedComponents[0];
 
     serializeFunctions.addDocumentIfItsMissing(serializedComponents);
 
@@ -186,10 +166,6 @@ export default class Core {
       if (serializedComponents[0].doenetAttributes === undefined) {
         serializedComponents[0].doenetAttributes = {};
       }
-
-      // TODO: why are we hard coding a document name here?
-      // Seems like a bad idea, author could have named document something esle
-      // serializedComponents[0].componentName = "/_document1";
     }
 
     console.log(`serialized components at the beginning`)
@@ -295,12 +271,11 @@ export default class Core {
     this.parameterStack.parameters.rngClass = MersenneTwister;
   }
 
-  expandDoenetMLsToFullSerializedState({ contentIds, doenetMLs, callBack }) {
+  expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
 
-    // TODO: check if this works for new core setup
-
-    let serializedStates = [];
+    let arrayOfSerializedComponents = [];
     let contentIdComponents = {};
+    let contentNameComponents = {};
 
     for (let doenetML of doenetMLs) {
 
@@ -321,41 +296,72 @@ export default class Core {
 
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
 
-      serializedStates.push(serializedComponents);
+      arrayOfSerializedComponents.push(serializedComponents);
 
-      let newContentIdComponents = serializeFunctions.findContentIdRefs({ serializedComponents });
+      let newContentComponents = serializeFunctions.findContentCopies({ serializedComponents });
 
-      for (let contentId in newContentIdComponents) {
+      for (let contentId in newContentComponents.contentIdComponents) {
         if (contentIdComponents[contentId] === undefined) {
           contentIdComponents[contentId] = []
         }
-        contentIdComponents[contentId].push(...newContentIdComponents[contentId])
+        contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
       }
-
+      for (let contentName in newContentComponents.contentNameComponents) {
+        if (contentNameComponents[contentName] === undefined) {
+          contentNameComponents[contentName] = []
+        }
+        contentNameComponents[contentName].push(...newContentComponents.contentNameComponents[contentName])
+      }
     }
 
     let contentIdList = Object.keys(contentIdComponents);
-    if (contentIdList.length > 0) {
-      // found refs with contentIds
-      // so look up those contentIds, convert to doenetMLs, and recurse on those doenetMLs
+    let contentNameList = Object.keys(contentNameComponents);
+    if (contentIdList.length + contentNameList.length > 0) {
+      // found copies with contentIds or contentNames
+      // so look up those contentIds/contentNames,
+      // convert to doenetMLs, and recurse on those doenetMLs
 
-      let mergedContentIdSerializedStateIntoRef = function ({ fullSerializedStates }) {
+      let mergeContentIdNameSerializedComponentsIntoCopy = function ({
+        fullSerializedComponents
+      }) {
 
         for (let [ind, contentId] of contentIdList.entries()) {
-          let serializedStateForContentId = fullSerializedStates[ind];
-          for (let originalRefWithContentId of contentIdComponents[contentId]) {
-            if (originalRefWithContentId.state === undefined) {
-              originalRefWithContentId.state = {};
+          let serializedComponentsForContentId = fullSerializedComponents[ind];
+
+          for (let originalCopyWithUri of contentIdComponents[contentId]) {
+            if (originalCopyWithUri.children === undefined) {
+              originalCopyWithUri.children = [];
             }
-            originalRefWithContentId.state.serializedStateForContentId = serializedStateForContentId;
+            originalCopyWithUri.children.push({
+              componentType: "externalcontent",
+              children: serializedComponentsForContentId,
+              doenetAttributes: { newNamespace: true }
+            });
           }
         }
 
-        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedState
+        for (let [ind, contentName] of contentNameList.entries()) {
+          // results from content names immediately follow those from content ids
+          let serializedComponentsForContentName = fullSerializedComponents[ind + contentIdList.length];
+          for (let originalCopyWithUri of contentNameComponents[contentName]) {
+            if (originalCopyWithUri.children === undefined) {
+              originalCopyWithUri.children = [];
+            }
+            originalCopyWithUri.children.push({
+              componentType: "externalcontent",
+              children: serializedComponentsForContentName,
+              doenetAttributes: { newNamespace: true }
+            });
+          }
+        }
+
+        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
         // so we call it with the contentIds and serializedComponents from that context
+        // This callBack will either be this.finishCoreConstruction
+        // or mergeContentIdNameSerializedComponentsIntoCopy
         callBack({
           contentIds,
-          fullSerializedStates: serializedStates,
+          fullSerializedComponents: arrayOfSerializedComponents,
           calledAsynchronously: true,
         })
       }.bind(this);
@@ -366,23 +372,56 @@ export default class Core {
           console.warn(message);
         }
 
-        this.expandDoenetMLsToFullSerializedState({
+        // check to see if got the contentIds requested
+        for (let [ind, contentId] of contentIdList.entries()) {
+          if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
+            throw Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`)
+          }
+        }
+
+        // check to see if the doenetMLs hash to the contentIds
+        let expectedN = contentIdList.length + contentNameList.length;
+        for (let ind = 0; ind < expectedN; ind++) {
+          let contentId = newContentIds[ind];
+          if (contentId) {
+            let doenetML = newDoenetMLs[ind];
+            let calculatedContentId = Hex.stringify(sha256(doenetML));
+            if (contentId !== calculatedContentId) {
+              console.log(contentId)
+              console.log(calculatedContentId)
+              throw Error(`Incorrect DoenetML returned for contentId: ${contentId}`)
+            }
+          } else {
+            // wasn't able to retrieve content
+            if (ind < contentIdList.length) {
+              console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+            } else {
+              console.warn(`Unable to retrieve content with contentName = ${contentNameList[ind - contentIdList.length]}`)
+            }
+            newDoenetMLs[ind] = "";
+          }
+        }
+
+        this.expandDoenetMLsToFullSerializedComponents({
           doenetMLs: newDoenetMLs,
           contentIds: newContentIds,
-          callBack: mergedContentIdSerializedStateIntoRef,
+          callBack: mergeContentIdNameSerializedComponentsIntoCopy,
         });
       }.bind(this);
 
       this.externalFunctions.contentIdsToDoenetMLs({
         contentIds: contentIdList,
+        contentNames: contentNameList,
         callBack: recurseToAdditionalDoenetMLs
       });
 
     } else {
       // end recursion when don't find additional refs with contentIds
+      // Note: this callBack will either be this.finishCoreConstruction
+      // or mergeContentIdNameSerializedComponentsIntoCopy
       callBack({
         contentIds,
-        fullSerializedStates: serializedStates,
+        fullSerializedComponents: arrayOfSerializedComponents,
         calledAsynchronously: false,
       });
     }
@@ -1135,6 +1174,12 @@ export default class Core {
       newComponent.replacementOf = componentsReplacementOf
     }
 
+    if(serializedComponent.adaptedFrom) {
+      // record adapter relationship
+      newComponent.adaptedFrom = this._components[serializedComponent.adaptedFrom];
+      newComponent.adaptedFrom.adapterUsed = newComponent;
+    }
+
     for (let name in prescribedDependencies) {
       let depArray = prescribedDependencies[name];
       for (let dep of depArray) {
@@ -1804,6 +1849,8 @@ export default class Core {
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
           }
+          
+          newSerializedChild.adaptedFrom = originalChild.componentName;
           let newChildrenResult = this.createIsolatedComponentsSub({
             serializedComponents: [newSerializedChild],
             shadow: true,
@@ -1815,10 +1862,6 @@ export default class Core {
 
           adapter = newChildrenResult.components[0];
 
-          // put adapter used directly on originalChild for quick access
-          originalChild.adapterUsed = adapter;
-
-          adapter.adaptedFrom = originalChild;
         }
 
         // Replace originalChild with its adapter in activeChildren

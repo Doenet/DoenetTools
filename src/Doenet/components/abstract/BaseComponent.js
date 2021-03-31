@@ -218,12 +218,17 @@ export default class BaseComponent {
           dependencyType: "sourceCompositeStateVariable",
           variableName: "hidden"
         },
+        adapterSourceHidden: {
+          dependencyType: "adapterSourceDependency",
+          variableName: "hidden"
+        },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
           hidden:  // check === true so null gives false
             dependencyValues.parentHidden === true
             || dependencyValues.sourceCompositeHidden === true
+            || dependencyValues.adapterSourceHidden === true
             || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
         }
       })

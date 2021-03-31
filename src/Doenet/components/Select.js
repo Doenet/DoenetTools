@@ -4,6 +4,7 @@ import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
@@ -52,7 +53,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromText(s) : (type === "number" ? Number(s) : s))
+              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
               .map(s => ({
                 componentType: "option",
                 children: [{
@@ -496,29 +497,6 @@ export default class Select extends CompositeComponent {
 
       if (selectedChild.variants) {
         serializedChild.variants = deepClone(selectedChild.variants);
-      }
-
-
-      if (component.stateValues.hide) {
-        // if select is hidden, then make each of its replacements hidden
-        if (!serializedChild.state) {
-          serializedChild.state = {};
-        }
-
-        serializedChild.state.hide = true;
-
-        // // if assigning names to grandchild, then hide those as well
-        // // so that refs of those will be hidden, for consistency
-        // if (Array.isArray(name)) {
-        //   if (serializedChild.children) {
-        //     for (let grandchild of serializedChild.children) {
-        //       if (!grandchild.state) {
-        //         grandchild.state = {};
-        //       }
-        //       grandchild.state.hide = true;
-        //     }
-        //   }
-        // }
       }
 
       replacements.push(serializedChild);

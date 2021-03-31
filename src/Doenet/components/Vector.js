@@ -125,7 +125,7 @@ export default class Vector extends GraphicalComponent {
 
     let exactlyOneDisplacement = childLogic.newLeaf({
       name: "exactlyOneDisplacement",
-      componentType: 'vector',
+      componentType: 'displacement',
       number: 1,
       takePropertyChildren: true,
     });
@@ -1489,7 +1489,6 @@ export default class Vector extends GraphicalComponent {
   adapters = [{
     stateVariable: "displacementCoords",
     componentType: "coords",
-    stateVariableForNewComponent: "value",
   }];
 
   moveVector({ tailcoords, headcoords, transient, sourceInformation }) {
