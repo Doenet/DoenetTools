@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { HotTable } from '@handsontable/react';
 import Handsontable from 'handsontable';
+import MersenneTwister from 'mersenne-twister';
 
 
 class MyComponent extends React.Component {
@@ -41,9 +42,10 @@ class MyComponent extends React.Component {
     );
   }
 }
+var generator = new MersenneTwister();
 
 ReactDOM.render(
-    <MyComponent />,
+  <h1>{generator.random()}</h1>,
   document.getElementById('root'),
 );
 
