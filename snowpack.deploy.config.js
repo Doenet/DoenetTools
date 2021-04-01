@@ -1,5 +1,3 @@
-
-
 module.exports = {
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
@@ -44,6 +42,6 @@ module.exports = {
   buildOptions: {
     out: 'dist',
     clean: true,
-    minify: true
+    minify: true,
   },
 };

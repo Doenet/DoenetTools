@@ -48,7 +48,6 @@ function DynamicLoad(props) {
 }
 
 
-
 ReactDOM.render(
   <DynamicLoad />,
   document.getElementById('root'),
