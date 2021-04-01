@@ -6,7 +6,7 @@ import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import DoenetExampleTool from './ExampleTool';
-import ToolRoot from '../_core/ToolRoot';
+import ToolRoot from '../_framework/ToolRoot';
 
 ReactDOM.render(
   // <DropTargetsProvider>
