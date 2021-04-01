@@ -1812,9 +1812,9 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
   <point xs="3 2">
@@ -1888,9 +1888,9 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
   <point xs="3 2">
@@ -2565,6 +2565,118 @@ describe('Point Tag Tests', function () {
       expect(replacement.stateValues.slope.tree).eqls(['/', 3, 2]);
       expect(replacement.stateValues.xintercept.tree).eq(0);
       expect(replacement.stateValues.yintercept.tree).eq(0);
+    })
+
+  });
+
+  it('intersection of two lines hides dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <graph>
+  <point>(1,2)</point>
+  <point>(2,2)</point>
+  <point>(3,2)</point>
+  <point>(4,2)</point>
+  <line through="$_point1 $_point2" />
+  <line through="$_point3 $_point4" />
+  </graph>
+
+  <booleaninput name='h1' prefill="false" label="Hide first intersection" />
+  <booleaninput name='h2' prefill="true" label="Hide second intersection" />
+  
+  <p name="i1">Intersection 1: <intersection hide="$h1"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
+  <p name="i2">Intersection 2: <intersection hide="$h2"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
+  
+  <text>a</text>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0=y−2')
+    })
+    cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+    cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+    cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0=y−2')
+    })
+
+
+    cy.log(`make first line vertical`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 3, y: 5 });
+      components['/_point2'].movePoint({ x: 3, y: -5 });
+
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,2)')
+      })
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,2)')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+    })
+
+    cy.log(`make second line vertical`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point3'].movePoint({ x: -4, y: 5 });
+      components['/_point4'].movePoint({ x: -4, y: -5 });
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+    })
+
+    cy.log(`make lines intersect again`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -8, y: -7 });
+      components['/_point2'].movePoint({ x: 8, y: 9 });
+      components['/_point3'].movePoint({ x: 4, y: 6 });
+      components['/_point4'].movePoint({ x: -4, y: -6 });
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      })
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+
+    })
+
+    cy.log(`make lines equal again`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 6, y: 9 });
+      components['/_point2'].movePoint({ x: -6, y: -9 });
+      components['/_point3'].movePoint({ x: 4, y: 6 });
+      components['/_point4'].movePoint({ x: -4, y: -6 });
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0=18x−12y')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0=18x−12y')
+      })
     })
 
   });

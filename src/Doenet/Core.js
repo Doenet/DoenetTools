@@ -21,7 +21,7 @@ import { ancestorsIncludingComposites } from './utils/descendants';
 
 
 export default class Core {
-  constructor({ doenetML, doenetState, parameters, requestedVariant,
+  constructor({ doenetML, parameters, requestedVariant,
     externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback }) {
     // console.time('start up time');
 
@@ -46,7 +46,7 @@ export default class Core {
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
     this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
 
-    this.expandDoenetMLsToFullSerializedState = this.expandDoenetMLsToFullSerializedState.bind(this);
+    this.expandDoenetMLsToFullSerializedComponents = this.expandDoenetMLsToFullSerializedComponents.bind(this);
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
@@ -135,44 +135,24 @@ export default class Core {
     this.parameterStack = new ParameterStack(parameters);
     this.setUpRng();
 
-
-    let serializedComponents;
-
-    if (doenetState) {
-      serializedComponents = doenetState;
-      let contentId;
-      if (serializedComponents[0].doenetAttributes) {
-        contentId = serializedComponents[0].doenetAttributes.contentId;
-      }
-      if (contentId === undefined) {
-        contentId = "";
-      }
-      console.log(`contentId from doenetState: ${contentId}`)
-      this.finishCoreConstruction({
-        contentIds: [contentId],
-        fullSerializedStates: [serializedComponents],
-        finishSerializedStateProcessing: false
-      });
-    } else {
-      let contentId = Hex.stringify(sha256(JSON.stringify(doenetML)));
-      this.expandDoenetMLsToFullSerializedState({
-        contentIds: [contentId],
-        doenetMLs: [doenetML],
-        callBack: this.finishCoreConstruction
-      })
-    }
+    let contentId = Hex.stringify(sha256(doenetML));
+    this.expandDoenetMLsToFullSerializedComponents({
+      contentIds: [contentId],
+      doenetMLs: [doenetML],
+      callBack: this.finishCoreConstruction
+    })
   }
 
   finishCoreConstruction({
     contentIds,
-    fullSerializedStates,
+    fullSerializedComponents,
     finishSerializedStateProcessing = true,
     calledAsynchronously = false
   }) {
 
     this.contentId = contentIds[0];
 
-    let serializedComponents = fullSerializedStates[0];
+    let serializedComponents = fullSerializedComponents[0];
 
     serializeFunctions.addDocumentIfItsMissing(serializedComponents);
 
@@ -186,10 +166,6 @@ export default class Core {
       if (serializedComponents[0].doenetAttributes === undefined) {
         serializedComponents[0].doenetAttributes = {};
       }
-
-      // TODO: why are we hard coding a document name here?
-      // Seems like a bad idea, author could have named document something esle
-      // serializedComponents[0].componentName = "/_document1";
     }
 
     console.log(`serialized components at the beginning`)
@@ -295,12 +271,11 @@ export default class Core {
     this.parameterStack.parameters.rngClass = MersenneTwister;
   }
 
-  expandDoenetMLsToFullSerializedState({ contentIds, doenetMLs, callBack }) {
+  expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
 
-    // TODO: check if this works for new core setup
-
-    let serializedStates = [];
+    let arrayOfSerializedComponents = [];
     let contentIdComponents = {};
+    let contentNameComponents = {};
 
     for (let doenetML of doenetMLs) {
 
@@ -321,41 +296,72 @@ export default class Core {
 
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
 
-      serializedStates.push(serializedComponents);
+      arrayOfSerializedComponents.push(serializedComponents);
 
-      let newContentIdComponents = serializeFunctions.findContentIdRefs({ serializedComponents });
+      let newContentComponents = serializeFunctions.findContentCopies({ serializedComponents });
 
-      for (let contentId in newContentIdComponents) {
+      for (let contentId in newContentComponents.contentIdComponents) {
         if (contentIdComponents[contentId] === undefined) {
           contentIdComponents[contentId] = []
         }
-        contentIdComponents[contentId].push(...newContentIdComponents[contentId])
+        contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
       }
-
+      for (let contentName in newContentComponents.contentNameComponents) {
+        if (contentNameComponents[contentName] === undefined) {
+          contentNameComponents[contentName] = []
+        }
+        contentNameComponents[contentName].push(...newContentComponents.contentNameComponents[contentName])
+      }
     }
 
     let contentIdList = Object.keys(contentIdComponents);
-    if (contentIdList.length > 0) {
-      // found refs with contentIds
-      // so look up those contentIds, convert to doenetMLs, and recurse on those doenetMLs
+    let contentNameList = Object.keys(contentNameComponents);
+    if (contentIdList.length + contentNameList.length > 0) {
+      // found copies with contentIds or contentNames
+      // so look up those contentIds/contentNames,
+      // convert to doenetMLs, and recurse on those doenetMLs
 
-      let mergedContentIdSerializedStateIntoRef = function ({ fullSerializedStates }) {
+      let mergeContentIdNameSerializedComponentsIntoCopy = function ({
+        fullSerializedComponents
+      }) {
 
         for (let [ind, contentId] of contentIdList.entries()) {
-          let serializedStateForContentId = fullSerializedStates[ind];
-          for (let originalRefWithContentId of contentIdComponents[contentId]) {
-            if (originalRefWithContentId.state === undefined) {
-              originalRefWithContentId.state = {};
+          let serializedComponentsForContentId = fullSerializedComponents[ind];
+
+          for (let originalCopyWithUri of contentIdComponents[contentId]) {
+            if (originalCopyWithUri.children === undefined) {
+              originalCopyWithUri.children = [];
             }
-            originalRefWithContentId.state.serializedStateForContentId = serializedStateForContentId;
+            originalCopyWithUri.children.push({
+              componentType: "externalcontent",
+              children: serializedComponentsForContentId,
+              doenetAttributes: { newNamespace: true }
+            });
           }
         }
 
-        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedState
+        for (let [ind, contentName] of contentNameList.entries()) {
+          // results from content names immediately follow those from content ids
+          let serializedComponentsForContentName = fullSerializedComponents[ind + contentIdList.length];
+          for (let originalCopyWithUri of contentNameComponents[contentName]) {
+            if (originalCopyWithUri.children === undefined) {
+              originalCopyWithUri.children = [];
+            }
+            originalCopyWithUri.children.push({
+              componentType: "externalcontent",
+              children: serializedComponentsForContentName,
+              doenetAttributes: { newNamespace: true }
+            });
+          }
+        }
+
+        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
         // so we call it with the contentIds and serializedComponents from that context
+        // This callBack will either be this.finishCoreConstruction
+        // or mergeContentIdNameSerializedComponentsIntoCopy
         callBack({
           contentIds,
-          fullSerializedStates: serializedStates,
+          fullSerializedComponents: arrayOfSerializedComponents,
           calledAsynchronously: true,
         })
       }.bind(this);
@@ -366,23 +372,56 @@ export default class Core {
           console.warn(message);
         }
 
-        this.expandDoenetMLsToFullSerializedState({
+        // check to see if got the contentIds requested
+        for (let [ind, contentId] of contentIdList.entries()) {
+          if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
+            throw Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`)
+          }
+        }
+
+        // check to see if the doenetMLs hash to the contentIds
+        let expectedN = contentIdList.length + contentNameList.length;
+        for (let ind = 0; ind < expectedN; ind++) {
+          let contentId = newContentIds[ind];
+          if (contentId) {
+            let doenetML = newDoenetMLs[ind];
+            let calculatedContentId = Hex.stringify(sha256(doenetML));
+            if (contentId !== calculatedContentId) {
+              console.log(contentId)
+              console.log(calculatedContentId)
+              throw Error(`Incorrect DoenetML returned for contentId: ${contentId}`)
+            }
+          } else {
+            // wasn't able to retrieve content
+            if (ind < contentIdList.length) {
+              console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+            } else {
+              console.warn(`Unable to retrieve content with contentName = ${contentNameList[ind - contentIdList.length]}`)
+            }
+            newDoenetMLs[ind] = "";
+          }
+        }
+
+        this.expandDoenetMLsToFullSerializedComponents({
           doenetMLs: newDoenetMLs,
           contentIds: newContentIds,
-          callBack: mergedContentIdSerializedStateIntoRef,
+          callBack: mergeContentIdNameSerializedComponentsIntoCopy,
         });
       }.bind(this);
 
       this.externalFunctions.contentIdsToDoenetMLs({
         contentIds: contentIdList,
+        contentNames: contentNameList,
         callBack: recurseToAdditionalDoenetMLs
       });
 
     } else {
       // end recursion when don't find additional refs with contentIds
+      // Note: this callBack will either be this.finishCoreConstruction
+      // or mergeContentIdNameSerializedComponentsIntoCopy
       callBack({
         contentIds,
-        fullSerializedStates: serializedStates,
+        fullSerializedComponents: arrayOfSerializedComponents,
         calledAsynchronously: false,
       });
     }
@@ -784,7 +823,7 @@ export default class Core {
 
   createIsolatedComponentsSub({ serializedComponents, ancestors,
     applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
-    createNameContext = "", namespaceForUnamed = "/",
+    createNameContext = "", namespaceForUnamed = "/", componentsReplacementOf,
   }
   ) {
 
@@ -853,6 +892,7 @@ export default class Core {
         componentClass,
         applyAdapters, shadow, updatesNeeded, compositesBeingExpanded,
         namespaceForUnamed,
+        componentsReplacementOf,
       });
 
       let newComponent = createResult.newComponent;
@@ -874,7 +914,7 @@ export default class Core {
     ancestors, componentClass,
     applyAdapters = true, shadow = false,
     updatesNeeded, compositesBeingExpanded,
-    namespaceForUnamed = "/",
+    namespaceForUnamed = "/", componentsReplacementOf
   }) {
 
     // first recursively create children
@@ -899,8 +939,7 @@ export default class Core {
       componentClass.modifySharedParameters({ sharedParameters, serializedComponent });
     }
 
-    if (serializedComponent.doenetAttributes.pushSharedParameters
-    ) {
+    if (serializedComponent.doenetAttributes.pushSharedParameters) {
       for (let parInstruction of serializedComponent.doenetAttributes.pushSharedParameters) {
         let pName = parInstruction.parameterName;
         if (pName in sharedParameters) {
@@ -910,6 +949,19 @@ export default class Core {
           sharedParameters[pName] = [];
         }
         sharedParameters[pName].push(parInstruction.value);
+      }
+    }
+
+    if (serializedComponent.doenetAttributes.addToSharedParameters) {
+      for (let parInstruction of serializedComponent.doenetAttributes.addToSharedParameters) {
+        let pName = parInstruction.parameterName;
+        if (pName in sharedParameters) {
+          sharedParameters[pName] = Object.assign({}, sharedParameters[pName]);
+        }
+        else {
+          sharedParameters[pName] = {};
+        }
+        sharedParameters[pName][parInstruction.key] = parInstruction.value;
       }
     }
 
@@ -1118,6 +1170,16 @@ export default class Core {
 
     this.registerComponent(newComponent);
 
+    if (componentsReplacementOf) {
+      newComponent.replacementOf = componentsReplacementOf
+    }
+
+    if(serializedComponent.adaptedFrom) {
+      // record adapter relationship
+      newComponent.adaptedFrom = this._components[serializedComponent.adaptedFrom];
+      newComponent.adaptedFrom.adapterUsed = newComponent;
+    }
+
     for (let name in prescribedDependencies) {
       let depArray = prescribedDependencies[name];
       for (let dep of depArray) {
@@ -1179,6 +1241,7 @@ export default class Core {
       });
     }
 
+    this.dependencies.collateCountersAndPropagateToAncestors(newComponent, updatesNeeded);
 
     // remove a level from parameter stack;
     this.parameterStack.pop();
@@ -1308,6 +1371,12 @@ export default class Core {
         component: child,
       };
     }
+
+    // allChildrenOrder contains same children as allChildren,
+    // but retaining an order that we can use for counters.
+    // If defining children are replaced my composite replacements or adapters,
+    // those children come immediately after the corresponding defining child
+    component.allChildrenOrdered = component.activeChildren.map(x => x.componentName)
 
     // if any of activeChildren are compositeComponents
     // replace with new components given by the composite component
@@ -1591,6 +1660,7 @@ export default class Core {
       compositesBeingExpanded,
       createNameContext: component.componentName + "|replacements",
       namespaceForUnamed,
+      componentsReplacementOf: component
     });
 
     this.parameterStack.pop();
@@ -1599,11 +1669,6 @@ export default class Core {
     this.dependencies.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     component.isExpanded = true;
-
-    // record for top level replacement that they are a replacement of composite
-    for (let comp of component.replacements) {
-      comp.replacementOf = component;
-    }
 
     // resolve replacement state variables
     let stateVariables = [];
@@ -1688,16 +1753,13 @@ export default class Core {
           }
         }
 
-        // // even replacements that are marked as being withheld
-        // // should be in allChildren
-        // if (child.replacementsToWithhold > 0) {
-        //   for (let ind2 = replacements.length; ind2 < child.replacements.length; ind2++) {
-        //     let withheldReplacement = child.replacements[ind2];
-        //     component.allChildren[withheldReplacement.componentName] = {
-        //       component: withheldReplacement,
-        //     }
-        //   }
-        // }
+
+        // find index of child in allChildrenOrdered
+        // and place replacements immediately afterward
+        let childInd = component.allChildrenOrdered.indexOf(child.componentName)
+        component.allChildrenOrdered.splice(childInd + 1, 0,
+          ...replacements.map(x => x.componentName))
+
         if (replacements.length !== 1) {
           // if replaced composite with anything other than one replacement
           // shift activeChildrenIndices of later children
@@ -1787,6 +1849,8 @@ export default class Core {
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
           }
+          
+          newSerializedChild.adaptedFrom = originalChild.componentName;
           let newChildrenResult = this.createIsolatedComponentsSub({
             serializedComponents: [newSerializedChild],
             shadow: true,
@@ -1798,10 +1862,6 @@ export default class Core {
 
           adapter = newChildrenResult.components[0];
 
-          // put adapter used directly on originalChild for quick access
-          originalChild.adapterUsed = adapter;
-
-          adapter.adaptedFrom = originalChild;
         }
 
         // Replace originalChild with its adapter in activeChildren
@@ -1814,6 +1874,12 @@ export default class Core {
           activeChildrenIndex: Number(childNum),  // childNum is string since was defined via in
           component: adapter,
         }
+
+        // find index of originalChild in allChildrenOrdered
+        // and place adapter immediately afterward
+        let originalInd = component.allChildrenOrdered.indexOf(originalChild.componentName)
+        component.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+
       }
     }
 
@@ -1869,6 +1935,11 @@ export default class Core {
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.property] = dep.ancestorIdentity;
+          } else if (dep.dependencyType === "nonShadowingReplacement") {
+            redefineDependencies = {
+              linkSource: "nonShadowingReplacement",
+              compositeName: name,
+            }
           }
         }
       }
@@ -2402,6 +2473,8 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
+    let isNonShadowingReplacement = redefineDependencies.linkSource === "nonShadowingReplacement";
+
     let additionalPropertiesFromStateVariables = {};
 
     if (redefineDependencies.propVariable) {
@@ -2426,7 +2499,7 @@ export default class Core {
           variableName: property,
         }
       }
-      if (
+      if (!isNonShadowingReplacement &&
         (!redefineDependencies.propVariable || propertySpecification.propagateToProps)
         && (property in targetComponent.state)
       ) {
@@ -2641,6 +2714,10 @@ export default class Core {
             = propertySpecification[attribute];
         }
       }
+    }
+
+    if (isNonShadowingReplacement) {
+      return;
     }
 
     if (redefineDependencies.propVariable) {
@@ -5663,7 +5740,7 @@ export default class Core {
             // (presumably an array entry) is recreated
             // TODO: will there be a case where the state variable is not recreatd
             // such as when have a different component?
-            if(updatesNeeded.recreatedComponents[componentName]) {
+            if (updatesNeeded.recreatedComponents[componentName]) {
               continue;
             }
             throw Error(`Reference to invalid state variable ${varName} of ${componentName}`);
@@ -7180,6 +7257,7 @@ export default class Core {
             compositesBeingExpanded,
             createNameContext: component.componentName + "|replacements",
             namespaceForUnamed,
+            componentsReplacementOf: component
           });
 
           newComponents = createResult.components;
@@ -7258,11 +7336,6 @@ export default class Core {
             // splice in new replacements
             composite.replacements.splice(firstIndex, 0, ...newReplacements);
             this.dependencies.updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded);
-
-            // record for top level replacement that they are a replacement of composite
-            for (let comp of newReplacements) {
-              comp.replacementOf = composite;
-            }
 
             let newChange = {
               changeType: "addedReplacements",
@@ -7689,6 +7762,7 @@ export default class Core {
           compositesBeingExpanded,
           createNameContext: shadowingComponent.componentName + "|replacements",
           namespaceForUnamed,
+          componentsReplacementOf: shadowingComponent
         });
 
         this.parameterStack.pop();

@@ -257,6 +257,15 @@ export default class NumberList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nValues = {
+      isAlias: true,
+      targetVariableName: "nComponents"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "numbers"
+    };
 
     stateVariableDefinitions.text = {
       public: true,

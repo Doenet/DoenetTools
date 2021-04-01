@@ -1,45 +1,65 @@
-import BaseComponent from './abstract/BaseComponent';
+import Option from './Option';
 import { deepClone } from '../utils/deepFunctions';
 
-export default class Case extends BaseComponent {
+export default class Case extends Option {
   static componentType = "case";
-  static rendererType = undefined;
-
-  // static assignNewNamespaceToAllChildrenExcept = ["condition"];
-  // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
-
-  // static passThroughParentArrayAssignNames = true;
-
-  // // used when referencing this component without prop
-  // static useChildrenForReference = false;
-  // static get stateVariablesShadowedForReference() { return ["conditionSatisfied"] };
 
 
-  static createPropertiesObject(args) {
-    return {};
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
+    if (serializedComponent.children === undefined) {
+      return [];
+    }
+
+    let propertyClasses = [];
+    for (let componentType of ["condition", ...Object.keys(this.createPropertiesObject({}))]) {
+      let ct = componentType.toLowerCase();
+      propertyClasses.push({
+        componentType: ct,
+        class: componentInfoObjects.allComponentClasses[ct]
+      });
+    }
+
+    let nonPropertyChildInds = [];
+
+    // first occurence of a property component class
+    // will be created
+    // any other component will stay serialized
+    for (let [ind, child] of serializedComponent.children.entries()) {
+      let propFound = false;
+      for (let propObj of propertyClasses) {
+        if (componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: propObj.componentType
+        }) && !propObj.propFound) {
+          propFound = propObj.propFound = true;
+          break;
+        }
+      }
+      if (!propFound) {
+        nonPropertyChildInds.push(ind);
+      }
+    }
+
+    return nonPropertyChildInds;
+
   }
+
+  static get stateVariablesShadowedForReference() {
+    return ["conditionSatisfied"]
+  }
+
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneCondition = childLogic.newLeaf({
-      name: "exactlyOneCondition",
+    childLogic.newLeaf({
+      name: "atMostOneCondition",
       componentType: 'condition',
+      comparison: "atMost",
       number: 1,
-    });
-
-    let exactlyOneResult = childLogic.newLeaf({
-      name: "exactlyOneResult",
-      componentType: 'result',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "conditionAndResult",
-      operator: "and",
-      propositions: [exactlyOneCondition, exactlyOneResult],
+      takePropertyChildren: true,
       setAsBase: true
-    })
+    });
 
     return childLogic;
   }
@@ -48,39 +68,13 @@ export default class Case extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.serializedChildren = {
-      additionalStateVariablesDefined: ["resultChild"],
-      returnDependencies: () => ({
-        resultChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneResult",
-          variableNames: ["serializedChildren"],
-          doNotProxy: true
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let serializedChildren, resultChild;
-        if (dependencyValues.resultChild.length === 0) {
-          serializedChildren = null;
-          resultChild = null;
-        } else {
-          serializedChildren = dependencyValues.resultChild[0].stateValues.serializedChildren;
-          resultChild = Object.assign({}, dependencyValues.resultChild[0]);
-          delete resultChild.stateValues;
-          
-        }
-        return { newValues: { serializedChildren, resultChild } }
-      }
-    }
-
     stateVariableDefinitions.conditionSatisfied = {
       public: true,
       componentType: "boolean",
       returnDependencies: () => ({
         conditionChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneCondition",
+          childLogicName: "atMostOneCondition",
           variableNames: ["value"],
         },
       }),
@@ -88,17 +82,26 @@ export default class Case extends BaseComponent {
 
         let conditionSatisfied;
         if (dependencyValues.conditionChild.length === 0) {
-          conditionSatisfied = false;
+          conditionSatisfied = true;
         } else {
           conditionSatisfied = dependencyValues.conditionChild[0].stateValues.value;
         }
-
 
         return { newValues: { conditionSatisfied } }
       }
     };
 
     return stateVariableDefinitions;
+  }
+
+  static createSerializedReplacements({ component, componentInfoObjects }) {
+
+    if (!component.stateValues.conditionSatisfied) {
+      return { replacements: [] }
+    }
+
+    return super.createSerializedReplacements({ component, componentInfoObjects });
+
   }
 
 }

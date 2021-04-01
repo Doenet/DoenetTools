@@ -415,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence from="a" length="$_mathinput1" />
+        <sequence type="letters" from="a" length="$_mathinput1" />
       </aslist>
     </p>
     
@@ -591,5 +591,62 @@ describe('Copy Tag Tests', function () {
 
 
   });
+
+  it('copy ignores hide by default', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Hidden text: <text name="hidden" hide>secret</text></p>
+    <p>Revealed by default: $hidden</p>
+    <p>Force to stay hidden: <copy tname="hidden" targetPropertiesToIgnore="" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', 'Hidden text: ');
+    cy.get('#\\/_p2').should('have.text', 'Revealed by default: secret');
+    cy.get('#\\/_p3').should('have.text', 'Force to stay hidden: ');
+
+
+  });
+
+  it('copies hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <text name="target">hello</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first copy" />
+    <booleaninput name='h2' prefill="true" label="Hide second copy" />
+
+    <p name="c1">copy 1: <copy hide="$h1" tname="target" /></p>
+    <p name="c2">copy 2: <copy hide="$h2" tname="target" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
+    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: ')
+    cy.get('#\\/c2').should('have.text', 'copy 2: hello')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
+    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+
+  })
 
 });

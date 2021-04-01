@@ -11,7 +11,7 @@ import {
   CourseAssignmentControls,
 } from "./CourseAssignments";
 import LearnerAssignment from "./LearnerAssignment";
-import Tool, { openOverlayByName } from "../imports/Tool/Tool";
+import Tool from "../imports/Tool/Tool";
 import CollapseSection from "../imports/CollapseSection";
 import ActionButton from "../imports/PanelHeaderComponents/ActionButton";
 import Button from "../imports/PanelHeaderComponents/Button";
@@ -37,7 +37,7 @@ import {
 } from "recoil";
 import Switch from "../imports/Switch";
 import AddItem from "../imports/AddItem";
-import { supportVisible } from "../imports/Tool/Panels/SupportPanel";
+// import { supportVisible } from "../imports/Tool/Panels/SupportPanel";
 
 export const roleAtom = atom({
   key: "roleAtom",
@@ -64,10 +64,18 @@ const itemIdToDoenetML = selectorFamily({
       folderId: driveIdcourseIditemIdparentFolderId.folderId,
     };
     let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
+    console.log("folder info",folderInfo );
+    const branchId =  folderInfo?.contentsDictionary?.[
+      driveIdcourseIditemIdparentFolderId.itemId
+    ]?.branchId;
     const contentId =
       folderInfo?.contentsDictionary?.[
         driveIdcourseIditemIdparentFolderId.itemId
       ]?.contentId;
+
+    //version , branchIds , conentids
+    //filter ?
+
     const doenetML = get(fileByContent(contentId));
     return doenetML;
   },

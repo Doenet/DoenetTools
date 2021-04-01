@@ -143,7 +143,7 @@ export class Exercise extends Problem {
 
 
 export class Example extends SectioningComponent {
-  static componentType = "Example";
+  static componentType = "example";
   static rendererType = "section";
 
   static returnStateVariableDefinitions() {

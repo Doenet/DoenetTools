@@ -1,5 +1,6 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
+import { textToAst } from './math';
 
 
 export function evaluateLogic({ logicTree,
@@ -485,7 +486,7 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
 
   if (!Array.isArray(logicTree)) {
     if (typeof logicTree === "string" && !foundNonMath && !init) {
-      return me.fromText(logicTree).tree;  // split string
+      return me.fromAst(textToAst.convert(logicTree)).tree;  // split string
     } else {
       return logicTree;
     }
@@ -495,21 +496,37 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
   let operands = logicTree.slice(1);
 
   if (["and", "not", "or"].includes(operator)) {
-    return [operator, ...operands.map(x => splitSymbolsIfMath({
-      logicTree: x,
-      nonMathCodes, foundNonMath,
-      init: false
-    }))]
+    if (operator === "apply") {
+      return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
+        logicTree: x,
+        nonMathCodes, foundNonMath,
+        init
+      }))]
+    } else {
+      return [operator, ...operands.map(x => splitSymbolsIfMath({
+        logicTree: x,
+        nonMathCodes, foundNonMath,
+        init
+      }))]
+    }
   }
 
   if (operands.some(x => nonMathCodes.includes(x))) {
     foundNonMath = true;
   }
 
-  return [operator, ...operands.map(x => splitSymbolsIfMath({
-    logicTree: x,
-    nonMathCodes, foundNonMath,
-    init: false
-  }))]
+  if (operator === "apply") {
+    return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
+      logicTree: x,
+      nonMathCodes, foundNonMath,
+      init: false
+    }))]
+  } else {
+    return [operator, ...operands.map(x => splitSymbolsIfMath({
+      logicTree: x,
+      nonMathCodes, foundNonMath,
+      init: false
+    }))]
+  }
 
 }

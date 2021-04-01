@@ -27,20 +27,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate><copy tname="../clamp01" /><input>$x</input></evaluate></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../clampn35)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -117,20 +117,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate><copy tname="../wrap01" /><input>$x</input></evaluate></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../wrapn23)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../wrapn23)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -338,7 +338,7 @@ describe('Function Operator Tag Tests', function () {
       <function name="f3">xyz</function>
       <function name="f4" variable="z">xyz</function>
       <derivative name="d1"><function>x^2</function></derivative>
-      <derivative name="d2" formula='x^2' />
+      <derivative name="d2"><math>x^2</math></derivative>
       <derivative name="d3"><function formula="x^2sin(z)" /></derivative>
       <derivative name="d4" variable="z">x^2sin(z)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
@@ -513,17 +513,17 @@ describe('Function Operator Tag Tests', function () {
 
 
     <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
-    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1,min2"><copy prop="minima" tname="fp" /></extract></p> 
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
 
     <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
-    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1,max2"><copy prop="maxima" tname="fp" /></extract></p> 
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
 
     <p>To repeat:</p>
     <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
-    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12,min22"><copy prop="minima" tname="fp2" /></extract></p> 
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
 
     <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
-    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12,max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
 
 
     `}, "*");
@@ -700,17 +700,17 @@ describe('Function Operator Tag Tests', function () {
       <copy tname="fp" name="fp2" />
 
       <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
-      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1,min2"><copy prop="minima" tname="fp" /></extract></p> 
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
   
       <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
-      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1,max2"><copy prop="maxima" tname="fp" /></extract></p> 
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
   
       <p>To repeat:</p>
       <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
-      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12,min22"><copy prop="minima" tname="fp2" /></extract></p> 
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
   
       <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
-      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12,max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
   
       `}, "*");
     });

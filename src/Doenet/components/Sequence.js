@@ -16,13 +16,12 @@ export default class Sequence extends CompositeComponent {
   // since propertyChildren aren't copied
   static get stateVariablesShadowedForReference() {
     return [
-      "specifiedFrom", "typeOfFrom",
-      "specifiedTo", "typeOfTo",
-      "specifiedlength", "specifiedStep", "specifiedExclude"
+      "specifiedFrom", "specifiedTo",
+      "specifiedLength", "specifiedStep", "specifiedExclude"
     ]
   };
 
- 
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -81,13 +80,28 @@ export default class Sequence extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.type = {
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "doenetAttribute",
+          attributeName: "type",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.type) {
+          return { newValues: { type: dependencyValues.type } };
+        } else {
+          return { newValues: { type: "number" } };
+        }
+      },
+    };
+
     stateVariableDefinitions.specifiedFrom = {
-      additionalStateVariablesDefined: ["typeOfFrom"],
       returnDependencies: () => ({
         fromChild: {
           dependencyType: "child",
           childLogicName: "atMostOneFrom",
-          variableNames: ["value", "selectedType"],
+          variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
         },
       }),
@@ -98,7 +112,6 @@ export default class Sequence extends CompositeComponent {
             useEssentialOrDefaultValue: {
               specifiedFrom: { variablesToCheck: ["from", "specifiedFrom"] },
             },
-            newValues: { typeOfFrom: null }
           }
         }
         if (dependencyValues.fromChild[0].stateValues.value === null) {
@@ -109,27 +122,24 @@ export default class Sequence extends CompositeComponent {
           return {
             newValues: {
               specifiedFrom: NaN,
-              typeOfFrom: null
             }
           }
         }
         return {
           newValues: {
             specifiedFrom: dependencyValues.fromChild[0].stateValues.value,
-            typeOfFrom: dependencyValues.fromChild[0].stateValues.selectedType,
           }
         }
       },
     };
 
     stateVariableDefinitions.specifiedTo = {
-      additionalStateVariablesDefined: ["typeOfTo"],
 
       returnDependencies: () => ({
         toChild: {
           dependencyType: "child",
           childLogicName: "atMostOneTo",
-          variableNames: ["value", "selectedType"],
+          variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
         },
       }),
@@ -140,7 +150,6 @@ export default class Sequence extends CompositeComponent {
             useEssentialOrDefaultValue: {
               specifiedTo: { variablesToCheck: ["to", "specifiedTo"] },
             },
-            newValues: { typeOfTo: null }
           }
         }
         if (dependencyValues.toChild[0].stateValues.value === null) {
@@ -151,52 +160,18 @@ export default class Sequence extends CompositeComponent {
           return {
             newValues: {
               specifiedTo: NaN,
-              typeOfTo: null
             }
           }
         }
         return {
           newValues: {
             specifiedTo: dependencyValues.toChild[0].stateValues.value,
-            typeOfTo: dependencyValues.toChild[0].stateValues.selectedType,
           }
         }
       },
     };
 
-    stateVariableDefinitions.selectedType = {
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "doenetAttribute",
-          attributeName: "type",
-        },
-        typeOfFrom: {
-          dependencyType: "stateVariable",
-          variableName: "typeOfFrom",
-        },
-        typeOfTo: {
-          dependencyType: "stateVariable",
-          variableName: "typeOfTo",
-        },
-
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.type) {
-          return { newValues: { selectedType: dependencyValues.type } };
-        }
-        if (dependencyValues.typeOfFrom) {
-          return { newValues: { selectedType: dependencyValues.typeOfFrom } };
-        }
-        if (dependencyValues.typeOfTo) {
-          return { newValues: { selectedType: dependencyValues.typeOfTo } };
-        }
-
-        return { newValues: { selectedType: "number" } };
-
-      },
-    };
-
-    stateVariableDefinitions.specifiedlength = {
+    stateVariableDefinitions.specifiedLength = {
       returnDependencies: () => ({
         lengthChild: {
           dependencyType: "child",
@@ -210,7 +185,7 @@ export default class Sequence extends CompositeComponent {
         if (dependencyValues.lengthChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              specifiedlength: { variablesToCheck: ["length", "specifiedlength"] }
+              specifiedLength: { variablesToCheck: ["length", "specifiedLength"] }
             }
           }
         }
@@ -221,11 +196,11 @@ export default class Sequence extends CompositeComponent {
           // so return NaN
           return {
             newValues: {
-              specifiedlength: NaN,
+              specifiedLength: NaN,
             }
           }
         }
-        return { newValues: { specifiedlength: dependencyValues.lengthChild[0].stateValues.value } }
+        return { newValues: { specifiedLength: dependencyValues.lengthChild[0].stateValues.value } }
       },
     };
 
@@ -238,9 +213,9 @@ export default class Sequence extends CompositeComponent {
           variableNames: ["value"],
           requireChildLogicInitiallySatisfied: true
         },
-        selectedType: {
+        type: {
           dependencyType: "stateVariable",
-          variableName: "selectedType",
+          variableName: "type",
         },
       }),
       defaultValue: null,
@@ -331,9 +306,9 @@ export default class Sequence extends CompositeComponent {
 
     stateVariableDefinitions.validSequence = {
       returnDependencies: () => ({
-        specifiedlength: {
+        specifiedLength: {
           dependencyType: "stateVariable",
-          variableName: "specifiedlength",
+          variableName: "specifiedLength",
         },
         specifiedStep: {
           dependencyType: "stateVariable",
@@ -347,9 +322,9 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "specifiedTo",
         },
-        selectedType: {
+        type: {
           dependencyType: "stateVariable",
-          variableName: "selectedType",
+          variableName: "type",
         },
         lowercase: {
           dependencyType: "stateVariable",
@@ -360,47 +335,47 @@ export default class Sequence extends CompositeComponent {
 
         let validSequence = true;
 
-        if (dependencyValues.specifiedlength !== null) {
-          if (!Number.isInteger(dependencyValues.specifiedlength) || dependencyValues.specifiedlength < 0) {
-            console.log("Invalid length of sequence.  Must be a non-negative integer.")
+        if (dependencyValues.specifiedLength !== null) {
+          if (!Number.isInteger(dependencyValues.specifiedLength) || dependencyValues.specifiedLength < 0) {
+            console.warn("Invalid length of sequence.  Must be a non-negative integer.")
             validSequence = false;
           }
         }
 
         if (dependencyValues.specifiedStep !== null) {
           // step must be number if not math
-          if (dependencyValues.selectedType !== "math") {
+          if (dependencyValues.type !== "math") {
             let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
             if (!Number.isFinite(numericalStep)) {
-              console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
+              console.warn("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.type + ".")
               validSequence = false;
             }
           }
         }
 
         if (dependencyValues.specifiedFrom !== null) {
-          if (dependencyValues.selectedType === "number") {
+          if (dependencyValues.type === "number") {
             let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
             if (!Number.isFinite(numericalFrom)) {
-              console.log("Invalid from of number sequence.  Must be a number")
+              console.warn("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
           } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-            console.log("Invalid from of sequence")
+            console.warn("Invalid from of sequence")
             validSequence = false;
           }
 
         }
 
         if (dependencyValues.specifiedTo !== null) {
-          if (dependencyValues.selectedType === "number") {
+          if (dependencyValues.type === "number") {
             let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
             if (!Number.isFinite(numericalTo)) {
-              console.log("Invalid from of number sequence.  Must be a number")
+              console.warn("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
           } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-            console.log("Invalid to of sequence")
+            console.warn("Invalid to of sequence")
             validSequence = false;
           }
         }
@@ -423,17 +398,17 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "specifiedTo",
         },
-        specifiedlength: {
+        specifiedLength: {
           dependencyType: "stateVariable",
-          variableName: "specifiedlength",
+          variableName: "specifiedLength",
         },
         specifiedStep: {
           dependencyType: "stateVariable",
           variableName: "specifiedStep",
         },
-        selectedType: {
+        type: {
           dependencyType: "stateVariable",
-          variableName: "selectedType",
+          variableName: "type",
         },
         specifiedExclude: {
           dependencyType: "stateVariable",
@@ -449,11 +424,11 @@ export default class Sequence extends CompositeComponent {
         let from = dependencyValues.specifiedFrom;
         let to = dependencyValues.specifiedTo;
         let step = dependencyValues.specifiedStep;
-        let length = dependencyValues.specifiedlength;
+        let length = dependencyValues.specifiedLength;
         let exclude = [...dependencyValues.specifiedExclude];
-        let selectedType = dependencyValues.selectedType;
+        let type = dependencyValues.type;
 
-        if (dependencyValues.selectedType === "math") {
+        if (dependencyValues.type === "math") {
           // make sure to and from are math expressions
           if (to !== null) {
             if (!(to instanceof me.class)) {
@@ -472,7 +447,7 @@ export default class Sequence extends CompositeComponent {
           }
         } else {
 
-          // if selectedType is not math, convert step to a number
+          // if type is not math, convert step to a number
           if (step !== null) {
             if (step instanceof me.class) {
               step = step.evaluate_to_constant();
@@ -480,7 +455,7 @@ export default class Sequence extends CompositeComponent {
           }
 
 
-          if (dependencyValues.selectedType === "letters") {
+          if (dependencyValues.type === "letters") {
 
             // if from, to, and exclude are strings
             // then convert to numbers
@@ -499,7 +474,7 @@ export default class Sequence extends CompositeComponent {
                 exclude[index] = lettersToNumber(value)
               }
             }
-          } else if (dependencyValues.selectedType === "number") {
+          } else if (dependencyValues.type === "number") {
             // make sure to, from, and exclude are numbers
             if (to !== null) {
               if (to instanceof me.class) {
@@ -529,7 +504,7 @@ export default class Sequence extends CompositeComponent {
 
         if (dependencyValues.validSequence) {
           let results = componentConstructor.calculateSequenceParameters({
-            from, to, step, length, selectedType
+            from, to, step, length, type
           });
           results.exclude = exclude;
 
@@ -560,9 +535,9 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "step",
         },
-        selectedType: {
+        type: {
           dependencyType: "stateVariable",
-          variableName: "selectedType",
+          variableName: "type",
         },
         exclude: {
           dependencyType: "stateVariable",
@@ -584,20 +559,20 @@ export default class Sequence extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static calculateSequenceParameters({ from, to, step, length, selectedType }) {
+  static calculateSequenceParameters({ from, to, step, length, type }) {
 
     // calculate from, length and step from combinatons of from/to/length/step specified
 
     if (from === null) {
       if (to === null) {
-        if (selectedType === "math") {
+        if (type === "math") {
           from = me.fromAst(1);
         } else {
           from = 1;
         }
         if (step === null) {
           // no from, to, or step
-          if (selectedType === "math") {
+          if (type === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
@@ -614,14 +589,14 @@ export default class Sequence extends CompositeComponent {
       } else {
         // no from, but to
         if (step === null) {
-          if (selectedType === "math") {
+          if (type === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
           }
         }
         if (length === null) {
-          if (selectedType === "math") {
+          if (type === "math") {
             length = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
           } else {
             length = Math.floor((to - 1) / step + 1)
@@ -630,11 +605,11 @@ export default class Sequence extends CompositeComponent {
 
         // no from, but to
         // defined step and length even if none
-        if (selectedType === "math") {
+        if (type === "math") {
           from = to.subtract(step.multiply(length - 1)).simplify();
         } else {
           from = to - step * (length - 1);
-          if (selectedType === "letters") {
+          if (type === "letters") {
             if (from < 1) {
               // adjust length so that have valid letters
               length = Math.floor((to - 1) / step + 1)
@@ -649,7 +624,7 @@ export default class Sequence extends CompositeComponent {
       if (to === null) {
         // no to, but from
         if (step === null) {
-          if (selectedType === "math") {
+          if (type === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
@@ -662,20 +637,20 @@ export default class Sequence extends CompositeComponent {
         // from and to defined
         if (step === null) {
           if (length === null) {
-            if (selectedType === "math") {
+            if (type === "math") {
               step = me.fromAst(1);
-              length = to.subtract(from).add(1).evaluate_to_constant();
+              length = Math.floor(to.subtract(from).add(1).evaluate_to_constant());
             } else {
               step = 1;
-              length = (to - from + 1);
+              length = Math.floor(to - from + 1);
             }
           } else {
-            if (selectedType === "math") {
+            if (type === "math") {
               step = to.subtract(from).divide(length - 1);
             } else {
               step = (to - from) / (length - 1);
               // for letters, step must be integer
-              if (selectedType === "letters") {
+              if (type === "letters") {
                 step = Math.floor(step);
               }
             }
@@ -683,7 +658,7 @@ export default class Sequence extends CompositeComponent {
         } else {
           if (length === null) {
             // from, to, and step, no length
-            if (selectedType === "math") {
+            if (type === "math") {
               length = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
             } else {
               length = Math.floor((to - from) / step + 1);
@@ -697,7 +672,7 @@ export default class Sequence extends CompositeComponent {
     }
 
     if (!Number.isInteger(length) || length < 0) {
-      console.log("Invalid length of sequence.  Must be a non-negative integer.")
+      console.warn("Invalid length of sequence.  Must be a non-negative integer.")
       length = 0;
     }
 
@@ -719,10 +694,9 @@ export default class Sequence extends CompositeComponent {
         from: null,
         length: null,
         step: null,
-        selectedType: null,
+        type: null,
         exclude: null,
       }
-      workspace.nEmptiesAdded = 0;
       return { replacements: [] };
     }
 
@@ -730,7 +704,7 @@ export default class Sequence extends CompositeComponent {
       from: component.stateValues.from,
       length: component.stateValues.length,
       step: component.stateValues.step,
-      selectedType: component.stateValues.selectedType,
+      type: component.stateValues.type,
       exclude: component.stateValues.exclude,
     }
 
@@ -741,14 +715,14 @@ export default class Sequence extends CompositeComponent {
     for (let ind = 0; ind < nReplacementsToAttempt; ind++) {
       let componentValue = component.stateValues.from;
       if (ind > 0) {
-        if (component.stateValues.selectedType === "math") {
+        if (component.stateValues.type === "math") {
           componentValue = componentValue.add(component.stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
         } else {
           componentValue += component.stateValues.step * ind;
         }
       }
 
-      if (component.stateValues.selectedType === "math") {
+      if (component.stateValues.type === "math") {
         if (component.stateValues.exclude.some(x => x && x.equals(componentValue))) {
           continue;
         }
@@ -758,13 +732,20 @@ export default class Sequence extends CompositeComponent {
         }
       }
 
-      if (component.stateValues.selectedType === "letters") {
+      if (component.stateValues.type === "letters") {
         componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
       }
 
+      // make nonShadowingReplacement so properties like fixed
+      // on the sequence can be copied by replacements
       let serializedComponent = {
-        componentType: component.stateValues.selectedType,
+        componentType: component.stateValues.type,
         state: { value: componentValue, fixed: true },
+        downstreamDependencies: {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        },
       }
       replacements.push(serializedComponent);
     }
@@ -779,8 +760,6 @@ export default class Sequence extends CompositeComponent {
       parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
       componentInfoObjects,
     });
-
-    workspace.nEmptiesAdded = processResult.nEmptiesAdded;
 
     return { replacements: processResult.serializedComponents };
   }
@@ -818,10 +797,10 @@ export default class Sequence extends CompositeComponent {
       return replacementChanges;
     }
 
-    // check if changed selectedType
+    // check if changed type
     // or have excluded elements
     // TODO: don't completely recreate if have excluded elements
-    if (lrp.selectedType !== component.stateValues.selectedType ||
+    if (lrp.type !== component.stateValues.type ||
       lrp.exclude.length > 0 ||
       component.stateValues.exclude.length > 0
     ) {
@@ -845,7 +824,7 @@ export default class Sequence extends CompositeComponent {
     } else {
 
       let modifyExistingValues = false;
-      if (component.stateValues.selectedType === "math") {
+      if (component.stateValues.type === "math") {
         if (!(component.stateValues.from.equals(lrp.from) &&
           component.stateValues.step.equals(lrp.step))) {
           modifyExistingValues = true;
@@ -868,7 +847,6 @@ export default class Sequence extends CompositeComponent {
       // mark old replacements as hidden
       if (component.stateValues.length < prevlength) {
 
-        // since use number of replacements directly, it accounts for empties
         newReplacementsToWithhold = component.replacements.length - component.stateValues.length;
 
         let replacementInstruction = {
@@ -881,12 +859,8 @@ export default class Sequence extends CompositeComponent {
         numReplacementsToAdd = component.stateValues.length - prevlength;
 
         if (component.replacementsToWithhold > 0) {
-          let nonEmptiesWithheld = component.replacementsToWithhold;
-          if (workspace.nEmptiesAdded) {
-            nonEmptiesWithheld -= workspace.nEmptiesAdded;
-          }
 
-          if (nonEmptiesWithheld >= numReplacementsToAdd) {
+          if (component.replacementsToWithhold >= numReplacementsToAdd) {
             newReplacementsToWithhold = component.replacementsToWithhold - numReplacementsToAdd;
             numToModify += numReplacementsToAdd;
             prevlength += numReplacementsToAdd;
@@ -899,9 +873,9 @@ export default class Sequence extends CompositeComponent {
             replacementChanges.push(replacementInstruction);
 
           } else {
-            numReplacementsToAdd -= nonEmptiesWithheld;
-            numToModify += nonEmptiesWithheld;
-            prevlength += nonEmptiesWithheld;
+            numReplacementsToAdd -= component.replacementsToWithhold;
+            numToModify += component.replacementsToWithhold;
+            prevlength += component.replacementsToWithhold;
             newReplacementsToWithhold = 0;
             // don't need to send changedReplacementsToWithold instructions
             // since will send add instructions,
@@ -922,13 +896,13 @@ export default class Sequence extends CompositeComponent {
         for (let ind = firstToModify; ind < firstToModify + numToModify; ind++) {
           let componentValue = component.stateValues.from;
           if (ind > 0) {
-            if (component.stateValues.selectedType === "math") {
+            if (component.stateValues.type === "math") {
               componentValue = componentValue.add(component.stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
             } else {
               componentValue += component.stateValues.step * ind;
             }
           }
-          if (component.stateValues.selectedType === "letters") {
+          if (component.stateValues.type === "letters") {
             componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
           }
           let replacementInstruction = {
@@ -948,19 +922,26 @@ export default class Sequence extends CompositeComponent {
         for (let ind = prevlength; ind < component.stateValues.length; ind++) {
           let componentValue = component.stateValues.from;
           if (ind > 0) {
-            if (component.stateValues.selectedType === "math") {
+            if (component.stateValues.type === "math") {
               componentValue = componentValue.add(component.stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
             } else {
               componentValue += component.stateValues.step * ind;
             }
           }
-          if (component.stateValues.selectedType === "letters") {
+          if (component.stateValues.type === "letters") {
             componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
           }
 
+          // make nonShadowingReplacement so properties like fixed
+          // on the sequence can be copied by replacements
           let serializedComponent = {
-            componentType: component.stateValues.selectedType,
+            componentType: component.stateValues.type,
             state: { value: componentValue, fixed: true },
+            downstreamDependencies: {
+              [component.componentName]: [{
+                dependencyType: "nonShadowingReplacement",
+              }]
+            },
           }
           newSerializedReplacements.push(serializedComponent);
         }
@@ -979,17 +960,15 @@ export default class Sequence extends CompositeComponent {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevlength,
-          numberReplacementsToReplace: workspace.nEmptiesAdded,
           serializedReplacements: processResult.serializedComponents,
           replacementsToWithhold: 0,
           assignNamesOffset: prevlength
         }
         replacementChanges.push(replacementInstruction);
-        workspace.nEmptiesAdded = processResult.nEmptiesAdded;
       }
     }
 
-    lrp.selectedType = component.stateValues.selectedType;
+    lrp.type = component.stateValues.type;
     lrp.from = component.stateValues.from;
     lrp.length = component.stateValues.length;
     lrp.step = component.stateValues.step;
@@ -1003,7 +982,7 @@ export default class Sequence extends CompositeComponent {
   get allPotentialRendererTypes() {
     let allPotentialRendererTypes = [
       this.componentInfoObjects.allComponentClasses[
-        this.stateValues.selectedType
+        this.stateValues.type
       ].rendererType
     ];
     return allPotentialRendererTypes;
@@ -1021,7 +1000,7 @@ export function lettersToNumber(letters) {
   while ((pos -= 1) > -1) {
     let numForLetter = letters.charCodeAt(pos) - 64;
     if (numForLetter < 1 || numForLetter > 26) {
-      console.log("Cannot convert " + letters + " to a number");
+      console.warn("Cannot convert " + letters + " to a number");
       return undefined;
     }
     number += numForLetter * Math.pow(26, len - 1 - pos);

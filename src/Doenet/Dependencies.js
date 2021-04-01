@@ -426,6 +426,9 @@ export class DependencyHandler {
     // console.log(`update child and descendant deps for ${component.componentName}`)
     // console.log(JSON.parse(JSON.stringify(this.downstreamDependencies[component.componentName])))
 
+
+    this.collateCountersAndPropagateToAncestors(component, updatesNeeded);
+
     if (!component.childLogicSatisfied) {
       return;
     }
@@ -839,11 +842,12 @@ export class DependencyHandler {
           updatesNeeded,
         })
 
-        this.recordActualChangeInUpstreamDependencies({
-          component: this._components[updateObj.componentName],
-          varName: updateObj.stateVariable
-        })
-
+        for (let varName of updateObj.allStateVariablesAffected) {
+          this.recordActualChangeInUpstreamDependencies({
+            component: this._components[updateObj.componentName],
+            varName
+          })
+        }
       }
 
     }
@@ -1083,6 +1087,111 @@ export class DependencyHandler {
 
   }
 
+  collateCountersAndPropagateToAncestors(component, updatesNeeded) {
+
+    let allCounterNames = Object.keys(component.counters);
+    for (let childName of component.allChildrenOrdered) {
+      let child = this._components[childName];
+      for (let counterName in child.counters) {
+        if (!allCounterNames.includes(counterName)) {
+          allCounterNames.push(counterName)
+        }
+      }
+    }
+
+    let foundChange = false;
+
+    for (let counterName of allCounterNames) {
+
+      let counters = component.counters[counterName];
+      if (!counters) {
+        counters = component.counters[counterName] = {
+          dependencies: [],
+          componentList: [],
+        };
+      }
+
+      let componentList = [];
+      if (counters.dependencies.length > 0) {
+        // counter is in component itself
+        componentList.push(component.componentName)
+      }
+
+      for (let childName of component.allChildrenOrdered) {
+        let child = this._components[childName];
+        let childCounters = child.counters[counterName];
+        if (childCounters) {
+          componentList.push(...childCounters.componentList)
+        }
+      }
+
+      if (componentList.length !== counters.componentList.length ||
+        counters.componentList.some((v, i) => v != componentList[i])
+      ) {
+        foundChange = true;
+        counters.componentList = componentList;
+      }
+
+    }
+
+    if (!foundChange) {
+      return { foundChange: false }
+    }
+
+    if (!component.ancestors[0]) {
+      // made it to document
+      // set values of counters
+      for (let counterName of allCounterNames) {
+        let counters = component.counters[counterName];
+        for (let [ind, cName] of counters.componentList.entries()) {
+          let comp = this._components[cName];
+          let compCounter = comp.counters[counterName];
+          compCounter.value = ind + 1;
+          for (let dep of compCounter.dependencies) {
+            // note: markStateVariableAndUpstreamDependentsStale includes
+            // any additionalStateVariablesDefined with stateVariable
+            this.core.markStateVariableAndUpstreamDependentsStale({
+              component: comp,
+              varName: dep.representativeStateVariable,
+              updatesNeeded,
+            })
+
+            for(let varName of dep.upstreamVariableNames) {
+              // have to force recalculation
+              // since counter dep doesn't show values changed
+              comp.state[varName].forceRecalculation = true;
+
+              this.recordActualChangeInUpstreamDependencies({
+                component: comp,
+                varName
+              })
+            }
+
+          }
+
+        }
+
+      }
+      return { foundChange: true, finishedPropagation: true };
+    }
+
+    let parent = this._components[component.ancestors[0].componentName];
+    if (!(parent && parent.allChildrenOrdered.includes(component.componentName))) {
+      return { foundChange: true, finishedPropagation: false }
+    }
+
+    let parentResult = this.collateCountersAndPropagateToAncestors(parent, updatesNeeded);
+
+    if (!parentResult.foundChange) {
+      console.error(`we found a change in propagating counters for ${component.componentName}, but no change for ancestors!`)
+    }
+
+    return {
+      foundChange: true,
+      finishedPropagation: parentResult.finishedPropagation
+    }
+
+  }
 
   get components() {
     return new Proxy(this._components, readOnlyProxyHandler);
@@ -1163,7 +1272,7 @@ class Dependency {
 
     // Note: determineDownstreamComponents has side effects
     // of setting class variables and adding to updateTrigger objects
-    let downComponents = this.determineDownstreamComponents();
+    let downComponents = this.determineDownstreamComponents(updatesNeeded);
 
     // Note: initialize adds dependency to upstreamDependencies and downstreamDependencies
     this.initialize({
@@ -1685,13 +1794,26 @@ class Dependency {
       if (this.returnSingleVariableValue) {
         if (value.length === 1) {
           value = value[0];
-          let stateVariables = Object.keys(value.stateValues);
-          if (changes.valuesChanged && changes.valuesChanged[0] && changes.valuesChanged[0][0]) {
-            changes.valuesChanged = changes.valuesChanged[0][0];
+          if (changes.valuesChanged && changes.valuesChanged[0]) {
+            changes.valuesChanged = changes.valuesChanged[0];
+          } else {
+            delete changes.valuesChanged;
           }
 
+          let stateVariables = Object.keys(value.stateValues);
           if (stateVariables.length === 1) {
             value = value.stateValues[stateVariables[0]];
+            let nameForOutput;
+
+            if (this.useMappedVariableNames) {
+              nameForOutput = this.mappedDownstreamVariableNamesByComponent[0][0];
+            } else {
+              nameForOutput = this.originalDownstreamVariableNames[0];
+            }
+
+            if (changes.valuesChanged && changes.valuesChanged[nameForOutput]) {
+              changes.valuesChanged = changes.valuesChanged[nameForOutput];
+            }
 
             usedDefault = this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
               this.mappedDownstreamVariableNamesByComponent[0][0]
@@ -1699,15 +1821,19 @@ class Dependency {
 
           } else {
             value = null;
+            changes.valuesChanged = {};
           }
         } else {
           value = null;
+          changes.valuesChanged = {};
         }
       } else if (this.returnSingleComponent) {
         if (value.length === 1) {
           value = value[0];
           if (changes.valuesChanged && changes.valuesChanged[0]) {
             changes.valuesChanged = changes.valuesChanged[0];
+          } else {
+            delete changes.valuesChanged;
           }
         } else {
           value = null;
@@ -1737,7 +1863,7 @@ class Dependency {
 
   recalculateDownstreamComponents(updatesNeeded, compositesBeingExpanded) {
 
-    let newDownComponents = this.determineDownstreamComponents();
+    let newDownComponents = this.determineDownstreamComponents(updatesNeeded);
     // this.downstreamComponentNames = newDownComponents.downstreamComponentNames;
     // this.downstreamComponentTypes = newDownComponents.downstreamComponentTypes;
 
@@ -3033,6 +3159,183 @@ class ReplacementDependency extends Dependency {
 
 dependencyTypeArray.push(ReplacementDependency);
 
+class SourceCompositeDependency extends Dependency {
+  static dependencyType = "sourceCompositeStateVariable";
+
+  setUpParameters() {
+
+    if (this.definition.replacementName) {
+      this.replacementName = this.definition.replacementName
+      this.specifiedComponentName = this.replacementName;
+    } else {
+      this.replacementName = this.upstreamComponentName;
+    }
+
+    if (!this.definition.variableName) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: must have a variableName`)
+    } else {
+      this.originalDownstreamVariableNames = [this.definition.variableName];
+    }
+
+    this.returnSingleVariableValue = true;
+
+    // for source composite state variable
+    // always make variables optional so that don't get error
+    // depending on source composite (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let replacement = this.dependencyHandler._components[this.replacementName];
+
+    if (!replacement) {
+      if (this.specifiedComponentName) {
+        let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+        if (!dependenciesMissingComponent) {
+          dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName] = [];
+        }
+        if (!dependenciesMissingComponent.includes(this)) {
+          dependenciesMissingComponent.push(this);
+        }
+
+        this.unresolvedSpecifiedComponent = this.specifiedComponentName;
+
+      }
+
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    delete this.unresolvedSpecifiedComponent;
+
+    if (!replacement.replacementOf) {
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = replacement.replacementOf;
+
+    return {
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(SourceCompositeDependency);
+
+
+class AdapterSourceDependency extends Dependency {
+  static dependencyType = "adapterSourceDependency";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (!this.definition.variableName) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: must have a variableName`)
+    } else {
+      this.originalDownstreamVariableNames = [this.definition.variableName];
+    }
+
+    this.returnSingleVariableValue = true;
+
+    // for source composite state variable
+    // always make variables optional so that don't get error
+    // depending on source composite (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      if (this.specifiedComponentName) {
+        let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+        if (!dependenciesMissingComponent) {
+          dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName] = [];
+        }
+        if (!dependenciesMissingComponent.includes(this)) {
+          dependenciesMissingComponent.push(this);
+        }
+
+        this.unresolvedSpecifiedComponent = this.specifiedComponentName;
+
+      }
+
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    delete this.unresolvedSpecifiedComponent;
+
+    if (!component.adaptedFrom) {
+      return {
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = component.adaptedFrom;
+
+    return {
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(AdapterSourceDependency);
+
 
 class CountAmongSiblingsDependency extends Dependency {
   static dependencyType = "countAmongSiblingsOfSameType";
@@ -3510,4 +3813,58 @@ class VariantsDependency extends Dependency {
 }
 
 dependencyTypeArray.push(VariantsDependency);
+
+
+class CounterDependency extends Dependency {
+  static dependencyType = "counter";
+
+  setUpParameters() {
+
+    this.counterName = this.definition.counterName;
+
+    this.componentName = this.upstreamComponentName;
+
+  }
+
+  determineDownstreamComponents(updatesNeeded) {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    let counters = component.counters[this.counterName];
+    if (!counters) {
+      counters = component.counters[this.counterName] = {
+        dependencies: [],
+        componentList: [],
+        value: null,
+      };
+    }
+
+    if (!counters.dependencies.includes(this)) {
+      counters.dependencies.push(this);
+    }
+
+    this.dependencyHandler.collateCountersAndPropagateToAncestors(component, updatesNeeded);
+
+    return {
+      downstreamComponentNames: [],
+      downstreamComponentTypes: []
+    }
+
+  }
+
+
+  getValue() {
+    let component = this.dependencyHandler._components[this.componentName];
+
+    return {
+      value: component.counters[this.counterName].value,
+      changes: {}
+    }
+  }
+
+}
+
+dependencyTypeArray.push(CounterDependency);
+
+
 

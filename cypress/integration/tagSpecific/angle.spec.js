@@ -232,7 +232,7 @@ describe('Angle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}0{enter}', { force: true });
@@ -262,7 +262,7 @@ describe('Angle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
     })
 
@@ -370,8 +370,8 @@ describe('Angle Tag Tests', function () {
       
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.radians.tree);
-        assert.isNaN(components['/_angle1'].stateValues.degrees.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
+        expect(components['/_angle1'].stateValues.degrees.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput1 textarea').type('pi/4{enter}', { force: true });
@@ -562,6 +562,9 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π/2")
+    })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
@@ -595,6 +598,9 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π/2")
+    })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
@@ -628,6 +634,10 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    // TODO: add this when can simplify ratioss
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq("π/2")
+    // })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
@@ -660,6 +670,10 @@ describe('Angle Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("α")
+    })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
@@ -694,6 +708,9 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("α")
+    })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })

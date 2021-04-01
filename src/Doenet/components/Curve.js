@@ -1,8 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import { createUniqueName } from '../utils/naming';
 import {
-  breakEmbeddedStringByCommas, breakIntoVectorComponents,
-  breakPiecesByEquals,
   returnBreakStringsSugarFunction
 } from './commonsugar/breakstrings';
 import { returnNVariables } from '../utils/math';

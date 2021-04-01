@@ -293,55 +293,77 @@ export function doenetMLToSerializedComponents({ doenetML, includeBlankStrings =
   return json;
 }
 
-export function findContentIdRefs({ serializedComponents }) {
+export function findContentCopies({ serializedComponents }) {
 
   let contentIdComponents = {};
+  let contentNameComponents = {};
   for (let serializedComponent of serializedComponents) {
-    if (serializedComponent.componentType === "ref") {
+    if (serializedComponent.componentType === "copy") {
       if (serializedComponent.children !== undefined) {
-        let contentIdComponent;
+        let uriComponent;
         for (let child of serializedComponent.children) {
-          if (child.componentType === "contentid") {
-            contentIdComponent = child;
+          if (child.componentType === "uri" && child.doenetAttributes.isPropertyChild) {
+            uriComponent = child;
             break;
           }
         }
-        if (contentIdComponent) {
-          let contentId;
-          if (contentIdComponent.state !== undefined) {
-            contentId = contentIdComponent.state.value;
+        if (uriComponent) {
+          let uri;
+          if (uriComponent.state !== undefined) {
+            uri = uriComponent.state.value;
           }
-          if (contentIdComponent.children !== undefined) {
-            for (let child of contentIdComponent.children) {
+          // child overrides value from state
+          if (uriComponent.children !== undefined) {
+            for (let child of uriComponent.children) {
               if (child.componentType === "string") {
-                contentId = child.state.value;
+                uri = child.state.value;
                 break;
               }
             }
           }
-          if (contentId !== undefined) {
-            if (contentIdComponents[contentId] === undefined) {
-              contentIdComponents[contentId] = [];
+
+          if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
+
+            let uriEnd = uri.substring(7);
+
+            if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
+              let contentId = uriEnd.substring(10);
+              if (contentIdComponents[contentId] === undefined) {
+                contentIdComponents[contentId] = [];
+              }
+              contentIdComponents[contentId].push(serializedComponent);
+            } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
+              let contentName = uriEnd.substring(12);
+              if (contentNameComponents[contentName] === undefined) {
+                contentNameComponents[contentName] = [];
+              }
+              contentNameComponents[contentName].push(serializedComponent);
             }
-            contentIdComponents[contentId].push(serializedComponent);
+
           }
         }
       }
     } else {
       if (serializedComponent.children !== undefined) {
-        let results = findContentIdRefs({ serializedComponents: serializedComponent.children })
+        let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to contentIdComponents
-        for (let contentID in results) {
-          if (contentIdComponents[contentID] === undefined) {
-            contentIdComponents[contentID] = [];
+        // append results on to contentIdComponents and contentNameComponents
+        for (let contentId in results.contentIdComponents) {
+          if (contentIdComponents[contentId] === undefined) {
+            contentIdComponents[contentId] = [];
           }
-          contentIdComponents[contentID].push(...results[contentID]);
+          contentIdComponents[contentId].push(...results.contentIdComponents[contentId]);
+        }
+        for (let contentName in results.contentNameComponents) {
+          if (contentNameComponents[contentName] === undefined) {
+            contentNameComponents[contentName] = [];
+          }
+          contentNameComponents[contentName].push(...results.contentNameComponents[contentName]);
         }
       }
     }
   }
-  return contentIdComponents;
+  return { contentIdComponents, contentNameComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {
@@ -382,8 +404,11 @@ export function createComponentsFromProps(serializedComponents, standardComponen
           }
           newChildren.push(newComponent);
           delete component.props[prop];
-        } else if (!["name", "assignnames", "newnamespace", "tname", "prop", "type", "frommapancestor", "fromsources"].includes(propLower)) {
-          throw Error("Invalid property: " + prop);
+        } else if (![
+          "name", "assignnames", "newnamespace", "tname", "prop",
+          "type", "alias", "indexalias"
+        ].includes(propLower)) {
+          throw Error("Invalid attribute: " + prop);
         }
       }
       component.children.unshift(...newChildren);
@@ -987,7 +1012,8 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 //   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
 // }
 
-function breakStringByCommasWithParens(string) {
+
+function breakStringInPiecesBySpacesOrParens(string) {
   let Nparens = 0;
   let pieces = [];
 
@@ -997,30 +1023,46 @@ function breakStringByCommasWithParens(string) {
   for (let ind = 0; ind < string.length; ind++) {
     let char = string[ind];
     if (char === "(") {
+      if (Nparens === 0) {
+        // beginning new parens piece
+        // what have so far is a new piece
+        let newPiece = string.substring(beginInd, ind).trim();
+        if (newPiece.length > 0) {
+          pieces.push(newPiece);
+        }
+        beginInd = ind;
+      }
+
       Nparens++;
-    }
-    if (char === ")") {
+    } else if (char === ")") {
       if (Nparens === 0) {
         // parens didn't match, so return failure
         return { success: false };
       }
-      Nparens--
-    }
-    if (char === "," && Nparens === 0) {
-      let newPiece = string.substring(beginInd, ind).trim();
-      if (newPiece[0] === "(" && newPiece[newPiece.length - 1] === ")") {
-        // piece is in parens, try to break further
-        let result = breakStringByCommasWithParens(newPiece.substring(1, newPiece.length - 1));
-        if (result.success === true) {
-          pieces.push(result.pieces);
-        } else {
-          pieces.push(newPiece);
+      if (Nparens === 1) {
+        // found end of piece in parens
+        let newPiece = string.substring(beginInd + 1, ind).trim();
+        if (newPiece.length > 0) {
+          // try to break further
+          let result = breakStringInPiecesBySpacesOrParens(newPiece);
+          if (result.success === true) {
+            pieces.push(result.pieces);
+          } else {
+            pieces.push(newPiece);
+          }
         }
-      } else {
+        beginInd = ind + 1;
+      }
+      Nparens--
+    } else if (Nparens === 0 && char.match(/\s/)) {
+      // not in parens and found a space so potentially have a new piece
+      let newPiece = string.substring(beginInd, ind).trim();
+      if (newPiece.length > 0) {
         pieces.push(newPiece);
       }
-      beginInd = ind + 1;
+      beginInd = ind;
     }
+
   }
 
   // parens didn't match, so return failure
@@ -1029,15 +1071,7 @@ function breakStringByCommasWithParens(string) {
   }
 
   let newPiece = string.substring(beginInd, string.length).trim();
-  if (newPiece[0] === "(" && newPiece[newPiece.length - 1] === ")") {
-    // piece is in parens, try to break further
-    let result = breakStringByCommasWithParens(newPiece.substring(1, newPiece.length - 1));
-    if (result.success === true) {
-      pieces.push(result.pieces);
-    } else {
-      pieces.push(newPiece);
-    }
-  } else {
+  if (newPiece.length > 0) {
     pieces.push(newPiece);
   }
 
@@ -1085,8 +1119,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     let tName = doenetAttributes.tName;
     let propName = doenetAttributes.propName;
     let type = doenetAttributes.type;
-    let fromMapAncestor = doenetAttributes.fromMapAncestor;
-    let fromSources = doenetAttributes.fromSources;
+    let alias = doenetAttributes.alias;
+    let indexAlias = doenetAttributes.indexAlias;
 
     let mustCreateUniqueName =
       componentType === "string"
@@ -1107,7 +1141,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     if (props === undefined) {
       props = serializedComponent.props = {};
     } else {
-      // look for a property that matches name, assignNames, or newNamespace
+      // look for a property that matches an attribute
       // but case insensitive
       for (let key in props) {
         let lowercaseKey = key.toLowerCase();
@@ -1120,7 +1154,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           }
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
-            let result = breakStringByCommasWithParens(props[key]);
+            let result = breakStringInPiecesBySpacesOrParens(props[key]);
             if (result.success) {
               assignNames = result.pieces;
             } else {
@@ -1164,19 +1198,19 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           } else {
             throw Error("Cannot define type twice for a component");
           }
-        } else if (lowercaseKey === "frommapancestor") {
-          if (fromMapAncestor === undefined) {
-            fromMapAncestor = props[key].toLowerCase();
+        } else if (lowercaseKey === "alias") {
+          if (alias === undefined) {
+            alias = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define fromMapAncestor twice for a component");
+            throw Error("Cannot define alias twice for a component");
           }
-        } else if (lowercaseKey === "fromsources") {
-          if (fromSources === undefined) {
-            fromSources = props[key].toLowerCase();
+        } else if (lowercaseKey === "indexalias") {
+          if (indexAlias === undefined) {
+            indexAlias = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define fromSources twice for a component");
+            throw Error("Cannot define indexAlias twice for a component");
           }
         }
       }
@@ -1190,8 +1224,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
           throw Error("Component name must begin with a letter");
         }
-        if (!(/^[a-zA-Z0-9_:.\-]+$/.test(prescribedName))) {
-          throw Error("Component name can contain only letters, numbers, hyphens, underscores, colons and periods");
+        if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
+          throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
         }
       }
 
@@ -1229,20 +1263,24 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       // put in doenetAttributes as assignNames array
       doenetAttributes.assignNames = assignNames;
 
-      let flattedNames = flattenDeep(assignNames);
-      for (let name of flattedNames) {
-        if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-          throw Error("All assigned names must begin with a letter");
+      if (!doenetAttributes.createUniqueAssignNames) {
+        let flattedNames = flattenDeep(assignNames);
+        for (let name of flattedNames) {
+          if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
+            throw Error("All assigned names must begin with a letter");
+          }
+          if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
+            throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+          }
         }
-        if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
-          throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+        // check if unique names
+        if (flattedNames.length !== new Set(flattedNames).size) {
+          throw Error("Duplicate assigned names");
         }
-      }
-      // check if unique names
-      if (flattedNames.length !== new Set(flattedNames).size) {
-        throw Error("Duplicate assigned names");
       }
     }
+
+
     if (newNamespace) {
       // newNamespace was specified
       // put in doenetAttributes as boolean
@@ -1304,6 +1342,43 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       }
     }
 
+
+    if (serializedComponent.doenetAttributes.createUniqueAssignNames &&
+      serializedComponent.originalName
+    ) {
+      let assignNames = serializedComponent.doenetAttributes.assignNames = [];
+      let longNameIdBase = componentName + "|createUniqueName|assignNames|";
+
+      let namespace = '';
+      let oldNamespace;
+      if (!newNamespace) {
+        for (let l = 0; l <= level; l++) {
+          namespace += namespaceStack[l].namespace + '/';
+        }
+        let lastInd = serializedComponent.originalName.lastIndexOf("/");
+        oldNamespace = serializedComponent.originalName.slice(0, lastInd + 1)
+      } else {
+        namespace = componentName + '/';
+        oldNamespace = serializedComponent.originalName + '/';
+      }
+
+
+      for (let [ind, originalName] of serializedComponent.doenetAttributes.originalAssignNames.entries()) {
+        let longNameId = longNameIdBase + ind;
+        let newName = createUniqueName("fromAssignNames", longNameId);
+        assignNames.push(newName);
+
+        let infoForRenaming = {
+          componentName: namespace + newName,
+          originalName: oldNamespace + originalName
+        }
+
+        renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName);
+
+      }
+
+    }
+
     renameMatchingTNames(serializedComponent, doenetAttributesByFullTName);
 
     if (tName) {
@@ -1340,19 +1415,36 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       doenetAttributes.type = componentClass.defaultType;
     }
 
-    if (fromMapAncestor) {
-      if (!componentClass.acceptFromMapAncestor) {
-        throw Error(`Component type ${componentType} does not accept a fromMapAncestor property`);
+    if (alias) {
+
+      if (!componentClass.acceptAlias) {
+        throw Error("Cannot specify alias for component type " + serializedComponent.componentType);
       }
-      doenetAttributes.fromMapAncestor = fromMapAncestor
+      doenetAttributes.alias = alias;
+
+      if (!(/[a-zA-Z_]/.test(alias.substring(0, 1)))) {
+        throw Error("All aliases must begin with a letter or an underscore");
+      }
+      if (!(/^[a-zA-Z0-9_\-]+$/.test(alias))) {
+        throw Error("Aliases can contain only letters, numbers, hyphens, and underscores");
+      }
     }
 
-    if (fromSources) {
-      if (!componentClass.acceptFromSources) {
-        throw Error(`Component type ${componentType} does not accept a fromSources property`);
+    if (indexAlias) {
+
+      if (!componentClass.acceptIndexAlias) {
+        throw Error("Cannot specify index alias for component type " + serializedComponent.componentType);
       }
-      doenetAttributes.fromSources = fromSources
+      doenetAttributes.indexAlias = indexAlias;
+
+      if (!(/[a-zA-Z_]/.test(indexAlias.substring(0, 1)))) {
+        throw Error("All index aliases must begin with a letter or an underscore");
+      }
+      if (!(/^[a-zA-Z0-9_\-]+$/.test(indexAlias))) {
+        throw Error("Index aliases can contain only letters, numbers, hyphens, and underscores");
+      }
     }
+
 
     if (serializedComponent.children !== undefined) {
 
@@ -1384,6 +1476,28 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           });
         } else {
 
+
+          // newNamespace does not apply to property children
+
+          let propertyChildren = [], nonPropertyChildren = [];
+          for(let child of serializedComponent.children) {
+            if(child.doenetAttributes && child.doenetAttributes.isPropertyChild) {
+              propertyChildren.push(child);
+            } else {
+              nonPropertyChildren.push(child);
+            }
+          }
+
+          createComponentNames({
+            serializedComponents: propertyChildren,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            parentName: componentName,
+            useOriginalNames,
+            doenetAttributesByFullTName,
+          });
+
           // if newNamespace, then need to make sure that assigned names
           // don't conflict with new names added,
           // so include in namesused
@@ -1395,13 +1509,14 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed };
           namespaceStack.push(newNamespaceInfo);
           createComponentNames({
-            serializedComponents: serializedComponent.children,
+            serializedComponents: nonPropertyChildren,
             namespaceStack,
             componentInfoObjects,
             parentDoenetAttributes: doenetAttributes,
             parentName: componentName,
             useOriginalNames,
             doenetAttributesByFullTName,
+            indOffset: propertyChildren.length
           });
           namespaceStack.pop();
         }
@@ -1689,7 +1804,7 @@ export function processAssignNames({
 
     if (originalNamespace !== null) {
       for (let component of serializedComponents) {
-        setTNamesOutsideNamespaceToAbsolute({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1709,7 +1824,7 @@ export function processAssignNames({
       }
 
       if (originalNamespace !== null) {
-        setTNamesOutsideNamespaceToAbsolute({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1898,7 +2013,7 @@ export function createComponentNamesFromParentName({
 }
 
 
-function setTNamesOutsideNamespaceToAbsolute({ namespace, components, doenetAttributesByFullTName }) {
+function setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components, doenetAttributesByFullTName }) {
 
   let namespaceLength = namespace.length;
   for (let component of components) {
@@ -1914,7 +2029,7 @@ function setTNamesOutsideNamespaceToAbsolute({ namespace, components, doenetAttr
     }
 
     if (component.children) {
-      setTNamesOutsideNamespaceToAbsolute({ namespace, components: component.children, doenetAttributesByFullTName })
+      setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components: component.children, doenetAttributesByFullTName })
     }
   }
 }
@@ -1955,7 +2070,11 @@ function markToCreateAllUniqueNames(components) {
       component.doenetAttributes = {};
     }
     component.doenetAttributes.createUniqueName = true;
-    delete component.doenetAttributes.assignNames;
+    if (component.doenetAttributes.assignNames) {
+      component.doenetAttributes.createUniqueAssignNames = true;
+      component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
+      delete component.doenetAttributes.assignNames;
+    }
     delete component.doenetAttributes.prescribedName;
     if (component.children) {
       markToCreateAllUniqueNames(component.children);

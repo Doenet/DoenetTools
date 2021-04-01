@@ -3,21 +3,16 @@ import * as serializeFunctions from '../utils/serializedStateProcessing';
 import { postProcessCopy } from '../utils/copy';
 import { flattenDeep, flattenLevels } from '../utils/array';
 import { getUniqueIdentifierFromBase } from '../utils/naming';
+import { deepClone } from '../utils/deepFunctions';
 
 
 export default class Copy extends CompositeComponent {
-  constructor(args) {
-    super(args);
-    this.processNewDoenetML = this.processNewDoenetML.bind(this);
-  }
   static componentType = "copy";
 
   static assignNamesToReplacements = true;
 
   static acceptTname = true;
   static acceptProp = true;
-  static acceptFromMapAncestor = true;
-  static acceptFromSources = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName"] };
 
@@ -50,9 +45,8 @@ export default class Copy extends CompositeComponent {
 
     // Just in case there is a component that added these as a property, delete them
 
-    // delete string and contentid
+    // delete string
     delete properties.string;
-    delete properties.contentid;
 
     // delete basic types, in case they were used as property
     delete properties.math;
@@ -62,8 +56,9 @@ export default class Copy extends CompositeComponent {
     properties.includeUndefinedObjects = { default: false };
     properties.componentIndex = { default: null };
     properties.propIndex = { default: null };
+    properties.uri = { default: null };
 
-    // properties.targetPropertiesToIgnore = { default: [] };
+    properties.targetPropertiesToIgnore = { default: ["hide"] };
 
     return properties;
 
@@ -73,8 +68,8 @@ export default class Copy extends CompositeComponent {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "atMostOneContentId",
-      componentType: 'contentid',
+      name: "atMostOneExternalContent",
+      componentType: 'externalContent',
       number: 1,
       comparison: "atMost",
       setAsBase: true
@@ -87,30 +82,6 @@ export default class Copy extends CompositeComponent {
   static returnStateVariableDefinitions({ propertyNames }) {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.fromMapAncestor = {
-      returnDependencies: () => ({
-        fromMapAncestor: {
-          dependencyType: "doenetAttribute",
-          attributeName: "fromMapAncestor"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { fromMapAncestor: dependencyValues.fromMapAncestor }
-      })
-    }
-
-    stateVariableDefinitions.fromSources = {
-      returnDependencies: () => ({
-        fromSources: {
-          dependencyType: "doenetAttribute",
-          attributeName: "fromSources"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { fromSources: dependencyValues.fromSources }
-      })
-    }
 
     stateVariableDefinitions.tName = {
       returnDependencies: () => ({
@@ -126,43 +97,26 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.targetSourcesName = {
       additionalStateVariablesDefined: ["sourcesChildNumber"],
-      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSources", "tName"],
+      stateVariablesDeterminingDependencies: ["tName"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
 
-        if (stateValues.tName !== "_source") {
+        let sourceNameMappings = sharedParameters.sourceNameMappings;
+        if (!sourceNameMappings) {
           return {};
         }
 
-        let sourcesInfo = sharedParameters.sourcesInfo;
-
-        if (sourcesInfo === undefined) {
-          console.error(`Cannot copy _source when not inside a map template.`);
+        let theMapping = sourceNameMappings[stateValues.tName];
+        if (!theMapping) {
           return {};
         }
-
-        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
-        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
-
-        let level = sourcesInfo.length - fromMapAncestor;
-        let infoForLevel = sourcesInfo[level];
-        if (infoForLevel === undefined) {
-          console.error(`For copy of _source, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
-          return {};
-        }
-        let infoForSources = infoForLevel[fromSources - 1];
-        if (infoForSources === undefined) {
-          console.error(`For copy of _source, invalid value of fromSources: ${stateValues.fromSources}`);
-          return {};
-        };
-
         return {
           targetSourcesName: {
             dependencyType: "value",
-            value: infoForSources.name,
+            value: theMapping.name,
           },
           sourcesChildNumber: {
             dependencyType: "value",
-            value: infoForSources.childNumber
+            value: theMapping.childNumber
           }
         }
 
@@ -205,40 +159,24 @@ export default class Copy extends CompositeComponent {
 
 
     stateVariableDefinitions.sourceIndex = {
-      stateVariablesDeterminingDependencies: ["tName", "fromMapAncestor", "fromSources"],
+      stateVariablesDeterminingDependencies: ["tName"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
-        if (stateValues.tName !== "_sourceindex") {
+
+        let sourceIndexMappings = sharedParameters.sourceIndexMappings;
+        if (!sourceIndexMappings) {
           return {};
         }
 
-        let sourcesChildIndices = sharedParameters.sourcesChildIndices;
-
-        if (sourcesChildIndices === undefined) {
-          console.error(`Cannot copy _sourceindex when not inside a map template.`);
+        let theMapping = sourceIndexMappings[stateValues.tName];
+        if (theMapping === undefined) {
           return {};
         }
-
-        let fromMapAncestor = stateValues.fromMapAncestor ? Number(stateValues.fromMapAncestor) : 1
-        let fromSources = stateValues.fromSources ? Number(stateValues.fromSources) : 1
-
-        let level = sourcesChildIndices.length - fromMapAncestor;
-        let childIndices = sourcesChildIndices[level];
-        if (childIndices === undefined) {
-          console.error(`For copy of _sourceindex, invalid value of fromMapAncestor: ${stateValues.fromMapAncestor}`);
-          return {};
-        }
-        let childIndex = childIndices[fromSources - 1];
-        if (childIndex === undefined) {
-          console.error(`For copy of _sourceindex, invalid value of fromSources: ${stateValues.fromSources}`);
-          return {};
-        };
 
         return {
           sourceIndex: {
             dependencyType: "value",
-            value: childIndex,
-          }
-
+            value: theMapping,
+          },
         }
 
       },
@@ -326,95 +264,82 @@ export default class Copy extends CompositeComponent {
     };
 
     stateVariableDefinitions.contentId = {
+      additionalStateVariablesDefined: ["contentName"],
       returnDependencies: () => ({
-        contentIdChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneContentId",
-          variableNames: ["value"],
-        },
-        newNamespace: {
-          dependencyType: "doenetAttribute",
-          attributeName: "newNamespace",
+        uri: {
+          dependencyType: "stateVariable",
+          variableName: "uri",
         },
       }),
-      defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.contentIdChild.length === 0) {
+        if (!dependencyValues.uri ||
+          dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
+        ) {
           return {
-            useEssentialOrDefaultValue: {
-              contentId: { variablesToCheck: "contentId" }
-            }
+            newValues: { contentId: null, contentName: null }
           }
         }
 
-        if (!newNamespace.value) {
-          throw Error("Cannot copy contentId without specifying a new namespace")
+        let uriEnd = dependencyValues.uri.substring(7);
+
+        let contentId = null, contentName = null;
+
+        if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
+          contentId = uriEnd.substring(10);
+        } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
+          contentName = uriEnd.substring(12);
         }
 
-        return { newValues: { contentId: dependencyValues.contentIdChild[0].stateValues.value } }
+        return { newValues: { contentId, contentName } };
       },
     };
 
 
-    stateVariableDefinitions.serializedStateForContentId = {
-      returnDependencies: () => ({}),
-      defaultValue: null,
-      definition: function () {
+    stateVariableDefinitions.serializedComponentsForContentId = {
+      returnDependencies: () => ({
+        contentId: {
+          dependencyType: "stateVariable",
+          variableName: "contentId"
+        },
+        contentName: {
+          dependencyType: "stateVariable",
+          variableName: "contentName"
+        },
+        externalContentChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneExternalContent",
+          variableNames: ["serializedChildren", "newNamespace"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (!(dependencyValues.contentId || dependencyValues.contentName)) {
+          return {
+            newValues: { serializedComponentsForContentId: null }
+          }
+        }
+        let externalContentChild = dependencyValues.externalContentChild[0];
+        if (!externalContentChild) {
+          return {
+            newValues: { serializedComponentsForContentId: null }
+          }
+        }
+        let childrenOfContent = externalContentChild.stateValues.serializedChildren;
+        let serializedComponentsForContentId = {
+          componentType: "externalcontent",
+          state: { rendered: true },
+          children: childrenOfContent,
+          originalName: externalContentChild.componentName,
+        }
+        if (externalContentChild.stateValues.newNamespace) {
+          serializedComponentsForContentId.doenetAttributes = { newNamespace: true }
+        }
         return {
-          useEssentialOrDefaultValue: {
-            serializedStateForContentId: { variablesToCheck: "serializedStateForContentId" }
+          newValues: {
+            serializedComponentsForContentId
           }
         }
       }
     };
-
-    // stateVariableDefinitions.serializedContent = {
-    //   returnDependencies: () => ({
-    //     contentId: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "contentId",
-    //     },
-    //     serializedStateForContentId: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "serializedStateForContentId",
-    //     },
-    //   }),
-    //   defaultValue: undefined,
-    //   definition: function ({ contentId, serializedStateForContentId }, { allComponentClasses, componentTypesTakingComponentNames, standardComponentClasses, componentTypesCreatingVariants }) {
-    //     if (contentId.value === undefined) {
-    //       return { useEssentialOrDefaultValue: { serializedContent: "serializedContent" } }
-    //     }
-
-    //     if (serializedStateForContentId.value === undefined) {
-    //       // TODO: implement
-    //       throw Error("Need to implement resolving contentId on the fly.")
-    //       // this.externalFunctions.contentIdsToDoenetMLs({ contentIds: [this.state.contentId], callBack: this.processNewDoenetML })
-
-    //     }
-    //     if (!serializedStateForContentId.valueChanged) {
-    //       return { noChanges: true };
-    //     }
-
-    //     let serializedState = JSON.parse(JSON.stringify(serializedStateForContentId.value));
-    //     serializedState = serializeFunctions.scrapeOffAllDoumentRelated(serializedState);
-
-    //     serializeFunctions.createComponentsFromProps(serializedState, standardComponentClasses);
-
-    //     serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames, allComponentClasses });
-
-    //     this.componentNameToPreserializedName(serializedState, componentTypesTakingComponentNames);
-
-    //     serializeFunctions.gatherVariantComponents({
-    //       serializedState,
-    //       componentTypesCreatingVariants,
-    //       allComponentClasses,
-    //     });
-
-    //     return { newValues: { serializedContent: serializedState } }
-    //   },
-    // };
-
-
 
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
@@ -843,73 +768,6 @@ export default class Copy extends CompositeComponent {
 
   }
 
-  processNewDoenetML({ newDoenetMLs, message, success }) {
-
-    if (!success) {
-      console.warn(message);
-      //TODO: handle failure
-      return;
-    }
-
-    let serializedState = serializeFunctions.doenetMLToSerializedState({ doenetML: newDoenetMLs[0], standardComponentClasses: this.componentInfoObjects.standardComponentClasses, allComponentClasses: this.componentInfoObjects.allComponentClasses });
-
-    serializedState = serializeFunctions.scrapeOffAllDoumentRelated(serializedState);
-
-    serializeFunctions.createComponentsFromProps(serializedState, this.componentInfoObjects.standardComponentClasses);
-
-    // need to redo to include parentDoenetAttributes
-    serializeFunctions.createComponentNames({
-      serializedState,
-      componentInfoObjects: this.componentInfoObjects
-    });
-
-    this.componentNameToPreserializedName(serializedState, this.componentInfoObjects.componentTypesTakingComponentNames);
-
-    serializeFunctions.gatherVariantComponents({
-      serializedState,
-      componentTypesCreatingVariants: this.componentInfoObjects.componentTypesCreatingVariants,
-      componentInfoObjects: this.componentInfoObjects,
-    });
-
-    this.coreFunctions.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          serializedContent: { changes: serializedState },
-          serializedContentChanged: { changes: true },
-        }
-      }],
-      saveSerializedState: false,
-    });
-
-  }
-
-  componentNameToPreserializedName(serializedComponents, componentTypesTakingComponentNames) {
-
-    for (let serializedComponent of serializedComponents) {
-      let componentName = serializedComponent.componentName;
-      if (componentName !== undefined) {
-        serializedComponent.componentName = this.componentName + componentName;
-      }
-
-      if (serializedComponent.componentType in componentTypesTakingComponentNames) {
-        let targetName;
-        for (let child of serializedComponent.children) {
-          if (child.componentType === "string") {
-            child.state.value = this.componentName + child.state.value;
-            break;
-          }
-        }
-        serializedComponent.targetComponentName = targetName;
-      }
-      // recurse to children
-      if (serializedComponent.children !== undefined) {
-        this.componentNameToPreserializedName(serializedComponent.children, componentTypesTakingComponentNames);
-      }
-    }
-  }
-
 
   static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
@@ -926,7 +784,7 @@ export default class Copy extends CompositeComponent {
     workspace.uniqueIdentifiersUsedBySource = {};
 
     // if (component.state.contentIDChild !== undefined) {
-    //   if (!component.state.serializedStateForContentId) {
+    //   if (!component.state.serializedComponentsForContentId) {
     //     return { replacements: [] };
     //   }
     // }
@@ -934,13 +792,39 @@ export default class Copy extends CompositeComponent {
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
+    if (component.stateValues.serializedComponentsForContentId) {
+      let replacements = [deepClone(component.stateValues.serializedComponentsForContentId)];
+      replacements[0].downstreamDependencies = {
+        [component.componentName]: [{
+          dependencyType: "nonShadowingReplacement",
+        }]
+      };
 
-    // if have a sourceIndex, it means we had a prop="_sourceindex"
+      let processResult = serializeFunctions.processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: replacements,
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+        componentInfoObjects,
+      });
+
+      replacements = processResult.serializedComponents;
+
+      return { replacements };
+
+    }
+
+    // if have a sourceIndex, it means we are copying the indexAlias from a source
     // so we just return a number that is the index
     if (component.stateValues.sourceIndex !== null) {
       let replacements = [{
         componentType: "number",
         state: { value: component.stateValues.sourceIndex, fixed: true },
+        downstreamDependencies: {
+          [component.componentName]: [{
+            dependencyType: "nonShadowingReplacement",
+          }]
+        },
       }];
 
       let processResult = serializeFunctions.processAssignNames({
@@ -1077,7 +961,12 @@ export default class Copy extends CompositeComponent {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
-    // for prop="_sourceIndex", the replacements never change
+    // if copying a contentID, no changes
+    if (component.stateValues.serializedComponentsForContentId) {
+      return [];
+    }
+
+    // for indexAlias from a source, the replacements never change
     if (component.stateValues.sourceIndex !== null) {
       return [];
     }
@@ -1086,8 +975,6 @@ export default class Copy extends CompositeComponent {
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
     let replacementChanges = [];
-
-    let assignNames = component.doenetAttributes.assignNames;
 
     if (!component.stateValues.targetComponent || !component.stateValues.replacementSources) {
       if (component.replacements.length > 0) {

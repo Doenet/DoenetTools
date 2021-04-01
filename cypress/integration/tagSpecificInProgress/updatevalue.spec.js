@@ -16,12 +16,12 @@ describe('UpdateValue Tag Tests',function() {
     <template>
     <linesegment>
       <endpoints>
-      <point><coords>(<copy tname="_source" />, sin(<copy tname="_source" />))</coords></point>
-      <point><coords>(<copy tname="_source" />+<copy tname="step" />, sin(<copy tname="_source" />+<copy tname="step" />))</coords></point>
+      <point><coords>($x, sin($x))</coords></point>
+      <point><coords>($x+<copy tname="step" />, sin($x+<copy tname="step" />))</coords></point>
       </endpoints>
     </linesegment>
     </template>
-    <sources>
+    <sources alias="x">
     <sequence from="-10">
       <to><number>10-<copy tname="step" /></number></to>
       <count><number name="count">2</number></count>

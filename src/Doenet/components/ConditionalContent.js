@@ -4,6 +4,10 @@ import { postProcessCopy } from '../utils/copy';
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalcontent";
 
+  static get stateVariablesShadowedForReference() {
+    return ["hide"]
+  }
+  
   static createPropertiesObject() {
     let properties = super.createPropertiesObject();
     delete properties.hide;
@@ -18,6 +22,7 @@ export default class ConditionalContent extends CompositeComponent {
       componentType: 'condition',
       comparison: 'atMost',
       number: 1,
+      takePropertyChildren: true,
       allowSpillover: false,
     });
 

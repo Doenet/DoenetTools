@@ -24,12 +24,24 @@ import DoenetViewer from '../../../Tools/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/addon/hint/show-hint'
+import 'codemirror/addon/hint/xml-hint'
+import 'codemirror/addon/display/autorefresh';
+import 'codemirror/addon/comment/comment';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/edit/matchbrackets';
+import 'codemirror/addon/edit/closebrackets';
+import 'codemirror/addon/edit/matchtags';
+import 'codemirror/addon/edit/closetag';
+
 // import 'codemirror/theme/material.css';
 import 'codemirror/theme/xq-light.css';
 // import 'codemirror/theme/neo.css';
 // import 'codemirror/theme/base16-light.css';
 
-import './editor.css';
+import './Editor.css';
 
 const fileByContentId = atomFamily({
   key:"fileByContentId",
@@ -356,17 +368,39 @@ function TextEditor(props){
   const editorInit = useRecoilValue(editorInitAtom);
   if (!editorInit){return null;}
 
+  // const tags = {
+  //   "!top" : ["mathinput", "math", "p"],
+    
+  // }
   const options = {
       mode: 'xml',
       autoRefresh:true,
       // theme: 'neo',
       // theme: 'base16-light',
       theme: 'xq-light',
-      lineNumbers: true
-  }
-
+      lineNumbers: true,
+      //hot take
+      indentUnit : 4,
+      smartIndent : true,
+      matchTags : true,
+      // autoCloseTags: true,
+      matchBrackets: true,
+      // autoCloseBrackets: true,
+      // hintOptions: {schemaInfo: tags},
+      extraKeys : {
+        Tab: (cm) => {
+          var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+          cm.replaceSelection(spaces);
+        },
+        Enter : (cm) => {
+          cm.replaceSelection("\n")
+          setTimeout( () => cm.execCommand("indentAuto"), 1);
+        },
+        "Ctrl-Space" : "autocomplete"
+      }
+    }
+  
   return <>
-
   {/* <button onClick={()=>{
     console.log(">>>editorRef.current",editorRef.current)
     // editorRef.current.options.readOnly = true;
@@ -393,7 +427,6 @@ function TextEditor(props){
       editorRef.current.refresh();
     }  
     }}>
-    
 <CodeMirror
   className="CodeMirror"
   editorDidMount={editor => { editorRef.current = editor;  }}

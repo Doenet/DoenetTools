@@ -252,6 +252,15 @@ export default class BooleanList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nValues = {
+      isAlias: true,
+      targetVariableName: "nComponents"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "booleans"
+    };
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakEmbeddedStringIntoParensPieces } from '../commonsugar/breakstrings';
+import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -12,7 +12,7 @@ export default class PointListComponent extends BaseComponent {
 
     let createPointList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringIntoParensPieces({
+      let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
       });
 

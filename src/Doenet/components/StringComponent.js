@@ -8,7 +8,9 @@ export default class StringComponent extends InlineComponent {
   static get stateVariablesShadowedForReference() { return ["value"] };
 
   static createPropertiesObject() {
-    return {};
+    return {
+      hide: { default: false },
+    };
   }
 
 

@@ -42,9 +42,8 @@ export default class Extract extends CompositeComponent {
 
     // Just in case there is a component that added these as a property, delete them
 
-    // delete string and contentid
+    // delete string
     delete properties.string;
-    delete properties.contentid;
 
     // delete basic types, in case they were used as property
     delete properties.math;

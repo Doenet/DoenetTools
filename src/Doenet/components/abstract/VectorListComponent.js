@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakEmbeddedStringIntoParensPieces } from '../commonsugar/breakstrings';
+import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
@@ -11,7 +11,7 @@ export default class VectorListComponent extends BaseComponent {
 
     let createVectorList = function ({ matchedChildren }) {
 
-      let results = breakEmbeddedStringIntoParensPieces({
+      let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
       });
 

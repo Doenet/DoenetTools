@@ -14,7 +14,7 @@ describe('Specifying subvariants tests', function () {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
-      <select assignnames="(x)">u,v,w,x,y,z</select>
+      <select type="text" assignnames="(x)">u v w x y z</select>
     `,
           requestedVariant: {
             subvariants: [{
@@ -49,7 +49,7 @@ describe('Specifying subvariants tests', function () {
             doenetML: `
       <text>${ind1}</text>
       <text>${ind2}</text>
-      <select assignnames="(x),(y)" numbertoselect="2">x,y,z</select>
+      <select type="text" assignnames="(x) (y)" numbertoselect="2">x y z</select>
       `,
             requestedVariant: {
               subvariants: [{
@@ -121,7 +121,7 @@ describe('Specifying subvariants tests', function () {
             doenetML: `
         <text>${ind1}</text>
         <text>${ind2}</text>
-        <selectfromsequence assignnames="x,y" numbertoselect="2" to="4" />
+        <selectfromsequence assignnames="x y" numbertoselect="2" to="4" />
       `,
             requestedVariant: {
               subvariants: [{
@@ -184,9 +184,9 @@ describe('Specifying subvariants tests', function () {
       </select></p>
 
       <p>Sides: <aslist>
-      <select assignnames="(side1),(side2)" numbertoselect="2">
-        <option selectForVariants="a,b,c,a"><text>top</text></option>
-        <option selectForVariants="b,d"><text>bottom</text></option>
+      <select assignnames="(side1) (side2)" numbertoselect="2">
+        <option selectForVariants="a b c a"><text>top</text></option>
+        <option selectForVariants="b d"><text>bottom</text></option>
         <option selectForVariants="c"><text>left</text></option>
         <option selectForVariants="d"><text>right</text></option>
       </select>
@@ -232,9 +232,9 @@ describe('Specifying subvariants tests', function () {
       </select></p>
 
       <p>Sides: <aslist>
-      <select assignnames="(side1),(side2)" numbertoselect="2">
-        <option selectForVariants="a,b,c,a"><text>top</text></option>
-        <option selectForVariants="b,d"><text>bottom</text></option>
+      <select assignnames="(side1) (side2)" numbertoselect="2">
+        <option selectForVariants="a b c a"><text>top</text></option>
+        <option selectForVariants="b d"><text>bottom</text></option>
         <option selectForVariants="c"><text>left</text></option>
         <option selectForVariants="d"><text>right</text></option>
       </select>
@@ -284,9 +284,9 @@ describe('Specifying subvariants tests', function () {
       </select></p>
 
       <p>Sides: <aslist>
-      <select assignnames="(side1),(side2)" numbertoselect="2">
-        <option selectForVariants="a,b,c,a"><text>top</text></option>
-        <option selectForVariants="b,d"><text>bottom</text></option>
+      <select assignnames="(side1) (side2)" numbertoselect="2">
+        <option selectForVariants="a b c a"><text>top</text></option>
+        <option selectForVariants="b d"><text>bottom</text></option>
         <option selectForVariants="c"><text>left</text></option>
         <option selectForVariants="d"><text>right</text></option>
       </select>
@@ -335,9 +335,9 @@ describe('Specifying subvariants tests', function () {
       </select></p>
 
       <p>Sides: <aslist>
-      <select assignnames="(side1),(side2)" numbertoselect="2">
-        <option selectForVariants="a,b,c,a"><text>top</text></option>
-        <option selectForVariants="b,d"><text>bottom</text></option>
+      <select assignnames="(side1) (side2)" numbertoselect="2">
+        <option selectForVariants="a b c a"><text>top</text></option>
+        <option selectForVariants="b d"><text>bottom</text></option>
         <option selectForVariants="c"><text>left</text></option>
         <option selectForVariants="d"><text>right</text></option>
       </select>
@@ -403,8 +403,8 @@ describe('Specifying subvariants tests', function () {
             <selectfromsequence from="-1000" to="-400" />
           </select>
         </p></option>
-        <option><p>Chosen letter: <selectfromsequence type="letters">c,g</selectfromsequence></p></option>
-        <option><p>Variable: <select>u,v,w,x,z,y</select></p></option>
+        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p>Variable: <select>u v w x z y</select></p></option>
       </select>
       `,
           requestedVariant: {
@@ -454,12 +454,12 @@ describe('Specifying subvariants tests', function () {
           </p>
           <p>Selected number: 
             <select>
-              <selectfromsequence>1000, 2000</selectfromsequence>
-              <selectfromsequence>-1000,-400</selectfromsequence>
+              <selectfromsequence from="1000" to="2000" />
+              <selectfromsequence from="-1000" to="-400" />
             </select>
           </p>
-          <p>Chosen letter: <selectfromsequence type="letters">c,g</selectfromsequence></p>
-          <p>Variable: <select>u,v,w,x,z,y</select></p>
+          <p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p>
+          <p>Variable: <select>u v w x z y</select></p>
         </select>
         `,
             requestedVariant: {
@@ -517,12 +517,12 @@ describe('Specifying subvariants tests', function () {
         </p>
         <p>Selected number: 
           <select>
-            <selectfromsequence>1000, 2000</selectfromsequence>
-            <selectfromsequence>-1000,-400</selectfromsequence>
+            <selectfromsequence from="1000" to="2000" />
+            <selectfromsequence from="-1000" to="-400" />
           </select>
         </p>
-        <p>Chosen letter: <selectfromsequence type="letters">c,g</selectfromsequence></p>
-        <p>Variable: <select>u,v,w,x,z,y</select></p>
+        <p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p>
+        <p>Variable: <select>u v w x z y</select></p>
       </select>
       `,
           requestedVariant: {
@@ -580,9 +580,9 @@ describe('Specifying subvariants tests', function () {
                 <text>${ind6}</text>
                 <variantControl nvariants="100"/>
             
-                <select assignnames="(problem1), (problem2), (problem3)" numbertoselect="3" withReplacement>
+                <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
                   <option><problem><title>A word problem</title>
-                    <variantControl nvariants="5" variants="a,b,c,d,e" />
+                    <variantControl nvariants="5" variants="a b c d e" />
                     <p>Word:
                       <select>
                         <option selectForVariants="a"><text>angry</text></option>
@@ -685,25 +685,25 @@ describe('Specifying subvariants tests', function () {
     
                   <variantControl nvariants="100"/>
               
-                  <select assignnames="problem1, problem2, problem3" numbertoselect="3" withReplacement>
-                    <problem><title>A word problem</title>
+                  <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+                    <option><problem><title>A word problem</title>
                       <variantControl nvariants="5" />
                       <p>Word:
                         <select>
-                          <text>angry</text>
-                          <text>bad</text>
-                          <text>churlish</text>
-                          <text>drab</text>
-                          <text>excoriated</text>
+                          <option><text>angry</text></option>
+                          <option><text>bad</text></option>
+                          <option><text>churlish</text></option>
+                          <option><text>drab</text></option>
+                          <option><text>excoriated</text></option>
                         </select>
                       </p>
-                    </problem>
-                    <problem><title>A number problem</title>
+                    </problem></option>
+                    <option><problem><title>A number problem</title>
                       <variantControl nvariants="3" />
                       <p>Number: 
-                        <selectfromsequence>10</selectfromsequence>
+                        <selectfromsequence length="10" />
                       </p>
-                    </problem>
+                    </problem></option>
                   </select>
                   `,
                     requestedVariant: {

@@ -4,8 +4,7 @@ import Integer from './Integer';
 import TextComponent from './Text';
 import MathComponent from './Math';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
-import ComponentWithSelectableType from './abstract/ComponentWithSelectableType';
-import ComponentListWithSelectableType from './abstract/ComponentListWithSelectableType';
+import { ComponentWithSelectableType, ComponentListWithSelectableType, ComponentListOfListsWithSelectableType } from './abstract/ComponentWithSelectableType';
 import ComponentWithAnyChildren from './abstract/ComponentWithAnyChildren';
 import PointListComponent from './abstract/PointListComponent';
 import VectorListComponent from './abstract/VectorListComponent';
@@ -19,9 +18,9 @@ import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
 import MathList from './MathList';
-import When from './When';
 import TextOrInline from './abstract/TextOrInline';
 import Option from './Option';
+import Template from './Template';
 import Variants from './Variants';
 
 export class Hide extends BooleanComponent {
@@ -229,6 +228,11 @@ export class Exclude extends ComponentListWithSelectableType {
 
 export class ExcludeCombination extends ComponentListWithSelectableType {
   static componentType = "excludecombination";
+}
+
+export class ExcludeCombinations extends ComponentListOfListsWithSelectableType {
+  static componentType = "excludecombinations";
+  static componentTypeSingular = "excludecombination";
 }
 
 export class Step extends MathComponent {
@@ -705,7 +709,7 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Uri extends TextComponent {
+export class Uri extends TextFromSingleStringChild {
   static componentType = "uri";
   static rendererType = "text";
 }
@@ -816,11 +820,6 @@ export class TextType extends TextComponent {
 
 export class BranchId extends TextComponent {
   static componentType = "branchid";
-  static rendererType = "text";
-}
-
-export class ContentId extends TextComponent {
-  static componentType = "contentid";
   static rendererType = "text";
 }
 
@@ -967,8 +966,8 @@ export class Else extends Option {
   static componentType = "else";
 }
 
-export class Result extends Option {
-  static componentType = "result";
+export class externalContent extends Template {
+  static componentType = "externalContent";
 }
 
 export class ComponentIndex extends NumberComponent {
@@ -997,5 +996,10 @@ export class InDegrees extends BooleanComponent {
 }
 
 export class BetweenLines extends LineListComponent {
-  static componentType = "betweenLines"
+  static componentType = "betweenLines";
+}
+
+export class Numbered extends BooleanComponent {
+  static componentType = "numbered";
+  static rendererType = "boolean";
 }

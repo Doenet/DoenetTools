@@ -26,6 +26,9 @@ export default class Answer extends InlineComponent {
 
   static acceptType = true;
 
+  static variableForPlainMacro = "submittedResponses";
+
+
   static get stateVariablesShadowedForReference() { return ["showCorrectness"] };
   
 

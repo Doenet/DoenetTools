@@ -1,5 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -163,7 +164,7 @@ export default class Cell extends BaseComponent {
         } else {
           let math;
           try {
-            math = me.fromText(dependencyValues.text);
+            math = me.fromAst(textToAst.convert(dependencyValues.text));
           } catch (e) {
             math = me.fromAst('\uff3f')
           }

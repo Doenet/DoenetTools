@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import DriveCard from './DoenetDriveCard';
-import { useTransition, animated, interpolate } from "react-spring";
+import { useTransition, animated,useSpring, useChain ,config} from "react-spring";
 import "./drivecard.css";
 // import useMeasure  from "../Tools/useMeasure";
 import Measure from 'react-measure'
@@ -102,7 +102,16 @@ const DriveCardWrapper = (props) => {
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: (width / columns), height: 250};
   });
+  // const springRef = useRef()
+  // const { size, opacity, ...rest } = useSpring({
+  //   ref: springRef,
+  //   // config: config.stiff,
+  //   from: { size: '100%', background: 'hotpink' },
+  //   to: { size:  '100%' , background:'white' }
+  // })
+  // const transRef = useRef()
    const transitions = useTransition(driveCardItems, (item) => item.driveId, {
+    // ref: transRef,
       from: ({ 
         xy, width, height }) => ({
         xy,
@@ -115,7 +124,7 @@ const DriveCardWrapper = (props) => {
             }),
 
       enter: ({
-         xy, width, height }) => ({
+        xy, width, height }) => ({
         xy,
         width,
         height,
@@ -125,12 +134,14 @@ const DriveCardWrapper = (props) => {
         zIndex:0,
       }),
       update: ({
-         xy, width, height }) => ({ xy, width, height, scale: 1,opacity: 1,position:"absolute",  shadow : 0,zIndex:0,
+         xy, width, height }) => ({ xy, width, height, scale: 1,opacity: 1, shadow : 0,zIndex:0,
         }),
       leave: { height: 0, opacity: 0, scale: 0 },
       config: { mass: 5, tension: 5000, friction: 1000 },
       trail: 25
     });
+    // useChain([springRef, transRef], [0, 2])
+
     // console.log(">>>> transitions", transitions);
 
  
@@ -259,8 +270,9 @@ const DriveCardWrapper = (props) => {
       {({ measureRef }) => (
       <div ref={measureRef}
         style={{
-          width: "100%",
-          height:Math.max(...heights)+50,
+          // height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`,
+          // height:Math.max(...heights)+50,
+           width: '100%'
         }}
         className={`list`}
       >
@@ -272,19 +284,13 @@ const DriveCardWrapper = (props) => {
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
                 transform: props.xy.interpolate((x, y) => {
-                  return `translate(${x}px,${y}px) 
-                  scale(${
-                    selectedCard ? 1 : props.scale.value
-                  })`
-                  ;
+                  return `translate(${0}px,${0}px)`;
                 }),
-                transitionDuration: '0.2s' ,
-                transitionDelay:'0s',
-                ...props,
+                // ...props,
+                width:250,
                 height: 250,
                 opacity: 1,
-                // zIndex:selectedCard ? 2 : 0,
-                // boxShadow: props.shadow.interpolate(s => `rgba(0,0,0,0.15) 0px ${selectedCard ? 15 : 0}px ${(selectedCard ? 15: 0)}px 0px` ),
+                padding:15,
               }}
             >
               <div
@@ -312,6 +318,7 @@ const DriveCardWrapper = (props) => {
                     image={item.image}
                     color={item.color}
                     label={item.label}
+                    selectedCard={selectedCard}
                   />
               </div>
             </animated.div>

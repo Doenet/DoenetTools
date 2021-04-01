@@ -21,8 +21,8 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map>
-      <template><math>sin(2<copy tname="_source"/>) + <copy tname="_sourceindex"/></math></template>
-      <sources>
+      <template><math>sin(2$x) + $i</math></template>
+      <sources alias="x" indexAlias="i">
         <math>x</math>
         <math>y</math>
       </sources>
@@ -63,8 +63,8 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map >
-      <template><text>You are a <copy tname="_source"/>!</text> </template>
-      <sources><text>squirrel</text><text>bat</text></sources>
+      <template><text>You are a $animal!</text> </template>
+      <sources alias="animal"><text>squirrel</text><text>bat</text></sources>
     </map>
     `}, "*");
     });
@@ -96,8 +96,8 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-      <template><math simplify><copy tname="_source"/>^2</math> </template>
-      <sources><sequence from="1" to="5"/></sources>
+      <template><math simplify>$n^2</math> </template>
+      <sources alias="n"><sequence from="1" to="5"/></sources>
     </map>
     `}, "*");
     });
@@ -145,10 +145,10 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <aslist>
     <map behavior="parallel">
-      <template><math>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />, <copy tname="_source" fromSources="3" />)</math><math>(<copy tname="_sourceindex"/>, <copy tname="_sourceindex" fromSources="2" />, <copy tname="_sourceindex" fromSources="3" />)</math></template>
-      <sources><sequence from="1" to="5"/></sources>
-      <sources><sequence from="21" to="23"/></sources>
-      <sources><sequence from="-5" to="-21" step="-3"/></sources>
+      <template><math>($l, $m, $n)</math><math>($i, $j, $k)</math></template>
+      <sources alias="l" indexalias="i"><sequence from="1" to="5"/></sources>
+      <sources alias="m" indexalias="j"><sequence from="21" to="23"/></sources>
+      <sources alias="n" indexalias="k"><sequence from="-5" to="-21" step="-3"/></sources>
     </map>
     </aslist>
     `}, "*");
@@ -201,10 +201,10 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map behavior="combination">
-      <template><math>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />, <copy tname="_source" fromSources="3" />)</math><math>(<copy tname="_sourceindex"/>, <copy tname="_sourceindex" fromSources="2" />, <copy tname="_sourceindex" fromSources="3" />)</math></template>
-      <sources><sequence from="1" to="3"/></sources>
-      <sources><sequence from="21" to="23" step="2"/></sources>
-      <sources><sequence from="-5" to="-8" step="-3"/></sources>
+      <template><math>($l, $m, $n)</math><math>($i, $j, $k)</math></template>
+      <sources alias="l" indexalias="i"><sequence from="1" to="3"/></sources>
+      <sources alias="m" indexalias="j"><sequence from="21" to="23" step="2"/></sources>
+      <sources alias="n" indexalias="k"><sequence from="-5" to="-8" step="-3"/></sources>
     </map>
     `}, "*");
     });
@@ -329,10 +329,10 @@ describe('Map Tag Tests', function () {
     <aslist>
     <map>
       <template><map>
-          <template><math simplify><copy tname="_source" />+<copy tname="_source" fromMapAncestor="2" /></math><math simplify><copy tname="_sourceindex"/>+2<copy tname="_sourceindex" fromMapAncestor="2" /></math></template>
-          <sources><sequence from="1" to="2"/></sources>
+          <template><math simplify>$m+$n</math><math simplify>$i+2$j</math></template>
+          <sources alias="m" indexalias="i"><sequence from="1" to="2"/></sources>
         </map></template>
-      <sources><number>-10</number><number>5</number></sources>
+      <sources alias="n" indexalias="j"><number>-10</number><number>5</number></sources>
     </map>
     </aslist>
     `}, "*");
@@ -399,13 +399,13 @@ describe('Map Tag Tests', function () {
     <template><graph>
         <map>
           <template><map>
-              <template><point>(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="3"/>, <copy tname="_source" fromMapAncestor="2"/>)</point><point>(<copy tname="_sourceindex"/>+2*<copy tname="_sourceindex" fromMapAncestor="3"/>, <copy tname="_sourceindex" fromMapAncestor="2"/>)</point></template>
-              <sources><sequence from="1" to="2"/></sources>
+              <template><point>($l+$n, $m)</point><point>($i+2*$k, $j)</point></template>
+              <sources alias="l" indexalias="i"><sequence from="1" to="2"/></sources>
             </map></template>
-          <sources><sequence from="-5" to="5" step="10"/></sources>
+          <sources alias="m" indexalias="j"><sequence from="-5" to="5" step="10"/></sources>
         </map>
       </graph></template>
-    <sources><sequence from="-10" to="5" step="15"/></sources>
+    <sources alias="n" indexalias="k"><sequence from="-10" to="5" step="15"/></sources>
     </map>
     <copy name="mapcopy" tname="_map1" />
     `}, "*");
@@ -502,23 +502,23 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <map assignnames="u,v">
+    <map assignnames="u v">
     <template newNamespace>
       <graph>
-        <map assignnames="u,v">
+        <map assignnames="u v">
           <template newNamespace>
-            <map assignnames="u,v">
+            <map assignnames="u v">
               <template newNamespace>
-                <point name="A">(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="3"/>, <copy tname="_source" fromMapAncestor="2"/>)</point>
+                <point name="A">($l+$n, $m)</point>
               </template>
-              <sources><sequence from="1" to="2"/></sources>
+              <sources alias="l"><sequence from="1" to="2"/></sources>
             </map>
           </template>
-          <sources><sequence from="-5" to="5" step="10"/></sources>
+          <sources alias="m"><sequence from="-5" to="5" step="10"/></sources>
         </map>
       </graph>
     </template>
-    <sources><sequence from="-10" to="5" step="15"/></sources>
+    <sources alias="n"><sequence from="-10" to="5" step="15"/></sources>
     </map>
     <copy name="c1" prop="coords" tname="/u/u/u/A" />
     <copy name="c2" prop="coords" tname="/u/u/v/A" />
@@ -611,12 +611,12 @@ describe('Map Tag Tests', function () {
     <map>
     <template><graph>
       <map behavior="combination">
-        <template><point>(<copy tname="_source"/>+<copy tname="_source" fromMapAncestor="2" />, <copy tname="_source" fromSources="2" />)</point></template>
-        <sources><sequence from="1" to="2"/></sources>
-        <sources><sequence from="-5" to="5" step="10"/></sources>
+        <template><point>($l+$n, $m)</point></template>
+        <sources alias="l"><sequence from="1" to="2"/></sources>
+        <sources alias="m"><sequence from="-5" to="5" step="10"/></sources>
       </map>
     </graph></template>
-    <sources><sequence from="-10" to="5" step="15"/></sources>
+    <sources alias="n"><sequence from="-10" to="5" step="15"/></sources>
     </map>
     `}, "*");
     });
@@ -658,10 +658,10 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map>
     <template newNamespace><math simplify>
-        <copy tname="_source" name="b"/> + <copy tname="_sourceindex" name="i"/> + <copy tname="../a" /> 
+        <copy tname="n" name="b"/> + <copy tname="j" name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
-    <sources><sequence from="1" to="2"/></sources>
+    <sources alias="n" indexalias="j"><sequence from="1" to="2"/></sources>
     </map>
     <math name="a">x</math>
     <copy name="mapcopy" tname="_map1" />
@@ -718,10 +718,10 @@ describe('Map Tag Tests', function () {
     <number name="length" hide>1</number>
     <map>
     <template newnamespace><math simplify>
-        <copy tname="_source" name="b"/> + <copy tname="_sourceindex" name="i"/> + <copy tname="../a" /> 
+        <copy tname="n" name="b"/> + <copy tname="j" name="i"/> + <copy tname="../a" /> 
         + <math name="q">z</math> + <copy tname="q" /> + <copy tname="b" /> +<copy tname="i" />
       </math><math>x</math></template>
-    <sources><sequence from="1" length="$length"/></sources>
+    <sources alias="n" indexalias="j"><sequence from="1" length="$length"/></sources>
     </map>
     <math name="a">x</math>
     <copy name="mapcopy" tname="_map1" />
@@ -871,13 +871,13 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map>
-    <template><math simplify="full">sin(<copy tname="_sourceindex"/><copy tname="_source"/>)</math></template>
-    <sources><math>x</math><math>y</math></sources>
+    <template><math simplify="full">sin(<copy tname="i"/><copy tname="x"/>)</math></template>
+    <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
     <map>
     <copy tname="_template1" />
-    <sources><math>q</math><math>p</math></sources>
+    <sources alias="x" indexalias="i"><math>q</math><math>p</math></sources>
     </map>
 
     <copy name="mapcopy" tname="_map2" />
@@ -922,8 +922,8 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <map newNamespace>
-    <template><math simplify="full">sin(<copy tname="_sourceindex"/><copy tname="_source"/>)</math></template>
-    <sources><math>x</math><math>y</math></sources>
+    <template><math simplify="full">sin($i$x)</math></template>
+    <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
     <copy name="mapcopy" tname="_map1" />
@@ -964,10 +964,10 @@ describe('Map Tag Tests', function () {
     <copy tname="/hi/q/_point1" prop="coords" />
     
     <grapH Name="hi" newNamespace >
-    <map assignnames="q, c,s">
-      <template newnamespace><point>(<copy tname="_source"/>, <copy tname="_source" fromSources="2" />)</point></template>
-      <sources><sequence from="1" to="2"/></sources>
-      <sources><sequence from="-3" to="-2"/></sources>
+    <map assignnames="q  c s">
+      <template newnamespace><point>($m, $n)</point></template>
+      <sources alias="m"><sequence from="1" to="2"/></sources>
+      <sources alias="n"><sequence from="-3" to="-2"/></sources>
     </map>
     </graph>
     `}, "*");
@@ -1015,18 +1015,18 @@ describe('Map Tag Tests', function () {
     })
   });
 
-  it('map copying _source of other map', () => {
+  it('map copying source of other map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <map assignnames="u,v,w">
-      <template newNamespace><math>(<copy tname="_source"/>, <copy tname="../e/_copy1" />)</math></template>
-      <sources><sequence from="1" to="3"/></sources>
+    <map assignnames="u v w">
+      <template newNamespace><math>(<copy tname="n"/>, <copy tname="../e/_copy1" />)</math></template>
+      <sources alias="n"><sequence from="1" to="3"/></sources>
     </map>
-    <map assignnames="c,d,e">
-      <template newNamespace><math>sin(<copy tname="_source"/>)</math></template>
-      <sources><sequence from="4" to="6"/></sources>
+    <map assignnames="c d e">
+      <template newNamespace><math>sin(<copy tname="n"/>)</math></template>
+      <sources alias="n"><sequence from="4" to="6"/></sources>
     </map>
     `}, "*");
     });
@@ -1061,10 +1061,10 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map>
     <template><map>
-       <template><math>(<copy tname="_source"/>, <copy tname="_source" fromMapAncestor="2"/>)</math></template>
-       <sources><sequence from="1" to="$n" /></sources>
-     </map><copy tname="_source" hide name="n" /></template>
-    <sources><sequence from="1" to="3"/></sources>
+       <template><math>($a, $b)</math></template>
+       <sources alias="a"><sequence from="1" to="$b" /></sources>
+     </map></template>
+    <sources alias="b"><sequence from="1" to="3"/></sources>
     </map>
     `}, "*");
     });
@@ -1106,8 +1106,8 @@ describe('Map Tag Tests', function () {
 
     <p>
     <map>
-    <template><math simplify><copy tname="_source"/>^2</math><text>,</text></template>
-    <sources>
+    <template><math simplify>$n^2</math><text>,</text></template>
+    <sources alias="n">
     <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
     </sources>
     </map>
@@ -1438,15 +1438,15 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <map assignnames="a,b,c">
+      <map assignnames="a b c">
         <template newNamespace><point>
-            (<copy tname="../q" /><copy tname="_source"/>^2,
+            (<copy tname="../q" />$n^2,
             <copy prop="x" tname="_point2" />)
           </point><point>
-            (<copy tname="../r" /><copy tname="_source"/>,
+            (<copy tname="../r" />$n,
             <copy prop="x" tname="_point1" />)
           </point></template>
-      <sources>
+      <sources alias='n'>
         <sequence from="2" to="4" />
       </sources>
       </map>
@@ -1654,21 +1654,19 @@ describe('Map Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <map assignnames="a,b,c">
+      <map assignnames="a b c">
         <template newNamespace><point>
-            (-<copy tname="_source"/>,
-            <copy tname="_source"/><copy prop="x" tname="../q/_point1" />)
+            (-$n, $n<copy prop="x" tname="../q/_point1" />)
           </point></template>
-      <sources>
+      <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
       </sources>
       </map>
-      <map assignnames="q,r,s">
+      <map assignnames="q r s">
         <template newNamespace><point>
-            (<copy tname="_source"/>,
-            <copy tname="_source"/><copy prop="x" tname="../a/_point1" />)
+            ($n, $n<copy prop="x" tname="../a/_point1" />)
           </point></template>
-      <sources>
+      <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
       </sources>
       </map>
@@ -1947,8 +1945,8 @@ describe('Map Tag Tests', function () {
     
     <math>
       <map>
-        <template><point>(<copy tname="_source"/>, sin(<copy tname="_source"/>))</point></template>
-        <sources>
+        <template><point>($n, sin($n))</point></template>
+        <sources alias="n">
           <sequence from="2" length="$number" step="$step" />
         </sources>
       </map>
@@ -2041,18 +2039,18 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <p>Number of points: <mathinput name="number"/></p>
     
-    <map name="m1" assignNames="p1,p2,p3">
-      <template newNamespace><point name="pt">(<copy tname="_source"/>, 2<copy tname="_source"/>)</point></template>
-      <sources>
+    <map name="m1" assignNames="p1 p2 p3">
+      <template newNamespace><point name="pt">($n, 2$n)</point></template>
+      <sources alias="n">
         <sequence length="$number" />
       </sources>
     </map>
 
-    <map name="m2" assignNames="q1,q2,q3">
+    <map name="m2" assignNames="q1 q2 q3">
       <template newNamespace>
-        <point name="pt">(<copy tname="_source" prop="x" />^2, <copy tname="_source" prop="y" />^2)</point>
+        <point name="pt">(<copy tname="p" prop="x" />^2, <copy tname="p" prop="y" />^2)</point>
       </template>
-      <sources>
+      <sources alias="p">
         <copy tname="m1" />
       </sources>
     </map>
@@ -2318,6 +2316,143 @@ describe('Map Tag Tests', function () {
 
 
   });
+
+  it('can override fixed of source index', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <map assignNames="a b">
+      <template newNamespace>
+      <copy tname="i" assignNames="ind" />
+      <mathinput bindValueTo="$ind" />
+      </template>
+      <sources indexAlias="i"><text>red</text><text>yellow</text></sources>
+    </map>
+    <map assignNames="c d">
+      <template newNamespace>
+      <copy tname="i" assignNames="ind" fixed="false"  />
+      <mathinput bindValueTo="$ind" />
+      </template>
+      <sources indexAlias="i"><text>red</text><text>yellow</text></sources>
+    </map>
+
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '1');
+    cy.get(cesc('#/d/ind')).should('have.text', '2');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}3{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}4{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}5{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}6{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '5');
+    cy.get(cesc('#/d/ind')).should('have.text', '6');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', 'NaN');
+    cy.get(cesc('#/d/ind')).should('have.text', 'NaN');
+
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}7{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}8{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}10{enter}', { force: true })
+
+    cy.get(cesc('#/a/ind')).should('have.text', '1');
+    cy.get(cesc('#/b/ind')).should('have.text', '2');
+    cy.get(cesc('#/c/ind')).should('have.text', '9');
+    cy.get(cesc('#/d/ind')).should('have.text', '10');
+
+
+  });
+
+  it('maps hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first map" />
+    <booleaninput name='h2' prefill="true" label="Hide second map" />
+    <p>Length of map 1: <mathinput name="n1" prefill="4" /></p>
+    <p>Length of map 2: <mathinput name="n2" prefill="4" /></p>
+
+    <p name="m1">map 1: <map hide="$h1">
+    <template>hi$a </template>
+    <sources alias="a"><sequence length="$n1" /></sources>
+    </map></p>
+    <p name="m2">map 2: <map hide="$h2">
+    <template>hi$a </template>
+    <sources alias="a"><sequence length="$n2" /></sources>
+    </map></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}6{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}8{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 ')
+    cy.get('#\\/m2').should('have.text', 'map 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 ')
+
+    cy.get('#\\/n1 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/n2 textarea').type("{end}{backspace}4{enter}", { force: true })
+
+    cy.get('#\\/m1').should('have.text', 'map 1: ')
+    cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 ')
+
+
+  });
+
 
 
 });

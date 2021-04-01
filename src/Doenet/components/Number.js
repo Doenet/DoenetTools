@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
@@ -89,7 +90,7 @@ export default class NumberComponent extends InlineComponent {
           let number = Number(dependencyValues.stringChild[0].stateValues.value);
           if (Number.isNaN(number)) {
             try {
-              number = me.fromText(dependencyValues.stringChild[0].stateValues.value).evaluate_to_constant();
+              number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
               if (number === null) {
                 number = NaN;
               }
@@ -110,7 +111,7 @@ export default class NumberComponent extends InlineComponent {
         let number = Number(value);
         if (Number.isNaN(number)) {
           try {
-            number = me.fromText(value).evaluate_to_constant();
+            number = me.fromAst(textToAst.convert(value)).evaluate_to_constant();
             if (number === null) {
               number = NaN;
             }
@@ -129,6 +130,9 @@ export default class NumberComponent extends InlineComponent {
         let desiredValue = desiredStateVariableValues.value;
         if (desiredValue instanceof me.class) {
           desiredValue = desiredValue.evaluate_to_constant();
+          if (!Number.isFinite(desiredValue)) {
+            desiredValue = NaN;
+          }
         } else {
           desiredValue = Number(desiredValue);
         }
@@ -287,15 +291,15 @@ export default class NumberComponent extends InlineComponent {
 
 
 
-  returnSerializeInstructions() {
-    let stringMatches = this.childLogic.returnMatches("atMostOneString");
-    let skipChildren = stringMatches && stringMatches.length === 1;
-    if (skipChildren) {
-      let stateVariables = ["value"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   let stringMatches = this.childLogic.returnMatches("atMostOneString");
+  //   let skipChildren = stringMatches && stringMatches.length === 1;
+  //   if (skipChildren) {
+  //     let stateVariables = ["value"];
+  //     return { skipChildren, stateVariables };
+  //   }
+  //   return {};
+  // }
 
 
   adapters = ["math", "text"];

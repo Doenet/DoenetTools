@@ -46,18 +46,21 @@ export default class Map extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSources = {
-      additionalStateVariablesDefined: ["sourcesNames"],
+      additionalStateVariablesDefined: ["sourcesNames", "sourceAliases", "sourceIndexAliases"],
       returnDependencies: () => ({
         sourcesChildren: {
           dependencyType: "child",
           childLogicName: "atLeastOneSources",
+          variableNames: ["alias", "indexAlias"]
         },
       }),
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
             nSources: dependencyValues.sourcesChildren.length,
-            sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName)
+            sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName),
+            sourceAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.alias),
+            sourceIndexAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.indexAlias),
           }
         }
       },
@@ -228,32 +231,6 @@ export default class Map extends CompositeComponent {
 
     }
 
-    // let nAssignNames = 0;
-    // if (component.doenetAttributes.assignNames) {
-    //   nAssignNames = component.doenetAttributes.assignNames.length;
-    // }
-    // let nReplacements = replacements.length;
-
-    // if (nAssignNames > nReplacements) {
-    //   let empties = this.createEmptiesFromTemplate({
-    //     nEmptiesToAdd: nAssignNames - nReplacements,
-    //     firstInd: nReplacements,
-    //     assignNames: component.doenetAttributes.assignNames,
-    //     parentName: component.componentName,
-    //     parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-    //     componentInfoObjects,
-    //     additionalArgs: {
-    //       template: component.stateValues.template
-    //     }
-    //   });
-    //   replacements.push(...empties);
-
-    //   workspace.nEmptiesAdded = empties.length;
-
-    // } else {
-    //   workspace.nEmptiesAdded = 0;
-    // }
-
 
     // console.log(`replacements of map`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
@@ -271,101 +248,16 @@ export default class Map extends CompositeComponent {
       parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
       componentInfoObjects,
       indOffset: iter,
-      addEmpties: false,
     });
 
     replacements = processResult.serializedComponents;
 
-    replacements[0].doenetAttributes.pushSharedParameters = [
-      {
-        parameterName: "sourcesInfo",
-        value: component.stateValues.sourcesNames.map(x => ({
-          name: x,
-          childNumber: iter
-        })),
-      },
-      {
-        parameterName: "sourcesChildIndices",
-        value: Array(component.stateValues.nSources).fill(iter + 1),
-      }
-    ];
+    addSharedParameters(replacements[0], component, Array(component.stateValues.nSources).fill(iter));
 
     return replacements;
 
   }
 
-  // static createEmptiesFromTemplate({ nEmptiesToAdd, firstInd,
-  //   assignNames, parentName, parentCreatesNewNamespace,
-  //   componentInfoObjects, additionalArgs
-  // }) {
-  //   let setToEmptyAndDeleteUnreachable = function (comps) {
-  //     for (let i = comps.length - 1; i >= 0; i--) {
-  //       let comp = comps[i];
-  //       // Since these empties are just for creating names,
-  //       // delete component if it has an unreachable name
-  //       // unless it assignNames.
-  //       let deleteComp = true;
-  //       if (comp.doenetAttributes) {
-  //         if (comp.doenetAttributes.assignNames) {
-  //           deleteComp = false;
-  //         } else {
-  //           let cName = comp.componentName;
-  //           if (cName) {
-  //             let lastSlash = cName.lastIndexOf("/");
-  //             cName = cName.slice(lastSlash + 1);
-  //             if (cName.slice(0, 2) !== "__") {
-  //               deleteComp = false;
-  //             }
-  //           }
-  //         }
-  //       }
-  //       if (deleteComp) {
-  //         comps.splice(i, 1);
-  //       } else {
-  //         comp.componentType = "empty";
-  //         if (comp.children) {
-  //           setToEmptyAndDeleteUnreachable(comp.children);
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   let empties = [];
-
-  //   for (let i = 0; i < nEmptiesToAdd; i++) {
-  //     empties.push(deepClone(additionalArgs.template));
-  //   }
-
-  //   let processResult = processAssignNames({
-  //     assignNames,
-  //     serializedComponents: empties,
-  //     parentName,
-  //     parentCreatesNewNamespace,
-  //     componentInfoObjects,
-  //     indOffset: firstInd,
-  //     addEmpties: false,
-  //   });
-
-  //   empties = processResult.serializedComponents;
-
-  //   for (let i = 0; i < nEmptiesToAdd; i++) {
-  //     empties[i].componentType = "empty";
-  //     if (empties[i].children) {
-  //       setToEmptyAndDeleteUnreachable(empties[i].children);
-  //     }
-  //   }
-
-  //   return empties;
-  // }
-
-  // static returnEmptiesFunctionAndAdditionalArgs(component) {
-  //   return {
-  //     createEmptiesFunction: this.createEmptiesFromTemplate,
-  //     additionalArgs: {
-  //       template: component.stateValues.template
-  //     }
-  //   }
-  // }
 
   static recurseThroughCombinations({ component, sourcesNumber,
     childnumberArray = [], iterateNumber, componentInfoObjects }) {
@@ -377,31 +269,20 @@ export default class Map extends CompositeComponent {
       if (sourcesNumber >= component.stateValues.nSources - 1) {
         iterateNumber++;
 
+        let serializedComponents = [deepClone(component.stateValues.template)];
+
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,
-          serializedComponents: [deepClone(component.stateValues.template)],
+          serializedComponents,
           parentName: component.componentName,
           parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
           componentInfoObjects,
           indOffset: iterateNumber,
-          addEmpties: false,
         });
 
         let thisRepl = processResult.serializedComponents[0];
 
-        thisRepl.doenetAttributes.pushSharedParameters = [
-          {
-            parameterName: "sourcesInfo",
-            value: component.stateValues.sourcesNames.map((x, i) => ({
-              name: x,
-              childNumber: newChildnumberArray[i]
-            })),
-          },
-          {
-            parameterName: "sourcesChildIndices",
-            value: newChildnumberArray.map(i => i + 1),
-          }
-        ];
+        addSharedParameters(thisRepl, component, newChildnumberArray);
 
         replacements.push(thisRepl)
 
@@ -620,7 +501,6 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSourcesChild) {
-        // since use number of replacements directly, it accounts for empties
         newReplacementsToWithhold = component.replacements.length - currentMinNIterates;
 
         let replacementInstruction = {
@@ -647,11 +527,7 @@ export default class Map extends CompositeComponent {
       let numReplacementsToAdd = currentMinNIterates - prevMinNIterates;
 
       if (currentReplacementsToWithhold > 0) {
-        let nonEmptiesWithheld = currentReplacementsToWithhold;
-        // if (workspace.nEmptiesAdded) {
-        //   nonEmptiesWithheld -= workspace.nEmptiesAdded;
-        // }
-        if (nonEmptiesWithheld >= numReplacementsToAdd) {
+        if (currentReplacementsToWithhold >= numReplacementsToAdd) {
           newReplacementsToWithhold = currentReplacementsToWithhold -
             numReplacementsToAdd;
           numReplacementsToAdd = 0;
@@ -663,8 +539,8 @@ export default class Map extends CompositeComponent {
           replacementChanges.push(replacementInstruction);
 
         } else {
-          numReplacementsToAdd -= nonEmptiesWithheld;
-          prevMinNIterates += nonEmptiesWithheld;
+          numReplacementsToAdd -= currentReplacementsToWithhold;
+          prevMinNIterates += currentReplacementsToWithhold;
           newReplacementsToWithhold = 0;
           // don't need to send changedReplacementsToWithold instructions
           // since will send add instructions,
@@ -686,39 +562,16 @@ export default class Map extends CompositeComponent {
         if (component.doenetAttributes.assignNames) {
           nAssignNames = component.doenetAttributes.assignNames.length;
         }
-        // let nReplacements = replacements.length + prevMinNIterates;
-
-        // let newNEmptiesAdded = 0;
-
-        // if (nAssignNames > nReplacements) {
-        //   let empties = this.createEmptiesFromTemplate({
-        //     nEmptiesToAdd: nAssignNames - nReplacements,
-        //     firstInd: nReplacements,
-        //     assignNames: component.doenetAttributes.assignNames,
-        //     parentName: component.componentName,
-        //     parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
-        //     componentInfoObjects,
-        //     additionalArgs: {
-        //       template: component.stateValues.template
-        //     }
-        //   });
-        //   replacements.push(...empties);
-
-        //   newNEmptiesAdded = empties.length;
-
-        // }
 
         let replacementInstruction = {
           changeType: "add",
           changeTopLevelReplacements: true,
           firstReplacementInd: prevMinNIterates,
-          // numberReplacementsToReplace: workspace.nEmptiesAdded,
           serializedReplacements: replacements,
           replacementsToWithhold: 0,
           assignNamesOffset: prevMinNIterates,
         }
         replacementChanges.push(replacementInstruction);
-        // workspace.nEmptiesAdded = newNEmptiesAdded;
 
       }
     }
@@ -774,3 +627,37 @@ export default class Map extends CompositeComponent {
   }
 
 }
+function addSharedParameters(thisRepl, component, newChildnumberArray) {
+
+  let addToPars = thisRepl.doenetAttributes.addToSharedParameters = [];
+
+  for (let [ind, alias] of component.stateValues.sourceAliases.entries()) {
+    if (alias) {
+      let sourcesName = component.stateValues.sourcesNames[ind];
+
+      addToPars.push({
+        parameterName: "sourceNameMappings",
+        key: alias,
+        value: {
+          name: sourcesName,
+          childNumber: newChildnumberArray[ind]
+        },
+      })
+    }
+
+  }
+
+  for (let [ind, indexAlias] of component.stateValues.sourceIndexAliases.entries()) {
+
+    if (indexAlias) {
+      addToPars.push({
+        parameterName: "sourceIndexMappings",
+        key: indexAlias,
+        value: newChildnumberArray[ind] + 1,
+      })
+
+    }
+  }
+
+}
+

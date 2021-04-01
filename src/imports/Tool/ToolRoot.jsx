@@ -13,6 +13,8 @@ import Toast from "./Toast";
 import { useMenuPanelController } from "./Panels/MenuPanel";
 import { useSupportPanelController } from "./Panels/SupportPanel";
 import { GlobalStyle } from "../../Tools/DoenetStyle";
+import GradebookAssignmentView from "./Overlays/GradebookAssignmentView";
+import GradebookAttemptView from "./Overlays/GradebookAttemptView";
 // import doenetImage from "../../media/Doenet_Logo_cloud_only.png";
 
 const layerStackAtom = atom({
@@ -32,6 +34,8 @@ export const useToolControlHelper = () => {
     courseId,
     branchId,
     assignmentId,
+    attemptNumber,
+    userId,
   }) => {
     switch (type.toLowerCase()) {
       case "editor":
@@ -41,6 +45,24 @@ export const useToolControlHelper = () => {
             branchId={branchId}
             title={title}
             key={`EditorLayer${old.length + 1}`}
+          />,
+        ]);
+        break;
+      case "gradebookassignmentview":
+        setLayers((old) => [
+          ...old,
+          <GradebookAssignmentView
+            assignmentId = {assignmentId}
+          />,
+        ]);
+        break;
+      case "gradebookattemptview":
+        setLayers((old) => [
+          ...old,
+          <GradebookAttemptView
+            assignmentId = {assignmentId}
+            userId = {userId}
+            attemptNumber = {attemptNumber}
           />,
         ]);
         break;
