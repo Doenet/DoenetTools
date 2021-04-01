@@ -1,6 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DoenetTest from './DoenetTest.jsx';
+import axios from 'axios';
+
+
+// function DoenetTest(props){
+
+//   axios.post('/api/test.php',{}).then((resp) => console.log('>>>resp', resp.data));
+
+//   return <p>test</p>
+// }
 
 ReactDOM.render(
   <DoenetTest />,
