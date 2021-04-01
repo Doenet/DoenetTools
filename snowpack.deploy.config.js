@@ -1,19 +1,22 @@
 module.exports = {
   mount: {
+    'src/Tools/accountSettings': '/accountSettings',
+    'src/Tools/content': '/content',
+    'src/Tools/course': '/course',
+    'src/Tools/dashboard': '/dashboard',
+    'src/Tools/docs': '/docs',
     'src/Tools/exampleTool': '/exampleTool',
+    'src/Tools/gradebook': '/gradebook',
     'src/Tools/library': '/library',
-    // 'src/Tools/temp': '/temp',
-    'src/Core': '/core',
+    'src/Tools/signin': '/signin',
+    'src/Tools/signout': '/signout',
+    'src/Tools/temp': '/temp',
+    'src/Renderers': '/renderers',
+    'src/Media': '/media',
     'src/API': '/api',
     'src/Home': '/',
-    // 'src/Renderers': '/renderers',
-    // 'src/Tools': { url: '/', static: true,  resolve: false},
-    // public: { url: '/', static: true },
-    // src: { url: '/dist' },
-    // "src/Tools": "/",
   },
   plugins: [
-    '@snowpack/plugin-react-refresh',
     // '@snowpack/plugin-dotenv',
     [
       'snowpack-plugin-raw-file-loader',
@@ -25,6 +28,7 @@ module.exports = {
   routes: [
     /* Enable an SPA Fallback in development: */
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
+    
   ],
   optimize: {
     bundle: true,
@@ -33,11 +37,7 @@ module.exports = {
     treeshake: true,
   },
   packageOptions: {
-    polyfillNode: true,
-    // cache:'aaa',
-  },
-  devOptions: {
-    openUrl: '/core',
+    polyfillNode : true
   },
   buildOptions: {
     out: 'dist',
