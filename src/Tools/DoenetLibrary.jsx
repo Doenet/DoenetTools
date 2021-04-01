@@ -686,11 +686,6 @@ function AddCourseDriveButton(props){
       color,
       subType:"Administrator"
     }
-    set(fetchDrivesQuery,(oldDrivesInfo)=>{
-      let newDrivesInfo = {...oldDrivesInfo}
-      newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
-      return newDrivesInfo
-    })
     const payload = { params:{
       driveId:newDriveId,
       label,
@@ -698,8 +693,18 @@ function AddCourseDriveButton(props){
       image,
       color,
     } }
-    return axios.get("/api/addDrive.php", payload)
+    const result = axios.get("/api/addDrive.php", payload)
 
+    result.then((resp) => {
+      if (resp.data.success){
+        set(fetchDrivesQuery,(oldDrivesInfo)=>{
+          let newDrivesInfo = {...oldDrivesInfo}
+          newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
+          return newDrivesInfo
+        })
+      }
+    })
+    return result;
   });
 
   const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
