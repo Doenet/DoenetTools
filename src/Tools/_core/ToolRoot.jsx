@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback,
-} from "recoil";
-import Assignment from "./Overlays/Assignment";
-import Editor from "./Overlays/Editor";
-import Calendar from "./Overlays/Calendar";
-import Image from "./Overlays/Image";
-import Toast from "./Toast";
-import { useMenuPanelController } from "./Panels/MenuPanel";
-import { useSupportPanelController } from "./Panels/SupportPanel";
-import { GlobalStyle } from "../../Tools/DoenetStyle";
+} from 'recoil';
+import Assignment from './Overlays/Assignment';
+import Editor from './Overlays/Editor';
+import Calendar from './Overlays/Calendar';
+import Image from './Overlays/Image';
+import Toast from './Toast';
+import { useMenuPanelController } from './Panels/MenuPanel';
+import { useSupportPanelController } from './Panels/SupportPanel';
+// import { GlobalStyle } from "../../Tools/DoenetStyle";
 // import doenetImage from "../../media/Doenet_Logo_cloud_only.png";
 
 const layerStackAtom = atom({
-  key: "layerStackAtom",
+  key: 'layerStackAtom',
   default: [],
 });
 
@@ -34,7 +34,7 @@ export const useToolControlHelper = () => {
     assignmentId,
   }) => {
     switch (type.toLowerCase()) {
-      case "editor":
+      case 'editor':
         setLayers((old) => [
           ...old,
           <Editor
@@ -44,7 +44,7 @@ export const useToolControlHelper = () => {
           />,
         ]);
         break;
-      case "assignment":
+      case 'assignment':
         setLayers((old) => [
           ...old,
           <Assignment
@@ -55,7 +55,7 @@ export const useToolControlHelper = () => {
           />,
         ]);
         break;
-      case "calendar":
+      case 'calendar':
         setLayers((old) => [
           ...old,
           <Calendar
@@ -65,14 +65,14 @@ export const useToolControlHelper = () => {
           />,
         ]);
         break;
-      case "image":
+      case 'image':
         setLayers((old) => [
           ...old,
           <Image branchId={branchId} key={`ImageLayer${old.length + 1}`} />,
         ]);
         break;
       default:
-        console.error("Unknown Overlay Name");
+        console.error('Unknown Overlay Name');
       // throw new Error("Unknown Overlay Name");
     }
   };
@@ -107,11 +107,11 @@ export default function LayerRoot({ tool }) {
 
   return (
     <>
-      <GlobalStyle />
+      {/* <GlobalStyle /> */}
 
       {tool}
       {overlays.map((layer, idx) =>
-        idx == overlays.length - 1 ? layer : null
+        idx == overlays.length - 1 ? layer : null,
       )}
       <Toast />
     </>

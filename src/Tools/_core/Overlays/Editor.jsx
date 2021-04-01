@@ -5,7 +5,7 @@ import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import  VisibilitySensor from 'react-visibility-sensor';
-import Button from "../../PanelHeaderComponents/Button";
+import Button from "../temp/Button";
 import { nanoid } from 'nanoid';
 
 import { 
@@ -20,7 +20,7 @@ import {
   useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
-import DoenetViewer from '../../../Tools/DoenetViewer';
+// import DoenetViewer from '../../../Tools/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/xml/xml';
@@ -29,7 +29,7 @@ import 'codemirror/theme/xq-light.css';
 // import 'codemirror/theme/neo.css';
 // import 'codemirror/theme/base16-light.css';
 
-import './editor.css';
+import './Editor.css';
 
 const fileByContentId = atomFamily({
   key:"fileByContentId",
@@ -491,21 +491,22 @@ function DoenetViewerPanel(){
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
 
-  return <DoenetViewer
-      key={"doenetviewer" + viewerDoenetML?.updateNumber}
-      doenetML={viewerDoenetML?.doenetML}
-      flags={{
-        showCorrectness: true,
-        readOnly: false,
-        solutionDisplayMode: solutionDisplayMode,
-        showFeedback: true,
-        showHints: true,
-      }}
-      attemptNumber={attemptNumber}
-      assignmentId={assignmentId}
-      ignoreDatabase={false}
-      requestedVariant={requestedVariant}
-      /> 
+  return null
+  // return <DoenetViewer
+  //     key={"doenetviewer" + viewerDoenetML?.updateNumber}
+  //     doenetML={viewerDoenetML?.doenetML}
+  //     flags={{
+  //       showCorrectness: true,
+  //       readOnly: false,
+  //       solutionDisplayMode: solutionDisplayMode,
+  //       showFeedback: true,
+  //       showHints: true,
+  //     }}
+  //     attemptNumber={attemptNumber}
+  //     assignmentId={assignmentId}
+  //     ignoreDatabase={false}
+  //     requestedVariant={requestedVariant}
+  //     /> 
 }
 
 const editorInitAtom = atom({
@@ -544,7 +545,7 @@ export default function Editor({ branchId, title }) {
 
       <mainPanel>
         <div><DoenetViewerUpdateButton  /></div>
-        <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
+        {/* <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div> */}
       </mainPanel>
 
       <supportPanel isInitOpen>

@@ -1,17 +1,16 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 import {
   atomFamily,
   selectorFamily,
   useRecoilCallback,
   useSetRecoilState,
-} from "recoil";
-import { panelProportion } from "./ContentPanel";
-import { useStackId } from "../ToolRoot";
-import { M } from "../../../Doenet/components/MMeMen";
+} from 'recoil';
+import { panelProportion } from './ContentPanel';
+import { useStackId } from '../ToolRoot';
 
 const supportVisible = atomFamily({
-  key: "supportVisibleAtom",
+  key: 'supportVisibleAtom',
   default: false,
 });
 
@@ -23,10 +22,10 @@ export const useSupportPanelController = () => {
       set(panelProportion(stackId), newProportion ?? (visible ? 1 : 0));
       set(
         supportVisible(stackId),
-        (newProportion > 0.95 || newProportion == 0 ? false : true) ?? !visible
+        (newProportion > 0.95 || newProportion == 0 ? false : true) ?? !visible,
       );
     },
-    [stackId]
+    [stackId],
   );
   return supportController;
 };

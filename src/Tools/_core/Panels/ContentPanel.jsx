@@ -1,25 +1,25 @@
-import React, { useRef, useEffect } from "react";
-import styled from "styled-components";
+import React, { useRef, useEffect } from 'react';
+import styled from 'styled-components';
 import {
   useSetRecoilState,
   useRecoilState,
   atomFamily,
   useRecoilValue,
-} from "recoil";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons";
-import { clearDriveAndItemSelections } from "../../Drive";
-import { useSupportPanelController } from "./SupportPanel";
-import { useStackId } from "../ToolRoot";
+} from 'recoil';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
+// import { clearDriveAndItemSelections } from "../../Drive";
+import { useSupportPanelController } from './SupportPanel';
+import { useStackId } from '../ToolRoot';
 
 const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    "mainControls . supportControls" 40px
-    "mainPanel . supportPanel" 1.5fr
-    "mainPanel handle supportPanel" 1fr
-    "mainPanel . supportPanel" 1.5fr
+    'mainControls . supportControls' 40px
+    'mainPanel . supportPanel' 1.5fr
+    'mainPanel handle supportPanel' 1fr
+    'mainPanel . supportPanel' 1.5fr
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow-x: hidden;
   overflow-y: auto;
@@ -42,7 +42,7 @@ const DragHandle = styled.div`
 `;
 
 export const panelProportion = atomFamily({
-  key: "panelProportionAtom",
+  key: 'panelProportionAtom',
   default: 1,
 });
 
@@ -54,7 +54,7 @@ export default function ContentPanel({ main, support }) {
   //   , setSupportController] = useRecoilState(
   //   supportPanelControl(stackId)
   // );
-  const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+  // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   useEffect(() => {
     if (support?.props?.isInitOpen) setProportion(0.5);
@@ -81,8 +81,8 @@ export default function ContentPanel({ main, support }) {
         proportion < 0.95
           ? proportion > 0.1
             ? `${proportion}fr auto ${1 - proportion}fr`
-            : "0.1fr auto 0.9fr"
-          : "0.95fr auto 0.05fr";
+            : '0.1fr auto 0.9fr'
+          : '0.95fr auto 0.05fr';
       wrapperRef.current.proportion =
         proportion > 0.95 ? 1 : proportion < 0.1 ? 0.1 : proportion;
     }
@@ -108,7 +108,7 @@ export default function ContentPanel({ main, support }) {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
-      onClick={clearDriveSelections}
+      // onClick={clearDriveSelections}
       $proportion={proportion}
     >
       {main}

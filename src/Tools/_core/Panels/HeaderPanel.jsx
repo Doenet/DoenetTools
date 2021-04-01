@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { useToolControlHelper, useStackId } from "../ToolRoot";
-import DoenetHeader from "../../../Tools/DoenetHeader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useCookies } from "react-cookie";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { useToolControlHelper, useStackId } from '../ToolRoot';
+// import DoenetHeader from "../../../Tools/DoenetHeader";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+// import { useCookies } from "react-cookie";
+import axios from 'axios';
 
 const Wrapper = styled.div`
   grid-area: headerPanel;
@@ -43,17 +43,17 @@ export default function HeaderPanel({ title, children }) {
   const stackId = useStackId();
   //User profile logic
   const [profile, setProfile] = useState({});
-  const [jwt] = useCookies("JWT_JS");
+  // const [jwt] = useCookies("JWT_JS");
 
   let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT_JS")) {
-    isSignedIn = true;
-  }
+  // if (Object.keys(jwt).includes("JWT_JS")) {
+  //   isSignedIn = true;
+  // }
 
   useEffect(() => {
     //Fires each time you change the tool
     //Need to load profile from database each time
-    const phpUrl = "/api/loadProfile.php";
+    const phpUrl = '/api/loadProfile.php';
     const data = {};
     const payload = {
       params: data,
@@ -61,7 +61,7 @@ export default function HeaderPanel({ title, children }) {
     axios
       .get(phpUrl, payload)
       .then((resp) => {
-        if (resp.data.success === "1") {
+        if (resp.data.success === '1') {
           setProfile(resp.data.profile);
         }
       })
@@ -82,7 +82,8 @@ export default function HeaderPanel({ title, children }) {
         {children}
       </ControlsContainer>
       {!(stackId > 0 ?? false) ? (
-        <DoenetHeader
+        {
+          /* <DoenetHeader
           profile={profile}
           cookies={jwt}
           isSignedIn={isSignedIn}
@@ -92,7 +93,8 @@ export default function HeaderPanel({ title, children }) {
           // headerChangesFromLayout={props.headerChangesFromLayout}
           // guestUser={props.guestUser}
           // onChange={showCollapseMenu}
-        />
+        /> */
+        }
       ) : (
         <ExitOverlayButton onClick={close}>
           <FontAwesomeIcon icon={faTimes} />
