@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import DoenetTest from './DoenetTest.jsx';
 
 ReactDOM.render(
-  <h1>This is Test Tool</h1>,
+  <DoenetTest />,
   document.getElementById('root'),
 );
 
