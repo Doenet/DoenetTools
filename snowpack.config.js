@@ -18,6 +18,7 @@ module.exports = {
     'src/Tools/signout': '/signout',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
+    'src/Tools/_core': '/_core',
     'src/Renderers': '/renderers',
     'src/Media': '/media',
     'src/API': '/api',
