@@ -173,6 +173,7 @@ export const useDeleteItem = () => {
 }
 
 export const useMoveItems = () => {
+  const toast = useToast();
   const moveItems = useRecoilCallback(({snapshot, set})=> 
     async ({targetDriveId, targetFolderId, index})=>{
       const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
@@ -291,22 +292,6 @@ export const useMoveItems = () => {
             }
           }
         }
-        // Add all to destination
-        set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
-        
-        // Clear global selection
-        set(globalSelectedNodesAtom,[])
-        
-        // Remove from sources
-        for (let driveId of Object.keys(editedCache)){
-          for (let parentFolderId of Object.keys(editedCache[driveId])) {
-            set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
-            // Mark modified folders as dirty
-            set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
-          }
-        }
-        // Mark current folder as dirty
-        set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
 
         let selectedItemIds = [];
         for (let item of globalSelectedNodes){
@@ -323,13 +308,35 @@ export const useMoveItems = () => {
           newSortOrder,
         }
 
-        return axios.post("/api/moveItems.php", payload);
-      // }
+        const result = axios.post("/api/moveItems.php", payload);
+        
+        result.then(resp => {
+          if (resp.data.success){
+            // Clear global selection
+            set(globalSelectedNodesAtom,[])
+
+            // Add all to destination
+            set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
+            
+            // Remove from sources
+            for (let driveId of Object.keys(editedCache)){
+              for (let parentFolderId of Object.keys(editedCache[driveId])) {
+                set(folderDictionary({driveId:driveId,folderId:parentFolderId}),editedCache[driveId][parentFolderId])
+                // Mark modified folders as dirty
+                set(folderCacheDirtyAtom({driveId:driveId, folderId:parentFolderId}), true);
+              }
+            }
+            // Mark current folder as dirty
+            set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
+          }
+        });
+
+        return result;
     }
   );
 
   const onMoveItemsError = () => {
-    // TODO: revert changes
+    toast(`Move item(s) error`, 0, null, 3000);
   }
 
   return { moveItems, onMoveItemsError };
