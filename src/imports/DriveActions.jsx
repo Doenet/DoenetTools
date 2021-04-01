@@ -585,6 +585,7 @@ export const useDragShadowCallbacks = () => {
 }
 
 export const useSortFolder = () => {
+  const toast = useToast();
   const sortFolder = useRecoilCallback(({set})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
       const {driveId, folderId} = driveIdInstanceIdFolderId;
@@ -624,13 +625,14 @@ export const useSortFolder = () => {
   )
 
   const onSortFolderError = () => {
-
+    toast(`Sort items error`, 0, null, 3000);
   }
 
   return { sortFolder, invalidateSortCache, onSortFolderError }
 }
 
 export const useRenameItem = () => {
+  const toast = useToast();
   const renameItem = useRecoilCallback(({snapshot, set})=> 
     async ({driveIdFolderId, itemId, itemType, newLabel})=>{
       const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
@@ -640,18 +642,7 @@ export const useRenameItem = () => {
       newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary}
       newFInfo["contentsDictionary"][itemId] = {...fInfo.contentsDictionary[itemId]};
       newFInfo["contentsDictionary"][itemId].label = newLabel;
-      set(folderDictionary(driveIdFolderId), newFInfo);
-      // If a folder, update the label in the child folder
-      if (itemType === "Folder"){
-        set(folderDictionary({driveId: driveIdFolderId.driveId, folderId:itemId}),(old)=>{
-          let newFolderInfo = {...old}
-          newFolderInfo.folderInfo = {...old.folderInfo}
-          newFolderInfo.folderInfo.label = newLabel;
-          return newFolderInfo;
-        })
-      }
-      // TODO: Rename in selection
-      
+
       // Rename in database
       const rndata = {
         instruction: "rename",
@@ -663,18 +654,35 @@ export const useRenameItem = () => {
       const renamepayload = {
         params: rndata
       };
-      return await axios.get("/api/updateItem.php", renamepayload);
+      const result = axios.get("/api/updateItem.php", renamepayload);
+
+      result.then(resp => {
+        if (resp.data.success){
+          set(folderDictionary(driveIdFolderId), newFInfo);
+          // If a folder, update the label in the child folder
+          if (itemType === "Folder"){
+            set(folderDictionary({driveId: driveIdFolderId.driveId, folderId:itemId}),(old)=>{
+              let newFolderInfo = {...old}
+              newFolderInfo.folderInfo = {...old.folderInfo}
+              newFolderInfo.folderInfo.label = newLabel;
+              return newFolderInfo;
+            })
+          }
+        }
+      });
+      return result;
     } 
   )
 
   const onRenameItemError = () => {
-
+    toast(`Rename item error`, 0, null, 3000);
   }
 
   return { renameItem, onRenameItemError }
 }
 
 export const useAssignmentCallbacks = () => {
+  const toast = useToast();
   const publishAssignment = useRecoilCallback(({set})=> 
     ({driveIdFolderId, itemId, payload})=>{
       set(folderDictionary(driveIdFolderId),(old)=>{
@@ -690,6 +698,7 @@ export const useAssignmentCallbacks = () => {
   )
   
   const onPublishAssignmentError = () => {
+    toast(`Publish assignment error`, 0, null, 3000);
   }
 
   const publishContent = useRecoilCallback(({set})=> 
@@ -704,6 +713,7 @@ export const useAssignmentCallbacks = () => {
   )
   
   const onPublishContentError = () => {
+    toast(`Publish content error`, 0, null, 3000);
   }
 
   const updateAssignmentTitle = useRecoilCallback(({set})=> 
@@ -720,6 +730,7 @@ export const useAssignmentCallbacks = () => {
   )
   
   const onUpdateAssignmentTitleError = () => {
+    toast(`Rename assignment error`, 0, null, 3000);
   }
 
   const convertAssignmentToContent = useRecoilCallback(({set})=> 
@@ -735,6 +746,7 @@ export const useAssignmentCallbacks = () => {
   )
   
   const onConvertAssignmentToContentError = () => {
+    toast(`Convert assignment error`, 0, null, 3000);
   }
 
   return { 
