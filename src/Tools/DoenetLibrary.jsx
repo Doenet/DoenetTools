@@ -16,7 +16,7 @@ import Drive, {
   fetchDrivesSelector,
   encodeParams,
   fetchDriveUsers,
-  fetchDrivesQuery
+  fetchDrivesQuery,
 } from "../imports/Drive";
 import { nanoid } from 'nanoid';
 
@@ -58,6 +58,11 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import "../imports/drivecard.css";
 import DriveCards from "../imports/DriveCards";
+import { 
+  useAddItem,
+  useDeleteItem,
+  useRenameItem
+} from "../imports/DriveActions";
 
 
 function Container(props){
@@ -470,10 +475,31 @@ const FolderInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const { renameItem, onRenameItemError } = useRenameItem();
+  const toast = useToast();
 
   const [label,setLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder}/>
+  
+  const renameItemCallback = (newLabel) => {
+    const result = renameItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
+      itemId: itemInfo.itemId,
+      itemType: itemInfo.itemType,
+      newLabel: newLabel
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+      }else{
+        onRenameItemError({errorMessage: resp.data.message});
+      }
+    }).catch((e)=>{
+      onRenameItemError({errorMessage: e.message});
+    })
+  }
   
   return <>
   <h2>{fIcon} {itemInfo.label}</h2>
@@ -483,32 +509,28 @@ const FolderInfoPanel = function(props){
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
     if (e.key === "Enter"){
-
-      setFolder({
-        instructionType: folderInfoSelectorActions.RENAME_ITEM,
-        itemId:itemInfo.itemId,
-        driveInstanceId:itemInfo.driveInstanceId,
-        itemType:itemInfo.itemType,
-        label
-      })
+      renameItemCallback(label);
     }
   }}
   onBlur={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.RENAME_ITEM,
-      itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId,
-      itemType:itemInfo.itemType,
-      label
-    })
+    renameItemCallback(label);
   }}/></label>
   <br />
   <br />
   <Button value="Delete Folder" callback={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.DELETE_ITEM,
+    const result = deleteItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+      }else{
+        onDeleteItemError({errorMessage: resp.data.message});
+      }
+    }).catch((e)=>{
+      onDeleteItemError({errorMessage: e.message});
     })
   }} />
   </>
@@ -518,12 +540,33 @@ const DoenetMLInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const toast = useToast();
+  const { renameItem, onRenameItemError } = useRenameItem();
 
   const [label,setLabel] = useState(itemInfo.label);
 
   const { openOverlay } = useToolControlHelper();
 
   let dIcon = <FontAwesomeIcon icon={faCode}/>
+
+  const renameItemCallback = (newLabel) => {
+    const result = renameItem({
+      driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+      itemId: itemInfo.itemId,
+      itemType: itemInfo.itemType,
+      newLabel: newLabel
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+      }else{
+        onRenameItemError({errorMessage: resp.data.message});
+      }
+    }).catch((e)=>{
+      onRenameItemError({errorMessage: e.message});
+    })
+  }
   
   return <>
   <h2>{dIcon} {itemInfo.label}</h2>
@@ -534,23 +577,11 @@ const DoenetMLInfoPanel = function(props){
   onKeyDown={(e)=>{
 
     if (e.key === "Enter"){
-      setFolder({
-        instructionType: folderInfoSelectorActions.RENAME_ITEM,
-        itemId:itemInfo.itemId,
-        driveInstanceId:itemInfo.driveInstanceId,
-        itemType:itemInfo.itemType,
-        label
-      })
+      renameItemCallback(label);
     }
   }}
   onBlur={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.RENAME_ITEM,
-      itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId,
-      itemType:itemInfo.itemType,
-      label
-    })
+    renameItemCallback(label);
   }}/></label>
   <br />
   <br />
@@ -561,10 +592,19 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Delete DoenetML" callback={()=>{
-    setFolder({
-      instructionType: folderInfoSelectorActions.DELETE_ITEM,
+    const result = deleteItem({
+      driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
+    });
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+      }else{
+        onDeleteItemError({errorMessage: resp.data.message});
+      }
+    }).catch((e)=>{
+      onDeleteItemError({errorMessage: e.message});
     })
   }} />
   </>
@@ -646,11 +686,6 @@ function AddCourseDriveButton(props){
       color,
       subType:"Administrator"
     }
-    set(fetchDrivesQuery,(oldDrivesInfo)=>{
-      let newDrivesInfo = {...oldDrivesInfo}
-      newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
-      return newDrivesInfo
-    })
     const payload = { params:{
       driveId:newDriveId,
       courseId:newCourseId,
@@ -659,8 +694,18 @@ function AddCourseDriveButton(props){
       image,
       color,
     } }
-    return axios.get("/api/addDrive.php", payload)
+    const result = axios.get("/api/addDrive.php", payload)
 
+    result.then((resp) => {
+      if (resp.data.success){
+        set(fetchDrivesQuery,(oldDrivesInfo)=>{
+          let newDrivesInfo = {...oldDrivesInfo}
+          newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
+          return newDrivesInfo
+        })
+      }
+    })
+    return result;
   });
 
   const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
@@ -684,8 +729,7 @@ function AddCourseDriveButton(props){
   });
 
 
-  function onError({newDriveId,errorMessage}){
-    deleteNewDrive(newDriveId);
+  function onError({errorMessage}){
     toast(`Course not created. ${errorMessage}`, 2, null, 6000);
   }
 
@@ -701,11 +745,10 @@ function AddCourseDriveButton(props){
       if (resp.data.success){
         toast(`Created a new course named '${label}'`, 0, null, 3000);
       }else{
-        onError({newDriveId,errorMessage:resp.data.message});
+        onError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onError({newDriveId,errorMessage:errorObj.message});
-      
+    }).catch((e)=>{
+      onError({errorMessage: e.message});
     })
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
@@ -722,7 +765,8 @@ function AddMenuPanel(props){
   }
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
-
+  const { addItem, onAddItemError } = useAddItem();
+  const toast = useToast();
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
@@ -738,18 +782,38 @@ function AddMenuPanel(props){
    {addDrives}
   <h3>Folder</h3>
   <Button value="Add Folder" callback={()=>{
-    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
-    label:"Untitled",
-    itemType:"Folder"
+    const result = addItem({
+      driveIdFolderId: {driveId: driveId, folderId: folderId},
+      label: "Untitled",
+      itemType: "Folder"
+    });
+    result.then(resp => {
+      if (resp.data.success){
+        toast(`Add new item 'Untitled'`, 0, null, 3000);
+      }else{
+        onAddItemError({errorMessage: resp.data.message});
+      }
+    }).catch( e => {
+      onAddItemError({errorMessage: e.message});
     })
   }
   } />
 
   <h3>DoenetML</h3>
   <Button value="Add DoenetML" callback={()=>{
-    setFolderInfo({instructionType: folderInfoSelectorActions.ADD_ITEM,
-    label:"Untitled",
-    itemType:"DoenetML"
+    const result = addItem({
+      driveIdFolderId: {driveId: driveId, folderId: folderId},
+      label:"Untitled",
+      itemType:"DoenetML"
+    });
+    result.then(resp => {
+      if (resp.data.success){
+        toast(`Add new item 'Untitled'`, 0, null, 3000);
+      }else{
+        onAddItemError({errorMessage: resp.data.message});
+      }
+    }).catch( e => {
+      onAddItemError({errorMessage: e.message});
     })
   }
   } />

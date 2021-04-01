@@ -21,6 +21,7 @@ import MenuItem from "../imports/PanelHeaderComponents/MenuItem";
 import Menu, { useMenuContext } from "../imports/PanelHeaderComponents/Menu";
 import axios from "axios";
 import Drive, { folderDictionarySelector,fetchDrivesSelector } from "../imports/Drive";
+import { useAssignmentCallbacks } from '../imports/DriveActions';
 import DoenetViewer from "./DoenetViewer";
 import {
   atom,
@@ -341,6 +342,7 @@ const AssignmentForm = (props) => {
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
     folderDictionarySelector({ driveId: driveId, folderId: folderId })
   );
+  const { publishAssignment, onPublishAssignmentError } = useAssignmentCallbacks();
   let branchId = '';
     if(folderInfoObj?.state === "hasValue"){
  
@@ -379,11 +381,20 @@ const AssignmentForm = (props) => {
       itemId: itemId,
       assignedData: payload,
     });
-    setFolderInfo({
-      instructionType: "assignment was published",
+    const result = publishAssignment({
+      driveIdFolderId: { driveId: driveId, folderId: folderId },
       itemId: itemId,
       payload: payload,
-    });
+    })
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Assignment published`, 0, null, 3000);
+      }else{
+        onPublishAssignmentError({});
+      }
+    }).catch((errorObj)=>{
+      onPublishAssignmentError({});
+    })
   };
 
   return role === "Instructor" ? (
@@ -618,6 +629,14 @@ const ContentInfoPanel = (props) => {
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
     folderDictionarySelector({ driveId: driveId, folderId: folderId })
   );
+  const { 
+    publishContent,
+    onPublishContentError,
+    updateAssignmentTitle,
+    onUpdateAssignmentTitleError,
+    convertAssignmentToContent,
+    onConvertAssignmentToContentError
+  } = useAssignmentCallbacks();
   let branchId = '';
   // console.log(">>>> folderInfoObj",folderInfoObj);
   if(folderInfoObj?.state === "hasValue"){
@@ -668,15 +687,23 @@ const ContentInfoPanel = (props) => {
     let payload = {
       itemId: itemId,
     };
-    setFolderInfo({
-      instructionType: "content was published",
+    const result = publishContent({
+      driveIdFolderId: { driveId: driveId, folderId: folderId },
       itemId: itemId,
       payload: payload,
-    });
-
-    axios.post(`/api/handlePublishContent.php`, payload).then((response) => {
-      console.log(response.data);
-    });
+    })
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Content published`, 0, null, 3000);
+        axios.post(`/api/handlePublishContent.php`, payload).then((response) => {
+          console.log(response.data);
+        });
+      }else{
+        onPublishContentError({});
+      }
+    }).catch((errorObj)=>{
+      onPublishContentError({});
+    })
   };
 
   const [makecontent, setMakeContent] = useState(false);
@@ -694,11 +721,20 @@ const ContentInfoPanel = (props) => {
       console.log(response.data);
     });
     setAssignmentSettings({ type: "assignment to content", assignmentInfo });
-    setFolderInfo({
-      instructionType: "assignment to content",
+    const result = convertAssignmentToContent({
+      driveIdFolderId: { driveId: driveId, folderId: folderId },
       itemId: itemId,
       assignedDataSavenew: payload,
-    });
+    })
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Content created`, 0, null, 3000);
+      }else{
+        onConvertAssignmentToContentError({});
+      }
+    }).catch((errorObj)=>{
+      onConvertAssignmentToContentError({});
+    })
   }
 
   const loadBackAssignment = () => {
@@ -712,11 +748,20 @@ const ContentInfoPanel = (props) => {
       type: "load available assignment",
       assignmentInfo,
     });
-    setFolderInfo({
-      instructionType: "assignment title update",
+    const result = updateAssignmentTitle({
+      driveIdFolderId: { driveId: driveId, folderId: folderId },
       itemId: itemId,
       payloadAssignment: assignmentInfo,
-    });
+    })
+    result.then((resp)=>{
+      if (resp.data.success){
+        toast(`Assignment title updated`, 0, null, 3000);
+      }else{
+        onUpdateAssignmentTitleError({});
+      }
+    }).catch((errorObj)=>{
+      onUpdateAssignmentTitleError({});
+    })
   };
 
   return (
