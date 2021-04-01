@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-
 ReactDOM.render(
   <React.StrictMode>
     <p>test</p>
