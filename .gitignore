@@ -47,3 +47,4 @@ docker\ alp/
 doenet_docker/volumes/db/*
 
 package-lock.json
+.eslintrc.js
