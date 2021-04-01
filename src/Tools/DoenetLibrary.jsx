@@ -494,10 +494,10 @@ const FolderInfoPanel = function(props){
       if (resp.data.success){
         toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
       }else{
-        onRenameItemError({});
+        onRenameItemError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onRenameItemError({});
+    }).catch((e)=>{
+      onRenameItemError({errorMessage: e.message});
     })
   }
   
@@ -527,10 +527,10 @@ const FolderInfoPanel = function(props){
       if (resp.data.success){
         toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
       }else{
-        onDeleteItemError({});
+        onDeleteItemError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onDeleteItemError({});
+    }).catch((e)=>{
+      onDeleteItemError({errorMessage: e.message});
     })
   }} />
   </>
@@ -561,10 +561,10 @@ const DoenetMLInfoPanel = function(props){
       if (resp.data.success){
         toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
       }else{
-        onRenameItemError({});
+        onRenameItemError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onRenameItemError({});
+    }).catch((e)=>{
+      onRenameItemError({errorMessage: e.message});
     })
   }
   
@@ -601,10 +601,10 @@ const DoenetMLInfoPanel = function(props){
       if (resp.data.success){
         toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
       }else{
-        onDeleteItemError({});
+        onDeleteItemError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onDeleteItemError({});
+    }).catch((e)=>{
+      onDeleteItemError({errorMessage: e.message});
     })
   }} />
   </>
@@ -728,8 +728,7 @@ function AddCourseDriveButton(props){
   });
 
 
-  function onError({newDriveId,errorMessage}){
-    deleteNewDrive(newDriveId);
+  function onError({errorMessage}){
     toast(`Course not created. ${errorMessage}`, 2, null, 6000);
   }
 
@@ -744,10 +743,10 @@ function AddCourseDriveButton(props){
       if (resp.data.success){
         toast(`Created a new course named '${label}'`, 0, null, 3000);
       }else{
-        onError({newDriveId,errorMessage:resp.data.message});
+        onError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onError({newDriveId,errorMessage:errorObj.message});
+    }).catch((e)=>{
+      onError({errorMessage: e.message});
     })
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
     let newParams = {...urlParamsObj} 
@@ -790,10 +789,10 @@ function AddMenuPanel(props){
       if (resp.data.success){
         toast(`Add new item 'Untitled'`, 0, null, 3000);
       }else{
-        onAddItemError();
+        onAddItemError({errorMessage: resp.data.message});
       }
-    }).catch( errorObj => {
-      onAddItemError();
+    }).catch( e => {
+      onAddItemError({errorMessage: e.message});
     })
   }
   } />
@@ -809,10 +808,10 @@ function AddMenuPanel(props){
       if (resp.data.success){
         toast(`Add new item 'Untitled'`, 0, null, 3000);
       }else{
-        onAddItemError();
+        onAddItemError({errorMessage: resp.data.message});
       }
-    }).catch( errorObj => {
-      onAddItemError();
+    }).catch( e => {
+      onAddItemError({errorMessage: e.message});
     })
   }
   } />

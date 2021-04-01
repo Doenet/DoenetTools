@@ -104,8 +104,8 @@ export const useAddItem = () => {
     }
   );
 
-  const onAddItemError = () => {
-    toast(`Add item error`, 0, null, 3000);
+  const onAddItemError = ({errorMessage=null}) => {
+    toast(`Add item error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { addItem, onAddItemError };
@@ -165,8 +165,8 @@ export const useDeleteItem = () => {
       return result;
   });
 
-  const onDeleteItemError = () => {
-    toast(`Delete item error`, 0, null, 3000);
+  const onDeleteItemError = ({errorMessage=null}) => {
+    toast(`Delete item error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { deleteItem, onDeleteItemError };
@@ -335,8 +335,8 @@ export const useMoveItems = () => {
     }
   );
 
-  const onMoveItemsError = () => {
-    toast(`Move item(s) error`, 0, null, 3000);
+  const onMoveItemsError = ({errorMessage=null}) => {
+    toast(`Move item(s) error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { moveItems, onMoveItemsError };
@@ -624,8 +624,8 @@ export const useSortFolder = () => {
     } 
   )
 
-  const onSortFolderError = () => {
-    toast(`Sort items error`, 0, null, 3000);
+  const onSortFolderError = ({errorMessage=null}) => {
+    toast(`Sort items error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { sortFolder, invalidateSortCache, onSortFolderError }
@@ -674,8 +674,8 @@ export const useRenameItem = () => {
     } 
   )
 
-  const onRenameItemError = () => {
-    toast(`Rename item error`, 0, null, 3000);
+  const onRenameItemError = ({errorMessage=null}) => {
+    toast(`Rename item error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { renameItem, onRenameItemError }
@@ -697,8 +697,8 @@ export const useAssignmentCallbacks = () => {
     }
   )
   
-  const onPublishAssignmentError = () => {
-    toast(`Publish assignment error`, 0, null, 3000);
+  const onPublishAssignmentError = ({errorMessage=null}) => {
+    toast(`Publish assignment error: ${errorMessage}`, 0, null, 3000);
   }
 
   const publishContent = useRecoilCallback(({set})=> 
@@ -729,8 +729,8 @@ export const useAssignmentCallbacks = () => {
     }
   )
   
-  const onUpdateAssignmentTitleError = () => {
-    toast(`Rename assignment error`, 0, null, 3000);
+  const onUpdateAssignmentTitleError = ({errorMessage=null}) => {
+    toast(`Rename assignment error: ${errorMessage}`, 0, null, 3000);
   }
 
   const convertAssignmentToContent = useRecoilCallback(({set})=> 
@@ -745,8 +745,8 @@ export const useAssignmentCallbacks = () => {
     }
   )
   
-  const onConvertAssignmentToContentError = () => {
-    toast(`Convert assignment error`, 0, null, 3000);
+  const onConvertAssignmentToContentError = ({errorMessage=null}) => {
+    toast(`Convert assignment error: ${errorMessage}`, 0, null, 3000);
   }
 
   return { 

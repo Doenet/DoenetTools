@@ -968,10 +968,10 @@ function Folder(props){
       if (resp.data.success){
         toast(`Deleted item '${props.item?.label}'`, 0, null, 3000);
       }else{
-        onDeleteItemError({});
+        onDeleteItemError({errorMessage: resp.data.message});
       }
-    }).catch((errorObj)=>{
-      onDeleteItemError({});
+    }).catch((e)=>{
+      onDeleteItemError({errorMessage: e.message});
     })
   };
   
@@ -1044,8 +1044,7 @@ function Folder(props){
     });
     result.then((resp)=>{
     }).catch( e => {
-      console.log(e);
-      onSortFolderError({});
+      onSortFolderError({errorMessage: e.message});
     })
   };
 
@@ -2055,11 +2054,10 @@ function useDnDCallbacks() {
         if (resp.data.success){
           toast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, 0, null, 3000);
         }else{
-          onMoveItemsError({});
+          onMoveItemsError({errorMessage: resp.data.message});
         }
       }).catch( e => {
-        console.log(e);
-        onMoveItemsError({});
+        onMoveItemsError({errorMessage: e.message});
       })
     });
 
