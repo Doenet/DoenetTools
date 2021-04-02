@@ -49,7 +49,7 @@ const Icon = styled.div`
 
 const ProfilePicture = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/profile_pictures/${(props) => props.pic}.jpg');
+    url('/media/profile_pictures/${(props) => props.pic}.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -66,7 +66,7 @@ const ProfilePicture = styled.button`
 `;
 const ProfilePictureLrg = styled.div`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/profile_pictures/${(props) => props.pic}.jpg');
+    url('/media/profile_pictures/${({ pic }) => pic}.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -172,7 +172,7 @@ class UserProfile extends Component {
       this.populateMenuToolbox([]);
       this.profilePicture = 'anonymous';
     }
-
+    console.log(props.profile);
     this.profileMenuMap = [
       {
         id: 'Account',
@@ -195,7 +195,7 @@ class UserProfile extends Component {
     }
 
     this.populateMenuToolbox(props?.profile?.toolAccess);
-    this.profilePicture = this.props.profile.profilePicture;
+    // this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
   }
 
@@ -292,17 +292,6 @@ class UserProfile extends Component {
         label: 'Sign in',
         link: '/signin/',
       });
-    }
-  }
-
-  componentWillReceiveProps(props) {
-    if (
-      props.headerChangesFromLayout &&
-      props.headerChangesFromLayout.toolAccess
-    ) {
-      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
-      this.profilePicture = props.headerChangesFromLayout.profilePicture;
-      this.prepareProfileDropDown(this.profilePicture);
     }
   }
 
