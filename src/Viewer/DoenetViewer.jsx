@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Core from '../Doenet/Core';
+import Core from './Core';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
@@ -7,9 +7,9 @@ import CryptoJS from 'crypto-js';
 // TODO: dynamic loading of renderers fails if we don't load HotTable
 // even though we don't use HotTable anywhere
 // What is the cause of this dependency?
-import { HotTable } from '@handsontable/react';
+// import { HotTable } from '@handsontable/react';
 
-import { serializedComponentsReplacer, serializedComponentsReviver } from '../Utils/serializedStateProcessing';
+import { serializedComponentsReplacer, serializedComponentsReviver } from './utils/serializedStateProcessing';
 
 
 class DoenetViewer extends Component {
@@ -171,7 +171,8 @@ class DoenetViewer extends Component {
     console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      renderPromises.push(import(`../Renderers/${rendererClassName}.js`));
+      console.log(`>>>dynamic import '${rendererClassName}'`)
+      renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
 
 

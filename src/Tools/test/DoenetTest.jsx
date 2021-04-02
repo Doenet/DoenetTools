@@ -1,7 +1,11 @@
-import React, { useState, Component } from 'react';
-// import DoenetViewer from '.../Core/DoenetViewer.jsx';
+import React, { useState, Component, useEffect } from 'react';
+// import { useEffect } from 'react/cjs/react.development';
+import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import doenetDefaultML from './defaultCode.doenet';
 
+// function DoenetViewer(props){
+//   return <p>{props.doenetML}</p>
+// }
 
 // window.onmessage = this.updateAfterMessage;
 
@@ -24,11 +28,15 @@ import doenetDefaultML from './defaultCode.doenet';
 
 // mode={{solutionType:"displayed",allowViewSolutionWithoutRoundTrip:true}}
 
-function DoenetViewer(props){
-  return <p>{props.doenetML}</p>
-}
+
 
 export default function DoenetTest(){
+
+  //New DoenetViewer when code changes
+  useEffect(()=>{
+    setUpdateNumber((was)=>was+1)
+  },doenetDefaultML);
+  
   const [attemptNumber,setAttemptNumber] = useState(1);
   const [updateNumber,setUpdateNumber] = useState(1);
   const showCorrectness = true;
@@ -38,6 +46,8 @@ export default function DoenetTest(){
   const showHints = true;
   const ignoreDatabase = true;
   const requestedVariant = '1'; //????
+
+  console.log(">>>doenetDefaultML",doenetDefaultML)
 
   return (
     <>
