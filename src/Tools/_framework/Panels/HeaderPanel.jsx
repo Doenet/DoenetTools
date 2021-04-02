@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useToolControlHelper, useStackId } from '../ToolRoot';
-// import DoenetHeader from "../../../Tools/DoenetHeader";
+import UserProfile from '../temp/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-// import { useCookies } from "react-cookie";
+import Cookies from 'js-cookie';
 import axios from 'axios';
 
 const Wrapper = styled.div`
@@ -43,12 +43,13 @@ export default function HeaderPanel({ title, children }) {
   const stackId = useStackId();
   //User profile logic
   const [profile, setProfile] = useState({});
-  // const [jwt] = useCookies("JWT_JS");
+  const jwt = Cookies.get();
+  // console.log(jwt);
 
   let isSignedIn = false;
-  // if (Object.keys(jwt).includes("JWT_JS")) {
-  //   isSignedIn = true;
-  // }
+  if (Object.keys(jwt).includes('JWT_JS')) {
+    isSignedIn = true;
+  }
 
   useEffect(() => {
     //Fires each time you change the tool
@@ -70,11 +71,6 @@ export default function HeaderPanel({ title, children }) {
       });
   }, []);
 
-  //should this be here??
-  if (Object.keys(profile).length < 1) {
-    return <h1>Loading...</h1>;
-  }
-
   return (
     <Wrapper>
       <ControlsContainer>
@@ -82,8 +78,7 @@ export default function HeaderPanel({ title, children }) {
         {children}
       </ControlsContainer>
       {!(stackId > 0 ?? false) ? (
-        {
-          /* <DoenetHeader
+        <UserProfile
           profile={profile}
           cookies={jwt}
           isSignedIn={isSignedIn}
@@ -93,8 +88,7 @@ export default function HeaderPanel({ title, children }) {
           // headerChangesFromLayout={props.headerChangesFromLayout}
           // guestUser={props.guestUser}
           // onChange={showCollapseMenu}
-        /> */
-        }
+        />
       ) : (
         <ExitOverlayButton onClick={close}>
           <FontAwesomeIcon icon={faTimes} />
