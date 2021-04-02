@@ -3,7 +3,7 @@ import logo from '../../Media/Doenet_Logo_Frontpage.png';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 
-export default function DoenetSignIn(props) {
+export default function DoenetSignIn() {
   let [email, setEmail] = useState('');
   let [nineCode, setNineCode] = useState('');
   let [maxAge, setMaxAge] = useState(0);
@@ -163,12 +163,8 @@ export default function DoenetSignIn(props) {
           if (maxAge > 0) {
             cookieSettingsObj.maxAge = maxAge;
           }
-          setDeviceNameCookie(
-            'Device',
-            resp.data.deviceName,
-            cookieSettingsObj,
-          );
-          setStayCookie('Stay', maxAge, cookieSettingsObj);
+          Cookies.set('Device', resp.data.deviceName, cookieSettingsObj);
+          Cookies.set('Stay', maxAge, cookieSettingsObj);
         })
         .catch((error) => {
           this.setState({ error: error });
@@ -277,7 +273,7 @@ export default function DoenetSignIn(props) {
               onChange={(e) => {
                 if (e.target.checked) {
                   // console.log('stay')
-                  setMaxAge(2147483647);
+                  setMaxAge(240000); //2147483647 sec
                 } else {
                   // console.log('not stay')
                   setMaxAge(0);

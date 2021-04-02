@@ -1,6 +1,6 @@
 <?php
 use \Firebase\JWT\JWT;
-require_once "vendor/autoload.php";
+require_once "/vendor/autoload.php";
 
 $key = "example_key";
 $payload = array(

@@ -71,6 +71,7 @@ export default function HeaderPanel({ title, children }) {
       });
   }, []);
 
+  console.log(profile.profilePicture);
   return (
     <Wrapper>
       <ControlsContainer>
