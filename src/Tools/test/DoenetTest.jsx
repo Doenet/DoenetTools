@@ -1,13 +1,6 @@
-import React, { useState, Component, useEffect, useRef } from 'react';
-// import { useEffect } from 'react/cjs/react.development';
+import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import doenetDefaultML from './defaultCode.doenet';
-
-
-
-
-
-
 
 export default function DoenetTest(){
 
@@ -30,6 +23,7 @@ export default function DoenetTest(){
   const ignoreDatabase = true;
   const requestedVariant = '1'; //????
 
+  //For Cypress Test Use
   window.onmessage = (e)=>{
     if (e.data.doenetML !== undefined) {
       doenetML.current = e.data.doenetML;
@@ -38,7 +32,6 @@ export default function DoenetTest(){
   };
 
 
-  console.log(">>>doenetML.current",doenetML.current)
   if (doenetML.current === ""){
     return null;
   }
