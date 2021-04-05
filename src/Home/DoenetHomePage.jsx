@@ -73,7 +73,10 @@ const ParagraphTags = styled.p`
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     @media (max-width: 768px) {
-      margin:2em;
+        margin-left:6em;
+        margin-right:6em;
+        text-align: left;
+        display: block;
     }`;
 
 const Footer = styled.div`
@@ -170,6 +173,7 @@ export default function DoenetHomePage() {
           </SectionText>
         </ShadowColorSection>
         <Footer>
+          <SectionText>
           <div>
             <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
             <div style={{ marginBottom: '40px' }}>
@@ -206,6 +210,7 @@ export default function DoenetHomePage() {
               Science Foundation.{' '}
             </p>
           </div>
+          </SectionText>       
         </Footer>
       </mainPanel>
     </Tool>
