@@ -1,42 +1,25 @@
-import React, { useState, Component, useEffect } from 'react';
+import React, { useState, Component, useEffect, useRef } from 'react';
 // import { useEffect } from 'react/cjs/react.development';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import doenetDefaultML from './defaultCode.doenet';
 
-// function DoenetViewer(props){
-//   return <p>{props.doenetML}</p>
-// }
 
-// window.onmessage = this.updateAfterMessage;
 
-// }
 
-// updateAfterMessage(e) {
-
-//   if (e.data.doenetML !== undefined) {
-//     this.updateNumber++;
-//     window.MathJax.Hub.Queue(
-//       ["resetEquationNumbers", window.MathJax.InputJax.TeX],
-//     );
-//     // this.setState({ doenetML: e.data.doenetML, error: null, errorInfo: null });
-//     this.setState({
-//       doenetML: e.data.doenetML, error: null, errorInfo: null,
-//       requestedVariant: e.data.requestedVariant
-//     });
-//   }
-// }
-
-// mode={{solutionType:"displayed",allowViewSolutionWithoutRoundTrip:true}}
 
 
 
 export default function DoenetTest(){
 
+
   //New DoenetViewer when code changes
   useEffect(()=>{
+    doenetML.current = doenetDefaultML;
     setUpdateNumber((was)=>was+1)
   },doenetDefaultML);
-  
+
+  let doenetML = useRef("");
+
   const [attemptNumber,setAttemptNumber] = useState(1);
   const [updateNumber,setUpdateNumber] = useState(1);
   const showCorrectness = true;
@@ -47,7 +30,18 @@ export default function DoenetTest(){
   const ignoreDatabase = true;
   const requestedVariant = '1'; //????
 
-  console.log(">>>doenetDefaultML",doenetDefaultML)
+  window.onmessage = (e)=>{
+    if (e.data.doenetML !== undefined) {
+      doenetML.current = e.data.doenetML;
+      setUpdateNumber((was)=>was+1)
+    }
+  };
+
+
+  console.log(">>>doenetML.current",doenetML.current)
+  if (doenetML.current === ""){
+    return null;
+  }
 
   return (
     <>
@@ -61,7 +55,7 @@ export default function DoenetTest(){
       </div>
       <DoenetViewer
         key={"doenetviewer" + updateNumber}
-        doenetML={doenetDefaultML}
+        doenetML={doenetML.current}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,
