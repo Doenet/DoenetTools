@@ -1,8 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
+
+import DoenetHomePage from './DoenetHomePage';
+import ToolRoot from '../Tools/_framework/ToolRoot';
 
 ReactDOM.render(
-  <h1>This is Announcements</h1>,
+  <RecoilRoot>
+  <Router>
+    <Switch>
+      <Route
+        path="/"
+        render={(routeprops) => (
+          <ToolRoot
+            route={{ ...routeprops }}
+            tool={<DoenetHomePage key={'BaseTool'} />}
+          />
+        )}
+      />
+    </Switch>
+  </Router>
+</RecoilRoot>, 
   document.getElementById('root'),
 );
 
