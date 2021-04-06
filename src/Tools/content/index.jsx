@@ -1,8 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+// import { DropTargetsProvider } from "../imports/DropTarget";
+// import { BreadcrumbProvider } from "../imports/Breadcrumb";
+import { RecoilRoot } from 'recoil';
+
+import DoenetContent from './DoenetContent';
+import ToolRoot from '../_framework/ToolRoot';
 
 ReactDOM.render(
-  <h1>This is Content Tool</h1>,
+  // <DropTargetsProvider>
+  // <BreadcrumbProvider>
+  <RecoilRoot>
+    <Router>
+      <Switch>
+        <Route
+          path="/"
+          render={(routeprops) => (
+            <ToolRoot
+              route={{ ...routeprops }}
+              tool={<DoenetContent key={'BaseTool'} />}
+            />
+          )}
+        />
+      </Switch>
+    </Router>
+  </RecoilRoot>,
+  // </BreadcrumbProvider>
+  // </DropTargetsProvider>,
   document.getElementById('root'),
 );
 
