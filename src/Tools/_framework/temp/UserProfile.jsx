@@ -167,12 +167,9 @@ class UserProfile extends Component {
 
     if (props.profile.toolAccess) {
       this.populateMenuToolbox(props?.profile?.toolAccess);
-      this.profilePicture = this.props.profile.profilePicture;
     } else {
       this.populateMenuToolbox([]);
-      this.profilePicture = 'anonymous';
     }
-    console.log(props.profile);
     this.profileMenuMap = [
       {
         id: 'Account',
@@ -193,9 +190,7 @@ class UserProfile extends Component {
         link: '/signin/',
       });
     }
-
     this.populateMenuToolbox(props?.profile?.toolAccess);
-    // this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
   }
 
@@ -235,12 +230,12 @@ class UserProfile extends Component {
     }
   }
 
-  prepareProfileDropDown() {
+  prepareProfileDropDown(picture) {
     this.profileMenuMap = [
       {
         optionElem: (
           <ProfilePictureLrg
-            pic={this.profilePicture}
+            pic={picture}
             name="changeProfilePicture"
             id="changeProfilePicture"
           />
@@ -339,6 +334,8 @@ class UserProfile extends Component {
   }
 
   render() {
+    this.profilePicture = this.props?.profile?.profilePicture ?? 'anonymous';
+    this.prepareProfileDropDown(this.profilePicture);
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;

@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-ReactDOM.render(
-  <h1>This is Signin Tool</h1>,
-  document.getElementById('root'),
-);
+import SignOut from './SignOut.jsx';
+
+ReactDOM.render(<SignOut />, document.getElementById('root'));
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
 // Learn more: https://www.snowpack.dev/concepts/hot-module-replacement
