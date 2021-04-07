@@ -11,10 +11,10 @@ module.exports = {
     'src/Tools/signin': '/signin',
     'src/Tools/signout': '/signout',
     'src/Tools/temp': '/temp',
-    'src/Renderers': '/renderers',
     'src/Media': '/media',
     'src/API': '/api',
     'src/Home': '/',
+    'src/Core': '/Core',
   },
   plugins: [
     // '@snowpack/plugin-dotenv',

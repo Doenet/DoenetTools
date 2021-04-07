@@ -1,34 +1,18 @@
-import React, { useState, Component } from 'react';
-// import DoenetViewer from '.../Core/DoenetViewer.jsx';
+import React, { useState, useEffect, useRef } from 'react';
+import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import doenetDefaultML from './defaultCode.doenet';
 
-
-// window.onmessage = this.updateAfterMessage;
-
-// }
-
-// updateAfterMessage(e) {
-
-//   if (e.data.doenetML !== undefined) {
-//     this.updateNumber++;
-//     window.MathJax.Hub.Queue(
-//       ["resetEquationNumbers", window.MathJax.InputJax.TeX],
-//     );
-//     // this.setState({ doenetML: e.data.doenetML, error: null, errorInfo: null });
-//     this.setState({
-//       doenetML: e.data.doenetML, error: null, errorInfo: null,
-//       requestedVariant: e.data.requestedVariant
-//     });
-//   }
-// }
-
-// mode={{solutionType:"displayed",allowViewSolutionWithoutRoundTrip:true}}
-
-function DoenetViewer(props){
-  return <p>{props.doenetML}</p>
-}
-
 export default function DoenetTest(){
+
+
+  //New DoenetViewer when code changes
+  useEffect(()=>{
+    doenetML.current = doenetDefaultML;
+    setUpdateNumber((was)=>was+1)
+  },doenetDefaultML);
+
+  let doenetML = useRef("");
+
   const [attemptNumber,setAttemptNumber] = useState(1);
   const [updateNumber,setUpdateNumber] = useState(1);
   const showCorrectness = true;
@@ -38,6 +22,19 @@ export default function DoenetTest(){
   const showHints = true;
   const ignoreDatabase = true;
   const requestedVariant = '1'; //????
+
+  //For Cypress Test Use
+  window.onmessage = (e)=>{
+    if (e.data.doenetML !== undefined) {
+      doenetML.current = e.data.doenetML;
+      setUpdateNumber((was)=>was+1)
+    }
+  };
+
+
+  if (doenetML.current === ""){
+    return null;
+  }
 
   return (
     <>
@@ -51,7 +48,7 @@ export default function DoenetTest(){
       </div>
       <DoenetViewer
         key={"doenetviewer" + updateNumber}
-        doenetML={doenetDefaultML}
+        doenetML={doenetML.current}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,

@@ -19,11 +19,13 @@ module.exports = {
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
     'src/Tools/_framework': '/_framework',
-    'src/Renderers': '/renderers',
     'src/Media': '/media',
     'src/Media/profile_pictures': '/profile_pictures',
     'src/API': '/api',
     'src/Home': '/',
+    'src/Viewer': '/viewer',
+    'src/Viewer/renderers': '/viewer/renderers',
+
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
@@ -56,7 +58,7 @@ module.exports = {
     polyfillNode: true,
   },
   devOptions: {
-    openUrl: '/test',
+    openUrl: '/temp',
   },
   buildOptions: {
     watch: true,
