@@ -70,8 +70,8 @@ if ($row['minutes'] > 10){
         $isSecure = false;  
         }
         $isHttpOnly = true;
-        setcookie("JWT", $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
-        setcookie("JWT_JS", 1, $expirationTime, $path, $domain, $isSecure, 0);
+        setcookie("JWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
+        setcookie("JWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
         if ($newAccount == 1){
             header("Location: /accountsettings");
         }else{

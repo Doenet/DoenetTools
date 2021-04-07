@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetSignIn from './DoenetSignIn';
+import SignIn from './SignIn';
 
-ReactDOM.render(<DoenetSignIn />, document.getElementById('root'));
+ReactDOM.render(<SignIn />, document.getElementById('root'));
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
 // Learn more: https://www.snowpack.dev/concepts/hot-module-replacement

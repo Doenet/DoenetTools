@@ -3,10 +3,10 @@ import logo from '../../Media/Doenet_Logo_Frontpage.png';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 
-export default function DoenetSignIn() {
+export default function SignIn() {
   let [email, setEmail] = useState('');
   let [nineCode, setNineCode] = useState('');
-  let [maxAge, setMaxAge] = useState(0);
+  let [maxAge, setMaxAge] = useState(0); //'2147483647' sec
 
   let [signInStage, setSignInStage] = useState('beginning');
   let [isSentEmail, setIsSentEmail] = useState(false);
@@ -51,16 +51,17 @@ export default function DoenetSignIn() {
     console.log('Auto Signing In Devuser');
     let emailaddress = 'devuser@example.com';
     let deviceName = 'Cacao tree';
-    let maxAge = 24000; //'2147483647' sec
-    let cookieSettingsObj = { path: '/', expires: maxAge };
+    let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
     Cookies.set('Device', deviceName, cookieSettingsObj);
-    Cookies.set('Stay', maxAge, cookieSettingsObj);
+    Cookies.set('Stay', 1, cookieSettingsObj);
     location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
       emailaddress,
     )}&nineCode=${encodeURIComponent(
       '123456789',
     )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
   }
+
+  console.log('>>>SigninCookies', Cookies.get());
 
   // ** *** *** *** *** **
 
@@ -159,7 +160,7 @@ export default function DoenetSignIn() {
         .get(phpUrl, payload)
         .then((resp) => {
           setDeviceName(resp.data.deviceName);
-          let cookieSettingsObj = { path: '/' };
+          let cookieSettingsObj = { path: '/', sameSite: 'strict' };
           if (maxAge > 0) {
             cookieSettingsObj.maxAge = maxAge;
           }
