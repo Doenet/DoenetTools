@@ -31,7 +31,7 @@ import 'codemirror/theme/xq-light.css';
 
 import './Editor.css';
 
-export const fileByContentId = atomFamily({
+const fileByContentId = atomFamily({
   key:"fileByContentId",
   default: selectorFamily({
     key:"fileByContentId/Default",
