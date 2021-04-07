@@ -61,8 +61,6 @@ export default function SignIn() {
     )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
   }
 
-  console.log('>>>SigninCookies', Cookies.get());
-
   // ** *** *** *** *** **
 
   if (signInStage === 'check code') {

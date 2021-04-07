@@ -1,33 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../../Media/Doenet_Logo_Frontpage.png';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-export default function SignOut(props) {
+export default function SignOut() {
   const [signedOutAttempts, setSignedOutAttempts] = useState(0);
 
-  const phpUrl = '/api/signOut.php';
-  const data = {};
-  const payload = {
-    params: data,
-  };
-  axios
-    .get(phpUrl, payload)
-    .then((resp) => {
-      console.log(resp.data);
-    })
-    .catch((error) => {
-      this.setState({ error: error });
-    });
+  useEffect(() => {
+    const phpUrl = '/api/signOut.php';
+    const data = {};
+    const payload = {
+      params: data,
+    };
+    axios
+      .get(phpUrl, payload)
+      .then(() => {
+        Cookies.remove('TrackingConsent', { path: '/', sameSite: 'strict' });
+        Cookies.remove('Stay', {
+          path: '/',
+          expires: 24000,
+          sameSite: 'strict',
+        });
+        Cookies.remove('Device', {
+          path: '/',
+          expires: 24000,
+          sameSite: 'strict',
+        });
+      })
+      .catch((error) => {
+        this.setState({ error: error });
+      });
+  }, []);
 
   const vanillaCookies = document.cookie.split(';');
 
-  Cookies.remove('TrackingConsent', { path: '/', sameSite: 'strict' });
-  // removeCookie('JWT_JS', { path: "/" })
-  Cookies.remove('Stay', { path: '/', expires: 24000, sameSite: 'strict' });
-  Cookies.remove('Device', { path: '/', expires: 24000, sameSite: 'strict' });
-
-  console.log('>>>Cookies', Cookies.get(), vanillaCookies);
   if (vanillaCookies.length === 1 && vanillaCookies[0] === '') {
     return (
       <>
@@ -43,7 +49,13 @@ export default function SignOut(props) {
             margin: '20',
           }}
         >
-          <img style={{ width: '250px', height: '250px' }} src={logo} />
+          <img
+            style={{ width: '250px', height: '250px' }}
+            src={logo}
+            alt={
+              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+            }
+          />
           <div>
             <h2>You are Signed Out!</h2>
           </div>
@@ -67,7 +79,13 @@ export default function SignOut(props) {
             margin: '20',
           }}
         >
-          <img style={{ width: '250px', height: '250px' }} src={logo} />
+          <img
+            style={{ width: '250px', height: '250px' }}
+            src={logo}
+            alt={
+              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+            }
+          />
           <div>
             <h2>FAILED SIGN OUT</h2>
             <p>Please manually remove your cookies.</p>
@@ -95,7 +113,13 @@ export default function SignOut(props) {
           margin: '20',
         }}
       >
-        <img style={{ width: '250px', height: '250px' }} src={logo} />
+        <img
+          style={{ width: '250px', height: '250px' }}
+          src={logo}
+          alt={
+            'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+          }
+        />
         <div>
           <h2>Signing you out...</h2>
         </div>

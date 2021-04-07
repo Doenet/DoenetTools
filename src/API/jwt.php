@@ -12,16 +12,16 @@ use \Firebase\JWT\JWT;
 require_once "/vendor/autoload.php";
 $key = $ini_array['key'];
 
-$emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
-$nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);  
-$deviceName =  mysqli_real_escape_string($conn,$_REQUEST["deviceName"]);  
-$newAccount =  mysqli_real_escape_string($conn,$_REQUEST["newAccount"]);  
-$stay =  mysqli_real_escape_string($conn,$_REQUEST["stay"]);  
+$emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);
+$nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);
+$deviceName =  mysqli_real_escape_string($conn,$_REQUEST["deviceName"]);
+$newAccount =  mysqli_real_escape_string($conn,$_REQUEST["newAccount"]);
+$stay =  mysqli_real_escape_string($conn,$_REQUEST["stay"]);
 
 
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
-FROM user_device 
+FROM user_device
 WHERE email='$emailaddress' AND deviceName='$deviceName'";
 
 $result = $conn->query($sql);
@@ -33,7 +33,7 @@ if ($row['minutes'] > 10){
     echo "Code expired";
 }else{
     $sql = "SELECT signInCode AS nineCode, userId
-    FROM user_device 
+    FROM user_device
     WHERE email='$emailaddress' AND deviceName='$deviceName'";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
@@ -51,23 +51,23 @@ if ($row['minutes'] > 10){
         );
         $jwt = JWT::encode($payload, $key);
 
-        $sql = "UPDATE user_device 
+        $sql = "UPDATE user_device
         SET signedIn = '1'
         WHERE userId='$userId' AND deviceName='$deviceName'";
         $result = $conn->query($sql);
 
 
         $value = $jwt;
-        $expirationTime = 0;    
+        $expirationTime = 0;
         if ($stay == 1){
-            $expirationTime = 2147483647;    
+            $expirationTime = 2147483647;
         }
         $path = '/';
-        //$domain = $ini_array['dbhost']; 
+        //$domain = $ini_array['dbhost'];
         $domain = $_SERVER["SERVER_NAME"];
-        $isSecure = true;  
+        $isSecure = true;
         if ($domain=="localhost"){
-        $isSecure = false;  
+        $isSecure = false;
         }
         $isHttpOnly = true;
         setcookie("JWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
@@ -76,13 +76,9 @@ if ($row['minutes'] > 10){
             header("Location: /accountsettings");
         }else{
             header("Location: /dashboard");
-
         }
     }
-
 }
-    
-
 
 $conn->close();
 
