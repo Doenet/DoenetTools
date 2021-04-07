@@ -19,6 +19,7 @@ $result = $conn->query($sql);
 // set response code - 200 OK
 http_response_code(200);
 
+$path = '/';
 // $domain = $ini_array['dbhost']; 
 $domain = $_SERVER["SERVER_NAME"];
 $isSecure = true;  
@@ -26,9 +27,9 @@ if ($domain=="localhost"){
   $isSecure = false;  
 }
 $isHttpOnly = true;
-$expirationTime = -10;
-setcookie("JWT", "", $expirationTime, "/", $domain, $isSecure, $isHttpOnly);
-setcookie("JWT_JS", "", $expirationTime, "/", $domain, $isSecure, false);
+$expirationTime = time() - 3600;
+setcookie("JWT", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
+setcookie("JWT_JS", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 // make it json format
 // echo json_encode($response_arr);
 
