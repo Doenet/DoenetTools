@@ -201,6 +201,7 @@ export default function DoenetSignIn() {
               type="text"
               ref={codeRef}
               value={nineCode}
+              data-cy="signinCodeInput"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && validCode) {
                   setSignInStage('check code');
@@ -216,6 +217,7 @@ export default function DoenetSignIn() {
           disabled={!validCode}
           style={{}}
           onClick={() => setSignInStage('check code')}
+          data-cy="signInButton"
         >
           Sign In
         </button>
@@ -255,6 +257,7 @@ export default function DoenetSignIn() {
                 label="Email Address"
                 ref={emailRef}
                 value={email}
+                data-cy="signinEmailInput"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && validEmail) {
                     setSignInStage('enter code');
@@ -286,6 +289,7 @@ export default function DoenetSignIn() {
             disabled={!validEmail}
             style={{ float: 'right' }}
             onClick={() => setSignInStage('enter code')}
+            data-cy="sendEmailButton"
           >
             Send Email
           </button>
