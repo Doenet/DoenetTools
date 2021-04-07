@@ -20,7 +20,7 @@ export default function SignIn() {
   const codeRef = useRef(null);
 
   let validEmail = false;
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
     validEmail = true;
   }
 
