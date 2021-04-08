@@ -58,7 +58,7 @@ module.exports = {
     polyfillNode: true,
   },
   devOptions: {
-    openUrl: '/test',
+    openUrl: '/temp',
   },
   buildOptions: {
     watch: true,
