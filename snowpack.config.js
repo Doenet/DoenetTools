@@ -19,15 +19,14 @@ module.exports = {
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
     'src/Tools/_framework': '/_framework',
-    'src/Tools/_reactComponents': '/_reactComponents',
-    'src/Tools/_utils': '/_utils',
     'src/Media': '/media',
     'src/Media/profile_pictures': '/profile_pictures',
     'src/API': '/api',
     'src/Home': '/',
     'src/Viewer': '/viewer',
     'src/Viewer/renderers': '/viewer/renderers',
-
+    'src/_reactComponents': '/_reactComponents',
+    'src/_utils': '/_utils',
   },
   plugins: [
     '@snowpack/plugin-react-refresh',

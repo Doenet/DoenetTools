@@ -10,8 +10,8 @@ import { RecoilRoot } from "recoil";
  * Internal dependencies
  */
 import Library from './Library';
-import { DropTargetsProvider } from "../_reactComponents/DropTarget";
-import { BreadcrumbProvider } from "../_reactComponents/Breadcrumb";
+import { DropTargetsProvider } from "../../_reactComponents/DropTarget";
+import { BreadcrumbProvider } from "../../_reactComponents/Breadcrumb";
 import ToolRoot from "../_framework/ToolRoot";
 
 ReactDOM.render(

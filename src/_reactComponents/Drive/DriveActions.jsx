@@ -24,7 +24,7 @@ import {
   nodePathSelector,
   folderOpenAtom
 } from './Drive';
-import Toast, { useToast } from '../../_framework/Toast';
+import Toast, { useToast } from '../../Tools/_framework/Toast';
 
 const dragShadowId = "dragShadow";
 

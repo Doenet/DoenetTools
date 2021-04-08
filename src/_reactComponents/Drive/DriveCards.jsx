@@ -7,8 +7,8 @@ import Measure from 'react-measure'
 import {
   useHistory
 } from "react-router-dom";
-import { useMenuPanelController } from "../../_framework/Panels/MenuPanel";
-import { drivecardSelectedNodesAtom }from "../../library/Library";
+import { useMenuPanelController } from "../../Tools/_framework/Panels/MenuPanel";
+import { drivecardSelectedNodesAtom }from "../../Tools/library/Library";
 import {
   atom,
   useSetRecoilState,

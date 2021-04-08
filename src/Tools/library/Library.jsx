@@ -39,20 +39,20 @@ import Drive, {
   encodeParams,
   fetchDriveUsers,
   fetchDrivesQuery,
-} from "../_reactComponents/Drive/Drive";
+} from "../../_reactComponents/Drive/Drive";
 import { 
   useAddItem,
   useDeleteItem,
   useRenameItem
-} from "../_reactComponents/Drive/DriveActions";
-import { BreadcrumbContainer } from "../_reactComponents/Breadcrumb";
-import Button from "../_reactComponents/PanelHeaderComponents/Button";
-import DriveCards from "../_reactComponents/Drive/DriveCards";
-import "../_reactComponents/Drive/drivecard.css";
-import DoenetDriveCardMenu from "../_reactComponents/Drive/DoenetDriveCardMenu";
-import '../_utils/util.css';
+} from "../../_reactComponents/Drive/DriveActions";
+import { BreadcrumbContainer } from "../../_reactComponents/Breadcrumb";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button";
+import DriveCards from "../../_reactComponents/Drive/DriveCards";
+import "../../_reactComponents/Drive/drivecard.css";
+import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu";
+import '../../_utils/util.css';
 import GlobalFont from "../../Media/fonts/GlobalFont.js";
-import { driveColors, driveImages } from '../_reactComponents/Drive/util';
+import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
 import Toast, { useToast } from '../_framework/Toast';

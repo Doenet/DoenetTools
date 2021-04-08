@@ -47,7 +47,7 @@ import {
 import Draggable from '../Draggable';
 import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
 import { BreadcrumbContext } from '../Breadcrumb';
-import { drivecardSelectedNodesAtom } from '../../library/Library';
+import { drivecardSelectedNodesAtom } from '../../Tools/library/Library';
 import '../../_utils/util.css';
 import { 
   useDeleteItem,
@@ -55,8 +55,8 @@ import {
   useDragShadowCallbacks,
   useSortFolder
 } from './DriveActions';
-import { IsNavContext } from '../../_framework/Panels/NavPanel'
-import { useToast } from '../../_framework/Toast';
+import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
+import { useToast } from '../../Tools/_framework/Toast';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
