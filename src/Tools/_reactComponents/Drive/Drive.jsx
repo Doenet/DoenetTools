@@ -908,7 +908,7 @@ function Folder(props){
     })
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Deleted item '${props.item?.label}'`, 0, null, 3000);
+        addToast(`Deleted item '${props.item?.label}'`, ToastType.SUCCESS);
       }else{
         onDeleteItemError({errorMessage: resp.data.message});
       }
@@ -926,7 +926,7 @@ function Folder(props){
   const isOpenRef = useRef(isOpen);  // for memoized DnD callbacks
   const isSelectedRef = useRef(isSelected);  // for memoized DnD callbacks
 
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
   const {sortFolder, invalidateSortCache, onSortFolderError} = useSortFolder();
   const {insertDragShadow, removeDragShadow} = useDragShadowCallbacks();
 
@@ -1960,7 +1960,7 @@ function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, onMoveItemsError} = useMoveItems();
 
@@ -2006,7 +2006,7 @@ function useDnDCallbacks() {
       const result = moveItems(replaceDragShadowResp);
       result.then((resp)=>{
         if (resp.data.success){
-          toast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, 0, null, 3000);
+          addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
         }else{
           onMoveItemsError({errorMessage: resp.data.message});
         }

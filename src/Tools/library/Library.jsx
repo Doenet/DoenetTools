@@ -55,7 +55,7 @@ import GlobalFont from "../../Media/fonts/GlobalFont.js";
 import { driveColors, driveImages } from './util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
-import { useToast } from '../_framework/Toast';
+import Toast, { useToast } from '../_framework/Toast';
 
 
 function Container(props){
@@ -470,7 +470,7 @@ const FolderInfoPanel = function(props){
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
   const { renameItem, onRenameItemError } = useRenameItem();
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
 
   const [label,setLabel] = useState(itemInfo.label);
 
@@ -485,7 +485,7 @@ const FolderInfoPanel = function(props){
     });
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+        addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
       }else{
         onRenameItemError({errorMessage: resp.data.message});
       }
@@ -518,7 +518,7 @@ const FolderInfoPanel = function(props){
     });
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+        addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
       }else{
         onDeleteItemError({errorMessage: resp.data.message});
       }
@@ -534,7 +534,7 @@ const DoenetMLInfoPanel = function(props){
 
   const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
   const { renameItem, onRenameItemError } = useRenameItem();
 
   const [label,setLabel] = useState(itemInfo.label);
@@ -552,7 +552,7 @@ const DoenetMLInfoPanel = function(props){
     });
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Renamed item to '${newLabel}'`, 0, null, 3000);
+        addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
       }else{
         onRenameItemError({errorMessage: resp.data.message});
       }
@@ -592,7 +592,7 @@ const DoenetMLInfoPanel = function(props){
     });
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Deleted item '${itemInfo?.label}'`, 0, null, 3000);
+        addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
       }else{
         onDeleteItemError({errorMessage: resp.data.message});
       }
@@ -665,7 +665,7 @@ const ItemInfo = function (){
 
 function AddCourseDriveButton(props){
   const history = useHistory();
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
 
   const createNewDrive = useRecoilCallback(({set})=> 
   async ({label,newDriveId,newCourseId,image,color})=>{
@@ -723,7 +723,7 @@ function AddCourseDriveButton(props){
 
 
   function onError({errorMessage}){
-    toast(`Course not created. ${errorMessage}`, 2, null, 6000);
+    addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
   return <Button value="Create a New Course" callback={()=>{
@@ -736,7 +736,7 @@ function AddCourseDriveButton(props){
     const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
     result.then((resp)=>{
       if (resp.data.success){
-        toast(`Created a new course named '${label}'`, 0, null, 3000);
+        addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
       }else{
         onError({errorMessage: resp.data.message});
       }
@@ -759,7 +759,7 @@ function AddMenuPanel(props){
   let [driveId,folderId] = path.split(":");
   const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
   const { addItem, onAddItemError } = useAddItem();
-  const toast = useToast();
+  const [addToast, ToastType] = useToast();
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
@@ -782,7 +782,7 @@ function AddMenuPanel(props){
     });
     result.then(resp => {
       if (resp.data.success){
-        toast(`Add new item 'Untitled'`, 0, null, 3000);
+        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
       }else{
         onAddItemError({errorMessage: resp.data.message});
       }
@@ -801,7 +801,7 @@ function AddMenuPanel(props){
     });
     result.then(resp => {
       if (resp.data.success){
-        toast(`Add new item 'Untitled'`, 0, null, 3000);
+        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
       }else{
         onAddItemError({errorMessage: resp.data.message});
       }
