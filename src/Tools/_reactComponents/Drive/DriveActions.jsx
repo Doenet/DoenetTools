@@ -88,7 +88,7 @@ export const useAddItem = () => {
       const payload = { 
         params: data 
       };
-      const result = axios.get('/api/AddItem.php', payload);
+      const result = axios.get('/api/addItem.php', payload);
 
       result.then(resp => {
         if (resp.data.success){

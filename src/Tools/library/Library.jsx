@@ -52,7 +52,7 @@ import "../_reactComponents/Drive/drivecard.css";
 import DoenetDriveCardMenu from "../_reactComponents/Drive/DoenetDriveCardMenu";
 import '../_utils/util.css';
 import GlobalFont from "../../Media/fonts/GlobalFont.js";
-import { driveColors, driveImages } from './util';
+import { driveColors, driveImages } from '../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
 import Toast, { useToast } from '../_framework/Toast';
