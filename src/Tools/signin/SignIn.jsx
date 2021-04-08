@@ -47,19 +47,19 @@ export default function SignIn() {
   //Comment this if statement out if you are working on
   // sign in or multiple devices
 
-  if (window.location.hostname === 'localhost') {
-    console.log('Auto Signing In Devuser');
-    let emailaddress = 'devuser@example.com';
-    let deviceName = 'Cacao tree';
-    let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
-    Cookies.set('Device', deviceName, cookieSettingsObj);
-    Cookies.set('Stay', 1, cookieSettingsObj);
-    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-      emailaddress,
-    )}&nineCode=${encodeURIComponent(
-      '123456789',
-    )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
-  }
+  // if (window.location.hostname === 'localhost') {
+  //   console.log('Auto Signing In Devuser');
+  //   let emailaddress = 'devuser@example.com';
+  //   let deviceName = 'Cacao tree';
+  //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
+  //   Cookies.set('Device', deviceName, cookieSettingsObj);
+  //   Cookies.set('Stay', 1, cookieSettingsObj);
+  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //     emailaddress,
+  //   )}&nineCode=${encodeURIComponent(
+  //     '123456789',
+  //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
+  // }
 
   // ** *** *** *** *** **
 
