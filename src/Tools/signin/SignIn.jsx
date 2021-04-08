@@ -47,19 +47,19 @@ export default function SignIn() {
   //Comment this if statement out if you are working on
   // sign in or multiple devices
 
-  if (window.location.hostname === 'localhost') {
-    console.log('Auto Signing In Devuser');
-    let emailaddress = 'devuser@example.com';
-    let deviceName = 'Cacao tree';
-    let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
-    Cookies.set('Device', deviceName, cookieSettingsObj);
-    Cookies.set('Stay', 1, cookieSettingsObj);
-    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-      emailaddress,
-    )}&nineCode=${encodeURIComponent(
-      '123456789',
-    )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
-  }
+  // if (window.location.hostname === 'localhost') {
+  //   console.log('Auto Signing In Devuser');
+  //   let emailaddress = 'devuser@example.com';
+  //   let deviceName = 'Cacao tree';
+  //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
+  //   Cookies.set('Device', deviceName, cookieSettingsObj);
+  //   Cookies.set('Stay', 1, cookieSettingsObj);
+  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //     emailaddress,
+  //   )}&nineCode=${encodeURIComponent(
+  //     '123456789',
+  //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
+  // }
 
   // ** *** *** *** *** **
 
@@ -200,6 +200,7 @@ export default function SignIn() {
               type="text"
               ref={codeRef}
               value={nineCode}
+              data-cy="signinCodeInput"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && validCode) {
                   setSignInStage('check code');
@@ -215,6 +216,7 @@ export default function SignIn() {
           disabled={!validCode}
           style={{}}
           onClick={() => setSignInStage('check code')}
+          data-cy="signInButton"
         >
           Sign In
         </button>
@@ -254,6 +256,7 @@ export default function SignIn() {
                 label="Email Address"
                 ref={emailRef}
                 value={email}
+                data-cy="signinEmailInput"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && validEmail) {
                     setSignInStage('enter code');
@@ -285,6 +288,7 @@ export default function SignIn() {
             disabled={!validEmail}
             style={{ float: 'right' }}
             onClick={() => setSignInStage('enter code')}
+            data-cy="sendEmailButton"
           >
             Send Email
           </button>
