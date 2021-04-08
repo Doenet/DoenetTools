@@ -1000,7 +1000,7 @@ function Folder(props){
     })
   };
 
-  const markFolderDraggedOpened = useCallback(() => {
+  const markFolderDraggedOpened =() => {
     setDragState((old) => {
       let newOpenedFoldersInfo = [...old.openedFoldersInfo];
       newOpenedFoldersInfo.push({driveInstanceId:props.driveInstanceId,driveId:props.driveId,itemId:props.folderId});
@@ -1009,7 +1009,7 @@ function Folder(props){
         openedFoldersInfo: newOpenedFoldersInfo
       }
     })
-  }, [props.driveInstanceId, props.driveId, props.folderId]);
+  };
 
   const onDragOver = ({x, y, dropTargetRef}) => {
     onDragOverContainer({ id: props.folderId, driveId: props.driveId });
@@ -1963,6 +1963,7 @@ function useDnDCallbacks() {
   const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, onMoveItemsError} = useMoveItems();
+  const numItems = useRecoilValue(globalSelectedNodesAtom).length;
 
   const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
@@ -2030,7 +2031,6 @@ function useDnDCallbacks() {
 
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
-    const numItems = useRecoilValue(globalSelectedNodesAtom).length;
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
   }
 
