@@ -11,6 +11,9 @@ const ToolName = styled.span`
     font-weight: 700;
     margin-left: 10px;
 `;
+const Headings = styled.h1`
+  line-height: 1.1em;
+`;
 
 const DoenetLogo = styled.div`
   display: flex;
@@ -64,7 +67,9 @@ const SectionText = styled.div`
   text-align: center;
   max-width: 800px;
   display: inline-block;
-`;
+  margin-left:3em;
+  margin-right:3em;`;
+  
 const ParagraphTags = styled.p`
   text-align: left;
    display: block;
@@ -73,7 +78,10 @@ const ParagraphTags = styled.p`
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     @media (max-width: 768px) {
-      margin:2em;
+        margin-left:1em;
+        margin-right:1em;
+        text-align: left;
+        display: block;
     }`;
 
 const Footer = styled.div`
@@ -99,7 +107,7 @@ export default function DoenetHomePage() {
         </DoenetLogo>
         <CloudColorSection>
           <SectionText>
-            <h1>The Distributed Open Education Network</h1>
+            <Headings>The Distributed Open Education Network</Headings>
             <h4 style={{ marginTop: '0px' }}>
               The free and open data-driven educational technology platform
             </h4>
@@ -137,7 +145,7 @@ export default function DoenetHomePage() {
 
         <ChoclateColorSection>
           <SectionText>
-            <h1 className="section-headline">Introducing DoenetML</h1>
+            <Headings className="section-headline">Introducing DoenetML</Headings>
             <ParagraphTags>
               The markup language DoenetML allows you to build richly
               interactive activities by focusing on the meaning of the elements
@@ -155,7 +163,7 @@ export default function DoenetHomePage() {
         </ChoclateColorSection>
         <ShadowColorSection>
           <SectionText>
-            <h1 className="section-headline">Timeline</h1>
+            <Headings className="section-headline">Timeline</Headings>
             <ParagraphTags>
               In Fall 2020, we piloted Doenet in a small number of courses. We
               used Doenet for both content delivery and learning experiments and
@@ -170,6 +178,7 @@ export default function DoenetHomePage() {
           </SectionText>
         </ShadowColorSection>
         <Footer>
+          <SectionText>
           <div>
             <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
             <div style={{ marginBottom: '40px' }}>
@@ -206,6 +215,7 @@ export default function DoenetHomePage() {
               Science Foundation.{' '}
             </p>
           </div>
+          </SectionText>       
         </Footer>
       </mainPanel>
     </Tool>
