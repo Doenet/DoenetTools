@@ -15,8 +15,8 @@ const contentDoenetMLAtom = atom({
 
 export default function Content(props) {
   console.log("props", props);
-  // let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));      //TODO
-  // let newParams = {...urlParamsObj} 
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));      //TODO
+  let newParams = {...urlParamsObj} 
 
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (contentId)=>{
@@ -27,9 +27,9 @@ export default function Content(props) {
     set(contentDoenetMLAtom,{updateNumber,doenetML})
   })
 
-//   useEffect(() => {                         
-//     initDoenetML(newParams.contentId)
-//  }, []);
+  useEffect(() => {                         
+    initDoenetML(newParams.contentId)
+ }, []);
 
  const viewerDoenetML = useRecoilValue(contentDoenetMLAtom);
 
@@ -41,30 +41,35 @@ export default function Content(props) {
   const showFeedback = true;
   const showHints = true;
   const ignoreDatabase = true;
-  const requestedVariant = {index:1}; //????
+  const requestedVariant = {index:1}; 
   return (
     
     <Tool>
+      <headerPanel title="Content">
 
+      </headerPanel>
+       <mainPanel>
+
+         <p>DoenetViewer</p>
+         {newParams.contentId ? <DoenetViewer
+          key={'doenetviewer' + viewerDoenetML?.updateNumber}
+          doenetML={viewerDoenetML?.doenetML}
+          flags={{
+            showCorrectness,
+            readOnly,
+            solutionDisplayMode,
+            showFeedback,
+            showHints,
+          }}
+          attemptNumber={attemptNumber}
+          ignoreDatabase={ignoreDatabase}
+          requestedVariant={requestedVariant}
+        /> : <p>Need a contentId to display content...!</p>}
+       </mainPanel>
     </Tool>
-    // {newParams.contentId ?
-    // <Tool>
-    //   <headerPanel title="Content"></headerPanel>
-    //   <mainPanel>
-    //     <DoenetViewer
-    //       key={'doenetviewer' + viewerDoenetML?.updateNumber}
-    //       doenetML={viewerDoenetML?.doenetML}
-    //       flags={{
-    //         showCorrectness: true,
-    //         readOnly: true,
-    //         showFeedback: true,
-    //         showHints: true,
-    //       }}
-    //       ignoreDatabase={false}
-    //       requestedVariant={requestedVariant}
-    //     />
-    //   </mainPanel>
-    // </Tool>
-    // : <p>Need a contentId to display content...!</p>}
+
+
+
+ 
   );
 }

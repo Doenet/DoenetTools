@@ -19,7 +19,7 @@ ReactDOM.render(
           render={(routeprops) => (
             <ToolRoot
               route={{ ...routeprops }}
-              tool={<Content route={ ...routeprops } key={'BaseTool'} />}
+              tool={<Content route={ routeprops } key={'BaseTool'} />}
             />
           )}
         />
