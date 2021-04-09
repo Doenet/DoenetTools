@@ -5,7 +5,7 @@ import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 // import { BreadcrumbProvider } from "../imports/Breadcrumb";
 import { RecoilRoot } from 'recoil';
 
-import DoenetContent from './DoenetContent';
+import Content from './Content';
 import ToolRoot from '../_framework/ToolRoot';
 
 ReactDOM.render(
@@ -19,7 +19,7 @@ ReactDOM.render(
           render={(routeprops) => (
             <ToolRoot
               route={{ ...routeprops }}
-              tool={<DoenetContent key={'BaseTool'} />}
+              tool={<Content route={ ...routeprops } key={'BaseTool'} />}
             />
           )}
         />
