@@ -53,7 +53,7 @@ const LabelContainer = Styled.p`
 
 const DriveCard = props => {
   // console.log(">>> Drive Card", props)
-  let imageURL = `/media/${props.image}`
+  let imageURL = `/media/drive_pictures/${props.image}`
 
 return(
   <DriveCardContainer
