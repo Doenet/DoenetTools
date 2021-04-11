@@ -2192,7 +2192,7 @@ function useUpdateBreadcrumb(props) {
   }
 }
 
-const DragGhost = ({ id, element, numItems }) => {
+const DragGhost = ({ id, element, numItems, copyMode=false }) => {
 
   const containerStyle = {
     transform: "rotate(-5deg)",
@@ -2256,32 +2256,30 @@ const DragGhost = ({ id, element, numItems }) => {
   //   marginLeft: "-60px"
   // }
 
-  return (
-    <div id={id} style={containerStyle}>
-    {
-      numItems < 2 ? 
-        <div
-          style={singleItemStyle}>
-          { element }
-        </div>
-      :
-      <div 
-        // style={{minWidth: "300px"}}
-        >
-        <div
-          style={multipleItemsNumCircleContainerStyle}>
-          {numItems}
-        </div>
-        <div
-          // style={multipleItemsRearStackStyle}
-          >
-          <div
-            style={singleItemStyle}>
-            { element }
-          </div>
-        </div>
-      </div>
-    }      
+  let dragGhost = <>
+    <div
+      style={singleItemStyle}>
+      { element }
     </div>
-  )
+  </>;;
+
+  if (numItems >= 2) {
+    const numItemsIndicator = <>
+      <div
+        style={multipleItemsNumCircleContainerStyle}>
+        {numItems}
+      </div>
+    </>;
+
+    dragGhost = <>
+      { numItemsIndicator }
+      { dragGhost }
+    </>;
+  }
+
+  dragGhost = <div id={id} style={containerStyle}>
+    { dragGhost }
+  </div>
+
+  return dragGhost;
 }
