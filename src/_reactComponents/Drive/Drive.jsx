@@ -243,7 +243,8 @@ export const dragStateAtom = atom({
     isDraggedOverBreadcrumb: false,
     dragShadowDriveId: null,
     dragShadowParentId: null,
-    openedFoldersInfo: null
+    openedFoldersInfo: null,
+    copyMode: false
   }
 })
 const dragShadowId = "dragShadow";
@@ -1243,7 +1244,7 @@ function Folder(props){
       key={`dnode${props.driveInstanceId}${props.folderId}`} 
       id={props.folderId}
       className={draggableClassName}
-      onDragStart={() => onDragStart({ nodeId: props.folderId, driveId: props.driveId, onDragStartCallback })}
+      onDragStart={({ev}) => onDragStart({ ev, nodeId: props.folderId, driveId: props.driveId, onDragStartCallback })}
       onDrag={onDrag}
       onDragEnd={onDragEndCb}
       ghostElement={renderDragGhost(props.folderId, folder)}
@@ -1770,7 +1771,7 @@ const DoenetML = React.memo((props)=>{
         key={`dnode${props.driveInstanceId}${props.item.itemId}`} 
         id={props.item.itemId}
         className={draggableClassName}
-        onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
+        onDragStart={({ev}) => onDragStart({ ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
         onDragEnd={onDragEndCb}
@@ -1927,7 +1928,7 @@ const Url = React.memo((props)=>{
       key={`dnode${props.driveInstanceId}${props.item.itemId}`} 
       id={props.item.itemId}
       className={draggableClassName}
-      onDragStart={() => onDragStart({ nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
+      onDragStart={({ev}) => onDragStart({ ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
       onDrag={onDrag}
       onDragEnd={onDragEnd}
       onDragEnd={onDragEndCb}
@@ -1963,23 +1964,26 @@ function useDnDCallbacks() {
   const {moveItems, onMoveItemsError} = useMoveItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
 
-  const onDragStart = ({ nodeId, driveId, onDragStartCallback }) => {
+  const onDragStart = ({ ev=null, nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
     if (globalSelectedNodes.length === 0) {
       draggedItemsId.add(nodeId);
     } else {
       const globalSelectedNodeIds = [];
       for (let globalSelectedNode of globalSelectedNodes) globalSelectedNodeIds.push(globalSelectedNode.itemId);
-
       draggedItemsId = new Set(globalSelectedNodeIds);
     }
+    // Check if option key on hold
+    let copyMode = false;
+    if (ev && ev.altKey) copyMode = true;
 
     setDragState((dragState) => ({      
       ...dragState,
       isDragging: true,
       draggedOverDriveId: driveId,
       draggedItemsId,
-      openedFoldersInfo: []
+      openedFoldersInfo: [],
+      copyMode: copyMode
     }));
     onDragStartCallback?.();
   };
@@ -2022,7 +2026,8 @@ function useDnDCallbacks() {
       isDragging: false,
       draggedOverDriveId: null,
       draggedItemsId: null,
-      openedFoldersInfo: []
+      openedFoldersInfo: [],
+      copyMode: false
     }));
     dropActions.handleDrop();
   };
