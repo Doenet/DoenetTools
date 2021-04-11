@@ -2034,7 +2034,7 @@ function useDnDCallbacks() {
 
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
-    return <DragGhost id={dragGhostId} numItems={numItems} element={element} />;
+    return <DragGhost id={dragGhostId} numItems={numItems} element={element} copyMode={dragState.copyMode} />;
   }
 
   return {
@@ -2233,6 +2233,22 @@ const DragGhost = ({ id, element, numItems, copyMode=false }) => {
     // marginLeft: "-60px"
   }
 
+  const copyModeIndicatorCircleContainerStyle = {
+    position: 'absolute',
+    zIndex: "5",
+    top: "6px",
+    left: "5px",
+    borderRadius: '25px',
+    background: '#1A5A99',
+    fontSize: '12px',
+    color: 'white',
+    width: '25px',
+    height: '25px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center', 
+  }
+
   // const multipleItemsRearStackStyle = {
   //   boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
   //   borderRadius: '4px',
@@ -2273,6 +2289,20 @@ const DragGhost = ({ id, element, numItems, copyMode=false }) => {
 
     dragGhost = <>
       { numItemsIndicator }
+      { dragGhost }
+    </>;
+  }
+
+  if (copyMode) {
+    const copyModeIndicator = <>
+      <div
+        style={copyModeIndicatorCircleContainerStyle}>
+          +
+      </div>
+    </>;
+
+    dragGhost = <>
+      { copyModeIndicator }
       { dragGhost }
     </>;
   }
