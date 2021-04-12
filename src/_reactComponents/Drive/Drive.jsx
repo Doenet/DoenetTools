@@ -374,23 +374,6 @@ export const folderCacheDirtyAtom = atomFamily({
   default:false
 })
 
-export const folderInfoSelectorActions = Object.freeze({
-  ADD_ITEM: "addItem",
-  DELETE_ITEM: "delete item",
-  MOVE_ITEMS: "move items",
-  SORT: "sort",
-  PUBLISH_ASSIGNMENT: "assignment was published",
-  PUBLISH_CONTENT: "content was published",
-  ASSIGNMENT_TO_CONTENT: "assignment to content",
-  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
-  INSERT_DRAG_SHADOW: "insertDragShadow",
-  REMOVE_DRAG_SHADOW: "removeDragShadow",
-  REPLACE_DRAG_SHADOW: "replaceDragShadow",
-  INVALIDATE_SORT_CACHE: "invalidate sort cache",
-  RENAME_ITEM: "rename item",
-  CLEAN_UP_DRAG: "clean up drag"
-});
-
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
@@ -408,29 +391,6 @@ export const folderInfoSelector = selectorFamily({
     newFolderInfo.sortBy = folderSortOrder
     return {folderInfo: newFolderInfo, contentsDictionary, contentIdsArr};
   },
-  set: (driveIdInstanceIdFolderId) => async ({set,get}, instructions)=>{
-    const { driveId, folderId } = driveIdInstanceIdFolderId;
-
-    const dirtyActions = new Set([folderInfoSelectorActions.ADD_ITEM, folderInfoSelectorActions.DELETE_ITEM])
-    if (dirtyActions.has(instructions.instructionType)) {
-      set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortOptions.DEFAULT);
-    }
-
-    switch(instructions.instructionType){
-      case folderInfoSelectorActions.SORT:
-        const {contentIds} = get(folderDictionarySelector({driveId, folderId}))
-        set(folderSortOrderAtom(driveIdInstanceIdFolderId), instructions.sortKey);
-        
-        // if sortOrder not already cached in folderDictionary
-        if (!contentIds[instructions.sortKey]) {
-          set(folderDictionarySelector({driveId, folderId}), instructions);
-        }
-        
-        break;
-      default:
-        set(folderDictionarySelector({driveId, folderId}), instructions);
-    }
-  }
 });
 
 export const sortItems = ({ sortKey, nodeObjs, defaultFolderChildrenIds }) => {
@@ -2006,16 +1966,30 @@ function useDnDCallbacks() {
   const onDragEnd = () => {
     replaceDragShadow().then(replaceDragShadowResp => {
       if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
-      const result = moveItems(replaceDragShadowResp);
-      result.then((resp)=>{
-        if (resp.data.success){
-          addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-        }else{
-          onMoveItemsError({errorMessage: resp.data.message});
-        }
-      }).catch( e => {
-        onMoveItemsError({errorMessage: e.message});
-      })
+
+      if (dragState.copyMode) {
+        const result = moveItems(replaceDragShadowResp);
+        result.then((resp)=>{
+          if (resp.data.success){
+            addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+          }else{
+            onMoveItemsError({errorMessage: resp.data.message});
+          }
+        }).catch( e => {
+          onMoveItemsError({errorMessage: e.message});
+        })
+      } else {
+        const result = moveItems(replaceDragShadowResp);
+        result.then((resp)=>{
+          if (resp.data.success){
+            addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+          }else{
+            onMoveItemsError({errorMessage: resp.data.message});
+          }
+        }).catch( e => {
+          onMoveItemsError({errorMessage: e.message});
+        })  
+      }
     });
 
     cleanUpDragShadow();
