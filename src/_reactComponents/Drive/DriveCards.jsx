@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
 import DriveCard from './DoenetDriveCard';
-import { useTransition, animated,useSpring, useChain ,config} from "react-spring";
+// import { useTransition, animated,useSpring, useChain ,config} from "react-spring";
 import "./drivecard.css";
-// import useMeasure  from "../Tools/useMeasure";
 import Measure from 'react-measure'
 import {
   useHistory
@@ -66,8 +65,6 @@ const DriveCardWrapper = (props) => {
       .join("&");
   let driveCardItems =[];
   let heights = [];
-  // console.log(">>>> props.driveInfo",props.driveInfo );
-  // const [bind, { width },columns] = useMeasure();
   const [width, setWidth] = useState(0);
   const getColumns = (width) => {
     if(width > 1500){return 5;}
@@ -102,47 +99,6 @@ const DriveCardWrapper = (props) => {
     const xy = [((width) / columns) * column, (heights[column] += 250) - 250]; // X = container width / number of columns * column index, Y = it's just the height of the current column
     return { ...child, xy, width: (width / columns), height: 250};
   });
-  // const springRef = useRef()
-  // const { size, opacity, ...rest } = useSpring({
-  //   ref: springRef,
-  //   // config: config.stiff,
-  //   from: { size: '100%', background: 'hotpink' },
-  //   to: { size:  '100%' , background:'white' }
-  // })
-  // const transRef = useRef()
-   const transitions = useTransition(driveCardItems, (item) => item.driveId, {
-    // ref: transRef,
-      from: ({ 
-        xy, width, height }) => ({
-        xy,
-        width,
-        height,
-        opacity: 0,
-        scale: 1,
-        shadow : 0,
-        zIndex:0,
-            }),
-
-      enter: ({
-        xy, width, height }) => ({
-        xy,
-        width,
-        height,
-        opacity: 0,
-        scale: 1,
-        shadow : 0,
-        zIndex:0,
-      }),
-      update: ({
-         xy, width, height }) => ({ xy, width, height, scale: 1,opacity: 1, shadow : 0,zIndex:0,
-        }),
-      leave: { height: 0, opacity: 0, scale: 0 },
-      config: { mass: 5, tension: 5000, friction: 1000 },
-      trail: 25
-    });
-    // useChain([springRef, transRef], [0, 2])
-
-    // console.log(">>>> transitions", transitions);
 
  
   const [on, toggle] = useState(false);  
@@ -205,17 +161,17 @@ const DriveCardWrapper = (props) => {
             finalArray = [...old];
             initalDriveId = old[old.length-1].driveId;
           }
-          let firstDriveId = transitions.findIndex((j) => j.item.driveId === item.driveId);
-          let lastDriveId = transitions.findIndex((k)=>k.item.driveId === initalDriveId);
+          let firstDriveId = driveCardItems.findIndex((j) => j.driveId === item.driveId);
+          let lastDriveId = driveCardItems.findIndex((k)=>k.driveId === initalDriveId);
           if(firstDriveId > lastDriveId)
           {
-            let slicedArr = transitions.slice(lastDriveId,firstDriveId+1);
-            let filteredArr = slicedArr.map((l)=>l.item);
+            let slicedArr = driveCardItems.slice(lastDriveId,firstDriveId+1);
+            let filteredArr = slicedArr.map((l)=>l);
             finalArray = [...finalArray,...filteredArr];
           }
           else{
-            let slicedArr = transitions.slice(firstDriveId,lastDriveId+1);
-            let filteredArr = slicedArr.map((m)=>m.item);
+            let slicedArr = driveCardItems.slice(firstDriveId,lastDriveId+1);
+            let filteredArr = slicedArr.map((m)=>m);
             finalArray = [...finalArray,...filteredArr];
           }
           let outputArray = finalArray.reduce((uniue,index) => uniue.find((el)=> (el.driveId==index.driveId) ? true :false) ? uniue:[...uniue,index],[]);
@@ -247,10 +203,8 @@ const DriveCardWrapper = (props) => {
       } );
     }   }
 
-  //  console.log('>>>> drivecard selection item', item);
 
  }
-
  const getSelectedCard = (cardItem) => {
    if(drivecardSelectedValue.length == 0)
    {
@@ -270,23 +224,17 @@ const DriveCardWrapper = (props) => {
       {({ measureRef }) => (
       <div ref={measureRef}
         style={{
-          // height:isOneDriveSelect ? Math.max(...heights)+50  :`calc(100vh - 60px)`,
-          // height:Math.max(...heights)+50,
            width: '100%'
         }}
         className={`list`}
       >
-        {transitions.map(({ item, props }, index) => {
+        {driveCardItems.map((item, index) => {
           let selectedCard = getSelectedCard(item);
           return (
-            <animated.div
+            <div
               key={index}
               className={`adiv ${selectedCard ? "borderselection" : ""}`}
               style={{
-                transform: props.xy.interpolate((x, y) => {
-                  return `translate(${0}px,${0}px)`;
-                }),
-                // ...props,
                 width:250,
                 height: 250,
                 opacity: 1,
@@ -321,7 +269,7 @@ const DriveCardWrapper = (props) => {
                     selectedCard={selectedCard}
                   />
               </div>
-            </animated.div>
+            </div>
           );
         })}
       </div>

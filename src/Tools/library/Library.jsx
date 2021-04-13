@@ -946,12 +946,12 @@ export default function Library(props) {
         tabIndex={0}
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
-       {/* <DriveCards
+       <DriveCards
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
        driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
-       /> */}
+       />
         </div>
         
           
