@@ -16,7 +16,8 @@ const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    'mainControls . supportControls' 40px
+    'mainControls . supportControls' ${({ $hasRespCont }) =>
+      $hasRespCont ? 40 : 0}px
     'mainPanel . supportPanel' 1.5fr
     'mainPanel handle supportPanel' 1fr
     'mainPanel . supportPanel' 1.5fr
@@ -68,13 +69,6 @@ export const useSupportDividerController = () => {
             : calcInfo(newProportion),
       }));
 
-      console.log(
-        '>>>setting to',
-        (newProportion ?? 1) === 1
-          ? 'oldInfo.propotion'
-          : calcInfo(newProportion),
-      );
-
       if (refToClear) {
         refToClear.current.style.gridTemplateColumns = null;
       }
@@ -90,6 +84,10 @@ export default function ContentPanel({ main, support }) {
   const setDivider = useSupportDividerController();
   const panelInfo = useRecoilValue(panelPropotion(stackId));
   const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+
+  let hasRespCont =
+    (support?.props?.responsiveControls || main?.props?.responsiveControls) ??
+    false;
 
   useEffect(() => {
     setDivider(support?.props?.isInitOpen ?? false);
@@ -140,6 +138,7 @@ export default function ContentPanel({ main, support }) {
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
       onClick={clearDriveSelections}
+      $hasRespCont={hasRespCont}
       $proportion={panelInfo[1]}
     >
       {main}

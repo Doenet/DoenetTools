@@ -30,7 +30,7 @@ export default function DoenetExampleTool() {
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </mainPanel>
 
-      <supportPanel isInitOpen>
+      <supportPanel isInitOpen responsiveControls={<p>tests</p>}>
         <p>Support Panel</p>
       </supportPanel>
 

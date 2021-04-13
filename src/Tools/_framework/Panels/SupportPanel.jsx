@@ -20,9 +20,7 @@ const ControlsWrapper = styled.div`
 export default function SupportPanel({ children, responsiveControls }) {
   return (
     <>
-      {responsiveControls ? (
-        <ControlsWrapper>{responsiveControls}</ControlsWrapper>
-      ) : null}
+      <ControlsWrapper>{responsiveControls}</ControlsWrapper>
       <SupportWapper>{children}</SupportWapper>
     </>
   );
