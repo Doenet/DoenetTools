@@ -30,11 +30,11 @@ export default function DoenetExampleTool() {
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </mainPanel>
 
-      <supportPanel isInitOpen responsiveControls={<p>tests</p>}>
+      <supportPanel isInitOpen>
         <p>Support Panel</p>
       </supportPanel>
 
-      <menuPanel title="edit">
+      <menuPanel title="edit" isInitOpen>
         <p>control important stuff</p>
         {/* <CollapseSection title="toasts"> */}
         {/* <SectionDivider type="double"> */}

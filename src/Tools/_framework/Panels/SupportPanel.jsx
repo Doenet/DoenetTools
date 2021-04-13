@@ -10,6 +10,7 @@ const SupportWapper = styled.div`
 `;
 
 const ControlsWrapper = styled.div`
+  overflow: auto;
   grid-area: supportControls;
   display: flex;
   gap: 4px;
