@@ -1,34 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilCallback,
-  useSetRecoilState,
-} from 'recoil';
-import { panelProportion } from './ContentPanel';
-import { useStackId } from '../ToolRoot';
-
-const supportVisible = atomFamily({
-  key: 'supportVisibleAtom',
-  default: false,
-});
-
-export const useSupportPanelController = () => {
-  const stackId = useStackId();
-  const supportController = useRecoilCallback(
-    ({ snapshot, set }) => (newProportion) => {
-      const visible = snapshot.getLoadable(supportVisible(stackId));
-      set(panelProportion(stackId), newProportion ?? (visible ? 1 : 0));
-      set(
-        supportVisible(stackId),
-        (newProportion > 0.95 || newProportion == 0 ? false : true) ?? !visible,
-      );
-    },
-    [stackId],
-  );
-  return supportController;
-};
 
 const SupportWapper = styled.div`
   overflow: auto;
@@ -49,7 +20,9 @@ const ControlsWrapper = styled.div`
 export default function SupportPanel({ children, responsiveControls }) {
   return (
     <>
-      <ControlsWrapper>{responsiveControls}</ControlsWrapper>
+      {responsiveControls ? (
+        <ControlsWrapper>{responsiveControls}</ControlsWrapper>
+      ) : null}
       <SupportWapper>{children}</SupportWapper>
     </>
   );

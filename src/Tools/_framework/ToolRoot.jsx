@@ -11,9 +11,8 @@ import Calendar from './Overlays/Calendar';
 import Image from './Overlays/Image';
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
-import { useSupportPanelController } from './Panels/SupportPanel';
+import { useSupportDividerController } from './Panels/ContentPanel';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
-// import doenetImage from "../../media/Doenet_Logo_cloud_only.png";
 
 const layerStackAtom = atom({
   key: 'layerStackAtom',
@@ -23,7 +22,7 @@ const layerStackAtom = atom({
 export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
   const activateMenuPanel = useMenuPanelController();
-  const activateSupportPanel = useSupportPanelController();
+  const activateSupportPanel = useSupportDividerController();
 
   const openOverlay = ({
     type,
@@ -73,7 +72,6 @@ export const useToolControlHelper = () => {
         break;
       default:
         console.error('Unknown Overlay Name');
-      // throw new Error("Unknown Overlay Name");
     }
   };
 
@@ -102,7 +100,7 @@ export const useStackId = () => {
   return stackId;
 };
 
-export default function LayerRoot({ tool }) {
+export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
 
   return (

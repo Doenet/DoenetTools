@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { animated } from "react-spring";
-import NavPanel from "./Panels/NavPanel";
-import HeaderPanel from "./Panels/HeaderPanel";
-import ContentPanel from "./Panels/ContentPanel";
-import MainPanel from "./Panels/MainPanel";
-import SupportPanel from "./Panels/SupportPanel";
-import MenuPanel from "./Panels/MenuPanel";
-import { useStackId } from "./ToolRoot";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { animated } from 'react-spring';
+import NavPanel from './Panels/NavPanel';
+import HeaderPanel from './Panels/HeaderPanel';
+import ContentPanel from './Panels/ContentPanel';
+import MainPanel from './Panels/MainPanel';
+import SupportPanel from './Panels/SupportPanel';
+import MenuPanel from './Panels/MenuPanel';
+import { useStackId } from './ToolRoot';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
-    "navPanel headerPanel menuPanel" 60px
-    "navPanel contentPanel menuPanel" 1fr
+    'navPanel headerPanel menuPanel' 60px
+    'navPanel contentPanel menuPanel' 1fr
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
@@ -27,11 +27,11 @@ const ToolContainer = styled(animated.div)`
 `;
 
 const implementedToolParts = [
-  "navPanel",
-  "headerPanel",
-  "mainPanel",
-  "supportPanel",
-  "menuPanel",
+  'navPanel',
+  'headerPanel',
+  'mainPanel',
+  'supportPanel',
+  'menuPanel',
 ];
 
 export default function Tool({ children }) {
@@ -49,9 +49,9 @@ export default function Tool({ children }) {
           if (implementedToolParts.includes(child.type)) {
             let newProps = { ...child.props };
             delete newProps.children;
-            if (child.type === "menuPanel") {
+            if (child.type === 'menuPanel') {
               if (!toolParts.menuPanel) {
-                toolParts["menuPanel"] = [];
+                toolParts['menuPanel'] = [];
               }
               toolParts.menuPanel.push({
                 children: child.props.children,

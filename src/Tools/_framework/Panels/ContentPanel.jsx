@@ -1,16 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  useSetRecoilState,
-  useRecoilState,
   atomFamily,
+  selectorFamily,
+  useRecoilCallback,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
-// import { clearDriveAndItemSelections } from "../../Drive";
-import { useSupportPanelController } from './SupportPanel';
 import { useStackId } from '../ToolRoot';
+import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
 
 const Wrapper = styled.div`
   grid-area: contentPanel;
@@ -41,24 +41,59 @@ const DragHandle = styled.div`
   box-sizing: border-box;
 `;
 
-export const panelProportion = atomFamily({
-  key: 'panelProportionAtom',
-  default: 1,
+const panelsInfoAtom = atomFamily({
+  key: 'panelsInfoAtom',
+  default: { propotion: 0.5, isActive: false },
 });
+
+const panelPropotion = selectorFamily({
+  key: 'panelPropotion',
+  get: (id) => ({ get }) => {
+    const info = get(panelsInfoAtom(id));
+    return [info.isActive, info.isActive ? info.propotion : 1];
+  },
+});
+
+const calcInfo = (num) => (0.1 < num ? (num < 0.85 ? num : 1) : 0.1);
+
+export const useSupportDividerController = () => {
+  const stackId = useStackId();
+  const supportController = useRecoilCallback(
+    ({ set }) => (newIsActive, newProportion, refToClear) => {
+      set(panelsInfoAtom(stackId), (oldInfo) => ({
+        isActive: newProportion === 1 ? false : newIsActive,
+        propotion:
+          (newProportion ?? 1) === 1
+            ? oldInfo.propotion
+            : calcInfo(newProportion),
+      }));
+
+      console.log(
+        '>>>setting to',
+        (newProportion ?? 1) === 1
+          ? 'oldInfo.propotion'
+          : calcInfo(newProportion),
+      );
+
+      if (refToClear) {
+        refToClear.current.style.gridTemplateColumns = null;
+      }
+    },
+    [stackId],
+  );
+  return supportController;
+};
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   const stackId = useStackId();
-  const setProportion = useSupportPanelController();
-  const proportion = useRecoilValue(panelProportion(stackId));
-  //   , setSupportController] = useRecoilState(
-  //   supportPanelControl(stackId)
-  // );
-  // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+  const setDivider = useSupportDividerController();
+  const panelInfo = useRecoilValue(panelPropotion(stackId));
+  const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   useEffect(() => {
-    if (support?.props?.isInitOpen) setProportion(0.5);
-  }, [support?.props.isInitOpen, setProportion]);
+    setDivider(support?.props?.isInitOpen ?? false);
+  }, [support?.props.isInitOpen, setDivider]);
 
   let handleClicked = false;
   let handleDragged = false;
@@ -69,35 +104,31 @@ export default function ContentPanel({ main, support }) {
   };
 
   const onMouseMove = (event) => {
-    // Only activate if handle was clicked
     if (handleClicked) {
       event.preventDefault();
       handleDragged = true;
-      let proportion =
+
+      let proportion = calcInfo(
         (event.clientX - wrapperRef.current.offsetLeft) /
-        wrapperRef.current.clientWidth;
-      //use the ref to save on
-      wrapperRef.current.style.gridTemplateColumns =
-        proportion < 0.95
-          ? proportion > 0.1
-            ? `${proportion}fr auto ${1 - proportion}fr`
-            : '0.1fr auto 0.9fr'
-          : '0.95fr auto 0.05fr';
-      wrapperRef.current.proportion =
-        proportion > 0.95 ? 1 : proportion < 0.1 ? 0.1 : proportion;
+          wrapperRef.current.clientWidth,
+      );
+
+      //using a ref to save without react refresh
+      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr auto ${
+        1 - proportion
+      }fr`;
+      wrapperRef.current.proportion = proportion;
     }
   };
 
   const onMouseUp = () => {
-    //Only updates the proportions on mouse up
     if (handleClicked) {
       handleClicked = false;
       if (handleDragged) {
         handleDragged = false;
-        setProportion(wrapperRef.current.proportion);
-        wrapperRef.current.style.gridTemplateColumns = null;
+        setDivider(true, wrapperRef.current.proportion, wrapperRef);
       } else {
-        setProportion();
+        setDivider(!panelInfo[0]);
       }
     }
   };
@@ -108,8 +139,8 @@ export default function ContentPanel({ main, support }) {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
-      // onClick={clearDriveSelections}
-      $proportion={proportion}
+      onClick={clearDriveSelections}
+      $proportion={panelInfo[1]}
     >
       {main}
       {support ? (
