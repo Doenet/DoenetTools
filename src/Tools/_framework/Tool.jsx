@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
-import NavPanel from './Panels/NavPanel';
-import HeaderPanel from './Panels/HeaderPanel';
 import ContentPanel from './Panels/ContentPanel';
-import MainPanel from './Panels/MainPanel';
-import SupportPanel from './Panels/SupportPanel';
-import MenuPanel from './Panels/MenuPanel';
 import { useStackId } from './ToolRoot';
 
 const ToolContainer = styled(animated.div)`
@@ -41,6 +36,21 @@ export default function Tool({ children }) {
   useEffect(() => {
     //lowercase names logic
     var toolParts = {};
+    const NavPanel = lazy(() => {
+      import('./Panels/NavPanel');
+    });
+    const HeaderPanel = lazy(() => {
+      import('./Panels/HeaderPanel');
+    });
+    const MainPanel = lazy(() => {
+      import('./Panels/MainPanel');
+    });
+    const SupportPanel = lazy(() => {
+      import('./Panels/SupportPanel');
+    });
+    const MenuPanel = lazy(() => {
+      import('./Panels/MenuPanel');
+    });
 
     if (children) {
       if (Array.isArray(children)) {
