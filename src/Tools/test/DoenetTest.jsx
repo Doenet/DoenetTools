@@ -21,7 +21,7 @@ export default function DoenetTest(){
   const showFeedback = true;
   const showHints = true;
   const ignoreDatabase = true;
-  const requestedVariant = '1'; //????
+  const requestedVariant = {index: 1}
 
   //For Cypress Test Use
   window.onmessage = (e)=>{
