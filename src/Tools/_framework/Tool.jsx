@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 import ContentPanel from './Panels/ContentPanel';
@@ -36,21 +36,12 @@ export default function Tool({ children }) {
   useEffect(() => {
     //lowercase names logic
     var toolParts = {};
-    const NavPanel = lazy(() => {
-      import('./Panels/NavPanel');
-    });
-    const HeaderPanel = lazy(() => {
-      import('./Panels/HeaderPanel');
-    });
-    const MainPanel = lazy(() => {
-      import('./Panels/MainPanel');
-    });
-    const SupportPanel = lazy(() => {
-      import('./Panels/SupportPanel');
-    });
-    const MenuPanel = lazy(() => {
-      import('./Panels/MenuPanel');
-    });
+
+    const NavPanel = lazy(() => import('./Panels/NavPanel'));
+    const HeaderPanel = lazy(() => import('./Panels/HeaderPanel'));
+    const MainPanel = lazy(() => import('./Panels/MainPanel'));
+    const SupportPanel = lazy(() => import('./Panels/SupportPanel'));
+    const MenuPanel = lazy(() => import('./Panels/MenuPanel'));
 
     if (children) {
       if (Array.isArray(children)) {
@@ -136,16 +127,19 @@ export default function Tool({ children }) {
         </MenuPanel>
       );
     }
+
     setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
   }, [children, stackId]);
 
   return (
-    <ToolContainer $isOverlay={stackId > 0}>
-      {panels.navPanel}
-      {panels.headerPanel}
-      <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
-      {panels.menuPanel}
-      {/* <ReactQueryDevtools /> */}
-    </ToolContainer>
+    <Suspense fallback={<div>loading...</div>}>
+      <ToolContainer $isOverlay={stackId > 0}>
+        {panels.navPanel}
+        {panels.headerPanel}
+        <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
+        {panels.menuPanel}
+        {/* <ReactQueryDevtools /> */}
+      </ToolContainer>
+    </Suspense>
   );
 }
