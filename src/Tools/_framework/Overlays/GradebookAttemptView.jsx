@@ -22,7 +22,9 @@ export default function GradebookDoenetMLView(props){
     //console.log(assignmentId, userId, attemptNumber);
     
     let specificAttempt = useRecoilValueLoadable(specificAttemptData({assignmentId, userId, attemptNumber}))
-    
+    console.log(specificAttempt.state, specificAttempt.contents)
+    specificAttempt.state
+
     return(
         <Tool>
             <headerPanel></headerPanel>

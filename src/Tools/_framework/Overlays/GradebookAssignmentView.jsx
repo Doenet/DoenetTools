@@ -63,7 +63,7 @@ export default function GradebookAssignmentView(props){
                 let userId = getUserId(students.contents, name);
                 
                 //e.stopPropagation()
-                //console.log("trying overlay");
+                console.log("trying overlay");
                 openOverlay({ type: "gradebookattemptview", title: "Gradebook Attempt View", assignmentId, attemptNumber: i, userId});
                 //open("calendar", "fdsa", "f001");
             }}> {row.value} </a>
