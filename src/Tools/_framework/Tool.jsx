@@ -21,6 +21,15 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
+const LoadingFiller = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+`;
+
 const implementedToolParts = [
   'navPanel',
   'headerPanel',
@@ -132,14 +141,20 @@ export default function Tool({ children }) {
   }, [children, stackId]);
 
   return (
-    <Suspense fallback={<div>loading...</div>}>
-      <ToolContainer $isOverlay={stackId > 0}>
+    <ToolContainer $isOverlay={stackId > 0}>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
         {panels.navPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
         {panels.headerPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
         <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
         {panels.menuPanel}
-        {/* <ReactQueryDevtools /> */}
-      </ToolContainer>
-    </Suspense>
+      </Suspense>
+      {/* <ReactQueryDevtools /> */}
+    </ToolContainer>
   );
 }
