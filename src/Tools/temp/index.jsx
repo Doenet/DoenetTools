@@ -1,8 +1,5 @@
-import { nanoid } from 'nanoid';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { RecoilRoot } from 'recoil';
-import Editor from '../_framework/Overlays/Editor';
 // import axios from 'axios';
 
 
@@ -53,15 +50,7 @@ import Editor from '../_framework/Overlays/Editor';
   // <DynamicLoad />,
 
 ReactDOM.render(
-  <RecoilRoot>
-  <Editor 
-    branchId="test.js"
-    title = "Test Title"
-    key = {nanoid()}
-
-  />
-  </RecoilRoot>
-  ,
+  <p>temp</p>,
   document.getElementById('root'),
 );
 
