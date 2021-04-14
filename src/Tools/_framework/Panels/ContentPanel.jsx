@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   atomFamily,
@@ -51,27 +51,25 @@ const panelPropotion = selectorFamily({
   key: 'panelPropotion',
   get: (id) => ({ get }) => {
     const info = get(panelsInfoAtom(id));
-    return [info.isActive, info.isActive ? info.propotion : 1];
+    return info.isActive ? info.propotion : 1;
   },
 });
 
-const calcInfo = (num) => (0.1 < num ? (num < 0.85 ? num : 1) : 0.1);
+const calcInfo = (num) =>
+  num < 0.1 ? 0.1 : num > 0.95 ? 1 : num > 0.9 ? 0.9 : num;
 
 export const useSupportDividerController = () => {
   const stackId = useStackId();
   const supportController = useRecoilCallback(
-    ({ set }) => (newIsActive, newProportion, refToClear) => {
+    ({ set }) => (newIsActive, newProportion) => {
       set(panelsInfoAtom(stackId), (oldInfo) => ({
-        isActive: newProportion === 1 ? false : newIsActive,
+        isActive:
+          newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
         propotion:
           (newProportion ?? 1) === 1
             ? oldInfo.propotion
             : calcInfo(newProportion),
       }));
-
-      if (refToClear) {
-        refToClear.current.style.gridTemplateColumns = null;
-      }
     },
     [stackId],
   );
@@ -80,31 +78,41 @@ export const useSupportDividerController = () => {
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
+  const [hasRespCont, setHasRespCont] = useState(false);
   const stackId = useStackId();
   const setDivider = useSupportDividerController();
-  const panelInfo = useRecoilValue(panelPropotion(stackId));
+  const panelProportion = useRecoilValue(panelPropotion(stackId));
   const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
-  let hasRespCont =
-    (support?.props?.responsiveControls || main?.props?.responsiveControls) ??
-    false;
-
   useEffect(() => {
-    setDivider(support?.props?.isInitOpen ?? false);
+    setDivider(support?.props.isInitOpen ?? false);
   }, [support?.props.isInitOpen, setDivider]);
 
-  let handleClicked = false;
-  let handleDragged = false;
+  useEffect(() => {
+    wrapperRef.current.style.gridTemplate = null;
+  }, [panelProportion]);
+
+  useEffect(() => {
+    setHasRespCont(
+      (support?.props.responsiveControls || main?.props.responsiveControls) ??
+        false,
+    );
+  }, [support?.props.responsiveControls, main?.props.responsiveControls]);
+
+  useEffect(() => {
+    wrapperRef.current.handleClicked = false;
+    wrapperRef.current.handleDragged = false;
+  }, []);
 
   const onMouseDown = (event) => {
     event.preventDefault();
-    handleClicked = true;
+    wrapperRef.current.handleClicked = true;
   };
 
   const onMouseMove = (event) => {
-    if (handleClicked) {
+    if (wrapperRef.current.handleClicked) {
       event.preventDefault();
-      handleDragged = true;
+      wrapperRef.current.handleDragged = true;
 
       let proportion = calcInfo(
         (event.clientX - wrapperRef.current.offsetLeft) /
@@ -120,13 +128,13 @@ export default function ContentPanel({ main, support }) {
   };
 
   const onMouseUp = () => {
-    if (handleClicked) {
-      handleClicked = false;
-      if (handleDragged) {
-        handleDragged = false;
-        setDivider(true, wrapperRef.current.proportion, wrapperRef);
+    if (wrapperRef.current.handleClicked) {
+      wrapperRef.current.handleClicked = false;
+      if (wrapperRef.current.handleDragged) {
+        wrapperRef.current.handleDragged = false;
+        setDivider(true, wrapperRef.current.proportion);
       } else {
-        setDivider(!panelInfo[0]);
+        setDivider();
       }
     }
   };
@@ -139,7 +147,7 @@ export default function ContentPanel({ main, support }) {
       ref={wrapperRef}
       onClick={clearDriveSelections}
       $hasRespCont={hasRespCont}
-      $proportion={panelInfo[1]}
+      $proportion={panelProportion}
     >
       {main}
       {support ? (
