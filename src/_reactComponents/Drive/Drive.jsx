@@ -539,7 +539,6 @@ function DriveHeader(props){
             padding: "8px",
             border: "0px",
             borderBottom: "1px solid grey",
-            backgroundColor: "#f6f8ff",
             maxWidth: "850px",
             margin: "0px",
           }} 
@@ -1398,7 +1397,6 @@ const EmptyNode =  React.memo(function Node(props){
   return (<div style={{
     // width: "840px",
     padding: "8px",
-    backgroundColor: "#f6f8ff",
     marginLeft: '47.5%',
   
   }} ><div className="noselect" style={{justifyContent: "center"}}>EMPTY</div></div>)
@@ -1685,7 +1683,6 @@ const DoenetML = React.memo((props)=>{
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
-        backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
@@ -1854,7 +1851,6 @@ const Url = React.memo((props)=>{
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
-        backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
@@ -2195,7 +2191,7 @@ const DragGhost = ({ id, element, numItems }) => {
     transform: "rotate(-5deg)",
     zIndex: "10",
     background: "#e2e2e2",
-    width: "800px",
+    width: "40vw",
     border: "2px solid black",
     padding: "0px",
     height: "38px",
