@@ -25,7 +25,8 @@ module.exports = {
     'src/Home': '/',
     'src/Viewer': '/viewer',
     'src/Viewer/renderers': '/viewer/renderers',
-
+    'src/_reactComponents': '/_reactComponents',
+    'src/_utils': '/_utils',
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
@@ -43,6 +44,10 @@ module.exports = {
     //Using this to map port 80 to 8080 for api requests
     {
       src: '/api/.*',
+      dest: (req, res) => {
+        proxy.web(req, res);
+      },
+      src: '/media/.*',
       dest: (req, res) => {
         proxy.web(req, res);
       },

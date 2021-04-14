@@ -31,7 +31,7 @@ import 'codemirror/theme/xq-light.css';
 
 import './Editor.css';
 
-const fileByContentId = atomFamily({
+export const fileByContentId = atomFamily({
   key:"fileByContentId",
   default: selectorFamily({
     key:"fileByContentId/Default",
@@ -67,7 +67,7 @@ const itemHistoryAtom = atomFamily({
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
-      // console.log(">>>data",data)
+      console.log(">>>data",data)
       return data.versions
     }
   })
@@ -161,6 +161,8 @@ function VersionHistoryPanel(props){
 
     let versions = [];
     
+  console.log(">>> versionHistory",versionHistory)
+  console.log(">>> versionHistory.getValue()",versionHistory.getValue())
   for (let version of versionHistory.contents){
      
       // let nameItButton = <button>Name Version</button>;
@@ -362,7 +364,27 @@ function TextEditor(props){
       // theme: 'neo',
       // theme: 'base16-light',
       theme: 'xq-light',
-      lineNumbers: true
+      lineNumbers: true,
+      //hot take
+      indentUnit : 4,
+      smartIndent : true,
+      matchTags : true,
+      // autoCloseTags: true,
+      matchBrackets: true,
+      lineWrapping: true,
+      // autoCloseBrackets: true,
+      // hintOptions: {schemaInfo: tags},
+      extraKeys : {
+        Tab: (cm) => {
+          var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+          cm.replaceSelection(spaces);
+        },
+        Enter : (cm) => {
+          cm.replaceSelection("\n")
+          setTimeout( () => cm.execCommand("indentAuto"), 1);
+        },
+        "Ctrl-Space" : "autocomplete"
+      }
   }
 
   return <>

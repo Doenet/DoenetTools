@@ -3,10 +3,10 @@ import logo from '../../Media/Doenet_Logo_Frontpage.png';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 
-export default function DoenetSignIn() {
+export default function SignIn() {
   let [email, setEmail] = useState('');
   let [nineCode, setNineCode] = useState('');
-  let [maxAge, setMaxAge] = useState(0);
+  let [maxAge, setMaxAge] = useState(0); //'2147483647' sec
 
   let [signInStage, setSignInStage] = useState('beginning');
   let [isSentEmail, setIsSentEmail] = useState(false);
@@ -20,7 +20,7 @@ export default function DoenetSignIn() {
   const codeRef = useRef(null);
 
   let validEmail = false;
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
     validEmail = true;
   }
 
@@ -47,20 +47,19 @@ export default function DoenetSignIn() {
   //Comment this if statement out if you are working on
   // sign in or multiple devices
 
-  if (window.location.hostname === 'localhost') {
-    console.log('Auto Signing In Devuser');
-    let emailaddress = 'devuser@example.com';
-    let deviceName = 'Cacao tree';
-    let maxAge = 24000; //'2147483647' sec
-    let cookieSettingsObj = { path: '/', expires: maxAge };
-    Cookies.set('Device', deviceName, cookieSettingsObj);
-    Cookies.set('Stay', maxAge, cookieSettingsObj);
-    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
-      emailaddress,
-    )}&nineCode=${encodeURIComponent(
-      '123456789',
-    )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
-  }
+  // if (window.location.hostname === 'localhost') {
+  //   console.log('Auto Signing In Devuser');
+  //   let emailaddress = 'devuser@example.com';
+  //   let deviceName = 'Cacao tree';
+  //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
+  //   Cookies.set('Device', deviceName, cookieSettingsObj);
+  //   Cookies.set('Stay', 1, cookieSettingsObj);
+  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //     emailaddress,
+  //   )}&nineCode=${encodeURIComponent(
+  //     '123456789',
+  //   )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
+  // }
 
   // ** *** *** *** *** **
 
@@ -159,7 +158,7 @@ export default function DoenetSignIn() {
         .get(phpUrl, payload)
         .then((resp) => {
           setDeviceName(resp.data.deviceName);
-          let cookieSettingsObj = { path: '/' };
+          let cookieSettingsObj = { path: '/', sameSite: 'strict' };
           if (maxAge > 0) {
             cookieSettingsObj.maxAge = maxAge;
           }
@@ -201,6 +200,7 @@ export default function DoenetSignIn() {
               type="text"
               ref={codeRef}
               value={nineCode}
+              data-cy="signinCodeInput"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && validCode) {
                   setSignInStage('check code');
@@ -216,6 +216,7 @@ export default function DoenetSignIn() {
           disabled={!validCode}
           style={{}}
           onClick={() => setSignInStage('check code')}
+          data-cy="signInButton"
         >
           Sign In
         </button>
@@ -255,6 +256,7 @@ export default function DoenetSignIn() {
                 label="Email Address"
                 ref={emailRef}
                 value={email}
+                data-cy="signinEmailInput"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && validEmail) {
                     setSignInStage('enter code');
@@ -286,6 +288,7 @@ export default function DoenetSignIn() {
             disabled={!validEmail}
             style={{ float: 'right' }}
             onClick={() => setSignInStage('enter code')}
+            data-cy="sendEmailButton"
           >
             Send Email
           </button>
