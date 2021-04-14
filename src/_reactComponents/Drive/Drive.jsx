@@ -1107,7 +1107,7 @@ function Folder(props){
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black", 
-        backgroundColor: props.isNav ? bgcolor : "",
+        backgroundColor: bgcolor,
         // width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize,
