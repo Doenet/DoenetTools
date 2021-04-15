@@ -53,7 +53,8 @@ import {
   useDeleteItem,
   useMoveItems,
   useDragShadowCallbacks,
-  useSortFolder
+  useSortFolder,
+  useCopyItems
 } from './DriveActions';
 import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
@@ -1922,6 +1923,7 @@ function useDnDCallbacks() {
   const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, onMoveItemsError} = useMoveItems();
+  const {copyItems, onCopyItemsError} = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
 
   const onDragStart = ({ ev=null, nodeId, driveId, onDragStartCallback }) => {
@@ -1968,16 +1970,17 @@ function useDnDCallbacks() {
       if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
 
       if (dragState.copyMode) {
-        const result = moveItems(replaceDragShadowResp);
-        result.then((resp)=>{
-          if (resp.data.success){
-            addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-          }else{
-            onMoveItemsError({errorMessage: resp.data.message});
-          }
-        }).catch( e => {
-          onMoveItemsError({errorMessage: e.message});
-        })
+        const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
+        copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
+        // result.then((resp)=>{
+        //   if (resp.data.success){
+        //     addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+        //   }else{
+        //     onMoveItemsError({errorMessage: resp.data.message});
+        //   }
+        // }).catch( e => {
+        //   onMoveItemsError({errorMessage: e.message});
+        // })
       } else {
         const result = moveItems(replaceDragShadowResp);
         result.then((resp)=>{
