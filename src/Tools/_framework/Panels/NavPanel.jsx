@@ -1,8 +1,8 @@
-import React, { useState, createContext } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
-import { useSpring, animated } from "react-spring";
+import React, { useState, createContext } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
+import { useSpring, animated } from 'react-spring';
 
 export const IsNavContext = createContext(false);
 
@@ -29,11 +29,10 @@ const VisibilityButton = styled.button`
   z-index: 2;
 `;
 
-export default function NavPanel({ children }) {
-  const [visible, setVisible] = useState(true);
+export default function NavPanel({ children, isInitOpen }) {
+  const [visible, setVisible] = useState(isInitOpen);
   const props = useSpring({
     width: visible ? 240 : 0,
-    from: { width: visible ? 0 : 240 },
   });
 
   const icon = visible ? faTimes : faBars;
