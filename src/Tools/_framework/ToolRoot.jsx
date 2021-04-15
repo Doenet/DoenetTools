@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
-import Assignment from './Overlays/Assignment';
-import Editor from './Overlays/Editor';
-import Calendar from './Overlays/Calendar';
-import Image from './Overlays/Image';
-import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
+import Toast from './Toast';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
 const layerStackAtom = atom({
@@ -23,6 +19,11 @@ export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportDividerController();
+
+  const Assignment = lazy(() => import('./Overlays/Assignment'));
+  const Editor = lazy(() => import('./Overlays/Editor'));
+  const Image = lazy(() => import('./Overlays/Image'));
+  const Calendar = lazy(() => import('./Overlays/Calendar'));
 
   const openOverlay = ({
     type,
@@ -108,9 +109,11 @@ export default function ToolRoot({ tool }) {
       {/* <GlobalStyle /> */}
 
       {tool}
-      {overlays.map((layer, idx) =>
-        idx == overlays.length - 1 ? layer : null,
-      )}
+      <Suspense fallback={<div>loading...</div>}>
+        {overlays.map((layer, idx) =>
+          idx == overlays.length - 1 ? layer : null,
+        )}
+      </Suspense>
       <Toast />
     </>
   );

@@ -110,6 +110,7 @@ export default function ContentPanel({ main, support }) {
   };
 
   const onMouseMove = (event) => {
+    //TODO: minimum movment calc
     if (wrapperRef.current.handleClicked) {
       event.preventDefault();
       wrapperRef.current.handleDragged = true;
