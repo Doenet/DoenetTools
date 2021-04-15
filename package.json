@@ -48,7 +48,6 @@
     "react-table": "^7.6.3",
     "react-visibility-sensor": "^5.1.1",
     "recoil": "^0.2.0",
-    "snowpack-plugin-raw-file-loader": "^1.0.9",
     "styled-components": "^5.2.3"
   },
   "devDependencies": {
@@ -67,7 +66,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
     "prettier": "^2.0.5",
-    "snowpack": "^3.2.2"
+    "snowpack": "^3.0.13",
+    "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
     "extends": [

@@ -51,7 +51,7 @@ import DriveCards from "../../_reactComponents/Drive/DriveCards";
 import "../../_reactComponents/Drive/drivecard.css";
 import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu";
 import '../../_utils/util.css';
-import GlobalFont from "../../Media/fonts/GlobalFont.js";
+// import GlobalFont from "../../Media/fonts/GlobalFont.js";
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
@@ -909,7 +909,7 @@ export default function Library(props) {
   return (
     <Tool>
       <navPanel>
-      <GlobalFont/>
+      {/* <GlobalFont/> */}
       <div style={{marginBottom:"40px",height:"100vh"}} 
        onClick={useOutsideDriveSelector} >
       <Drive types={['content','course']}  foldersOnly={true} />
@@ -946,12 +946,12 @@ export default function Library(props) {
         tabIndex={0}
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
-       {/* <DriveCards
+       <DriveCards
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
        driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
-       /> */}
+       />
         </div>
         
           
