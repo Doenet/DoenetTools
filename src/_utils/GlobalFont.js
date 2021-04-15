@@ -1,14 +1,14 @@
 import { createGlobalStyle } from 'styled-components';
 
-import OpenSansRegularWoffTwo from './files/open-sans-v18-latin-regular.woff2';
-import OpenSansRegularItalicWoffTwo from './files/open-sans-v18-latin-italic.woff2';
-import OpenSansBoldWoffTwo from './files/open-sans-v18-latin-700.woff2';
-import OpenSansItalicBoldWoffTwo from './files/open-sans-v18-latin-700italic.woff2';
+import OpenSansRegularWoffTwo from '../Media/fonts/files/open-sans-v18-latin-regular.woff2';
+import OpenSansRegularItalicWoffTwo from '../Media/fonts/files/open-sans-v18-latin-italic.woff2';
+import OpenSansBoldWoffTwo from '../Media/fonts/files/open-sans-v18-latin-700.woff2';
+import OpenSansItalicBoldWoffTwo from '../Media/fonts/files/open-sans-v18-latin-700italic.woff2';
  
-import OpenSansRegularWoff from './files/open-sans-v18-latin-regular.woff';
-import OpenSansRegularItalicWoff from './files/open-sans-v18-latin-italic.woff';
-import OpenSansBoldWoff from './files/open-sans-v18-latin-700.woff';
-import OpenSansItalicBoldWoff from './files/open-sans-v18-latin-700italic.woff';
+import OpenSansRegularWoff from '../Media/fonts/files/open-sans-v18-latin-regular.woff';
+import OpenSansRegularItalicWoff from '../Media/fonts/files/open-sans-v18-latin-italic.woff';
+import OpenSansBoldWoff from '../Media/fonts/files/open-sans-v18-latin-700.woff';
+import OpenSansItalicBoldWoff from '../Media/fonts/files/open-sans-v18-latin-700italic.woff';
  
 const GlobalFont = createGlobalStyle`
   @font-face {
