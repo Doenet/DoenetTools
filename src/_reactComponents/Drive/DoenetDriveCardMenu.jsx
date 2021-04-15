@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Styled from "styled-components";
+import styled from "styled-components";
 
-const ColorBox = Styled.button`
+const ColorBox = styled.button`
   width: 20px;
   height: 20px;
   background: ${(props) => `${props.color}`};
@@ -11,28 +11,28 @@ const ColorBox = Styled.button`
   border-radius: 3px;
 `;
 
-const HexBoxContainer = Styled.div`
+const HexBoxContainer = styled.div`
 width:100%;
 text-align:right;
 `;
- const ColorPickerHexButton = Styled.div`
+ const ColorPickerHexButton = styled.div`
  border:1px solid black;
  width: 50px;
  background: rgba(0, 0, 0, 0);
  cursor: pointer;
  padding:0px 5px 0px 5px;
  `;
- const ColorPickerHexValue = Styled.div`
+ const ColorPickerHexValue = styled.div`
  border: none;
  width: 20px;
  background: rgba(0, 0, 0, 0);
  cursor: pointer;
  `;
- const ColorPickerContainer = Styled.div`
+ const ColorPickerContainer = styled.div`
  margin-right: 0;
  width: 86px;
  `; 
- const ColorList = Styled.ul`
+ const ColorList = styled.ul`
  padding: 4px;
  list-style-type: none;
  /* border: 1px solid #505050; */
