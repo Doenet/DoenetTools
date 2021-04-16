@@ -554,7 +554,7 @@ export const useCopyItems = () => {
           parentFolderId: item.itemId,
           itemId: contentId
         }
-        let result = cloneItem({
+        let result = await cloneItem({
           snapshot,
           globalDictionary, 
           globalContentIds, 
@@ -575,6 +575,7 @@ export const useCopyItems = () => {
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
+
     return {newItemId, newItem}
   }
 
