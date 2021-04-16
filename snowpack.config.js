@@ -48,6 +48,12 @@ module.exports = {
         proxy.web(req, res);
       },
     },
+    {
+      src: '/media/.*',
+      dest: (req,res) => {
+        proxy.web(req,res);
+      }
+    }
   ],
   optimize: {
     // bundle: true,
