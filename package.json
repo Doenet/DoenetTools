@@ -6,6 +6,7 @@
     "hot": "snowpack dev --config snowpack.config.js",
     "clean": "snowpack --reload --config snowpack.config.js",
     "build": "snowpack build --config snowpack.deploy.config.js",
+    "build:core": "esbuild src/Core/Core.js --bundle --minify --outfile=src/Viewer/core.js",
     "deploy": "snowpack build --config snowpack.deploy.config.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false",

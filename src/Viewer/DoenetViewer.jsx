@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Core from './Core';
+import * as Core from './core';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
@@ -9,8 +9,13 @@ import CryptoJS from 'crypto-js';
 // What is the cause of this dependency?
 // import { HotTable } from '@handsontable/react';
 
-import { serializedComponentsReplacer, serializedComponentsReviver } from './utils/serializedStateProcessing';
+// import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 
+// class DoenetViewer_old extends Component {
+//   renderer(){
+//     return <p>viewer</p>
+//   }
+// }
 
 class DoenetViewer extends Component {
   constructor(props) {
