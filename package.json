@@ -29,6 +29,7 @@
     "crypto-js": "^4.0.0",
     "cssesc": "^3.0.0",
     "csv-parse": "^4.15.3",
+    "esbuild": "^0.9.7",
     "handsontable": "^8.3.2",
     "js-cookie": "^2.2.1",
     "math-expressions": "^2.0.0-alpha26",
