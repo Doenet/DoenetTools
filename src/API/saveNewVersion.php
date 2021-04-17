@@ -96,7 +96,7 @@ function saveDoenetML($fileName,$dangerousDoenetML){
     // $fileName = $contentId;
     // if ($isDraft){$fileName = $branchId;}
     //TODO: Config file needed for server
-    $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
+    $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
     fwrite($newfile, $dangerousDoenetML);
     fclose($newfile);
 }

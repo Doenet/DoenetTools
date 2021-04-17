@@ -68,7 +68,7 @@ if ($success){
   }else if ($type == 'DoenetML'){
     $fileName = $branchId;
     //TODO: Config file needed for server
-    $newfile = fopen("../media/$fileName", "w") or die("Unable to open file!");
+    $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
     fwrite($newfile, "");
     fclose($newfile);
 
