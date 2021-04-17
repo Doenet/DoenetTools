@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as Core from './core';
+import Core from './core';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
