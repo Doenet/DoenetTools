@@ -6,7 +6,7 @@
     "hot": "snowpack dev --config snowpack.config.js",
     "clean": "snowpack --reload --config snowpack.config.js",
     "build": "snowpack build --config snowpack.deploy.config.js",
-    "build:core": "esbuild src/Core/Core.js --define:process.env.NODE_ENV=\\\"production\\\"  --format=esm --bundle --minify --outfile=src/Viewer/core.js",
+    "build:core": "esbuild src/Core/Core.js --define:global=window --define:process.env.NODE_ENV=\\\"production\\\"  --format=esm --bundle --minify --outfile=src/Viewer/core.js",
     "temp": "esbuild temp.js --format=esm --bundle --minify --outfile=src/Tools/temp/temp.js",
     "deploy": "snowpack build --config snowpack.deploy.config.js",
     "test": "cypress open",

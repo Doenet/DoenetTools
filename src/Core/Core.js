@@ -2891,24 +2891,24 @@ export default class Core {
             };
           }
 
-          let global2Dependencies = {}
+          let globalDependencies = {}
 
           if (copyComponentType) {
-            global2Dependencies.targetVariableComponentType = {
+            globalDependencies.targetVariableComponentType = {
               dependencyType: "stateVariableComponentType",
               componentName: targetComponent.componentName,
               variableName: varName,
             }
           }
-          return { global2Dependencies, dependenciesByKey }
+          return { globalDependencies, dependenciesByKey }
         }
 
 
         stateDef.arrayDefinitionByKey = function ({
-          global2DependencyValues, dependencyValuesByKey, arrayKeys
+          globalDependencyValues, dependencyValuesByKey, arrayKeys
         }) {
           // console.log(`shadow array definition by key`)
-          // console.log(JSON.parse(JSON.stringify(global2DependencyValues)))
+          // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
           // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
           // console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
@@ -2930,9 +2930,9 @@ export default class Core {
           };
 
           // TODO: how do we make it do this just once?
-          if ("targetVariableComponentType" in global2DependencyValues) {
+          if ("targetVariableComponentType" in globalDependencyValues) {
             result.setComponentType = {
-              [varName]: global2DependencyValues.targetVariableComponentType
+              [varName]: globalDependencyValues.targetVariableComponentType
             }
           }
 
@@ -3782,7 +3782,7 @@ export default class Core {
           // TODO: a better idea?  This seems like it could lead to confusion.
           if (!stateVarObj.dependencyNames) {
             stateVarObj.dependencyNames = {
-              namesByKey: {}, keysByName: {}, global2: [],
+              namesByKey: {}, keysByName: {}, global: [],
             };
             if (stateVarObj.additionalStateVariablesDefined) {
               for (let vName of stateVarObj.additionalStateVariablesDefined) {
@@ -3791,9 +3791,9 @@ export default class Core {
             }
           }
 
-          if (arrayDependencies.global2Dependencies) {
-            stateVarObj.dependencyNames.global2 = Object.keys(arrayDependencies.global2Dependencies);
-            Object.assign(dependencies, arrayDependencies.global2Dependencies);
+          if (arrayDependencies.globalDependencies) {
+            stateVarObj.dependencyNames.global = Object.keys(arrayDependencies.globalDependencies);
+            Object.assign(dependencies, arrayDependencies.globalDependencies);
           }
 
           if (!arrayDependencies.dependenciesByKey) {
@@ -3828,7 +3828,7 @@ export default class Core {
           }
 
           // to tie into making sure array size is a dependency, below
-          stateVarObj.dependencyNames.global2.push("__array_size");
+          stateVarObj.dependencyNames.global.push("__array_size");
 
         }
 
@@ -3919,7 +3919,7 @@ export default class Core {
         }
 
         for (let changeName in changes) {
-          if (stateVarObj.dependencyNames.global2.includes(changeName)
+          if (stateVarObj.dependencyNames.global.includes(changeName)
           ) {
             // everything is stale, except possible array size
             freshnessInfo.freshByKey = {};
@@ -3985,9 +3985,9 @@ export default class Core {
         // console.log(`extract array dependencies`, dependencyValues, arrayKeys)
         // console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
-        let global2DependencyValues = {};
-        for (let dependencyName of stateVarObj.dependencyNames.global2) {
-          global2DependencyValues[dependencyName] = dependencyValues[dependencyName];
+        let globalDependencyValues = {};
+        for (let dependencyName of stateVarObj.dependencyNames.global) {
+          globalDependencyValues[dependencyName] = dependencyValues[dependencyName];
         }
 
         let dependencyValuesByKey = {};
@@ -4008,7 +4008,7 @@ export default class Core {
           }
         }
 
-        return { global2DependencyValues, dependencyValuesByKey, foundAllDependencyValuesForKey };
+        return { globalDependencyValues, dependencyValuesByKey, foundAllDependencyValuesForKey };
 
       }
 
@@ -4034,12 +4034,12 @@ export default class Core {
         } else {
 
           let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
-          let global2DependencyValues = extractedDeps.global2DependencyValues;
+          let globalDependencyValues = extractedDeps.globalDependencyValues;
           let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
           let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
           delete args.dependencyValues;
-          args.global2DependencyValues = global2DependencyValues;
+          args.globalDependencyValues = globalDependencyValues;
           args.dependencyValuesByKey = dependencyValuesByKey;
 
           let arrayKeysToRecalculate = [];
@@ -4140,12 +4140,12 @@ export default class Core {
 
 
           let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
-          let global2DependencyValues = extractedDeps.global2DependencyValues;
+          let globalDependencyValues = extractedDeps.globalDependencyValues;
           let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
           // let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
           delete args.dependencyValues;
-          args.global2DependencyValues = global2DependencyValues;
+          args.globalDependencyValues = globalDependencyValues;
           args.dependencyValuesByKey = dependencyValuesByKey;
 
           args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
