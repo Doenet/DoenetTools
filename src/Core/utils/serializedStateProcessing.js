@@ -5,6 +5,11 @@ import { deepClone } from './deepFunctions';
 import readOnlyProxyHandler from '../ReadOnlyProxyHandler';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 
+
+export function doenetMLToSerializedState({}){
+  return null;
+}
+
 export function scrapeOffAllDoumentRelated(serializedComponents) {
 
   if (serializedComponents.length === 1 && serializedComponents[0].componentType === "document") {
