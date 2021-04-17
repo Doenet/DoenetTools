@@ -39,7 +39,7 @@ export const fileByContentId = atomFamily({
       if (!contentId){
         return "";
       }
-      return await axios.get(`/media/${contentId}`) 
+      return await axios.get(`/media/${contentId}.doenet`) 
     }
   })
   
