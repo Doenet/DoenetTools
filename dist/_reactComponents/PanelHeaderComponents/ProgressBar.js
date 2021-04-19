@@ -1,5 +1,5 @@
-import React from "../../_snowpack/pkg/react.js";
-import "./ProgressBar.css.proxy.js";
+import React from "react";
+import "./ProgressBar.css";
 export default function ProgressBar(props) {
   function convert() {
     var elem = document.getElementById("moving");

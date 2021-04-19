@@ -1,8 +1,8 @@
-import React from "../../_snowpack/pkg/react.js";
-import ReactDOM from "../../_snowpack/pkg/react-dom.js";
+import React from "react";
+import ReactDOM from "react-dom";
 import DoenetRenderer from "./DoenetRenderer.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faLevelDownAlt, faTimes, faCloud} from "@fortawesome/free-solid-svg-icons";
 export default class ChoiceinputRenderer extends DoenetRenderer {
   constructor(props) {
     super(props);

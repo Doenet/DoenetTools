@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState} from "react";
 import {driveColors, driveImages} from "../Drive/util.js";
-import styled, {css} from "../../_snowpack/pkg/styled-components.js";
+import styled, {css} from "styled-components";
 const Display = styled.div`
     border-radius: 5px;
     height: 36px;

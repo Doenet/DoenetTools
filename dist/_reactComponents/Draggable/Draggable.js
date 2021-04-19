@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 const POSITION = {x: 0, y: 0};
 const Draggable = ({children, id, className = "", onDragStart, onDrag, onDragEnd, ghostElement = null}) => {
   const [state, setState] = useState({

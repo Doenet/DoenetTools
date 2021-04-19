@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useRef, useEffect} from "react";
 const WithDropTarget = ({children, id, registerDropTarget, unregisterDropTarget, dropCallbacks}) => {
   const dropRef = useRef();
   const {onDragOver, onDragHover, onDrop} = dropCallbacks;

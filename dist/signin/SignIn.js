@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from "../_snowpack/pkg/react.js";
-import logo from "../media/Doenet_Logo_Frontpage.png.proxy.js";
-import Cookies from "../_snowpack/pkg/js-cookie.js";
-import axios from "../_snowpack/pkg/axios.js";
+import React, {useState, useEffect, useRef} from "react";
+import logo from "../media/Doenet_Logo_Frontpage.png";
+import Cookies from "js-cookie";
+import axios from "axios";
 export default function SignIn() {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");

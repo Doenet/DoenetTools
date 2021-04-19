@@ -1,8 +1,8 @@
-import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {animated, useSpring, useTransition, useChain} from "../../_snowpack/pkg/react-spring.js";
-import {faChevronDown} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import styled from "../../_snowpack/pkg/styled-components.js";
+import React, {useState, useEffect, useRef} from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {animated, useSpring, useTransition, useChain} from "react-spring";
+import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
 const DropDown = styled(animated.div)`
   text-align: center;
   color: black;

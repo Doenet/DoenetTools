@@ -1,4 +1,4 @@
-import { useRef } from "../../../_snowpack/pkg/react.js";
+import { useRef } from "react";
 
 export const useImmediateEffect = (effectFn, deps) => {
   const previousDeps = useRef();

@@ -1,7 +1,7 @@
-import React, {useContext, useRef, useEffect, Suspense, useCallback, useState} from "../../_snowpack/pkg/react.js";
-import axios from "../../_snowpack/pkg/axios.js";
-import {nanoid} from "../../_snowpack/pkg/nanoid.js";
-import Measure from "../../_snowpack/pkg/react-measure.js";
+import React, {useContext, useRef, useEffect, Suspense, useCallback, useState} from "react";
+import axios from "axios";
+import {nanoid} from "nanoid";
+import Measure from "react-measure";
 import {
   faLink,
   faCode,
@@ -13,15 +13,15 @@ import {
   faUserEdit,
   faBookOpen,
   faChalkboard
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
   HashRouter as Router,
   Switch,
   Route,
   useHistory,
   Link
-} from "../../_snowpack/pkg/react-router-dom.js";
+} from "react-router-dom";
 import {
   atom,
   atomFamily,
@@ -32,7 +32,7 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValue
-} from "../../_snowpack/pkg/recoil.js";
+} from "recoil";
 import {
   DropTargetsContext,
   WithDropTarget
@@ -41,7 +41,7 @@ import Draggable from "../Draggable/index.js";
 import getSortOrder from "../../_utils/sort/LexicographicalRankingSort.js";
 import {BreadcrumbContext} from "../Breadcrumb/index.js";
 import {drivecardSelectedNodesAtom} from "../../library/Library.js";
-import "../../_utils/util.css.proxy.js";
+import "../../_utils/util.css";
 import {
   useDeleteItem,
   useMoveItems,

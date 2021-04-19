@@ -1,7 +1,7 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 import DoenetRenderer from "./DoenetRenderer.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faComment as thoughtBubble} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faComment as thoughtBubble} from "@fortawesome/free-regular-svg-icons";
 export default class Feedback extends DoenetRenderer {
   render() {
     if (this.doenetSvData.hidden) {

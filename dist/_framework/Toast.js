@@ -1,14 +1,14 @@
-import React, {useRef} from "../_snowpack/pkg/react.js";
+import React, {useRef} from "react";
 import {
   atom,
   useRecoilValue,
   useSetRecoilState,
   useRecoilCallback
-} from "../_snowpack/pkg/recoil.js";
-import styled from "../_snowpack/pkg/styled-components.js";
-import {animated, useSpring} from "../_snowpack/pkg/react-spring.js";
-import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faTimes} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+} from "recoil";
+import styled from "styled-components";
+import {animated, useSpring} from "react-spring";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTimes} from "@fortawesome/free-solid-svg-icons";
 const ToastContainer = styled.div`
   position: fixed;
   width: 0 auto;

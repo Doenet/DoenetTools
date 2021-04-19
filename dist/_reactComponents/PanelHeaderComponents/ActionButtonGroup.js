@@ -1,5 +1,5 @@
-import React from "../../_snowpack/pkg/react.js";
-import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
+import React from "react";
+import styled, {ThemeProvider} from "styled-components";
 const actionGroup = {
   margin: "0px -2px 0px -2px",
   borderRadius: "0",

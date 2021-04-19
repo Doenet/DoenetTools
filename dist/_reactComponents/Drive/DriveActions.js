@@ -1,9 +1,9 @@
-import React from "../../_snowpack/pkg/react.js";
-import {nanoid} from "../../_snowpack/pkg/nanoid.js";
-import axios from "../../_snowpack/pkg/axios.js";
+import React from "react";
+import {nanoid} from "nanoid";
+import axios from "axios";
 import {
   useRecoilCallback
-} from "../../_snowpack/pkg/recoil.js";
+} from "recoil";
 import {
   folderDictionarySelector,
   globalSelectedNodesAtom,

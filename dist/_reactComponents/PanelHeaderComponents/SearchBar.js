@@ -1,7 +1,7 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState} from "react";
 import {doenetComponentForegroundInactive, doenetComponentForegroundActive} from "./theme.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faSearch, faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 export default function Searchbar(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [cancelShown, setCancelShown] = useState("hidden");

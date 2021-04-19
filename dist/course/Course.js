@@ -1,4 +1,4 @@
-import React, {useEffect} from "../_snowpack/pkg/react.js";
+import React, {useEffect} from "react";
 import Tool from "../_framework/Tool.js";
 import {useToolControlHelper} from "../_framework/ToolRoot.js";
 import {useToast} from "../_framework/Toast.js";

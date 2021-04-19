@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "../../../_snowpack/pkg/react.js";
+import { useEffect, useRef } from "react";
 
 export const useWillUnmount = (callback) => {
   const callbackRef = useRef(callback);

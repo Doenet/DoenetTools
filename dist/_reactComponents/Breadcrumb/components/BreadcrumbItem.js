@@ -1,4 +1,4 @@
-import React from "../../../_snowpack/pkg/react.js";
+import React from "react";
 const BreadcrumbItem = ({children, ...props}) => {
   return /* @__PURE__ */ React.createElement("li", {
     ...props

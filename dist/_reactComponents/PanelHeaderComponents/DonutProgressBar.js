@@ -1,4 +1,4 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 const DonutProgressBar = () => {
   return /* @__PURE__ */ React.createElement("svg", {
     x: "0px",

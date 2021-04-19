@@ -1,4 +1,4 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState} from "react";
 export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true, doenetPropsForChildren = {}) {
   let [updateCount, setUpdateCount] = useState(0);
   let stateValues = props.componentInstructions.stateValues;

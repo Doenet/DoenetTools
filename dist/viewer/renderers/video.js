@@ -1,6 +1,6 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 import DoenetRenderer from "./DoenetRenderer.js";
-import cssesc from "../../_snowpack/pkg/cssesc.js";
+import cssesc from "cssesc";
 export default class Video extends DoenetRenderer {
   constructor(props) {
     super(props);

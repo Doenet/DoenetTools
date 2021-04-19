@@ -1,4 +1,4 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 import DoenetRenderer from "./DoenetRenderer.js";
 export default class Image extends DoenetRenderer {
   render() {

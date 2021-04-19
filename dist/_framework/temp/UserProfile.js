@@ -1,7 +1,7 @@
-import React, {Component, useState} from "../../_snowpack/pkg/react.js";
-import "./header.css.proxy.js";
-import doenetImage from "../../media/Doenet_Logo_cloud_only.png.proxy.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import React, {Component, useState} from "react";
+import "./header.css";
+import doenetImage from "../../media/Doenet_Logo_cloud_only.png";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
   faTh,
   faUser,
@@ -9,10 +9,10 @@ import {
   faBars,
   faCaretRight,
   faCaretDown
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import axios from "../../_snowpack/pkg/axios.js";
+} from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 axios.defaults.withCredentials = true;
-import styled from "../../_snowpack/pkg/styled-components.js";
+import styled from "styled-components";
 import MenuDropDown from "./MenuDropDown.js";
 const ExtendedHeader = styled.div`
   display: none;

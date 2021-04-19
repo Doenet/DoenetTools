@@ -1,5 +1,5 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
-import styled from "../../_snowpack/pkg/styled-components.js";
+import React, {useState} from "react";
+import styled from "styled-components";
 const ColorBox = styled.button`
   width: 20px;
   height: 20px;

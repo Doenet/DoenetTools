@@ -1,7 +1,7 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 import DoenetRenderer from "./DoenetRenderer.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faPuzzlePiece as puzzle} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPuzzlePiece as puzzle} from "@fortawesome/free-solid-svg-icons";
 export default class Solution extends DoenetRenderer {
   render() {
     if (this.doenetSvData.hidden) {

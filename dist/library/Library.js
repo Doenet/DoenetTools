@@ -1,15 +1,15 @@
-import React, {useEffect, useState, Suspense} from "../_snowpack/pkg/react.js";
-import {nanoid} from "../_snowpack/pkg/nanoid.js";
+import React, {useEffect, useState, Suspense} from "react";
+import {nanoid} from "nanoid";
 import {
   faChalkboard,
   faCode,
   faFolder,
   faUserCircle
-} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
   useHistory
-} from "../_snowpack/pkg/react-router-dom.js";
+} from "react-router-dom";
 import {
   atom,
   useSetRecoilState,
@@ -19,10 +19,10 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilCallback
-} from "../_snowpack/pkg/recoil.js";
-import axios from "../_snowpack/pkg/axios.js";
-import "../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
-import "../_snowpack/pkg/codemirror/theme/material.css.proxy.js";
+} from "recoil";
+import axios from "axios";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/material.css";
 import Drive, {
   folderDictionarySelector,
   globalSelectedNodesAtom,
@@ -41,9 +41,9 @@ import {
 import {BreadcrumbContainer} from "../_reactComponents/Breadcrumb/index.js";
 import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
 import DriveCards from "../_reactComponents/Drive/DriveCards.js";
-import "../_reactComponents/Drive/drivecard.css.proxy.js";
+import "../_reactComponents/Drive/drivecard.css";
 import DoenetDriveCardMenu from "../_reactComponents/Drive/DoenetDriveCardMenu.js";
-import "../_utils/util.css.proxy.js";
+import "../_utils/util.css";
 import GlobalFont from "../_utils/GlobalFont.js";
 import {driveColors, driveImages} from "../_reactComponents/Drive/util.js";
 import Tool from "../_framework/Tool.js";

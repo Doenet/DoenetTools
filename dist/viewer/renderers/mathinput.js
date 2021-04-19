@@ -1,11 +1,11 @@
-import React from "../../_snowpack/pkg/react.js";
-import ReactDOM from "../../_snowpack/pkg/react-dom.js";
+import React from "react";
+import ReactDOM from "react-dom";
 import DoenetRenderer from "./DoenetRenderer.js";
-import me from "../../_snowpack/pkg/math-expressions.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import styled from "../../_snowpack/pkg/styled-components.js";
-import mathquill from "../../_snowpack/pkg/react-mathquill.js";
+import me from "math-expressions";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
+import mathquill from "react-mathquill";
 mathquill.addStyles();
 let EditableMathField = mathquill.EditableMathField;
 export default class MathInput extends DoenetRenderer {

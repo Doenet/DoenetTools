@@ -1,6 +1,6 @@
-import React, {useState, useEffect, lazy, Suspense} from "../_snowpack/pkg/react.js";
-import styled from "../_snowpack/pkg/styled-components.js";
-import {animated} from "../_snowpack/pkg/react-spring.js";
+import React, {useState, useEffect, lazy, Suspense} from "react";
+import styled from "styled-components";
+import {animated} from "react-spring";
 import ContentPanel from "./Panels/ContentPanel.js";
 import {useStackId} from "./ToolRoot.js";
 const ToolContainer = styled(animated.div)`

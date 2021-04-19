@@ -1,9 +1,9 @@
-import React, {Component} from "../_snowpack/pkg/react.js";
+import React, {Component} from "react";
 import Core from "../Doenet/Core";
-import axios from "../_snowpack/pkg/axios.js";
-import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
-import CryptoJS from "../_snowpack/pkg/crypto-js.js";
-import {HotTable} from "../_snowpack/pkg/@handsontable/react.js";
+import axios from "axios";
+import sha256 from "crypto-js/sha256";
+import CryptoJS from "crypto-js";
+import {HotTable} from "@handsontable/react";
 import {serializedComponentsReplacer, serializedComponentsReviver} from "../Doenet/utils/serializedStateProcessing";
 class DoenetViewer extends Component {
   constructor(props) {

@@ -1,6 +1,6 @@
-import React from "../../_snowpack/pkg/react.js";
+import React from "react";
 import SelectBox from "./SelectBox.js";
-import "./selectbox.css.proxy.js";
+import "./selectbox.css";
 export default function DropDownSelect(props) {
   return /* @__PURE__ */ React.createElement("div", {
     className: "drop-down-select"

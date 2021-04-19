@@ -1,13 +1,13 @@
-import React, {useContext} from "../../_snowpack/pkg/react.js";
+import React, {useContext} from "react";
 import {useBreadcrumbItems} from "./hooks/useBreadcrumbItems.js";
 import BreadcrumbItem from "./components/BreadcrumbItem.js";
 import BreadcrumbDivider from "./components/BreadcrumbDivider.js";
 import {BreadcrumbContext} from "./BreadcrumbProvider.js";
 import {
   useHistory
-} from "../../_snowpack/pkg/react-router-dom.js";
-import {faChevronLeft, faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+} from "react-router-dom";
+import {faChevronLeft, faTh} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 export const BreadcrumbContainer = ({divider = "/", ...props}) => {
   const items = useBreadcrumbItems();
   const {clearItems: clearBreadcrumb} = useContext(BreadcrumbContext);

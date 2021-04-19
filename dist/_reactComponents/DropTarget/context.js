@@ -1,3 +1,3 @@
-import React from '../../_snowpack/pkg/react.js';
+import React from 'react';
 
 export const DropTargetsContext = React.createContext();

@@ -1,4 +1,4 @@
-import React, {createContext, useCallback, useRef} from "../../_snowpack/pkg/react.js";
+import React, {createContext, useCallback, useRef} from "react";
 export const BreadcrumbContext = createContext({});
 export const BreadcrumbProvider = ({children}) => {
   const itemsRef = useRef([]);
