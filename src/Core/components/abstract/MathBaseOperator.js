@@ -325,10 +325,10 @@ export default class MathOperator extends MathComponent {
           dependencyType: "stateVariable",
           variableName: "fixed",
         },
-        inverseMathOperator: {
-          dependencyType: "stateVariable",
-          variableName: "mathOperator"
-        },
+        // inverseMathOperator: {
+        //   dependencyType: "stateVariable",
+        //   variableName: "mathOperator"
+        // },
         mathNumberChildren: {
           dependencyType: "child",
           childLogicName: "mathsAndNumbers",

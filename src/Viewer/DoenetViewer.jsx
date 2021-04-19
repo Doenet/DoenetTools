@@ -1,15 +1,45 @@
 import React, { Component } from 'react';
-import Core from './Core';
+import Core from './core';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-
+import me from 'math-expressions';
 // TODO: dynamic loading of renderers fails if we don't load HotTable
 // even though we don't use HotTable anywhere
 // What is the cause of this dependency?
 // import { HotTable } from '@handsontable/react';
 
-import { serializedComponentsReplacer, serializedComponentsReviver } from './utils/serializedStateProcessing';
+// import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
+
+export function serializedComponentsReplacer(key, value) {
+  if (value !== value) {
+    return { objectType: 'special-numeric', stringValue: 'NaN' };
+  } else if (value === Infinity) {
+    return { objectType: 'special-numeric', stringValue: 'Infinity' };
+  } else if (value === -Infinity) {
+    return { objectType: 'special-numeric', stringValue: '-Infinity' };
+  }
+  return value;
+}
+
+let nanInfinityReviver = function (key, value) {
+
+  if (value && value.objectType === "special-numeric") {
+    if (value.stringValue === "NaN") {
+      return NaN;
+    } else if (value.stringValue === "Infinity") {
+      return Infinity;
+    } else if (value.stringValue === "-Infinity") {
+      return -Infinity;
+    }
+  }
+
+  return value;
+}
+
+export function serializedComponentsReviver(key, value) {
+  return me.reviver(key, nanInfinityReviver(key, value))
+}
 
 
 class DoenetViewer extends Component {

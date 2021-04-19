@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+
 // import axios from 'axios';
 
 
@@ -48,6 +49,8 @@ import ReactDOM from 'react-dom';
 // }
 
   // <DynamicLoad />,
+
+
 
 ReactDOM.render(
   <p>temp</p>,
