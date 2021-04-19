@@ -61,7 +61,7 @@ module.exports = {
     knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
-    openUrl: '/test',
+    openUrl: '/temp',
   },
   buildOptions: {
     watch: true,
