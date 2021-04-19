@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import temp, { other } from './temp';
 
 // import axios from 'axios';
 
@@ -51,20 +50,10 @@ import temp, { other } from './temp';
 
   // <DynamicLoad />,
 
-  function TempTest(props){
-    console.log(">>>temp",temp)
-    console.log(">>>other",other)
-    console.log(temp())
-    console.log(other(4))
-    // console.log(temp.default())
-    // let test = temp();
-    // console.log(test)
-    return <p>hey</p>
-  }
+
 
 ReactDOM.render(
-  <TempTest />,
-  // <p>temp</p>,
+  <p>temp</p>,
   document.getElementById('root'),
 );
 

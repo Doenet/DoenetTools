@@ -22,9 +22,11 @@ require('esbuild').build({
   format: 'esm',
   bundle: true,
   minify: true,
+  watch: true,
   define: {
     global:"window",
   },
+  external: ['math-expressions'],
   plugins: [processEnv],
   outfile: 'src/Viewer/core.js',
 }).catch(() => process.exit(1))
