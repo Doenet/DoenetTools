@@ -1,0 +1,1 @@
+export default "/media/Doenet_Logo_Frontpage.png";

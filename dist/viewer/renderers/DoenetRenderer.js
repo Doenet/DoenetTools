@@ -1,5 +1,5 @@
-import {nanoid} from "nanoid";
-import React, {Component} from "react";
+import {nanoid} from "../../_snowpack/pkg/nanoid.js";
+import React, {Component} from "../../_snowpack/pkg/react.js";
 export default class DoenetRenderer extends Component {
   constructor(props) {
     super(props);

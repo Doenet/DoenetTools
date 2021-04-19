@@ -1,4 +1,4 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundActive} from "./theme.js";
 export default function Button(props) {
   var button = {

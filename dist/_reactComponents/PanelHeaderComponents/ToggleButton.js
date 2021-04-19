@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState} from "../../_snowpack/pkg/react.js";
 import {doenetMainBlue} from "./theme.js";
 export default function ToggleButton(props) {
   const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);

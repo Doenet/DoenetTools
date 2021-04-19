@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "../../../_snowpack/pkg/react.js";
 import { BreadcrumbContext } from "../BreadcrumbProvider.js";
 import { useImmediateEffect } from "./useImmediateEffect.js";
 import { useWillUnmount } from "./useWillUnmount.js";

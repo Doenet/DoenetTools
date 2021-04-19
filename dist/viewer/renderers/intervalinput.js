@@ -1,6 +1,6 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
-import styled from "styled-components";
+import styled from "../../_snowpack/pkg/styled-components.js";
 {
 }
 const TextNoSelect = styled.text`

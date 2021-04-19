@@ -1,9 +1,9 @@
-import React from "react";
+import React from "./_snowpack/pkg/react.js";
 import Tool from "./_framework/Tool.js";
-import logo from "./media/Doenet_Logo_Frontpage.png";
-import doenetImage from "./media/Doenet_Logo_cloud_only.png";
-import styled from "styled-components";
-import "./homepage.css";
+import logo from "./media/Doenet_Logo_Frontpage.png.proxy.js";
+import doenetImage from "./media/Doenet_Logo_cloud_only.png.proxy.js";
+import styled from "./_snowpack/pkg/styled-components.js";
+import "./homepage.css.proxy.js";
 const ToolName = styled.span`
    font-size: 20px;
     color: #333333;

@@ -1,10 +1,10 @@
-import React, {useState, lazy, Suspense} from "react";
+import React, {useState, lazy, Suspense} from "../_snowpack/pkg/react.js";
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback
-} from "recoil";
+} from "../_snowpack/pkg/recoil.js";
 import {useMenuPanelController} from "./Panels/MenuPanel.js";
 import {useSupportDividerController} from "./Panels/ContentPanel.js";
 import Toast from "./Toast.js";

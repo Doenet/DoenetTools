@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useRef
-} from "react";
+} from "../../_snowpack/pkg/react.js";
 import {DropTargetsContext} from "./context.js";
 export default function DropTargetsProvider({children}) {
   const [draggedObject, setDraggedObject] = useState(null);

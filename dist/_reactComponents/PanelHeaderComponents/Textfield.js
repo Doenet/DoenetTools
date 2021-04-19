@@ -1,4 +1,4 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import {doenetComponentForegroundInactive} from "./theme.js";
 export default function Textfield(props) {
   var textfield = {

@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from "react";
-import styled from "styled-components";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 const ControlGroupParent = styled.div`
   display: flex;
   justify-content: flex-start;

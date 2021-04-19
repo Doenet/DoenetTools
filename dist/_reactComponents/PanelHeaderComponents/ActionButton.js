@@ -1,5 +1,5 @@
-import React from "react";
-import styled, {ThemeProvider, css} from "styled-components";
+import React from "../../_snowpack/pkg/react.js";
+import styled, {ThemeProvider, css} from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;

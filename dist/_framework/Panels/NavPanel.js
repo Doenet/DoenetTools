@@ -1,8 +1,8 @@
-import React, {useState, createContext} from "react";
-import styled from "styled-components";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimes, faBars} from "@fortawesome/free-solid-svg-icons";
-import {useSpring, animated} from "react-spring";
+import React, {useState, createContext} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faTimes, faBars} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {useSpring, animated} from "../../_snowpack/pkg/react-spring.js";
 export const IsNavContext = createContext(false);
 const Wrapper = styled(animated.div)`
   grid-area: navPanel;

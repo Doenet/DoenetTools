@@ -1,6 +1,6 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
-import cssesc from "cssesc";
+import cssesc from "../../_snowpack/pkg/cssesc.js";
 export default class Embed extends DoenetRenderer {
   componentDidMount() {
     if (this.doenetSvData.encodedGeogebraContent) {

@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef} from "react";
-import styled, {css} from "styled-components";
-import "./theme.css";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import styled, {css} from "../../_snowpack/pkg/styled-components.js";
+import "./theme.css.proxy.js";
 const Textfield = styled.input`
   border-radius: 5px;
   border: 2px solid black;

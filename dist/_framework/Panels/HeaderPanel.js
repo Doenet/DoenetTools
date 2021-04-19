@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from "react";
-import styled from "styled-components";
+import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {useToolControlHelper, useStackId} from "../ToolRoot.js";
 import UserProfile from "../temp/UserProfile.js";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
-import Cookies from "js-cookie";
-import axios from "axios";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import Cookies from "../../_snowpack/pkg/js-cookie.js";
+import axios from "../../_snowpack/pkg/axios.js";
 const Wrapper = styled.div`
   grid-area: headerPanel;
   display: flex;

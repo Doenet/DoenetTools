@@ -1,14 +1,14 @@
-import React, {useState, useRef, useEffect} from "react";
-import styled from "styled-components";
+import React, {useState, useRef, useEffect} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {
   atomFamily,
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState
-} from "recoil";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faGripLinesVertical} from "@fortawesome/free-solid-svg-icons";
+} from "../../_snowpack/pkg/recoil.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faGripLinesVertical} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {useStackId} from "../ToolRoot.js";
 import {clearDriveAndItemSelections} from "../../_reactComponents/Drive/Drive.js";
 const Wrapper = styled.div`

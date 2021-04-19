@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef} from "react";
-import "./selectbox.css";
-import cloneDeep from "lodash/cloneDeep";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import "./selectbox.css.proxy.js";
+import cloneDeep from "../../_snowpack/pkg/lodash/cloneDeep.js";
 function SelectBox({items}) {
   const node = useRef();
   const [item, setItem] = useState(items);

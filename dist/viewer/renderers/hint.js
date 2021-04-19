@@ -1,10 +1,10 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faLightbulb as lightOff} from "@fortawesome/free-solid-svg-icons";
-import {faLightbulb as lightOn} from "@fortawesome/free-regular-svg-icons";
-import {faCaretRight as twirlIsClosed} from "@fortawesome/free-solid-svg-icons";
-import {faCaretDown as twirlIsOpen} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faLightbulb as lightOff} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
+import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default class Hint extends DoenetRenderer {
   render() {
     if (!this.doenetSvData.showHints) {

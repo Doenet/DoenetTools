@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from "react";
-import {atomFamily, useRecoilState, useSetRecoilState} from "recoil";
-import styled from "styled-components";
+import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import {atomFamily, useRecoilState, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {useStackId} from "../ToolRoot.js";
 const Wrapper = styled.div`
   grid-area: menuPanel;

@@ -1,4 +1,4 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import {useMenuContext} from "./Menu.js";
 import {roleAtom} from "../../Tools/DoenetCourse";
 import {
@@ -7,7 +7,7 @@ import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilState
-} from "recoil";
+} from "../../_snowpack/pkg/recoil.js";
 export default function MenuItem(props) {
   const setRole = useSetRecoilState(roleAtom);
   const {selection, makeSelection} = useMenuContext();

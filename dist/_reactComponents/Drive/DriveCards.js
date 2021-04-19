@@ -1,10 +1,10 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef} from "../../_snowpack/pkg/react.js";
 import DriveCard from "./DoenetDriveCard.js";
-import "./drivecard.css";
-import Measure from "react-measure";
+import "./drivecard.css.proxy.js";
+import Measure from "../../_snowpack/pkg/react-measure.js";
 import {
   useHistory
-} from "react-router-dom";
+} from "../../_snowpack/pkg/react-router-dom.js";
 import {useMenuPanelController} from "../../_framework/Panels/MenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../../library/Library.js";
 import {
@@ -12,7 +12,7 @@ import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable
-} from "recoil";
+} from "../../_snowpack/pkg/recoil.js";
 import {
   fetchDrivesSelector
 } from "./Drive.js";

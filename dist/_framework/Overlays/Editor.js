@@ -1,12 +1,12 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import Tool from "../Tool.js";
 import {useToolControlHelper} from "../ToolRoot.js";
-import axios from "axios";
-import sha256 from "crypto-js/sha256";
-import CryptoJS from "crypto-js";
-import VisibilitySensor from "react-visibility-sensor";
+import axios from "../../_snowpack/pkg/axios.js";
+import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
+import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor.js";
 import Button from "../temp/Button.js";
-import {nanoid} from "nanoid";
+import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import {
   useRecoilValue,
   atom,
@@ -18,12 +18,12 @@ import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilCallback
-} from "recoil";
-import {Controlled as CodeMirror} from "react-codemirror2";
-import "codemirror/lib/codemirror.css";
-import "codemirror/mode/xml/xml";
-import "codemirror/theme/xq-light.css";
-import "./Editor.css";
+} from "../../_snowpack/pkg/recoil.js";
+import {Controlled as CodeMirror} from "../../_snowpack/pkg/react-codemirror2.js";
+import "../../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
+import "../../_snowpack/pkg/codemirror/mode/xml/xml.js";
+import "../../_snowpack/pkg/codemirror/theme/xq-light.css.proxy.js";
+import "./Editor.css.proxy.js";
 export const fileByContentId = atomFamily({
   key: "fileByContentId",
   default: selectorFamily({

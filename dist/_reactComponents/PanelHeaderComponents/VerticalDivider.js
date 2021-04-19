@@ -1,4 +1,4 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import {doenetComponentBackgroundActive} from "./theme.js";
 export default function VerticalDivider() {
   const verticalHeaderDivider = {

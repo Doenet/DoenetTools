@@ -1,10 +1,10 @@
 import * as __SNOWPACK_ENV__ from './_snowpack/env.js';
 import.meta.env = __SNOWPACK_ENV__;
 
-import React from "react";
-import ReactDOM from "react-dom";
-import {HashRouter as Router, Switch, Route} from "react-router-dom";
-import {RecoilRoot} from "recoil";
+import React from "./_snowpack/pkg/react.js";
+import ReactDOM from "./_snowpack/pkg/react-dom.js";
+import {HashRouter as Router, Switch, Route} from "./_snowpack/pkg/react-router-dom.js";
+import {RecoilRoot} from "./_snowpack/pkg/recoil.js";
 import DoenetHomePage from "./DoenetHomePage.js";
 import ToolRoot from "./_framework/ToolRoot.js";
 ReactDOM.render(/* @__PURE__ */ React.createElement(RecoilRoot, null, /* @__PURE__ */ React.createElement(Router, null, /* @__PURE__ */ React.createElement(Switch, null, /* @__PURE__ */ React.createElement(Route, {

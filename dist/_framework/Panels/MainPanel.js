@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
   background-color: hsl(0, 0%, 99%);

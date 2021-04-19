@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect} from "../_snowpack/pkg/react.js";
 import Tool from "../_framework/Tool.js";
 import DoenetViewer from "../viewer/DoenetViewer.js";
 import {
   useRecoilValue,
   useRecoilCallback,
   atom
-} from "recoil";
+} from "../_snowpack/pkg/recoil.js";
 import {fileByContentId} from "../_framework/Overlays/Editor.js";
 const contentDoenetMLAtom = atom({
   key: "contentDoenetMLAtom",

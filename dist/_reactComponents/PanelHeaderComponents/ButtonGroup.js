@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import React, {useState} from "../../_snowpack/pkg/react.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 export default function ButtonGroup(props) {
   const defaultValue = props.data.filter((d) => d.default)[0].value;
   let [currentValue, setCurrentValue] = useState(defaultValue);

@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import React, {Component} from "../_snowpack/pkg/react.js";
 import Core from "./core.js";
-import axios from "axios";
-import sha256 from "crypto-js/sha256";
-import CryptoJS from "crypto-js";
-import me from "math-expressions";
+import axios from "../_snowpack/pkg/axios.js";
+import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
+import CryptoJS from "../_snowpack/pkg/crypto-js.js";
+import me from "../_snowpack/pkg/math-expressions.js";
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
     return {objectType: "special-numeric", stringValue: "NaN"};

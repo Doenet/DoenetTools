@@ -1,8 +1,8 @@
-import React from "react";
+import React from "../../_snowpack/pkg/react.js";
 import {
   atom,
   useRecoilValue
-} from "recoil";
+} from "../../_snowpack/pkg/recoil.js";
 import {roleAtom} from "../../Tools/DoenetCourse";
 const MenuContext = React.createContext(null);
 export default function Menu(props) {

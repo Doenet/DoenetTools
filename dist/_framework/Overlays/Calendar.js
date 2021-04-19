@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import Tool from "../Tool.js";
 import {useToolControlHelper} from "../ToolRoot.js";
 export default function Calendar({contentId, branchId}) {

@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from "../../_snowpack/pkg/react.js";
+import ReactDOM from "../../_snowpack/pkg/react-dom.js";
 import DoenetRenderer from "./DoenetRenderer.js";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default class TextInput extends DoenetRenderer {
   constructor(props) {
     super(props);
