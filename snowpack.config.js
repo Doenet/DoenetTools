@@ -55,6 +55,7 @@ module.exports = {
       }
     }
   ],
+  
   optimize: {
     // bundle: true,
     // minify: true,
@@ -63,6 +64,7 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode: true,
+    knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
     openUrl: '/temp',
