@@ -936,7 +936,7 @@ function Folder(props){
   },[props.pathItemId])
 
   const indentPx = 25;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px";
   let marginSize = "0";
   let widthSize = "60vw";
@@ -1621,7 +1621,7 @@ const DoenetML = React.memo((props)=>{
 
 
 
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
@@ -1810,7 +1810,7 @@ const Url = React.memo((props)=>{
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
 
   const indentPx = 30;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
   let marginSize = "0";
