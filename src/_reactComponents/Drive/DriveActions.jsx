@@ -466,6 +466,36 @@ export const useCopyItems = () => {
       // Mark current folder as dirty
       set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
 
+      let promises = [];
+      for (let newItemId of Object.keys(globalDictionary)) {
+        let newItem = globalDictionary[newItemId];
+        
+        const data = { 
+          driveId: targetDriveId,
+          parentFolderId: newItem.parentFolderId,
+          itemId: newItemId,
+          branchId: newItem.branchId,
+          versionId: "",  // TODO: change versionId
+          label: newItem.label,
+          type: newItem.itemType,
+          sortOrder: newItem.sortOrder,
+         };
+        const payload = { 
+          params: data 
+        };
+        const result = axios.get('/api/addItem.php', payload);
+        promises.push(result);
+      }
+      
+      Promise.allSettled(promises).then(([result]) => {
+        console.log(result.value.data.success);
+      });
+
+
+      // result.then(resp => {
+      //   if (resp.data.success){
+      //   }
+      // })
       // const payload = {
       //   sourceDriveId: globalSelectedNodes[0].driveId,
       //   selectedItemIds,
