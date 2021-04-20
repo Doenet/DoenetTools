@@ -18,13 +18,10 @@ const Wrapper = styled.div`
   grid-template:
     'mainControls . supportControls' ${({ $hasRespCont }) =>
       $hasRespCont ? 40 : 0}px
-    'mainPanel . supportPanel' 1.5fr
     'mainPanel handle supportPanel' 1fr
-    'mainPanel . supportPanel' 1.5fr
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
-  overflow-x: hidden;
-  overflow-y: auto;
-  gap: 2px;
+  overflow: hidden;
+  border-radius: 4px;
 `;
 
 const DragHandle = styled.div`
@@ -32,13 +29,12 @@ const DragHandle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgb(246, 248, 255);
   font-size: 12px;
+  color: hsl(0, 0%, 99%);
   padding: 0;
   cursor: ew-resize;
-  background-color: #1a5a99;
-  border-radius: 10px 0px 0px 10px;
-  width: 10px;
+  background-color: hsl(0, 0%, 29%);
+  width: 8px;
   box-sizing: border-box;
 `;
 
