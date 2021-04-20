@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Tool from "../Tool";
-import { Styles, Table, studentData, attemptData } from "../../gradebook/DoenetGradebook"
+import { Styles, Table, studentData, attemptData } from "../../gradebook/Gradebook"
 import { useToolControlHelper } from "../ToolRoot";
 
 import {

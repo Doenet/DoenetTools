@@ -609,7 +609,7 @@ function CourseSelector(props){
     </select>)
 }
 
-export default function DoenetGradebook(props){
+export default function Gradebook(props){
 
     let [courseIdVal, setCourseIdVal] = useRecoilState(courseId);
     const history = useHistory();

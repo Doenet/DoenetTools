@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import {specificAttemptData} from "../../gradebook/DoenetGradebook"
+import {specificAttemptData} from "../../gradebook/Gradebook"
 import {
     atom,
     RecoilRoot,

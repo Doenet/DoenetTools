@@ -9,7 +9,7 @@ import { RecoilRoot } from "recoil";
 /**
  * Internal dependencies
  */
-import DoenetGradebook from './DoenetGradebook';
+import Gradebook from './Gradebook';
 import { DropTargetsProvider } from "../../_reactComponents/DropTarget";
 import { BreadcrumbProvider } from "../../_reactComponents/Breadcrumb";
 import ToolRoot from "../_framework/ToolRoot";
@@ -24,7 +24,7 @@ ReactDOM.render(
               path="/"
               render={(routeprops) => (
                 <ToolRoot
-                  tool={<DoenetGradebook key={"BaseTool"} route={{ ...routeprops }}/>}
+                  tool={<Gradebook key={"BaseTool"} route={{ ...routeprops }}/>}
                 />
               )}
             />
