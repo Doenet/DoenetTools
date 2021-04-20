@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { atomFamily, useRecoilState, useSetRecoilState } from "recoil";
-import styled from "styled-components";
-import { useStackId } from "../ToolRoot";
+import React, { useState, useEffect } from 'react';
+import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+import { useStackId } from '../ToolRoot';
+import DragPanel, { handleDirection } from './Panel';
 
 const Wrapper = styled.div`
-  grid-area: menuPanel;
-  width: 240px;
+  width: 100%;
   display: grid;
   grid-template:
-    "buttons" 60px
-    "sections" 1fr;
-  border-radius: 4px;
+    'buttons' 60px
+    'sections' 1fr;
   background-color: hsl(0, 0%, 99%);
-  overflow: hidden;
 `;
 const ButtonsWrapper = styled.div`
   grid-area: buttons;
@@ -29,17 +27,17 @@ const PanelsWrapper = styled.div`
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
-    linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
+    linkedPanel === activePanel ? '8px solid #1A5A99' : 'none'};
   background-color: hsl(0, 0%, 99%);
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
-      linkedPanel === activePanel ? "#f6f8ff" : "black"};
+      linkedPanel === activePanel ? '#f6f8ff' : 'black'};
   width: 100%;
   height: 100%;
 `;
 
 export const activeMenuPanel = atomFamily({
-  key: "activeMenuPanelAtom",
+  key: 'activeMenuPanelAtom',
   default: 0,
 });
 
@@ -49,10 +47,10 @@ export const useMenuPanelController = () => {
   return menuAtomControl;
 };
 
-export default function MenuPanel({ children }) {
+export default function MenuPanel({ children, isInitOpen }) {
   const stackId = useStackId();
   const [activePanel, setActivePanel] = useRecoilState(
-    activeMenuPanel(stackId)
+    activeMenuPanel(stackId),
   );
   const [panels, setPanels] = useState([]);
 
@@ -63,24 +61,30 @@ export default function MenuPanel({ children }) {
   }, [children]);
 
   return (
-    <Wrapper>
-      <ButtonsWrapper>
-        {panels.map((panel, idx) => {
-          return (
-            <MenuHeaderButton
-              key={`headerB${idx}`}
-              onClick={() => {
-                activePanel !== idx ? setActivePanel(idx) : null;
-              }}
-              linkedPanel={idx}
-              activePanel={activePanel}
-            >
-              {panel.props.title}
-            </MenuHeaderButton>
-          );
-        })}
-      </ButtonsWrapper>
-      <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
-    </Wrapper>
+    <DragPanel
+      gridArea={'menuPanel'}
+      direction={handleDirection.LEFT}
+      isInitOpen={isInitOpen}
+    >
+      <Wrapper>
+        <ButtonsWrapper>
+          {panels.map((panel, idx) => {
+            return (
+              <MenuHeaderButton
+                key={`headerB${idx}`}
+                onClick={() => {
+                  activePanel !== idx ? setActivePanel(idx) : null;
+                }}
+                linkedPanel={idx}
+                activePanel={activePanel}
+              >
+                {panel.props.title}
+              </MenuHeaderButton>
+            );
+          })}
+        </ButtonsWrapper>
+        <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
+      </Wrapper>
+    </DragPanel>
   );
 }

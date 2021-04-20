@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
-// import Drive from "../imports/Drive";
-// import { BreadcrumbContainer } from "../imports/Breadcrumb";
 import { useToast } from '../_framework/Toast';
 // import CollapseSection from "../imports/CollapseSection";
 // import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
@@ -19,7 +17,7 @@ export default function DoenetExampleTool() {
 
   return (
     <Tool>
-      <navPanel>
+      <navPanel isInitOpen>
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </navPanel>
 
@@ -34,7 +32,7 @@ export default function DoenetExampleTool() {
         <p>Support Panel</p>
       </supportPanel>
 
-      <menuPanel title="edit">
+      <menuPanel title="edit" isInitOpen>
         <p>control important stuff</p>
         {/* <CollapseSection title="toasts"> */}
         {/* <SectionDivider type="double"> */}
@@ -81,6 +79,10 @@ export default function DoenetExampleTool() {
       <menuPanel title="other">
         <p>control more important stuff</p>
       </menuPanel>
+
+      <footerPanel>
+        <p>Hello from the bottom</p>
+      </footerPanel>
     </Tool>
   );
 }

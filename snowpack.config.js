@@ -19,7 +19,7 @@ module.exports = {
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
     'src/Tools/_framework': '/_framework',
-    'src/Media': '/media',
+    'src/Media': { "url": "/media", "static": true, "resolve": false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/API': '/api',
     'src/Home': '/',
@@ -48,7 +48,14 @@ module.exports = {
         proxy.web(req, res);
       },
     },
+    {
+      src: '/media/.*',
+      dest: (req,res) => {
+        proxy.web(req,res);
+      }
+    }
   ],
+  
   optimize: {
     // bundle: true,
     // minify: true,
@@ -57,6 +64,7 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode: true,
+    knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
     openUrl: '/temp',

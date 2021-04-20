@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { animated } from "react-spring";
-import NavPanel from "./Panels/NavPanel";
-import HeaderPanel from "./Panels/HeaderPanel";
-import ContentPanel from "./Panels/ContentPanel";
-import MainPanel from "./Panels/MainPanel";
-import SupportPanel from "./Panels/SupportPanel";
-import MenuPanel from "./Panels/MenuPanel";
-import { useStackId } from "./ToolRoot";
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import styled from 'styled-components';
+import { animated } from 'react-spring';
+import ContentPanel from './Panels/ContentPanel';
+import { useStackId } from './ToolRoot';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
-    "navPanel headerPanel menuPanel" 60px
-    "navPanel contentPanel menuPanel" 1fr
+    'navPanel headerPanel menuPanel' auto
+    'navPanel contentPanel menuPanel' 1fr
+    'navPanel footerPanel menuPanel' auto
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
@@ -26,12 +22,22 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
+const LoadingFiller = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+`;
+
 const implementedToolParts = [
-  "navPanel",
-  "headerPanel",
-  "mainPanel",
-  "supportPanel",
-  "menuPanel",
+  'navPanel',
+  'headerPanel',
+  'mainPanel',
+  'supportPanel',
+  'menuPanel',
+  'footerPanel',
 ];
 
 export default function Tool({ children }) {
@@ -42,6 +48,13 @@ export default function Tool({ children }) {
     //lowercase names logic
     var toolParts = {};
 
+    const NavPanel = lazy(() => import('./Panels/NavPanel'));
+    const HeaderPanel = lazy(() => import('./Panels/HeaderPanel'));
+    const MainPanel = lazy(() => import('./Panels/MainPanel'));
+    const SupportPanel = lazy(() => import('./Panels/SupportPanel'));
+    const MenuPanel = lazy(() => import('./Panels/MenuPanel'));
+    const FooterPanel = lazy(() => import('./Panels/FooterPanel'));
+
     if (children) {
       if (Array.isArray(children)) {
         //populate toolParts dictionary from the lowercase Tool children
@@ -49,9 +62,9 @@ export default function Tool({ children }) {
           if (implementedToolParts.includes(child.type)) {
             let newProps = { ...child.props };
             delete newProps.children;
-            if (child.type === "menuPanel") {
+            if (child.type === 'menuPanel') {
               if (!toolParts.menuPanel) {
-                toolParts["menuPanel"] = [];
+                toolParts['menuPanel'] = [];
               }
               toolParts.menuPanel.push({
                 children: child.props.children,
@@ -83,6 +96,7 @@ export default function Tool({ children }) {
     let mainPanel = null;
     let supportPanel = null;
     let menuPanel = null;
+    let footerPanel = null;
 
     if (toolParts?.navPanel) {
       navPanel = (
@@ -121,20 +135,47 @@ export default function Tool({ children }) {
 
     if (toolParts?.menuPanel) {
       menuPanel = (
-        <MenuPanel {...toolParts.menuPanel.props} key={`Menu${stackId}`}>
+        <MenuPanel {...toolParts.menuPanel[0].props} key={`Menu${stackId}`}>
           {toolParts.menuPanel}
         </MenuPanel>
       );
     }
-    setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
+
+    if (toolParts?.footerPanel) {
+      footerPanel = (
+        <FooterPanel {...toolParts.footerPanel.props} key={`Footer${stackId}`}>
+          {toolParts.footerPanel.children}
+        </FooterPanel>
+      );
+    }
+
+    setPanels({
+      headerPanel,
+      navPanel,
+      mainPanel,
+      supportPanel,
+      menuPanel,
+      footerPanel,
+    });
   }, [children, stackId]);
 
   return (
     <ToolContainer $isOverlay={stackId > 0}>
-      {panels.navPanel}
-      {panels.headerPanel}
-      <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
-      {panels.menuPanel}
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        {panels.navPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        {panels.headerPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        {panels.menuPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        {panels.footerPanel}
+      </Suspense>
       {/* <ReactQueryDevtools /> */}
     </ToolContainer>
   );

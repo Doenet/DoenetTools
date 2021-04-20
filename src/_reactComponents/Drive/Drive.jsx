@@ -1683,6 +1683,7 @@ const DoenetML = React.memo((props)=>{
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
+        backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize
@@ -1851,6 +1852,7 @@ const Url = React.memo((props)=>{
         padding: "8px",
         border: "0px",
         borderBottom: "2px solid black",
+        backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
         marginLeft: marginSize

@@ -1,7 +1,7 @@
 import React from "react";
-import Styled from "styled-components";
+import styled from "styled-components";
 
-const DriveCardContainer = Styled.div`
+const DriveCardContainer = styled.div`
 position: relative;
 background-size: cover;
 background-position: center center;
@@ -19,7 +19,7 @@ background-color: ${(props) => `#${props.color}`};
 border: 2px solid #040F1A
 `;
 
-const Image = Styled.div`
+const Image = styled.div`
   height: 100%;
   //width: 100%;
   color: red;
@@ -28,7 +28,7 @@ const Image = Styled.div`
   background-size: cover;
   background-position: center;
 `;
-const Info = Styled.div`
+const Info = styled.div`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
   border-top: 2px solid #040F1A;
@@ -37,7 +37,7 @@ const Info = Styled.div`
   background: #f6f8ff;
 `;
 
-const LabelContainer = Styled.p`
+const LabelContainer = styled.p`
   text-transform: capitalize;
   margin: 7px;
   //width: 100%;

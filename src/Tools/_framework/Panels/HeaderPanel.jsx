@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const Wrapper = styled.div`
   grid-area: headerPanel;
+  height: 60px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
