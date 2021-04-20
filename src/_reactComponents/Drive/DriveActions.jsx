@@ -603,7 +603,7 @@ export const useDragShadowCallbacks = () => {
         copyMode
       } = await snapshot.getPromise(dragStateAtom);
 
-      if (draggedItemsId && draggedItemsId?.has(itemId)) {
+      if (!copyMode && draggedItemsId && draggedItemsId?.has(itemId)) {
         removeDragShadow();
         return;
       }
