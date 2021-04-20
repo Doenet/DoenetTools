@@ -48,7 +48,14 @@ module.exports = {
         proxy.web(req, res);
       },
     },
+    {
+      src: '/media/.*',
+      dest: (req,res) => {
+        proxy.web(req,res);
+      }
+    }
   ],
+  
   optimize: {
     // bundle: true,
     // minify: true,
@@ -57,6 +64,7 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode: true,
+    knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
     openUrl: '/temp',

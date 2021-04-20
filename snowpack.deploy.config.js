@@ -1,3 +1,5 @@
+
+
 module.exports = {
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
@@ -5,19 +7,22 @@ module.exports = {
     'src/Tools/course': '/course',
     'src/Tools/dashboard': '/dashboard',
     'src/Tools/docs': '/docs',
-    'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/gradebook': '/gradebook',
     'src/Tools/library': '/library',
     'src/Tools/signin': '/signin',
     'src/Tools/signout': '/signout',
-    'src/Tools/temp': '/temp',
-    'src/Media': '/media',
+    'src/Tools/_framework': '/_framework',
+    'src/Media': { "url": "/media", "static": true, "resolve": false },
+    'src/Media/profile_pictures': '/profile_pictures',
     'src/API': '/api',
     'src/Home': '/',
-    'src/Core': '/Core',
+    'src/Viewer': '/viewer',
+    'src/_reactComponents': '/_reactComponents',
+    'src/_utils': '/_utils',
   },
   plugins: [
-    // '@snowpack/plugin-dotenv',
+    '@snowpack/plugin-react-refresh',
+    '@snowpack/plugin-dotenv',
     [
       'snowpack-plugin-raw-file-loader',
       {
@@ -25,23 +30,22 @@ module.exports = {
       },
     ],
   ],
-  routes: [
-    /* Enable an SPA Fallback in development: */
-    // {"match": "routes", "src": ".*", "dest": "/index.html"},
-    
-  ],
+
+  
   optimize: {
-    bundle: true,
-    minify: true,
-    target: 'es2020',
-    treeshake: true,
+    // bundle: true,
+    // minify: true,
+    // target: 'es2020',
+    // treeshake: true,
   },
   packageOptions: {
-    polyfillNode : true
+    polyfillNode: true,
+    knownEntrypoints: ["crypto-js/sha1"],
   },
   buildOptions: {
+    watch: false,
     out: 'dist',
     clean: true,
-    minify: true,
+    // minify: true
   },
 };
