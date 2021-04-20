@@ -1971,16 +1971,17 @@ function useDnDCallbacks() {
 
       if (dragState.copyMode) {
         const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
-        copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
-        // result.then((resp)=>{
-        //   if (resp.data.success){
-        //     addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-        //   }else{
-        //     onMoveItemsError({errorMessage: resp.data.message});
-        //   }
-        // }).catch( e => {
-        //   onMoveItemsError({errorMessage: e.message});
-        // })
+        const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
+        
+        result.then(([resp])=>{
+          if (resp.value?.data?.success){
+            addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+          }else{
+            onCopyItemsError({errorMessage: resp?.reason});
+          }
+        }).catch( e => {
+          onCopyItemsError({errorMessage: e.message});
+        })
       } else {
         const result = moveItems(replaceDragShadowResp);
         result.then((resp)=>{

@@ -448,7 +448,7 @@ export const useCopyItems = () => {
       }
       
       Promise.allSettled(promises).then(([result]) => {
-        if (result.value.data.success) {
+        if (result.value?.data?.success) {
           // Update destination folder
           set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
 
@@ -497,7 +497,8 @@ export const useCopyItems = () => {
         }
       });
 
-      // return result;
+      const result = await Promise.allSettled(promises);
+      return result;
     }
   );
 
@@ -555,11 +556,10 @@ export const useCopyItems = () => {
       doenetML: item.doenetML,
     }
     return newVersion;
-    axios.post("/api/saveNewVersion.php",newDBVersion)
   }
 
   const onCopyItemsError = ({errorMessage=null}) => {
-    addToast(`Move item(s) error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Copy item(s) error: ${errorMessage}`, ToastType.ERROR);
   }
 
   return { copyItems, onCopyItemsError };
