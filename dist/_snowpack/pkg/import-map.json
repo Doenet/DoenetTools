@@ -23,6 +23,7 @@
     "react-measure": "./react-measure.js",
     "react-router-dom": "./react-router-dom.js",
     "react-spring": "./react-spring.js",
+    "react-use-gesture": "./react-use-gesture.js",
     "react-visibility-sensor": "./react-visibility-sensor.js",
     "recoil": "./recoil.js",
     "styled-components": "./styled-components.js"

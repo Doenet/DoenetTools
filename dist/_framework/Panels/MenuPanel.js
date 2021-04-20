@@ -2,16 +2,14 @@ import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import {atomFamily, useRecoilState, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {useStackId} from "../ToolRoot.js";
+import DragPanel, {handleDirection} from "./Panel.js";
 const Wrapper = styled.div`
-  grid-area: menuPanel;
-  width: 240px;
+  width: 100%;
   display: grid;
   grid-template:
-    "buttons" 60px
-    "sections" 1fr;
-  border-radius: 4px;
+    'buttons' 60px
+    'sections' 1fr;
   background-color: hsl(0, 0%, 99%);
-  overflow: hidden;
 `;
 const ButtonsWrapper = styled.div`
   grid-area: buttons;
@@ -41,14 +39,18 @@ export const useMenuPanelController = () => {
   const menuAtomControl = useSetRecoilState(activeMenuPanel(stackId));
   return menuAtomControl;
 };
-export default function MenuPanel({children}) {
+export default function MenuPanel({children, isInitOpen}) {
   const stackId = useStackId();
   const [activePanel, setActivePanel] = useRecoilState(activeMenuPanel(stackId));
   const [panels, setPanels] = useState([]);
   useEffect(() => {
     setPanels(children.map((panel) => panel));
   }, [children]);
-  return /* @__PURE__ */ React.createElement(Wrapper, null, /* @__PURE__ */ React.createElement(ButtonsWrapper, null, panels.map((panel, idx) => {
+  return /* @__PURE__ */ React.createElement(DragPanel, {
+    gridArea: "menuPanel",
+    direction: handleDirection.LEFT,
+    isInitOpen
+  }, /* @__PURE__ */ React.createElement(Wrapper, null, /* @__PURE__ */ React.createElement(ButtonsWrapper, null, panels.map((panel, idx) => {
     return /* @__PURE__ */ React.createElement(MenuHeaderButton, {
       key: `headerB${idx}`,
       onClick: () => {
@@ -57,5 +59,5 @@ export default function MenuPanel({children}) {
       linkedPanel: idx,
       activePanel
     }, panel.props.title);
-  })), /* @__PURE__ */ React.createElement(PanelsWrapper, null, panels[activePanel]?.children));
+  })), /* @__PURE__ */ React.createElement(PanelsWrapper, null, panels[activePanel]?.children)));
 }
