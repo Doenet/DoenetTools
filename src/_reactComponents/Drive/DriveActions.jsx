@@ -488,30 +488,10 @@ export const useCopyItems = () => {
       }
       
       Promise.allSettled(promises).then(([result]) => {
-        console.log(result.value.data.success);
+        if (result.value.data.success) {
+                    
+        }
       });
-
-
-      // result.then(resp => {
-      //   if (resp.data.success){
-      //   }
-      // })
-      // const payload = {
-      //   sourceDriveId: globalSelectedNodes[0].driveId,
-      //   selectedItemIds,
-      //   selectedItemChildrenIds: driveIdChanged,
-      //   destinationItemId: targetFolderId,
-      //   destinationParentFolderId: destinationFolderObj.folderInfo.parentFolderId,
-      //   destinationDriveId: targetDriveId,
-      //   newSortOrder,
-      // }
-
-      // const result = axios.post("/api/moveItems.php", payload);
-      
-      // result.then(resp => {
-      //   if (resp.data.success){
-      //   }
-      // });
 
       // return result;
     }
@@ -604,7 +584,8 @@ export const useDragShadowCallbacks = () => {
       const { 
         dragShadowDriveId,
         dragShadowParentId,
-        draggedItemsId 
+        draggedItemsId,
+        copyMode
       } = await snapshot.getPromise(dragStateAtom);
 
       if (draggedItemsId && draggedItemsId?.has(itemId)) {
@@ -729,7 +710,7 @@ export const useDragShadowCallbacks = () => {
           if (insertPosition === "afterCurrent") index += 1;
 
           // Check if insertion index valid
-          isValid = isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
+          isValid = copyMode || isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
 
           // Insert dragShadow into order array
           if (isValid) newDefaultOrder.splice(index, 0, dragShadowId);
