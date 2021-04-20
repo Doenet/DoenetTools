@@ -377,6 +377,8 @@ export const useCopyItems = () => {
       let newItems = [];
       const insertIndex = index ?? 0;
       let newSortOrder = "";
+      const dt = new Date();
+      const creationTimestamp = formatDate(dt);
       let globalDictionary = {};
       let globalContentIds = {};
       
@@ -392,8 +394,6 @@ export const useCopyItems = () => {
         set(selectedDriveItemsAtom(selectedItem), false); 
 
         // Clone target item and its children
-        const dt = new Date();
-        const creationTimestamp = formatDate(dt);
         const { newItemId, newItem } = await cloneItem({
           snapshot,
           globalDictionary,
@@ -420,52 +420,6 @@ export const useCopyItems = () => {
       // Clear global selection
       set(globalSelectedNodesAtom,[])
 
-      // Update destination folder
-      set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
-
-      // Add new cloned items into folderDictionary
-      for (let newItemId of Object.keys(globalDictionary)) {
-        let newItem = globalDictionary[newItemId];
-        if (newItem.itemType === "Folder") {
-          // BFS tree-walk to iterate through tree nodes
-          let queue = [newItemId];
-          while (queue.length) {
-            const size = queue.length;
-            for (let i = 0; i < size; i++) {
-              const currentItemId = queue.shift();
-              const currentItem = globalDictionary[currentItemId];
-              if (currentItem.itemType !== "Folder") continue;
-
-              // Build contentsDictionary
-              let contentsDictionary = {};
-              for (let childContentId of globalContentIds[currentItemId]) {
-                contentsDictionary = {
-                  ...contentsDictionary,
-                  [childContentId]: globalDictionary[childContentId]
-                };
-              }
-
-              // Build folder info object
-              const currentFolderInfoObj = {
-                folderInfo: currentItem,
-                contentsDictionary,
-                contentIds: {
-                  [sortOptions.DEFAULT]: globalContentIds[currentItemId]
-                }
-              }
-
-              // Add current folder into folderDictionary
-              set(folderDictionary({driveId: targetDriveId, folderId: currentItemId}), currentFolderInfoObj);
-
-              queue = [...queue, ...globalContentIds[currentItemId]];
-            }
-          }
-        }
-      }
-
-      // Mark current folder as dirty
-      set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
-
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
@@ -485,11 +439,61 @@ export const useCopyItems = () => {
         };
         const result = axios.get('/api/addItem.php', payload);
         promises.push(result);
+
+        // Clone DoenetML
+        if (newItem.itemType === "DoenetML") {
+          const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+          promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
+        }
       }
       
       Promise.allSettled(promises).then(([result]) => {
         if (result.value.data.success) {
-                    
+          // Update destination folder
+          set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
+
+          // Add new cloned items into folderDictionary
+          for (let newItemId of Object.keys(globalDictionary)) {
+            let newItem = globalDictionary[newItemId];
+            if (newItem.itemType === "Folder") {
+              // BFS tree-walk to iterate through tree nodes
+              let queue = [newItemId];
+              while (queue.length) {
+                const size = queue.length;
+                for (let i = 0; i < size; i++) {
+                  const currentItemId = queue.shift();
+                  const currentItem = globalDictionary[currentItemId];
+                  if (currentItem.itemType !== "Folder") continue;
+
+                  // Build contentsDictionary
+                  let contentsDictionary = {};
+                  for (let childContentId of globalContentIds[currentItemId]) {
+                    contentsDictionary = {
+                      ...contentsDictionary,
+                      [childContentId]: globalDictionary[childContentId]
+                    };
+                  }
+
+                  // Build folder info object
+                  const currentFolderInfoObj = {
+                    folderInfo: currentItem,
+                    contentsDictionary,
+                    contentIds: {
+                      [sortOptions.DEFAULT]: globalContentIds[currentItemId]
+                    }
+                  }
+
+                  // Add current folder into folderDictionary
+                  set(folderDictionary({driveId: targetDriveId, folderId: currentItemId}), currentFolderInfoObj);
+
+                  queue = [...queue, ...globalContentIds[currentItemId]];
+                }
+              }
+            }
+          }
+
+          // Mark current folder as dirty
+          set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
         }
       });
 
@@ -499,8 +503,6 @@ export const useCopyItems = () => {
 
   const cloneItem = async ({snapshot, globalDictionary={}, globalContentIds={}, creationTimestamp, item, targetFolderId}) => {
     // Retrieve info of target item from parentFolder
-    
-    
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
 
@@ -530,8 +532,6 @@ export const useCopyItems = () => {
         globalContentIds[newItemId].push(newSubItemId);
       }
 
-    } else if (itemInfo.itemType === "DoenetML") {
-      // TODO: clone versions
     }
 
     const newItemLabel = `${newItem.label} Copy`
@@ -541,6 +541,21 @@ export const useCopyItems = () => {
     globalDictionary[newItemId] = newItem;
 
     return {newItemId, newItem}
+  }
+
+  const cloneDoenetML = ({item, timestamp}) => {
+    let newVersion = {
+      title: item.label,
+      branchId: item.branchId,
+      contentId: nanoid(),
+      versionId: nanoid(),
+      timestamp,
+      isDraft: '0',
+      isNamed: '1',
+      doenetML: item.doenetML,
+    }
+    return newVersion;
+    axios.post("/api/saveNewVersion.php",newDBVersion)
   }
 
   const onCopyItemsError = ({errorMessage=null}) => {
