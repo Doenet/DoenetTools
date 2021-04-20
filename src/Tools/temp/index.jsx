@@ -1,20 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Panel, { handleDirection } from '../_framework/Panels/Panel';
+import DragPanel, { handleDirection } from '../_framework/Panels/Panel';
 
 const Test = () => {
   return (
     <div
       style={{
         display: 'grid',
-        grid: '"nav extra" / auto 1fr',
+        grid:
+          '"nav header menu" auto "nav extra menu" 1fr "nav footer menu" auto / auto 1fr auto',
         height: '85vh',
         gap: '4px',
       }}
     >
-      <Panel direction={handleDirection.RIGHT}>
+      <DragPanel
+        direction={handleDirection.DOWN}
+        gridArea={'header'}
+        panelSize={60}
+      >
         Test teawteateateatateatea
-      </Panel>
+      </DragPanel>
+      <DragPanel direction={handleDirection.RIGHT} gridArea={'nav'} isInitOpen>
+        Test teawteateateatateatea
+      </DragPanel>
+      <DragPanel direction={handleDirection.LEFT} gridArea={'menu'}>
+        Test teawteateateatateatea
+      </DragPanel>
+      <DragPanel direction={handleDirection.UP} gridArea={'footer'}>
+        Test teawteateateatateatea
+      </DragPanel>
       <div style={{ gridArea: 'extra', backgroundColor: 'red' }} />
     </div>
   );
