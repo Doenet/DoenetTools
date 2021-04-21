@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
 import { useToast } from '../_framework/Toast';
 // import CollapseSection from "../imports/CollapseSection";
 // import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
 
+const XView = ({ x }) => {
+  return <div>{x}</div>;
+};
 export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
-
+  const [x, set] = useState(0);
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
   const [toast, toastType] = useToast();
 
@@ -17,7 +20,15 @@ export default function DoenetExampleTool() {
 
   return (
     <Tool>
-      <navPanel isInitOpen>
+      <navPanel>
+        <XView x={x} />
+        <button
+          onClick={() => {
+            set((x) => x + 1);
+          }}
+        >
+          x + 1
+        </button>
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </navPanel>
 

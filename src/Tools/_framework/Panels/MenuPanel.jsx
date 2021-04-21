@@ -64,6 +64,7 @@ export default function MenuPanel({ children, isInitOpen }) {
     <DragPanel
       gridArea={'menuPanel'}
       direction={handleDirection.LEFT}
+      id={`menuPanel${stackId}`}
       isInitOpen={isInitOpen}
     >
       <Wrapper>
