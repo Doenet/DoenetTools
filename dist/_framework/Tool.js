@@ -1,4 +1,4 @@
-import React, {useState, useEffect, lazy, Suspense} from "../_snowpack/pkg/react.js";
+import React, {useState, useEffect, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import styled from "../_snowpack/pkg/styled-components.js";
 import {animated} from "../_snowpack/pkg/react-spring.js";
 import ContentPanel from "./Panels/ContentPanel.js";
@@ -37,16 +37,25 @@ const implementedToolParts = [
   "footerPanel"
 ];
 export default function Tool({children}) {
+  const [
+    NavPanel,
+    HeaderPanel,
+    MainPanel,
+    SupportPanel,
+    MenuPanel,
+    FooterPanel
+  ] = useRef([
+    lazy(() => import("./Panels/NavPanel.js")),
+    lazy(() => import("./Panels/HeaderPanel.js")),
+    lazy(() => import("./Panels/MainPanel.js")),
+    lazy(() => import("./Panels/SupportPanel.js")),
+    lazy(() => import("./Panels/MenuPanel.js")),
+    lazy(() => import("./Panels/FooterPanel.js"))
+  ]).current;
   const stackId = useStackId();
   const [panels, setPanels] = useState({});
   useEffect(() => {
     var toolParts = {};
-    const NavPanel = lazy(() => import("./Panels/NavPanel.js"));
-    const HeaderPanel = lazy(() => import("./Panels/HeaderPanel.js"));
-    const MainPanel = lazy(() => import("./Panels/MainPanel.js"));
-    const SupportPanel = lazy(() => import("./Panels/SupportPanel.js"));
-    const MenuPanel = lazy(() => import("./Panels/MenuPanel.js"));
-    const FooterPanel = lazy(() => import("./Panels/FooterPanel.js"));
     if (children) {
       if (Array.isArray(children)) {
         for (let child of children) {

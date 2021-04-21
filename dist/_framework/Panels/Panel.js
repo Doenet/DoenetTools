@@ -1,4 +1,4 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {animated, useSpring} from "../../_snowpack/pkg/react-spring.js";
 import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
@@ -7,7 +7,7 @@ import {
   faGripLinesVertical,
   faGripLines
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {useRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilState, atomFamily} from "../../_snowpack/pkg/recoil.js";
 export const handleDirection = {
   LEFT: {
     flexDir: "row-reverse",
@@ -65,18 +65,26 @@ const DragHandle = styled.div`
   box-sizing: border-box;
   touch-action: none;
 `;
+const panelOpen = atomFamily({
+  key: "panelOpenAtom",
+  default: false
+});
 export default function DragPanel({
   children,
   direction,
+  id,
   gridArea = "auto",
   handleSize = 10,
   panelSize = 240,
   isInitOpen = false
 }) {
-  const [open, setOpen] = useState(isInitOpen);
+  const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{dir}, api] = useSpring(() => ({
-    dir: isInitOpen ? handleSize + panelSize : handleSize
+    dir: open ? handleSize + panelSize : handleSize
   }));
+  useEffect(() => {
+    setOpen(isInitOpen);
+  }, [isInitOpen, setOpen]);
   const bindX = useGesture({
     onDrag: ({tap, movement: [mx, my]}) => {
       let movDir = (direction.drag[0] === "x" ? mx : my) * direction.drag[1];
@@ -84,6 +92,7 @@ export default function DragPanel({
         api.start({
           dir: movDir === handleSize ? panelSize + handleSize : handleSize
         });
+        setOpen(movDir === handleSize);
       } else {
         api.start({dir: movDir});
       }
@@ -94,6 +103,7 @@ export default function DragPanel({
       api.start({
         dir: dragDir === 1 || movDir >= (panelSize + handleSize) / 2 && dragDir !== -1 ? panelSize + handleSize : handleSize
       });
+      setOpen(dragDir === 1 || movDir >= (panelSize + handleSize) / 2 && dragDir !== -1);
     }
   }, {
     drag: {
