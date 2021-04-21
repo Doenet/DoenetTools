@@ -2100,6 +2100,10 @@ function useHistory() {
 
   return useContext(historyContext);
 }
+function useLocation() {
+
+  return useContext(context).location;
+}
 
 /**
  * The public API for a <Router> that uses HTML5 history.
@@ -2342,4 +2346,4 @@ var NavLink = forwardRef$1(function (_ref, forwardedRef) {
   });
 });
 
-export { HashRouter, Link, Route, Switch, useHistory };
+export { BrowserRouter, HashRouter, Link, Route, Switch, useHistory, useLocation };

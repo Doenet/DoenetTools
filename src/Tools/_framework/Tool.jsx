@@ -7,8 +7,9 @@ import { useStackId } from './ToolRoot';
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
-    'navPanel headerPanel menuPanel' 60px
+    'navPanel headerPanel menuPanel' auto
     'navPanel contentPanel menuPanel' 1fr
+    'navPanel footerPanel menuPanel' auto
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
@@ -36,6 +37,7 @@ const implementedToolParts = [
   'mainPanel',
   'supportPanel',
   'menuPanel',
+  'footerPanel',
 ];
 
 export default function Tool({ children }) {
@@ -51,6 +53,7 @@ export default function Tool({ children }) {
     const MainPanel = lazy(() => import('./Panels/MainPanel'));
     const SupportPanel = lazy(() => import('./Panels/SupportPanel'));
     const MenuPanel = lazy(() => import('./Panels/MenuPanel'));
+    const FooterPanel = lazy(() => import('./Panels/FooterPanel'));
 
     if (children) {
       if (Array.isArray(children)) {
@@ -93,6 +96,7 @@ export default function Tool({ children }) {
     let mainPanel = null;
     let supportPanel = null;
     let menuPanel = null;
+    let footerPanel = null;
 
     if (toolParts?.navPanel) {
       navPanel = (
@@ -131,13 +135,28 @@ export default function Tool({ children }) {
 
     if (toolParts?.menuPanel) {
       menuPanel = (
-        <MenuPanel {...toolParts.menuPanel.props} key={`Menu${stackId}`}>
+        <MenuPanel {...toolParts.menuPanel[0].props} key={`Menu${stackId}`}>
           {toolParts.menuPanel}
         </MenuPanel>
       );
     }
 
-    setPanels({ headerPanel, navPanel, mainPanel, supportPanel, menuPanel });
+    if (toolParts?.footerPanel) {
+      footerPanel = (
+        <FooterPanel {...toolParts.footerPanel.props} key={`Footer${stackId}`}>
+          {toolParts.footerPanel.children}
+        </FooterPanel>
+      );
+    }
+
+    setPanels({
+      headerPanel,
+      navPanel,
+      mainPanel,
+      supportPanel,
+      menuPanel,
+      footerPanel,
+    });
   }, [children, stackId]);
 
   return (
@@ -153,6 +172,9 @@ export default function Tool({ children }) {
       </Suspense>
       <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
         {panels.menuPanel}
+      </Suspense>
+      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+        {panels.footerPanel}
       </Suspense>
       {/* <ReactQueryDevtools /> */}
     </ToolContainer>

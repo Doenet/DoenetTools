@@ -8,6 +8,7 @@ import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import axios from "../../_snowpack/pkg/axios.js";
 const Wrapper = styled.div`
   grid-area: headerPanel;
+  height: 60px;
   display: flex;
   justify-content: flex-end;
   align-items: center;

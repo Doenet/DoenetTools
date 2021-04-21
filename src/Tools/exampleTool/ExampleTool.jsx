@@ -17,18 +17,18 @@ export default function DoenetExampleTool() {
 
   return (
     <Tool>
-      <navPanel>
+      <navPanel isInitOpen>
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </navPanel>
 
       <headerPanel title="Doenet Example Tool"></headerPanel>
 
-      <mainPanel responsiveControls={<p>tests</p>}>
+      <mainPanel>
         {/* responsiveControls={<BreadcrumbContainer />} */}
         {/* <Drive driveId="ZLHh5s8BWM2azTVFhazIH" urlClickBehavior="select" /> */}
       </mainPanel>
 
-      <supportPanel isInitOpen responsiveControls={<p>tests</p>}>
+      <supportPanel isInitOpen>
         <p>Support Panel</p>
       </supportPanel>
 
@@ -79,6 +79,10 @@ export default function DoenetExampleTool() {
       <menuPanel title="other">
         <p>control more important stuff</p>
       </menuPanel>
+
+      <footerPanel>
+        <p>Hello from the bottom</p>
+      </footerPanel>
     </Tool>
   );
 }

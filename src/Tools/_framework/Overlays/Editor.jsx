@@ -20,7 +20,7 @@ import {
   useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
-// import DoenetViewer from '../../../Tools/DoenetViewer';
+import DoenetViewer from '../../../Viewer/DoenetViewer';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/xml/xml';
@@ -512,23 +512,22 @@ function DoenetViewerPanel(){
   let requestedVariant = { index: attemptNumber }
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
-
-  return null
-  // return <DoenetViewer
-  //     key={"doenetviewer" + viewerDoenetML?.updateNumber}
-  //     doenetML={viewerDoenetML?.doenetML}
-  //     flags={{
-  //       showCorrectness: true,
-  //       readOnly: false,
-  //       solutionDisplayMode: solutionDisplayMode,
-  //       showFeedback: true,
-  //       showHints: true,
-  //     }}
-  //     attemptNumber={attemptNumber}
-  //     assignmentId={assignmentId}
-  //     ignoreDatabase={false}
-  //     requestedVariant={requestedVariant}
-  //     /> 
+  
+  return <DoenetViewer
+      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      doenetML={viewerDoenetML?.doenetML}
+      flags={{
+        showCorrectness: true,
+        readOnly: false,
+        solutionDisplayMode: solutionDisplayMode,
+        showFeedback: true,
+        showHints: true,
+      }}
+      attemptNumber={attemptNumber}
+      // assignmentId={assignmentId}
+      ignoreDatabase={true}
+      requestedVariant={requestedVariant}
+      /> 
 }
 
 const editorInitAtom = atom({
@@ -567,7 +566,7 @@ export default function Editor({ branchId, title }) {
 
       <mainPanel>
         <div><DoenetViewerUpdateButton  /></div>
-        {/* <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div> */}
+        <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
       </mainPanel>
 
       <supportPanel isInitOpen>

@@ -1,1 +1,0 @@
-export default "<p>Welcome to Doenet Test</p>\n<mathinput />\n<p>test</p>"
