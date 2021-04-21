@@ -1,17 +1,11 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useRef } from 'react';
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
-import Assignment from './Overlays/Assignment';
-import Editor from './Overlays/Editor';
-import Calendar from './Overlays/Calendar';
-import Image from './Overlays/Image';
 import Toast from './Toast';
-import GradebookAssignmentView from './Overlays/GradebookAssignmentView';
-import GradebookAttemptView from './Overlays/GradebookAttemptView';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
 //import Toast from './Toast';
@@ -26,12 +20,21 @@ export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportDividerController();
-
-  const Assignment = lazy(() => import('./Overlays/Assignment'));
-  const Editor = lazy(() => import('./Overlays/Editor'));
-  const Image = lazy(() => import('./Overlays/Image'));
-  const Calendar = lazy(() => import('./Overlays/Calendar'));
-
+  const [
+    Assignment,
+    Editor,
+    Image,
+    Calendar,
+    GradebookAssignmentView,
+    GradebookAttemptView,
+  ] = useRef([
+    lazy(() => import('./Overlays/Assignment')),
+    lazy(() => import('./Overlays/Editor')),
+    lazy(() => import('./Overlays/Image')),
+    lazy(() => import('./Overlays/Calendar')),
+    lazy(() => import('./Overlays/GradebookAssignmentView')),
+    lazy(() => import('./Overlays/GradebookAttemptView')),
+  ]).current;
   const openOverlay = ({
     type,
     title,
@@ -43,23 +46,23 @@ export const useToolControlHelper = () => {
     userId,
   }) => {
     switch (type.toLowerCase()) {
-      case "gradebookassignmentview":
+      case 'gradebookassignmentview':
         setLayers((old) => [
           ...old,
           <GradebookAssignmentView
-            assignmentId = {assignmentId}
+            assignmentId={assignmentId}
+            key={`GBAssign${old.length + 1}`}
           />,
         ]);
         break;
-      case "gradebookattemptview":
-        console.log(assignmentId, userId, attemptNumber);
-        
+      case 'gradebookattemptview':
         setLayers((old) => [
           ...old,
           <GradebookAttemptView
-            assignmentId = {assignmentId}
-            userId = {userId}
-            attemptNumber = {attemptNumber}
+            assignmentId={assignmentId}
+            userId={userId}
+            attemptNumber={attemptNumber}
+            key={`GBView${old.length + 1}`}
           />,
         ]);
         break;
