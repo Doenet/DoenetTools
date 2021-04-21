@@ -5,9 +5,16 @@ import {
   useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
+import Assignment from './Overlays/Assignment';
+import Editor from './Overlays/Editor';
+import Calendar from './Overlays/Calendar';
+import Image from './Overlays/Image';
+import Toast from './Toast';
+import GradebookAssignmentView from './Overlays/GradebookAssignmentView';
+import GradebookAttemptView from './Overlays/GradebookAttemptView';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
-import Toast from './Toast';
+//import Toast from './Toast';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
 const layerStackAtom = atom({
@@ -32,8 +39,30 @@ export const useToolControlHelper = () => {
     courseId,
     branchId,
     assignmentId,
+    attemptNumber,
+    userId,
   }) => {
     switch (type.toLowerCase()) {
+      case "gradebookassignmentview":
+        setLayers((old) => [
+          ...old,
+          <GradebookAssignmentView
+            assignmentId = {assignmentId}
+          />,
+        ]);
+        break;
+      case "gradebookattemptview":
+        console.log(assignmentId, userId, attemptNumber);
+        
+        setLayers((old) => [
+          ...old,
+          <GradebookAttemptView
+            assignmentId = {assignmentId}
+            userId = {userId}
+            attemptNumber = {attemptNumber}
+          />,
+        ]);
+        break;
       case 'editor':
         setLayers((old) => [
           ...old,

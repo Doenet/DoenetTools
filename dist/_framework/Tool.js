@@ -6,8 +6,9 @@ import {useStackId} from "./ToolRoot.js";
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
-    'navPanel headerPanel menuPanel' 60px
+    'navPanel headerPanel menuPanel' auto
     'navPanel contentPanel menuPanel' 1fr
+    'navPanel footerPanel menuPanel' auto
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
@@ -32,7 +33,8 @@ const implementedToolParts = [
   "headerPanel",
   "mainPanel",
   "supportPanel",
-  "menuPanel"
+  "menuPanel",
+  "footerPanel"
 ];
 export default function Tool({children}) {
   const stackId = useStackId();
@@ -44,6 +46,7 @@ export default function Tool({children}) {
     const MainPanel = lazy(() => import("./Panels/MainPanel.js"));
     const SupportPanel = lazy(() => import("./Panels/SupportPanel.js"));
     const MenuPanel = lazy(() => import("./Panels/MenuPanel.js"));
+    const FooterPanel = lazy(() => import("./Panels/FooterPanel.js"));
     if (children) {
       if (Array.isArray(children)) {
         for (let child of children) {
@@ -82,6 +85,7 @@ export default function Tool({children}) {
     let mainPanel = null;
     let supportPanel = null;
     let menuPanel = null;
+    let footerPanel = null;
     if (toolParts?.navPanel) {
       navPanel = /* @__PURE__ */ React.createElement(NavPanel, {
         ...toolParts.navPanel.props,
@@ -108,11 +112,24 @@ export default function Tool({children}) {
     }
     if (toolParts?.menuPanel) {
       menuPanel = /* @__PURE__ */ React.createElement(MenuPanel, {
-        ...toolParts.menuPanel.props,
+        ...toolParts.menuPanel[0].props,
         key: `Menu${stackId}`
       }, toolParts.menuPanel);
     }
-    setPanels({headerPanel, navPanel, mainPanel, supportPanel, menuPanel});
+    if (toolParts?.footerPanel) {
+      footerPanel = /* @__PURE__ */ React.createElement(FooterPanel, {
+        ...toolParts.footerPanel.props,
+        key: `Footer${stackId}`
+      }, toolParts.footerPanel.children);
+    }
+    setPanels({
+      headerPanel,
+      navPanel,
+      mainPanel,
+      supportPanel,
+      menuPanel,
+      footerPanel
+    });
   }, [children, stackId]);
   return /* @__PURE__ */ React.createElement(ToolContainer, {
     $isOverlay: stackId > 0
@@ -127,5 +144,7 @@ export default function Tool({children}) {
     support: panels.supportPanel
   })), /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
-  }, panels.menuPanel));
+  }, panels.menuPanel), /* @__PURE__ */ React.createElement(Suspense, {
+    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+  }, panels.footerPanel));
 }

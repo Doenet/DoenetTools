@@ -116,6 +116,8 @@ class DoenetViewer extends Component {
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber
       };
+      console.log(">>>this.assignmentId", this.assignmentId);
+      console.log(">>>this.props.ignoreDatabase", this.props.ignoreDatabase);
       console.log("core ready payload:", payload);
       axios.post("/api/saveAssignmentWeights.php", payload).then((resp) => {
         console.log("saveAssignmentWeights-->>", resp.data);

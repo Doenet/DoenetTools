@@ -19,6 +19,7 @@ import {
   useRecoilStateLoadable,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
+import DoenetViewer from "../../viewer/DoenetViewer.js";
 import {Controlled as CodeMirror} from "../../_snowpack/pkg/react-codemirror2.js";
 import "../../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
 import "../../_snowpack/pkg/codemirror/mode/xml/xml.js";
@@ -423,7 +424,20 @@ function DoenetViewerPanel() {
   let requestedVariant = {index: attemptNumber};
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
-  return null;
+  return /* @__PURE__ */ React.createElement(DoenetViewer, {
+    key: "doenetviewer" + viewerDoenetML?.updateNumber,
+    doenetML: viewerDoenetML?.doenetML,
+    flags: {
+      showCorrectness: true,
+      readOnly: false,
+      solutionDisplayMode,
+      showFeedback: true,
+      showHints: true
+    },
+    attemptNumber,
+    ignoreDatabase: true,
+    requestedVariant
+  });
 }
 const editorInitAtom = atom({
   key: "editorInit",
@@ -450,7 +464,9 @@ export default function Editor({branchId, title}) {
     title
   }, /* @__PURE__ */ React.createElement(ReturnToEditingButton, {
     branchId
-  })), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DoenetViewerUpdateButton, null))), /* @__PURE__ */ React.createElement("supportPanel", {
+  })), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DoenetViewerUpdateButton, null)), /* @__PURE__ */ React.createElement("div", {
+    style: {overflowY: "scroll", height: "calc(100vh - 84px)"}
+  }, /* @__PURE__ */ React.createElement(DoenetViewerPanel, null))), /* @__PURE__ */ React.createElement("supportPanel", {
     isInitOpen: true
   }, /* @__PURE__ */ React.createElement(TempEditorHeaderBar, {
     branchId
