@@ -512,7 +512,6 @@ function DoenetViewerPanel(){
   let requestedVariant = { index: attemptNumber }
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
-console.log(">>>viewerDoenetML",viewerDoenetML)
   
   return <DoenetViewer
       key={"doenetviewer" + viewerDoenetML?.updateNumber}
@@ -525,8 +524,8 @@ console.log(">>>viewerDoenetML",viewerDoenetML)
         showHints: true,
       }}
       attemptNumber={attemptNumber}
-      assignmentId={assignmentId}
-      ignoreDatabase={false}
+      // assignmentId={assignmentId}
+      ignoreDatabase={true}
       requestedVariant={requestedVariant}
       /> 
 }
