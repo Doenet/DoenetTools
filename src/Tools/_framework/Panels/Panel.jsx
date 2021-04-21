@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from 'react-spring';
 import { useGesture } from 'react-use-gesture';
@@ -7,7 +7,7 @@ import {
   faGripLinesVertical,
   faGripLines,
 } from '@fortawesome/free-solid-svg-icons';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, atomFamily } from 'recoil';
 
 export const handleDirection = {
   LEFT: {
@@ -70,23 +70,30 @@ const DragHandle = styled.div`
   touch-action: none;
 `;
 
-// const panelOpen = atomFamily({
-//   key: 'panelOpenAtom',
-//   default: false,
-// });
+const panelOpen = atomFamily({
+  key: 'panelOpenAtom',
+  default: false,
+});
 
 export default function DragPanel({
   children,
   direction,
+  id,
   gridArea = 'auto',
   handleSize = 10,
   panelSize = 240,
   isInitOpen = false,
 }) {
-  const [open, setOpen] = useState(isInitOpen);
+  const [open, setOpen] = useRecoilState(panelOpen(id));
+  // console.log(id, open);
   const [{ dir }, api] = useSpring(() => ({
-    dir: isInitOpen ? handleSize + panelSize : handleSize,
+    dir: open ? handleSize + panelSize : handleSize,
   }));
+
+  useEffect(() => {
+    // console.log(id, 'initEffect');
+    setOpen(isInitOpen);
+  }, [isInitOpen, setOpen]);
 
   // Set the drag hook and define component movement based on gesture data
   const bindX = useGesture(
@@ -99,6 +106,7 @@ export default function DragPanel({
           api.start({
             dir: movDir === handleSize ? panelSize + handleSize : handleSize,
           });
+          setOpen(movDir === handleSize);
         } else {
           // console.log(movDir);
           api.start({ dir: movDir });
@@ -115,6 +123,10 @@ export default function DragPanel({
               ? panelSize + handleSize
               : handleSize,
         });
+        setOpen(
+          dragDir === 1 ||
+            (movDir >= (panelSize + handleSize) / 2 && dragDir !== -1),
+        );
       },
     },
     {
