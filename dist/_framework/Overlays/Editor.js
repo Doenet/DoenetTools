@@ -424,7 +424,6 @@ function DoenetViewerPanel() {
   let requestedVariant = {index: attemptNumber};
   let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
-  console.log(">>>viewerDoenetML", viewerDoenetML);
   return /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: "doenetviewer" + viewerDoenetML?.updateNumber,
     doenetML: viewerDoenetML?.doenetML,
@@ -436,8 +435,7 @@ function DoenetViewerPanel() {
       showHints: true
     },
     attemptNumber,
-    assignmentId,
-    ignoreDatabase: false,
+    ignoreDatabase: true,
     requestedVariant
   });
 }

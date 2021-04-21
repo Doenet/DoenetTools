@@ -3,7 +3,6 @@
     "@fortawesome/free-regular-svg-icons": "./@fortawesome/free-regular-svg-icons.js",
     "@fortawesome/free-solid-svg-icons": "./@fortawesome/free-solid-svg-icons.js",
     "@fortawesome/react-fontawesome": "./@fortawesome/react-fontawesome.js",
-    "@handsontable/react": "./@handsontable/react.js",
     "axios": "./axios.js",
     "codemirror/lib/codemirror.css": "./codemirror/lib/codemirror.css",
     "codemirror/mode/xml/xml": "./codemirror/mode/xml/xml.js",
