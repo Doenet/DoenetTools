@@ -194,7 +194,6 @@ export const useMoveItems = () => {
         throw "No items selected"
       }
       
-      // TODO: Does this catch every case of folder into itself?
       // Interrupt move action if dragging folder to itself
       for (let gItem of globalSelectedNodes){
         if (gItem.itemId === targetFolderId){
@@ -540,9 +539,11 @@ export const useCopyItems = () => {
 
     }
 
-    // TODO: Specify copy in label when copying within same drive
-    const newItemLabel = `Copy of ${newItem.label}`
-    newItem.label = newItemLabel;
+    // Specify copy in label when copying within same drive
+    if (item.driveId === targetDriveId) {
+      const newItemLabel = `Copy of ${newItem.label}`
+      newItem.label = newItemLabel;
+    }   
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
