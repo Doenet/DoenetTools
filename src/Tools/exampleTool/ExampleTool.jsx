@@ -20,7 +20,7 @@ export default function DoenetExampleTool() {
 
   return (
     <Tool>
-      <navPanel>
+      <navPanel isInitOpen>
         <XView x={x} />
         <button
           onClick={() => {
