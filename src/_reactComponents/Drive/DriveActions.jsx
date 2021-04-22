@@ -371,10 +371,8 @@ export const useCopyItems = () => {
         throw "No items to be copied"
       }
 
-      // Add to destination at index
       let destinationFolderObj = await snapshot.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
       let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
-      let newItems = [];
       const insertIndex = index ?? 0;
       let newSortOrder = "";
       const dt = new Date();
@@ -400,6 +398,7 @@ export const useCopyItems = () => {
           globalContentIds, 
           creationTimestamp,
           item,
+          targetDriveId,
           targetFolderId
         });
       
@@ -423,28 +422,33 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-        
+
         const data = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: newItem.branchId,
-          versionId: "",  // TODO: change versionId
+          branchId: "",
+          versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
           sortOrder: newItem.sortOrder,
          };
-        const payload = { 
-          params: data 
-        };
-        const result = axios.get('/api/addItem.php', payload);
-        promises.push(result);
 
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
+
+          // Unify new branchId
+          data["branchId"] = newDoenetML?.branchId;
         }
+
+        const payload = { 
+          params: data 
+        };
+
+        const result = axios.get('/api/addItem.php', payload);
+        promises.push(result);
       }
       
       Promise.allSettled(promises).then(([result]) => {
@@ -493,7 +497,7 @@ export const useCopyItems = () => {
           }
 
           // Mark current folder as dirty
-          set(folderCacheDirtyAtom({driveId:targetDriveId, folderId:targetFolderId}), true);
+          set(folderCacheDirtyAtom({driveId: targetDriveId, folderId: targetFolderId}), true);
         }
       });
 
@@ -502,7 +506,7 @@ export const useCopyItems = () => {
     }
   );
 
-  const cloneItem = async ({snapshot, globalDictionary={}, globalContentIds={}, creationTimestamp, item, targetFolderId}) => {
+  const cloneItem = async ({snapshot, globalDictionary={}, globalContentIds={}, creationTimestamp, item, targetDriveId, targetFolderId}) => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
@@ -513,7 +517,7 @@ export const useCopyItems = () => {
     newItem.itemId = newItemId;
     
     if (itemInfo.itemType === "Folder") {
-      const {contentsDictionary, contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
       for (let contentId of contentIds[sortOptions.DEFAULT]) {
         let subItem = {
@@ -527,7 +531,8 @@ export const useCopyItems = () => {
           globalContentIds, 
           creationTimestamp,
           item: subItem,
-          targetFolderId: newItemId
+          targetFolderId: newItemId,
+          targetDriveId
         });
         const newSubItemId = result.newItemId;
         globalContentIds[newItemId].push(newSubItemId);
@@ -535,7 +540,8 @@ export const useCopyItems = () => {
 
     }
 
-    const newItemLabel = `${newItem.label} Copy`
+    // TODO: Specify copy in label when copying within same drive
+    const newItemLabel = `Copy of ${newItem.label}`
     newItem.label = newItemLabel;
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
@@ -547,8 +553,8 @@ export const useCopyItems = () => {
   const cloneDoenetML = ({item, timestamp}) => {
     let newVersion = {
       title: item.label,
-      branchId: item.branchId,
-      contentId: nanoid(),
+      branchId: nanoid(),
+      contentId: item.contentId,
       versionId: nanoid(),
       timestamp,
       isDraft: '0',
