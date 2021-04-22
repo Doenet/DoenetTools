@@ -5,7 +5,7 @@
 // new php request -- using emailid & device name
 // return signin code
 // enter password  and click signin
-//goes to dashboard
+//goes to dashboard //TODO: signin now goes to course
 
 import {signIn} from './DoenetSignin';
 import {signOut} from './DoenetSignOut';

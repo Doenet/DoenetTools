@@ -5,7 +5,6 @@ module.exports = {
     'src/Tools/accountSettings': '/accountSettings',
     'src/Tools/content': '/content',
     'src/Tools/course': '/course',
-    'src/Tools/dashboard': '/dashboard',
     'src/Tools/docs': '/docs',
     'src/Tools/gradebook': '/gradebook',
     'src/Tools/library': '/library',

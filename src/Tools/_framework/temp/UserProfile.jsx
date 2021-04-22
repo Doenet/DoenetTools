@@ -216,11 +216,6 @@ class UserProfile extends Component {
         label: 'Gradebook',
         link: '/gradebook/',
       },
-      dashboard: {
-        id: 'Dashboard',
-        label: 'Dashboard',
-        link: '/dashboard/',
-      },
     };
     this.menuToolBoxItems = [];
     if (tools) {
@@ -243,11 +238,6 @@ class UserProfile extends Component {
         id: 'profile',
         label: `${this.props.profile.screenName}`,
         subLabel: `${this.props.cookies.Device}`,
-      },
-      {
-        id: 'Dashboard',
-        label: 'Dashboard',
-        link: '/dashboard/',
       },
       {
         id: 'Library',

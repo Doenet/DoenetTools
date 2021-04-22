@@ -36,9 +36,9 @@ if ($result->num_rows > 0){
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
 );
 $roleAccessList = array(
-    "roleStudent" => array("Chooser", "Course", "Dashboard"),
-    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook", "Dashboard"),
-    "roleCourseDesigner" => array("Chooser", "Course", "Documentation", "Dashboard"),
+    "roleStudent" => array("Chooser", "Course"),
+    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook"),
+    "roleCourseDesigner" => array("Chooser", "Course", "Documentation"),
     "roleWatchdog" => array(/*???*/),
     "roleCommunityTA" => array(/*???*/),
     "roleLiveDataCommunity" => array(/*???*/)
