@@ -1,7 +1,8 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 import ContentPanel from './Panels/ContentPanel';
+// import NavPanel from './Panels/NavPanel';
 import { useStackId } from './ToolRoot';
 
 const ToolContainer = styled(animated.div)`
@@ -41,19 +42,32 @@ const implementedToolParts = [
 ];
 
 export default function Tool({ children }) {
+  const [
+    NavPanel,
+    HeaderPanel,
+    MainPanel,
+    SupportPanel,
+    MenuPanel,
+    FooterPanel,
+  ] = useRef([
+    lazy(() => import('./Panels/NavPanel')),
+    lazy(() => import('./Panels/HeaderPanel')),
+    lazy(() => import('./Panels/MainPanel')),
+    lazy(() => import('./Panels/SupportPanel')),
+    lazy(() => import('./Panels/MenuPanel')),
+    lazy(() => import('./Panels/FooterPanel')),
+  ]).current;
   const stackId = useStackId();
   const [panels, setPanels] = useState({});
+  // const [NavPanel] = useState(() => lazy(() => import('./Panels/NavPanel')));
+  // const NavPanel = lazy(() => import('./Panels/NavPanel'));
+  // const NavPanel = ref.current.navPanel;
+
+  // console.log(ref.current);
 
   useEffect(() => {
     //lowercase names logic
     var toolParts = {};
-
-    const NavPanel = lazy(() => import('./Panels/NavPanel'));
-    const HeaderPanel = lazy(() => import('./Panels/HeaderPanel'));
-    const MainPanel = lazy(() => import('./Panels/MainPanel'));
-    const SupportPanel = lazy(() => import('./Panels/SupportPanel'));
-    const MenuPanel = lazy(() => import('./Panels/MenuPanel'));
-    const FooterPanel = lazy(() => import('./Panels/FooterPanel'));
 
     if (children) {
       if (Array.isArray(children)) {

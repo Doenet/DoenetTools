@@ -49,6 +49,7 @@ export default function MenuPanel({children, isInitOpen}) {
   return /* @__PURE__ */ React.createElement(DragPanel, {
     gridArea: "menuPanel",
     direction: handleDirection.LEFT,
+    id: `menuPanel${stackId}`,
     isInitOpen
   }, /* @__PURE__ */ React.createElement(Wrapper, null, /* @__PURE__ */ React.createElement(ButtonsWrapper, null, panels.map((panel, idx) => {
     return /* @__PURE__ */ React.createElement(MenuHeaderButton, {
