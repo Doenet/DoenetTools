@@ -16,6 +16,7 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
 
   const handleMouseDown = useCallback(
     (ev) => {
+      // Respond only to left clicks
       if (ev.button !== 0) return;
 
       setInitializingDrag(true);
@@ -37,7 +38,9 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
           origin: { x: clientX, y: clientY },
           actionType: actionType
         }));
-        onDragStart?.();
+        onDragStart?.({
+          ev: targetEvent.current
+        });
         timerRef.current = null;
       }, 300);
     },

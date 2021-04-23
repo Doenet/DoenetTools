@@ -5,7 +5,7 @@ import React from 'react';
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import {
-  useRecoilCallback
+  useRecoilCallback, useRecoilValue
 } from 'recoil';
 
 /**
@@ -28,6 +28,18 @@ import Toast, { useToast } from '../../Tools/_framework/Toast';
 
 const dragShadowId = "dragShadow";
 
+const formatDate = (dt) => {
+  const formattedDate = `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    dt.getDate().toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`;
+    
+  return formattedDate;
+}
+
 export const useAddItem = () => {
   const [addToast, ToastType] = useToast();
 
@@ -35,13 +47,7 @@ export const useAddItem = () => {
     async ({driveIdFolderId, label, itemType, selectedItemId=null, url=null})=>{
       // Item creation
       const dt = new Date();
-      const creationDate = `${
-        dt.getFullYear().toString().padStart(2, '0')}-${
-        (dt.getMonth()+1).toString().padStart(2, '0')}-${
-        dt.getDate().toString().padStart(2, '0')} ${
-        dt.getHours().toString().padStart(2, '0')}:${
-        dt.getMinutes().toString().padStart(2, '0')}:${
-        dt.getSeconds().toString().padStart(2, '0')}`
+      const creationDate = formatDate(dt);
       const itemId = nanoid();
       const branchId = nanoid();
       const newItem = {
@@ -188,7 +194,6 @@ export const useMoveItems = () => {
         throw "No items selected"
       }
       
-      // TODO: Does this catch every case of folder into itself?
       // Interrupt move action if dragging folder to itself
       for (let gItem of globalSelectedNodes){
         if (gItem.itemId === targetFolderId){
@@ -347,6 +352,226 @@ export const useMoveItems = () => {
   return { moveItems, onMoveItemsError };
 }
 
+export const useCopyItems = () => {
+  const [addToast, ToastType] = useToast();
+
+  /**
+   * @param {Object[]} items - items to be copied { driveId, driveInstanceId, 
+   *  itemId, parentFolderId }
+   * @param {string} targetDriveId - destination drive ID
+   * @param {string} targetFolderId - destination folder ID
+   * @param {string} index - insertion index in destination folder
+   */
+  const copyItems = useRecoilCallback(({snapshot, set})=> 
+    async ({items=[], targetDriveId, targetFolderId, index})=>{
+      
+      // Interrupt copy action if items is empty
+      if (items.length === 0){ 
+        throw "No items to be copied"
+      }
+
+      let destinationFolderObj = await snapshot.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
+      let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
+      const insertIndex = index ?? 0;
+      let newSortOrder = "";
+      const dt = new Date();
+      const creationTimestamp = formatDate(dt);
+      let globalDictionary = {};
+      let globalContentIds = {};
+      
+      for(let item of items){
+        if (!item.driveId || !item.driveInstanceId || !item.itemId) throw "Invalid arguments error"
+        
+        // Deselect currently selected items
+        let selectedItem = {
+          driveId: item.driveId,
+          driveInstanceId: item.driveInstanceId,
+          itemId: item.itemId
+        };
+        set(selectedDriveItemsAtom(selectedItem), false); 
+
+        // Clone target item and its children
+        const { newItemId, newItem } = await cloneItem({
+          snapshot,
+          globalDictionary,
+          globalContentIds, 
+          creationTimestamp,
+          item,
+          targetDriveId,
+          targetFolderId
+        });
+      
+        // Generate sortOrder for cloned item
+        const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
+        newSortOrder = getLexicographicOrder({
+          index: insertIndex, 
+          nodeObjs: newDestinationFolderObj.contentsDictionary, 
+          defaultFolderChildrenIds: cleanDefaultOrder 
+        });
+        newItem.sortOrder = newSortOrder;
+
+        // Insert root of cloned tree/item into destination        
+        newDestinationFolderObj["contentsDictionary"][newItemId] = newItem
+        newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, newItemId)
+      }
+      
+      // Clear global selection
+      set(globalSelectedNodesAtom,[])
+
+      let promises = [];
+      for (let newItemId of Object.keys(globalDictionary)) {
+        let newItem = globalDictionary[newItemId];
+
+        const data = { 
+          driveId: targetDriveId,
+          parentFolderId: newItem.parentFolderId,
+          itemId: newItemId,
+          branchId: "",
+          versionId: nanoid(),
+          label: newItem.label,
+          type: newItem.itemType,
+          sortOrder: newItem.sortOrder,
+         };
+
+        // Clone DoenetML
+        if (newItem.itemType === "DoenetML") {
+          const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+          promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
+
+          // Unify new branchId
+          data["branchId"] = newDoenetML?.branchId;
+        }
+
+        const payload = { 
+          params: data 
+        };
+
+        const result = axios.get('/api/addItem.php', payload);
+        promises.push(result);
+      }
+      
+      Promise.allSettled(promises).then(([result]) => {
+        if (result.value?.data?.success) {
+          // Update destination folder
+          set(folderDictionary({driveId:targetDriveId, folderId:targetFolderId}), newDestinationFolderObj);
+
+          // Add new cloned items into folderDictionary
+          for (let newItemId of Object.keys(globalDictionary)) {
+            let newItem = globalDictionary[newItemId];
+            if (newItem.itemType === "Folder") {
+              // BFS tree-walk to iterate through tree nodes
+              let queue = [newItemId];
+              while (queue.length) {
+                const size = queue.length;
+                for (let i = 0; i < size; i++) {
+                  const currentItemId = queue.shift();
+                  const currentItem = globalDictionary[currentItemId];
+                  if (currentItem.itemType !== "Folder") continue;
+
+                  // Build contentsDictionary
+                  let contentsDictionary = {};
+                  for (let childContentId of globalContentIds[currentItemId]) {
+                    contentsDictionary = {
+                      ...contentsDictionary,
+                      [childContentId]: globalDictionary[childContentId]
+                    };
+                  }
+
+                  // Build folder info object
+                  const currentFolderInfoObj = {
+                    folderInfo: currentItem,
+                    contentsDictionary,
+                    contentIds: {
+                      [sortOptions.DEFAULT]: globalContentIds[currentItemId]
+                    }
+                  }
+
+                  // Add current folder into folderDictionary
+                  set(folderDictionary({driveId: targetDriveId, folderId: currentItemId}), currentFolderInfoObj);
+
+                  queue = [...queue, ...globalContentIds[currentItemId]];
+                }
+              }
+            }
+          }
+
+          // Mark current folder as dirty
+          set(folderCacheDirtyAtom({driveId: targetDriveId, folderId: targetFolderId}), true);
+        }
+      });
+
+      const result = await Promise.allSettled(promises);
+      return result;
+    }
+  );
+
+  const cloneItem = async ({snapshot, globalDictionary={}, globalContentIds={}, creationTimestamp, item, targetDriveId, targetFolderId}) => {
+    // Retrieve info of target item from parentFolder
+    const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
+    const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
+
+    // Clone item
+    const newItem = { ...itemInfo };
+    const newItemId = nanoid();
+    newItem.itemId = newItemId;
+    
+    if (itemInfo.itemType === "Folder") {
+      const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
+      globalContentIds[newItemId] = [];
+      for (let contentId of contentIds[sortOptions.DEFAULT]) {
+        let subItem = {
+          ...item,
+          parentFolderId: item.itemId,
+          itemId: contentId
+        }
+        let result = await cloneItem({
+          snapshot,
+          globalDictionary, 
+          globalContentIds, 
+          creationTimestamp,
+          item: subItem,
+          targetFolderId: newItemId,
+          targetDriveId
+        });
+        const newSubItemId = result.newItemId;
+        globalContentIds[newItemId].push(newSubItemId);
+      }
+
+    }
+
+    // Specify copy in label when copying within same drive
+    if (item.driveId === targetDriveId) {
+      const newItemLabel = `Copy of ${newItem.label}`
+      newItem.label = newItemLabel;
+    }   
+    newItem.parentFolderId = targetFolderId;
+    newItem.creationDate = creationTimestamp;
+    globalDictionary[newItemId] = newItem;
+
+    return {newItemId, newItem}
+  }
+
+  const cloneDoenetML = ({item, timestamp}) => {
+    let newVersion = {
+      title: item.label,
+      branchId: nanoid(),
+      contentId: item.contentId,
+      versionId: nanoid(),
+      timestamp,
+      isDraft: '0',
+      isNamed: '1',
+      doenetML: item.doenetML,
+    }
+    return newVersion;
+  }
+
+  const onCopyItemsError = ({errorMessage=null}) => {
+    addToast(`Copy item(s) error: ${errorMessage}`, ToastType.ERROR);
+  }
+
+  return { copyItems, onCopyItemsError };
+}
+
 export const useDragShadowCallbacks = () => {
   const replaceDragShadow = useRecoilCallback(({snapshot})=> 
     async () => {
@@ -381,10 +606,11 @@ export const useDragShadowCallbacks = () => {
       const { 
         dragShadowDriveId,
         dragShadowParentId,
-        draggedItemsId 
+        draggedItemsId,
+        copyMode
       } = await snapshot.getPromise(dragStateAtom);
 
-      if (draggedItemsId && draggedItemsId?.has(itemId)) {
+      if (!copyMode && draggedItemsId && draggedItemsId?.has(itemId)) {
         removeDragShadow();
         return;
       }
@@ -506,7 +732,7 @@ export const useDragShadowCallbacks = () => {
           if (insertPosition === "afterCurrent") index += 1;
 
           // Check if insertion index valid
-          isValid = isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
+          isValid = copyMode || isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
 
           // Insert dragShadow into order array
           if (isValid) newDefaultOrder.splice(index, 0, dragShadowId);

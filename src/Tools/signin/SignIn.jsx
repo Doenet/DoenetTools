@@ -37,9 +37,9 @@ export default function SignIn() {
     }
   });
 
-  //If already signed in go to dashboard
+  //If already signed in go to course
   if (Object.keys(jwt).includes('JWT_JS')) {
-    location.href = '/dashboard';
+    location.href = '/course';
   }
 
   // ** *** *** *** *** **

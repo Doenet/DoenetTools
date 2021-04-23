@@ -55,13 +55,11 @@ export default function HeaderPanel({ title, children }) {
   useEffect(() => {
     //Fires each time you change the tool
     //Need to load profile from database each time
-    const phpUrl = '/api/loadProfile.php';
-    const data = {};
     const payload = {
-      params: data,
+      params: {},
     };
     axios
-      .get(phpUrl, payload)
+      .get('/api/loadProfile.php', payload)
       .then((resp) => {
         if (resp.data.success === '1') {
           setProfile(resp.data.profile);
@@ -72,14 +70,9 @@ export default function HeaderPanel({ title, children }) {
       });
   }, []);
 
-  return (
-    <Wrapper>
-      <ControlsContainer>
-        <p>{title}</p>
-        {children}
-      </ControlsContainer>
-      {!(stackId > 0 ?? false) ? (
-        <UserProfile
+  let userProfile = <p>Loading</p> //TODO: update this to blank circle svg
+  if (Object.keys(profile).length > 0){
+    userProfile = <UserProfile
           profile={profile}
           cookies={jwt}
           isSignedIn={isSignedIn}
@@ -90,6 +83,17 @@ export default function HeaderPanel({ title, children }) {
           // guestUser={props.guestUser}
           // onChange={showCollapseMenu}
         />
+  }
+
+  return (
+    <Wrapper>
+      <ControlsContainer>
+        <p>{title}</p>
+        {children}
+      </ControlsContainer>
+      {!(stackId > 0 ?? false) ? (
+        <>{userProfile}</>
+    
       ) : (
         <ExitOverlayButton onClick={close}>
           <FontAwesomeIcon icon={faTimes} />

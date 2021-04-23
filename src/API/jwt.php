@@ -73,10 +73,13 @@ if ($row['minutes'] > 10){
         setcookie("JWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
         setcookie("JWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
         if ($newAccount == 1){
-            header("Location: /accountsettings");
+        //     header("Location: /accountsettings");
+                header("Location: /library");
         }else{
-            header("Location: /dashboard");
+        //     header("Location: /dashboard");
+                header("Location: /course");
         }
+
     }
 }
 

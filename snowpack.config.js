@@ -9,7 +9,6 @@ module.exports = {
     'src/Tools/accountSettings': '/accountSettings',
     'src/Tools/content': '/content',
     'src/Tools/course': '/course',
-    'src/Tools/dashboard': '/dashboard',
     'src/Tools/docs': '/docs',
     'src/Tools/exampleTool': '/exampleTool',
     'src/Tools/gradebook': '/gradebook',
@@ -67,7 +66,7 @@ module.exports = {
     knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
-    openUrl: '/temp',
+    openUrl: '/library',
   },
   buildOptions: {
     watch: true,
