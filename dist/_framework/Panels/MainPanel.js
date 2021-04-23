@@ -5,6 +5,7 @@ const ContentWrapper = styled.div`
   background-color: hsl(0, 0%, 99%);
   height: 100%;
   border-radius: 0 0 4px 4px;
+  overflow: auto;
 `;
 const ControlsWrapper = styled.div`
   grid-area: mainControls;

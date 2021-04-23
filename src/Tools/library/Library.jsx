@@ -55,7 +55,7 @@ import GlobalFont from '../../_utils/GlobalFont';
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
-import Toast, { useToast } from '../_framework/Toast';
+import { useToast } from '../_framework/Toast';
 
 
 function Container(props){
@@ -87,17 +87,6 @@ const selectedDriveInformation = selector({
   }
 })
 
-const itemVersionsSelector = selectorFamily({
-  key:"itemInfoSelector",
-  get:(branchId)=> async ()=>{
-    // Load versions from database
-    const { data } = await axios.get(
-      `/api/loadVersions.php?branchId=${branchId}`
-    );
-    return data.versions
-  }
-})
-
 const selectedInformation = selector({
   key:"selectedInformation",
   get: ({get})=>{
@@ -118,11 +107,6 @@ const selectedInformation = selector({
 
     return {number:globalSelected.length,itemInfo}
   }
-})
-
-let overlayTitleAtom = atom({
-  key:"overlayTitleAtom",
-  default:""
 })
 
 function User(props){
@@ -872,7 +856,6 @@ export default function Library(props) {
   const history = useHistory();
 
   function useOutsideDriveSelector() {
-
     let newParams = {};
     newParams["path"] = `:::`;
     history.push("?" + encodeParams(newParams));
@@ -892,14 +875,6 @@ export default function Library(props) {
     breadcrumbContainer = <BreadcrumbContainer />;
   }
 
-  
-  // let mainPanelStyle ={
-  //   height:'100%',
-  //   width:'100%'
-  // }
-  // if(routePathDriveId === ''){
-  //   mainPanelStyle = {}
-  // }
   const driveCardSelection = ({item}) => {
     let newParams = {};
     newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;

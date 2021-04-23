@@ -1,17 +1,11 @@
-import React, {useState, lazy, Suspense} from "../_snowpack/pkg/react.js";
+import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
-import Assignment from "./Overlays/Assignment.js";
-import Editor from "./Overlays/Editor.js";
-import Calendar from "./Overlays/Calendar.js";
-import Image from "./Overlays/Image.js";
 import Toast from "./Toast.js";
-import GradebookAssignmentView from "./Overlays/GradebookAssignmentView.js";
-import GradebookAttemptView from "./Overlays/GradebookAttemptView.js";
 import {useMenuPanelController} from "./Panels/MenuPanel.js";
 import {useSupportDividerController} from "./Panels/ContentPanel.js";
 const layerStackAtom = atom({
@@ -22,10 +16,21 @@ export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportDividerController();
-  const Assignment2 = lazy(() => import("./Overlays/Assignment.js"));
-  const Editor2 = lazy(() => import("./Overlays/Editor.js"));
-  const Image2 = lazy(() => import("./Overlays/Image.js"));
-  const Calendar2 = lazy(() => import("./Overlays/Calendar.js"));
+  const [
+    Assignment,
+    Editor,
+    Image,
+    Calendar,
+    GradebookAssignmentView,
+    GradebookAttemptView
+  ] = useRef([
+    lazy(() => import("./Overlays/Assignment.js")),
+    lazy(() => import("./Overlays/Editor.js")),
+    lazy(() => import("./Overlays/Image.js")),
+    lazy(() => import("./Overlays/Calendar.js")),
+    lazy(() => import("./Overlays/GradebookAssignmentView.js")),
+    lazy(() => import("./Overlays/GradebookAttemptView.js"))
+  ]).current;
   const openOverlay = ({
     type,
     title,
@@ -41,25 +46,26 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAssignmentView, {
-            assignmentId
+            assignmentId,
+            key: `GBAssign${old.length + 1}`
           })
         ]);
         break;
       case "gradebookattemptview":
-        console.log(assignmentId, userId, attemptNumber);
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAttemptView, {
             assignmentId,
             userId,
-            attemptNumber
+            attemptNumber,
+            key: `GBView${old.length + 1}`
           })
         ]);
         break;
       case "editor":
         setLayers((old) => [
           ...old,
-          /* @__PURE__ */ React.createElement(Editor2, {
+          /* @__PURE__ */ React.createElement(Editor, {
             branchId,
             title,
             key: `EditorLayer${old.length + 1}`
@@ -69,7 +75,7 @@ export const useToolControlHelper = () => {
       case "assignment":
         setLayers((old) => [
           ...old,
-          /* @__PURE__ */ React.createElement(Assignment2, {
+          /* @__PURE__ */ React.createElement(Assignment, {
             branchId,
             assignmentId,
             courseId,
@@ -80,7 +86,7 @@ export const useToolControlHelper = () => {
       case "calendar":
         setLayers((old) => [
           ...old,
-          /* @__PURE__ */ React.createElement(Calendar2, {
+          /* @__PURE__ */ React.createElement(Calendar, {
             branchId,
             contentId,
             key: `CalendarLayer${old.length + 1}`
@@ -90,7 +96,7 @@ export const useToolControlHelper = () => {
       case "image":
         setLayers((old) => [
           ...old,
-          /* @__PURE__ */ React.createElement(Image2, {
+          /* @__PURE__ */ React.createElement(Image, {
             branchId,
             key: `ImageLayer${old.length + 1}`
           })
