@@ -857,8 +857,6 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext)
 
-  console.log(">>>profile in library",profile)
-
   if (profile.signedIn === "0"){
     return (<>
      <GlobalFont/>

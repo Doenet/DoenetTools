@@ -37,9 +37,9 @@ if ($result->num_rows > 0){
         "signedIn" => "1",
 );
 $roleAccessList = array(
-    "roleStudent" => array("Library", "Course"),
-    "roleInstructor" => array("Library", "Course", "Documentation", "Gradebook"),
-    "roleCourseDesigner" => array("Library", "Course", "Documentation"),
+    "roleStudent" => array("Account", "Library", "Course"),
+    "roleInstructor" => array("Account", "Library", "Course", "Documentation", "Gradebook"),
+    "roleCourseDesigner" => array("Account", "Library", "Course", "Documentation"),
     "roleWatchdog" => array(/*???*/),
     "roleCommunityTA" => array(/*???*/),
     "roleLiveDataCommunity" => array(/*???*/)
@@ -54,6 +54,7 @@ $roleAccessList = array(
     }
 
   $profile["toolAccess"] = $toolAccessList;
+  $profile["device"] = $jwtArray["deviceName"];
 
     $response_arr = array("success" => "1",
                           "profile" => $profile);
@@ -79,6 +80,7 @@ $roleAccessList = array(
   );
 // $profile["toolAccess"] = array("Library", "Course", "Documentation");
 $profile["toolAccess"] = $toolAccessList;
+$profile["device"] = "N/A";
 
 $response_arr = array("success" => "1",
                           "profile" => $profile);

@@ -144,6 +144,7 @@ export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
   const [profile,setProfile] = useState(null);
 
+  console.log(">>>Root profile",profile)
   //Need profile before rendering any tools
   if (!profile){
     const cookies = Cookies.get();
@@ -169,9 +170,6 @@ export default function ToolRoot({ tool }) {
   }
 
 
-    
-
-  console.log(">>>profile:",profile);
 
   return (
     <>
