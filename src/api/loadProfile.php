@@ -34,11 +34,12 @@ if ($result->num_rows > 0){
         "roleWatchdog" => $row['roleWatchdog'],
         "roleCommunityTA" => $row['roleCommunityTA'],
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
+        "signedIn" => "1",
 );
 $roleAccessList = array(
-    "roleStudent" => array("Chooser", "Course"),
-    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook"),
-    "roleCourseDesigner" => array("Chooser", "Course", "Documentation"),
+    "roleStudent" => array("Library", "Course"),
+    "roleInstructor" => array("Library", "Course", "Documentation", "Gradebook"),
+    "roleCourseDesigner" => array("Library", "Course", "Documentation"),
     "roleWatchdog" => array(/*???*/),
     "roleCommunityTA" => array(/*???*/),
     "roleLiveDataCommunity" => array(/*???*/)
@@ -59,7 +60,8 @@ $roleAccessList = array(
     
 }else{
   //Send back not signed in profile
-  $toolAccessList = array("Chooser", "Course", "Documentation");
+  // $toolAccessList = array("Library", "Course", "Documentation");
+  $toolAccessList = array("Documentation");
   $profile = array(
     "screenName" => "anonymous",
     "email" => "",
@@ -70,11 +72,14 @@ $roleAccessList = array(
     "roleStudent" => "0",
     "roleInstructor" => "0",
     "roleCourseDesigner" => "0",
-    "roleWatchdog" => "0",
+    "roleWatchdog" => "0", 
     "roleCommunityTA" => "0",
-    "roleLiveDataCommunity" => "0"
-);
-$profile["toolAccess"] = array("Chooser", "Course", "Documentation");
+    "roleLiveDataCommunity" => "0",
+    "signedIn" => "0",
+  );
+// $profile["toolAccess"] = array("Library", "Course", "Documentation");
+$profile["toolAccess"] = $toolAccessList;
+
 $response_arr = array("success" => "1",
                           "profile" => $profile);
 }
