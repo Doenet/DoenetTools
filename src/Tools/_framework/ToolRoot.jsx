@@ -8,6 +8,10 @@ import {
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+
+
 //import Toast from './Toast';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
@@ -133,11 +137,45 @@ export const useStackId = () => {
   return stackId;
 };
 
+export const ProfileContext = React.createContext({});
+
+
 export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
+  const [profile,setProfile] = useState(null);
+
+  //Need profile before rendering any tools
+  if (!profile){
+    const cookies = Cookies.get();
+    if (cookies.Profile){
+      //First try to get a cached cookie copy of profile
+      setProfile(JSON.parse(cookies.Profile));
+    }else{
+      //If doesn't exist then we need to load the profile from the server
+      axios
+      .get('/api/loadProfile.php', {params: {}})
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          // console.log(">>>resp.data.profile",resp.data.profile)
+          setProfile(resp.data.profile);
+        }
+      })
+      .catch((error) => {
+        //  Error currently does nothing
+      });
+    }
+
+    return null;
+  }
+
+
+    
+
+  console.log(">>>profile:",profile);
 
   return (
     <>
+    <ProfileContext.Provider value={profile}>
       {/* <GlobalStyle /> */}
 
       {tool}
@@ -147,6 +185,7 @@ export default function ToolRoot({ tool }) {
         )}
       </Suspense>
       <Toast />
+      </ProfileContext.Provider>
     </>
   );
 }
