@@ -885,7 +885,7 @@ export default function Library(props) {
     <>
     <GlobalFont/>
     <Tool>
-      <navPanel>
+      <navPanel isInitOpen>
       <div style={{marginBottom:"40px",height:"100vh"}} 
        onClick={useOutsideDriveSelector} >
       <Drive types={['content','course']}  foldersOnly={true} />
@@ -939,10 +939,10 @@ export default function Library(props) {
       </Container>
       </supportPanel>
 
-      <menuPanel title="Selected">
+      <menuPanel title="Selected" isInitOpen>
         <ItemInfo  />
       </menuPanel>
-      <menuPanel title="+ Add Items">
+      <menuPanel title="+ Add Items" isInitOpen>
        <AddMenuPanel route={props.route} />
       </menuPanel>
 
