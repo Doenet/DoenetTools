@@ -185,8 +185,8 @@ class UserProfile extends Component {
         ),
         id: 'profile',
         label: `${this.props.profile.screenName}`,
-        subLabel: `Device Here`,
-        // subLabel: `${this.props.profile.device}`,
+        // subLabel: `Device Here`,
+        subLabel: `${this.props.profile.device}`,
       }]
 
       for (let toolName of this.toolAccess){

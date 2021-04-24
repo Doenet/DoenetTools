@@ -142,29 +142,27 @@ export const ProfileContext = React.createContext({});
 
 export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [profile,setProfile] = useState(null);
+  const [_,setRefresh] = useState(0);
+
+  const profile = JSON.parse(localStorage.getItem("Profile"));
 
   console.log(">>>Root profile",profile)
   //Need profile before rendering any tools
   if (!profile){
-    const cookies = Cookies.get();
-    if (cookies.Profile){
-      //First try to get a cached cookie copy of profile
-      setProfile(JSON.parse(cookies.Profile));
-    }else{
-      //If doesn't exist then we need to load the profile from the server
-      axios
-      .get('/api/loadProfile.php', {params: {}})
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          // console.log(">>>resp.data.profile",resp.data.profile)
-          setProfile(resp.data.profile);
-        }
-      })
-      .catch((error) => {
-        //  Error currently does nothing
-      });
-    }
+
+    //If doesn't exist then we need to load the profile from the server
+    axios
+    .get('/api/loadProfile.php', {params: {}})
+    .then((resp) => {
+      if (resp.data.success === '1') {
+        // console.log(">>>resp.data.profile",resp.data.profile)
+        localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
+        setRefresh(was=>was+1);
+      }
+    })
+    .catch((error) => {
+      //  Error currently does nothing
+    });
 
     return null;
   }

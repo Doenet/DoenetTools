@@ -85,13 +85,6 @@ $profile["device"] = "N/A";
 $response_arr = array("success" => "1",
                           "profile" => $profile);
 }
-//Store profile cookie with same settings as jwt
-$expirationTime = $jwt_array['expires'];
-$path = '/';
-$domain = $_SERVER["SERVER_NAME"];
-$isSecure = true;
-
-setcookie("Profile", json_encode($profile), array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 
 // set response code - 200 OK
 http_response_code(200);

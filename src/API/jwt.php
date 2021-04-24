@@ -53,7 +53,7 @@ if ($row['minutes'] > 10){
             // "email" => $emailaddress,
             "userId" => $userId,
             "deviceName" => $deviceName,
-            "expires" => $expirationTime
+            // "expires" => $expirationTime
         );
         $jwt = JWT::encode($payload, $key);
 
