@@ -42,7 +42,7 @@ export default function SignIn() {
     .then((resp) => {
       if (resp.data.success === '1') {
         localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
-        // location.href = '/course';
+        location.href = '/course';
       }else{
         //  Error currently does nothing
       }})
