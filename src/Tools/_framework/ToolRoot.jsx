@@ -146,7 +146,6 @@ export default function ToolRoot({ tool }) {
 
   const profile = JSON.parse(localStorage.getItem("Profile"));
 
-  console.log(">>>Root profile",profile)
   //Need profile before rendering any tools
   if (!profile){
 

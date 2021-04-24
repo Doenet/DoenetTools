@@ -7,13 +7,13 @@ export default function SignOut() {
   const [signedOutAttempts, setSignedOutAttempts] = useState(0);
 
   useEffect(() => {
-    const phpUrl = '/api/signOut.php';
-    const data = {};
+    localStorage.clear(); //Clear out the profile
+
     const payload = {
-      params: data,
+      params: {},
     };
     axios
-      .get(phpUrl, payload)
+      .get('/api/signOut.php', payload)
       .then(() => {
         Cookies.remove('TrackingConsent', { path: '/', sameSite: 'strict' });
         Cookies.remove('Stay', {
