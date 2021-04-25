@@ -82,7 +82,7 @@ const Draggable = ({ children, id, className="", onDragStart, onDrag, onDragEnd,
         translation
       }));
 
-      onDrag?.({ clientX, clientY, translation, id });
+      onDrag?.({ clientX, clientY, translation, id, ev });
     },
     [state.origin, onDrag, id]
   );

@@ -1950,7 +1950,14 @@ function useDnDCallbacks() {
     onDragStartCallback?.();
   };
 
-  const onDrag = ({ clientX, clientY, translation, id }) => {
+  const onDrag = ({ clientX, clientY, translation, id, ev }) => {
+    if (ev && ev.altKey !== dragState.copyMode) {
+      let copyMode = ev.altKey;
+      setDragState((dragState) => ({
+        ...dragState,
+        copyMode
+      }));
+    } 
     dropActions.handleDrag(clientX, clientY);
   };
 
