@@ -2,7 +2,8 @@ import React from "../../_snowpack/pkg/react.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {
-  useRecoilCallback
+  useRecoilCallback,
+  useRecoilValue
 } from "../../_snowpack/pkg/recoil.js";
 import {
   folderDictionarySelector,
@@ -19,11 +20,15 @@ import {
 } from "./Drive.js";
 import Toast, {useToast} from "../../_framework/Toast.js";
 const dragShadowId = "dragShadow";
+const formatDate = (dt) => {
+  const formattedDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
+  return formattedDate;
+};
 export const useAddItem = () => {
   const [addToast, ToastType] = useToast();
   const addItem = useRecoilCallback(({snapshot: snapshot2, set}) => async ({driveIdFolderId, label, itemType, selectedItemId = null, url = null}) => {
     const dt = new Date();
-    const creationDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
+    const creationDate = formatDate(dt);
     const itemId = nanoid();
     const branchId = nanoid();
     const newItem = {
@@ -255,6 +260,168 @@ export const useMoveItems = () => {
   };
   return {moveItems, onMoveItemsError};
 };
+export const useCopyItems = () => {
+  const [addToast, ToastType] = useToast();
+  const copyItems = useRecoilCallback(({snapshot: snapshot2, set}) => async ({items = [], targetDriveId, targetFolderId, index}) => {
+    if (items.length === 0) {
+      throw "No items to be copied";
+    }
+    let destinationFolderObj = await snapshot2.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
+    let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
+    const insertIndex = index ?? 0;
+    let newSortOrder = "";
+    const dt = new Date();
+    const creationTimestamp = formatDate(dt);
+    let globalDictionary = {};
+    let globalContentIds = {};
+    for (let item of items) {
+      if (!item.driveId || !item.driveInstanceId || !item.itemId)
+        throw "Invalid arguments error";
+      let selectedItem = {
+        driveId: item.driveId,
+        driveInstanceId: item.driveInstanceId,
+        itemId: item.itemId
+      };
+      set(selectedDriveItemsAtom(selectedItem), false);
+      const {newItemId, newItem} = await cloneItem({
+        snapshot: snapshot2,
+        globalDictionary,
+        globalContentIds,
+        creationTimestamp,
+        item,
+        targetDriveId,
+        targetFolderId
+      });
+      const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter((itemId) => itemId !== dragShadowId);
+      newSortOrder = getLexicographicOrder({
+        index: insertIndex,
+        nodeObjs: newDestinationFolderObj.contentsDictionary,
+        defaultFolderChildrenIds: cleanDefaultOrder
+      });
+      newItem.sortOrder = newSortOrder;
+      newDestinationFolderObj["contentsDictionary"][newItemId] = newItem;
+      newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, newItemId);
+    }
+    set(globalSelectedNodesAtom, []);
+    let promises = [];
+    for (let newItemId of Object.keys(globalDictionary)) {
+      let newItem = globalDictionary[newItemId];
+      const data = {
+        driveId: targetDriveId,
+        parentFolderId: newItem.parentFolderId,
+        itemId: newItemId,
+        branchId: "",
+        versionId: nanoid(),
+        label: newItem.label,
+        type: newItem.itemType,
+        sortOrder: newItem.sortOrder
+      };
+      if (newItem.itemType === "DoenetML") {
+        const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+        promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
+        data["branchId"] = newDoenetML?.branchId;
+      }
+      const payload = {
+        params: data
+      };
+      const result2 = axios.get("/api/addItem.php", payload);
+      promises.push(result2);
+    }
+    Promise.allSettled(promises).then(([result2]) => {
+      if (result2.value?.data?.success) {
+        set(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}), newDestinationFolderObj);
+        for (let newItemId of Object.keys(globalDictionary)) {
+          let newItem = globalDictionary[newItemId];
+          if (newItem.itemType === "Folder") {
+            let queue = [newItemId];
+            while (queue.length) {
+              const size = queue.length;
+              for (let i = 0; i < size; i++) {
+                const currentItemId = queue.shift();
+                const currentItem = globalDictionary[currentItemId];
+                if (currentItem.itemType !== "Folder")
+                  continue;
+                let contentsDictionary = {};
+                for (let childContentId of globalContentIds[currentItemId]) {
+                  contentsDictionary = {
+                    ...contentsDictionary,
+                    [childContentId]: globalDictionary[childContentId]
+                  };
+                }
+                const currentFolderInfoObj = {
+                  folderInfo: currentItem,
+                  contentsDictionary,
+                  contentIds: {
+                    [sortOptions.DEFAULT]: globalContentIds[currentItemId]
+                  }
+                };
+                set(folderDictionary({driveId: targetDriveId, folderId: currentItemId}), currentFolderInfoObj);
+                queue = [...queue, ...globalContentIds[currentItemId]];
+              }
+            }
+          }
+        }
+        set(folderCacheDirtyAtom({driveId: targetDriveId, folderId: targetFolderId}), true);
+      }
+    });
+    const result = await Promise.allSettled(promises);
+    return result;
+  });
+  const cloneItem = async ({snapshot: snapshot2, globalDictionary = {}, globalContentIds = {}, creationTimestamp, item, targetDriveId, targetFolderId}) => {
+    const itemParentFolder = await snapshot2.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
+    const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
+    const newItem = {...itemInfo};
+    const newItemId = nanoid();
+    newItem.itemId = newItemId;
+    if (itemInfo.itemType === "Folder") {
+      const {contentIds} = await snapshot2.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
+      globalContentIds[newItemId] = [];
+      for (let contentId of contentIds[sortOptions.DEFAULT]) {
+        let subItem = {
+          ...item,
+          parentFolderId: item.itemId,
+          itemId: contentId
+        };
+        let result = await cloneItem({
+          snapshot: snapshot2,
+          globalDictionary,
+          globalContentIds,
+          creationTimestamp,
+          item: subItem,
+          targetFolderId: newItemId,
+          targetDriveId
+        });
+        const newSubItemId = result.newItemId;
+        globalContentIds[newItemId].push(newSubItemId);
+      }
+    }
+    if (item.driveId === targetDriveId) {
+      const newItemLabel = `Copy of ${newItem.label}`;
+      newItem.label = newItemLabel;
+    }
+    newItem.parentFolderId = targetFolderId;
+    newItem.creationDate = creationTimestamp;
+    globalDictionary[newItemId] = newItem;
+    return {newItemId, newItem};
+  };
+  const cloneDoenetML = ({item, timestamp}) => {
+    let newVersion = {
+      title: item.label,
+      branchId: nanoid(),
+      contentId: item.contentId,
+      versionId: nanoid(),
+      timestamp,
+      isDraft: "0",
+      isNamed: "1",
+      doenetML: item.doenetML
+    };
+    return newVersion;
+  };
+  const onCopyItemsError = ({errorMessage = null}) => {
+    addToast(`Copy item(s) error: ${errorMessage}`, ToastType.ERROR);
+  };
+  return {copyItems, onCopyItemsError};
+};
 export const useDragShadowCallbacks = () => {
   const replaceDragShadow = useRecoilCallback(({snapshot: snapshot2}) => async () => {
     const {
@@ -284,9 +451,10 @@ export const useDragShadowCallbacks = () => {
     const {
       dragShadowDriveId,
       dragShadowParentId,
-      draggedItemsId
+      draggedItemsId,
+      copyMode
     } = await snapshot2.getPromise(dragStateAtom);
-    if (draggedItemsId && draggedItemsId?.has(itemId)) {
+    if (!copyMode && draggedItemsId && draggedItemsId?.has(itemId)) {
       removeDragShadow();
       return;
     }
@@ -376,7 +544,7 @@ export const useDragShadowCallbacks = () => {
         let index = newDefaultOrder.indexOf(itemId);
         if (insertPosition === "afterCurrent")
           index += 1;
-        isValid = isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
+        isValid = copyMode || isValidPosition({draggedItemsId, contentIdsArr: newDefaultOrder, index});
         if (isValid)
           newDefaultOrder.splice(index, 0, dragShadowId);
         const defaultOrderObj = {[sortOptions.DEFAULT]: newDefaultOrder};

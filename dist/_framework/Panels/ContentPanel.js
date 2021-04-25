@@ -45,7 +45,7 @@ const panelPropotion = selectorFamily({
     return info.isActive ? info.propotion : 1;
   }
 });
-const calcInfo = (num) => num < 0.1 ? 0.1 : num > 0.95 ? 1 : num > 0.9 ? 0.9 : num;
+const calcInfo = (num) => num < 0.05 ? 0 : num < 0.1 ? 0.1 : num > 0.95 ? 1 : num > 0.9 ? 0.9 : num;
 export const useSupportDividerController = () => {
   const stackId = useStackId();
   const supportController = useRecoilCallback(({set}) => (newIsActive, newProportion) => {

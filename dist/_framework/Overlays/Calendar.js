@@ -3,7 +3,6 @@ import Tool from "../Tool.js";
 import {useToolControlHelper} from "../ToolRoot.js";
 export default function Calendar({contentId, branchId}) {
   useEffect(() => {
-    console.log(">>>Cal Init");
     return () => console.log(">>>Cal exit");
   }, []);
   return /* @__PURE__ */ React.createElement(Tool, {

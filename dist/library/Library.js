@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense} from "../_snowpack/pkg/react.js";
+import React, {useEffect, useState, Suspense, useContext} from "../_snowpack/pkg/react.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {
   faChalkboard,
@@ -47,8 +47,8 @@ import "../_utils/util.css.proxy.js";
 import GlobalFont from "../_utils/GlobalFont.js";
 import {driveColors, driveImages} from "../_reactComponents/Drive/util.js";
 import Tool from "../_framework/Tool.js";
-import {useToolControlHelper} from "../_framework/ToolRoot.js";
-import Toast, {useToast} from "../_framework/Toast.js";
+import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
+import {useToast} from "../_framework/Toast.js";
 function Container(props) {
   return /* @__PURE__ */ React.createElement("div", {
     style: {
@@ -71,13 +71,6 @@ const selectedDriveInformation = selector({
     set(drivecardSelectedNodesAtom, (old) => [...old, newObj]);
   }
 });
-const itemVersionsSelector = selectorFamily({
-  key: "itemInfoSelector",
-  get: (branchId) => async () => {
-    const {data} = await axios.get(`/api/loadVersions.php?branchId=${branchId}`);
-    return data.versions;
-  }
-});
 const selectedInformation = selector({
   key: "selectedInformation",
   get: ({get}) => {
@@ -95,10 +88,6 @@ const selectedInformation = selector({
     itemInfo["driveInstanceId"] = driveInstanceId;
     return {number: globalSelected.length, itemInfo};
   }
-});
-let overlayTitleAtom = atom({
-  key: "overlayTitleAtom",
-  default: ""
 });
 function User(props) {
   let onClick = props.onClick;
@@ -734,6 +723,16 @@ export default function Library(props) {
     }
   }, []);
   const history = useHistory();
+  const profile = useContext(ProfileContext);
+  if (profile.signedIn === "0") {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+      title: "Library"
+    }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
+      style: {margin: "10px"}
+    }, /* @__PURE__ */ React.createElement("h1", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requirers sign in for use"), /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("a", {
+      href: "/signin"
+    }, "Sign in with this link"))))));
+  }
   function useOutsideDriveSelector() {
     let newParams = {};
     newParams["path"] = `:::`;
@@ -751,7 +750,9 @@ export default function Library(props) {
     newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
     history.push("?" + encodeParams(newParams));
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", null, /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
+    isInitOpen: true
+  }, /* @__PURE__ */ React.createElement("div", {
     style: {marginBottom: "40px", height: "100vh"},
     onClick: useOutsideDriveSelector
   }, /* @__PURE__ */ React.createElement(Drive, {
@@ -785,9 +786,11 @@ export default function Library(props) {
     types: ["content", "course"],
     urlClickBehavior: "select"
   }))), /* @__PURE__ */ React.createElement("menuPanel", {
-    title: "Selected"
+    title: "Selected",
+    isInitOpen: true
   }, /* @__PURE__ */ React.createElement(ItemInfo, null)), /* @__PURE__ */ React.createElement("menuPanel", {
-    title: "+ Add Items"
+    title: "+ Add Items",
+    isInitOpen: true
   }, /* @__PURE__ */ React.createElement(AddMenuPanel, {
     route: props.route
   }))));

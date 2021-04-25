@@ -46,7 +46,8 @@ import {
   useDeleteItem,
   useMoveItems,
   useDragShadowCallbacks,
-  useSortFolder
+  useSortFolder,
+  useCopyItems
 } from "./DriveActions.js";
 import {IsNavContext} from "../../_framework/Panels/NavPanel.js";
 import {useToast} from "../../_framework/Toast.js";
@@ -211,7 +212,8 @@ export const dragStateAtom = atom({
     isDraggedOverBreadcrumb: false,
     dragShadowDriveId: null,
     dragShadowParentId: null,
-    openedFoldersInfo: null
+    openedFoldersInfo: null,
+    copyMode: false
   }
 });
 const dragShadowId = "dragShadow";
@@ -328,22 +330,6 @@ export const folderCacheDirtyAtom = atomFamily({
   key: "foldedCacheDirtyAtom",
   default: false
 });
-export const folderInfoSelectorActions = Object.freeze({
-  ADD_ITEM: "addItem",
-  DELETE_ITEM: "delete item",
-  MOVE_ITEMS: "move items",
-  SORT: "sort",
-  PUBLISH_ASSIGNMENT: "assignment was published",
-  PUBLISH_CONTENT: "content was published",
-  ASSIGNMENT_TO_CONTENT: "assignment to content",
-  UPDATE_ASSIGNMENT_TITLE: "assignment title update",
-  INSERT_DRAG_SHADOW: "insertDragShadow",
-  REMOVE_DRAG_SHADOW: "removeDragShadow",
-  REPLACE_DRAG_SHADOW: "replaceDragShadow",
-  INVALIDATE_SORT_CACHE: "invalidate sort cache",
-  RENAME_ITEM: "rename item",
-  CLEAN_UP_DRAG: "clean up drag"
-});
 export const folderInfoSelector = selectorFamily({
   get: (driveIdInstanceIdFolderId) => ({get}) => {
     const {driveId, folderId} = driveIdInstanceIdFolderId;
@@ -357,24 +343,6 @@ export const folderInfoSelector = selectorFamily({
     let newFolderInfo = {...folderInfo};
     newFolderInfo.sortBy = folderSortOrder;
     return {folderInfo: newFolderInfo, contentsDictionary, contentIdsArr};
-  },
-  set: (driveIdInstanceIdFolderId) => async ({set, get}, instructions) => {
-    const {driveId, folderId} = driveIdInstanceIdFolderId;
-    const dirtyActions = new Set([folderInfoSelectorActions.ADD_ITEM, folderInfoSelectorActions.DELETE_ITEM]);
-    if (dirtyActions.has(instructions.instructionType)) {
-      set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortOptions.DEFAULT);
-    }
-    switch (instructions.instructionType) {
-      case folderInfoSelectorActions.SORT:
-        const {contentIds} = get(folderDictionarySelector({driveId, folderId}));
-        set(folderSortOrderAtom(driveIdInstanceIdFolderId), instructions.sortKey);
-        if (!contentIds[instructions.sortKey]) {
-          set(folderDictionarySelector({driveId, folderId}), instructions);
-        }
-        break;
-      default:
-        set(folderDictionarySelector({driveId, folderId}), instructions);
-    }
   }
 });
 export const sortItems = ({sortKey, nodeObjs, defaultFolderChildrenIds}) => {
@@ -755,7 +723,7 @@ function Folder(props) {
     setInstanceParentId(props.pathItemId);
   }, [props.pathItemId]);
   const indentPx = 25;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px";
   let marginSize = "0";
   let widthSize = "60vw";
@@ -1027,7 +995,7 @@ function Folder(props) {
       key: `dnode${props.driveInstanceId}${props.folderId}`,
       id: props.folderId,
       className: draggableClassName,
-      onDragStart: () => onDragStart({nodeId: props.folderId, driveId: props.driveId, onDragStartCallback}),
+      onDragStart: ({ev}) => onDragStart({ev, nodeId: props.folderId, driveId: props.driveId, onDragStartCallback}),
       onDrag,
       onDragEnd: onDragEndCb,
       ghostElement: renderDragGhost(props.folderId, folder)
@@ -1341,7 +1309,7 @@ const DoenetML = React.memo((props) => {
   } else if (props.numColumns === 1) {
     columns = "100%";
   }
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
@@ -1485,7 +1453,7 @@ const DoenetML = React.memo((props) => {
       key: `dnode${props.driveInstanceId}${props.item.itemId}`,
       id: props.item.itemId,
       className: draggableClassName,
-      onDragStart: () => onDragStart({nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback}),
+      onDragStart: ({ev}) => onDragStart({ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback}),
       onDrag,
       onDragEnd,
       onDragEnd: onDragEndCb,
@@ -1515,7 +1483,7 @@ const Url = React.memo((props) => {
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const indentPx = 30;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
   let marginSize = "0";
@@ -1634,7 +1602,7 @@ const Url = React.memo((props) => {
       key: `dnode${props.driveInstanceId}${props.item.itemId}`,
       id: props.item.itemId,
       className: draggableClassName,
-      onDragStart: () => onDragStart({nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback}),
+      onDragStart: ({ev}) => onDragStart({ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback}),
       onDrag,
       onDragEnd,
       onDragEnd: onDragEndCb,
@@ -1659,8 +1627,9 @@ function useDnDCallbacks() {
   const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, onMoveItemsError} = useMoveItems();
+  const {copyItems, onCopyItemsError} = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
-  const onDragStart = ({nodeId, driveId, onDragStartCallback}) => {
+  const onDragStart = ({ev = null, nodeId, driveId, onDragStartCallback}) => {
     let draggedItemsId = new Set();
     if (globalSelectedNodes.length === 0) {
       draggedItemsId.add(nodeId);
@@ -1670,12 +1639,16 @@ function useDnDCallbacks() {
         globalSelectedNodeIds.push(globalSelectedNode.itemId);
       draggedItemsId = new Set(globalSelectedNodeIds);
     }
+    let copyMode = false;
+    if (ev && ev.altKey)
+      copyMode = true;
     setDragState((dragState2) => ({
       ...dragState2,
       isDragging: true,
       draggedOverDriveId: driveId,
       draggedItemsId,
-      openedFoldersInfo: []
+      openedFoldersInfo: [],
+      copyMode
     }));
     onDragStartCallback?.();
   };
@@ -1695,16 +1668,30 @@ function useDnDCallbacks() {
     replaceDragShadow().then((replaceDragShadowResp) => {
       if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0)
         return;
-      const result = moveItems(replaceDragShadowResp);
-      result.then((resp) => {
-        if (resp.data.success) {
-          addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-        } else {
-          onMoveItemsError({errorMessage: resp.data.message});
-        }
-      }).catch((e) => {
-        onMoveItemsError({errorMessage: e.message});
-      });
+      if (dragState.copyMode) {
+        const {targetDriveId, targetFolderId, index} = replaceDragShadowResp;
+        const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
+        result.then(([resp]) => {
+          if (resp.value?.data?.success) {
+            addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+          } else {
+            onCopyItemsError({errorMessage: resp?.reason});
+          }
+        }).catch((e) => {
+          onCopyItemsError({errorMessage: e.message});
+        });
+      } else {
+        const result = moveItems(replaceDragShadowResp);
+        result.then((resp) => {
+          if (resp.data.success) {
+            addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
+          } else {
+            onMoveItemsError({errorMessage: resp.data.message});
+          }
+        }).catch((e) => {
+          onMoveItemsError({errorMessage: e.message});
+        });
+      }
     });
     cleanUpDragShadow();
     removeDragShadow();
@@ -1713,7 +1700,8 @@ function useDnDCallbacks() {
       isDragging: false,
       draggedOverDriveId: null,
       draggedItemsId: null,
-      openedFoldersInfo: []
+      openedFoldersInfo: [],
+      copyMode: false
     }));
     dropActions.handleDrop();
   };
@@ -1722,7 +1710,8 @@ function useDnDCallbacks() {
     return /* @__PURE__ */ React.createElement(DragGhost, {
       id: dragGhostId,
       numItems,
-      element
+      element,
+      copyMode: dragState.copyMode
     });
   }
   return {
@@ -1856,7 +1845,7 @@ function useUpdateBreadcrumb(props) {
     }
   };
 }
-const DragGhost = ({id, element, numItems}) => {
+const DragGhost = ({id, element, numItems, copyMode = false}) => {
   const containerStyle = {
     transform: "rotate(-5deg)",
     zIndex: "10",
@@ -1891,14 +1880,40 @@ const DragGhost = ({id, element, numItems}) => {
     justifyContent: "center",
     alignItems: "center"
   };
-  return /* @__PURE__ */ React.createElement("div", {
+  const copyModeIndicatorCircleContainerStyle = {
+    position: "absolute",
+    zIndex: "5",
+    top: "6px",
+    left: "5px",
+    borderRadius: "25px",
+    background: "#08ed00",
+    fontSize: "23px",
+    color: "white",
+    width: "25px",
+    height: "25px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  };
+  let dragGhost = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    style: singleItemStyle
+  }, element));
+  ;
+  if (numItems >= 2) {
+    const numItemsIndicator = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      style: multipleItemsNumCircleContainerStyle
+    }, numItems));
+    dragGhost = /* @__PURE__ */ React.createElement(React.Fragment, null, numItemsIndicator, dragGhost);
+  }
+  if (copyMode) {
+    const copyModeIndicator = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      style: copyModeIndicatorCircleContainerStyle
+    }, "+"));
+    dragGhost = /* @__PURE__ */ React.createElement(React.Fragment, null, copyModeIndicator, dragGhost);
+  }
+  dragGhost = /* @__PURE__ */ React.createElement("div", {
     id,
     style: containerStyle
-  }, numItems < 2 ? /* @__PURE__ */ React.createElement("div", {
-    style: singleItemStyle
-  }, element) : /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
-    style: multipleItemsNumCircleContainerStyle
-  }, numItems), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
-    style: singleItemStyle
-  }, element))));
+  }, dragGhost);
+  return dragGhost;
 };

@@ -76,6 +76,7 @@ const ProfilePictureLrg = styled.div`
 class UserProfile extends Component {
   constructor(props) {
     super(props);
+    this.toolAccess = props?.profile?.toolAccess;
     this.state = {
       menuVisble: false,
       showToolbox: false,
@@ -140,68 +141,7 @@ class UserProfile extends Component {
         this.forceUpdate();
       }
     }, this.options);
-    if (props.profile.toolAccess) {
-      this.populateMenuToolbox(props?.profile?.toolAccess);
-    } else {
-      this.populateMenuToolbox([]);
-    }
-    this.profileMenuMap = [
-      {
-        id: "Account",
-        label: "Account settings",
-        link: "/accountsettings/"
-      }
-    ];
-    if (props.isSignedIn) {
-      this.profileMenuMap.push({
-        id: "SignOut",
-        label: "Sign out",
-        link: "/signout/"
-      });
-    } else {
-      this.profileMenuMap.push({
-        id: "SignIn",
-        label: "Sign in",
-        link: "/signin/"
-      });
-    }
-    this.populateMenuToolbox(props?.profile?.toolAccess);
     this.prepareProfileDropDown(this.profilePicture);
-  }
-  populateMenuToolbox(tools) {
-    const toolObjs = {
-      chooser: {
-        id: "Library",
-        label: "Library",
-        link: "/library/"
-      },
-      course: {
-        id: "Course",
-        label: "Course",
-        link: "/course/"
-      },
-      documentation: {
-        id: "Documentation",
-        label: "Documentation",
-        link: "/docs/"
-      },
-      gradebook: {
-        id: "Gradebook",
-        label: "Gradebook",
-        link: "/gradebook/"
-      },
-      dashboard: {
-        id: "Dashboard",
-        label: "Dashboard",
-        link: "/dashboard/"
-      }
-    };
-    this.menuToolBoxItems = [];
-    if (tools) {
-      for (let tool of tools) {
-        this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
-      }
-    }
   }
   prepareProfileDropDown(picture) {
     this.profileMenuMap = [
@@ -213,40 +153,50 @@ class UserProfile extends Component {
         }),
         id: "profile",
         label: `${this.props.profile.screenName}`,
-        subLabel: `${this.props.cookies.Device}`
-      },
-      {
-        id: "Dashboard",
-        label: "Dashboard",
-        link: "/dashboard/"
-      },
-      {
-        id: "Library",
-        label: "Library",
-        link: "/library/"
-      },
-      {
-        id: "Course",
-        label: "Course",
-        link: "/course/"
-      },
-      {
-        id: "Documentation",
-        label: "Documentation",
-        link: "/docs/"
-      },
-      {
-        id: "Gradebook",
-        label: "Gradebook",
-        link: "/gradebook/"
-      },
-      {
-        id: "Account",
-        label: "Account Settings",
-        link: "/accountsettings/"
+        subLabel: `${this.props.profile.device}`
       }
     ];
-    if (this.props.isSignedIn) {
+    for (let toolName of this.toolAccess) {
+      let name = toolName.toLowerCase();
+      switch (name) {
+        case "library":
+          this.profileMenuMap.push({
+            id: "Library",
+            label: "Library",
+            link: "/library/"
+          });
+          break;
+        case "course":
+          this.profileMenuMap.push({
+            id: "Course",
+            label: "Course",
+            link: "/course/"
+          });
+          break;
+        case "documentation":
+          this.profileMenuMap.push({
+            id: "Documentation",
+            label: "Documentation",
+            link: "/docs/"
+          });
+          break;
+        case "gradebook":
+          this.profileMenuMap.push({
+            id: "Gradebook",
+            label: "Gradebook",
+            link: "/gradebook/"
+          });
+          break;
+        case "account":
+          this.profileMenuMap.push({
+            id: "Account",
+            label: "Account Settings",
+            link: "/accountsettings/"
+          });
+          break;
+      }
+    }
+    if (this.props.profile.signedIn == "1") {
       this.profileMenuMap.push({
         id: "SignOut",
         label: "Sign out",
@@ -313,13 +263,6 @@ class UserProfile extends Component {
       pic: this.profilePicture,
       name: "changeProfilePicture",
       id: "changeProfilePicture"
-    });
-    const menuToolBox = /* @__PURE__ */ React.createElement(MenuDropDown, {
-      position: "left",
-      menuBase: menuIcon,
-      offset: -20,
-      showThisMenuText: this.props.toolName,
-      options: this.menuToolBoxItems
     });
     const profileMenu = /* @__PURE__ */ React.createElement(MenuDropDown, {
       position: "left",
