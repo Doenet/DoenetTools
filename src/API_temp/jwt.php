@@ -44,10 +44,16 @@ if ($row['minutes'] > 10){
         //Valid code and not expired
         http_response_code(200);
 
+        $expirationTime = 0;
+        if ($stay == 1){
+            $expirationTime = 2147483647;
+        }
+
         $payload = array(
             // "email" => $emailaddress,
             "userId" => $userId,
             "deviceName" => $deviceName,
+            // "expires" => $expirationTime
         );
         $jwt = JWT::encode($payload, $key);
 
@@ -58,10 +64,7 @@ if ($row['minutes'] > 10){
 
 
         $value = $jwt;
-        $expirationTime = 0;
-        if ($stay == 1){
-            $expirationTime = 2147483647;
-        }
+        
         $path = '/';
         //$domain = $ini_array['dbhost'];
         $domain = $_SERVER["SERVER_NAME"];
@@ -72,13 +75,16 @@ if ($row['minutes'] > 10){
         $isHttpOnly = true;
         setcookie("JWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
         setcookie("JWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
-        if ($newAccount == 1){
-            //     header("Location: /accountsettings");
-                    header("Location: /library");
-            }else{
-            //     header("Location: /dashboard");
-                    header("Location: /course");
-            }
+        header("Location: /signin"); //needs to store profile into localstorage
+       
+        // if ($newAccount == 1){
+        // //     header("Location: /accountsettings");
+        //         header("Location: /library");
+        // }else{
+        // //     header("Location: /dashboard");
+        //         header("Location: /course");
+        // }
+
     }
 }
 
