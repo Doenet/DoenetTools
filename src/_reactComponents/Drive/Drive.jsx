@@ -1969,9 +1969,12 @@ function useDnDCallbacks() {
     replaceDragShadow().then(replaceDragShadowResp => {
       if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
 
-      if (dragState.copyMode) {
-        const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
-        const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
+      const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
+      const draggingAcrossDrives = globalSelectedNodes?.[0].driveId !== targetDriveId;
+      const copyMode = dragState.copyMode || draggingAcrossDrives;
+
+      if (copyMode) {
+      const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
         
         result.then(([resp])=>{
           if (resp.value?.data?.success){
