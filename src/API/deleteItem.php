@@ -15,23 +15,39 @@ $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 
 $success = TRUE;
-$results_arr = array();
+$message = "";
 
-$sql = "
-SELECT canDeleteItemsAndFolders
-FROM drive_user
-WHERE userId = '$userId'
-AND driveId = '$driveId'
-";
-$result = $conn->query($sql); 
-if ($result->num_rows > 0){
-$row = $result->fetch_assoc();
-$canDelete = $row["canDeleteItemsAndFolders"];
-if (!$canDelete){
+
+if ($driveId == ""){
   $success = FALSE;
-}
+  $message = 'Internal Error: missing driveId';
+}elseif ($itemId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing itemId';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to delete";
 }
 
+
+if ($success){
+  //Check for permissions
+  $sql = "
+  SELECT canDeleteItemsAndFolders
+  FROM drive_user
+  WHERE userId = '$userId'
+  AND driveId = '$driveId'
+  ";
+  $result = $conn->query($sql); 
+  if ($result->num_rows > 0){
+  $row = $result->fetch_assoc();
+  $canDelete = $row["canDeleteItemsAndFolders"];
+  if (!$canDelete){
+    $success = FALSE;
+    $message = "No permission to delete";
+  }
+  }
+}
 
 if ($success){
   $sql="
@@ -46,8 +62,9 @@ if ($success){
 
 
 $response_arr = array(
-  "success"=>$success
-  );
+  "success"=>$success,
+  "message"=>$message
+  );;
 
 // set response code - 200 OK
 http_response_code(200);
