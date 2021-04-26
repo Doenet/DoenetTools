@@ -21,25 +21,57 @@ $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 $sortOrder = mysqli_real_escape_string($conn,$_REQUEST["sortOrder"]);
 
 $success = TRUE;
-$results_arr = array();
+$message = "";
 
-$sql = "
-SELECT canAddItemsAndFolders
-FROM drive_user
-WHERE userId = '$userId'
-AND driveId = '$driveId'
-";
 
-$result = $conn->query($sql); 
-if ($result->num_rows > 0){
-$row = $result->fetch_assoc();
-$canAdd = $row["canAddItemsAndFolders"];
-if (!$canAdd){
+if ($driveId == ""){
   $success = FALSE;
+  $message = 'Internal Error: missing driveId';
+}elseif ($parentFolderId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing parentFolderId';
+}elseif ($itemId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing itemId';
+}elseif ($versionId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing versionId';
+}elseif ($label == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing label';
+}elseif ($type == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing type';
+}elseif ($branchId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing branchId';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to create a $type";
 }
-}else{
-  //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
-  $success = FALSE;
+
+if ($success){
+  //Check for permissions
+  $sql = "
+  SELECT canAddItemsAndFolders
+  FROM drive_user
+  WHERE userId = '$userId'
+  AND driveId = '$driveId'
+  ";
+
+  $result = $conn->query($sql); 
+  if ($result->num_rows > 0){
+  $row = $result->fetch_assoc();
+  $canAdd = $row["canAddItemsAndFolders"];
+  if (!$canAdd){
+    $success = FALSE;
+    $message = "No permission to add";
+  }
+  }else{
+    //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+    $success = FALSE;
+    $message = "Database rejected update";
+  }
 }
 
 if ($success){
@@ -90,12 +122,14 @@ if ($success){
     $result = $conn->query($sql); 
   }else{
     $success = FALSE;
+    $message = "Don't know how to add type $type";
   }
 
 }
 
 $response_arr = array(
-  "success"=>$success
+  "success"=>$success,
+  "message"=>$message
   );
 
 // set response code - 200 OK
