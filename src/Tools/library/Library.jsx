@@ -64,7 +64,7 @@ function Container(props){
       maxWidth: "850px",
       // border: "1px red solid",
       padding: "20px",
-      height:"calc(100vh - 168px)"
+      display:"grid"
   }
   }
   >
