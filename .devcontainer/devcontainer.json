@@ -1,0 +1,16 @@
+{
+    "name": "Doenet Dev Env",
+    "dockerFile": "../doenet_docker/docker-compose.yml",
+    "appPort": [8080,80],
+    "runArgs": ["-u", "node"],
+    "settings": {
+      // "workbench.colorTheme": "Hot Dog Stand",
+      "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "postCreateCommand": "npm install && npx snowpack dev",
+    "extensions": [
+      "sdras.night-owl",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode"
+    ]
+  }
