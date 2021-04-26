@@ -41,7 +41,6 @@ export const BreadcrumbContainer = ({ divider = '/', ...props }) => {
     flexWrap: "wrap",
     overflow: "hidden",
     alignItems: "center",
-    padding: "12px 0",
     width: "100%",
     borderBottom: "1px solid #cdcdcd",
     margin: "0",
@@ -59,5 +58,7 @@ export const BreadcrumbContainer = ({ divider = '/', ...props }) => {
   
   }
 
-  return (<ol style={breadcrumbContainerStyle}>{<div onClick={leftmostBreadcrumb} style={{marginLeft:'10px',marginRight:'10px'}} >{<FontAwesomeIcon icon={faTh}/>}</div>}{children}</ol>);
+  return (<ol style={breadcrumbContainerStyle}>{<div onClick={leftmostBreadcrumb} 
+    style={{marginLeft:'0px',marginRight:'10px'}}
+     >{<FontAwesomeIcon icon={faTh}/>}</div>}{children}</ol>);
 };
