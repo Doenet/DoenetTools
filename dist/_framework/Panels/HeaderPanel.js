@@ -1,11 +1,9 @@
-import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useContext} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {useToolControlHelper, useStackId} from "../ToolRoot.js";
+import {useToolControlHelper, useStackId, ProfileContext} from "../ToolRoot.js";
 import UserProfile from "../temp/UserProfile.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import Cookies from "../../_snowpack/pkg/js-cookie.js";
-import axios from "../../_snowpack/pkg/axios.js";
 const Wrapper = styled.div`
   grid-area: headerPanel;
   height: 60px;
@@ -38,31 +36,15 @@ const ExitOverlayButton = styled.button`
 export default function HeaderPanel({title, children}) {
   const {close} = useToolControlHelper();
   const stackId = useStackId();
-  const [profile, setProfile] = useState({});
-  const jwt = Cookies.get();
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT_JS")) {
-    isSignedIn = true;
-  }
-  useEffect(() => {
-    const phpUrl = "/api/loadProfile.php";
-    const data = {};
-    const payload = {
-      params: data
-    };
-    axios.get(phpUrl, payload).then((resp) => {
-      if (resp.data.success === "1") {
-        setProfile(resp.data.profile);
-      }
-    }).catch((error) => {
+  const profile = useContext(ProfileContext);
+  let userProfile = /* @__PURE__ */ React.createElement("p", null, "Loading");
+  if (Object.keys(profile).length > 0) {
+    userProfile = /* @__PURE__ */ React.createElement(UserProfile, {
+      profile,
+      showProfileOnly: true
     });
-  }, []);
-  return /* @__PURE__ */ React.createElement(Wrapper, null, /* @__PURE__ */ React.createElement(ControlsContainer, null, /* @__PURE__ */ React.createElement("p", null, title), children), !(stackId > 0) ? /* @__PURE__ */ React.createElement(UserProfile, {
-    profile,
-    cookies: jwt,
-    isSignedIn,
-    showProfileOnly: true
-  }) : /* @__PURE__ */ React.createElement(ExitOverlayButton, {
+  }
+  return /* @__PURE__ */ React.createElement(Wrapper, null, /* @__PURE__ */ React.createElement(ControlsContainer, null, /* @__PURE__ */ React.createElement("p", null, title), children), !(stackId > 0) ? /* @__PURE__ */ React.createElement(React.Fragment, null, userProfile) : /* @__PURE__ */ React.createElement(ExitOverlayButton, {
     onClick: close
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faTimes

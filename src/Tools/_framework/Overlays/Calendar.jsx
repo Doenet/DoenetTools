@@ -5,7 +5,7 @@ import { useToolControlHelper } from "../ToolRoot";
 export default function Calendar({ contentId, branchId }) {
   useEffect(() => {
     //init code here
-    console.log(">>>Cal Init");
+    // console.log(">>>Cal Init");
     return () => console.log(">>>Cal exit"); //cleanup code here
   }, []);
 

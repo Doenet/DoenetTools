@@ -81,7 +81,7 @@ export default function DragPanel({
   const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{dir}, api] = useSpring(() => ({
     dir: open ? handleSize + panelSize : handleSize
-  }));
+  }), [open]);
   useEffect(() => {
     setOpen(isInitOpen);
   }, [isInitOpen, setOpen]);

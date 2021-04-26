@@ -8,6 +8,8 @@ import {
 import Toast from "./Toast.js";
 import {useMenuPanelController} from "./Panels/MenuPanel.js";
 import {useSupportDividerController} from "./Panels/ContentPanel.js";
+import Cookies from "../_snowpack/pkg/js-cookie.js";
+import axios from "../_snowpack/pkg/axios.js";
 const layerStackAtom = atom({
   key: "layerStackAtom",
   default: []
@@ -128,9 +130,24 @@ export const useStackId = () => {
   const [stackId] = useState(() => getId());
   return stackId;
 };
+export const ProfileContext = React.createContext({});
 export default function ToolRoot({tool}) {
   const overlays = useRecoilValue(layerStackAtom);
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, tool, /* @__PURE__ */ React.createElement(Suspense, {
+  const [_, setRefresh] = useState(0);
+  const profile = JSON.parse(localStorage.getItem("Profile"));
+  if (!profile) {
+    axios.get("/api/loadProfile.php", {params: {}}).then((resp) => {
+      if (resp.data.success === "1") {
+        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
+        setRefresh((was) => was + 1);
+      }
+    }).catch((error) => {
+    });
+    return null;
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
+    value: profile
+  }, tool, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading...")
-  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null));
+  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null)));
 }

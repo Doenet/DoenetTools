@@ -898,7 +898,7 @@ function Folder(props){
   },[props.pathItemId])
 
   const indentPx = 25;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px";
   let marginSize = "0";
   let widthSize = "60vw";
@@ -1583,7 +1583,7 @@ const DoenetML = React.memo((props)=>{
 
 
 
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
@@ -1772,7 +1772,7 @@ const Url = React.memo((props)=>{
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
 
   const indentPx = 30;
-  let bgcolor = "#f6f8ff";
+  let bgcolor = "#ffffff";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "60vw";
   let marginSize = "0";
@@ -1950,7 +1950,14 @@ function useDnDCallbacks() {
     onDragStartCallback?.();
   };
 
-  const onDrag = ({ clientX, clientY, translation, id }) => {
+  const onDrag = ({ clientX, clientY, translation, id, ev }) => {
+    if (ev && ev.altKey !== dragState.copyMode) {
+      let copyMode = ev.altKey;
+      setDragState((dragState) => ({
+        ...dragState,
+        copyMode
+      }));
+    } 
     dropActions.handleDrag(clientX, clientY);
   };
 
@@ -1969,9 +1976,12 @@ function useDnDCallbacks() {
     replaceDragShadow().then(replaceDragShadowResp => {
       if (!replaceDragShadowResp || Object.keys(replaceDragShadowResp).length === 0) return;
 
-      if (dragState.copyMode) {
-        const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
-        const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
+      const { targetDriveId, targetFolderId, index } = replaceDragShadowResp;
+      const draggingAcrossDrives = globalSelectedNodes?.[0].driveId !== targetDriveId;
+      const copyMode = dragState.copyMode || draggingAcrossDrives;
+
+      if (copyMode) {
+      const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
         
         result.then(([resp])=>{
           if (resp.value?.data?.success){

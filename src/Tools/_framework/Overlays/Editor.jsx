@@ -67,7 +67,7 @@ const itemHistoryAtom = atomFamily({
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
-      console.log(">>>data",data)
+      // console.log(">>>data",data)
       return data.versions
     }
   })
@@ -161,8 +161,8 @@ function VersionHistoryPanel(props){
 
     let versions = [];
     
-  console.log(">>> versionHistory",versionHistory)
-  console.log(">>> versionHistory.getValue()",versionHistory.getValue())
+  // console.log(">>> versionHistory",versionHistory)
+  // console.log(">>> versionHistory.getValue()",versionHistory.getValue())
   for (let version of versionHistory.contents){
      
       // let nameItButton = <button>Name Version</button>;

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { useToolControlHelper, useStackId } from '../ToolRoot';
+import { useToolControlHelper, useStackId, ProfileContext } from '../ToolRoot';
 import UserProfile from '../temp/UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 
 const Wrapper = styled.div`
   grid-area: headerPanel;
@@ -42,40 +40,16 @@ const ExitOverlayButton = styled.button`
 export default function HeaderPanel({ title, children }) {
   const { close } = useToolControlHelper();
   const stackId = useStackId();
-  //User profile logic
-  const [profile, setProfile] = useState({});
-  const jwt = Cookies.get();
-  // console.log(jwt);
 
-  let isSignedIn = false;
-  if (Object.keys(jwt).includes('JWT_JS')) {
-    isSignedIn = true;
-  }
-
-  useEffect(() => {
-    //Fires each time you change the tool
-    //Need to load profile from database each time
-    const payload = {
-      params: {},
-    };
-    axios
-      .get('/api/loadProfile.php', payload)
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          setProfile(resp.data.profile);
-        }
-      })
-      .catch((error) => {
-        // this.setState({ error: error }); currently does nothing
-      });
-  }, []);
+  const profile = useContext(ProfileContext)
+  // console.log(">>>Header profile",profile)
 
   let userProfile = <p>Loading</p> //TODO: update this to blank circle svg
   if (Object.keys(profile).length > 0){
     userProfile = <UserProfile
           profile={profile}
-          cookies={jwt}
-          isSignedIn={isSignedIn}
+          // cookies={jwt}
+          // isSignedIn={isSignedIn}
           showProfileOnly={true}
           // TODO: this needs review
           // headerRoleFromLayout={props.headerRoleFromLayout}

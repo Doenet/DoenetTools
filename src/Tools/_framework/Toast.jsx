@@ -162,7 +162,7 @@ function ToastMessage({
     from: { opacity: 0, height: 0, life: "100%" },
     to: async (next, cancel) => {
       ref.current.cancel = cancel;
-      console.log(">>>offsetHight", ref.current.offsetHeight);
+      // console.log(">>>offsetHight", ref.current.offsetHeight);
       await next({ opacity: 1, height: ref.current.offsetHeight });
       if (duration > 0) {
         await next({ life: "0%", config: { duration: duration } });

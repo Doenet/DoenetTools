@@ -34,11 +34,12 @@ if ($result->num_rows > 0){
         "roleWatchdog" => $row['roleWatchdog'],
         "roleCommunityTA" => $row['roleCommunityTA'],
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
+        "signedIn" => "1",
 );
 $roleAccessList = array(
-    "roleStudent" => array("Chooser", "Course", "Dashboard"),
-    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook", "Dashboard"),
-    "roleCourseDesigner" => array("Chooser", "Course", "Documentation", "Dashboard"),
+    "roleStudent" => array("Account", "Library", "Course"),
+    "roleInstructor" => array("Account", "Library", "Course", "Documentation", "Gradebook"),
+    "roleCourseDesigner" => array("Account", "Library", "Course", "Documentation"),
     "roleWatchdog" => array(/*???*/),
     "roleCommunityTA" => array(/*???*/),
     "roleLiveDataCommunity" => array(/*???*/)
@@ -53,13 +54,15 @@ $roleAccessList = array(
     }
 
   $profile["toolAccess"] = $toolAccessList;
+  $profile["device"] = $jwtArray["deviceName"];
 
     $response_arr = array("success" => "1",
                           "profile" => $profile);
     
 }else{
   //Send back not signed in profile
-  $toolAccessList = array("Chooser", "Course", "Documentation");
+  // $toolAccessList = array("Library", "Course", "Documentation");
+  $toolAccessList = array("Documentation");
   $profile = array(
     "screenName" => "anonymous",
     "email" => "",
@@ -70,14 +73,19 @@ $roleAccessList = array(
     "roleStudent" => "0",
     "roleInstructor" => "0",
     "roleCourseDesigner" => "0",
-    "roleWatchdog" => "0",
+    "roleWatchdog" => "0", 
     "roleCommunityTA" => "0",
-    "roleLiveDataCommunity" => "0"
-);
-$profile["toolAccess"] = array("Chooser", "Course", "Documentation");
+    "roleLiveDataCommunity" => "0",
+    "signedIn" => "0",
+  );
+// $profile["toolAccess"] = array("Library", "Course", "Documentation");
+$profile["toolAccess"] = $toolAccessList;
+$profile["device"] = "N/A";
+
 $response_arr = array("success" => "1",
                           "profile" => $profile);
 }
+
 // set response code - 200 OK
 http_response_code(200);
 

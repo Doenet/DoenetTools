@@ -5,12 +5,11 @@ import axios from "../_snowpack/pkg/axios.js";
 export default function SignOut() {
   const [signedOutAttempts, setSignedOutAttempts] = useState(0);
   useEffect(() => {
-    const phpUrl = "/api/signOut.php";
-    const data = {};
+    localStorage.clear();
     const payload = {
-      params: data
+      params: {}
     };
-    axios.get(phpUrl, payload).then(() => {
+    axios.get("/api/signOut.php", payload).then(() => {
       Cookies.remove("TrackingConsent", {path: "/", sameSite: "strict"});
       Cookies.remove("Stay", {
         path: "/",

@@ -173,7 +173,7 @@ class UserProfile extends Component {
  
 
   prepareProfileDropDown(picture) {
-console.log(">>>toolAccess",this.toolAccess)
+
     this.profileMenuMap = [
       {
         optionElem: (
@@ -185,12 +185,13 @@ console.log(">>>toolAccess",this.toolAccess)
         ),
         id: 'profile',
         label: `${this.props.profile.screenName}`,
-        subLabel: `${this.props.cookies.Device}`,
+        // subLabel: `Device Here`,
+        subLabel: `${this.props.profile.device}`,
       }]
 
       for (let toolName of this.toolAccess){
         let name = toolName.toLowerCase()
-        console.log(">>>name",name)
+   
         switch (name){
           case "library":
           this.profileMenuMap.push(
@@ -240,7 +241,7 @@ console.log(">>>toolAccess",this.toolAccess)
         }
       }
 
-    if (this.props.isSignedIn) {
+    if (this.props.profile.signedIn == "1") {
       this.profileMenuMap.push({
         id: 'SignOut',
         label: 'Sign out',

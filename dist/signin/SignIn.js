@@ -28,10 +28,17 @@ export default function SignIn() {
     }
   });
   if (Object.keys(jwt).includes("JWT_JS")) {
-    location.href = "/dashboard";
+    axios.get("/api/loadProfile.php", {params: {}}).then((resp) => {
+      if (resp.data.success === "1") {
+        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
+        location.href = "/course";
+      } else {
+      }
+    }).catch((error) => {
+    });
+    return null;
   }
   if (signInStage === "check code") {
-    const phpUrl = "/api/checkCredentials.php";
     const data = {
       emailaddress: email,
       nineCode,
@@ -40,7 +47,7 @@ export default function SignIn() {
     const payload = {
       params: data
     };
-    axios.get(phpUrl, payload).then((resp) => {
+    axios.get("/api/checkCredentials.php", payload).then((resp) => {
       if (resp.data.success) {
         let newAccount = "1";
         if (resp.data.existed) {

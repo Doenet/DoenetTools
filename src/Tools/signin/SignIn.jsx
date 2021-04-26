@@ -13,8 +13,6 @@ export default function SignIn() {
   let [deviceName, setDeviceName] = useState('');
 
   const jwt = Cookies.get();
-  // const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
-  // const [stayCookie, setStayCookie] = useCookies('Stay');
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
@@ -39,7 +37,20 @@ export default function SignIn() {
 
   //If already signed in go to course
   if (Object.keys(jwt).includes('JWT_JS')) {
-    location.href = '/course';
+    axios
+    .get('/api/loadProfile.php', {params: {}})
+    .then((resp) => {
+      if (resp.data.success === '1') {
+        localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
+        location.href = '/course';
+      }else{
+        //  Error currently does nothing
+      }})
+      .catch((error) => {
+        //  Error currently does nothing
+      });
+
+      return null;
   }
 
   // ** *** *** *** *** **
@@ -65,7 +76,7 @@ export default function SignIn() {
 
   if (signInStage === 'check code') {
     //Ask Server for data which matches email address
-    const phpUrl = '/api/checkCredentials.php';
+
     const data = {
       emailaddress: email,
       nineCode: nineCode,
@@ -75,7 +86,7 @@ export default function SignIn() {
       params: data,
     };
     axios
-      .get(phpUrl, payload)
+      .get('/api/checkCredentials.php', payload)
       .then((resp) => {
         // console.log('checkCredentials resp',resp);
 
