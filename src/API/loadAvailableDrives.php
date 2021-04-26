@@ -13,77 +13,86 @@ $userId = $jwtArray['userId'];
 // $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
 $success = TRUE;
-$results_arr = array();
-//TODO: If entry for userId doesn't exist then create Doenet Demo Content
-
-//Gather matching drive ids
+$message = "";
 $driveIdsAndLabels = array();
-$sql = "
-SELECT
-d.driveId AS driveId,
-d.label AS label,
-d.driveType AS driveType,
-d.isShared AS isShared,
-d.courseId AS courseId,
-d.image AS image,
-d.color AS color
-FROM drive AS d
-LEFT JOIN drive_user AS du
-ON d.driveId = du.driveId
-WHERE du.userId='$userId'
-AND d.isDeleted = '0'
-";
 
-$result = $conn->query($sql);
-while($row = $result->fetch_assoc()){
-  $driveAndLabel = array(
-    "driveId"=>$row['driveId'],
-    "label"=>$row['label'],
-    "type"=>$row['driveType'],
-    "subType"=>"Administrator",
-    "isShared"=>$row['isShared'],
-    "courseId"=>$row['courseId'],
-    "image"=>$row['image'],
-    "color"=>$row['color'],
-
-  );
-  array_push($driveIdsAndLabels,$driveAndLabel);
+if ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to view drives";
 }
 
-$sql = "
-SELECT 
-d.driveId AS driveId,
-d.label AS label,
-d.driveType AS driveType,
-d.isShared AS isShared,
-d.courseId AS courseId,
-d.image AS image,
-d.color AS color
-FROM course_enrollment AS ce
-LEFT JOIN drive AS d
-ON d.courseId = ce.courseId
-WHERE ce.userId='$userId'
-AND d.isDeleted = '0'
-";
+if ($success){
+  //Gather matching drive ids
+  
+  $sql = "
+  SELECT
+  d.driveId AS driveId,
+  d.label AS label,
+  d.driveType AS driveType,
+  d.isShared AS isShared,
+  d.courseId AS courseId,
+  d.image AS image,
+  d.color AS color
+  FROM drive AS d
+  LEFT JOIN drive_user AS du
+  ON d.driveId = du.driveId
+  WHERE du.userId='$userId'
+  AND d.isDeleted = '0'
+  ";
 
-$result = $conn->query($sql);
-while($row = $result->fetch_assoc()){
-  $driveAndLabel = array(
-    "driveId"=>$row['driveId'],
-    "label"=>$row['label'],
-    "type"=>$row['driveType'],
-    "subType"=>"Student",
-    "isShared"=>$row['isShared'],
-    "courseId"=>$row['courseId'],
-    "image"=>$row['image'],
-    "color"=>$row['color'],
+  $result = $conn->query($sql);
+  while($row = $result->fetch_assoc()){
+    $driveAndLabel = array(
+      "driveId"=>$row['driveId'],
+      "label"=>$row['label'],
+      "type"=>$row['driveType'],
+      "subType"=>"Administrator",
+      "isShared"=>$row['isShared'],
+      "courseId"=>$row['courseId'],
+      "image"=>$row['image'],
+      "color"=>$row['color'],
 
-  );
-  array_push($driveIdsAndLabels,$driveAndLabel);
+    );
+    array_push($driveIdsAndLabels,$driveAndLabel);
+  }
+
+  $sql = "
+  SELECT 
+  d.driveId AS driveId,
+  d.label AS label,
+  d.driveType AS driveType,
+  d.isShared AS isShared,
+  d.courseId AS courseId,
+  d.image AS image,
+  d.color AS color
+  FROM course_enrollment AS ce
+  LEFT JOIN drive AS d
+  ON d.courseId = ce.courseId
+  WHERE ce.userId='$userId'
+  AND d.isDeleted = '0'
+  ";
+
+  $result = $conn->query($sql);
+  while($row = $result->fetch_assoc()){
+    $driveAndLabel = array(
+      "driveId"=>$row['driveId'],
+      "label"=>$row['label'],
+      "type"=>$row['driveType'],
+      "subType"=>"Student",
+      "isShared"=>$row['isShared'],
+      "courseId"=>$row['courseId'],
+      "image"=>$row['image'],
+      "color"=>$row['color'],
+
+    );
+    array_push($driveIdsAndLabels,$driveAndLabel);
+  }
+
 }
 $response_arr = array(
   "success"=>$success,
-  "driveIdsAndLabels"=>$driveIdsAndLabels
+  "driveIdsAndLabels"=>$driveIdsAndLabels,
+  "message"=>$message
   );
 
 
