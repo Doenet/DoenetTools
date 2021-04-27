@@ -867,10 +867,12 @@ console.log(">>>profile",profile)
       </headerPanel>
 
       <mainPanel>
-        <div style={{margin:"10px"}}>
-          <h1>You are not signed in</h1>
+        <div style={{border:"1px solid grey",borderRadius:"10px",margin:"auto",padding:"10px",width:"60%"}}>
+          <div style={{textAlign:"center",alignItems:"center"}}>
+          <h2>You are not signed in</h2>
           <h2>Library currently requires sign in for use</h2> 
-          <h2><a href='/signin'>Sign in with this link</a></h2>
+          <button style={{background:"#1a5a99",borderRadius:"5px"}}><a href='/signin' style={{color:"white",textDecoration:"none"}}>Sign in with this link</a></button>
+          </div>
           </div>
       </mainPanel>
     
