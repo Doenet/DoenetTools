@@ -23,7 +23,6 @@ export function parse(inText) {
  * parse string and output a convinent to use object. 
  * @param {string} inText
  */
-//TODO rewrite grammar so extraneous whitespace is disregared?
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
@@ -67,7 +66,7 @@ export function parseAndCompile(inText){
             //get back to the level of OpenTag in order to parse tag body
             cursor.parent();
 
-            let element = {tag : tagName, attributes : attrs, children : []}
+            let element = {contentType : tagName, attributes : attrs, children : []}
             // now we go through all of the other non-terminals in this row until we get to the closing tag,
             // adding the compiled version of each non-terminal to the children section of the object we're going to return
             // for the time being we're just going to handle 2 cases:
@@ -95,7 +94,6 @@ export function parseAndCompile(inText){
             }
             return element;
 
-        //something wrong here. Tag (the name) gets overriden with attrs?
         } else if (cursor.name === "SelfClosingTag"){
             cursor.firstChild();
 
@@ -125,7 +123,7 @@ export function parseAndCompile(inText){
 
             }
 
-            return {tag :  tagName, attributes : attrs, children : []};
+            return {contentType :  tagName, attributes : attrs, children : []};
             
         } else {
             //Unreachable case, see the grammar for why

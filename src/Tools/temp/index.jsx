@@ -90,7 +90,7 @@ ReactDOM.render(
 );
 
 
-const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> "
+const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
 
 // const doenetMl = `
 //   <p> this is a test string 
