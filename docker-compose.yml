@@ -9,14 +9,18 @@ services:
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
       - /home/node/snworkspaceow/dist_local
-    links:
-      - apache
+    networks:
+      - dev_net
     command: tail -f /dev/null
 
   apache:
     build: './doenet_docker/apache'
+    ports:
+      - 80:80
     volumes:
       - ./dist_local:/usr/local/apache2/htdocs
+    networks:
+      - dev_net
     depends_on:
       - php
       - mysql
@@ -26,6 +30,8 @@ services:
     build: './doenet_docker/php'
     volumes:
       - ./dist_local:/usr/local/apache2/htdocs
+    networks:
+      - dev_net
     restart: always
 
   mysql:
@@ -35,7 +41,12 @@ services:
     volumes:
       - ./doenet_docker/volumes/db:/var/lib/mysql
       - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+    networks:
+      - dev_net
     restart: always
 
 volumes:
   node_modules:
+
+networks:
+  dev_net:

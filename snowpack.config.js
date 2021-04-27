@@ -1,8 +1,8 @@
-const httpProxy = require('http-proxy');
-const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-proxy.on('proxyReq', function (proxyReq, req, res, options) {
-  proxyReq.setHeader('Host', '0.0.0.0');
-});
+const proxy = require('http2-proxy');
+// const proxy = httpProxy.createServer({ target: 'http://0.0.0.0:80' });
+// proxy.on('proxyReq', function (proxyReq, req, res, options) {
+//   proxyReq.setHeader('Host', 'localhost');
+// });
 
 module.exports = {
   mount: {
@@ -44,13 +44,19 @@ module.exports = {
     {
       src: '/api/.*',
       dest: (req, res) => {
-        proxy.web(req, res);
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
       },
     },
     {
       src: '/media/.*',
       dest: (req, res) => {
-        proxy.web(req, res);
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
       },
     },
   ],
