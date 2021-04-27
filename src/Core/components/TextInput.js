@@ -1,8 +1,6 @@
 import Input from './abstract/Input';
-import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
 
-export default class Mathinput extends Input {
+export default class Textinput extends Input {
   constructor(args) {
     super(args);
 
@@ -37,7 +35,7 @@ export default class Mathinput extends Input {
     });
 
   }
-  static componentType = "mathinput";
+  static componentType = "textInput";
 
   static variableForPlainMacro = "value";
 
@@ -45,27 +43,25 @@ export default class Mathinput extends Input {
     return ["value"]
   };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.prefill = { default: "" };
-    properties.format = { default: "text" };
-    properties.size = { default: 10, forRenderer: true };
-    return properties;
-  }
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atMostOneBindValueTo",
-      componentType: "bindValueTo",
-      comparison: "atMost",
-      number: 1,
-      setAsBase: true,
-      takePropertyChildren: true,
-    })
-
-    return childLogic;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.prefill = {
+      createComponentOfType: "text",
+      createStateVariable: "prefill",
+      defaultValue: "",
+      public: true,
+    };
+    attributes.size = {
+      createComponentOfType: "number",
+      createStateVariable: "size",
+      defaultValue: 10,
+      forRenderer: true,
+      public: true,
+    };
+    attributes.bindValueTo = {
+      createComponentOfType: "text"
+    };
+    return attributes;
   }
 
 
@@ -75,55 +71,40 @@ export default class Mathinput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
-        bindValueToChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneBindValueTo",
-          variableNames: ["value", "valueForDisplay"],
-          requireChildLogicInitiallySatisfied: true,
+        bindValueTo: {
+          dependencyType: "attributeComponent",
+          attributeName: "bindValueTo",
+          variableNames: ["value"],
         },
         prefill: {
           dependencyType: "stateVariable",
           variableName: "prefill"
         },
-        format: {
-          dependencyType: "stateVariable",
-          variableName: "format"
-        },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.bindValueToChild.length === 0) {
+        if (!dependencyValues.bindValueTo) {
           return {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
-                get defaultValue() {
-                  return parseValueIntoMath({
-                    inputString: dependencyValues.prefill,
-                    format: dependencyValues.format
-                  })
-                }
+                defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-
-        return { newValues: { value: convertValueToMathExpression(dependencyValues.bindValueToChild[0].stateValues.valueForDisplay) } };
+        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        // console.log(`inverse definition of value for mathinput`)
-        // console.log(desiredStateVariableValues)
-
-        if (dependencyValues.bindValueToChild.length === 1) {
+        if (dependencyValues.bindValueTo) {
           return {
             success: true,
             instructions: [{
-              setDependency: "bindValueToChild",
+              setDependency: "bindValueTo",
               desiredValue: desiredStateVariableValues.value,
-              childIndex: 0,
               variableIndex: 0,
             }]
           };
@@ -141,7 +122,7 @@ export default class Mathinput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
+      componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -199,6 +180,7 @@ export default class Mathinput extends Input {
       }
     }
 
+
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
@@ -209,20 +191,20 @@ export default class Mathinput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value.toString() } }
+        return { newValues: { text: dependencyValues.value } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "math" } })
+      definition: () => ({ newValues: { componentType: "text" } })
     }
 
 
     // stateVariableDefinitions.submittedValue = {
-    //   defaultValue: me.fromAst('\uFF3F'),
+    //   defaultValue: '\uFF3F',
     //   public: true,
-    //   componentType: "math",
+    //   componentType: "text",
     //   returnDependencies: () => ({}),
     //   definition: () => ({
     //     useEssentialOrDefaultValue: {
@@ -248,18 +230,15 @@ export default class Mathinput extends Input {
   }
 
 
-  updateImmediateValue({ mathExpression }) {
+  updateImmediateValue({ text }) {
     if (!this.stateValues.disabled) {
-      // we set transient to true so that each keystroke does not
-      // add a row to the database
       this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: mathExpression,
-        }],
-        transient: true
+          value: text,
+        }]
       })
     }
   }
@@ -276,7 +255,7 @@ export default class Mathinput extends Input {
       // we set immediate value to whatever was the result
       // (hence the need to execute update first)
       // Also, this makes sure immediateValue is saved to the database,
-      // since in updateImmediateValue, immediateValue is not saved to database
+      // since in updateImmediateValue, immediateValue is note saved to database
       {
         updateType: "executeUpdate"
       },
@@ -295,7 +274,7 @@ export default class Mathinput extends Input {
         },
         result: {
           response: this.stateValues.immediateValue,
-          responseText: this.stateValues.immediateValue.toString(),
+          responseText: this.stateValues.immediateValue,
         }
       }
 
@@ -313,30 +292,4 @@ export default class Mathinput extends Input {
     }
   }
 
-}
-
-
-function parseValueIntoMath({ inputString, format }) {
-
-  if (!inputString) {
-    return me.fromAst('\uFF3F');
-  }
-
-  let expression;
-  if (format === "latex") {
-    try {
-      expression = me.fromLatex(inputString);
-    } catch (e) {
-      console.warn(`Invalid latex for mathinput: ${inputString}`)
-      expression = me.fromAst('\uFF3F');
-    }
-  } else if (format === "text") {
-    try {
-      expression = me.fromText(inputString);
-    } catch (e) {
-      console.warn(`Invalid text for mathinput: ${inputString}`)
-      expression = me.fromAst('\uFF3F');
-    }
-  }
-  return expression;
 }

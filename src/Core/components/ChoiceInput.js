@@ -35,7 +35,9 @@ export default class Choiceinput extends Input {
 
   }
 
-  static componentType = "choiceinput";
+  static componentType = "choiceInput";
+
+  static renderChildren = true;
 
   static variableForPlainMacro = "values";
 
@@ -48,38 +50,57 @@ export default class Choiceinput extends Input {
     ]
   };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.selectMultiple = { default: false };
-    properties.assignPartialCredit = { default: false };
-    properties.inline = { default: false, forRenderer: true };
-    properties.fixedOrder = { default: false };
-    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.selectMultiple = {
+      createComponentOfType: "boolean",
+      createStateVariable: "selectMultiple",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.assignPartialCredit = {
+      createComponentOfType: "boolean",
+      createStateVariable: "assignPartialCredit",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.inline = {
+      createComponentOfType: "boolean",
+      createStateVariable: "inline",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.fixedOrder = {
+      createComponentOfType: "boolean",
+      createStateVariable: "fixedOrder",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.feedbackDefinitions = {
+      createComponentOfType: "feedbackDefinitions",
+      createStateVariable: "feedbackDefinitions",
+      public: true,
+      propagateToDescendants: true,
+      mergeArrays: true
+    };
+
+    attributes.bindValueTo = {
+      createComponentOfType: "text"
+    };
+
+    return attributes;
   }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroChoices = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atLeastZeroChoices",
       componentType: "choice",
       comparison: "atLeast",
       number: 0,
-    })
-
-    let atMostOneBindValueTo = childLogic.newLeaf({
-      name: "atMostOneBindValueTo",
-      componentType: "bindValueTo",
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    childLogic.newOperator({
-      name: "choicesAndBind",
-      operator: "and",
-      propositions: [atLeastZeroChoices, atMostOneBindValueTo],
       setAsBase: true,
     })
 
@@ -108,6 +129,7 @@ export default class Choiceinput extends Input {
     }
 
     stateVariableDefinitions.choiceOrder = {
+      forRenderer: true,
       returnDependencies: ({ sharedParameters }) => ({
         choiceChildren: {
           dependencyType: "child",
@@ -139,14 +161,14 @@ export default class Choiceinput extends Input {
             let desiredChoiceOrder = dependencyValues.variants.desiredVariant.indices;
             if (desiredChoiceOrder !== undefined) {
               if (desiredChoiceOrder.length !== numberChoices) {
-                console.warn("Ignoring indices specified for choiceinput as number of indices doesn't match number of choice children.")
+                console.warn("Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.")
               } else {
                 desiredChoiceOrder = desiredChoiceOrder.map(Number);
                 if (!desiredChoiceOrder.every(Number.isInteger)) {
-                  throw Error("All indices specified for choiceinput must be integers");
+                  throw Error("All indices specified for choiceInput must be integers");
                 }
                 if (!desiredChoiceOrder.every(x => x >= 0 && x < numberChoices)) {
-                  console.warn("Ignoring indices specified for choiceinput as some indices out of range.")
+                  console.warn("Ignoring indices specified for choiceInput as some indices out of range.")
                 } else {
 
                   return {
@@ -320,21 +342,19 @@ export default class Choiceinput extends Input {
           childLogicName: "atLeastZeroChoices",
           variableNames: ["text"]
         },
-        bindValueToChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneBindValueTo",
-          variableNames: ["text"],
-          requireChildLogicInitiallySatisfied: true,
+        bindValueTo: {
+          dependencyType: "attributeComponent",
+          attributeName: "bindValueTo",
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
-        if (dependencyValues.bindValueToChild.length === 1) {
+        if (dependencyValues.bindValueTo !== null) {
           let choiceTexts = choiceChildrenOrdered.map(x => x.stateValues.text.toLowerCase().trim())
-          let bindValueToChild = dependencyValues.bindValueToChild[0];
-          if (bindValueToChild.stateValues.text) {
-            let ind = choiceTexts.indexOf(bindValueToChild.stateValues.text.toLowerCase().trim());
+          if (dependencyValues.bindValueTo.stateValues.value) {
+            let ind = choiceTexts.indexOf(dependencyValues.bindValueTo.stateValues.value.toLowerCase().trim());
             if (ind !== -1) {
               return { newValues: { indexMatchedByBoundValue: ind + 1 } }
             }
@@ -346,8 +366,6 @@ export default class Choiceinput extends Input {
     }
 
 
-    // could just make selectedIndices and array with entireArrayAtOnce set
-    // if get that working correctly with essential values
     stateVariableDefinitions.allSelectedIndices = {
       defaultValue: [],
       returnDependencies() {
@@ -365,16 +383,16 @@ export default class Choiceinput extends Input {
             dependencyType: "stateVariable",
             variableName: "indexMatchedByBoundValue"
           },
-          bindValueToChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneBindValueTo",
-            variableNames: ["text"],
+          bindValueTo: {
+            dependencyType: "attributeComponent",
+            attributeName: "bindValueTo",
+            variableNames: ["value"],
           },
 
         };
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.bindValueToChild.length === 1) {
+        if (dependencyValues.bindValueTo !== null) {
           let allSelectedIndices;
           if (dependencyValues.indexMatchedByBoundValue !== null) {
             allSelectedIndices = [dependencyValues.indexMatchedByBoundValue];
@@ -395,7 +413,7 @@ export default class Choiceinput extends Input {
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
-        if (dependencyValues.bindValueToChild.length === 0) {
+        if (dependencyValues.bindValueTo === null) {
           return {
             success: true,
             instructions: [{
@@ -417,9 +435,8 @@ export default class Choiceinput extends Input {
           return {
             success: true,
             instructions: [{
-              setDependency: "bindValueToChild",
+              setDependency: "bindValueTo",
               desiredValue: desiredText,
-              childIndex: 0,
               variableIndex: 0
             }]
           }
@@ -680,12 +697,7 @@ export default class Choiceinput extends Input {
       targetVariableName: "submittedIndices"
     }
 
-    stateVariableDefinitions.feedbacks = {
-      public: true,
-      componentType: "feedbacktext",
-      isArray: true,
-      entryPrefixes: ["feedback"],
-      entireArrayAtOnce: true,
+    stateVariableDefinitions.allFeedbacks = {
       returnDependencies: () => ({
         choiceOrder: {
           dependencyType: "stateVariable",
@@ -697,7 +709,7 @@ export default class Choiceinput extends Input {
           variableNames: ["feedbacks"]
         },
       }),
-      entireArrayDefinition({ dependencyValues }) {
+      definition({ dependencyValues }) {
 
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
@@ -708,36 +720,93 @@ export default class Choiceinput extends Input {
         }
         return {
           newValues: {
-            feedbacks
+            allFeedbacks: feedbacks
           }
         }
       }
     }
 
-
-    stateVariableDefinitions.childrenToRender = {
+    stateVariableDefinitions.numberFeedbacks = {
+      public: true,
+      componentType: "number",
       returnDependencies: () => ({
-        choiceChildrenOrdered: {
+        allFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "choiceChildrenOrdered"
-        },
-        inline: {
-          dependencyType: "stateVariable",
-          variableName: "inline"
+          variableName: "allFeedbacks"
         }
       }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.inline) {
-          return { newValues: { childrenToRender: [] } }
-        } else {
-          return {
-            newValues: {
-              childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
-            }
-          }
+      definition({ dependencyValues }) {
+        return {
+          newValues: { numberFeedbacks: dependencyValues.allFeedbacks.length },
+          checkForActualChange: { numberFeedbacks: true }
         }
       }
     }
+
+    stateVariableDefinitions.feedbacks = {
+      public: true,
+      componentType: "feedback",
+      isArray: true,
+      entryPrefixes: ["feedback"],
+      returnArraySizeDependencies: () => ({
+        numberFeedbacks: {
+          dependencyType: "stateVariable",
+          variableName: "numberFeedbacks",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberFeedbacks];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          allFeedbacks: {
+            dependencyType: "stateVariable",
+            variableName: "allFeedbacks"
+          }
+        }
+
+        return { globalDependencies }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        // console.log(`array definition by key of function feedbacks`)
+        // console.log(globalDependencyValues)
+
+        let feedbacks = {};
+
+        for (let arrayKey = 0; arrayKey < globalDependencyValues.__array_size; arrayKey++) {
+          feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
+        }
+
+        return { newValues: { feedbacks } }
+      }
+
+    }
+
+
+    // stateVariableDefinitions.childrenToRender = {
+    //   returnDependencies: () => ({
+    //     choiceChildrenOrdered: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "choiceChildrenOrdered"
+    //     },
+    //     inline: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "inline"
+    //     }
+    //   }),
+    //   definition: function ({ dependencyValues }) {
+    //     if (dependencyValues.inline) {
+    //       return { newValues: { childrenToRender: [] } }
+    //     } else {
+    //       return {
+    //         newValues: {
+    //           childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
 
     return stateVariableDefinitions;

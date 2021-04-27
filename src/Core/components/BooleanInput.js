@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 
-export default class Booleaninput extends Input {
+export default class BooleanInput extends Input {
   constructor(args) {
     super(args);
     this.updateBoolean = this.updateBoolean.bind(
@@ -33,7 +33,7 @@ export default class Booleaninput extends Input {
     });
 
   }
-  static componentType = "booleaninput";
+  static componentType = "booleanInput";
 
   static variableForPlainMacro = "value";
 
@@ -41,29 +41,26 @@ export default class Booleaninput extends Input {
     return ["value"]
   };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.prefill = { default: "false" };
-    properties.label = { default: "", forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.prefill = {
+      createComponentOfType: "boolean",
+      createStateVariable: "prefill",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: "",
+      forRenderer: true,
+      public: true,
+    };
+    attributes.bindValueTo = {
+      createComponentOfType: "boolean"
+    };
+    return attributes;
   }
-
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atMostOneBindValueTo",
-      componentType: "bindValueTo",
-      comparison: "atMost",
-      number: 1,
-      setAsBase: true,
-      takePropertyChildren: true,
-    })
-
-    return childLogic;
-  }
-
 
   static returnStateVariableDefinitions() {
 
@@ -74,11 +71,10 @@ export default class Booleaninput extends Input {
       componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
-        bindValueToChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneBindValueTo",
+        bindValueTo: {
+          dependencyType: "attributeComponent",
+          attributeName: "bindValueTo",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -86,29 +82,26 @@ export default class Booleaninput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.bindValueToChild.length === 0) {
+        if (!dependencyValues.bindValueTo) {
           return {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
-                get defaultValue() {
-                  return dependencyValues.prefill.trim().toLowerCase() === "true";
-                }
+                defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueToChild[0].stateValues.value } };
+        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        if (dependencyValues.bindValueToChild.length === 1) {
+        if (dependencyValues.bindValueTo) {
           return {
             success: true,
             instructions: [{
-              setDependency: "bindValueToChild",
+              setDependency: "bindValueTo",
               desiredValue: desiredStateVariableValues.value,
-              childIndex: 0,
               variableIndex: 0,
             }]
           };

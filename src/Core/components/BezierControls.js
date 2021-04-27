@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings
 import me from 'math-expressions';
 
 export default class BezierControls extends BaseComponent {
-  static componentType = "beziercontrols";
+  static componentType = "bezierControls";
   static rendererType = "container";
 
   static get stateVariablesShadowedForReference() { return ["controls"] };
@@ -29,7 +29,7 @@ export default class BezierControls extends BaseComponent {
         newChildren: results.pieces.map(function (piece) {
           if (piece.length > 1 || piece[0].componentType === "string") {
             return {
-              componentType: "controlvectors",
+              componentType: "controlVectors",
               children: [{
                 componentType: "vector",
                 children: piece
@@ -59,7 +59,7 @@ export default class BezierControls extends BaseComponent {
 
     childLogic.newLeaf({
       name: "atLeastZeroControlvectors",
-      componentType: 'controlvectors',
+      componentType: 'controlVectors',
       comparison: 'atLeast',
       number: 0,
       setAsBase: true

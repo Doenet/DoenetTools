@@ -4,11 +4,12 @@ import { normalizeIndex } from '../utils/table';
 export default class Row extends BaseComponent {
   static componentType = "row";
   static rendererType = "container";
+  static renderChildren = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.rowNum = { default: null };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.rowNum = { default: null };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -602,21 +603,6 @@ export default class Row extends BaseComponent {
 
     //   }
     // }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroCells"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
 
     return stateVariableDefinitions;
   }

@@ -1,29 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
+import { textToAst, latexToAst, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
 import { flattenDeep } from '../utils/array';
-
-
-let appliedFunctionSymbols = [
-  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
-  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
-  "asech", "asin", "asinh", "atan", "atanh",
-  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
-  "sech", "sin", "sinh", "tan", "tanh",
-  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
-  'arg',
-  'min', 'max', 'mean', 'median', //'mode',
-  'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
-  'count', 'mod'
-];
-
-var textToAst = new me.converters.textToAstObj({
-  appliedFunctionSymbols
-});
-var latexToAst = new me.converters.latexToAstObj({
-  appliedFunctionSymbols
-});
 
 
 export default class MathComponent extends InlineComponent {
@@ -36,27 +14,77 @@ export default class MathComponent extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.format = { default: "text", validValues: ["text", "latex"] };
-
-    // let simply==="" be full simplify so that can simplify <math simplify /> to get full simplification
-    // TODO: do we want to support simplify===""?
-    properties.simplify = {
-      default: "none",
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.format = {
+      createComponentOfType: "text",
+      createStateVariable: "format",
+      defaultValue: "text",
+      public: true,
+      validValues: ["text", "latex"]
+    };
+    // let simply==="" or simplify="true" be full simplify
+    attributes.simplify = {
+      createComponentOfType: "text",
+      createStateVariable: "simplify",
+      defaultValue: "none",
+      public: true,
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "true": "full" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
-    properties.expand = { default: false };
-    properties.displayDigits = { default: 10 };
-    properties.displayDecimals = { default: null };
-    properties.displaySmallAsZero = { default: false };
-    properties.renderMode = { default: "inline", forRenderer: true };
-    properties.unordered = { default: false };
-    properties.createVectors = { default: false };
-    properties.createIntervals = { default: false };
-    return properties;
+    attributes.expand = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expand",
+      defaultValue: false,
+      public: true,
+    };
+
+    attributes.displayDigits = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displaySmallAsZero",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.renderMode = {
+      createComponentOfType: "text",
+      createStateVariable: "renderMode",
+      defaultValue: "inline",
+      public: true,
+      forRenderer: true,
+    };
+    attributes.unordered = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unordered",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.createVectors = {
+      createComponentOfType: "boolean",
+      createStateVariable: "createVectors",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.createIntervals = {
+      createComponentOfType: "boolean",
+      createStateVariable: "createIntervals",
+      defaultValue: false,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -117,7 +145,6 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: calculateCodePre,
@@ -131,7 +158,6 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
         format: {
           dependencyType: "stateVariable",
@@ -160,13 +186,11 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "canBeModified"],
-          requireChildLogicInitiallySatisfied: true,
         },
         stringChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -427,7 +451,6 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["canBeModified"],
-          requireChildLogicInitiallySatisfied: true,
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -518,17 +541,17 @@ export default class MathComponent extends InlineComponent {
   }
 
 
-  returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-      this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
-    if (skipChildren) {
-      let stateVariables = ["unnormalizedValue"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
+  //     this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
+  //   if (skipChildren) {
+  //     let stateVariables = ["unnormalizedValue"];
+  //     return { skipChildren, stateVariables };
+  //   }
+  //   return {};
+  // }
 
-  adapters = ["number", "text"];
+  static adapters = ["number", "text"];
 
 }
 
@@ -1170,6 +1193,12 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
   // if there are any string children,
   // need to update expressionWithCodes with new values
   // and then update the string children based on it
+
+  // TODO: the only time a string child could change is if it
+  // entirely contains a component of a vector.
+  // Can we easily determine if this is the case and skip processing
+  // string children and expression with codes if it is not the case?
+
   if (stringChildren.length > 0) {
     let newExpressionWithCodes = stateValues.expressionWithCodes;
 
@@ -1215,7 +1244,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
 
 function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
 
-  console.log("finishInvertMathForStringChildren")
+  // console.log("finishInvertMathForStringChildren")
 
   let mathChildren = dependencyValues.mathChildren;
   let stringChildren = dependencyValues.stringChildren;
@@ -1250,6 +1279,8 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
 
   }
 
+
+  // TODO: see TODO about string children in invertMath
 
   let instructions = [];
 

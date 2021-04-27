@@ -693,7 +693,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygonVs = components["/_polygon1"].activeChildren[0].activeChildren;
+      let polygonVs = components["/_polygon1"].attributes.vertices.activeChildren;
       let v1 = components["/v1"].replacements[0];
       let v2 = components["/v2"].replacements[0];
       let v3 = components["/v3"].replacements[0];
@@ -773,8 +773,8 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygon1Vs = components["/_polygon1"].activeChildren[0].activeChildren;
-      let polygon2Vs = components["/_polygon2"].activeChildren[0].activeChildren;
+      let polygon1Vs = components["/_polygon1"].attributes.vertices.activeChildren;
+      let polygon2Vs = components["/_polygon2"].attributes.vertices.activeChildren;
       let pointnames = [
         [polygon1Vs[0].componentName, polygon2Vs[0].componentName],
         [polygon1Vs[1].componentName, polygon2Vs[1].componentName],
@@ -909,7 +909,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygon1Vs = components["/_polygon1"].activeChildren[0].activeChildren;
+      let polygon1Vs = components["/_polygon1"].attributes.vertices.activeChildren;
       let vs = components["/vs"].replacements;
       let pointnames = [
         [polygon1Vs[0].componentName, vs[0].componentName],
@@ -918,7 +918,7 @@ describe('Polygon Tag Tests', function () {
         [polygon1Vs[3].componentName, vs[3].componentName]
       ];
 
-      let polygon2Vs = components["/_polygon2"].activeChildren[0].activeChildren;
+      let polygon2Vs = components["/_polygon2"].attributes.vertices.activeChildren;
       let pointnamestrans = [
         polygon2Vs[0].componentName,
         polygon2Vs[1].componentName,
@@ -1252,7 +1252,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1{prop='vertex1'})" />
+  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1{prop='vertex1' componentType='point'})" />
   </graph>
   `}, "*");
     });
@@ -1325,7 +1325,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1{prop='vertex4' includeUndefinedObjects}) (3,4) (-5,6) (1,2)" />
+  <polygon vertices="$(_polygon1{prop='vertex4' componentType='point' }) (3,4) (-5,6) (1,2)" />
   </graph>
   
   `}, "*");
@@ -1399,7 +1399,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1{prop='vertex4'}) (3,4)(-5,6) (1,2) ($(_polygon1{prop='vertexX1_1'})+1,2)" />
+  <polygon vertices="$(_polygon1{prop='vertex4' componentType='point'}) (3,4)(-5,6) (1,2) ($(_polygon1{prop='vertexX1_1'})+1,2)" />
   </graph>
   
   `}, "*");
@@ -1494,7 +1494,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon name="P" vertices="$(P{prop='vertex4'}) (1,2) (3,4) $(P{prop='vertex7'}) (5,7) (-5,7) $(P{prop='vertex10' includeUndefinedObjects}) (3,1) (5,0) (-5,-1)" />
+  <polygon name="P" vertices="$(P{prop='vertex4' componentType='point'}) (1,2) (3,4) $(P{prop='vertex7' componentType='point'}) (5,7) (-5,7) $(P{prop='vertex10' componentType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
   
   `}, "*");

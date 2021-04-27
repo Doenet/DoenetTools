@@ -3,13 +3,14 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Column extends BaseComponent {
   static componentType = "column";
   static rendererType = "container";
+  static renderChildren = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.colNum = { default: null };
+    attributes.colNum = { default: null };
 
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -605,21 +606,6 @@ export default class Column extends BaseComponent {
 
     //   }
     // }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroCells"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
 
     return stateVariableDefinitions;
   }

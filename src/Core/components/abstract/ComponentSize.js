@@ -1,7 +1,7 @@
 import BaseComponent from './BaseComponent';
 
 export default class ComponentSize extends BaseComponent {
-  static componentType = "_componentsize";
+  static componentType = "_componentSize";
   static rendererType = "number";
 
   // used when referencing this component without prop

@@ -2,15 +2,15 @@ import Sequence from './Sequence';
 import me from 'math-expressions';
 
 export default class AnimateFromSequence extends Sequence {
-  static componentType = "animatefromsequence";
+  static componentType = "animateFromSequence";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.animationOn = {default: false};
-    properties.animationMode = {default: "increase"};
-    properties.animationInterval = {default: 1000};
-    properties.initialSelectedIndex = {default: 0};
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.animationOn = {default: false};
+    attributes.animationMode = {default: "increase"};
+    attributes.animationInterval = {default: 1000};
+    attributes.initialSelectedIndex = {default: 0};
+    return attributes;
   }
 
   updateState(args={}) {

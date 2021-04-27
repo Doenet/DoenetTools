@@ -8,27 +8,71 @@ export default class When extends BooleanComponent {
   static componentType = "when";
   static rendererType = undefined;
 
-  static stateVariableForPropertyValue = "conditionSatisfied";
+  static stateVariableForAttributeValue = "conditionSatisfied";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    // properties.defaultType = { default: "math" };
-    properties.matchPartial = { default: false };
-    properties.symbolicEquality = { default: false };
-    properties.expandOnCompare = { default: false, propagateToDescendants: true };
-    properties.simplifyOnCompare = {
-      default: "none",
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.matchPartial = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchPartial",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.symbolicEquality = {
+      createComponentOfType: "boolean",
+      createStateVariable: "symbolicEquality",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.expandOnCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expandOnCompare",
+      defaultValue: false,
+      public: true,
+      propagateToDescendants: true,
+    };
+    attributes.simplifyOnCompare = {
+      createComponentOfType: "text",
+      createStateVariable: "simplifyOnCompare",
+      defaultValue: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      public: true,
       propagateToDescendants: true,
     };
-    properties.unorderedCompare = { default: false, propagateToDescendants: true };
-    properties.allowedErrorInNumbers = { default: 0 };
-    properties.includeErrorInNumberExponents = { default: false };
-    properties.allowedErrorIsAbsolute = { default: false };
-    properties.nSignErrorsMatched = { default: 0 };
-    return properties;
+    attributes.unorderedCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unorderedCompare",
+      defaultValue: false,
+      public: true,
+      propagateToDescendants: true,
+    };
+    attributes.allowedErrorInNumbers = {
+      createComponentOfType: "number",
+      createStateVariable: "allowedErrorInNumbers",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.includeErrorInNumberExponents = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeErrorInNumberExponents",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.allowedErrorIsAbsolute = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowedErrorIsAbsolute",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.nSignErrorsMatched = {
+      createComponentOfType: "number",
+      createStateVariable: "nSignErrorsMatched",
+      defaultValue: 0,
+      public: true,
+    };
+    return attributes;
   }
 
 
@@ -97,25 +141,25 @@ export default class When extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "booleanChildrenByCode",
         },
-        booleanlistChildrenByCode: {
+        booleanListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "booleanlistChildrenByCode",
+          variableName: "booleanListChildrenByCode",
         },
         textChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "textChildrenByCode",
         },
-        textlistChildrenByCode: {
+        textListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "textlistChildrenByCode",
+          variableName: "textListChildrenByCode",
         },
         mathChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "mathChildrenByCode",
         },
-        mathlistChildrenByCode: {
+        mathListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "mathlistChildrenByCode",
+          variableName: "mathListChildrenByCode",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -156,7 +200,7 @@ export default class When extends BooleanComponent {
           }
         }
 
-        // check math children for additional properties
+        // check math children for additional attributes
         for (let child of dependencyValues.mathChildren) {
 
           if (canOverrideExpandOnCompare && child.stateValues.expand) {

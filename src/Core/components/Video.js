@@ -3,15 +3,39 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Video extends BlockComponent {
   static componentType = "video";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.width = { default: 500, forRenderer: true };
-    properties.height = { default: 500, forRenderer: true };
-    properties.youtube = { default: null, forRenderer: true };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.source = { default: null, forRenderer: true };
+    attributes.width = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "width",
+      defaultValue: 500,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "height",
+      defaultValue: 500,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.youtube = {
+      createComponentOfType: "text",
+      createStateVariable: "youtube",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.source = {
+      createComponentOfType: "text",
+      createStateVariable: "source",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    };
 
-    return properties;
+    return attributes;
   }
 
   actions = {

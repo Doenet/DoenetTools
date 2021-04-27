@@ -1,21 +1,26 @@
 import ConstraintComponent from './abstract/ConstraintComponent';
 
 export default class AttractToAngles extends ConstraintComponent {
-  static componentType = "attracttoangles";
+  static componentType = "attractToAngles";
 
-  static createPropertiesObject() {
-    return {
-      threshold: {default: 0.3},
-    };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.threshold = {
+      createComponentOfType: "number",
+      createStateVariable: "threshold",
+      defaultValue: 0.3,
+      public: true,
+    }
+    return attributes;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addAngles = function({activeChildrenMatched}) {
+    let addAngles = function ({ activeChildrenMatched }) {
       // add <angles> around children
       let anglesChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         anglesChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -27,7 +32,7 @@ export default class AttractToAngles extends ConstraintComponent {
       }
     }
 
-    let AtLeastOneAngle =childLogic.newLeaf({
+    let AtLeastOneAngle = childLogic.newLeaf({
       name: "AtLeastOneAngle",
       componentType: 'angle',
       comparison: 'atLeast',
@@ -42,7 +47,7 @@ export default class AttractToAngles extends ConstraintComponent {
       comparison: 'atLeast',
       number: 1,
     });
-    
+
     let AtLeastOneMath = childLogic.newLeaf({
       name: "AtLeastOneMath",
       componentType: 'math',
@@ -58,7 +63,7 @@ export default class AttractToAngles extends ConstraintComponent {
       isSugar: true,
       replacementFunction: addAngles,
     });
-    
+
     let AtMostOneAngles = childLogic.newLeaf({
       name: "AtMostOneAngles",
       componentType: "angles",
@@ -90,10 +95,10 @@ export default class AttractToAngles extends ConstraintComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
+  updateState(args = {}) {
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.angles = true;
       this.unresolvedState.offset = true;
       return;
@@ -102,35 +107,35 @@ export default class AttractToAngles extends ConstraintComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
 
       let anglesInd = this.childLogic.returnMatches("AtMostOneAngles");
 
-      if(anglesInd.length === 1) {
+      if (anglesInd.length === 1) {
         this.state.anglesChild = this.activeChildren[anglesInd[0]];
-      }else {
+      } else {
         delete this.state.anglesChild;
         this.state.angles = [];
         delete this.unresolvedState.angles;
       }
 
       let pointInd = this.childLogic.returnMatches("AtMostOnePoint");
-      if(pointInd.length === 1) {
+      if (pointInd.length === 1) {
         this.state.pointChild = this.activeChildren[pointInd[0]];
-      }else {
+      } else {
         delete this.state.pointChild;
-        this.state.offset = [0,0,0];
+        this.state.offset = [0, 0, 0];
         delete this.unresolvedState.offset;
       }
     }
 
-    if(this.state.anglesChild) {
-      if(this.state.anglesChild.unresolvedState.angles) {
+    if (this.state.anglesChild) {
+      if (this.state.anglesChild.unresolvedState.angles) {
         this.unresolvedState.angles = true;
         return;
       }
 
-      if(childrenChanged || trackChanges.getVariableChanges({
+      if (childrenChanged || trackChanges.getVariableChanges({
         component: this.state.anglesChild, variable: "angles"
       })) {
         delete this.unresolvedState.angles;
@@ -139,21 +144,21 @@ export default class AttractToAngles extends ConstraintComponent {
     }
 
 
-    if(this.state.pointChild) {
-      if(this.state.pointChild.unresolvedState.xs) {
+    if (this.state.pointChild) {
+      if (this.state.pointChild.unresolvedState.xs) {
         this.unresolvedState.offset = true;
         return;
       }
 
-      if(childrenChanged || trackChanges.getVariableChanges({
+      if (childrenChanged || trackChanges.getVariableChanges({
         component: this.state.pointChild, variable: "xs"
       })) {
         delete this.unresolvedState.offset;
 
         this.state.offset = [];
-        for(let i=0; i < this.state.pointChild.state.ndimensions; i++) {
+        for (let i = 0; i < this.state.pointChild.state.ndimensions; i++) {
           let temp = this.state.pointChild.state.xs[i].evaluate_to_constant();
-          if(!Number.isFinite(temp)) {
+          if (!Number.isFinite(temp)) {
             this.state.offset = NaN;
             break;
           }
@@ -163,16 +168,16 @@ export default class AttractToAngles extends ConstraintComponent {
     }
   }
 
-  applyTheConstraint({x1, x2, x3, offset}) {
+  applyTheConstraint({ x1, x2, x3, offset }) {
     // use the convention of x1, x2, and x3 for variable names
     // so that components can call constraints generically for n-dimensions
 
-    if(this.unresolvedState.angles || this.unresolvedState.offset) {
+    if (this.unresolvedState.angles || this.unresolvedState.offset) {
       return {};
     }
 
     // only works in 2D
-    if(x1 === undefined || x2 === undefined || x3 !== undefined) {
+    if (x1 === undefined || x2 === undefined || x3 !== undefined) {
       return {};
     }
 
@@ -180,22 +185,22 @@ export default class AttractToAngles extends ConstraintComponent {
     x1 = this.findFiniteNumericalValue(x1);
     x2 = this.findFiniteNumericalValue(x2);
 
-    if(!Number.isFinite(x1) || !Number.isFinite(x2)) {
+    if (!Number.isFinite(x1) || !Number.isFinite(x2)) {
       return {};
     }
 
-    if(offset === undefined) {
+    if (offset === undefined) {
       offset = this.state.offset;
     }
 
     // if didn't get a numerical value for one of the offset components
     // return no constraint
-    if(Number.isNaN(offset)) {
+    if (Number.isNaN(offset)) {
       return {};
     }
 
-    let dx1 = x1-offset[0];
-    let dx2 = x2-offset[1];
+    let dx1 = x1 - offset[0];
+    let dx2 = x2 - offset[1];
 
     let foundAngle = Math.atan2(dx2, dx1);
 
@@ -203,17 +208,17 @@ export default class AttractToAngles extends ConstraintComponent {
     let closestAngle;
     let closestInd;
 
-    for(let [ind, angleComp] of this.state.angles.entries()) {
+    for (let [ind, angleComp] of this.state.angles.entries()) {
 
       let angle = angleComp.state.angle.evaluate_to_constant();
 
-      if(!Number.isFinite(angle)) {
+      if (!Number.isFinite(angle)) {
         continue;
       }
 
-      let distanceToAngle = Math.abs(((angle-foundAngle + Math.PI) % (2*Math.PI))-Math.PI);
+      let distanceToAngle = Math.abs(((angle - foundAngle + Math.PI) % (2 * Math.PI)) - Math.PI);
 
-      if(distanceToAngle < closestDistance) {
+      if (distanceToAngle < closestDistance) {
         closestAngle = angle;
         closestInd = ind;
         closestDistance = distanceToAngle;
@@ -221,17 +226,17 @@ export default class AttractToAngles extends ConstraintComponent {
 
     }
 
-    if(closestAngle === undefined) {
+    if (closestAngle === undefined) {
       return {};
     }
 
-    let mag = Math.sqrt(dx1*dx1+dx2*dx2);
+    let mag = Math.sqrt(dx1 * dx1 + dx2 * dx2);
 
-    let newX1 = offset[0] + mag*Math.cos(closestAngle);
-    let newX2 = offset[1] + mag*Math.sin(closestAngle);
+    let newX1 = offset[0] + mag * Math.cos(closestAngle);
+    let newX2 = offset[1] + mag * Math.sin(closestAngle);
 
-    let distanceAsPoints = Math.sqrt(Math.pow(newX1-x1,2) + Math.pow(newX2-x2,2));
-    if(distanceAsPoints >= this.state.threshold) {
+    let distanceAsPoints = Math.sqrt(Math.pow(newX1 - x1, 2) + Math.pow(newX2 - x2, 2));
+    if (distanceAsPoints >= this.state.threshold) {
       return {};
     }
 

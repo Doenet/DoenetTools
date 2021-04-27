@@ -1,5 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -7,13 +8,13 @@ export default class Cell extends BaseComponent {
 
   static primaryStateVariableForDefinition = "placeholder";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.rowNum = { default: null };
-    properties.colNum = { default: null };
+    attributes.rowNum = { default: null };
+    attributes.colNum = { default: null };
 
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -163,7 +164,7 @@ export default class Cell extends BaseComponent {
         } else {
           let math;
           try {
-            math = me.fromText(dependencyValues.text);
+            math = me.fromAst(textToAst.convert(dependencyValues.text));
           } catch (e) {
             math = me.fromAst('\uff3f')
           }
@@ -244,6 +245,6 @@ export default class Cell extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  adapters = ["text", "math", "number"];
+  static adapters = ["text", "math", "number"];
 
 }

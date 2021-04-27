@@ -4,10 +4,15 @@ export default class Coords extends MathComponent {
   static componentType = "coords";
   static rendererType = "math";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.createVectors = { default: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.createVectors = {
+      createComponentOfType: "boolean",
+      createStateVariable: "createVectors",
+      defaultValue: true,
+      public: true,
+    };
+    return attributes;
   }
 
 

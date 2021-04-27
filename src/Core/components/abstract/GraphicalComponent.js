@@ -4,12 +4,30 @@ import { returnDefaultStyleDefinitions } from '../../utils/style';
 export default class GraphicalComponent extends BaseComponent {
   static componentType = "_graphical";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.label = { default: "", forRenderer: true };
-    properties.showLabel = { default: true, forRenderer: true };
-    properties.layer = { default: 0, forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: "",
+      public: true,
+      forRenderer: true
+    };
+    attributes.showLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showLabel",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+    return attributes;
 
   }
 

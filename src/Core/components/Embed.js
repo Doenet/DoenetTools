@@ -3,14 +3,45 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Embed extends BlockComponent {
   static componentType = "embed";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.width = { default: 500, forRenderer: true };
-    properties.height = { default: 500, forRenderer: true };
-    properties.geogebra = { default: null, forRenderer: true };
-    properties.fromMathInsight = { default: null, forRenderer: true };
-    properties.encodedGeogebraContent = { default: null, forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.width = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "width",
+      defaultValue: 500,
+      public: true,
+      forRenderer: true
+    };
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "height",
+      defaultValue: 500,
+      public: true,
+      forRenderer: true
+    };
+    attributes.geogebra = {
+      createComponentOfType: "text",
+      createStateVariable: "geogebra",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
+    attributes.encodedGeogebraContent = {
+      createComponentOfType: "text",
+      createStateVariable: "encodedGeogebraContent",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
+    attributes.fromMathInsight = {
+      createComponentOfType: "text",
+      createStateVariable: "fromMathInsight",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
+
+    return attributes;
   }
 
 

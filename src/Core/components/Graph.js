@@ -2,21 +2,86 @@ import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
   static componentType = "graph";
+  static renderChildren = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.xmin = { default: -10, forRenderer: true };
-    properties.xmax = { default: 10, forRenderer: true };
-    properties.ymin = { default: -10, forRenderer: true };
-    properties.ymax = { default: 10, forRenderer: true };
-    properties.width = { default: 300 };
-    properties.height = { default: 300 };
-    properties.displayXAxis = { default: true, forRenderer: true };
-    properties.displayYAxis = { default: true, forRenderer: true };
-    properties.xlabel = { default: "", forRenderer: true };
-    properties.ylabel = { default: "", forRenderer: true };
-    properties.showNavigation = { default: true, forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.xmin = {
+      createComponentOfType: "number",
+      createStateVariable: "xmin",
+      defaultValue: -10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.xmax = {
+      createComponentOfType: "number",
+      createStateVariable: "xmax",
+      defaultValue: 10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.ymin = {
+      createComponentOfType: "number",
+      createStateVariable: "ymin",
+      defaultValue: -10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.ymax = {
+      createComponentOfType: "number",
+      createStateVariable: "ymax",
+      defaultValue: 10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.width = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "width",
+      defaultValue: 300,
+      public: true,
+    };
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "height",
+      defaultValue: 300,
+      public: true,
+    };
+    attributes.displayXAxis = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayXAxis",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.displayYAxis = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayYAxis",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.xlabel = {
+      createComponentOfType: "text",
+      createStateVariable: "xlabel",
+      defaultValue: "",
+      public: true,
+      forRenderer: true
+    };
+    attributes.ylabel = {
+      createComponentOfType: "text",
+      createStateVariable: "ylabel",
+      defaultValue: "",
+      public: true,
+      forRenderer: true
+    };
+    attributes.showNavigation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showNavigation",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    return attributes;
   }
 
 
@@ -103,21 +168,6 @@ export default class Graph extends BlockComponent {
       definition: ({ dependencyValues }) => ({
         newValues: { numericalHeight: parseInt(dependencyValues.height) }
       })
-    }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroGraphical"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
     }
 
     return stateVariableDefinitions;

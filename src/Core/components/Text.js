@@ -51,11 +51,10 @@ export default class Text extends InlineComponent {
           dependencyType: "child",
           childLogicName: "stringsAndTexts",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
       }),
       defaultValue: "",
-      set: String,
+      set: x => x === null ? "" : String(x),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.stringTextChildren.length === 0) {
           return {
@@ -91,7 +90,7 @@ export default class Text extends InlineComponent {
           success: true,
           instructions: [{
             setStateVariable: "value",
-            value: String(desiredStateVariableValues.value)
+            value: desiredStateVariableValues.value === null ? "" : String(desiredStateVariableValues.value)
           }]
         };
       }
@@ -124,14 +123,14 @@ export default class Text extends InlineComponent {
   }
 
 
-  returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
-      this.childLogic.returnMatches("atLeastZeroTexts").length === 0;
-    if (skipChildren) {
-      let stateVariables = ["value"];
-      return { skipChildren, stateVariables };
-    }
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
+  //     this.childLogic.returnMatches("atLeastZeroTexts").length === 0;
+  //   if (skipChildren) {
+  //     let stateVariables = ["value"];
+  //     return { skipChildren, stateVariables };
+  //   }
+  //   return {};
+  // }
 
 }

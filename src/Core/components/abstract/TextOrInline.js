@@ -2,6 +2,7 @@ import InlineComponent from './InlineComponent';
 
 export default class TextOrInline extends InlineComponent {
   static componentType = "_textOrInline";
+  static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
@@ -57,22 +58,6 @@ export default class TextOrInline extends InlineComponent {
       definition: ({ dependencyValues }) => ({
         newValues: { text: dependencyValues.value }
       })
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroInline"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
     }
 
 

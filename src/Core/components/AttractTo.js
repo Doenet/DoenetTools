@@ -1,13 +1,18 @@
 import ConstraintComponent from './abstract/ConstraintComponent';
 
 export default class AttractTo extends ConstraintComponent {
-  static componentType = "attractto";
+  static componentType = "attractTo";
 
 
-  static createPropertiesObject() {
-    return {
-      threshold: { default: 0.5 },
-    };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.threshold = {
+      createComponentOfType: "number",
+      createStateVariable: "threshold",
+      defaultValue: 0.5,
+      public: true,
+    }
+    return attributes;
   }
 
   static returnChildLogic(args) {

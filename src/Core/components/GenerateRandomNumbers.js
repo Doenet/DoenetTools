@@ -3,19 +3,19 @@ import RandomNumber from './RandomNumber';
 import SelectFromSequence from './SelectFromSequence';
 
 export default class GenerateRandomNumbers extends CompositeComponent {
-  static componentType = "generaterandomnumbers";
+  static componentType = "generateRandomNumbers";
 
   static assignNamesToReplacements = true;
 
   static previewSerializedComponent = RandomNumber.previewSerializedComponent;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.numberOfSamples = {default: 1};
-    properties.withreplacement = {default: false};  //used only for discrete
+    attributes.numberOfSamples = {default: 1};
+    attributes.withreplacement = {default: false};  //used only for discrete
 
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic = RandomNumber.returnChildLogic;
@@ -163,7 +163,7 @@ export default class GenerateRandomNumbers extends CompositeComponent {
     // determine the namespace of the randomNumber
     let randomNumberAlias = this.doenetAttributes.componentName;
     if(randomNumberAlias !== undefined) {
-      if(this.doenetAttributes.newNamespace === true) {
+      if(this.attributes.newNamespace === true) {
         this.state.randomNumberNamespace = randomNumberAlias + "/";
       }else {
         //Grab everything from the begining up to and including the slash

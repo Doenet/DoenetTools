@@ -1,7 +1,7 @@
 import BooleanComponent from '../Boolean';
 
 export default class BooleanOperator extends BooleanComponent {
-  static componentType = "_booleanoperator";
+  static componentType = "_booleanOperator";
   static rendererType = "boolean";
 
   static returnChildLogic(args) {

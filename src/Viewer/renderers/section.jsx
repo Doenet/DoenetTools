@@ -16,12 +16,23 @@ export default class Section extends DoenetRenderer {
 
     let id = this.componentName + "_title";
 
-    let childrenToRender = this.children;
+    let childrenToRender = [...this.children];
+
+    // BADBADBAD: need to redo how getting the title child
+    // getting it using the internal guts of componentInstructions
+    // is just asking for trouble
 
     let title;
-    if (this.doenetSvData.titleDefinedByChildren) {
-      title = this.children[0]
-      childrenToRender = this.children.slice(1); // remove title
+    if (this.doenetSvData.titleChildName) {
+      let titleChildInd;
+      for (let [ind, child] of this.children.entries()) {
+        if (child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+          titleChildInd = ind;
+          break;
+        }
+      }
+      title = this.children[titleChildInd];
+      childrenToRender.splice(titleChildInd, 1); // remove title
     } else {
       title = this.doenetSvData.title;
     }
@@ -34,33 +45,33 @@ export default class Section extends DoenetRenderer {
       }
     }
 
-    // if (this.doenetSvData.level === 0) {
-    //   heading = <h1 id={id}>{title}</h1>;
-    // } else if (this.doenetSvData.level === 1) {
-    //   heading = <h2 id={id}>{title}</h2>;
-    // } else if (this.doenetSvData.level === 2) {
-    //   heading = <h3 id={id}>{title}</h3>;
-    // } else if (this.doenetSvData.level === 3) {
-    //   heading = <h4 id={id}>{title}</h4>;
-    // } else if (this.doenetSvData.level === 4) {
-    //   heading = <h5 id={id}>{title}</h5>;
-    // } else if (this.doenetSvData.level === 5) {
-    //   heading = <h6 id={id}>{title}</h6>;
-    // }
-
-     if (this.doenetSvData.level === 0) {
-      heading = <span style={{fontSize:"30px"}} id={id}>{title}</span>;
+    if (this.doenetSvData.level === 0) {
+      heading = <h1 id={id}>{title}</h1>;
     } else if (this.doenetSvData.level === 1) {
-      heading = <span style={{fontSize:"26px"}} id={id}>{title}</span>;
+      heading = <h2 id={id}>{title}</h2>;
     } else if (this.doenetSvData.level === 2) {
-      heading = <span style={{fontSize:"22px"}} id={id}>{title}</span>;
+      heading = <h3 id={id}>{title}</h3>;
     } else if (this.doenetSvData.level === 3) {
-      heading = <span style={{fontSize:"18px"}} id={id}>{title}</span>;
+      heading = <h4 id={id}>{title}</h4>;
     } else if (this.doenetSvData.level === 4) {
-      heading = <span style={{fontSize:"14px"}} id={id}>{title}</span>;
+      heading = <h5 id={id}>{title}</h5>;
     } else if (this.doenetSvData.level === 5) {
-      heading = <span style={{fontSize:"12px"}} id={id}>{title}</span>;
+      heading = <h6 id={id}>{title}</h6>;
     }
+
+    //  if (this.doenetSvData.level === 0) {
+    //   heading = <span style={{fontSize:"30px"}} id={id}>{title}</span>;
+    // } else if (this.doenetSvData.level === 1) {
+    //   heading = <span style={{fontSize:"26px"}} id={id}>{title}</span>;
+    // } else if (this.doenetSvData.level === 2) {
+    //   heading = <span style={{fontSize:"22px"}} id={id}>{title}</span>;
+    // } else if (this.doenetSvData.level === 3) {
+    //   heading = <span style={{fontSize:"18px"}} id={id}>{title}</span>;
+    // } else if (this.doenetSvData.level === 4) {
+    //   heading = <span style={{fontSize:"14px"}} id={id}>{title}</span>;
+    // } else if (this.doenetSvData.level === 5) {
+    //   heading = <span style={{fontSize:"12px"}} id={id}>{title}</span>;
+    // }
 
     let checkworkComponent = null;
 

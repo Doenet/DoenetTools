@@ -1,5 +1,6 @@
 import NumberComponent from './Number';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Integer extends NumberComponent {
   static componentType = "integer";
@@ -17,7 +18,7 @@ export default class Integer extends NumberComponent {
         let number = Number(dependencyValues.stringChild[0].stateValues.value);
         if (Number.isNaN(number)) {
           try {
-            number = me.fromText(dependencyValues.stringChild[0].stateValues.value).evaluate_to_constant();
+            number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
             if (number === null) {
               number = NaN;
             }

@@ -2,17 +2,47 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 import { findFiniteNumericalValue } from '../utils/math';
 
 export default class ConstrainToGrid extends ConstraintComponent {
-  static componentType = "constraintogrid";
+  static componentType = "constrainToGrid";
 
-  static createPropertiesObject() {
-    return {
-      dx: { default: 1 },
-      dy: { default: 1 },
-      dz: { default: 1 },
-      xoffset: { default: 0 },
-      yoffset: { default: 0 },
-      zoffset: { default: 0 },
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.dx = {
+      createComponentOfType: "number",
+      createStateVariable: "dx",
+      defaultValue: 1,
+      public: true,
     };
+    attributes.dy = {
+      createComponentOfType: "number",
+      createStateVariable: "dy",
+      defaultValue: 1,
+      public: true,
+    };
+    attributes.dz = {
+      createComponentOfType: "number",
+      createStateVariable: "dz",
+      defaultValue: 1,
+      public: true,
+    };
+    attributes.xoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "xoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.yoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "yoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.zoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "zoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -78,7 +108,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
       definition: ({ dependencyValues }) => ({
         newValues: {
           applyComponentConstraint: function (variables) {
-            
+
             // if given the value of x1, apply to constraint to x1
             // and ignore any other arguments (which shouldn't be given)
             if ("x1" in variables) {

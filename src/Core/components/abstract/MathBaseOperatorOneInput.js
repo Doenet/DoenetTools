@@ -2,7 +2,7 @@ import MathComponent from '../Math';
 import { renameStateVariable } from '../../utils/stateVariables';
 
 export default class MathOperatorOneInput extends MathComponent {
-  static componentType = "_mathoperatoroneinput";
+  static componentType = "_mathOperatorOneInput";
   static rendererType = "math";
 
   static returnStateVariableDefinitions() {

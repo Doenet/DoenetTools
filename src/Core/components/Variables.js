@@ -7,9 +7,9 @@ export default class Variables extends MathList {
   // TODO: how to add this feature?
   static additionalStateVariablesForProperties = ["validVariables"];
 
-  // when another component has a property that is a mathlist,
-  // use the maths state variable to populate that property
-  static stateVariableForPropertyValue = "variables";
+  // when another component has a attribute that is a mathList,
+  // use the maths state variable to populate that attribute
+  static stateVariableForAttributeValue = "variables";
 
 
   static returnStateVariableDefinitions() {
