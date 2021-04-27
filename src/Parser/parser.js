@@ -33,7 +33,7 @@ export function parseAndCompile(inText){
 
         cursor.firstChild();
 
-        if (cursor.name == "OpenTag"){
+        if (cursor.name === "OpenTag"){
             cursor.firstChild();
             let tagName = inText.substring(cursor.from,cursor.to);
 
@@ -75,11 +75,15 @@ export function parseAndCompile(inText){
             // and the element case, in which case we recurse
 
             while(cursor.nextSibling()){
-                if(cursor.name == "Text"){
-                    element.children.push(inText.substring(cursor.from,cursor.to))
-                } else if (cursor.name == "Element") {
+                if(cursor.name === "Text"){
+                    //don't necesarily need trim if not wanted
+                    let txt = inText.substring(cursor.from,cursor.to).trim();
+                    if(txt !== ""){
+                        element.children.push(inText.substring(cursor.from,cursor.to).trim())
+                    }
+                } else if (cursor.name === "Element") {
                     element.children.push(compileElement(cursor.node.cursor))
-                } else if (cursor.name == "CloseTag") {
+                } else if (cursor.name === "CloseTag") {
                     // Will always be the matching tag (and the last tag in the list)
                     break;
                 } else {
@@ -92,7 +96,7 @@ export function parseAndCompile(inText){
             return element;
 
         //something wrong here. Tag (the name) gets overriden with attrs?
-        } else if (cursor.name == "SelfClosingTag"){
+        } else if (cursor.name === "SelfClosingTag"){
             cursor.firstChild();
 
             let tagName = inText.substring(cursor.from,cursor.to);
