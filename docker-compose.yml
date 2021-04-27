@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  dev:
+    image: node:14-stretch
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/home/node/workspace
+      - node_modules:/home/node/workspace/node_modules
+      - /home/node/snworkspaceow/dist_local
+    links:
+      - apache
+    command: tail -f /dev/null
+
+  apache:
+    build: './doenet_docker/apache'
+    volumes:
+      - ./dist_local:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+      - mysql
+    restart: always
+
+  php:
+    build: './doenet_docker/php'
+    volumes:
+      - ./dist_local:/usr/local/apache2/htdocs
+    restart: always
+
+  mysql:
+    build: './doenet_docker/mysql'
+    ports:
+      - 3306:3306
+    volumes:
+      - ./doenet_docker/volumes/db:/var/lib/mysql
+      - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+    restart: always
+
+volumes:
+  node_modules:

@@ -47,6 +47,7 @@ export default function SignIn() {
         //  Error currently does nothing
       }})
       .catch((error) => {
+        console.log(error)
         //  Error currently does nothing
       });
 

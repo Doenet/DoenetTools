@@ -1,7 +1,7 @@
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
 proxy.on('proxyReq', function (proxyReq, req, res, options) {
-  proxyReq.setHeader('Host', 'localhost');
+  proxyReq.setHeader('Host', '0.0.0.0');
 });
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
     'src/Tools/_framework': '/_framework',
-    'src/Media': { "url": "/media", "static": true, "resolve": false },
+    'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/API': '/api',
     'src/Home': '/',
@@ -49,12 +49,12 @@ module.exports = {
     },
     {
       src: '/media/.*',
-      dest: (req,res) => {
-        proxy.web(req,res);
-      }
-    }
+      dest: (req, res) => {
+        proxy.web(req, res);
+      },
+    },
   ],
-  
+
   optimize: {
     // bundle: true,
     // minify: true,
@@ -63,10 +63,10 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode: true,
-    knownEntrypoints: ["crypto-js/sha1"],
+    knownEntrypoints: ['crypto-js/sha1'],
   },
   devOptions: {
-    openUrl: '/library',
+    openUrl: '/exampleTool',
   },
   buildOptions: {
     watch: true,

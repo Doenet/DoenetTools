@@ -1,16 +1,15 @@
 {
-    "name": "Doenet Dev Env",
-    "dockerFile": "../doenet_docker/docker-compose.yml",
-    "appPort": [8080,80],
-    "runArgs": ["-u", "node"],
+    "name": "Doenet Dev Container",
+    "dockerComposeFile": ["../docker-compose.yml"],
+    "service": "dev",
     "settings": {
-      // "workbench.colorTheme": "Hot Dog Stand",
       "terminal.integrated.shell.linux": "/bin/bash"
     },
+    "forwardPorts": [8080],
     "postCreateCommand": "npm install && npx snowpack dev",
     "extensions": [
-      "sdras.night-owl",
       "dbaeumer.vscode-eslint",
       "esbenp.prettier-vscode"
-    ]
+    ],
+    "workspaceFolder": "/home/node/workspace",
   }
