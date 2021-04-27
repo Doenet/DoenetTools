@@ -15,8 +15,37 @@ $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
 $success = TRUE;
-$results_arr = array();
-//make sure the user is supposed to have drive read access
+$message = "";
+
+if ($driveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing driveId';
+}elseif ($parentId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing parentId';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to learn of drive users";
+}
+
+//Check for permisions
+if ($success){
+  $sql = "
+  SELECT canViewDrive
+  FROM drive_user
+  WHERE userId = '$userId'
+  AND driveId = '$driveId'
+  ";
+  $result = $conn->query($sql); 
+  $row = $result->fetch_assoc();
+  if ($row['canViewDrive'] == '0'){
+    $success = FALSE;
+    $message = "You need need permission to learn of drive users";
+  }
+}
+
+if ($success){
+
 $sql = "
 SELECT 
 canViewDrive, 
@@ -197,11 +226,13 @@ ON dc.assignmentId = a.assignmentId
 
 }
 }
+}
 
 $response_arr = array(
   "results"=>$results_arr,
   "perms"=>$perms,
-  "success"=>$success
+  "success"=>$success,
+  "message"=>$message
   );
 
 // set response code - 200 OK

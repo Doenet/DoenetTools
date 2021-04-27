@@ -313,16 +313,12 @@ class DoenetViewer extends Component {
 
   loadDoenetML(contentId, callback) {
 
-    const loadFromContentIdUrl = '/api/loadFromContentId.php';
-    const data = {
-      contentId,
-    }
-
-    axios.post(loadFromContentIdUrl, data)
+    axios.get(`/media/${contentId}.doenet`)
       .then(resp => {
+        console.log(">>>resp.data!!!!!!!",resp.data)
         if (callback) {
           callback({
-            contentId, doenetML: resp.data.doenetML,
+            contentId, doenetML: resp.data,
           })
         }
       });
