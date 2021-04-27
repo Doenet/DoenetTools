@@ -1046,9 +1046,7 @@ function Folder(props){
       >
         <div style={{display: 'inline', margin:'0px'}}>
           {openCloseButton}
-          <div data-cy="folderIcon">
-            <FontAwesomeIcon icon={faFolder}/> 
-          </div>
+          <span data-cy="folderIcon"><FontAwesomeIcon icon={faFolder}/></span>
           {label}
         </div>
       </div>
@@ -1267,10 +1265,10 @@ function Folder(props){
     }
   }
 
-  return <>
-  {folder}
-  {items}
-  </>
+  return <div data-cy="drive">
+    {folder}
+    {items}
+  </div>
 }
 
 const EmptyNode =  React.memo(function Node(props){
@@ -1636,9 +1634,7 @@ const DoenetML = React.memo((props)=>{
         alignContent: 'center'
       }}>
       <p style={{display: 'inline', margin: '0px'}}>
-        <div data-cy="doenetMLIcon">
-          <FontAwesomeIcon icon={faCode}/> 
-        </div>
+        <span data-cy="doenetMLIcon"><FontAwesomeIcon icon={faCode}/></span>
         {label} 
       </p> 
       {props.numColumns >= 2 ? <span>{date}</span> : null }

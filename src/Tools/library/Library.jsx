@@ -479,7 +479,7 @@ const FolderInfoPanel = function(props){
   }
   
   return <>
-  <h2>{fIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
   value={label} 
@@ -546,7 +546,7 @@ const DoenetMLInfoPanel = function(props){
   }
   
   return <>
-  <h2>{dIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
   value={label} 
@@ -912,6 +912,7 @@ export default function Library(props) {
         onClick={()=>{
           clearSelections()
         }}
+        data-cy="mainPanel"
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
@@ -928,6 +929,7 @@ export default function Library(props) {
         onClick={
           cleardrivecardSelection
         }
+        data-cy="mainPanel"
         tabIndex={0}
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
