@@ -1142,6 +1142,7 @@ function Folder(props){
     folder = <>
     <div
       data-doenet-driveinstanceid={props.driveInstanceId}
+      data-cy="navDriveHeader"
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -2153,6 +2154,7 @@ function useUpdateBreadcrumb(props) {
       }}
       >
       <Link 
+        data-cy="breadcrumbDriveColumn"
         style={breadcrumbItemStyle} 
         to={driveDestinationLink}>
         {props.driveLabel}

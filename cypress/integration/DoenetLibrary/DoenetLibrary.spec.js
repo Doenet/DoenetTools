@@ -1,3 +1,4 @@
+import { expect } from "chai";
 
 describe("Library", function () {
   beforeEach(() => {
@@ -6,11 +7,19 @@ describe("Library", function () {
 
   it('CreateNewCourse', function() {
     cy.get('[data-cy=createNewCourseButton]').click();
+    cy.get(':nth-child(1) > [data-cy=navDriveHeader]').should('exist');
+  });
 
-    // Check if new course exists
+  it('ClickOnCourse', function() {
+    cy.get(':nth-child(1) > [data-cy=navDriveHeader]').click();
 
-
-  });  
+    // Check for drive title equality across nav panel and breadcrumb
+    cy.get(':nth-child(1) > [data-cy=navDriveHeader]').invoke('text').then(navDriveTitle => {
+      cy.get('[data-cy=breadcrumbDriveColumn]').invoke('text').then(breadcrumbDriveTitle => {
+        expect(navDriveTitle.trim()).equal(breadcrumbDriveTitle.trim());
+      })
+    })
+  });
 });
 
 /*
