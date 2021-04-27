@@ -59,7 +59,7 @@
     "@testing-library/react": "^11.2.6",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
-    "cypress": "^6.9.1",
+    "cypress": "^7.2.0",
     "esbuild": "^0.9.7",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.2.0",
