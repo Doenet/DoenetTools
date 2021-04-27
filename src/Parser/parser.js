@@ -1,5 +1,16 @@
 import {parser} from './doenet.js'
 
+/*
+* There are 2 uses for this parser:
+* 1. Use as a replacement for the parser in core
+*  parseAndCompile() serves this purpose by making an extra pass and extracting the extra information from the input string and parse tree
+* 2. Use in the text editor
+*  parse() should be suffecient here -- the tree cursor class provides all/most of the methods you will want for text-editing purposes.
+* See https://lezer.codemirror.net/docs/ref/#tree.TreeCursor for details.
+* This file also provides a showCursor() method for use in demonstration/debugging. 
+* It should most likely be used in combination with the exported parse function
+*/
+
 /**
  *  takes in a string an outputs a TreeCursor
  * @param {string} inText 
@@ -12,8 +23,7 @@ export function parse(inText) {
  * parse string and output a convinent to use object. 
  * @param {string} inText
  */
-//I think i'll just have to use substring to get the info I want out of the string...
-//Because the parser gives to's and from's this is feasable if... kinda silly
+//TODO rewrite grammar so extraneous whitespace is disregared?
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
@@ -22,26 +32,29 @@ export function parseAndCompile(inText){
         }
 
         cursor.firstChild();
+
         if (cursor.name == "OpenTag"){
             cursor.firstChild();
             let tagName = inText.substring(cursor.from,cursor.to);
 
             let attrs = [];
             while(cursor.nextSibling()){
+
                 //All of the siblings must be Attributes, but we're checking just in case the grammar changes
-                //Things that could be solved with sum/product types...
                 if(cursor.name != "Attribute"){
-                    console.error("how could this possibly not be an Attribute",cursor);
+                    console.error(">>>Invalid non-terminal child of OpenTag, expected an Attribute and got: ",cursor);
                     throw Error("Expected an Attribute in OpenTag");
                 }
+
                 //Attributes always have exactly two children, an AttributeName and an Attribute Value
                 //We scrape the content of both from the in string and add them to the attribute array here
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
                 cursor.nextSibling();
-                //fuddling to ignore the quotes
+                //boundry fuddling to ignore the quotes
                 let attrValue = inText.substring(cursor.from+1,cursor.to-1);
 
+                //move out of Attribute to maintain loop invariant
                 cursor.parent();
 
                 let attr = {};
@@ -50,7 +63,8 @@ export function parseAndCompile(inText){
                 attrs.push(attr);
 
             }
-            //get back to the level of OpenTag
+
+            //get back to the level of OpenTag in order to parse tag body
             cursor.parent();
 
             let element = {tag : tagName, attributes : attrs, children : []}
@@ -66,18 +80,22 @@ export function parseAndCompile(inText){
                 } else if (cursor.name == "Element") {
                     element.children.push(compileElement(cursor.node.cursor))
                 } else if (cursor.name == "CloseTag") {
-                    //Will always be the matching tag
+                    // Will always be the matching tag (and the last tag in the list)
                     break;
                 } else {
-                    //TODO
+                    // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
+                    // TODO if decided to be desireable
                     console.error("Non text/element non-terminal not supported", cursor)
                     throw Error();
                 }
             }
             return element;
 
+        //something wrong here. Tag (the name) gets overriden with attrs?
         } else if (cursor.name == "SelfClosingTag"){
             cursor.firstChild();
+
+            let tagName = inText.substring(cursor.from,cursor.to);
 
             let attrs = [];
             while(cursor.nextSibling()){
@@ -103,7 +121,7 @@ export function parseAndCompile(inText){
 
             }
 
-            return {tag : inText.substring(cursor.from,cursor.to), attributes : attrs, children : []};
+            return {tag :  tagName, attributes : attrs, children : []};
             
         } else {
             //Unreachable case, see the grammar for why
@@ -127,6 +145,12 @@ export function parseAndCompile(inText){
     return out;
 }
 
+/**
+ * pretty-print the tree pointed to by a tree-cursor.
+ * Intended for demonstration/debugging
+ * @param {treeCursor} cursor 
+ * @returns {string}
+ */
 export function showCursor(cursor){
     return showNode(cursor.node);
 }

@@ -89,7 +89,15 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-const doenetMl = "<p> this is a test string <div id=\"yep\" wow=\"incredible\"> with a div </div></p> <test />"
+
+const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> "
+
+// const doenetMl = `
+//   <p> this is a test string 
+//     <div id="divtastic" parsed="true"> with a div <a href ="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> cool link </a></div>
+//   </p>  
+//   <test passed="true" />`
+
 
 let t = parse(doenetMl);
 console.log(t);
