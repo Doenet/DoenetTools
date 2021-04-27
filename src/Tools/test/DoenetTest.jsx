@@ -1,27 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
+import core from '../../Core/Core';
 
-export default function DoenetTest(){
+export default function Test(){
+console.log("===Test")
 
-
+  // const [doenetML,setDoenetML] = useState("");
+  let doenetML = useRef("");
+ 
   //New DoenetViewer when code changes
   useEffect(()=>{
     doenetML.current = testCodeDoenetML;
     setUpdateNumber((was)=>was+1)
   },testCodeDoenetML);
 
-  let doenetML = useRef("");
 
   const [attemptNumber,setAttemptNumber] = useState(1);
-  const [updateNumber,setUpdateNumber] = useState(1);
-  const showCorrectness = true;
-  const readOnly = false;
+  const [controlsVisible,setControlsVisible] = useState(false);
+  const [showCorrectness,setShowCorrectness] = useState(true);
+  const [readOnly,setReadOnly] = useState(false);
+  const [showFeedback,setShowFeedback] = useState(true);
+  const [showHints,setShowHints] = useState(true);
+  const [ignoreDatabase,setIgnoreDatabase] = useState(true);
+  const [bundledCore,setBundledCore] = useState(false);
   const solutionDisplayMode = "button";
-  const showFeedback = true;
-  const showHints = true;
-  const ignoreDatabase = true;
-  const requestedVariant = {index: 1}
+  const requestedVariant = { index: 0 };
+
+  const [updateNumber,setUpdateNumber] = useState(1);
 
   //For Cypress Test Use
   window.onmessage = (e)=>{
@@ -32,19 +38,86 @@ export default function DoenetTest(){
   };
 
 
-  if (doenetML.current === ""){
+  if (doenetML === ""){
     return null;
+  }
+  let controls = null;
+  let buttonText = 'show';
+  if (controlsVisible){
+    buttonText = 'hide';
+    controls = <div>
+      <div>
+        <label>Attempt Number: {attemptNumber} <button onClick={
+          () => {
+            setAttemptNumber(was=>was+1)
+            setUpdateNumber(was=>was+1)
+          }
+          }>New Attempt</button></label>
+      </div>
+  
+      <div>
+        <label> <input type='checkbox' checked={showCorrectness} onChange={
+          () => {
+            setShowCorrectness(was=>!was)
+            setUpdateNumber((was)=>was+1)
+
+          }
+          } />Show Correctness</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={readOnly} onChange={
+          () => {
+            setReadOnly(was=>!was)
+            setUpdateNumber((was)=>was+1)
+          }
+          } />Read Only</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={showFeedback} onChange={
+          () => {
+            setShowFeedback(was=>!was)
+            setUpdateNumber((was)=>was+1)
+          }
+          } />Show Feedback</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={showHints} onChange={
+          () => {
+            setShowHints(was=>!was)
+            setUpdateNumber((was)=>was+1)
+          }
+          } />Show Hints</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={ignoreDatabase} onChange={
+          () => {
+            setIgnoreDatabase(was=>!was)
+            setUpdateNumber((was)=>was+1)
+          }
+          } />Ignore Database</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={bundledCore} onChange={
+          () => {
+            setBundledCore(was=>!was)
+            setUpdateNumber((was)=>was+1)
+          }
+          } />Bundled Core</label>
+      </div>
+    </div>
+  }
+  
+  let coreProp = core;
+  if (bundledCore){
+    coreProp = null;
   }
 
   return (
     <>
-         <div style={{ backgroundColor: "#e3e3e3" }}><h3>Test Tool</h3>
-        <label>Attempt Number: {attemptNumber} <button onClick={
-          () => {
-            setAttemptNumber((was)=>was+1)
-            setUpdateNumber((was)=>was+1)
-          }
-          }>New Attempt</button></label>
+         <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={()=>setControlsVisible(was=>!was)}>{buttonText} controls</button>
+         Test Viewer and Core 
+           </h3>
+        {controls}
       </div>
       <DoenetViewer
         key={"doenetviewer" + updateNumber}
@@ -60,6 +133,7 @@ export default function DoenetTest(){
         attemptNumber={attemptNumber}
         ignoreDatabase={ignoreDatabase}
         requestedVariant={requestedVariant}
+        core={coreProp} 
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}

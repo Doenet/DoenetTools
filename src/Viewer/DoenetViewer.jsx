@@ -126,20 +126,36 @@ class DoenetViewer extends Component {
     // should verify hash
 
 
-
-    this.core = new Core({
-      coreReadyCallback: this.coreReady,
-      coreUpdatedCallback: this.update,
-      doenetML: this.doenetML,
-      externalFunctions: {
-        localStateChanged: this.localStateChanged,
-        submitResponse: this.submitResponse,
-        recordSolutionView: this.recordSolutionView,
-        recordEvent: this.recordEvent,
-      },
-      flags: this.props.flags,
-      requestedVariant: this.requestedVariant,
-    });
+    if (this.props.core){
+      this.core = new this.props.core({
+        coreReadyCallback: this.coreReady,
+        coreUpdatedCallback: this.update,
+        doenetML: this.doenetML,
+        externalFunctions: {
+          localStateChanged: this.localStateChanged,
+          submitResponse: this.submitResponse,
+          recordSolutionView: this.recordSolutionView,
+          recordEvent: this.recordEvent,
+        },
+        flags: this.props.flags,
+        requestedVariant: this.requestedVariant,
+      });
+    }else{
+      this.core = new Core({
+        coreReadyCallback: this.coreReady,
+        coreUpdatedCallback: this.update,
+        doenetML: this.doenetML,
+        externalFunctions: {
+          localStateChanged: this.localStateChanged,
+          submitResponse: this.submitResponse,
+          recordSolutionView: this.recordSolutionView,
+          recordEvent: this.recordEvent,
+        },
+        flags: this.props.flags,
+        requestedVariant: this.requestedVariant,
+      });
+    }
+    
 
 
     // this.databaseItemsToReload = props.databaseItemsToReload;
