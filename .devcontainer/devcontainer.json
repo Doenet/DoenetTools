@@ -6,8 +6,9 @@
       "terminal.integrated.shell.linux": "/bin/bash"
     },
     "forwardPorts": [8080],
-    "postCreateCommand": "npm install && npx snowpack dev",
+    "postCreateCommand": "npm install",
     "extensions": [
+      "ms-azuretools.vscode-docker",
       "dbaeumer.vscode-eslint",
       "esbenp.prettier-vscode"
     ],

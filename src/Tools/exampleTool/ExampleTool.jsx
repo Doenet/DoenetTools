@@ -15,7 +15,7 @@ export default function DoenetExampleTool() {
   const [toast, toastType] = useToast();
 
   useEffect(() => {
-    activateMenuPanel(0);
+    activateMenuPanel(1);
   }, [activateMenuPanel]);
 
   return (

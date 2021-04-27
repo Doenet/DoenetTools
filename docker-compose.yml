@@ -4,7 +4,7 @@ services:
   dev:
     image: node:14-stretch
     ports:
-      - 8080:8080
+      - 80:80
     volumes:
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
@@ -15,10 +15,11 @@ services:
 
   apache:
     build: './doenet_docker/apache'
-    ports:
-      - 80:80
+    # ports:
+    #   - 80:80
     volumes:
-      - ./dist_local:/usr/local/apache2/htdocs
+      - ./dist_local/api:/usr/local/apache2/htdocs/api
+      - ./dist_local/media:/usr/local/apache2/htdocs/media
     networks:
       - dev_net
     depends_on:
@@ -29,7 +30,7 @@ services:
   php:
     build: './doenet_docker/php'
     volumes:
-      - ./dist_local:/usr/local/apache2/htdocs
+      - ./src/api:/usr/local/apache2/htdocs/api
     networks:
       - dev_net
     restart: always

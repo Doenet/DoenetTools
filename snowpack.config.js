@@ -72,6 +72,8 @@ module.exports = {
     knownEntrypoints: ['crypto-js/sha1'],
   },
   devOptions: {
+    port: 80,
+    hmrPort: 80,
     openUrl: '/exampleTool',
   },
   buildOptions: {
