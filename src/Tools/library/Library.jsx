@@ -63,8 +63,7 @@ function Container(props){
   style={{
       maxWidth: "850px",
       // border: "1px red solid",
-      padding: "20px",
-      display:"grid"
+      margin: "20px",
   }
   }
   >
@@ -922,9 +921,9 @@ console.log(">>>profile",profile)
       <headerPanel title="Library">
       </headerPanel>
 
-      <mainPanel responsiveControls={breadcrumbContainer}> 
+      <mainPanel > 
       <AutoSelect />
-
+      {breadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections()
