@@ -89,7 +89,7 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-const doenetMl = "<p> this is a test string <div id=\"yep\"> with a div </div></p> <test />"
+const doenetMl = "<p> this is a test string <div id=\"yep\" wow=\"incredible\"> with a div </div></p> <test />"
 
 let t = parse(doenetMl);
 console.log(t);
