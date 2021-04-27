@@ -30,8 +30,8 @@ export default function  Course() {
         </headerPanel>
   
         <mainPanel>
-          <div style={{border:"1px solid grey",borderRadius:"10px",margin:"auto",padding:"10px",width:"60%"}}>
-            <div style={{textAlign:"center",alignItems:"center"}}>
+          <div style={{border:"1px solid grey",borderRadius:"20px",margin:"auto",marginTop:"10%",padding:"10px",width:"50%"}}>
+            <div style={{textAlign:"center",alignItems:"center",marginBottom:"20px"}}>
             <h2>You are not signed in</h2>
             <h2>Course currently requires sign in for use</h2> 
             <button style={{background:"#1a5a99",borderRadius:"5px"}}><a href='/signin' style={{color:"white",textDecoration:"none"}}>Sign in with this link</a></button>
