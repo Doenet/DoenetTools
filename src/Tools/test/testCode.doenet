@@ -1,3 +1,4 @@
+<text>a</text>
     <p>Number of equations 1: <mathinput prefill="2" name="m" /></p>
     <p>Number of equations 2: <mathinput prefill="1" name="n" /></p>
     
@@ -17,3 +18,18 @@
     </mdn>
     <men name="z">z</men>
     
+    <p name="px">x: <copy prop="equationTag" assignNames="etx" tname="x" />, equation <ref tname="x" name="rx" /></p>
+    <p name="pm1">m1: <copy prop="equationTag" assignNames="etm1" tname="m1/eq" />, equation <ref tname="m1/eq" name="rm1" /></p>
+    <p name="pm2">m2: <copy prop="equationTag" assignNames="etm2" tname="m2/eq" />, equation <ref tname="m2/eq" name="rm2" /></p>
+    <p name="pm3">m3: <copy prop="equationTag" assignNames="etm3" tname="m3/eq" />, equation <ref tname="m3/eq" name="rm3" /></p>
+    <p name="pm4">m4: <copy prop="equationTag" assignNames="etm4" tname="m4/eq" />, equation <ref tname="m4/eq" name="rm4" /></p>
+    <p name="pm5">m5: <copy prop="equationTag" assignNames="etm5" tname="m5/eq" />, equation <ref tname="m5/eq" name="rm5" /></p>
+    <p name="pm6">m6: <copy prop="equationTag" assignNames="etm6" tname="m6/eq" />, equation <ref tname="m6/eq" name="rm6" /></p>
+    <p name="py">y: <copy prop="equationTag" assignNames="ety" tname="y" />, equation <ref tname="y" name="ry" /></p>
+    <p name="pn1">n1: <copy prop="equationTag" assignNames="etn1" tname="n1/eq" />, equation <ref tname="n1/eq" name="rn1" /></p>
+    <p name="pn2">n2: <copy prop="equationTag" assignNames="etn2" tname="n2/eq" />, equation <ref tname="n2/eq" name="rn2" /></p>
+    <p name="pn3">n3: <copy prop="equationTag" assignNames="etn3" tname="n3/eq" />, equation <ref tname="n3/eq" name="rn3" /></p>
+    <p name="pn4">n4: <copy prop="equationTag" assignNames="etn4" tname="n4/eq" />, equation <ref tname="n4/eq" name="rn4" /></p>
+    <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" tname="n5/eq" />, equation <ref tname="n5/eq" name="rn5" /></p>
+    <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" tname="n6/eq" />, equation <ref tname="n6/eq" name="rn6" /></p>
+    <p name="pz">z: <copy prop="equationTag" assignNames="etz" tname="z" />, equation <ref tname="z" name="rz" /></p>
