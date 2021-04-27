@@ -710,29 +710,32 @@ function AddCourseDriveButton(props){
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
-  return <Button value="Create a New Course" callback={()=>{
-    let driveId = null;
-    let newDriveId = nanoid();
-    let newCourseId = nanoid();
-    let label = "Untitled";
-    let image = driveImages[Math.floor(Math.random() * driveImages.length)];
-    let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
-    result.then((resp)=>{
-      if (resp.data.success){
-        addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
-      }else{
-        onError({errorMessage: resp.data.message});
-      }
-    }).catch((e)=>{
-      onError({errorMessage: e.message});
-    })
-    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    newParams['path'] = `:::`
-    history.push('?'+encodeParams(newParams))
-
-  }}/>
+  return <Button 
+    value="Create a New Course" 
+    data-cy="createNewCourseButton"
+    callback={()=>{
+      let driveId = null;
+      let newDriveId = nanoid();
+      let newCourseId = nanoid();
+      let label = "Untitled";
+      let image = driveImages[Math.floor(Math.random() * driveImages.length)];
+      let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+      const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
+      result.then((resp)=>{
+        if (resp.data.success){
+          addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
+        }else{
+          onError({errorMessage: resp.data.message});
+        }
+      }).catch((e)=>{
+        onError({errorMessage: e.message});
+      })
+      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+      let newParams = {...urlParamsObj} 
+      newParams['path'] = `:::`
+      history.push('?'+encodeParams(newParams))
+    }}
+  />
 }
 
 function AddMenuPanel(props){
@@ -758,42 +761,48 @@ function AddMenuPanel(props){
   <h3>Course</h3>
    {addDrives}
   <h3>Folder</h3>
-  <Button value="Add Folder" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label: "Untitled",
-      itemType: "Folder"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add Folder" 
+    data-cy="addFolderButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label: "Untitled",
+        itemType: "Folder"
+      });
+      result.then(resp => {
+        if (resp.data.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data.message});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
 
   <h3>DoenetML</h3>
-  <Button value="Add DoenetML" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label:"Untitled",
-      itemType:"DoenetML"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add DoenetML" 
+    data-cy="addDoenetMLButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label:"Untitled",
+        itemType:"DoenetML"
+      });
+      result.then(resp => {
+        if (resp.data.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data.message});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
  
   {/* <h3>URL</h3>
   <div>
