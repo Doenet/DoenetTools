@@ -20,7 +20,7 @@ export function parseAndCompile(inText){
     // Mildly klduge-esq
     function compileElement(node){
         if(node.name != "Element"){
-            console.error(">>>huh?",node);
+            console.error(">>> Doesn't really make sense to call this on a non-element, right?",node);
             throw Error();
         }
 
@@ -29,14 +29,35 @@ export function parseAndCompile(inText){
             let openTag = node.firstChild;
 
             //initially the tag name, but the siblings might be attributes
-            let openTagParams = openTag.firstChild; 
+            let openTagParams = openTag.firstChild.cursor; 
 
             let tagName = inText.substring(openTagParams.from,openTagParams.to);
 
-            if(openTagParams.nextSibling != null){
-                //TODO handle attributes
+            let attrs = [];
+            while(openTagParams.nextSibling()){
+                //All of the siblings must be Attributes, but we're checking just in case the grammar changes
+                //Things that could be solved with sum/product types...
+                if(openTagParams.name != "Attribute"){
+                    console.error("how could this possibly not be an Attribute",openTagParams);
+                    throw Error("Expected an Attribute in OpenTag");
+                }
+                //Attributes always have exactly two children, an AttributeName and an Attribute Value
+                //We scrape the content of both from the in string and add them to the attribute array here
+                openTagParams.firstChild();
+                let attrName = inText.substring(openTagParams.from,openTagParams.to);
+                openTagParams.nextSibling();
+                //fuddling to ignore the quotes
+                let attrValue = inText.substring(openTagParams.from+1,openTagParams.to-1);
+
+                openTagParams.parent();
+
+                let attr = {};
+                attr[attrName] = attrValue;
+
+                attrs.push(attr);
+
             }
-            let element = {tag : tagName, children : []}
+            let element = {tag : tagName, attributes : attrs, children : []}
 
             // now we go through all of the other non-terminals in this row until we get to the closing tag,
             // adding the compiled version of each non-terminal to the children section of the object we're going to return
@@ -63,15 +84,41 @@ export function parseAndCompile(inText){
             return element;
 
         } else if (node.firstChild.name == "SelfClosingTag"){
-            let tagNameNode = node.firstChild.firstChild;
-            return {tag : inText.substring(tagNameNode.from,tagNameNode.to), children : []};
+            let tagNameNode = node.firstChild.firstChild.cursor;
+
+            let attrs = [];
+            while(tagNameNode.nextSibling()){
+                //All of the siblings must be Attributes, but we're checking just in case the grammar changes
+                //Things that could be solved with sum/product types...
+                if(tagNameNode.name != "Attribute"){
+                    console.error("how could this possibly not be an Attribute",tagNameNode);
+                    throw Error("Expected an Attribute in OpenTag");
+                }
+                //Attributes always have exactly two children, an AttributeName and an Attribute Value
+                //We scrape the content of both from the in string and add them to the attribute array here
+                tagNameNode.firstChild();
+                let attrName = inText.substring(tagNameNode.from,tagNameNode.to);
+                tagNameNode.nextSibling();
+                //fuddling to ignore the quotes
+                let attrValue = inText.substring(tagNameNode.from + 1,tagNameNode.to - 1);
+
+                tagNameNode.parent();
+
+                let attr = {};
+                attr[attrName] = attrValue;
+
+                attrs.push(attr);
+
+            }
+
+            return {tag : inText.substring(tagNameNode.from,tagNameNode.to), attributes : attrs, children : []};
             
         } else {
             throw Error(">>>Huh?");
         }
     }
      
-    let tc = parser.parse(inText).cursor();
+    let tc = parse(inText);
     let out = [];
     if(!tc.firstChild()){
         return out; 
@@ -87,7 +134,6 @@ export function parseAndCompile(inText){
     }
     return out;
 }
-
 
 export function showCursor(cursor){
     return showNode(cursor.node);
