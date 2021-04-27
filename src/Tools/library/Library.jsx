@@ -856,7 +856,6 @@ export default function Library(props) {
   const history = useHistory();
 
   const profile = useContext(ProfileContext)
-console.log(">>>profile",profile)
 
   if (profile.signedIn === "0"){
     return (<>

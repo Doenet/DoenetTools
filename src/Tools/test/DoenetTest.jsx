@@ -25,7 +25,7 @@ console.log("===Test")
   const [ignoreDatabase,setIgnoreDatabase] = useState(true);
   const [bundledCore,setBundledCore] = useState(false);
   const solutionDisplayMode = "button";
-  const requestedVariant = { index: 0 };
+  let requestedVariant = useRef({ index: 0 });
 
   const [updateNumber,setUpdateNumber] = useState(1);
 
@@ -33,6 +33,10 @@ console.log("===Test")
   window.onmessage = (e)=>{
     if (e.data.doenetML !== undefined) {
       doenetML.current = e.data.doenetML;
+      //Only if defined
+      if (e.data.requestedVariant){
+        requestedVariant.current = e.data.requestedVariant;
+      }
       setUpdateNumber((was)=>was+1)
     }
   };
@@ -132,7 +136,7 @@ console.log("===Test")
         }}
         attemptNumber={attemptNumber}
         ignoreDatabase={ignoreDatabase}
-        requestedVariant={requestedVariant}
+        requestedVariant={requestedVariant.current}
         core={coreProp} 
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
