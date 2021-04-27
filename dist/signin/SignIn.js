@@ -112,8 +112,6 @@ export default function SignIn() {
         if (maxAge > 0) {
           cookieSettingsObj.maxAge = maxAge;
         }
-        Cookies.set("Device", resp.data.deviceName, cookieSettingsObj);
-        Cookies.set("Stay", maxAge, cookieSettingsObj);
       }).catch((error) => {
         this.setState({error});
       });

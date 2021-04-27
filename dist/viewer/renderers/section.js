@@ -11,11 +11,18 @@ export default class Section extends DoenetRenderer {
     }
     let heading = null;
     let id = this.componentName + "_title";
-    let childrenToRender = this.children;
+    let childrenToRender = [...this.children];
     let title;
-    if (this.doenetSvData.titleDefinedByChildren) {
-      title = this.children[0];
-      childrenToRender = this.children.slice(1);
+    if (this.doenetSvData.titleChildName) {
+      let titleChildInd;
+      for (let [ind, child] of this.children.entries()) {
+        if (child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+          titleChildInd = ind;
+          break;
+        }
+      }
+      title = this.children[titleChildInd];
+      childrenToRender.splice(titleChildInd, 1);
     } else {
       title = this.doenetSvData.title;
     }
@@ -31,33 +38,27 @@ export default class Section extends DoenetRenderer {
       }
     }
     if (this.doenetSvData.level === 0) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "30px"},
+      heading = /* @__PURE__ */ React.createElement("h1", {
         id
       }, title);
     } else if (this.doenetSvData.level === 1) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "26px"},
+      heading = /* @__PURE__ */ React.createElement("h2", {
         id
       }, title);
     } else if (this.doenetSvData.level === 2) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "22px"},
+      heading = /* @__PURE__ */ React.createElement("h3", {
         id
       }, title);
     } else if (this.doenetSvData.level === 3) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "18px"},
+      heading = /* @__PURE__ */ React.createElement("h4", {
         id
       }, title);
     } else if (this.doenetSvData.level === 4) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "14px"},
+      heading = /* @__PURE__ */ React.createElement("h5", {
         id
       }, title);
     } else if (this.doenetSvData.level === 5) {
-      heading = /* @__PURE__ */ React.createElement("span", {
-        style: {fontSize: "12px"},
+      heading = /* @__PURE__ */ React.createElement("h6", {
         id
       }, title);
     }

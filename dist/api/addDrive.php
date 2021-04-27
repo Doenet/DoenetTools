@@ -15,12 +15,38 @@ $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
-$sourceDriveId = mysqli_real_escape_string($conn,$_REQUEST["sourceDriveId"]);
 $image = mysqli_real_escape_string($conn,$_REQUEST["image"]);
 $color = mysqli_real_escape_string($conn,$_REQUEST["color"]);
+// $sourceDriveId = mysqli_real_escape_string($conn,$_REQUEST["sourceDriveId"]);
 
 $success = TRUE;
-$results_arr = array();
+$message = "";
+
+if ($driveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing driveId';
+}elseif ($courseId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing courseId';
+}elseif ($label == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing label';
+}elseif ($type == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing type';
+}elseif ($image == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing image';
+}elseif ($color == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing color';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to create a $type";
+}
+
+
+if ($success){
 
 $contentOrCourse = 'content';
 if ($type === "new course drive"){
@@ -46,14 +72,18 @@ VALUES
 ";
 $result = $conn->query($sql); 
 
+  //   $message = "Can't save to database.";
+
+
+}
+
+
+
 $response_arr = array(
-  "success"=>$success
+  "success"=>$success,
+  "message"=>$message
   );
 
-  // $response_arr = array(
-  //   "success"=>FALSE,
-  //   "message"=>"Can't save to database."
-  //   );
 
 // set response code - 200 OK
 http_response_code(200);

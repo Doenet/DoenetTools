@@ -13,6 +13,7 @@ const ControlsWrapper = styled.div`
   gap: 4px;
   background-color: hsl(0, 0%, 89%);
   border-radius: 4px 4px 0 0;
+  overflow: auto hidden;
 `;
 export default function MainPanel({children, responsiveControls}) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ControlsWrapper, null, responsiveControls), /* @__PURE__ */ React.createElement(ContentWrapper, null, children));

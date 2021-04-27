@@ -21,12 +21,9 @@ export default class MathRenderer extends DoenetRenderer {
       beginDelim = "\\[";
       endDelim = "\\]";
     } else if (this.doenetSvData.renderMode === "numbered") {
-      beginDelim = "\\begin{gather}";
+      beginDelim = `\\begin{gather}\\tag{${this.doenetSvData.equationTag}}`;
       endDelim = "\\end{gather}";
     } else if (this.doenetSvData.renderMode === "align") {
-      beginDelim = "\\begin{align*}";
-      endDelim = "\\end{align*}";
-    } else if (this.doenetSvData.renderMode === "alignnumbered") {
       beginDelim = "\\begin{align}";
       endDelim = "\\end{align}";
     } else {
@@ -34,28 +31,26 @@ export default class MathRenderer extends DoenetRenderer {
       endDelim = "\\)";
     }
     let latexOrInputChildren = this.doenetSvData.latexWithInputChildren.map((x) => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim);
+    let anchors = [
+      React.createElement("a", {name: this.componentName, key: this.componentName})
+    ];
+    if (this.doenetSvData.mrowChildNames) {
+      anchors.push(this.doenetSvData.mrowChildNames.map((x) => React.createElement("a", {name: x, key: x})));
+    }
     if (latexOrInputChildren.length === 0) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("span", {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }));
     } else if (latexOrInputChildren.length === 1) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("span", {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, latexOrInputChildren[0]));
     } else if (latexOrInputChildren.length === 2) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("span", {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, latexOrInputChildren[0], latexOrInputChildren[1]));
     } else {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("span", {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, latexOrInputChildren[0]));
     }

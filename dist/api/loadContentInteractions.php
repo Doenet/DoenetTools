@@ -16,9 +16,25 @@ $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 $assignmentId = mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
-// contentId='$contentId',
+$success = TRUE;
+$message = "";
+if ($contentId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing contentId';
+}elseif ($attemptNumber == ""){
+$success = FALSE;
+$message = 'Internal Error: missing attemptNumber';
+}elseif ($assignmentId == ""){
+$success = FALSE;
+$message = 'Internal Error: missing assignmentId';
+}elseif ($userId == ""){
+$success = FALSE;
+$message = "You need to be signed in for content interaction information";
+}
 
-$sql = "SELECT stateVariables, variant
+if ($success){
+
+  $sql = "SELECT stateVariables, variant
         FROM content_interactions
         WHERE userId='$userId'
         AND contentId='$contentId'
@@ -26,20 +42,22 @@ $sql = "SELECT stateVariables, variant
         AND assignmentId='$assignmentId'
         ORDER BY timestamp DESC, id DESC";
 
-$result = $conn->query($sql);
-// $stateVariables = array();
-// while ($row = $result->fetch_assoc()){
-//         array_push($stateVariables,$row["stateVariables"]);
-// }
-$row = $result->fetch_assoc();
-$stateVariables = $row["stateVariables"];
-$variant = $row["variant"];
+  $result = $conn->query($sql);
+  // $stateVariables = array();
+  // while ($row = $result->fetch_assoc()){
+  //         array_push($stateVariables,$row["stateVariables"]);
+  // }
+  $row = $result->fetch_assoc();
+  $stateVariables = $row["stateVariables"];
+  $variant = $row["variant"];
+}
 
 $response_arr = array(
-        "success" => 0,
+        "success"=>$success,
         "stateVariables" => $stateVariables,
         "variant" => $variant,
-        );
+        "message"=>$message
+);
 
 http_response_code(200);
 

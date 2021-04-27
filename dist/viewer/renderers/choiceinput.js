@@ -213,7 +213,8 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let selectedIndices = this.doenetSvData.selectedIndices;
       let disabled = this.doenetSvData.disabled;
       let keyBeginning = inputKey + "_choice";
-      let choiceDoenetTags = this.children.map(function(child, i) {
+      let children = this.children;
+      let choiceDoenetTags = this.doenetSvData.choiceOrder.map((v) => children[v]).map(function(child, i) {
         return /* @__PURE__ */ React.createElement("li", {
           key: inputKey + "_choice" + (i + 1)
         }, /* @__PURE__ */ React.createElement("input", {

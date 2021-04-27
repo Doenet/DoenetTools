@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    'mainControls . supportControls' ${({$hasRespCont}) => $hasRespCont ? 40 : 0}px
+    'mainControls handle supportControls' ${({$hasRespCont}) => $hasRespCont ? 40 : 0}px
     'mainPanel handle supportPanel' 1fr
     / ${({$proportion}) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
