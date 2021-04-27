@@ -2,21 +2,72 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 import { findFiniteNumericalValue } from '../utils/math';
 
 export default class AttractToGrid extends ConstraintComponent {
-  static componentType = "attracttogrid";
+  static componentType = "attractToGrid";
 
-  static createPropertiesObject() {
-    return {
-      dx: { default: 1 },
-      dy: { default: 1 },
-      dz: { default: 1 },
-      xoffset: { default: 0 },
-      yoffset: { default: 0 },
-      zoffset: { default: 0 },
-      xthreshold: { default: 0.2 },
-      ythreshold: { default: 0.2 },
-      zthreshold: { default: 0.2 },
-      includeGridlines: { default: false },
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.dx = {
+      createComponentOfType: "number",
+      createStateVariable: "dx",
+      defaultValue: 1,
+      public: true,
     };
+    attributes.dy = {
+      createComponentOfType: "number",
+      createStateVariable: "dy",
+      defaultValue: 1,
+      public: true,
+    };
+    attributes.dz = {
+      createComponentOfType: "number",
+      createStateVariable: "dz",
+      defaultValue: 1,
+      public: true,
+    };
+    attributes.xoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "xoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.yoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "yoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.zoffset = {
+      createComponentOfType: "number",
+      createStateVariable: "zoffset",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.xthreshold = {
+      createComponentOfType: "number",
+      createStateVariable: "xthreshold",
+      defaultValue: 0.2,
+      public: true,
+    };
+    attributes.ythreshold = {
+      createComponentOfType: "number",
+      createStateVariable: "ythreshold",
+      defaultValue: 0.2,
+      public: true,
+    };
+    attributes.zthreshold = {
+      createComponentOfType: "number",
+      createStateVariable: "zthreshold",
+      defaultValue: 0.2,
+      public: true,
+    };
+    attributes.includeGridlines = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeGridlines",
+      defaultValue: false,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {

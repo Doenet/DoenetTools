@@ -1,17 +1,17 @@
 import InlineComponent from './abstract/InlineComponent';
 
 export default class TextList extends InlineComponent {
-  static componentType = "randomizedtextlist";
+  static componentType = "randomizedTextList";
 
-  // when another component has a property that is a textlist,
-  // use the texts state variable to populate that property
-  static stateVariableForPropertyValue = "texts";
+  // when another component has a attribute that is a textList,
+  // use the texts state variable to populate that attribute
+  static stateVariableForAttributeValue = "texts";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.unordered = { default: false };
-    properties.maximumNumber = { default: null };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.unordered = { default: false };
+    attributes.maximumNumber = { default: null };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -24,9 +24,9 @@ export default class TextList extends InlineComponent {
       number: 0
     });
 
-    let atLeastZeroTextlists = childLogic.newLeaf({
-      name: "atLeastZeroTextlists",
-      componentType: 'textlist',
+    let atLeastZeroTextLists = childLogic.newLeaf({
+      name: "atLeastZeroTextLists",
+      componentType: 'textList',
       comparison: 'atLeast',
       number: 0
     });
@@ -63,7 +63,7 @@ export default class TextList extends InlineComponent {
     let textAndTextLists = childLogic.newOperator({
       name: "textAndTextLists",
       operator: "and",
-      propositions: [atLeastZeroTexts, atLeastZeroTextlists]
+      propositions: [atLeastZeroTexts, atLeastZeroTextLists]
     })
 
     childLogic.newOperator({
@@ -87,7 +87,7 @@ export default class TextList extends InlineComponent {
       isArray: true,
       entryPrefixes: ["text"],
       returnDependencies: () => ({
-        textAndTextlistChildren: {
+        textAndTextListChildren: {
           dependencyType: "child",
           childLogicName: "textAndTextLists",
           variableNames: ["value", "texts"],
@@ -105,10 +105,10 @@ export default class TextList extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let texts = [];
 
-        let childNames = dependencyValues.textAndTextlistChildren.map(x => x.componentName);
+        let childNames = dependencyValues.textAndTextListChildren.map(x => x.componentName);
         for (let childName of dependencyValues.childrenToRender) {
           let index = childNames.indexOf(childName);
-          let child = dependencyValues.textAndTextlistChildren[index];
+          let child = dependencyValues.textAndTextListChildren[index];
           if (child.stateValues.texts) {
             texts.push(...child.stateValues.texts);
           } else {
@@ -151,7 +151,7 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: ({ sharedParameters }) => ({
-        textAndTextlistChildren: {
+        textAndTextListChildren: {
           dependencyType: "child",
           childLogicName: "textAndTextLists",
           variableNames: ["childrenToRender"],
@@ -171,7 +171,7 @@ export default class TextList extends InlineComponent {
         let childrenToRender = [];
 
 
-        for (let child of dependencyValues.textAndTextlistChildren) {
+        for (let child of dependencyValues.textAndTextListChildren) {
 
           if (child.stateValues.childrenToRender) {
             childrenToRender.push(...child.stateValues.childrenToRender);

@@ -2,7 +2,7 @@ import BooleanComponent from '../Boolean';
 import { renameStateVariable } from '../../utils/stateVariables';
 
 export default class BooleanOperatorOneInput extends BooleanComponent {
-  static componentType = "_booleanoperatoroneinput";
+  static componentType = "_booleanOperatorOneInput";
   static rendererType = "boolean";
 
   static returnStateVariableDefinitions() {

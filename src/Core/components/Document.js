@@ -5,24 +5,39 @@ import { returnDefaultStyleDefinitions } from '../utils/style';
 export default class Document extends BaseComponent {
   static componentType = "document";
   static rendererType = "section";
+  static renderChildren = true;
 
   static createsVariants = true;
 
   static alwaysSetUpVariant = true;
 
-  static createPropertiesObject() {
-    return {
-      feedbackDefinitions: {
-        get default() { return returnDefaultFeedbackDefinitions() },
-        propagateToDescendants: true,
-        mergeArrayWithDefault: true,
-      },
-      styleDefinitions: {
-        get default() { return returnDefaultStyleDefinitions() },
-        propagateToDescendants: true,
-        mergeArrayWithDefault: true,
-      }
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    delete attributes.hide;
+    delete attributes.disabled;
+    delete attributes.modifyIndirectly;
+    delete attributes.fixed;
+    delete attributes.styleNumber;
+    delete attributes.isResponse;
+
+    attributes.feedbackDefinitions = {
+      createComponentOfType: "feedbackDefinitions",
+      createStateVariable: "feedbackDefinitions",
+      get defaultValue() { return returnDefaultFeedbackDefinitions() },
+      propagateToDescendants: true,
+      mergeArrayWithDefault: true,
+      public: true,
     };
+    attributes.styleDefinitions = {
+      createComponentOfType: "styleDefinitions",
+      createStateVariable: "styleDefinitions",
+      get defaultValue() { return returnDefaultStyleDefinitions() },
+      propagateToDescendants: true,
+      mergeArrayWithDefault: true,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -38,7 +53,7 @@ export default class Document extends BaseComponent {
 
     let atMostOneVariantControl = childLogic.newLeaf({
       name: "atMostOneVariantControl",
-      componentType: "variantcontrol",
+      componentType: "variantControl",
       comparison: "atMost",
       number: 1,
       allowSpillover: false,
@@ -81,7 +96,7 @@ export default class Document extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
 
-    stateVariableDefinitions.titleDefinedByChildren = {
+    stateVariableDefinitions.titleChildName = {
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -90,13 +105,16 @@ export default class Document extends BaseComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let titleChildName = null;
+        if (dependencyValues.titleChild.length === 1) {
+          titleChildName = dependencyValues.titleChild[0].componentName
+        }
         return {
-          newValues: {
-            titleDefinedByChildren: dependencyValues.titleChild.length === 1
-          }
+          newValues: { titleChildName }
         }
       }
     }
+
 
     stateVariableDefinitions.title = {
       public: true,
@@ -168,7 +186,7 @@ export default class Document extends BaseComponent {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_sectioningcomponent", "answer"],
+          componentTypes: ["_sectioningComponent", "answer"],
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
@@ -292,14 +310,14 @@ export default class Document extends BaseComponent {
       public: true,
       componentType: "number",
       defaultValue: 0,
-      stateVariablesPrescribingAdditionalProperties: {
+      stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
       },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
         componentType: "number",
-        stateVariablesPrescribingAdditionalProperties: {
+        stateVariablesPrescribingAdditionalAttributes: {
           displayDigits: "displayDigitsForCreditAchieved",
         }
       }],
@@ -371,30 +389,6 @@ export default class Document extends BaseComponent {
       }
     }
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        titleChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneTitle"
-        },
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "anything"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-          {
-            childrenToRender:
-              [...dependencyValues.titleChild, ...dependencyValues.activeChildren]
-                .map(x => x.componentName)
-          }
-        };
-      }
-    }
-
     return stateVariableDefinitions;
   }
 
@@ -428,26 +422,26 @@ export default class Document extends BaseComponent {
 
     // console.log("****Variant for document*****")
 
-    let variantcontrolChild;
+    let variantControlChild;
     for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "variantcontrol") {
-        variantcontrolChild = child;
+      if (child !== undefined && child.componentType === "variantControl") {
+        variantControlChild = child;
         break;
       }
     }
-    if (variantcontrolChild === undefined) {
+    if (variantControlChild === undefined) {
       // no variant control child
       // so just use default of 100 variants
       // with variant names a, b, c, ...
       // and seeds 1,2,3,...
 
-      let nvariants = 100;
+      let nVariants = 100;
 
-      if (serializedComponent.variants.uniquevariants) {
-        nvariants = serializedComponent.variants.numberOfVariants;
+      if (serializedComponent.variants.uniqueVariants) {
+        nVariants = serializedComponent.variants.numberOfVariants;
       }
 
-      sharedParameters.allPossibleVariants = [...Array(nvariants).keys()].map(numberToLowercaseLetters);
+      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(numberToLowercaseLetters);
 
       let variantNumber;
       // check if desiredVariant was specified
@@ -458,9 +452,9 @@ export default class Document extends BaseComponent {
           if (!Number.isInteger(desiredVariantNumber)) {
             throw Error("Variant number " + desiredVariant.index + " must be an integer");
           } else {
-            variantNumber = desiredVariantNumber % nvariants;
+            variantNumber = desiredVariantNumber % nVariants;
             if (variantNumber < 0) {
-              variantNumber += nvariants;
+              variantNumber += nVariants;
             }
           }
         } else if (desiredVariant.value !== undefined) {
@@ -477,7 +471,7 @@ export default class Document extends BaseComponent {
               sharedParameters.hashStringToInteger(
                 JSON.stringify(desiredVariant.value)
               )
-              % nvariants
+              % nVariants
             );
             console.log(variantNumber);
           }
@@ -487,7 +481,7 @@ export default class Document extends BaseComponent {
       if (variantNumber === undefined) {
         // if variant number wasn't specifed, generate randomly
         let rand = sharedParameters.selectRng.random();
-        variantNumber = Math.floor(rand * nvariants);
+        variantNumber = Math.floor(rand * nVariants);
 
       }
 
@@ -512,11 +506,11 @@ export default class Document extends BaseComponent {
 
     } else {
       // get parameters from variant control child
-      sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
-      sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
-      sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
-      // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
+      sharedParameters.variant = variantControlChild.state.selectedVariant.value;
+      sharedParameters.variantNumber = variantControlChild.state.selectedVariantNumber.value;
+      sharedParameters.selectRng = variantControlChild.state.selectRng.value;
+      sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
+      // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
     }
 
     console.log("Document variant: " + sharedParameters.variant);
@@ -527,9 +521,9 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniquevariants specified
+    // if subvariants aren't defined but we have uniqueVariants specified
     // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniquevariants) {
+    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
       let variantInfo = this.getUniqueVariant({
         serializedComponent: serializedComponent,
         variantNumber: sharedParameters.variantNumber,
@@ -566,8 +560,8 @@ export default class Document extends BaseComponent {
     let variantControlInd;
     let variantControlChild
     for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "variantcontrol" || (
-        child.createdComponent && components[child.componentName].componentType === "variantcontrol"
+      if (child.componentType === "variantControl" || (
+        child.createdComponent && components[child.componentName].componentType === "variantControl"
       )) {
         variantControlInd = ind;
         variantControlChild = child;
@@ -577,27 +571,25 @@ export default class Document extends BaseComponent {
 
     // Find number of variants from variantControl, if it exists
     let numberOfVariants = 100;
-    if (variantControlInd !== undefined && variantControlChild.children !== undefined) {
-      for (let child of variantControlChild.children) {
-        if (child.componentType === "nvariants") {
-          // calculate nvariants only if has its value set directly 
-          // or if has a single child that is a string
-          let foundValid = false;
-          if (child.state !== undefined && child.state.value !== undefined) {
-            numberOfVariants = Math.round(Number(child.state.value));
-            foundValid = true;
-          }
-          // children overwrite state
-          if (child.children !== undefined && child.children.length === 1 &&
-            child.children[0].componentType === "string") {
-            numberOfVariants = Math.round(Number(child.children[0].state.value));
-            foundValid = true;
-          }
-          if (!foundValid) {
-            return { success: false }
-          }
-          break;
-        }
+    if (variantControlInd !== undefined && variantControlChild.attributes &&
+      variantControlChild.attributes.nVariants !== undefined
+    ) {
+      let nVariantsComp = variantControlChild.attributes.nVariants;
+      // calculate nVariants only if has its value set directly 
+      // or if has a single child that is a string
+      let foundValid = false;
+      if (nVariantsComp.state !== undefined && nVariantsComp.state.value !== undefined) {
+        numberOfVariants = Math.round(Number(nVariantsComp.state.value));
+        foundValid = true;
+      }
+      // children overwrite state
+      if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
+        nVariantsComp.children[0].componentType === "string") {
+        numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
+        foundValid = true;
+      }
+      if (!foundValid) {
+        return { success: false }
       }
     }
 

@@ -764,9 +764,13 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
     cy.window().then((win) => {
+      console.log('hello')
       let components = Object.assign({}, win.state.components);
+      console.log(components["/_map1"].replacements)
       let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
+      console.log(components["/mapcopy"].replacements)
+      console.log(components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []))
       let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
@@ -2055,19 +2059,19 @@ describe('Map Tag Tests', function () {
       </sources>
     </map>
 
-    <copy tname="p1" assignNames="p1a" />
-    <copy tname="p1/pt" assignNames="p1b" />
-    <copy tname="p2" assignNames="p2a" />
-    <copy tname="p2/pt" assignNames="p2b" />
-    <copy tname="p3" assignNames="p3a" />
-    <copy tname="p3/pt" assignNames="p3b" />
+    p1a: <copy tname="p1" assignNames="p1a" />,
+    p1b: <copy tname="p1/pt" assignNames="p1b" />,
+    p2a: <copy tname="p2" assignNames="p2a" />,
+    p2b: <copy tname="p2/pt" assignNames="p2b" />,
+    p3a: <copy tname="p3" assignNames="p3a" />,
+    p3b: <copy tname="p3/pt" assignNames="p3b" />,
 
-    <copy tname="q1" assignNames="q1a" />
-    <copy tname="q1/pt" assignNames="q1b" />
-    <copy tname="q2" assignNames="q2a" />
-    <copy tname="q2/pt" assignNames="q2b" />
-    <copy tname="q3" assignNames="q3a" />
-    <copy tname="q3/pt" assignNames="q3b" />
+    q1a: <copy tname="q1" assignNames="q1a" />,
+    q1b: <copy tname="q1/pt" assignNames="q1b" />,
+    q2a: <copy tname="q2" assignNames="q2a" />,
+    q2b: <copy tname="q2/pt" assignNames="q2b" />,
+    q3a: <copy tname="q3" assignNames="q3a" />,
+    q3b: <copy tname="q3/pt" assignNames="q3b" />,
 
     `}, "*");
     });

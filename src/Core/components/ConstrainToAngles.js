@@ -1,7 +1,7 @@
 import ConstraintComponent from './abstract/ConstraintComponent';
 
 export default class ConstrainToAngles extends ConstraintComponent {
-  static componentType = "constraintoangles";
+  static componentType = "constrainToAngles";
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);

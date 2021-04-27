@@ -12,15 +12,21 @@ export default class UpdateValue extends InlineComponent {
     };
 
   }
-  static componentType = "updatevalue";
+  static componentType = "updateValue";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    // properties.width = {default: 300};
-    // properties.height = {default: 50};
-    properties.label = { default: "update value", forRenderer: true };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    // attributes.width = {default: 300};
+    // attributes.height = {default: 50};
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: "update value",
+      public: true,
+      forRenderer: true,
+    };
 
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic (args) {

@@ -1,0 +1,19 @@
+    <p>Number of equations 1: <mathinput prefill="2" name="m" /></p>
+    <p>Number of equations 2: <mathinput prefill="1" name="n" /></p>
+    
+    <men name="x">x</men>
+    <mdn name="ms">
+      <map assignNames="m1 m2 m3 m4 m5 m6">
+        <template newNamespace><mrow name='eq' number="mod($i,2)=1">$i m &amp;= $v</mrow></template>
+        <sources indexAlias="i" alias="v"><sequence length="$m" from="11" /></sources>
+      </map>
+    </mdn>
+    <men name="y">y</men>
+    <mdn name="ns">
+      <map assignNames="n1 n2 n3 n4 n5 n6">
+        <template newNamespace><mrow name="eq" number="(-1)^$i = 1">$i n &= $v</mrow></template>
+        <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
+      </map>
+    </mdn>
+    <men name="z">z</men>
+    

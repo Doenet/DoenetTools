@@ -49,7 +49,7 @@ export default class FunctionCurve extends DoenetRenderer {
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
       this.curveJXG = this.props.board.create('curve', [
         this.doenetSvData.fs[0], this.doenetSvData.fs[1],
-        this.doenetSvData.parmin, this.doenetSvData.parmax
+        this.doenetSvData.parMin, this.doenetSvData.parMax
       ], curveAttributes);
 
     } else {
@@ -407,8 +407,8 @@ export default class FunctionCurve extends DoenetRenderer {
     if (["parameterization", "bezier"].includes(this.doenetSvData.curveType)) {
       this.curveJXG.X = this.doenetSvData.fs[0];
       this.curveJXG.Y = this.doenetSvData.fs[1];
-      this.curveJXG.minX = () => this.doenetSvData.parmin;
-      this.curveJXG.maxX = () => this.doenetSvData.parmax;
+      this.curveJXG.minX = () => this.doenetSvData.parMin;
+      this.curveJXG.maxX = () => this.doenetSvData.parMax;
     } else {
       if (this.doenetSvData.flipFunction) {
         this.originalCurveJXG.Y = this.doenetSvData.fs[0];

@@ -2,9 +2,10 @@ import BaseComponent from './abstract/BaseComponent';
 import { breakStringsAndOthersIntoComponentsByStringCommas } from './commonsugar/breakstrings';
 
 export default class CollaborateGroups extends BaseComponent {
-  static componentType = "collaborategroups";
+  static componentType = "collaborateGroups";
+  static rendererType = undefined;
 
-  static stateVariableForPropertyValue = "collaborateGroups";
+  static stateVariableForAttributeValue = "collaborateGroups";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

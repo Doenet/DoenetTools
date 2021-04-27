@@ -9,24 +9,20 @@ export default class Solution extends BlockComponent {
 
   }
   static componentType = "solution";
+  static renderChildren = true;
 
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    delete properties.hide;
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.hide = {
+      createComponentOfType: "boolean"
+    }
+    return attributes;
   }
 
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
-
-    let atMostOneHide = childLogic.newLeaf({
-      name: "atMostOneHide",
-      componentType: "hide",
-      comparison: "atMost",
-      number: 1,
-    })
 
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",
@@ -43,9 +39,9 @@ export default class Solution extends BlockComponent {
     });
 
     childLogic.newOperator({
-      name: 'inlineOrBlock',
-      operator: "or",
-      propositions: [atMostOneHide, atLeastZeroInline, atLeastZeroBlock],
+      name: 'inlineAndBlock',
+      operator: "and",
+      propositions: [atLeastZeroInline, atLeastZeroBlock],
       setAsBase: true,
     })
 
@@ -64,9 +60,9 @@ export default class Solution extends BlockComponent {
       forRenderer: true,
       defaultValue: false,
       returnDependencies: () => ({
-        hideChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneHide",
+        hideAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "hide",
           variableNames: ["value"]
         },
         displayMode: {
@@ -77,10 +73,10 @@ export default class Solution extends BlockComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
           return { newValues: { hide: true } }
-        } else if (dependencyValues.hideChild.length === 1) {
+        } else if (dependencyValues.hideAttr !== null) {
           return {
             newValues: {
-              hide: dependencyValues.hideChild[0].stateValues.value
+              hide: dependencyValues.hideAttr.stateValues.value
             }
           }
         } else {
@@ -94,13 +90,12 @@ export default class Solution extends BlockComponent {
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
           return { success: false }
-        } else if (dependencyValues.hideChild.length === 1) {
+        } else if (dependencyValues.hideAttr !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "hideChild",
+              setDependency: "hideAttr",
               desiredValue: desiredStateVariableValues.hide,
-              childIndex: 0,
               variableIndex: 0
             }]
           }
@@ -200,21 +195,6 @@ export default class Solution extends BlockComponent {
             value: desiredStateVariableValues.message
           }]
         }
-      }
-    }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        children: {
-          dependencyType: "child",
-          childLogicName: "inlineOrBlock"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.children.map(x => x.componentName) }
-        };
       }
     }
 

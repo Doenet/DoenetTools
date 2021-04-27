@@ -959,7 +959,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist name="e1">4 6</mathlist><exclude name="e2">2 8</exclude><number name="e3">7</number>
+    <mathlist name="e1">4 6</mathlist><numberlist name="e2">2 8</numberlist><number name="e3">7</number>
     <p><aslist><sequence from="1" to="10" exclude="$e1 $e2 $e3" /></aslist></p>
     `}, "*");
     });

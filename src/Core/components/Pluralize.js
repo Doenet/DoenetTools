@@ -11,11 +11,21 @@ export default class Pluralize extends Text {
   static componentType = "pluralize";
   static rendererType = "text";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.pluralForm = { default: null };
-    properties.basedOnNumber = { default: null };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.pluralForm = {
+      createComponentOfType: "text",
+      createStateVariable: "pluralForm",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.basedOnNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "basedOnNumber",
+      defaultValue: null,
+      public: true,
+    };
+    return attributes;
   }
 
 

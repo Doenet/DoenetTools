@@ -8,6 +8,8 @@ import styled from 'styled-components';
 // import MathJax from 'react-mathjax2';
 //snowpack is not a fan of destructing here for some reason?
 import mathquill from 'react-mathquill';
+// import { latexToAst, substituteUnicodeInLatexString } from '../../Core/utils/math';
+//  /Doenet/utils/math';
 mathquill.addStyles(); //Styling for react-mathquill input field
 let EditableMathField = mathquill.EditableMathField;
 
@@ -78,7 +80,10 @@ export default class MathInput extends DoenetRenderer {
 
   calculateMathExpressionFromLatex(text) {
     let expression;
+
+    // text = substituteUnicodeInLatexString(text);
     try {
+      // expression = me.fromAst(latexToAst.convert(text));
       expression = me.fromLatex(text);
     } catch (e) {
       // TODO: error on bad text

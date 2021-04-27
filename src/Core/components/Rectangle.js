@@ -1,5 +1,5 @@
 import Polygon from './Polygon';
-import me  from "math-expressions";
+import me from "math-expressions";
 
 export default class Rectangle extends Polygon {
   static componentType = "rectangle";
@@ -13,43 +13,33 @@ export default class Rectangle extends Polygon {
     ]
   };
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
 
-    let atMostOneCenter = childLogic.newLeaf({
-      name: "atMostOneCenter",
-      componentType: 'center',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
+    attributes.vertices = {
+      createComponentOfType: "_pointListComponent",
+    }
+    attributes.center = {
+      createComponentOfType: "point"
+    }
+    attributes.width = {
+      createComponentOfType: "number"
+    }
+    attributes.height = {
+      createComponentOfType: "number"
+    }
 
-    let atMostOneWidth = childLogic.newLeaf({
-      name: "atMostOneWidth",
-      componentType: 'width',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let atMostOneHeight = childLogic.newLeaf({
-      name: "atMostOneHeight",
-      componentType: 'height',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "rectangleLogic",
-      operator: "and",
-      propositions: [atMostOneCenter, atMostOneWidth, atMostOneHeight, childLogic.baseLogic],
-      setAsBase: true,
-    });
-
-    return childLogic;
+    return attributes;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -58,15 +48,15 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.nVerticesSpecified = {
 
       returnDependencies: () => ({
-        verticesChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneVertices",
+        verticesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "vertices",
           variableNames: ["nPoints"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.verticesChild.length === 1) {
-          return { newValues: { nVerticesSpecified: dependencyValues.verticesChild[0].stateValues.nPoints } }
+        if (dependencyValues.verticesAttr !== null) {
+          return { newValues: { nVerticesSpecified: dependencyValues.verticesAttr.stateValues.nPoints } }
         } else {
           return { newValues: { nVerticesSpecified: 0 } }
         }
@@ -126,14 +116,14 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.haveSpecifiedCenter = {
       returnDependencies: () => ({
-        centerChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneCenter"
+        centerAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "center"
         }
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          haveSpecifiedCenter: dependencyValues.centerChild.length === 1
+          haveSpecifiedCenter: dependencyValues.centerAttr !== null
         }
       })
     }
@@ -158,9 +148,9 @@ export default class Rectangle extends Polygon {
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
-            centerChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneCenter",
+            centerAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "center",
               variableNames: ["x" + varEnding],
             },
           }
@@ -169,15 +159,15 @@ export default class Rectangle extends Polygon {
         return { dependenciesByKey }
       },
 
-      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
 
         let specifiedCenter = {};
 
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
 
-          if (dependencyValuesByKey[arrayKey].centerChild.length === 1) {
-            specifiedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerChild[0].stateValues["x" + varEnding];
+          if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
+            specifiedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding];
           }
         }
 
@@ -185,20 +175,19 @@ export default class Rectangle extends Polygon {
       },
 
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize
+        dependencyValuesByKey, dependencyNamesByKey,
       }) {
         let instructions = [];
 
         for (let arrayKey in desiredStateVariableValues.specifiedCenter) {
 
-          if (dependencyValuesByKey[arrayKey].centerChild &&
-            dependencyValuesByKey[arrayKey].centerChild.length === 1
+          if (dependencyValuesByKey[arrayKey].centerAttr &&
+            dependencyValuesByKey[arrayKey].centerAttr !== null
           ) {
 
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].centerChild,
+              setDependency: dependencyNamesByKey[arrayKey].centerAttr,
               desiredValue: desiredStateVariableValues.specifiedCenter[arrayKey],
-              childIndex: 0,
               variableIndex: 0,
             })
           }
@@ -217,38 +206,38 @@ export default class Rectangle extends Polygon {
 
       returnDependencies() {
         return {
-          specifiedWidthChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneWidth",
+          widthAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "width",
             variableNames: ["value"]
           },
           nVerticesSpecified: {
             dependencyType: "stateVariable",
             variableName: "nVerticesSpecified"
           },
-          centerChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneCenter"
+          haveSpecifiedCenter: {
+            dependencyType: "stateVariable",
+            variableName: "haveSpecifiedCenter"
           }
         }
       },
 
       definition({ dependencyValues }) {
-        if (dependencyValues.specifiedWidthChild.length === 1) {
-          return { newValues: { specifiedWidth: dependencyValues.specifiedWidthChild[0].stateValues.value } };
+        if (dependencyValues.widthAttr !== null) {
+          return { newValues: { specifiedWidth: dependencyValues.widthAttr.stateValues.value } };
 
-        } else if (dependencyValues.centerChild.length + dependencyValues.nVerticesSpecified <= 1) {
+        } else if ((dependencyValues.haveSpecifiedCenter ? 1 : 0) + dependencyValues.nVerticesSpecified <= 1) {
           return { useEssentialOrDefaultValue: { specifiedWidth: { variablesToCheck: ["specifiedWidth"] } } };
         }
         return { newValues: { specifiedWidth: null } }
       },
 
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.specifiedWidthChild.length === 1) {
+        if (dependencyValues.widthAttr !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "specifiedWidthChild",
+              setDependency: "widthAttr",
               desiredValue: desiredStateVariableValues.specifiedWidth,
               childIndex: 0,
               variableIndex: 0
@@ -271,40 +260,39 @@ export default class Rectangle extends Polygon {
 
       returnDependencies() {
         return {
-          specifiedHeightChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneHeight",
+          heightAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "height",
             variableNames: ["value"],
           },
           nVerticesSpecified: {
             dependencyType: "stateVariable",
             variableName: "nVerticesSpecified"
           },
-          centerChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneCenter"
+          haveSpecifiedCenter: {
+            dependencyType: "stateVariable",
+            variableName: "haveSpecifiedCenter"
           }
         }
       },
 
       definition({ dependencyValues }) {
-        if (dependencyValues.specifiedHeightChild.length === 1) {
-          return { newValues: { specifiedHeight: dependencyValues.specifiedHeightChild[0].stateValues.value } };
+        if (dependencyValues.heightAttr !== null) {
+          return { newValues: { specifiedHeight: dependencyValues.heightAttr.stateValues.value } };
 
-        } else if (dependencyValues.centerChild.length + dependencyValues.nVerticesSpecified <= 1) {
+        } else if ((dependencyValues.haveSpecifiedCenter ? 1 : 0) + dependencyValues.nVerticesSpecified <= 1) {
           return { useEssentialOrDefaultValue: { specifiedHeight: { variablesToCheck: ["specifiedHeight"] } } };
         }
         return { newValues: { specifiedHeight: null } }
       },
 
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.specifiedHeightChild.length === 1) {
+        if (dependencyValues.heightAttr !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "specifiedHeightChild",
+              setDependency: "heightAttr",
               desiredValue: desiredStateVariableValues.specifiedHeight,
-              childIndex: 0,
               variableIndex: 0
             }]
           }
@@ -331,7 +319,7 @@ export default class Rectangle extends Polygon {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
 
@@ -522,17 +510,26 @@ export default class Rectangle extends Polygon {
           // vertex or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
         if (arrayEntryPrefix === "vertexX") {
           // vertexX1_2 is the 2nd component of the first vertex
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (arraySize) {
+            if (desiredEntrySize) {
+              // If give a desired entry size, then ignore array size.
+              // Since by default, we return just 1 entry,
+              // return that one entry as long as the size is positive in all dimensions
+              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -549,10 +546,22 @@ export default class Rectangle extends Polygon {
           }
         } else {
           // vertex3 is all components of the third vertex
+          let vertexInd = Number(varEnding) - 1;
+          if (desiredEntrySize) {
+            if (desiredEntrySize[0] > 0 && Number.isInteger(vertexInd) && vertexInd >= 0) {
+              // if have desired entry size, then assume specify size after wrapping components
+              // In this case, if the entry size is positive, will return all components
+              // for point while ignoring arraySize[0]
+
+              // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
+              return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+            } else {
+              return [];
+            }
+          }
           if (!arraySize) {
             return [];
           }
-          let vertexInd = Number(varEnding) - 1;
           if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
             // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
@@ -656,9 +665,9 @@ export default class Rectangle extends Polygon {
               let varEnding = "1_" + (Number(dim) + 1);
 
               dependenciesByKey[arrayKey] = {
-                verticesChild: {
-                  dependencyType: "child",
-                  childLogicName: "atMostOneVertices",
+                verticesAttr: {
+                  dependencyType: "attributeComponent",
+                  attributeName: "vertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -679,9 +688,9 @@ export default class Rectangle extends Polygon {
               let varEnding = "1_" + (Number(dim) + 1);
 
               dependenciesByKey[arrayKey] = {
-                verticesChild: {
-                  dependencyType: "child",
-                  childLogicName: "atMostOneVertices",
+                verticesAttr: {
+                  dependencyType: "attributeComponent",
+                  attributeName: "vertices",
                   variableNames: ["pointX" + varEnding]
                 }
               };
@@ -730,9 +739,9 @@ export default class Rectangle extends Polygon {
             }
 
             dependenciesByKey[arrayKey] = {
-              verticesChild: {
-                dependencyType: "child",
-                childLogicName: "atMostOneVertices",
+              verticesAttr: {
+                dependencyType: "attributeComponent",
+                attributeName: "vertices",
                 variableNames: ["pointX" + varEnding]
               }
             };
@@ -807,11 +816,11 @@ export default class Rectangle extends Polygon {
             for (let arrayKey of arrayKeys) {
               let [vertexInd, dim] = arrayKey.split(",");
 
-              let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+              let verticesAttr = dependencyValuesByKey[arrayKey].verticesAttr;
               let vertComponent;
 
-              if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
-                vertComponent = Object.values(verticesChild[0].stateValues)[0];
+              if (verticesAttr !== null && Object.keys(verticesAttr.stateValues).length === 1) {
+                vertComponent = Object.values(verticesAttr.stateValues)[0];
               } else {
                 vertComponent = me.fromAst('\uff3f');
               }
@@ -830,11 +839,11 @@ export default class Rectangle extends Polygon {
             for (let arrayKey of arrayKeys) {
               let [vertexInd, dim] = arrayKey.split(",");
 
-              let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+              let verticesAttr = dependencyValuesByKey[arrayKey].verticesAttr;
               let vertComponent;
 
-              if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
-                vertComponent = Object.values(verticesChild[0].stateValues)[0];
+              if (verticesAttr !== null && Object.keys(verticesAttr.stateValues).length === 1) {
+                vertComponent = Object.values(verticesAttr.stateValues)[0];
               } else {
                 vertComponent = me.fromAst('\uff3f');
               }
@@ -861,10 +870,10 @@ export default class Rectangle extends Polygon {
 
           for (let arrayKey of arrayKeys) {
 
-            let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+            let verticesAttr = dependencyValuesByKey[arrayKey].verticesAttr;
 
-            if (verticesChild.length === 1 && Object.keys(verticesChild[0].stateValues).length === 1) {
-              vertices[arrayKey] = Object.values(verticesChild[0].stateValues)[0];
+            if (verticesAttr !== null && Object.keys(verticesAttr.stateValues).length === 1) {
+              vertices[arrayKey] = Object.values(verticesAttr.stateValues)[0];
             } else {
               vertices[arrayKey] = me.fromAst('\uff3f');
             }
@@ -1011,9 +1020,8 @@ export default class Rectangle extends Polygon {
               let vert = workspace.v0[0].simplify();
 
               instructions.push({
-                setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+                setDependency: dependencyNamesByKey[keyV0X].verticesAttr,
                 desiredValue: vert,
-                childIndex: 0,
                 variableIndex: 0,
               });
             }
@@ -1030,9 +1038,8 @@ export default class Rectangle extends Polygon {
               let vert = workspace.v0[1].simplify();
 
               instructions.push({
-                setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+                setDependency: dependencyNamesByKey[keyV0Y].verticesAttr,
                 desiredValue: vert,
-                childIndex: 0,
                 variableIndex: 0,
               });
             }
@@ -1051,9 +1058,8 @@ export default class Rectangle extends Polygon {
               let vert = workspace.v0[0].simplify();
 
               instructions.push({
-                setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+                setDependency: dependencyNamesByKey[keyV0X].verticesAttr,
                 desiredValue: vert,
-                childIndex: 0,
                 variableIndex: 0,
               });
             }
@@ -1070,9 +1076,8 @@ export default class Rectangle extends Polygon {
               let vert = workspace.v0[1].simplify();
 
               instructions.push({
-                setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+                setDependency: dependencyNamesByKey[keyV0Y].verticesAttr,
                 desiredValue: vert,
-                childIndex: 0,
                 variableIndex: 0,
               });
             }
@@ -1090,34 +1095,30 @@ export default class Rectangle extends Polygon {
 
           if (keyV0X !== undefined) {
             instructions.push({
-              setDependency: dependencyNamesByKey[keyV0X].verticesChild,
+              setDependency: dependencyNamesByKey[keyV0X].verticesAttr,
               desiredValue: workspace.v0[0],
-              childIndex: 0,
               variableIndex: 0,
             });
           }
           if (keyV2X !== undefined) {
             instructions.push({
-              setDependency: dependencyNamesByKey[keyV2X].verticesChild,
+              setDependency: dependencyNamesByKey[keyV2X].verticesAttr,
               desiredValue: workspace.v2[0],
-              childIndex: 0,
               variableIndex: 0,
             });
           }
 
           if (keyV0Y !== undefined) {
             instructions.push({
-              setDependency: dependencyNamesByKey[keyV0Y].verticesChild,
+              setDependency: dependencyNamesByKey[keyV0Y].verticesAttr,
               desiredValue: workspace.v0[1],
-              childIndex: 0,
               variableIndex: 0,
             });
           }
           if (keyV2Y !== undefined) {
             instructions.push({
-              setDependency: dependencyNamesByKey[keyV2Y].verticesChild,
+              setDependency: dependencyNamesByKey[keyV2Y].verticesAttr,
               desiredValue: workspace.v2[1],
-              childIndex: 0,
               variableIndex: 0,
             });
           }

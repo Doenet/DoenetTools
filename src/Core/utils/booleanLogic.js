@@ -1,5 +1,6 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
+import { textToAst } from './math';
 
 
 export function evaluateLogic({ logicTree,
@@ -81,11 +82,11 @@ export function evaluateLogic({ logicTree,
 
   operands.forEach(function (x) {
     if (typeof x === "string") {
-      if (x in dependencyValues.mathChildrenByCode || x in dependencyValues.mathlistChildrenByCode) {
+      if (x in dependencyValues.mathChildrenByCode || x in dependencyValues.mathListChildrenByCode) {
         foundMath = true;
-      } else if (x in dependencyValues.textChildrenByCode || x in dependencyValues.textlistChildrenByCode) {
+      } else if (x in dependencyValues.textChildrenByCode || x in dependencyValues.textListChildrenByCode) {
         foundText = true;
-      } else if (x in dependencyValues.booleanChildrenByCode || x in dependencyValues.booleanlistChildrenByCode) {
+      } else if (x in dependencyValues.booleanChildrenByCode || x in dependencyValues.booleanListChildrenByCode) {
         foundBoolean = true;
       }
     }
@@ -98,7 +99,7 @@ export function evaluateLogic({ logicTree,
       if (child !== undefined) {
         return child.stateValues.value.tree;
       }
-      child = dependencyValues.mathlistChildrenByCode[tree];
+      child = dependencyValues.mathListChildrenByCode[tree];
       if (child !== undefined) {
         return ["list", ...child.stateValues.maths.map(x => x.tree)];
       }
@@ -151,7 +152,7 @@ export function evaluateLogic({ logicTree,
         if (child !== undefined) {
           return child.stateValues.value;
         }
-        child = dependencyValues.booleanlistChildrenByCode[x];
+        child = dependencyValues.booleanListChildrenByCode[x];
         if (child !== undefined) {
           return child.stateValues.booleans;
         }
@@ -233,7 +234,7 @@ export function evaluateLogic({ logicTree,
         if (child !== undefined) {
           return child.stateValues.value.trim();
         }
-        child = dependencyValues.textlistChildrenByCode[tree];
+        child = dependencyValues.textListChildrenByCode[tree];
         if (child !== undefined) {
           return child.stateValues.texts.map(x => x.trim());
         }
@@ -304,7 +305,7 @@ export function evaluateLogic({ logicTree,
     }
   }
 
-  // no boolean or text, just math, mathlist, and strings
+  // no boolean or text, just math, mathList, and strings
 
 
   let strict;
@@ -485,7 +486,7 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
 
   if (!Array.isArray(logicTree)) {
     if (typeof logicTree === "string" && !foundNonMath && !init) {
-      return me.fromText(logicTree).tree;  // split string
+      return me.fromAst(textToAst.convert(logicTree)).tree;  // split string
     } else {
       return logicTree;
     }
@@ -495,21 +496,37 @@ export function splitSymbolsIfMath({ logicTree, nonMathCodes, foundNonMath = fal
   let operands = logicTree.slice(1);
 
   if (["and", "not", "or"].includes(operator)) {
-    return [operator, ...operands.map(x => splitSymbolsIfMath({
-      logicTree: x,
-      nonMathCodes, foundNonMath,
-      init
-    }))]
+    if (operator === "apply") {
+      return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
+        logicTree: x,
+        nonMathCodes, foundNonMath,
+        init
+      }))]
+    } else {
+      return [operator, ...operands.map(x => splitSymbolsIfMath({
+        logicTree: x,
+        nonMathCodes, foundNonMath,
+        init
+      }))]
+    }
   }
 
   if (operands.some(x => nonMathCodes.includes(x))) {
     foundNonMath = true;
   }
 
-  return [operator, ...operands.map(x => splitSymbolsIfMath({
-    logicTree: x,
-    nonMathCodes, foundNonMath,
-    init: false
-  }))]
+  if (operator === "apply") {
+    return [operator, operands[0], ...operands.slice(1).map(x => splitSymbolsIfMath({
+      logicTree: x,
+      nonMathCodes, foundNonMath,
+      init: false
+    }))]
+  } else {
+    return [operator, ...operands.map(x => splitSymbolsIfMath({
+      logicTree: x,
+      nonMathCodes, foundNonMath,
+      init: false
+    }))]
+  }
 
 }

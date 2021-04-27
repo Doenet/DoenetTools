@@ -1950,31 +1950,31 @@ describe('Collect Tag Tests', function () {
       expect(group2.replacements.length).eq(1);
       expect(group2reps.length).eq(6);
 
-      expect(components['/_group1'].replacements[0].componentType).eq("mathinput");
+      expect(components['/_group1'].replacements[0].componentType).eq("mathInput");
       expect(components['/_group1'].replacements[0].stateValues.value.tree).eq('x');
-      expect(components['/_collect1'].replacements[0].componentType).eq("mathinput");
+      expect(components['/_collect1'].replacements[0].componentType).eq("mathInput");
       expect(components['/_collect1'].replacements[0].stateValues.value.tree).eq('x');
       expect(collect2.replacements[0].componentType).eq("math");
       expect(collect2.replacements[0].stateValues.value.tree).eq('x');
-      expect(group2reps[0].componentType).eq("mathinput");
+      expect(group2reps[0].componentType).eq("mathInput");
       expect(group2reps[0].stateValues.value.tree).eq('x');
 
-      expect(components['/_group1'].replacements[1].componentType).eq("textinput");
+      expect(components['/_group1'].replacements[1].componentType).eq("textInput");
       expect(components['/_group1'].replacements[1].stateValues.value).eq('hello');
-      expect(components['/_collect1'].replacements[1].componentType).eq("textinput");
+      expect(components['/_collect1'].replacements[1].componentType).eq("textInput");
       expect(components['/_collect1'].replacements[1].stateValues.value).eq('hello');
       expect(collect2.replacements[1].componentType).eq("text");
       expect(collect2.replacements[1].stateValues.value).eq('hello');
-      expect(group2reps[1].componentType).eq("textinput");
+      expect(group2reps[1].componentType).eq("textInput");
       expect(group2reps[1].stateValues.value).eq('hello');
 
-      expect(components['/_group1'].replacements[2].componentType).eq("booleaninput");
+      expect(components['/_group1'].replacements[2].componentType).eq("booleanInput");
       expect(components['/_group1'].replacements[2].stateValues.value).eq(false);
-      expect(components['/_collect1'].replacements[2].componentType).eq("booleaninput");
+      expect(components['/_collect1'].replacements[2].componentType).eq("booleanInput");
       expect(components['/_collect1'].replacements[2].stateValues.value).eq(false);
       expect(collect2.replacements[2].componentType).eq("boolean");
       expect(collect2.replacements[2].stateValues.value).eq(false);
-      expect(group2reps[2].componentType).eq("booleaninput");
+      expect(group2reps[2].componentType).eq("booleanInput");
       expect(group2reps[2].stateValues.value).eq(false);
 
       expect(components['/_group1'].replacements[3].componentType).eq("math");
@@ -2018,7 +2018,7 @@ describe('Collect Tag Tests', function () {
       <text>public</text>
     </section>
     <p>Revealed by default: <collect componentTypes="text" tname="_section1" /></p>
-    <p>Force to stay hidden: <collect componentTypes="text" tname="_section1" targetPropertiesToIgnore="" /></p>
+    <p>Force to stay hidden: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="" /></p>
 
     `}, "*");
     });

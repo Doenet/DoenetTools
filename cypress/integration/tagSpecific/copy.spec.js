@@ -144,13 +144,13 @@ describe('Copy Tag Tests', function () {
       expect(components['/frmt'].replacements[0].stateValues.value).eq("text");
 
       expect(components['/frmt2'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/frmt2'].replacements[0].stateValues.hide).eq(true);
+      expect(components['/frmt2'].replacements[0].stateValues.hidden).eq(true);
       expect(components['/frmt2'].replacements[0].stateValues.value).eq("text");
 
       // all attributes copied when don't use prop
       expect(components['/frmt3'].replacements[0].stateValues.modifyIndirectly).eq(false);
       expect(components['/frmt3'].replacements[0].stateValues.value).eq("text");
-      expect(components['/frmt3'].replacements[0].stateValues.hide).eq(true);
+      expect(components['/frmt3'].replacements[0].stateValues.hidden).eq(true);
 
       expect(components['/A'].stateValues.label).eq("A");
       expect(components['/cA'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
@@ -599,7 +599,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
     <p>Revealed by default: $hidden</p>
-    <p>Force to stay hidden: <copy tname="hidden" targetPropertiesToIgnore="" /></p>
+    <p>Force to stay hidden: <copy tname="hidden" targetAttributesToIgnore="" /></p>
 
     `}, "*");
     });

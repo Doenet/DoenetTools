@@ -426,11 +426,11 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <excludecombination name="ec">-4 -2</excludecombination>
-    <exclude name="e1">-2</exclude>
+    <numberlist name="ec">-4 -2</numberlist>
+    <number name="e1">-2</number>
     <number name="e2">2</number>
     <math name="e3">-4</math>
-    <exclude type="numbers" name="ec2">-4 -2</exclude>
+    <numberlist name="ec2">-4 -2</numberlist>
     <numberlist name="ec3">-2 2</numberlist>
     <mathlist name="ec4">2 -4</mathlist>
 
@@ -1224,11 +1224,11 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <excludecombination type="math" name="ec">x x+y</excludecombination>
-    <exclude type="math" name="e1">x+y</exclude>
+    <mathlist name="ec">x x+y</mathlist>
+    <math name="e1">x+y</math>
     <math name="e2">x+3y</math>
     <math name="e3">x</math>
-    <exclude type="math" name="ec2">x x+y</exclude>
+    <mathlist name="ec2">x x+y</mathlist>
     <mathlist name="ec3">x+y x+3y</mathlist>
 
     <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
@@ -1317,11 +1317,11 @@ describe('SelectFromSequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <excludecombination type="letters" name="ec">m v</excludecombination>
-    <exclude type="letters" name="e1">s</exclude>
+    <textlist name="ec">m v</textlist>
+    <text name="e1">s</text>
     <text name="e2">v</text>
     <text name="e3">s</text>
-    <exclude type="letters" name="ec2">m v</exclude>
+    <textlist name="ec2">m v</textlist>
     <textlist name="ec3">s m</textlist>
 
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
@@ -1429,6 +1429,46 @@ describe('SelectFromSequence Tag Tests', function () {
       }
     });
 
+  });
+
+  it('selectfromsequences hides dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first select" />
+    <booleaninput name='h2' prefill="true" label="Hide second select" />
+    <p><selectfromsequence assignnames="c" hide="$h1" type="letters" from="a" to="e"/>, <selectfromsequence assignnames="d" hide="$h2" type="letters" from="a" to="e"/></p>
+    <p><copy tname="c" />, <copy tname="d" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let c = components['/c'].stateValues.value;
+      let d = components['/d'].stateValues.value;
+      expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
+      expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
+
+      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+
+      cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+
+      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
+      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+    })
   });
 
 

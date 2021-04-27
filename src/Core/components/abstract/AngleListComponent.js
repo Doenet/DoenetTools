@@ -2,12 +2,12 @@ import BaseComponent from './BaseComponent';
 import { breakStringsAndOthersIntoComponentsByStringCommas } from '../commonsugar/breakstrings';
 
 export default class AngleListComponent extends BaseComponent {
-  static componentType = "_anglelistcomponent";
+  static componentType = "_angleListComponent";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.hide = { default: true };
+    return attributes;
   }
 
   static returnChildLogic(args) {

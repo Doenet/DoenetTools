@@ -2,6 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 
 export default class Hint extends BlockComponent {
   static componentType = "hint";
+  static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
@@ -131,23 +132,6 @@ export default class Hint extends BlockComponent {
           return { newValues: { title: "Hint" } };
         } else {
           return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        children: {
-          dependencyType: "child",
-          childLogicName: "titleAndContent"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.children.map(x => x.componentName)
-          }
         }
       }
     }

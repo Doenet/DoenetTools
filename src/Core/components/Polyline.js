@@ -14,27 +14,22 @@ export default class Polyline extends GraphicalComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["vertices", "nVertices"] };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true, forRenderer: true };
-    return properties;
-  }
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    attributes.vertices = {
+      createComponentOfType: "_pointListComponent",
+    }
 
-    childLogic.newLeaf({
-      name: "atMostOneVertices",
-      componentType: 'vertices',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-      setAsBase: true,
-    });
-
-
-    return childLogic;
+    return attributes;
   }
 
 
@@ -77,15 +72,15 @@ export default class Polyline extends GraphicalComponent {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({
-        verticesChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneVertices",
+        vertices: {
+          dependencyType: "attributeComponent",
+          attributeName: "vertices",
           variableNames: ["nPoints"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.verticesChild.length === 1) {
-          return { newValues: { nVertices: dependencyValues.verticesChild[0].stateValues.nPoints } }
+        if (dependencyValues.vertices !== null) {
+          return { newValues: { nVertices: dependencyValues.vertices.stateValues.nPoints } }
         } else {
           return { newValues: { nVertices: 0 } }
         }
@@ -98,17 +93,17 @@ export default class Polyline extends GraphicalComponent {
       componentType: "number",
       returnDependencies() {
         return {
-          verticesChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneVertices",
+          vertices: {
+            dependencyType: "attributeComponent",
+            attributeName: "vertices",
             variableNames: ["nDimensions"],
           }
         }
       },
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.verticesChild.length === 1) {
-          let nDimensions = dependencyValues.verticesChild[0].stateValues.nDimensions;
+        if (dependencyValues.vertices !== null) {
+          let nDimensions = dependencyValues.vertices.stateValues.nDimensions;
           return {
             newValues: { nDimensions },
             checkForActualChange: { nDimensions: true }
@@ -134,17 +129,26 @@ export default class Polyline extends GraphicalComponent {
           // vertex or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
         if (arrayEntryPrefix === "vertexX") {
           // vertexX1_2 is the 2nd component of the first vertex
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (arraySize) {
+            if (desiredEntrySize) {
+              // If give a desired entry size, then ignore array size.
+              // Since by default, we return just 1 entry,
+              // return that one entry as long as the size is positive in all dimensions
+              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -161,16 +165,66 @@ export default class Polyline extends GraphicalComponent {
           }
         } else {
           // vertex3 is all components of the third vertex
+          let vertexInd = Number(varEnding) - 1;
+          if (desiredEntrySize) {
+            if (desiredEntrySize[0] > 0 && Number.isInteger(vertexInd) && vertexInd >= 0) {
+              // if have desired entry size, then assume specify size after wrapping components
+              // In this case, if the entry size is positive, will return all components
+              // for point while ignoring arraySize[0]
+
+              // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
+              return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
+            } else {
+              return [];
+            }
+          }
           if (!arraySize) {
             return [];
           }
-          let vertexInd = Number(varEnding) - 1;
           if (Number.isInteger(vertexInd) && vertexInd >= 0 && vertexInd < arraySize[0]) {
             // array of "vertexInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => vertexInd + "," + i)
           } else {
             return [];
           }
+        }
+
+      },
+      getAllArrayKeys(arraySize, flatten = true, desiredSize) {
+        function getAllArrayKeysSub(subArraySize) {
+          if (subArraySize.length === 1) {
+            // array of numbers from 0 to subArraySize[0], cast to strings
+            return Array.from(Array(subArraySize[0]), (_, i) => String(i));
+          } else {
+            let currentSize = subArraySize[0];
+            let subSubKeys = getAllArrayKeysSub(subArraySize.slice(1));
+            let subKeys = [];
+            for (let ind = 0; ind < currentSize; ind++) {
+              if (flatten) {
+                subKeys.push(...subSubKeys.map(x => ind + "," + x))
+              } else {
+                subKeys.push(subSubKeys.map(x => ind + "," + x))
+              }
+            }
+            return subKeys;
+          }
+        }
+
+        if (desiredSize) {
+          // if have desired size, then assume specify size after wrapping components
+          // I.e., use actual array size, with first component
+          // replaced with desired size
+          if (desiredSize.length === 0 || !arraySize) {
+            return [];
+          } else {
+            let desiredSizeOfWholeArray = [...arraySize];
+            desiredSizeOfWholeArray[0] = desiredSize[0];
+            return getAllArrayKeysSub(desiredSizeOfWholeArray);
+          }
+        } else if (!arraySize || arraySize.length === 0) {
+          return [];
+        } else {
+          return getAllArrayKeysSub(arraySize);
         }
 
       },
@@ -194,9 +248,9 @@ export default class Polyline extends GraphicalComponent {
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
-            verticesChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneVertices",
+            vertices: {
+              dependencyType: "attributeComponent",
+              attributeName: "vertices",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -216,11 +270,11 @@ export default class Polyline extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
-          if (verticesChild.length === 1
-            && verticesChild[0].stateValues["pointX" + varEnding]
+          let verticesAttr = dependencyValuesByKey[arrayKey].vertices;
+          if (verticesAttr !== null
+            && verticesAttr.stateValues["pointX" + varEnding]
           ) {
-            vertices[arrayKey] = verticesChild[0].stateValues["pointX" + varEnding];
+            vertices[arrayKey] = verticesAttr.stateValues["pointX" + varEnding];
           } else {
             vertices[arrayKey] = me.fromAst('\uff3f');
           }
@@ -249,13 +303,12 @@ export default class Polyline extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
-            && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].vertices !== null
+            && dependencyValuesByKey[arrayKey].vertices.stateValues["pointX" + varEnding]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].verticesChild,
+              setDependency: dependencyNamesByKey[arrayKey].vertices,
               desiredValue: desiredStateVariableValues.vertices[arrayKey],
-              childIndex: 0,
               variableIndex: 0,
             })
 

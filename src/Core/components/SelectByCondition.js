@@ -6,20 +6,27 @@ export default class SelectByCondition extends CompositeComponent {
   static componentType = "selectByCondition";
 
   // assign name to else child
-  // static assignNewNamespaceToAllChildrenExcept = ["case", ...Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase())];
+  // static assignNewNamespaceToAllChildrenExcept = ["case", ...Object.keys(this.createAttributesObject({})).map(x => x.toLowerCase())];
   // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
   // static passArrayAssignNamesToChildren = [["case", "else"]];
 
   static assignNamesToReplacements = true;
 
+  static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
+
   // used when referencing this component without prop
   // static useChildrenForReference = false;
   // static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.maximumNumberToSelect = { default: null };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.maximumNumberToSelect = {
+      createComponentOfType: "number",
+      createStateVariable: "maximumNumberToSelect",
+      defaultValue: null,
+      public: true,
+    }
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -130,7 +137,7 @@ export default class SelectByCondition extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpand = {
+    stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         selectedIndices: {
           dependencyType: "stateVariable",
@@ -139,7 +146,7 @@ export default class SelectByCondition extends CompositeComponent {
       }),
       definition() {
         return {
-          newValues: { readyToExpand: true }
+          newValues: { readyToExpandWhenResolved: true }
         }
       }
     }
@@ -166,9 +173,6 @@ export default class SelectByCondition extends CompositeComponent {
 
     let replacements = this.getReplacements(component, components, componentInfoObjects);
 
-    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
-    component.stateValues.needsReplacementsUpdatedWhenStale;
-
     workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
     // console.log(`replacements for ${component.componentName}`)
@@ -185,49 +189,29 @@ export default class SelectByCondition extends CompositeComponent {
 
     for (let selectedIndex of component.stateValues.selectedIndices) {
 
-      let selectedChildName, selectedGroupIdentity = {};
+      let selectedChildName, childComponentType;
       if (selectedIndex < component.stateValues.nCases) {
         selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
-        selectedGroupIdentity.componentType = "result";
-        selectedGroupIdentity.componentName = components[selectedChildName].stateValues.resultChild.componentName;
+        childComponentType = "case";
 
       } else {
-        selectedChildName = selectedGroupIdentity.componentName = component.stateValues.elseChild.componentName;
-        selectedGroupIdentity.componentType = "else";
+        selectedChildName = component.stateValues.elseChild.componentName;
+        childComponentType = "else";
       }
       // use state, not stateValues, as read only proxy messes up internal
       // links between descendant variant components and the components themselves
 
       let serializedGrandchildren = deepClone(components[selectedChildName].state.serializedChildren.value);
       let serializedChild = {
-        componentType: selectedGroupIdentity.componentType,
+        componentType: childComponentType,
         state: { rendered: true },
-        doenetAttributes: Object.assign({}, components[selectedGroupIdentity.componentName].doenetAttributes),
+        doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
         children: serializedGrandchildren,
-        originalName: selectedGroupIdentity.componentName,
+        originalName: selectedChildName,
       }
 
-
-      if (component.stateValues.hide) {
-        // if select is hidden, then make each of its replacements hidden
-        if (!serializedChild.state) {
-          serializedChild.state = {};
-        }
-
-        serializedChild.state.hide = true;
-
-        // // if assigning names to grandchild, then hide those as well
-        // // so that refs of those will be hidden, for consistency
-        // if (Array.isArray(name)) {
-        //   if (serializedChild.children) {
-        //     for (let grandchild of serializedChild.children) {
-        //       if (!grandchild.state) {
-        //         grandchild.state = {};
-        //       }
-        //       grandchild.state.hide = true;
-        //     }
-        //   }
-        // }
+      if (components[selectedChildName].attributes.newNamespace) {
+        serializedChild.attributes = { newNamespace: true }
       }
 
       replacements.push(serializedChild);
@@ -237,7 +221,7 @@ export default class SelectByCondition extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      parentCreatesNewNamespace: component.attributes.newNamespace,
       componentInfoObjects,
     });
 
@@ -251,9 +235,6 @@ export default class SelectByCondition extends CompositeComponent {
     // console.log(`calculate replacement changes for selectByCondition`)
     // console.log(workspace.previousSelectedIndices);
     // console.log(component.stateValues.selectedIndices);
-
-    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
-    component.stateValues.needsReplacementsUpdatedWhenStale;
 
     if (workspace.previousSelectedIndices.length === component.stateValues.selectedIndices.length
       && workspace.previousSelectedIndices.every((v, i) => v === component.stateValues.selectedIndices[i])
@@ -283,8 +264,6 @@ export default class SelectByCondition extends CompositeComponent {
 
     workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
 
-    console.log(`replacementChanges for if ${component.componentName}`);
-    console.log(replacementChanges);
     return replacementChanges;
 
     // let replacementChanges = processChangesForReplacements({

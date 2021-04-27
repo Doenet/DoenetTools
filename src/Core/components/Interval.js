@@ -5,19 +5,10 @@ export default class Interval extends MathComponent {
   static componentType = "interval";
   static rendererType = "math";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-
-    properties.createIntervals = { default: true };
-
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.createIntervals.default = true;
+    return attributes;
   }
 
-  // static returnStateVariableDefinitions() {
-
-  //   let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-  //   return stateVariableDefinitions;
-  // }
-  
 }

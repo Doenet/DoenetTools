@@ -3,9 +3,10 @@ import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { numberToLetters, lettersToNumber } from './Sequence';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { textToAst } from '../utils/math';
 
 export default class SelectFromSequence extends Sequence {
-  static componentType = "selectfromsequence";
+  static componentType = "selectFromSequence";
 
   static assignNamesToReplacements = true;
 
@@ -15,36 +16,30 @@ export default class SelectFromSequence extends Sequence {
     return [...super.stateVariablesShadowedForReference, "excludedCombinations"]
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.numberToSelect = { default: 1 };
-    properties.withReplacement = { default: false };
-    properties.sortResults = { default: false };
-    return properties;
-  }
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let sequenceBase = childLogic.baseLogic;
-
-    let atMostOneExcludeCombinations = childLogic.newLeaf({
-      name: "atMostOneExcludeCombinations",
-      componentType: 'excludecombinations',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "selectFromSequenceLogic",
-      operator: 'and',
-      propositions: [sequenceBase, atMostOneExcludeCombinations],
-      setAsBase: true,
-    });
-
-    return childLogic;
-
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.numberToSelect = {
+      createComponentOfType: "number",
+      createStateVariable: "numberToSelect",
+      defaultValue: 1,
+      public: true,
+    }
+    attributes.withReplacement = {
+      createComponentOfType: "boolean",
+      createStateVariable: "withReplacement",
+      defaultValue: false,
+      public: true,
+    }
+    attributes.sortResults = {
+      createComponentOfType: "boolean",
+      createStateVariable: "sortResults",
+      defaultValue: false,
+      public: true,
+    }
+    attributes.excludeCombinations = {
+      createComponentOfType: "_componentListOfListsWithSelectableType"
+    }
+    return attributes;
   }
 
   static returnStateVariableDefinitions() {
@@ -53,19 +48,19 @@ export default class SelectFromSequence extends Sequence {
 
     stateVariableDefinitions.excludedCombinations = {
       returnDependencies: () => ({
-        excludeCombinationsChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneExcludeCombinations",
+        excludeCombinations: {
+          dependencyType: "attributeComponent",
+          attributeName: "excludeCombinations",
           variableNames: ["lists"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.excludeCombinationsChild.length === 1) {
+        if (dependencyValues.excludeCombinations !== null) {
           return {
             newValues:
             {
               excludedCombinations:
-                dependencyValues.excludeCombinationsChild[0].stateValues.lists
+                dependencyValues.excludeCombinations.stateValues.lists
             }
           }
         } else {
@@ -177,8 +172,8 @@ export default class SelectFromSequence extends Sequence {
       }
     }
 
-    let originalReturnDependencies = stateVariableDefinitions.readyToExpand.returnDependencies;
-    stateVariableDefinitions.readyToExpand.returnDependencies = function () {
+    let originalReturnDependencies = stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies;
+    stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies = function () {
       let deps = originalReturnDependencies();
 
       deps.selectedValues = {
@@ -199,16 +194,9 @@ export default class SelectFromSequence extends Sequence {
 
     for (let value of component.stateValues.selectedValues) {
 
-      // if selectfromsequence is specified to be hidden
-      // then replacements should be hidden as well
-      let state = { value: value };
-      if (component.stateValues.hide) {
-        state.hide = true;
-      }
-
       replacements.push({
-        componentType: component.stateValues.type,
-        state
+        componentType: component.stateValues.type === "letters" ? "text" : component.stateValues.type,
+        state: { value }
       });
 
     }
@@ -217,7 +205,7 @@ export default class SelectFromSequence extends Sequence {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      parentCreatesNewNamespace: component.attributes.newNamespace,
       componentInfoObjects,
     });
 
@@ -367,7 +355,7 @@ export default class SelectFromSequence extends Sequence {
       if (sequencePars[par] !== undefined) {
         if (sequencePars.type === "math") {
           if (typeof sequencePars[par] === "string") {
-            sequencePars[par] = me.fromText(sequencePars[par]);
+            sequencePars[par] = me.fromAst(textToAst.convert(sequencePars[par]));
           } else if (sequencePars[par].tree === undefined) {
             return { success: false }
           }
@@ -397,7 +385,7 @@ export default class SelectFromSequence extends Sequence {
     for (let [ind, exc] of excludes.entries()) {
       if (sequencePars.type === "math") {
         if (typeof exc === "string") {
-          exc = me.fromText(exc);
+          exc = me.fromAst(textToAst.convert(exc));
         } else if (exc.tree === undefined) {
           return { success: false }
         }

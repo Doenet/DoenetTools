@@ -1,50 +1,37 @@
 import BaseComponent from './abstract/BaseComponent';
 
 export default class VariantControl extends BaseComponent {
-  static componentType = "variantcontrol";
+  static componentType = "variantControl";
   static rendererType = undefined;
 
   static createsVariants = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.nVariants = { default: 100 };
-    properties.uniqueVariants = { default: false };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.nVariants = {
+      createComponentOfType: "number",
+      createStateVariable: "nVariants",
+      defaultValue: 100,
+      public: true,
+    };
+    attributes.uniqueVariants = {
+      createComponentOfType: "boolean",
+      createStateVariable: "uniqueVariants",
+      defaultValue: false,
+      public: true,
+    };
 
-    // base component has variants as a property
+    // base component has variants as a attribute
     // but want to treat variants separately here
-    delete properties.variants;
+    attributes.variants = {
+      createComponentOfType: "variants"
+    }
 
-    return properties;
-  }
+    attributes.seeds = {
+      createComponentOfType: "seeds"
+    }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let atMostOneSeeds = childLogic.newLeaf({
-      name: 'atMostOneSeeds',
-      componentType: 'seeds',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let atMostOneVariants = childLogic.newLeaf({
-      name: 'atMostOneVariants',
-      componentType: 'variants',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "seedsAndVariants",
-      operator: "and",
-      propositions: [atMostOneSeeds, atMostOneVariants],
-      setAsBase: true,
-    })
-
-    return childLogic;
+    return attributes;
   }
 
 
@@ -93,15 +80,15 @@ export default class VariantControl extends BaseComponent {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
-        seedsChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneSeeds",
+        seedsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "seeds",
           variableNames: ["nSeeds"],
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.seedsChild.length === 1) {
-          return { newValues: { nSeeds: dependencyValues.seedsChild[0].stateValues.nSeeds } }
+        if (dependencyValues.seedsAttr !== null) {
+          return { newValues: { nSeeds: dependencyValues.seedsAttr.stateValues.nSeeds } }
         } else {
           return { newValues: { nSeeds: 0 } }
         }
@@ -127,9 +114,9 @@ export default class VariantControl extends BaseComponent {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
-            seedsChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneSeeds",
+            seedsAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "seeds",
               variableNames: ["seed" + (Number(arrayKey) + 1)],
             }
           }
@@ -139,8 +126,8 @@ export default class VariantControl extends BaseComponent {
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
         let seeds = {};
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].seedsChild.length === 1) {
-            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedsChild[0]
+          if (dependencyValuesByKey[arrayKey].seedsAttr !== null) {
+            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedsAttr
               .stateValues["seed" + (Number(arrayKey) + 1)]
           }
         }
@@ -150,16 +137,16 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.originalVariants = {
       returnDependencies: () => ({
-        variantsChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneVariants",
+        variantsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "variants",
           variableNames: ["variants"],
         },
       }),
       definition: function ({ dependencyValues }) {
         let originalVariants = [];
-        if (dependencyValues.variantsChild.length === 1) {
-          originalVariants = dependencyValues.variantsChild[0].stateValues.variants;
+        if (dependencyValues.variantsAttr !== null) {
+          originalVariants = dependencyValues.variantsAttr.stateValues.variants;
         }
         return { newValues: { originalVariants } }
       }
@@ -323,7 +310,7 @@ export default class VariantControl extends BaseComponent {
 
         // random number in [0, 1)
         let rand = dependencyValues.selectRng.random();
-        // random integer from 0 to nvariants-1
+        // random integer from 0 to nVariants-1
         let selectedVariantNumber = Math.floor(rand * dependencyValues.nVariantsSpecified);
 
 

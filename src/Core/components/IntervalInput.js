@@ -8,22 +8,52 @@ export default class IntervalInput extends BlockComponent {
 
   static componentType = "intervalinput";
 
-  //creates properties 
+  //creates attributes 
   //Automatically creates childlogic leaf comparison:'atMost' number:1
   //creates state variables with a value from the matching child or default if not found
   //updates the value of the state variable if the child changes
   //makes the state variable public state variable with componentType:childNameHere
-  //flagged isProperty = true
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.xmin = { default: -10, forRenderer: true };
-    properties.xmax = { default: 10, forRenderer: true };
-    properties.width = { default: 800, forRenderer: true };
-    properties.height = { default: 300, forRenderer: true };
-    properties.xlabel = { default: "", forRenderer: true };
+  //flagged isAttribute = true
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.xmin = {
+      createComponentOfType: "number",
+      createStateVariable: "xmin",
+      defaultValue: -10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.xmax = {
+      createComponentOfType: "number",
+      createStateVariable: "xmax",
+      defaultValue: 10,
+      public: true,
+      forRenderer: true
+    };
+    attributes.width = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "width",
+      defaultValue: 800,
+      public: true,
+      forRenderer: true
+    };
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "height",
+      defaultValue: 300,
+      public: true,
+      forRenderer: true
+    };
+    attributes.xlabel = {
+      createComponentOfType: "text",
+      createStateVariable: "xlabel",
+      defaultValue: "",
+      public: true,
+      forRenderer: true
+    };
     //interval type buttons includeIntervalBasedControls
     //point type buttons includePointBasedControls
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic(args) {

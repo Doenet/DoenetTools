@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
-import doenetDefaultML from './defaultCode.doenet';
+import testCodeDoenetML from './testCode.doenet';
 
 export default function DoenetTest(){
 
 
   //New DoenetViewer when code changes
   useEffect(()=>{
-    doenetML.current = doenetDefaultML;
+    doenetML.current = testCodeDoenetML;
     setUpdateNumber((was)=>was+1)
-  },doenetDefaultML);
+  },testCodeDoenetML);
 
   let doenetML = useRef("");
 

@@ -4,11 +4,18 @@ import BaseComponent from './abstract/BaseComponent';
 export class Ol extends BlockComponent {
   static componentType = "ol";
   static rendererType = "list";
+  static renderChildren = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.label = { default: undefined, forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: undefined,
+      public: true,
+      forRenderer: true
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {
@@ -34,23 +41,6 @@ export class Ol extends BlockComponent {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { numbered: true } })
     }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        liChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroLis"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.liChildren.map(x => x.componentName)
-          }
-        }
-      }
-    }
-
 
     return stateVariableDefinitions;
 
@@ -83,6 +73,7 @@ export class Ul extends Ol {
 export class Li extends BaseComponent {
   static componentType = "li";
   static rendererType = "list";
+  static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
@@ -123,23 +114,6 @@ export class Li extends BaseComponent {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { item: true } })
     }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        children: {
-          dependencyType: "child",
-          childLogicName: "inlineOrBlock"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.children.map(x => x.componentName)
-          }
-        }
-      }
-    }
-
 
     return stateVariableDefinitions;
 

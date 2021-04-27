@@ -15,24 +15,92 @@ export default class Function extends InlineComponent {
     ]
   };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.simplify = {
-      default: "none",
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.simplify = {
+      createComponentOfType: "text",
+      createStateVariable: "simplify",
+      defaultValue: "none",
+      public: true,
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "true": "full" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
-    properties.expand = { default: false };
+    attributes.expand = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expand",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.xscale = {
+      createComponentOfType: "number",
+      createStateVariable: "xscale",
+      defaultValue: 1,
+      public: true,
+      propagateToDescendants: true,
+    };
+    attributes.yscale = {
+      createComponentOfType: "number",
+      createStateVariable: "yscale",
+      defaultValue: 1,
+      public: true,
+      propagateToDescendants: true,
+    };
 
-    properties.xscale = { default: 1, propagateToDescendants: true };
-    properties.yscale = { default: 1, propagateToDescendants: true };
-    // include properties of graphical components
+    // include attributes of graphical components
     // for case when function is adapted into a curve
-    properties.label = { default: "", forRenderer: true };
-    properties.showLabel = { default: true, forRenderer: true };
-    properties.layer = { default: 0, forRenderer: true };
-    return properties;
+
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: "",
+      public: true,
+      forRenderer: true
+    };
+    attributes.showLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showLabel",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.layer = {
+      createComponentOfType: "number",
+      createStateVariable: "layer",
+      defaultValue: 0,
+      public: true,
+      forRenderer: true
+    };
+
+
+    attributes.formula = {
+      createComponentOfType: "math"
+    }
+
+    attributes.minima = {
+      createComponentOfType: "extrema"
+    }
+    attributes.maxima = {
+      createComponentOfType: "extrema"
+    }
+    attributes.extrema = {
+      createComponentOfType: "extrema"
+    }
+    attributes.through = {
+      createComponentOfType: "_pointListComponent"
+    }
+    attributes.throughSlopes = {
+      createComponentOfType: "mathList"
+    }
+    attributes.variable = {
+      createComponentOfType: "variable"
+    }
+    attributes.symbolic = {
+      createComponentOfType: "boolean"
+    }
+
+    return attributes;
   }
 
   static returnSugarInstructions() {
@@ -42,11 +110,12 @@ export default class Function extends InlineComponent {
       childrenRegex: /s/,
       replacementFunction: ({ matchedChildren }) => ({
         success: true,
-        newChildren: [{
-          componentType: "formula",
-          doenetAttributes: { isPropertyChild: true },
-          children: matchedChildren
-        }],
+        newAttributes: {
+          formula: {
+            componentType: "math",
+            children: matchedChildren
+          }
+        }
       })
     });
 
@@ -57,93 +126,13 @@ export default class Function extends InlineComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneFormula = childLogic.newLeaf({
-      name: "exactlyOneFormula",
-      componentType: "formula",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let exactlyOneMinima = childLogic.newLeaf({
-      name: "exactlyOneMinima",
-      componentType: "minima",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let exactlyOneMaxima = childLogic.newLeaf({
-      name: "exactlyOneMaxima",
-      componentType: "maxima",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let exactlyOneExtrema = childLogic.newLeaf({
-      name: "exactlyOneExtrema",
-      componentType: "extrema",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
-      componentType: "through",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let exactlyOneThroughSlopes = childLogic.newLeaf({
-      name: "exactlyOneThroughSlopes",
-      componentType: "throughSlopes",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-
-    let throughCriteria = childLogic.newOperator({
-      name: "throughCriteria",
-      operator: "or",
-      propositions: [exactlyOneMinima, exactlyOneMaxima, exactlyOneExtrema, exactlyOneThrough, exactlyOneThroughSlopes],
-    })
-
-    let atMostOneFunction = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atMostOneFunction",
       componentType: "function",
       comparison: 'atMost',
       number: 1,
-    })
-
-
-    let functionXorFormula = childLogic.newOperator({
-      name: "functionXorFormula",
-      operator: 'xor',
-      propositions: [atMostOneFunction, exactlyOneFormula, throughCriteria],
-    })
-
-
-    let atMostOneVariable = childLogic.newLeaf({
-      name: "atMostOneVariable",
-      componentType: "variable",
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let atMostOneSymbolic = childLogic.newLeaf({
-      name: "atMostOneSymbolic",
-      componentType: 'symbolic',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "formulaWithVariable",
-      operator: "and",
-      propositions: [atMostOneVariable, functionXorFormula, atMostOneSymbolic],
       setAsBase: true,
     })
-
 
     return childLogic;
   }
@@ -168,7 +157,7 @@ export default class Function extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         let styleDefinitions = dependencyValues.ancestorWithStyle.stateValues.styleDefinitions;
-        if(!styleDefinitions) {
+        if (!styleDefinitions) {
           styleDefinitions = returnDefaultStyleDefinitions();
         }
 
@@ -226,9 +215,9 @@ export default class Function extends InlineComponent {
       componentType: "boolean",
       defaultValue: false,
       returnDependencies: () => ({
-        symbolicChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneSymbolic",
+        symbolicAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "symbolic",
           variableNames: ["value"],
         },
         functionChild: {
@@ -238,8 +227,8 @@ export default class Function extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.symbolicChild.length === 1) {
-          return { newValues: { symbolic: dependencyValues.symbolicChild[0].stateValues.value } }
+        if (dependencyValues.symbolicAttr !== null) {
+          return { newValues: { symbolic: dependencyValues.symbolicAttr.stateValues.value } }
         } else if (dependencyValues.functionChild.length === 1) {
           return { newValues: { symbolic: dependencyValues.functionChild[0].stateValues.symbolic } }
         } else {
@@ -250,15 +239,29 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.isInterpolatedFunction = {
       returnDependencies: () => ({
-        throughCriteriaChildren: {
-          dependencyType: "child",
-          childLogicName: "throughCriteria",
-        }
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+        },
+        minima: {
+          dependencyType: "attributeComponent",
+          attributeName: "minima",
+        },
+        maxima: {
+          dependencyType: "attributeComponent",
+          attributeName: "maxima",
+        },
+        extrema: {
+          dependencyType: "attributeComponent",
+          attributeName: "extrema",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           newValues: {
-            isInterpolatedFunction: dependencyValues.throughCriteriaChildren.length > 0
+            isInterpolatedFunction:
+              dependencyValues.through || dependencyValues.minima ||
+              dependencyValues.maxima || dependencyValues.extrema
           }
         }
       }
@@ -269,9 +272,9 @@ export default class Function extends InlineComponent {
       componentType: "variable",
       defaultValue: me.fromAst("x"),
       returnDependencies: () => ({
-        variableChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneVariable",
+        variableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "variable",
           variableNames: ["value"],
         },
         functionChild: {
@@ -292,12 +295,12 @@ export default class Function extends InlineComponent {
         if (dependencyValues.isInterpolatedFunction) {
           return { newValues: { variable: me.fromAst('\uff3f') } };
         } else if (dependencyValues.functionChild.length === 1) {
-          if (dependencyValues.variableChild.length === 1) {
+          if (dependencyValues.variableAttr !== null) {
             console.warn("Variable for function is ignored when it has a function child")
           }
           return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
-        } else if (dependencyValues.variableChild.length === 1) {
-          return { newValues: { variable: dependencyValues.variableChild[0].stateValues.value } }
+        } else if (dependencyValues.variableAttr !== null) {
+          return { newValues: { variable: dependencyValues.variableAttr.stateValues.value } }
         } else if (dependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
           return { newValues: { variable: dependencyValues.parentVariableForChild } }
         } else {
@@ -315,9 +318,9 @@ export default class Function extends InlineComponent {
       componentType: "formula",
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
-        formulaChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneFormula",
+        formulaAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "formula",
           variableNames: ["value"]
         },
         functionChild: {
@@ -334,11 +337,11 @@ export default class Function extends InlineComponent {
 
         if (dependencyValues.isInterpolatedFunction) {
           return { newValues: { formula: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.formulaChild.length === 1) {
+        } else if (dependencyValues.formulaAttr !== null) {
 
           return {
             newValues: {
-              formula: dependencyValues.formulaChild[0].stateValues.value
+              formula: dependencyValues.formulaAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length === 1) {
@@ -364,17 +367,17 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.nPrescribedPoints = {
       returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneThrough",
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
           variableNames: ["nPoints"]
         }
       }),
       definition({ dependencyValues }) {
 
         let nPrescribedPoints = 0;
-        if (dependencyValues.throughChild.length === 1) {
-          nPrescribedPoints = dependencyValues.throughChild[0].stateValues.nPoints;
+        if (dependencyValues.through !== null) {
+          nPrescribedPoints = dependencyValues.through.stateValues.nPoints;
         }
         return {
           newValues: { nPrescribedPoints }
@@ -400,14 +403,14 @@ export default class Function extends InlineComponent {
         for (let arrayKey of arrayKeys) {
           let pointNum = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
-            throughChild: {
-              dependencyType: "child",
-              childLogicName: "exactlyOneThrough",
+            through: {
+              dependencyType: "attributeComponent",
+              attributeName: "through",
               variableNames: ["point" + pointNum],
             },
-            throughSlopesChild: {
-              dependencyType: "child",
-              childLogicName: "exactlyOneThroughSlopes",
+            throughSlopes: {
+              dependencyType: "attributeComponent",
+              attributeName: "throughSlopes",
               variableNames: ["math" + pointNum],
             },
           }
@@ -425,15 +428,15 @@ export default class Function extends InlineComponent {
         let prescribedPoints = {};
 
         for (let arrayKey of arrayKeys) {
-          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
-          if (throughChild.length === 1) {
+          let through = dependencyValuesByKey[arrayKey].through;
+          if (through !== null) {
             let pointNum = Number(arrayKey) + 1;
-            let point = throughChild[0].stateValues["point" + pointNum];
+            let point = through.stateValues["point" + pointNum];
             let slope = null;
 
-            let throughSlopesChild = dependencyValuesByKey[arrayKey].throughSlopesChild;
-            if (throughSlopesChild.length === 1) {
-              slope = throughSlopesChild[0].stateValues["math" + pointNum]
+            let throughSlopes = dependencyValuesByKey[arrayKey].throughSlopes;
+            if (throughSlopes !== null) {
+              slope = throughSlopes.stateValues["math" + pointNum]
               if (slope === undefined) {
                 slope = null;
               }
@@ -452,16 +455,16 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.prescribedMinima = {
       returnDependencies: () => ({
-        minimaChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneMinima",
-          variableNames: ["minima"]
+        minima: {
+          dependencyType: "attributeComponent",
+          attributeName: "minima",
+          variableNames: ["extrema"]
         }
       }),
       definition({ dependencyValues }) {
         let prescribedMinima = [];
-        if (dependencyValues.minimaChild.length == 1) {
-          prescribedMinima = dependencyValues.minimaChild[0].stateValues.minima.map(v => ({
+        if (dependencyValues.minima !== null) {
+          prescribedMinima = dependencyValues.minima.stateValues.extrema.map(v => ({
             x: v[0],
             y: v[1]
           }))
@@ -475,16 +478,16 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.prescribedMaxima = {
       returnDependencies: () => ({
-        maximaChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneMaxima",
-          variableNames: ["maxima"]
+        maxima: {
+          dependencyType: "attributeComponent",
+          attributeName: "maxima",
+          variableNames: ["extrema"]
         }
       }),
       definition({ dependencyValues }) {
         let prescribedMaxima = [];
-        if (dependencyValues.maximaChild.length == 1) {
-          prescribedMaxima = dependencyValues.maximaChild[0].stateValues.maxima.map(v => ({
+        if (dependencyValues.maxima !== null) {
+          prescribedMaxima = dependencyValues.maxima.stateValues.extrema.map(v => ({
             x: v[0],
             y: v[1]
           }))
@@ -498,16 +501,16 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.prescribedExtrema = {
       returnDependencies: () => ({
-        extremaChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneExtrema",
+        extrema: {
+          dependencyType: "attributeComponent",
+          attributeName: "extrema",
           variableNames: ["extrema"]
         }
       }),
       definition({ dependencyValues }) {
         let prescribedExtrema = [];
-        if (dependencyValues.extremaChild.length == 1) {
-          prescribedExtrema = dependencyValues.extremaChild[0].stateValues.extrema.map(v => ({
+        if (dependencyValues.extrema !== null) {
+          prescribedExtrema = dependencyValues.extrema.stateValues.extrema.map(v => ({
             x: v[0],
             y: v[1]
           }))
@@ -1044,7 +1047,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         } else {
           // don't wrap minimumLocation(s) or minimumValues(s)
           return [];
@@ -1411,7 +1414,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         } else {
           // don't wrap maximumLocation(s) or maximumValues(s)
           return [];
@@ -1562,7 +1565,7 @@ export default class Function extends InlineComponent {
           // These are points,
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         } else {
           // don't wrap extremumLocation(s) or extremumValues(s)
           return [];
@@ -1742,7 +1745,7 @@ export default class Function extends InlineComponent {
 
   }
 
-  adapters = [{
+  static adapters = [{
     stateVariable: "numericalf",
     componentType: "curve"
   },

@@ -2,7 +2,7 @@ import Function, { returnSymbolicFunctionFromFormula, returnNumericalFunctionFro
 import me from 'math-expressions';
 
 export default class FunctionOperator extends Function {
-  static componentType = "_functionoperator";
+  static componentType = "_functionOperator";
 
 
   static returnSugarInstructions() {
@@ -40,35 +40,12 @@ export default class FunctionOperator extends Function {
       number: 1,
     });
 
-    let functionXorMath = childLogic.newOperator({
+    childLogic.newOperator({
       name: "functionXorMath",
       operator: "xor",
-      propositions: [exactlyOneMath, atMostOneFunctionForOperator]
-    })
-
-    let atMostOneVariable = childLogic.newLeaf({
-      name: "atMostOneVariable",
-      componentType: 'variable',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let atMostOneSymbolic = childLogic.newLeaf({
-      name: "atMostOneSymbolic",
-      componentType: 'symbolic',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "functionAndVariable",
-      operator: "and",
-      propositions: [functionXorMath, atMostOneVariable, atMostOneSymbolic],
+      propositions: [exactlyOneMath, atMostOneFunctionForOperator],
       setAsBase: true
     })
-
 
     return childLogic;
 

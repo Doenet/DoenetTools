@@ -4,7 +4,7 @@ export default class Variants extends BaseComponent {
   static componentType = "variants";
   static rendererType = undefined;
 
-  static stateVariableForPropertyValue = "variants";
+  static stateVariableForAttributeValue = "variants";
 
 
   static returnSugarInstructions() {

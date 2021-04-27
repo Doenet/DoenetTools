@@ -1,17 +1,17 @@
 import BaseComponent from './abstract/BaseComponent';
 
 
-export default class Cellblock extends BaseComponent {
-  static componentType = "cellblock";
+export default class CellBlock extends BaseComponent {
+  static componentType = "cellBlock";
   static rendererType = "container";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.rowNum = { default: null };
-    properties.colNum = { default: null };
+    attributes.rowNum = { default: null };
+    attributes.colNum = { default: null };
 
-    return properties;
+    return attributes;
   }
 
   static returnChildLogic(args) {

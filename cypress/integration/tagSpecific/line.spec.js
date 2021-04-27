@@ -93,10 +93,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -169,10 +168,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -637,10 +635,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
       let line2 = components['/_copy1'].replacements[0];
 
       cy.log('line starts off correctly')
@@ -961,7 +958,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1140,7 +1137,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1382,7 +1379,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       point1.movePoint({ x: 4, y: 4 });
@@ -1510,9 +1507,9 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line through="$(_line2{prop='point2'}) (1,0)" />
-  <line through="$(_line3{prop='point2'}) (3,2)" />
-  <line through="$(_line1{prop='point2'}) (-1,4)" />
+  <line through="$(_line2{prop='point2' componentType='point'}) (1,0)" />
+  <line through="$(_line3{prop='point2' componentType='point'}) (3,2)" />
+  <line through="$(_line1{prop='point2' componentType='point'}) (-1,4)" />
   </graph>
   `}, "*");
     });
@@ -1521,18 +1518,15 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild1 = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild1.activeChildren[0];
-      let point2 = throughChild1.activeChildren[1];
-      let throughChild2 = components["/_line2"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point3 = throughChild2.activeChildren[0];
-      let point4 = throughChild2.activeChildren[1];
-      let throughChild3 = components["/_line3"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point5 = throughChild3.activeChildren[0];
-      let point6 = throughChild3.activeChildren[1];
+      let throughComponent1 = components["/_line1"].attributes.through;
+      let point1 = throughComponent1.activeChildren[0];
+      let point2 = throughComponent1.activeChildren[1];
+      let throughComponent2 = components["/_line2"].attributes.through;
+      let point3 = throughComponent2.activeChildren[0];
+      let point4 = throughComponent2.activeChildren[1];
+      let throughComponent3 = components["/_line3"].attributes.through;
+      let point5 = throughComponent3.activeChildren[0];
+      let point6 = throughComponent3.activeChildren[1];
 
       let x1 = 1, y1 = 0;
       let x2 = 3, y2 = 2;
@@ -4921,10 +4915,9 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       let x1 = 3, y1 = 3;
       let x2 = 4, y2 = 5;
@@ -5098,8 +5091,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5278,8 +5270,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5488,8 +5479,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
 
       let P2a = components['/P2a'].replacements[0];
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
