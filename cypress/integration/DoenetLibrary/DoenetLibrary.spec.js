@@ -5,12 +5,12 @@ describe("Library", function () {
     cy.visit('/library');
   });
 
-  it('CreateNewCourse', function() {
+  it('Creating a new course by clicking the create a new course button', function() {
     cy.get('[data-cy=createNewCourseButton]').click();
     cy.get(':nth-child(1) > [data-cy=navDriveHeader]').should('exist');
   });
 
-  it('ClickOnCourse', function() {
+  it('Clicking on a course in the Nav Panel should select it and open it up in the drive', function() {
     cy.get(':nth-child(1) > [data-cy=navDriveHeader]').click();
 
     // Check for drive title equality across nav panel and breadcrumb
@@ -20,12 +20,22 @@ describe("Library", function () {
       })
     })
   });
+
+  it('Selecting a course then creating a new folder', function() {
+    cy.get(':nth-child(1) > [data-cy=navDriveHeader]').click();
+    cy.get('[data-cy=addFolderButton]').click();
+
+    // Verify item existence and type
+    cy.get(':nth-child(1) > [data-cy=driveItem]').should('exist');
+    cy.get(':nth-child(1) > [data-cy=driveItem]').within(() => {
+      cy.get('[data-cy=folderIcon]').should('exist');
+    });    
+  })
+
+
 });
 
 /*
-Single-click on "Create a New Course" button in infoPanel
-- new course Untitled should be created
-
 
 Single-click an item (DoenetML/Folder) in table
 - right infoPanel should display item name
