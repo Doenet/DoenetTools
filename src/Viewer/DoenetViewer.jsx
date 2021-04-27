@@ -315,7 +315,6 @@ class DoenetViewer extends Component {
 
     axios.get(`/media/${contentId}.doenet`)
       .then(resp => {
-        console.log(">>>resp.data!!!!!!!",resp.data)
         if (callback) {
           callback({
             contentId, doenetML: resp.data,
