@@ -12,6 +12,35 @@ $userId = $jwtArray['userId'];
 
 $branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 
+$success = TRUE;
+$message = "";
+
+if ($branchId == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing branchId';
+}elseif ($userId == ""){
+    $success = FALSE;
+    $message = "You need to be signed in to load versions";
+}
+
+if ($success){
+    $sql = "
+    SELECT canViewDrive
+    FROM drive_user
+    WHERE userId = '$userId'
+    AND driveId = '$driveId'
+    ";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc();
+    if ($row['canViewDrive'] == '0'){
+      $success = FALSE;
+      $message = "You need need permission to view versions";
+    }
+}
+
+
+if ($success){
+
 $sql="
 SELECT 
  c.contentId AS contentId,
@@ -43,9 +72,13 @@ if ($result->num_rows > 0){
     }
 }
 
+}
+
 $response_arr = array(
-        "success"=>true,
-        "versions"=>$versions_arr
+        "success"=>$success,
+        "versions"=>$versions_arr,
+        "message"=>$message
+
 );
     
  // set response code - 200 OK

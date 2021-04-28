@@ -16,36 +16,19 @@ $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
 $success = TRUE;
 $message = "";
+$results_arr = array();
 
+//note: not currently using $parentId
 if ($driveId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing driveId';
-}elseif ($parentId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing parentId';
 }elseif ($userId == ""){
   $success = FALSE;
   $message = "You need to be signed in to learn of drive users";
 }
 
-//Check for permisions
-if ($success){
-  $sql = "
-  SELECT canViewDrive
-  FROM drive_user
-  WHERE userId = '$userId'
-  AND driveId = '$driveId'
-  ";
-  $result = $conn->query($sql); 
-  $row = $result->fetch_assoc();
-  if ($row['canViewDrive'] == '0'){
-    $success = FALSE;
-    $message = "You need need permission to learn of drive users";
-  }
-}
 
-if ($success){
-
+//make sure the user is supposed to have drive read access
 $sql = "
 SELECT 
 canViewDrive, 
@@ -224,7 +207,6 @@ ON dc.assignmentId = a.assignmentId
   //Get just one folder's information
   //Haven't needed this yet
 
-}
 }
 }
 
