@@ -913,7 +913,7 @@ export default function Library(props) {
     <GlobalFont/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{marginBottom:"40px",height:"100vh"}} 
+      <div style={{marginBottom:"40px",height:"auto"}} 
        onClick={useOutsideDriveSelector} >
       <Drive types={['content','course']}  foldersOnly={true} />
       </div>
