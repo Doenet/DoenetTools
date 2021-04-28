@@ -30,7 +30,7 @@ services:
   php:
     build: './doenet_docker/php'
     volumes:
-      - ./src/api:/usr/local/apache2/htdocs/api
+      - ./dist_local/api:/usr/local/apache2/htdocs/api
     networks:
       - dev_net
     restart: always

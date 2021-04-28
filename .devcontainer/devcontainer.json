@@ -1,16 +1,22 @@
 {
-    "name": "Doenet Dev Container",
-    "dockerComposeFile": ["../docker-compose.yml"],
-    "service": "dev",
-    "settings": {
-      "terminal.integrated.shell.linux": "/bin/bash"
-    },
-    "forwardPorts": [8080],
-    "postCreateCommand": "npm install",
-    "extensions": [
-      "ms-azuretools.vscode-docker",
-      "dbaeumer.vscode-eslint",
-      "esbenp.prettier-vscode"
-    ],
-    "workspaceFolder": "/home/node/workspace",
-  }
+  "name": "Doenet Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "dev",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.requireConfig": true,
+    "editor.formatOnSave": true
+  },
+  "postCreateCommand": "npm install",
+  "extensions": [
+    "ms-azuretools.vscode-docker",
+    "eg2.vscode-npm-script",
+    "visualstudioexptteam.vscodeintellicode",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens",
+    "jpoissonnier.vscode-styled-components"
+  ],
+  "workspaceFolder": "/home/node/workspace"
+}
