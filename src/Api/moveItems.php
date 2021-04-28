@@ -18,6 +18,9 @@ $destinationItemId = mysqli_real_escape_string($conn,$_POST["destinationItemId"]
 $newSortOrder = mysqli_real_escape_string($conn,$_POST["newSortOrder"]); 
 
 $success = FALSE;
+$message = "";
+
+
 $sql = "
 SELECT canMoveItemsAndFolders
 FROM drive_user
@@ -88,8 +91,11 @@ if ($canAddDesination && $canMoveSource){
 }else{
   $success = FALSE;
 }
+
+
 $response_arr = array( 
     "success" => $success,
+    "message"=>$message
    );
  // set response code - 200 OK
  http_response_code(200);
