@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import me from 'math-expressions';
 import { findFiniteNumericalValue } from '../utils/math';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
@@ -23,6 +24,10 @@ export default class Sequence extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+
+    attributes.fixed = {
+      leaveRaw: true
+    }
 
     attributes.type = {
       createPrimitiveOfType: "text"
@@ -701,16 +706,24 @@ export default class Sequence extends CompositeComponent {
         componentType = "text"
       }
 
-      // make nonShadowingReplacement so attributes like fixed
-      // on the sequence can be copied by replacements
+
+      // allow one to override the fixed (default true) attribute
+      // by specifying it on the sequence
+      let attributesFromComposite = {};
+
+      if ("fixed" in component.attributes) {
+        attributesFromComposite = convertAttributesForComponentType({
+          attributes: { fixed: component.attributes.fixed },
+          componentType,
+          componentInfoObjects, compositeAttributesObj: {},
+          compositeCreatesNewNamespace: component.attributes.newNamespace
+        })
+      }
+
       let serializedComponent = {
         componentType,
+        attributes: attributesFromComposite,
         state: { value: componentValue, fixed: true },
-        downstreamDependencies: {
-          [component.componentName]: [{
-            dependencyType: "nonShadowingReplacement",
-          }]
-        },
       }
       replacements.push(serializedComponent);
     }
@@ -896,17 +909,25 @@ export default class Sequence extends CompositeComponent {
             componentType = "text";
           }
 
-          // make nonShadowingReplacement so attributes like fixed
-          // on the sequence can be copied by replacements
+          // allow one to override the fixed (default true) attribute
+          // by specifying it on the sequence
+          let attributesFromComposite = {};
+
+          if ("fixed" in component.attributes) {
+            attributesFromComposite = convertAttributesForComponentType({
+              attributes: { fixed: component.attributes.fixed },
+              componentType,
+              componentInfoObjects, compositeAttributesObj: {},
+              compositeCreatesNewNamespace: component.attributes.newNamespace
+            })
+          }
+
           let serializedComponent = {
             componentType,
+            attributes: attributesFromComposite,
             state: { value: componentValue, fixed: true },
-            downstreamDependencies: {
-              [component.componentName]: [{
-                dependencyType: "nonShadowingReplacement",
-              }]
-            },
           }
+
           newSerializedReplacements.push(serializedComponent);
         }
 

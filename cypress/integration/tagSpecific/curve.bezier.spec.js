@@ -8481,7 +8481,7 @@ describe('Curve Tag Bezier Tests', function () {
   <curve through="(1,2) (3,4) (-5,6) (3,5)">
   <beziercontrols>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector1_2" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX1_2_2" tname="_curve1" />,
       5)
     </vector></controlVectors>
     <controlVectors direction="both">
@@ -8492,11 +8492,11 @@ describe('Curve Tag Bezier Tests', function () {
       </vector>
     </controlVectors>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector4_1" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX4_1_2" tname="_curve1" />,
       4)
     </vector></controlVectors>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector3_1" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX3_1_2" tname="_curve1" />,
       -2)
     </vector></controlVectors>
   </beziercontrols>

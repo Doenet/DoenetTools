@@ -113,23 +113,14 @@ export default class LineSegment extends GraphicalComponent {
           return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "endpointX") {
           // pointX1_2 is the 2nd component of the first point
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -146,22 +137,10 @@ export default class LineSegment extends GraphicalComponent {
           }
         } else {
           // endpoint3 is all components of the third point
-          let pointInd = Number(varEnding) - 1;
-          if (desiredEntrySize) {
-            if (desiredEntrySize[0] > 0 && Number.isInteger(pointInd) && pointInd >= 0) {
-              // if have desired entry size, then assume specify size after wrapping components
-              // In this case, if the entry size is positive, will return all components
-              // for point while ignoring arraySize[0]
-
-              // array of "pointInd,i", where i=0, ..., arraySize[1]-1
-              return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
-            } else {
-              return [];
-            }
-          }
           if (!arraySize) {
             return [];
           }
+          let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)

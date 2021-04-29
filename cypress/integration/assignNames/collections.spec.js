@@ -1,6 +1,6 @@
 import me from 'math-expressions';
 import cssesc from 'cssesc';
-import { flattenDeep } from '../../../src/Doenet/utils/array';
+import { flattenDeep } from '../../../src/Core/utils/array';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });

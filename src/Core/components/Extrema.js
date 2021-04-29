@@ -400,43 +400,6 @@ export class Extrema extends BaseComponent {
           return extremaClass.componentTypeSingular + "Value" + (Number(ind1) + 1)
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
-        if (arrayEntryPrefix === "pointX") {
-          // pointX1_2 is the 2nd component of the first point
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
-          )) {
-            if (arraySize) {
-              if (indices.every((x, i) => x < arraySize[i])) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
-              return [String(indices)];
-            }
-          } else {
-            return [];
-          }
-        } else {
-          // point3 is all components of the third point
-          if (!arraySize) {
-            return [];
-          }
-          let extremumInd = Number(varEnding) - 1;
-          if (Number.isInteger(extremumInd) && extremumInd >= 0 && extremumInd < arraySize[0]) {
-            // array of "extremumInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => extremumInd + "," + i)
-          } else {
-            return [];
-          }
-        }
-
-      },
       returnArraySizeDependencies: () => ({
         nChildren: {
           dependencyType: "stateVariable",

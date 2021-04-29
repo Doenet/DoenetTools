@@ -416,23 +416,14 @@ export default class Curve extends GraphicalComponent {
           return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first throughPoint
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -449,22 +440,10 @@ export default class Curve extends GraphicalComponent {
           }
         } else {
           // throughPoint3 is all components of the third throughPoint
-          let throughPointInd = Number(varEnding) - 1;
-          if (desiredEntrySize) {
-            if (desiredEntrySize[0] > 0 && Number.isInteger(throughPointInd) && throughPointInd >= 0) {
-              // if have desired entry size, then assume specify size after wrapping components
-              // In this case, if the entry size is positive, will return all components
-              // for point while ignoring arraySize[0]
-
-              // array of "throughPointInd,i", where i=0, ..., arraySize[1]-1
-              return Array.from(Array(arraySize[1]), (_, i) => throughPointInd + "," + i)
-            } else {
-              return [];
-            }
-          }
           if (!arraySize) {
             return [];
           }
+          let throughPointInd = Number(varEnding) - 1;
           if (Number.isInteger(throughPointInd) && throughPointInd >= 0 && throughPointInd < arraySize[0]) {
             // array of "throughPointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => throughPointInd + "," + i)
@@ -752,7 +731,7 @@ export default class Curve extends GraphicalComponent {
           return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlVectorX") {
           // controlVectorX3_2_1 is the first component of the second control vector
           // controlling the third point
@@ -760,16 +739,7 @@ export default class Curve extends GraphicalComponent {
           if (indices.length === 3 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -787,23 +757,10 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlVector3_2 is all components of the second control vector
           // controling the third point
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (desiredEntrySize) {
-            if (desiredEntrySize[0] > 0 && indices.length === 2 && indices.every(
-              (x, i) => Number.isInteger(x) && x >= 0
-            )) {
-              // if have desired entry size, then assume specify size after wrapping components
-              // In this case, if the entry size is positive, will return all components
-              // for vector while ignoring arraySize[0] and arraySize[1]
-              return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
-            } else {
-              return [];
-            }
-          }
-
           if (!arraySize) {
             return [];
           }
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
           )) {
@@ -927,9 +884,9 @@ export default class Curve extends GraphicalComponent {
           let vectorInd = arrayIndices[1];
 
           let direction = dependencyValuesByKey[arrayKey].direction;
-          if (!direction) {
-            direction = "none";
-          }
+          // if (!direction) {
+          //   direction = "none";
+          // }
 
 
           if (direction === "none") {
@@ -973,48 +930,36 @@ export default class Curve extends GraphicalComponent {
             }
 
 
+          } else if ((arrayIndices[1] === 0 && direction === "next") ||
+            (arrayIndices[1] === 0 && direction === "next")
+          ) {
+            // calculate control vector from spline
+
+            // only two of these three will be defined
+            let point1 = dependencyValuesByKey[arrayKey]["throughPoint" + pointInd]
+            let point2 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 1)]
+            let point3 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 2)]
+
+
+            let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+              tau: globalDependencyValues.splineTension,
+              eps: numerics.eps,
+              splineForm: globalDependencyValues.splineForm,
+              point1: point1 ? point1 : point3,
+              point2,
+              point3: undefined,
+            });
+
+            for (let dim = 0; dim < 2; dim++) {
+              let arrayKeyDim = pointInd + "," + vectorInd + "," + dim;
+              newControlValues[arrayKeyDim] = coordsNumeric[dim];
+            }
+
           } else {
-
             // if have a vector from control child, use that
-
-            let foundControlFromControlChild = false;
-
-            let controlChild = dependencyValuesByKey[arrayKey].controlChild;
-            if (controlChild.length === 1) {
-              let control = controlChild[0].stateValues["control" + jointVarEnding];
-              if (control) {
-                foundControlFromControlChild = true;
-                newControlValues[arrayKey] = control;
-              }
-            }
-
-            if (!foundControlFromControlChild) {
-              // calculate control vector from spline
-
-              // only two of these three will be defined
-              let point1 = dependencyValuesByKey[arrayKey]["throughPoint" + pointInd]
-              let point2 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 1)]
-              let point3 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 2)]
-
-
-              let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
-                tau: globalDependencyValues.splineTension,
-                eps: numerics.eps,
-                splineForm: globalDependencyValues.splineForm,
-                point1: point1 ? point1 : point3,
-                point2,
-                point3: undefined,
-              });
-
-              for (let dim = 0; dim < 2; dim++) {
-                let arrayKeyDim = pointInd + "," + vectorInd + "," + dim;
-                newControlValues[arrayKeyDim] = coordsNumeric[dim];
-              }
-
-
-            }
+            newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].controlChild[0]
+              .stateValues["control" + jointVarEnding];
           }
-
 
         }
 
@@ -1140,7 +1085,7 @@ export default class Curve extends GraphicalComponent {
           return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlPointX") {
           // controlPointX3_2_1 is the first component of the second control point
           // controlling the third point
@@ -1148,16 +1093,7 @@ export default class Curve extends GraphicalComponent {
           if (indices.length === 3 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -1175,21 +1111,10 @@ export default class Curve extends GraphicalComponent {
         } else {
           // controlPoint3_2 is all components of the second control point
           // controling the third point
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (desiredEntrySize) {
-            if (desiredEntrySize[0] > 0 && indices.length === 2 && indices.every(
-              (x, i) => Number.isInteger(x) && x >= 0
-            )) {
-              // if have desired entry size, then assume specify size after wrapping components
-              // In this case, if the entry size is positive, will return all components
-              // for point while ignoring arraySize[0] and arraySize[1]
-              return Array.from(Array(arraySize[2]), (_, i) => String(indices) + "," + i)
-            } else {
-              return [];
-            }
-          } if (!arraySize) {
+          if (!arraySize) {
             return [];
           }
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0 && x < arraySize[i]
           )) {
