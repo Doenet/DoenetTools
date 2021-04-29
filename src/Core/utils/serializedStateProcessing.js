@@ -471,6 +471,8 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects })
       newPrimitive = attrObj.validationFunction(newPrimitive);
     }
     return newPrimitive;
+  } else if (attrObj.leaveRaw) {
+    return value;
   }
 }
 
