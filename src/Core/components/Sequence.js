@@ -1010,15 +1010,3 @@ export function numberToLetters(number, lowercase) {
   }
   return letters;
 }
-
-
-function lettersOnlyInString(s) {
-  if (typeof s !== "string") {
-    return false;
-  }
-
-  let pieces = s.split(",").map(x => x.trim());
-
-  return pieces.every(x => /^[a-zA-Z]+$/.test(x));
-
-}

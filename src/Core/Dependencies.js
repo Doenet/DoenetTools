@@ -2820,8 +2820,7 @@ class Dependency {
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
               if (!depComponent.state[mappedVarName].deferred) {
                 componentObj.stateValues[nameForOutput] = depComponent.stateValues[mappedVarName];
-                if (this.valuesChanged[componentInd][mappedVarName].changed
-                ) {
+                if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};
                   }
