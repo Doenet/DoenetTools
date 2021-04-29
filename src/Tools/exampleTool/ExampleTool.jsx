@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Tool from '../_framework/Tool';
-import { useToolControlHelper } from '../_framework/ToolRoot';
-import { useToast } from '../_framework/Toast';
+import Tool from '@Tool';
+import { useToolControlHelper } from '@ToolRoot';
+import { useToast } from '@Toast';
 // import CollapseSection from "../imports/CollapseSection";
 // import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
 

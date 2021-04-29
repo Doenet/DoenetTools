@@ -1,9 +1,9 @@
 {
   "scripts": {
     "start": "snowpack dev",
-    "clean": "snowpack --reload --config snowpack.config.js",
-    "deploy": "snowpack build --config snowpack.deploy.config.js",
-    "build": "snowpack build --config snowpack.deploy.config.js",
+    "build": "snowpack build",
+    "build:clean": "snowpack build --clean --reload",
+    "build:deploy": "snowpack build --clean",
     "build:docker": "docker-compose build",
     "build:core": "node package.core.js",
     "test": "cypress open",
@@ -21,6 +21,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@handsontable/react": "^5.0.0",
+    "@react-spring/web": "^9.1.2",
     "axios": "^0.21.1",
     "codemirror": "^5.61.0",
     "compromise": "^13.11.1",
@@ -43,7 +44,6 @@
     "react-measure": "^2.5.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-spring": "npm:@react-spring/web@^9.1.2",
     "react-table": "^7.7.0",
     "react-use-gesture": "^9.1.3",
     "react-visibility-sensor": "^5.1.1",
@@ -112,6 +112,13 @@
       "node": true
     },
     "settings": {
+      "import/core-modules": [
+        "@ToolRoot",
+        "@Tool",
+        "@Toast",
+        "solid-svg",
+        "react-spring"
+      ],
       "import/resolver": {
         "node": {
           "paths": [

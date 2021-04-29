@@ -5,6 +5,13 @@ const proxy = require('http2-proxy');
 // });
 
 module.exports = {
+  alias: {
+    '@ToolRoot': './src/Tools/_framework/ToolRoot',
+    '@Tool': './src/Tools/_framework/Tool',
+    '@Toast': './src/Tools/_framework/Toast',
+    'solid-svg': '@fortawesome/free-solid-svg-icons',
+    'react-spring': '@react-spring/web',
+  },
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
     'src/Tools/content': '/content',
@@ -40,7 +47,7 @@ module.exports = {
   routes: [
     /* Enable an SPA Fallback in development: */
     // { match: 'routes', src: '.*', dest: '/index.html' },
-    //Using this to map port 80 to 8080 for api requests
+    //internal docker network mapping
     {
       src: '/api/.*',
       dest: (req, res) => {
@@ -77,8 +84,7 @@ module.exports = {
     openUrl: '/exampleTool',
   },
   buildOptions: {
-    watch: true,
-    out: 'dist_local',
+    out: 'dist',
     clean: false,
     // minify: true
   },
