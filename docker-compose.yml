@@ -17,7 +17,7 @@ services:
     build: './doenet_docker/apache'
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
-      - ./src/media:/usr/local/apache2/htdocs/media
+      - ./dist/media:/usr/local/apache2/htdocs/media
     networks:
       - dev_net
     depends_on:
