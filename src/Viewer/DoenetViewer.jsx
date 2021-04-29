@@ -215,11 +215,11 @@ class DoenetViewer extends Component {
 
     let renderPromises = [];
     let rendererClassNames = [];
-    console.log('rendererTypesInDocument');
-    console.log(this.core.rendererTypesInDocument);
+    // console.log('rendererTypesInDocument');
+    // console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      console.log(`>>>dynamic import '${rendererClassName}'`)
+      // console.log(`>>>dynamic import '${rendererClassName}'`)
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
 

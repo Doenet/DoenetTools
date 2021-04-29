@@ -3,7 +3,7 @@ import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
 import core from '../../Core/Core';
 
-export default function Test(){
+function Test(){
 console.log("===Test")
 
   // const [doenetML,setDoenetML] = useState("");
@@ -13,7 +13,7 @@ console.log("===Test")
   useEffect(()=>{
     doenetML.current = testCodeDoenetML;
     setUpdateNumber((was)=>was+1)
-  },testCodeDoenetML);
+  },[testCodeDoenetML]);
 
 
   const [attemptNumber,setAttemptNumber] = useState(1);
@@ -119,7 +119,7 @@ console.log("===Test")
   return (
     <>
          <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={()=>setControlsVisible(was=>!was)}>{buttonText} controls</button>
-         Test Viewer and Core 
+        Test Viewer and Core 
            </h3>
         {controls}
       </div>
@@ -146,3 +146,15 @@ console.log("===Test")
   )
 }
 
+if (import.meta.hot) {
+  import.meta.hot.accept();
+  // import.meta.hot.accept(({module}) => {
+  //   Test = module.default;
+  //   console.log(">>>ACCEPT CALLED in test!!!!!!!!!",module.default)
+  //   console.log(">>>module",module)
+  // }
+  // );
+}
+
+
+export default Test;
