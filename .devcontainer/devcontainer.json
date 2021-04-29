@@ -10,7 +10,6 @@
   },
   "postCreateCommand": "npm install",
   "extensions": [
-    "ms-azuretools.vscode-docker",
     "eg2.vscode-npm-script",
     "visualstudioexptteam.vscodeintellicode",
     "dbaeumer.vscode-eslint",

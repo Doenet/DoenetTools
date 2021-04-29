@@ -1,13 +1,11 @@
 {
   "scripts": {
-    "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack build --config snowpack.config.js",
-    "docker:build": "cd doenet_docker && docker-compose build",
-    "dev": "snowpack dev --config snowpack.config.js",
-    "hot": "snowpack dev --config snowpack.config.js",
+    "start": "snowpack dev",
     "clean": "snowpack --reload --config snowpack.config.js",
-    "build": "snowpack build --config snowpack.deploy.config.js",
-    "build:core": "node package.core.js",
     "deploy": "snowpack build --config snowpack.deploy.config.js",
+    "build": "snowpack build --config snowpack.deploy.config.js",
+    "build:docker": "docker-compose build",
+    "build:core": "node package.core.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false",
     "publish_db": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",

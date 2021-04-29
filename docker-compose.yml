@@ -8,18 +8,16 @@ services:
     volumes:
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
-      - /home/node/snworkspaceow/dist_local
+      - /home/node/workspace/dist_local
     networks:
       - dev_net
     command: tail -f /dev/null
 
   apache:
     build: './doenet_docker/apache'
-    # ports:
-    #   - 80:80
     volumes:
-      - ./dist_local/api:/usr/local/apache2/htdocs/api
-      - ./dist_local/media:/usr/local/apache2/htdocs/media
+      - ./src/api:/usr/local/apache2/htdocs/api
+      - ./src/media:/usr/local/apache2/htdocs/media
     networks:
       - dev_net
     depends_on:
@@ -30,7 +28,7 @@ services:
   php:
     build: './doenet_docker/php'
     volumes:
-      - ./dist_local/api:/usr/local/apache2/htdocs/api
+      - ./src/api:/usr/local/apache2/htdocs/api
     networks:
       - dev_net
     restart: always

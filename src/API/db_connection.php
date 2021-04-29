@@ -5,7 +5,6 @@ $remoteuser = "devuser";
   // $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 // $db_temp = "cse_doenet";
 
-
 if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000' ||  $_SERVER['HTTP_HOST'] == 'apache' ){
   $env_path = "env.ini";
   $remoteuser = "devuser";
