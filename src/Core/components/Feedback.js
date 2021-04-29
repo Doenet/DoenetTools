@@ -46,6 +46,10 @@ export default class Feedback extends BlockComponent {
           attributeName: "condition",
           variableNames: ["value"],
         },
+        showFeedback: {
+          dependencyType: "flag",
+          flagName: "showFeedback",
+        }
       }),
       definition: function ({ dependencyValues }) {
 
@@ -53,7 +57,7 @@ export default class Feedback extends BlockComponent {
         if (dependencyValues.condition === null) {
           hide = false;
         } else {
-          hide = !dependencyValues.condition.stateValues.value;
+          hide = !(dependencyValues.showFeedback && dependencyValues.condition.stateValues.value);
         }
 
         return { newValues: { hide } }
