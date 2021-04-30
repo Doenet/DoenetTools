@@ -242,6 +242,7 @@ export const dragStateAtom = atom({
     isDragging: false,
     draggedItemsId: null,
     draggedOverDriveId: null,
+    initialDriveId: null,
     isDraggedOverBreadcrumb: false,
     dragShadowDriveId: null,
     dragShadowParentId: null,
@@ -1926,7 +1927,7 @@ function useDnDCallbacks() {
   const {moveItems, onMoveItemsError} = useMoveItems();
   const {copyItems, onCopyItemsError} = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
-  const optionKeyPressed = useKeyPressedListener("Alt");
+  const optionKeyPressed = useKeyPressedListener("Alt");  // Listen for option key events
 
   useEffect(() => {
     setDragState((dragState) => ({      
@@ -1952,6 +1953,7 @@ function useDnDCallbacks() {
       ...dragState,
       isDragging: true,
       draggedOverDriveId: driveId,
+      initialDriveId: driveId,
       draggedItemsId,
       openedFoldersInfo: [],
       copyMode: copyMode
@@ -1964,14 +1966,28 @@ function useDnDCallbacks() {
   };
 
   const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
-    // update driveId if changed
-    if (dragState.draggedOverDriveId !== driveId) {
-      setDragState((dragState) => ({
-        ...dragState,
-        draggedOverDriveId: driveId,
-        isDraggedOverBreadcrumb: isBreadcrumb
-      }));
+    // Update driveId if changed
+    if (draggedOverDriveIdRef.current !== driveId) {
+      
     }
+    setDragState((dragState) => {
+      const { draggedOverDriveId, initialDriveId, copyMode } = dragState;
+      let newDraggedOverDriveId = draggedOverDriveId;
+      let newCopyMode = copyMode;
+      if (draggedOverDriveId !== driveId) {
+        newDraggedOverDriveId = driveId;
+      }
+
+      // newCopyMode = initialDriveId !== driveId;
+      
+      return {
+        ...dragState,
+        draggedOverDriveId: newDraggedOverDriveId,
+        isDraggedOverBreadcrumb: isBreadcrumb,
+        copyMode: newCopyMode
+      }
+      
+    });
   };
 
   const onDragEnd = () => {
@@ -2015,6 +2031,7 @@ function useDnDCallbacks() {
       ...dragState,
       isDragging: false,
       draggedOverDriveId: null,
+      initialDriveId: null,
       draggedItemsId: null,
       openedFoldersInfo: [],
       copyMode: false
