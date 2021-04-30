@@ -31,7 +31,7 @@ describe("Course creation in Library", function () {
   // });
 });
 
-describe("Library", function () {
+describe("Library items creation and simple interactions", function () {
   beforeEach(() => {
     cy.visit('/library');
 
@@ -131,7 +131,7 @@ describe("Library", function () {
   //   });
   // });
 
-  // it('Creating a new DoenetML by clicking on the Add DoenetML button', function() {
+  // it('Creating a new DoenetML at drive level by clicking on the Add DoenetML button', function() {
   //   cy.get('[data-cy=addDoenetMLButton]').click();
 
   //   // Verify item existence and type
@@ -139,6 +139,33 @@ describe("Library", function () {
   //   cy.get(':nth-child(1) > [data-cy=driveItem]').within(() => {
   //     cy.get('[data-cy=doenetMLIcon]').should('exist');
   //   });    
+  // })
+
+  // it('Creating a DoenetML within another folder', function() {
+  //   cy.get('[data-cy=addFolderButton]').click();
+
+  //   cy.get('[data-cy=navPanel]').within(() => {
+  //     // Get second item in navPanel
+  //     const folder = cy.get('[data-cy=driveItem]').eq(1);
+
+  //     // Verify item is a folder
+  //     folder.within(() => {
+  //       cy.get('[data-cy=folderIcon]').should('exist');
+  //     });
+
+  //     // Select folder
+  //     folder.click();
+  //   }); 
+
+  //   cy.get('[data-cy=addDoenetMLButton]').click();
+
+  //   // Verify item existence and type
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().should('exist');
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=doenetMLIcon]').should('exist');
+  //     })
+  //   });
   // })
 
   // it('Single-clicking on a DoenetML should select it and displays information about it in the InfoPanel', function() {
