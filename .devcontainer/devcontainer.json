@@ -1,5 +1,5 @@
 {
-  "name": "Doenet Dev Container",
+  "name": "Doenet",
   "dockerComposeFile": ["../docker-compose.yml"],
   "service": "dev",
   "settings": {
