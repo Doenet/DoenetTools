@@ -148,6 +148,27 @@ describe("Library items creation and deletion", function () {
   //   });
   // });
 
+  it('Renaming a folder through the input box in the InfoPanel', function() {
+    const newFolderLabel = "Test label";
+
+    cy.get('[data-cy=addFolderButton]').click();
+
+    cy.get('[data-cy=mainPanel]').within(() => {
+      cy.get('[data-cy=driveItem]').first().click();
+    });
+
+    cy.get('[data-cy=mainPanel]').within(() => {
+      cy.get('[data-cy=driveItem]').first().within(() => {
+        cy.get('[data-cy=folderLabel]').invoke('text').then(label => {
+          folderLabel = label;
+        })
+      })
+    }); 
+    cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
+      expect(folderLabel.trim()).equal(infoPanelItemLabel.trim());
+    })   
+  });
+
   // it('Creating a new DoenetML at drive level by clicking on the Add DoenetML button', function() {
   //   cy.get('[data-cy=addDoenetMLButton]').click();
 
