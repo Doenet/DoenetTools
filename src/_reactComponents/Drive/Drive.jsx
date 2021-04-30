@@ -1047,7 +1047,7 @@ function Folder(props){
         <div style={{display: 'inline', margin:'0px'}}>
           {openCloseButton}
           <span data-cy="folderIcon"><FontAwesomeIcon icon={faFolder}/></span>
-          {label}
+          <span data-cy="folderLabel">{label}</span>
         </div>
       </div>
     </div>;
@@ -1635,7 +1635,7 @@ const DoenetML = React.memo((props)=>{
       }}>
       <p style={{display: 'inline', margin: '0px'}}>
         <span data-cy="doenetMLIcon"><FontAwesomeIcon icon={faCode}/></span>
-        {label} 
+        <span data-cy="doenetMLLabel">{label} </span>
       </p> 
       {props.numColumns >= 2 ? <span>{date}</span> : null }
       {props.numColumns >= 3 ? <span>{published}</span> : null }
