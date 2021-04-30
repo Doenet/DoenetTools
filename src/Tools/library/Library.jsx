@@ -494,7 +494,7 @@ const FolderInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button value="Delete Folder" callback={()=>{
+  <Button data-cy="deleteFolderButton" value="Delete Folder" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -568,7 +568,7 @@ const DoenetMLInfoPanel = function(props){
   }} />
   <br />
   <br />
-  <Button value="Delete DoenetML" callback={()=>{
+  <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,

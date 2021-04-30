@@ -31,14 +31,16 @@ describe("Course creation in Library", function () {
   // });
 });
 
-describe("Library items creation and simple interactions", function () {
+describe("Library items creation and deletion", function () {
   beforeEach(() => {
     cy.visit('/library');
 
     // Create a new course and select it
     cy.get('[data-cy=createNewCourseButton]').click();
     cy.wait(500);
-    cy.get(':nth-child(1) > :nth-child(1) > [data-cy=navDriveHeader]').click();
+    cy.get('[data-cy=navPanel]').within(() => {
+      cy.get('[data-cy=navDriveHeader]').first().click();
+    });
   });
 
   // it('Creating a folder at drive level by clicking on the Add Folder button', function() {
@@ -77,6 +79,21 @@ describe("Library items creation and simple interactions", function () {
   //     cy.get('[data-cy=driveItem]').first().within(() => {
   //       cy.get('[data-cy=folderIcon]').should('exist');
   //     })
+  //   });
+  // })
+
+  // it('Deleting a folder by selecting the folder then clicking on the Delete Folder button', function() {
+  //   cy.get('[data-cy=addFolderButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().should('exist');
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //   });
+
+  //   cy.get('[data-cy=deleteFolderButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().should('not.exist');
   //   });
   // })
 
@@ -165,6 +182,21 @@ describe("Library items creation and simple interactions", function () {
   //     cy.get('[data-cy=driveItem]').first().within(() => {
   //       cy.get('[data-cy=doenetMLIcon]').should('exist');
   //     })
+  //   });
+  // })
+
+  // it('Deleting a DoenetML by selecting the DoenetML then clicking on the Delete DoenetML button', function() {
+  //   cy.get('[data-cy=addDoenetMLButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().should('exist');
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //   });
+
+  //   cy.get('[data-cy=deleteDoenetMLButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().should('not.exist');
   //   });
   // })
 
