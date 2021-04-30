@@ -15,6 +15,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $sourceDriveId = mysqli_real_escape_string($conn,$_POST["sourceDriveId"]); 
 $destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationDriveId"]); 
 $destinationItemId = mysqli_real_escape_string($conn,$_POST["destinationItemId"]); 
+$newSortOrder = mysqli_real_escape_string($conn,$_POST["newSortOrder"]); 
 
 $success = FALSE;
 $sql = "
@@ -49,29 +50,47 @@ if ($destinationDriveId == $sourceDriveId){
 
 if ($canAddDesination && $canMoveSource){
   $success = TRUE;
-$number_items = count($_POST["selectedItemIds"]);
+  $number_items = count($_POST["selectedItemIds"]);
 
-$new_values = "";
-for ($i = 0; $i < $number_items; $i++) {
-  $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemIds"][$i]);
-  $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId'),";
-}
-$new_values = rtrim($new_values,",");
+  $new_values = "";
+  for ($i = 0; $i < $number_items; $i++) {
+    $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemIds"][$i]);
+    $new_values = $new_values . "('$destinationDriveId','$destinationItemId','$itemId','$newSortOrder'),";
+  }
+  $new_values = rtrim($new_values,",");
 
-$sql = "INSERT INTO drive_content (driveId,parentFolderId,itemId)
-        VALUES ";
-$sql = $sql . $new_values;
-$sql = $sql . " ON DUPLICATE KEY UPDATE 
-driveId = VALUES(driveId),
-parentFolderId = VALUES(parentFolderId) ";
-$result = $conn->query($sql); 
+  $sql = "INSERT INTO drive_content (driveId,parentFolderId,itemId,sortOrder)
+          VALUES ";
+  $sql = $sql . $new_values;
+  $sql = $sql . " ON DUPLICATE KEY UPDATE 
+  driveId = VALUES(driveId),
+  parentFolderId = VALUES(parentFolderId),
+  sortOrder = VALUES(sortOrder)
+  ";
+  $result = $conn->query($sql); 
+
+  /* Update driveId of all child nodes in moved folders */
+  $number_items = count($_POST["selectedItemChildrenIds"]);
+
+  $id_list = "(";
+
+  for ($i = 0; $i < $number_items; $i++) {
+    $itemId =  mysqli_real_escape_string($conn,$_POST["selectedItemChildrenIds"][$i]);
+    $id_list = $id_list . "'$itemId',";
+  }
+  $id_list = rtrim($id_list,",");
+  
+  $sql = "UPDATE drive_content
+          SET driveId='$destinationDriveId'
+          WHERE itemId IN $id_list)";
+
+  $result = $conn->query($sql); 
 }else{
   $success = FALSE;
 }
 $response_arr = array( 
     "success" => $success,
    );
-
  // set response code - 200 OK
  http_response_code(200);
 

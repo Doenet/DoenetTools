@@ -1,76 +1,77 @@
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-proxy.on('proxyReq', function(proxyReq, req, res, options) {
+proxy.on('proxyReq', function (proxyReq, req, res, options) {
   proxyReq.setHeader('Host', 'localhost');
 });
 
-/** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
-  // sets what directories should be mounted where
   mount: {
-    "src": "/"
-    // "desired/path" : "desired/endpoint"
+    'src/Tools/accountSettings': '/accountSettings',
+    'src/Tools/content': '/content',
+    'src/Tools/course': '/course',
+    'src/Tools/docs': '/docs',
+    'src/Tools/exampleTool': '/exampleTool',
+    'src/Tools/gradebook': '/gradebook',
+    'src/Tools/library': '/library',
+    'src/Tools/signin': '/signin',
+    'src/Tools/signout': '/signout',
+    'src/Tools/temp': '/temp',
+    'src/Tools/test': '/test',
+    'src/Tools/_framework': '/_framework',
+    'src/Media': { "url": "/media", "static": true, "resolve": false },
+    'src/Media/profile_pictures': '/profile_pictures',
+    'src/Api': '/api',
+    'src/Home': '/',
+    'src/Viewer': '/viewer',
+    'src/_reactComponents': '/_reactComponents',
+    'src/_utils': '/_utils',
+    'src/Core': '/core',
   },
   plugins: [
-    ["snowpack-plugin-raw-file-loader", {
-      exts: [".doenet",".txt"], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
-    }],
+    '@snowpack/plugin-react-refresh',
+    '@snowpack/plugin-dotenv',
+    [
+      'snowpack-plugin-raw-file-loader',
+      {
+        exts: ['.doenet', '.txt'], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+      },
+    ],
   ],
-  //any and all requests to apache must have a section here.
   routes: [
+    /* Enable an SPA Fallback in development: */
+    // { match: 'routes', src: '.*', dest: '/index.html' },
+    //Using this to map port 80 to 8080 for api requests
     {
       src: '/api/.*',
       dest: (req, res) => {
-        // remove /api prefix (optional)
-        // req.url = req.url.replace(/^\/api/, '');
-        // console.log("api call!");
-        // console.log(req.url);
-        
         proxy.web(req, res);
       },
     },
-    {
-      src: '/open_api/.*',
-      dest: (req, res) => {
-        proxy.web(req, res);
-      },
-    },
-
     {
       src: '/media/.*',
-      dest: (req, res) => {
-        proxy.web(req, res);
-      },
-    },
-    {
-      src: '/geogebra/.*',
-      dest: (req, res) => {
-        proxy.web(req, res);
-      },
-    },
- ],
+      dest: (req,res) => {
+        proxy.web(req,res);
+      }
+    }
+  ],
+  
   optimize: {
-    /* Example: Bundle your final build: */
-    // "bundle": true,
+    // bundle: true,
+    // minify: true,
+    // target: 'es2020',
+    // treeshake: true,
   },
   packageOptions: {
-    rollup: {
-      plugins: [
-        require('rollup-plugin-re')({
-          patterns: [
-            {
-              test: /require(\((["'])(?:\\\2|[^\n])*?\2\))/g,
-              replace: 'import$1'
-            }
-          ]
-        })
-      ]
-    },
+    polyfillNode: true,
+    knownEntrypoints: ["crypto-js/sha1"],
   },
   devOptions: {
-    port: 8080
+    openUrl: '/library',
   },
   buildOptions: {
-    /* ... */
+    watch: true,
+    out: 'dist_local',
+    clean: false,
+    // minify: true
   },
 };

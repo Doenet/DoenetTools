@@ -959,7 +959,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist name="e1">4 6</mathlist><exclude name="e2">2 8</exclude><number name="e3">7</number>
+    <mathlist name="e1">4 6</mathlist><numberlist name="e2">2 8</numberlist><number name="e3">7</number>
     <p><aslist><sequence from="1" to="10" exclude="$e1 $e2 $e3" /></aslist></p>
     `}, "*");
     });
@@ -1036,7 +1036,7 @@ describe('Sequence Tag Tests', function () {
 
   });
 
-  it('can override fixed property', () => {
+  it('sequence fixed by default', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1045,7 +1045,56 @@ describe('Sequence Tag Tests', function () {
     <p>From: <mathinput name="from" prefill="1" /></p>
     <p>Step: <mathinput name="step" prefill="2" /></p>
 
-    <p name="thelist"><aslist><sequence assignNames="a b" from="$from" step="$step" to="7" fixed="false" /></aslist></p>
+    <p name="thelist"><aslist><sequence assignNames="a b" from="$from" step="$step" to="7" /></aslist></p>
+
+    <p>Change first: <mathinput name="a2" bindValueTo="$a" /></p>
+    <p>Change second: <mathinput name="b2" bindValueTo="$b" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}21{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '1, 3, 5, 7')
+
+    cy.get('#\\/from textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 6')
+
+    cy.get('#\\/step textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4')
+
+
+  });
+
+  it('can override fixed property', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>From: <mathinput name="from" prefill="1" /></p>
+    <p>Step: <mathinput name="step" prefill="2" /></p>
+    <p>Fixed: <booleaninput name="fx" /></p>
+
+    <p name="thelist"><aslist><sequence assignNames="a b" from="$from" step="$step" to="7" fixed="$fx" /></aslist></p>
 
     <p>Change first: <mathinput name="a2" bindValueTo="$a" /></p>
     <p>Change second: <mathinput name="b2" bindValueTo="$b" /></p>
@@ -1080,6 +1129,25 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
     cy.get('#\\/thelist').should('have.text', '9')
+
+
+    cy.get('#\\/fx_input').click();
+    cy.get('#\\/step textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 5, 6, 7')
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 5, 6, 7')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '4, 5, 6, 7')
+
+    cy.get('#\\/fx_input').click();
+
+    cy.get('#\\/a2 textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '9, 5, 6, 7')
+
+    cy.get('#\\/b2 textarea').type("{end}{backspace}41{enter}", { force: true })
+    cy.get('#\\/thelist').should('have.text', '9, 41, 6, 7')
 
   });
 

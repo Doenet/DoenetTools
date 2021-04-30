@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Choiceinput Tag Tests', function () {
+describe('ChoiceInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
