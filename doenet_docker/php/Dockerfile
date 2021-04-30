@@ -1,5 +1,5 @@
 # FROM php:7.4-fpm-alpine
-FROM php:7.4.1-fpm
+FROM php:5.4-fpm
 # COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # RUN apk update; \
@@ -36,7 +36,7 @@ RUN cd / && composer install
 
 
 # Link /usr/local/apache2/htdocs/api/vendor to /vendor in dev environment for compatability with prod
-RUN ln -s /vendor ./vendor
+RUN ln -s -T /vendor/ vendor
 
 # RUN composer require firebase/php-jwt
 RUN composer require firebase/php-jwt
