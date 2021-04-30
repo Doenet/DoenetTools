@@ -426,7 +426,7 @@ export const useCopyItems = () => {
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: "",
+          branchId: newItem.branchId,
           versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
@@ -513,7 +513,9 @@ export const useCopyItems = () => {
     // Clone item
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
+    const newBranchId = nanoid();
     newItem.itemId = newItemId;
+    newItem.branchId = newBranchId;
     
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
