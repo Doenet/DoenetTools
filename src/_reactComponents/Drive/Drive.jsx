@@ -58,6 +58,7 @@ import {
 } from './DriveActions';
 import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
+import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -1925,6 +1926,14 @@ function useDnDCallbacks() {
   const {moveItems, onMoveItemsError} = useMoveItems();
   const {copyItems, onCopyItemsError} = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
+  const optionKeyPressed = useKeyPressedListener("Alt");
+
+  useEffect(() => {
+    setDragState((dragState) => ({      
+      ...dragState,
+      copyMode: optionKeyPressed
+    }));
+  }, [optionKeyPressed]);
 
   const onDragStart = ({ ev=null, nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
@@ -1951,13 +1960,6 @@ function useDnDCallbacks() {
   };
 
   const onDrag = ({ clientX, clientY, translation, id, ev }) => {
-    if (ev && ev.altKey !== dragState.copyMode) {
-      let copyMode = ev.altKey;
-      setDragState((dragState) => ({
-        ...dragState,
-        copyMode
-      }));
-    } 
     dropActions.handleDrag(clientX, clientY);
   };
 
