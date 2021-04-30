@@ -2,10 +2,11 @@ version: '3.9'
 
 services:
   dev:
-    image: node:14-stretch
+    build: ./doenet_docker/snowpack
     ports:
       - 80:80
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
       - /home/node/workspace/dist_local

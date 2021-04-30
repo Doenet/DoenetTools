@@ -8,8 +8,9 @@
     "prettier.requireConfig": true,
     "editor.formatOnSave": true
   },
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "docker exec -d snow_php_1 ln -s -T /vendor/ vendor && npm install",
   "extensions": [
+    "ms-azuretools.vscode-docker",
     "eg2.vscode-npm-script",
     "visualstudioexptteam.vscodeintellicode",
     "dbaeumer.vscode-eslint",
